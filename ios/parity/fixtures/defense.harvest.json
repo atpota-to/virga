@@ -4774,7 +4774,7 @@
                 "content-type": "application/json"
               },
               "body": {
-                "$text": "{\"records\":[{\"did\":\"did:plc:nodot\",\"rkey\":\"3r0odot\"}]}"
+                "$text": "{\"records\":[{\"did\":\"did:plc:busy\",\"rkey\":\"3r0busy\"},{\"did\":\"did:plc:fan\",\"rkey\":\"3r1:fan\"},{\"did\":\"did:plc:fan\",\"rkey\":\"3r2:fan\"},{\"did\":\"did:plc:l3\",\"rkey\":\"3r3c:l3\"},{\"did\":\"did:plc:l4\",\"rkey\":\"3r4c:l4\"}]}"
               }
             }
           },
@@ -4789,12 +4789,12 @@
               "timeoutMs": 15000
             },
             "response": {
-              "status": 404,
+              "status": 200,
               "headers": {
                 "content-type": "application/json"
               },
               "body": {
-                "$text": "{\"error\":\"NotFound\"}"
+                "$text": "{\"records\":[{\"did\":\"did:plc:busy\",\"rkey\":\"3r0busy\"},{\"did\":\"did:plc:fan\",\"rkey\":\"3r1:fan\"},{\"did\":\"did:plc:fan\",\"rkey\":\"3r2:fan\"},{\"did\":\"did:plc:l3\",\"rkey\":\"3r3c:l3\"},{\"did\":\"did:plc:l4\",\"rkey\":\"3r4c:l4\"}]}"
               }
             }
           },
@@ -4815,26 +4815,6 @@
               },
               "body": {
                 "$text": "{\"records\":[{\"did\":\"did:plc:author\",\"rkey\":\"3r0thor\"}]}"
-              }
-            }
-          },
-          {
-            "request": {
-              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinks?subject=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F3kpost&source=app.bsky.feed.like%3Asubject.uri&limit=100",
-              "method": "GET",
-              "headers": {
-                "accept": "application/json"
-              },
-              "body": null,
-              "timeoutMs": 15000
-            },
-            "response": {
-              "status": 404,
-              "headers": {
-                "content-type": "application/json"
-              },
-              "body": {
-                "$text": "{\"error\":\"NotFound\"}"
               }
             }
           }
@@ -4863,7 +4843,7 @@
                 "distinctDids": null,
                 "kind": "like",
                 "truncated": false,
-                "failed": true
+                "failed": false
               },
               {
                 "collection": "app.bsky.feed.threadgate",
@@ -4878,18 +4858,93 @@
             ],
             "participants": [
               {
-                "did": "did:plc:nodot",
+                "did": "did:plc:fan",
                 "engagements": {
-                  "like": 1
+                  "like": 4
                 },
                 "records": [
                   {
                     "kind": "like",
-                    "rkey": "3r0odot",
+                    "rkey": "3r1:fan",
+                    "collection": "app.bsky.feed.like"
+                  },
+                  {
+                    "kind": "like",
+                    "rkey": "3r2:fan",
+                    "collection": "app.bsky.feed.like"
+                  },
+                  {
+                    "kind": "like",
+                    "rkey": "3r1:fan",
+                    "collection": "app.bsky.feed.like"
+                  },
+                  {
+                    "kind": "like",
+                    "rkey": "3r2:fan",
                     "collection": "app.bsky.feed.like"
                   }
                 ],
-                "total": 1,
+                "total": 4,
+                "primary": "like"
+              },
+              {
+                "did": "did:plc:busy",
+                "engagements": {
+                  "like": 2
+                },
+                "records": [
+                  {
+                    "kind": "like",
+                    "rkey": "3r0busy",
+                    "collection": "app.bsky.feed.like"
+                  },
+                  {
+                    "kind": "like",
+                    "rkey": "3r0busy",
+                    "collection": "app.bsky.feed.like"
+                  }
+                ],
+                "total": 2,
+                "primary": "like"
+              },
+              {
+                "did": "did:plc:l3",
+                "engagements": {
+                  "like": 2
+                },
+                "records": [
+                  {
+                    "kind": "like",
+                    "rkey": "3r3c:l3",
+                    "collection": "app.bsky.feed.like"
+                  },
+                  {
+                    "kind": "like",
+                    "rkey": "3r3c:l3",
+                    "collection": "app.bsky.feed.like"
+                  }
+                ],
+                "total": 2,
+                "primary": "like"
+              },
+              {
+                "did": "did:plc:l4",
+                "engagements": {
+                  "like": 2
+                },
+                "records": [
+                  {
+                    "kind": "like",
+                    "rkey": "3r4c:l4",
+                    "collection": "app.bsky.feed.like"
+                  },
+                  {
+                    "kind": "like",
+                    "rkey": "3r4c:l4",
+                    "collection": "app.bsky.feed.like"
+                  }
+                ],
+                "total": 2,
                 "primary": "like"
               },
               {
@@ -4909,20 +4964,15 @@
               }
             ],
             "totals": {
-              "participants": 2,
+              "participants": 5,
               "engagements": {
-                "like": 1,
+                "like": 10,
                 "gate": 1
               },
-              "records": 2
+              "records": 11
             },
-            "truncated": true,
-            "unread": [
-              {
-                "kind": "like",
-                "count": 1
-              }
-            ]
+            "truncated": false,
+            "unread": []
           },
           "progress": [
             {
@@ -5167,7 +5217,7 @@
                 "content-type": "application/json"
               },
               "body": {
-                "$text": "{\"records\":[{\"did\":\"did:plc:nodot\",\"rkey\":\"3r0odot\"}]}"
+                "$text": "{\"records\":[{\"did\":\"did:plc:busy\",\"rkey\":\"3r0busy\"},{\"did\":\"did:plc:fan\",\"rkey\":\"3r1:fan\"},{\"did\":\"did:plc:fan\",\"rkey\":\"3r2:fan\"},{\"did\":\"did:plc:l3\",\"rkey\":\"3r3c:l3\"},{\"did\":\"did:plc:l4\",\"rkey\":\"3r4c:l4\"}]}"
               }
             }
           },
@@ -5242,32 +5292,12 @@
               "timeoutMs": 15000
             },
             "response": {
-              "status": 404,
+              "status": 200,
               "headers": {
                 "content-type": "application/json"
               },
               "body": {
-                "$text": "{\"error\":\"NotFound\"}"
-              }
-            }
-          },
-          {
-            "request": {
-              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinks?subject=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F3kpost&source=app.bsky.feed.like%3Asubject.uri&limit=100",
-              "method": "GET",
-              "headers": {
-                "accept": "application/json"
-              },
-              "body": null,
-              "timeoutMs": 15000
-            },
-            "response": {
-              "status": 404,
-              "headers": {
-                "content-type": "application/json"
-              },
-              "body": {
-                "$text": "{\"error\":\"NotFound\"}"
+                "$text": "{\"records\":[{\"did\":\"did:plc:busy\",\"rkey\":\"3r0busy\"},{\"did\":\"did:plc:fan\",\"rkey\":\"3r1:fan\"},{\"did\":\"did:plc:fan\",\"rkey\":\"3r2:fan\"},{\"did\":\"did:plc:l3\",\"rkey\":\"3r3c:l3\"},{\"did\":\"did:plc:l4\",\"rkey\":\"3r4c:l4\"}]}"
               }
             }
           },
@@ -5436,7 +5466,7 @@
                 "distinctDids": null,
                 "kind": "like",
                 "truncated": false,
-                "failed": true
+                "failed": false
               },
               {
                 "collection": "app.bsky.feed.post",
@@ -5494,6 +5524,7 @@
                 "did": "did:plc:busy",
                 "engagements": {
                   "threadReply": 1,
+                  "like": 2,
                   "repost": 1,
                   "reply": 1,
                   "quote": 1
@@ -5503,6 +5534,11 @@
                     "kind": "threadReply",
                     "rkey": "3r2busy",
                     "collection": "app.bsky.feed.post"
+                  },
+                  {
+                    "kind": "like",
+                    "rkey": "3r0busy",
+                    "collection": "app.bsky.feed.like"
                   },
                   {
                     "kind": "repost",
@@ -5518,9 +5554,14 @@
                     "kind": "quote",
                     "rkey": "3r1busy",
                     "collection": "app.bsky.feed.post"
+                  },
+                  {
+                    "kind": "like",
+                    "rkey": "3r0busy",
+                    "collection": "app.bsky.feed.like"
                   }
                 ],
-                "total": 4,
+                "total": 6,
                 "primary": "quote"
               },
               {
@@ -5632,16 +5673,37 @@
               {
                 "did": "did:plc:fan",
                 "engagements": {
+                  "like": 4,
                   "repost": 1
                 },
                 "records": [
                   {
+                    "kind": "like",
+                    "rkey": "3r1:fan",
+                    "collection": "app.bsky.feed.like"
+                  },
+                  {
+                    "kind": "like",
+                    "rkey": "3r2:fan",
+                    "collection": "app.bsky.feed.like"
+                  },
+                  {
                     "kind": "repost",
                     "rkey": "3r0:fan",
                     "collection": "app.bsky.feed.repost"
+                  },
+                  {
+                    "kind": "like",
+                    "rkey": "3r1:fan",
+                    "collection": "app.bsky.feed.like"
+                  },
+                  {
+                    "kind": "like",
+                    "rkey": "3r2:fan",
+                    "collection": "app.bsky.feed.like"
                   }
                 ],
-                "total": 1,
+                "total": 5,
                 "primary": "repost"
               },
               {
@@ -5675,18 +5737,43 @@
                 "primary": "repost"
               },
               {
-                "did": "did:plc:nodot",
+                "did": "did:plc:l3",
                 "engagements": {
-                  "like": 1
+                  "like": 2
                 },
                 "records": [
                   {
                     "kind": "like",
-                    "rkey": "3r0odot",
+                    "rkey": "3r3c:l3",
+                    "collection": "app.bsky.feed.like"
+                  },
+                  {
+                    "kind": "like",
+                    "rkey": "3r3c:l3",
                     "collection": "app.bsky.feed.like"
                   }
                 ],
-                "total": 1,
+                "total": 2,
+                "primary": "like"
+              },
+              {
+                "did": "did:plc:l4",
+                "engagements": {
+                  "like": 2
+                },
+                "records": [
+                  {
+                    "kind": "like",
+                    "rkey": "3r4c:l4",
+                    "collection": "app.bsky.feed.like"
+                  },
+                  {
+                    "kind": "like",
+                    "rkey": "3r4c:l4",
+                    "collection": "app.bsky.feed.like"
+                  }
+                ],
+                "total": 2,
                 "primary": "like"
               },
               {
@@ -5751,25 +5838,20 @@
               }
             ],
             "totals": {
-              "participants": 15,
+              "participants": 16,
               "engagements": {
                 "threadReply": 6,
+                "like": 10,
                 "repost": 4,
                 "reply": 3,
                 "quote": 3,
-                "like": 1,
                 "gate": 1,
                 "other": 3
               },
-              "records": 21
+              "records": 30
             },
-            "truncated": true,
-            "unread": [
-              {
-                "kind": "like",
-                "count": 1
-              }
-            ]
+            "truncated": false,
+            "unread": []
           },
           "progress": [
             {
