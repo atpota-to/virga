@@ -64,6 +64,12 @@ extension Measure.Reports {
 }
 
 extension Measure.Dashboard {
+  /// `@media (max-width: 1179px) { .dash-grid { column-gap: clamp(24px, 4cqi,
+  /// var(--grid-gap-x)) } }`: with less room the gutter narrows with the
+  /// grid, 4% of the grid box's width and at least 24.
+  static let narrowGapAt: CGFloat = 1179
+  static let narrowGapMin: CGFloat = 24
+  static let narrowGapShare: CGFloat = 0.04
   /// `.stat { padding-top: 16px }`, 12 at 560 and under.
   static let phoneStatPaddingTop: CGFloat = 12
   /// `@container widget (max-width: 250px) { .stat-window { display: none } }`
@@ -93,6 +99,10 @@ extension Measure.Dashboard {
   /// `(max-width: 479px)` the handle too.
   static let personRelHiddenAt: CGFloat = 599
   static let personHandleHiddenAt: CGFloat = 479
+  /// tools.css `@container widget (max-width: 400px) { .person-history {
+  /// display: none } }`: a card a third of the row wide keeps a name, a
+  /// count and Follow.
+  static let personHistoryHiddenAt: CGFloat = 400
   /// `.person-meta > :not(:last-child)::after { margin: 0 6px }`
   static let personDotMargin: CGFloat = 6
   /// `.post-row { gap: 14px }`, `.post-rank { width: 16px }`, `.post-main { gap: 4px }`,

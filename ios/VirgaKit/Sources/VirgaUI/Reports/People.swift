@@ -8,14 +8,14 @@
 // you" and a fact, a dot between them; in a list under 600 wide a row with
 // a fact leaves "follows you" out, and under 480 the handle too
 // (PersonList measures the list). Then the number at the right, the way to
-// your history with them (the Interaction lookup; not on a phone), and
-// Follow where the archive knows who you follow, its slot one width so the
-// column lines up. Names come from the archive's cards (wantActors fills
-// them in), else the follower list, else a card the caller remembers (the
-// unfollows log's). A post: its words (a link to it on Bluesky, two lines
-// at most), and a meta line of when (relative within a week), whether it
-// was a reply or a quote, and its counts by kind, the ones not counted
-// dimmed.
+// your history with them (the Interaction lookup; not on a phone, nor in
+// a dashboard card 400 wide or less), and Follow where the archive knows
+// who you follow, its slot one width so the column lines up. Names come
+// from the archive's cards (wantActors fills them in), else the follower
+// list, else a card the caller remembers (the unfollows log's). A post:
+// its words (a link to it on Bluesky, two lines at most), and a meta line
+// of when (relative within a week), whether it was a reply or a quote, and
+// its counts by kind, the ones not counted dimmed.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -103,6 +103,8 @@ struct PersonRow: View {
   @Environment(\.navigate) private var navigate
   @Environment(\.openURL) private var openURL
   @Environment(\.personListWidth) private var listWidth
+  /// The dashboard card the row is in, if it is in one (`@container widget`).
+  @Environment(\.widgetWidth) private var widgetWidth
   @Environment(ArchiveModel.self) private var model: ArchiveModel?
   let archive: ReportArchive
   let did: String
@@ -154,8 +156,10 @@ struct PersonRow: View {
       if let value {
         Text(value).virgaText(.textBase, weight: VirgaWeight.semibold).foregroundStyle(theme.ink).fixedSize()
       }
-      // A phone gives the name the room: the way to your history goes.
-      if !phone, !did.jsEquals(archive.did) {
+      // A phone gives the name the room: the way to your history goes; so
+      // does a dashboard card 400 wide or less, room for a name, a count
+      // and Follow.
+      if !phone, (widgetWidth ?? .infinity) > Measure.Dashboard.personHistoryHiddenAt, !did.jsEquals(archive.did) {
         Button {
           navigate(InteractionModel.lookupHref(did))
         } label: {
