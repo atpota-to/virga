@@ -1,0 +1,4766 @@
+{
+  "name": "scheduling.draftActions",
+  "sources": [
+    "src/posting/pages/draftActions.js"
+  ],
+  "cases": [
+    {
+      "id": "draftMeta#1",
+      "fn": "draftMeta",
+      "input": {
+        "tz": "UTC",
+        "row": {
+          "updatedAt": "2026-11-12T11:55:00Z",
+          "isThread": true,
+          "posts": 3,
+          "isReply": false,
+          "images": 2,
+          "video": false,
+          "link": null,
+          "record": {
+            "kind": "post"
+          },
+          "labels": [],
+          "tags": [
+            "books",
+            "reading"
+          ],
+          "deviceName": "Bluesky",
+          "savedHere": false
+        },
+        "now": 1794484800000
+      },
+      "output": [
+        "Edited 5 min ago",
+        "Thread of 3",
+        "2 images",
+        "Quotes a post",
+        "#books #reading",
+        "Saved in Bluesky"
+      ]
+    },
+    {
+      "id": "draftMeta#2",
+      "fn": "draftMeta",
+      "input": {
+        "tz": "UTC",
+        "row": null,
+        "now": 1794484800000
+      },
+      "output": []
+    },
+    {
+      "id": "draftMeta#3",
+      "fn": "draftMeta",
+      "input": {
+        "tz": "UTC",
+        "row": {
+          "updatedAt": "2026-11-12T11:55:00Z",
+          "isThread": true,
+          "posts": 3,
+          "isReply": true,
+          "images": 1,
+          "video": true,
+          "link": {
+            "url": "x"
+          },
+          "record": {
+            "kind": "feed"
+          },
+          "labels": [
+            "nudity"
+          ],
+          "tags": [
+            "books",
+            "reading"
+          ],
+          "deviceName": "Bluesky",
+          "savedHere": true
+        },
+        "now": 1794484800000
+      },
+      "output": [
+        "Edited 5 min ago",
+        "Thread of 3",
+        "Reply",
+        "1 image",
+        "Video",
+        "Link card",
+        "Shares a feed",
+        "Content warning",
+        "#books #reading"
+      ]
+    },
+    {
+      "id": "draftMeta#4",
+      "fn": "draftMeta",
+      "input": {
+        "tz": "UTC",
+        "row": {
+          "updatedAt": "2026-11-12T11:55:00Z",
+          "isThread": true,
+          "posts": 3,
+          "isReply": false,
+          "images": 2,
+          "video": false,
+          "link": null,
+          "record": {
+            "kind": "list"
+          },
+          "labels": [],
+          "tags": [],
+          "deviceName": "",
+          "savedHere": false
+        },
+        "now": 1794484800000
+      },
+      "output": [
+        "Edited 5 min ago",
+        "Thread of 3",
+        "2 images",
+        "Shares a list"
+      ]
+    },
+    {
+      "id": "draftMeta#5",
+      "fn": "draftMeta",
+      "input": {
+        "tz": "UTC",
+        "row": {
+          "updatedAt": "whenever",
+          "isThread": true,
+          "posts": 3,
+          "isReply": false,
+          "images": 1200,
+          "video": false,
+          "link": null,
+          "record": {
+            "kind": "starterpack"
+          },
+          "labels": [],
+          "tags": [
+            "books",
+            "reading"
+          ],
+          "deviceName": "Bluesky",
+          "savedHere": false
+        },
+        "now": 1794484800000
+      },
+      "output": [
+        "Thread of 3",
+        "1,200 images",
+        "Shares a starter pack",
+        "#books #reading",
+        "Saved in Bluesky"
+      ]
+    },
+    {
+      "id": "draftMeta#6",
+      "fn": "draftMeta",
+      "input": {
+        "tz": "UTC",
+        "row": {
+          "updatedAt": "2026-11-12T11:55:00Z",
+          "isThread": true,
+          "isReply": false,
+          "images": 2,
+          "video": false,
+          "link": null,
+          "record": {
+            "kind": "other"
+          },
+          "labels": [],
+          "tags": [
+            "books",
+            "reading"
+          ],
+          "deviceName": "Bluesky",
+          "savedHere": false
+        },
+        "now": 1794484800000
+      },
+      "output": [
+        "Edited 5 min ago",
+        "Thread of undefined",
+        "2 images",
+        "Quotes a post",
+        "#books #reading",
+        "Saved in Bluesky"
+      ]
+    },
+    {
+      "id": "draftMeta#7",
+      "fn": "draftMeta",
+      "input": {
+        "tz": "UTC",
+        "row": {
+          "text": "bare"
+        },
+        "now": 1794484800000
+      },
+      "output": []
+    },
+    {
+      "id": "draftMeta#8",
+      "fn": "draftMeta",
+      "input": {
+        "tz": "UTC",
+        "row": {
+          "updatedAt": "2026-11-12T11:00",
+          "isThread": true,
+          "posts": 3,
+          "isReply": false,
+          "images": 2,
+          "video": false,
+          "link": null,
+          "record": {
+            "kind": "post"
+          },
+          "labels": [],
+          "tags": [
+            "books",
+            "reading"
+          ],
+          "deviceName": "Bluesky",
+          "savedHere": false
+        },
+        "now": 1794484800000
+      },
+      "output": [
+        "Edited 1 hr ago",
+        "Thread of 3",
+        "2 images",
+        "Quotes a post",
+        "#books #reading",
+        "Saved in Bluesky"
+      ]
+    },
+    {
+      "id": "draftMeta#9",
+      "fn": "draftMeta",
+      "input": {
+        "tz": "America/New_York",
+        "row": {
+          "updatedAt": "2026-11-12T11:55:00Z",
+          "isThread": true,
+          "posts": 3,
+          "isReply": false,
+          "images": 2,
+          "video": false,
+          "link": null,
+          "record": {
+            "kind": "post"
+          },
+          "labels": [],
+          "tags": [
+            "books",
+            "reading"
+          ],
+          "deviceName": "Bluesky",
+          "savedHere": false
+        },
+        "now": 1794484800000
+      },
+      "output": [
+        "Edited 5 min ago",
+        "Thread of 3",
+        "2 images",
+        "Quotes a post",
+        "#books #reading",
+        "Saved in Bluesky"
+      ]
+    },
+    {
+      "id": "draftMeta#10",
+      "fn": "draftMeta",
+      "input": {
+        "tz": "America/New_York",
+        "row": null,
+        "now": 1794484800000
+      },
+      "output": []
+    },
+    {
+      "id": "draftMeta#11",
+      "fn": "draftMeta",
+      "input": {
+        "tz": "America/New_York",
+        "row": {
+          "updatedAt": "2026-11-12T11:55:00Z",
+          "isThread": true,
+          "posts": 3,
+          "isReply": true,
+          "images": 1,
+          "video": true,
+          "link": {
+            "url": "x"
+          },
+          "record": {
+            "kind": "feed"
+          },
+          "labels": [
+            "nudity"
+          ],
+          "tags": [
+            "books",
+            "reading"
+          ],
+          "deviceName": "Bluesky",
+          "savedHere": true
+        },
+        "now": 1794484800000
+      },
+      "output": [
+        "Edited 5 min ago",
+        "Thread of 3",
+        "Reply",
+        "1 image",
+        "Video",
+        "Link card",
+        "Shares a feed",
+        "Content warning",
+        "#books #reading"
+      ]
+    },
+    {
+      "id": "draftMeta#12",
+      "fn": "draftMeta",
+      "input": {
+        "tz": "America/New_York",
+        "row": {
+          "updatedAt": "2026-11-12T11:55:00Z",
+          "isThread": true,
+          "posts": 3,
+          "isReply": false,
+          "images": 2,
+          "video": false,
+          "link": null,
+          "record": {
+            "kind": "list"
+          },
+          "labels": [],
+          "tags": [],
+          "deviceName": "",
+          "savedHere": false
+        },
+        "now": 1794484800000
+      },
+      "output": [
+        "Edited 5 min ago",
+        "Thread of 3",
+        "2 images",
+        "Shares a list"
+      ]
+    },
+    {
+      "id": "draftMeta#13",
+      "fn": "draftMeta",
+      "input": {
+        "tz": "America/New_York",
+        "row": {
+          "updatedAt": "whenever",
+          "isThread": true,
+          "posts": 3,
+          "isReply": false,
+          "images": 1200,
+          "video": false,
+          "link": null,
+          "record": {
+            "kind": "starterpack"
+          },
+          "labels": [],
+          "tags": [
+            "books",
+            "reading"
+          ],
+          "deviceName": "Bluesky",
+          "savedHere": false
+        },
+        "now": 1794484800000
+      },
+      "output": [
+        "Thread of 3",
+        "1,200 images",
+        "Shares a starter pack",
+        "#books #reading",
+        "Saved in Bluesky"
+      ]
+    },
+    {
+      "id": "draftMeta#14",
+      "fn": "draftMeta",
+      "input": {
+        "tz": "America/New_York",
+        "row": {
+          "updatedAt": "2026-11-12T11:55:00Z",
+          "isThread": true,
+          "isReply": false,
+          "images": 2,
+          "video": false,
+          "link": null,
+          "record": {
+            "kind": "other"
+          },
+          "labels": [],
+          "tags": [
+            "books",
+            "reading"
+          ],
+          "deviceName": "Bluesky",
+          "savedHere": false
+        },
+        "now": 1794484800000
+      },
+      "output": [
+        "Edited 5 min ago",
+        "Thread of undefined",
+        "2 images",
+        "Quotes a post",
+        "#books #reading",
+        "Saved in Bluesky"
+      ]
+    },
+    {
+      "id": "draftMeta#15",
+      "fn": "draftMeta",
+      "input": {
+        "tz": "America/New_York",
+        "row": {
+          "text": "bare"
+        },
+        "now": 1794484800000
+      },
+      "output": []
+    },
+    {
+      "id": "draftMeta#16",
+      "fn": "draftMeta",
+      "input": {
+        "tz": "America/New_York",
+        "row": {
+          "updatedAt": "2026-11-12T11:00",
+          "isThread": true,
+          "posts": 3,
+          "isReply": false,
+          "images": 2,
+          "video": false,
+          "link": null,
+          "record": {
+            "kind": "post"
+          },
+          "labels": [],
+          "tags": [
+            "books",
+            "reading"
+          ],
+          "deviceName": "Bluesky",
+          "savedHere": false
+        },
+        "now": 1794484800000
+      },
+      "output": [
+        "Edited just now",
+        "Thread of 3",
+        "2 images",
+        "Quotes a post",
+        "#books #reading",
+        "Saved in Bluesky"
+      ]
+    },
+    {
+      "id": "draftMeta#17",
+      "fn": "draftMeta",
+      "input": {
+        "tz": "UTC",
+        "locale": "en-FR",
+        "row": {
+          "updatedAt": "2026-11-12T11:55:00Z",
+          "isThread": true,
+          "posts": 3,
+          "isReply": false,
+          "images": 1200,
+          "video": false,
+          "link": null,
+          "record": {
+            "kind": "post"
+          },
+          "labels": [],
+          "tags": [
+            "books",
+            "reading"
+          ],
+          "deviceName": "Bluesky",
+          "savedHere": false
+        },
+        "now": 1794484800000
+      },
+      "output": [
+        "Edited 5 min ago",
+        "Thread of 3",
+        "1 200 images",
+        "Quotes a post",
+        "#books #reading",
+        "Saved in Bluesky"
+      ]
+    },
+    {
+      "id": "editedLabel#1",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "iso": "2026-11-12T11:59:50Z",
+        "now": 1794484800000
+      },
+      "output": "Edited just now"
+    },
+    {
+      "id": "editedLabel#2",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "iso": "2026-11-12T12:00:30Z",
+        "now": 1794484800000
+      },
+      "output": "Edited just now"
+    },
+    {
+      "id": "editedLabel#3",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "iso": "2026-11-12T13:00:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited just now"
+    },
+    {
+      "id": "editedLabel#4",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "iso": "2026-11-12T11:59:29Z",
+        "now": 1794484800000
+      },
+      "output": "Edited 1 min ago"
+    },
+    {
+      "id": "editedLabel#5",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "iso": "2026-11-12T11:30:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited 30 min ago"
+    },
+    {
+      "id": "editedLabel#6",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "iso": "2026-11-12T11:00:30Z",
+        "now": 1794484800000
+      },
+      "output": "Edited 1 hr ago"
+    },
+    {
+      "id": "editedLabel#7",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "iso": "2026-11-12T09:00:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited 3 hr ago"
+    },
+    {
+      "id": "editedLabel#8",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "iso": "2026-11-11T12:30:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited Nov 11"
+    },
+    {
+      "id": "editedLabel#9",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "iso": "2026-11-11T12:00:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited Nov 11"
+    },
+    {
+      "id": "editedLabel#10",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "iso": "2026-11-02T09:00:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited Nov 2"
+    },
+    {
+      "id": "editedLabel#11",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "iso": "2025-11-02T09:00:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited Nov 2, 2025"
+    },
+    {
+      "id": "editedLabel#12",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "iso": "2025-12-31T23:30:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited Dec 31, 2025"
+    },
+    {
+      "id": "editedLabel#13",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "iso": "nope",
+        "now": 1794484800000
+      },
+      "output": ""
+    },
+    {
+      "id": "editedLabel#14",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "iso": null,
+        "now": 1794484800000
+      },
+      "output": ""
+    },
+    {
+      "id": "editedLabel#15",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "iso": "2026-11-01T09:00",
+        "now": 1794484800000
+      },
+      "output": "Edited Nov 1"
+    },
+    {
+      "id": "editedLabel#16",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "America/New_York",
+        "iso": "2026-11-12T11:59:50Z",
+        "now": 1794484800000
+      },
+      "output": "Edited just now"
+    },
+    {
+      "id": "editedLabel#17",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "America/New_York",
+        "iso": "2026-11-12T12:00:30Z",
+        "now": 1794484800000
+      },
+      "output": "Edited just now"
+    },
+    {
+      "id": "editedLabel#18",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "America/New_York",
+        "iso": "2026-11-12T13:00:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited just now"
+    },
+    {
+      "id": "editedLabel#19",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "America/New_York",
+        "iso": "2026-11-12T11:59:29Z",
+        "now": 1794484800000
+      },
+      "output": "Edited 1 min ago"
+    },
+    {
+      "id": "editedLabel#20",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "America/New_York",
+        "iso": "2026-11-12T11:30:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited 30 min ago"
+    },
+    {
+      "id": "editedLabel#21",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "America/New_York",
+        "iso": "2026-11-12T11:00:30Z",
+        "now": 1794484800000
+      },
+      "output": "Edited 1 hr ago"
+    },
+    {
+      "id": "editedLabel#22",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "America/New_York",
+        "iso": "2026-11-12T09:00:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited 3 hr ago"
+    },
+    {
+      "id": "editedLabel#23",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "America/New_York",
+        "iso": "2026-11-11T12:30:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited Nov 11"
+    },
+    {
+      "id": "editedLabel#24",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "America/New_York",
+        "iso": "2026-11-11T12:00:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited Nov 11"
+    },
+    {
+      "id": "editedLabel#25",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "America/New_York",
+        "iso": "2026-11-02T09:00:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited Nov 2"
+    },
+    {
+      "id": "editedLabel#26",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "America/New_York",
+        "iso": "2025-11-02T09:00:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited Nov 2, 2025"
+    },
+    {
+      "id": "editedLabel#27",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "America/New_York",
+        "iso": "2025-12-31T23:30:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited Dec 31, 2025"
+    },
+    {
+      "id": "editedLabel#28",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "America/New_York",
+        "iso": "nope",
+        "now": 1794484800000
+      },
+      "output": ""
+    },
+    {
+      "id": "editedLabel#29",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "America/New_York",
+        "iso": null,
+        "now": 1794484800000
+      },
+      "output": ""
+    },
+    {
+      "id": "editedLabel#30",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "America/New_York",
+        "iso": "2026-11-01T09:00",
+        "now": 1794484800000
+      },
+      "output": "Edited Nov 1"
+    },
+    {
+      "id": "editedLabel#31",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "iso": "2026-11-12T11:59:50Z",
+        "now": 1794484800000
+      },
+      "output": "Edited just now"
+    },
+    {
+      "id": "editedLabel#32",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "iso": "2026-11-12T12:00:30Z",
+        "now": 1794484800000
+      },
+      "output": "Edited just now"
+    },
+    {
+      "id": "editedLabel#33",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "iso": "2026-11-12T13:00:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited just now"
+    },
+    {
+      "id": "editedLabel#34",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "iso": "2026-11-12T11:59:29Z",
+        "now": 1794484800000
+      },
+      "output": "Edited 1 min ago"
+    },
+    {
+      "id": "editedLabel#35",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "iso": "2026-11-12T11:30:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited 30 min ago"
+    },
+    {
+      "id": "editedLabel#36",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "iso": "2026-11-12T11:00:30Z",
+        "now": 1794484800000
+      },
+      "output": "Edited 1 hr ago"
+    },
+    {
+      "id": "editedLabel#37",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "iso": "2026-11-12T09:00:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited 3 hr ago"
+    },
+    {
+      "id": "editedLabel#38",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "iso": "2026-11-11T12:30:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited Nov 12"
+    },
+    {
+      "id": "editedLabel#39",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "iso": "2026-11-11T12:00:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited Nov 12"
+    },
+    {
+      "id": "editedLabel#40",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "iso": "2026-11-02T09:00:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited Nov 2"
+    },
+    {
+      "id": "editedLabel#41",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "iso": "2025-11-02T09:00:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited Nov 2, 2025"
+    },
+    {
+      "id": "editedLabel#42",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "iso": "2025-12-31T23:30:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited Jan 1"
+    },
+    {
+      "id": "editedLabel#43",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "iso": "nope",
+        "now": 1794484800000
+      },
+      "output": ""
+    },
+    {
+      "id": "editedLabel#44",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "iso": null,
+        "now": 1794484800000
+      },
+      "output": ""
+    },
+    {
+      "id": "editedLabel#45",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "iso": "2026-11-01T09:00",
+        "now": 1794484800000
+      },
+      "output": "Edited Nov 1"
+    },
+    {
+      "id": "editedLabel#46",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "iso": "2026-01-01T00:30:00Z",
+        "now": 1767394800000
+      },
+      "output": "Edited Jan 1"
+    },
+    {
+      "id": "editedLabel#47",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "America/New_York",
+        "iso": "2026-01-01T03:00:00Z",
+        "now": 1767614400000
+      },
+      "output": "Edited Dec 31, 2025"
+    },
+    {
+      "id": "editedLabel#48",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "locale": "en-GB",
+        "iso": "2025-11-02T09:00:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited 2 Nov 2025"
+    },
+    {
+      "id": "editedLabel#49",
+      "fn": "editedLabel",
+      "input": {
+        "tz": "UTC",
+        "locale": "en-AU",
+        "iso": "2025-11-02T09:00:00Z",
+        "now": 1794484800000
+      },
+      "output": "Edited 2 Nov 2025"
+    },
+    {
+      "id": "draftScheduleBlock#1",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {},
+        "can": true
+      },
+      "output": ""
+    },
+    {
+      "id": "draftScheduleBlock#2",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {},
+        "can": false
+      },
+      "output": "Scheduling needs a long session."
+    },
+    {
+      "id": "draftScheduleBlock#3",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "isReply": true
+        },
+        "can": true
+      },
+      "output": "Replies can’t be scheduled. Post it now instead."
+    },
+    {
+      "id": "draftScheduleBlock#4",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "isReply": true
+        },
+        "can": false
+      },
+      "output": "Scheduling needs a long session."
+    },
+    {
+      "id": "draftScheduleBlock#5",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "video": true
+        },
+        "can": true
+      },
+      "output": "Posts with video can’t be scheduled. Post it now instead."
+    },
+    {
+      "id": "draftScheduleBlock#6",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "video": true
+        },
+        "can": false
+      },
+      "output": "Scheduling needs a long session."
+    },
+    {
+      "id": "draftScheduleBlock#7",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "mediaElsewhere": true
+        },
+        "can": true
+      },
+      "output": "Its images were saved on another device. Open it to attach them again."
+    },
+    {
+      "id": "draftScheduleBlock#8",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "mediaElsewhere": true
+        },
+        "can": false
+      },
+      "output": "Scheduling needs a long session."
+    },
+    {
+      "id": "draftScheduleBlock#9",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "text": "x"
+        },
+        "can": true
+      },
+      "output": ""
+    },
+    {
+      "id": "draftScheduleBlock#10",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "text": "x"
+        },
+        "can": false
+      },
+      "output": "Scheduling needs a long session."
+    },
+    {
+      "id": "draftScheduleBlock#11",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "text": "  ",
+          "images": 0
+        },
+        "can": true
+      },
+      "output": ""
+    },
+    {
+      "id": "draftScheduleBlock#12",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "text": "  ",
+          "images": 0
+        },
+        "can": false
+      },
+      "output": "Scheduling needs a long session."
+    },
+    {
+      "id": "draftScheduleBlock#13",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "text": "x",
+          "mediaElsewhere": true
+        },
+        "can": true
+      },
+      "output": "Its images were saved on another device. Open it to attach them again."
+    },
+    {
+      "id": "draftScheduleBlock#14",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "text": "x",
+          "mediaElsewhere": true
+        },
+        "can": false
+      },
+      "output": "Scheduling needs a long session."
+    },
+    {
+      "id": "draftScheduleBlock#15",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "text": "",
+          "images": 1
+        },
+        "can": true
+      },
+      "output": ""
+    },
+    {
+      "id": "draftScheduleBlock#16",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "text": "",
+          "images": 1
+        },
+        "can": false
+      },
+      "output": "Scheduling needs a long session."
+    },
+    {
+      "id": "draftScheduleBlock#17",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "text": "",
+          "link": {
+            "url": "x"
+          }
+        },
+        "can": true
+      },
+      "output": ""
+    },
+    {
+      "id": "draftScheduleBlock#18",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "text": "",
+          "link": {
+            "url": "x"
+          }
+        },
+        "can": false
+      },
+      "output": "Scheduling needs a long session."
+    },
+    {
+      "id": "draftScheduleBlock#19",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "text": "",
+          "record": {
+            "kind": "post"
+          }
+        },
+        "can": true
+      },
+      "output": ""
+    },
+    {
+      "id": "draftScheduleBlock#20",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "text": "",
+          "record": {
+            "kind": "post"
+          }
+        },
+        "can": false
+      },
+      "output": "Scheduling needs a long session."
+    },
+    {
+      "id": "draftScheduleBlock#21",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "text": "",
+          "video": true
+        },
+        "can": true
+      },
+      "output": "Posts with video can’t be scheduled. Post it now instead."
+    },
+    {
+      "id": "draftScheduleBlock#22",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": {
+          "text": "",
+          "video": true
+        },
+        "can": false
+      },
+      "output": "Scheduling needs a long session."
+    },
+    {
+      "id": "draftScheduleBlock#23",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": null,
+        "can": true
+      },
+      "output": ""
+    },
+    {
+      "id": "draftScheduleBlock#24",
+      "fn": "draftScheduleBlock",
+      "input": {
+        "row": null,
+        "can": false
+      },
+      "output": "Scheduling needs a long session."
+    },
+    {
+      "id": "draftPostBlock#1",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {},
+        "can": false
+      },
+      "output": "Virga needs permission to post."
+    },
+    {
+      "id": "draftPostBlock#2",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {
+          "isReply": true
+        },
+        "can": false
+      },
+      "output": "Virga needs permission to post."
+    },
+    {
+      "id": "draftPostBlock#3",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {
+          "video": true
+        },
+        "can": false
+      },
+      "output": "Virga needs permission to post."
+    },
+    {
+      "id": "draftPostBlock#4",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {
+          "mediaElsewhere": true
+        },
+        "can": false
+      },
+      "output": "Virga needs permission to post."
+    },
+    {
+      "id": "draftPostBlock#5",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {
+          "text": "x"
+        },
+        "can": true
+      },
+      "output": ""
+    },
+    {
+      "id": "draftPostBlock#6",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {
+          "text": "x"
+        },
+        "can": false
+      },
+      "output": "Virga needs permission to post."
+    },
+    {
+      "id": "draftPostBlock#7",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {
+          "text": "  ",
+          "images": 0
+        },
+        "can": true
+      },
+      "output": "There’s nothing in it to post yet."
+    },
+    {
+      "id": "draftPostBlock#8",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {
+          "text": "  ",
+          "images": 0
+        },
+        "can": false
+      },
+      "output": "Virga needs permission to post."
+    },
+    {
+      "id": "draftPostBlock#9",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {
+          "text": "x",
+          "mediaElsewhere": true
+        },
+        "can": true
+      },
+      "output": "Its images were saved on another device. Open it to attach them again."
+    },
+    {
+      "id": "draftPostBlock#10",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {
+          "text": "x",
+          "mediaElsewhere": true
+        },
+        "can": false
+      },
+      "output": "Virga needs permission to post."
+    },
+    {
+      "id": "draftPostBlock#11",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {
+          "text": "",
+          "images": 1
+        },
+        "can": true
+      },
+      "output": ""
+    },
+    {
+      "id": "draftPostBlock#12",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {
+          "text": "",
+          "images": 1
+        },
+        "can": false
+      },
+      "output": "Virga needs permission to post."
+    },
+    {
+      "id": "draftPostBlock#13",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {
+          "text": "",
+          "link": {
+            "url": "x"
+          }
+        },
+        "can": true
+      },
+      "output": ""
+    },
+    {
+      "id": "draftPostBlock#14",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {
+          "text": "",
+          "link": {
+            "url": "x"
+          }
+        },
+        "can": false
+      },
+      "output": "Virga needs permission to post."
+    },
+    {
+      "id": "draftPostBlock#15",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {
+          "text": "",
+          "record": {
+            "kind": "post"
+          }
+        },
+        "can": true
+      },
+      "output": ""
+    },
+    {
+      "id": "draftPostBlock#16",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {
+          "text": "",
+          "record": {
+            "kind": "post"
+          }
+        },
+        "can": false
+      },
+      "output": "Virga needs permission to post."
+    },
+    {
+      "id": "draftPostBlock#17",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {
+          "text": "",
+          "video": true
+        },
+        "can": true
+      },
+      "output": ""
+    },
+    {
+      "id": "draftPostBlock#18",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": {
+          "text": "",
+          "video": true
+        },
+        "can": false
+      },
+      "output": "Virga needs permission to post."
+    },
+    {
+      "id": "draftPostBlock#19",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": null,
+        "can": true
+      },
+      "output": ""
+    },
+    {
+      "id": "draftPostBlock#20",
+      "fn": "draftPostBlock",
+      "input": {
+        "row": null,
+        "can": false
+      },
+      "output": "Virga needs permission to post."
+    },
+    {
+      "id": "draftActionMessage#1",
+      "fn": "draftActionMessage",
+      "input": {
+        "err": {
+          "code": "MEDIA_MISSING",
+          "message": "Open it."
+        },
+        "action": "post"
+      },
+      "output": "Open it."
+    },
+    {
+      "id": "draftActionMessage#2",
+      "fn": "draftActionMessage",
+      "input": {
+        "err": {
+          "code": "NEEDS_BACKEND",
+          "message": "Sign in."
+        },
+        "action": "schedule"
+      },
+      "output": "Sign in."
+    },
+    {
+      "id": "draftActionMessage#3",
+      "fn": "draftActionMessage",
+      "input": {
+        "err": {
+          "code": "DRAFT_LIMIT",
+          "message": "Too many drafts."
+        },
+        "action": "post"
+      },
+      "output": "Too many drafts."
+    },
+    {
+      "id": "draftActionMessage#4",
+      "fn": "draftActionMessage",
+      "input": {
+        "err": {
+          "code": "MISSING_SCOPE",
+          "message": "No scope."
+        },
+        "action": "post"
+      },
+      "output": "No scope."
+    },
+    {
+      "id": "draftActionMessage#5",
+      "fn": "draftActionMessage",
+      "input": {
+        "err": {
+          "problems": [
+            {
+              "message": "Too long."
+            },
+            {
+              "message": "Also this."
+            }
+          ]
+        },
+        "action": "post"
+      },
+      "output": "Too long."
+    },
+    {
+      "id": "draftActionMessage#6",
+      "fn": "draftActionMessage",
+      "input": {
+        "err": {
+          "problems": []
+        },
+        "action": "post"
+      },
+      "output": "The draft couldn’t be posted. Try again."
+    },
+    {
+      "id": "draftActionMessage#7",
+      "fn": "draftActionMessage",
+      "input": {
+        "err": {
+          "message": "Offline."
+        },
+        "action": "post"
+      },
+      "output": "The draft couldn’t be posted. Offline."
+    },
+    {
+      "id": "draftActionMessage#8",
+      "fn": "draftActionMessage",
+      "input": {
+        "err": {},
+        "action": "schedule"
+      },
+      "output": "The draft couldn’t be scheduled. Try again."
+    },
+    {
+      "id": "draftActionMessage#9",
+      "fn": "draftActionMessage",
+      "input": {
+        "err": {
+          "message": ""
+        },
+        "action": "post"
+      },
+      "output": "The draft couldn’t be posted. Try again."
+    },
+    {
+      "id": "draftActionMessage#10",
+      "fn": "draftActionMessage",
+      "input": {
+        "err": null,
+        "action": "post"
+      },
+      "output": ""
+    },
+    {
+      "id": "draftActionMessage#11",
+      "fn": "draftActionMessage",
+      "input": {
+        "err": {
+          "code": "QUOTA_EXCEEDED",
+          "message": "quota"
+        },
+        "action": "schedule"
+      },
+      "output": "The draft couldn’t be scheduled. quota"
+    },
+    {
+      "id": "draftActionMessage#12",
+      "fn": "draftActionMessage",
+      "input": {
+        "err": {
+          "message": "x"
+        },
+        "action": "other"
+      },
+      "output": "The draft couldn’t be posted. x"
+    },
+    {
+      "id": "defaults",
+      "fn": "prepare",
+      "input": {
+        "settings": {
+          "langs": [
+            "en"
+          ]
+        },
+        "agent": true
+      },
+      "output": {
+        "state": {
+          "posts": [
+            {
+              "id": "p",
+              "text": "hello",
+              "images": [],
+              "video": null,
+              "record": null,
+              "card": null
+            }
+          ],
+          "reply": null,
+          "tags": [],
+          "langs": [
+            "en"
+          ],
+          "labels": [],
+          "gates": {
+            "custom": false,
+            "reply": [
+              {
+                "type": "following"
+              }
+            ],
+            "quotes": true
+          },
+          "asDid": "did:plc:mira",
+          "schedule": null,
+          "lifespan": {
+            "enabled": false
+          },
+          "source": {
+            "kind": "draft",
+            "id": "d1",
+            "ownerDid": "did:plc:mira"
+          }
+        },
+        "notes": [],
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {
+              "langs": [
+                "en"
+              ]
+            }
+          ],
+          [
+            "resolveDefaultGates",
+            {
+              "langs": [
+                "en"
+              ]
+            },
+            "agent"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "custom-gates",
+      "fn": "prepare",
+      "input": {
+        "open": {
+          "state": {
+            "posts": [
+              {
+                "id": "p",
+                "text": "hello",
+                "images": [],
+                "video": null,
+                "record": null,
+                "card": null
+              }
+            ],
+            "reply": null,
+            "tags": [],
+            "langs": [
+              "en"
+            ],
+            "labels": [],
+            "gates": {
+              "custom": true,
+              "reply": [],
+              "quotes": false
+            },
+            "asDid": "did:plc:mira",
+            "schedule": null,
+            "lifespan": {
+              "enabled": false
+            },
+            "source": {
+              "kind": "draft",
+              "id": "d1",
+              "ownerDid": "did:plc:mira"
+            }
+          },
+          "missing": []
+        }
+      },
+      "output": {
+        "state": {
+          "posts": [
+            {
+              "id": "p",
+              "text": "hello",
+              "images": [],
+              "video": null,
+              "record": null,
+              "card": null
+            }
+          ],
+          "reply": null,
+          "tags": [],
+          "langs": [
+            "en"
+          ],
+          "labels": [],
+          "gates": {
+            "custom": true,
+            "reply": [],
+            "quotes": false
+          },
+          "asDid": "did:plc:mira",
+          "schedule": null,
+          "lifespan": {
+            "enabled": false
+          },
+          "source": {
+            "kind": "draft",
+            "id": "d1",
+            "ownerDid": "did:plc:mira"
+          }
+        },
+        "notes": [],
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ]
+        ]
+      }
+    },
+    {
+      "id": "reply",
+      "fn": "prepare",
+      "input": {
+        "open": {
+          "state": {
+            "posts": [
+              {
+                "id": "p",
+                "text": "hello",
+                "images": [],
+                "video": null,
+                "record": null,
+                "card": null
+              }
+            ],
+            "reply": {
+              "uri": "at://x/app.bsky.feed.post/1"
+            },
+            "tags": [],
+            "langs": [
+              "en"
+            ],
+            "labels": [],
+            "gates": {
+              "custom": false,
+              "reply": null,
+              "quotes": true
+            },
+            "asDid": "did:plc:mira",
+            "schedule": null,
+            "lifespan": {
+              "enabled": false
+            },
+            "source": {
+              "kind": "draft",
+              "id": "d1",
+              "ownerDid": "did:plc:mira"
+            }
+          },
+          "missing": []
+        }
+      },
+      "output": {
+        "state": {
+          "posts": [
+            {
+              "id": "p",
+              "text": "hello",
+              "images": [],
+              "video": null,
+              "record": null,
+              "card": null
+            }
+          ],
+          "reply": {
+            "uri": "at://x/app.bsky.feed.post/1"
+          },
+          "tags": [],
+          "langs": [
+            "en"
+          ],
+          "labels": [],
+          "gates": {
+            "custom": false,
+            "reply": null,
+            "quotes": true
+          },
+          "asDid": "did:plc:mira",
+          "schedule": null,
+          "lifespan": {
+            "enabled": false
+          },
+          "source": {
+            "kind": "draft",
+            "id": "d1",
+            "ownerDid": "did:plc:mira"
+          }
+        },
+        "notes": [],
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ]
+        ]
+      }
+    },
+    {
+      "id": "media-missing",
+      "fn": "prepare",
+      "input": {
+        "open": {
+          "state": {
+            "posts": [
+              {
+                "id": "p",
+                "text": "hello",
+                "images": [],
+                "video": null,
+                "record": null,
+                "card": null
+              }
+            ],
+            "reply": null,
+            "tags": [],
+            "langs": [
+              "en"
+            ],
+            "labels": [],
+            "gates": {
+              "custom": false,
+              "reply": null,
+              "quotes": true
+            },
+            "asDid": "did:plc:mira",
+            "schedule": null,
+            "lifespan": {
+              "enabled": false
+            },
+            "source": {
+              "kind": "draft",
+              "id": "d1",
+              "ownerDid": "did:plc:mira"
+            }
+          },
+          "missing": [
+            "virga-media:1"
+          ]
+        }
+      },
+      "output": {
+        "$error": {
+          "message": "This draft’s images were saved on another device. Open it to attach them again, then post it.",
+          "code": "MEDIA_MISSING"
+        },
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ]
+        ]
+      }
+    },
+    {
+      "id": "gates-notice",
+      "fn": "prepare",
+      "input": {
+        "gates": {
+          "gates": {
+            "custom": false,
+            "reply": null,
+            "quotes": true
+          },
+          "notice": "Couldn’t read."
+        }
+      },
+      "output": {
+        "state": {
+          "posts": [
+            {
+              "id": "p",
+              "text": "hello",
+              "images": [],
+              "video": null,
+              "record": null,
+              "card": null
+            }
+          ],
+          "reply": null,
+          "tags": [],
+          "langs": [
+            "en"
+          ],
+          "labels": [],
+          "gates": {
+            "custom": false,
+            "reply": null,
+            "quotes": true
+          },
+          "asDid": "did:plc:mira",
+          "schedule": null,
+          "lifespan": {
+            "enabled": false
+          },
+          "source": {
+            "kind": "draft",
+            "id": "d1",
+            "ownerDid": "did:plc:mira"
+          }
+        },
+        "notes": [
+          "Couldn’t read."
+        ],
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "id": "gates-throw",
+      "fn": "prepare",
+      "input": {
+        "gates": "throw"
+      },
+      "output": {
+        "$error": {
+          "message": "gates broke",
+          "code": null
+        },
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "id": "timer-room",
+      "fn": "prepare",
+      "input": {
+        "open": {
+          "state": {
+            "posts": [
+              {
+                "id": "p",
+                "text": "hello",
+                "images": [],
+                "video": null,
+                "record": null,
+                "card": null
+              }
+            ],
+            "reply": null,
+            "tags": [],
+            "langs": [
+              "en"
+            ],
+            "labels": [],
+            "gates": {
+              "custom": false,
+              "reply": null,
+              "quotes": true
+            },
+            "asDid": "did:plc:mira",
+            "schedule": null,
+            "lifespan": {
+              "enabled": true,
+              "lifespanSeconds": 3600
+            },
+            "source": {
+              "kind": "draft",
+              "id": "d1",
+              "ownerDid": "did:plc:mira"
+            }
+          },
+          "missing": []
+        },
+        "timerRoom": ""
+      },
+      "output": {
+        "state": {
+          "posts": [
+            {
+              "id": "p",
+              "text": "hello",
+              "images": [],
+              "video": null,
+              "record": null,
+              "card": null
+            }
+          ],
+          "reply": null,
+          "tags": [],
+          "langs": [
+            "en"
+          ],
+          "labels": [],
+          "gates": {
+            "custom": false,
+            "reply": [
+              {
+                "type": "following"
+              }
+            ],
+            "quotes": true
+          },
+          "asDid": "did:plc:mira",
+          "schedule": null,
+          "lifespan": {
+            "enabled": true,
+            "lifespanSeconds": 3600
+          },
+          "source": {
+            "kind": "draft",
+            "id": "d1",
+            "ownerDid": "did:plc:mira"
+          }
+        },
+        "notes": [],
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ],
+          [
+            "timerRoom",
+            {
+              "enabled": true,
+              "lifespanSeconds": 3600
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "timer-full",
+      "fn": "prepare",
+      "input": {
+        "open": {
+          "state": {
+            "posts": [
+              {
+                "id": "p",
+                "text": "hello",
+                "images": [],
+                "video": null,
+                "record": null,
+                "card": null
+              }
+            ],
+            "reply": null,
+            "tags": [],
+            "langs": [
+              "en"
+            ],
+            "labels": [],
+            "gates": {
+              "custom": false,
+              "reply": null,
+              "quotes": true
+            },
+            "asDid": "did:plc:mira",
+            "schedule": null,
+            "lifespan": {
+              "enabled": true,
+              "lifespanSeconds": 3600
+            },
+            "source": {
+              "kind": "draft",
+              "id": "d1",
+              "ownerDid": "did:plc:mira"
+            }
+          },
+          "missing": []
+        },
+        "timerRoom": "It’s in use."
+      },
+      "output": {
+        "state": {
+          "posts": [
+            {
+              "id": "p",
+              "text": "hello",
+              "images": [],
+              "video": null,
+              "record": null,
+              "card": null
+            }
+          ],
+          "reply": null,
+          "tags": [],
+          "langs": [
+            "en"
+          ],
+          "labels": [],
+          "gates": {
+            "custom": false,
+            "reply": [
+              {
+                "type": "following"
+              }
+            ],
+            "quotes": true
+          },
+          "asDid": "did:plc:mira",
+          "schedule": null,
+          "lifespan": {
+            "enabled": false,
+            "lifespanSeconds": 3600
+          },
+          "source": {
+            "kind": "draft",
+            "id": "d1",
+            "ownerDid": "did:plc:mira"
+          }
+        },
+        "notes": [
+          "It went without your default timer. It’s in use."
+        ],
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ],
+          [
+            "timerRoom",
+            {
+              "enabled": true,
+              "lifespanSeconds": 3600
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "timer-null",
+      "fn": "prepare",
+      "input": {
+        "open": {
+          "state": {
+            "posts": [
+              {
+                "id": "p",
+                "text": "hello",
+                "images": [],
+                "video": null,
+                "record": null,
+                "card": null
+              }
+            ],
+            "reply": null,
+            "tags": [],
+            "langs": [
+              "en"
+            ],
+            "labels": [],
+            "gates": {
+              "custom": false,
+              "reply": null,
+              "quotes": true
+            },
+            "asDid": "did:plc:mira",
+            "schedule": null,
+            "lifespan": {
+              "enabled": true,
+              "lifespanSeconds": 3600
+            },
+            "source": {
+              "kind": "draft",
+              "id": "d1",
+              "ownerDid": "did:plc:mira"
+            }
+          },
+          "missing": []
+        },
+        "timerRoom": null
+      },
+      "output": {
+        "state": {
+          "posts": [
+            {
+              "id": "p",
+              "text": "hello",
+              "images": [],
+              "video": null,
+              "record": null,
+              "card": null
+            }
+          ],
+          "reply": null,
+          "tags": [],
+          "langs": [
+            "en"
+          ],
+          "labels": [],
+          "gates": {
+            "custom": false,
+            "reply": [
+              {
+                "type": "following"
+              }
+            ],
+            "quotes": true
+          },
+          "asDid": "did:plc:mira",
+          "schedule": null,
+          "lifespan": {
+            "enabled": false,
+            "lifespanSeconds": 3600
+          },
+          "source": {
+            "kind": "draft",
+            "id": "d1",
+            "ownerDid": "did:plc:mira"
+          }
+        },
+        "notes": [],
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ],
+          [
+            "timerRoom",
+            {
+              "enabled": true,
+              "lifespanSeconds": 3600
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "timer-no-dep",
+      "fn": "prepare",
+      "input": {
+        "open": {
+          "state": {
+            "posts": [
+              {
+                "id": "p",
+                "text": "hello",
+                "images": [],
+                "video": null,
+                "record": null,
+                "card": null
+              }
+            ],
+            "reply": null,
+            "tags": [],
+            "langs": [
+              "en"
+            ],
+            "labels": [],
+            "gates": {
+              "custom": false,
+              "reply": null,
+              "quotes": true
+            },
+            "asDid": "did:plc:mira",
+            "schedule": null,
+            "lifespan": {
+              "enabled": true,
+              "lifespanSeconds": 3600
+            },
+            "source": {
+              "kind": "draft",
+              "id": "d1",
+              "ownerDid": "did:plc:mira"
+            }
+          },
+          "missing": []
+        }
+      },
+      "output": {
+        "state": {
+          "posts": [
+            {
+              "id": "p",
+              "text": "hello",
+              "images": [],
+              "video": null,
+              "record": null,
+              "card": null
+            }
+          ],
+          "reply": null,
+          "tags": [],
+          "langs": [
+            "en"
+          ],
+          "labels": [],
+          "gates": {
+            "custom": false,
+            "reply": [
+              {
+                "type": "following"
+              }
+            ],
+            "quotes": true
+          },
+          "asDid": "did:plc:mira",
+          "schedule": null,
+          "lifespan": {
+            "enabled": false,
+            "lifespanSeconds": 3600
+          },
+          "source": {
+            "kind": "draft",
+            "id": "d1",
+            "ownerDid": "did:plc:mira"
+          }
+        },
+        "notes": [],
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "id": "open-throws",
+      "fn": "prepare",
+      "input": {
+        "open": "throw"
+      },
+      "output": {
+        "$error": {
+          "message": "could not open",
+          "code": null
+        },
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ]
+        ]
+      }
+    },
+    {
+      "id": "posts",
+      "fn": "post",
+      "input": {
+        "settings": {
+          "requireAltText": true
+        },
+        "agent": true
+      },
+      "output": {
+        "result": {
+          "posts": [
+            {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+              "cid": "c"
+            }
+          ],
+          "root": {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+            "cid": "c"
+          },
+          "written": [
+            {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+              "cid": "c",
+              "record": {
+                "text": "hello"
+              }
+            }
+          ]
+        },
+        "notes": [],
+        "timer": null,
+        "deleted": true,
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {
+              "requireAltText": true
+            }
+          ],
+          [
+            "resolveDefaultGates",
+            {
+              "requireAltText": true
+            },
+            "agent"
+          ],
+          [
+            "targetFor",
+            "did:plc:mira"
+          ],
+          [
+            "publish",
+            {
+              "posts": [
+                {
+                  "id": "p",
+                  "text": "hello",
+                  "images": [],
+                  "video": null,
+                  "record": null,
+                  "card": null
+                }
+              ],
+              "reply": null,
+              "tags": [],
+              "langs": [
+                "en"
+              ],
+              "labels": [],
+              "gates": {
+                "custom": false,
+                "reply": [
+                  {
+                    "type": "following"
+                  }
+                ],
+                "quotes": true
+              },
+              "asDid": "did:plc:mira",
+              "schedule": null,
+              "lifespan": {
+                "enabled": false
+              },
+              "source": {
+                "kind": "draft",
+                "id": "d1",
+                "ownerDid": "did:plc:mira"
+              }
+            },
+            {
+              "did": "did:plc:mira"
+            },
+            "function",
+            true
+          ],
+          [
+            "emitPostsChanged",
+            "did:plc:mira",
+            [
+              {
+                "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                "cid": "c",
+                "record": {
+                  "text": "hello"
+                }
+              }
+            ]
+          ],
+          [
+            "deleteDraft",
+            "agent",
+            "d1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "alt-text-loose",
+      "fn": "post",
+      "input": {
+        "settings": {
+          "requireAltText": "yes"
+        }
+      },
+      "output": {
+        "result": {
+          "posts": [
+            {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+              "cid": "c"
+            }
+          ],
+          "root": {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+            "cid": "c"
+          },
+          "written": [
+            {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+              "cid": "c",
+              "record": {
+                "text": "hello"
+              }
+            }
+          ]
+        },
+        "notes": [],
+        "timer": null,
+        "deleted": true,
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {
+              "requireAltText": "yes"
+            }
+          ],
+          [
+            "resolveDefaultGates",
+            {
+              "requireAltText": "yes"
+            },
+            null
+          ],
+          [
+            "targetFor",
+            "did:plc:mira"
+          ],
+          [
+            "publish",
+            {
+              "posts": [
+                {
+                  "id": "p",
+                  "text": "hello",
+                  "images": [],
+                  "video": null,
+                  "record": null,
+                  "card": null
+                }
+              ],
+              "reply": null,
+              "tags": [],
+              "langs": [
+                "en"
+              ],
+              "labels": [],
+              "gates": {
+                "custom": false,
+                "reply": [
+                  {
+                    "type": "following"
+                  }
+                ],
+                "quotes": true
+              },
+              "asDid": "did:plc:mira",
+              "schedule": null,
+              "lifespan": {
+                "enabled": false
+              },
+              "source": {
+                "kind": "draft",
+                "id": "d1",
+                "ownerDid": "did:plc:mira"
+              }
+            },
+            {
+              "did": "did:plc:mira"
+            },
+            "function",
+            false
+          ],
+          [
+            "emitPostsChanged",
+            "did:plc:mira",
+            [
+              {
+                "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                "cid": "c",
+                "record": {
+                  "text": "hello"
+                }
+              }
+            ]
+          ],
+          [
+            "deleteDraft",
+            null,
+            "d1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "publish-fails",
+      "fn": "post",
+      "input": {
+        "publish": {
+          "throws": "nope"
+        }
+      },
+      "output": {
+        "$error": {
+          "message": "nope",
+          "code": null
+        },
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ],
+          [
+            "targetFor",
+            "did:plc:mira"
+          ],
+          [
+            "publish",
+            {
+              "posts": [
+                {
+                  "id": "p",
+                  "text": "hello",
+                  "images": [],
+                  "video": null,
+                  "record": null,
+                  "card": null
+                }
+              ],
+              "reply": null,
+              "tags": [],
+              "langs": [
+                "en"
+              ],
+              "labels": [],
+              "gates": {
+                "custom": false,
+                "reply": [
+                  {
+                    "type": "following"
+                  }
+                ],
+                "quotes": true
+              },
+              "asDid": "did:plc:mira",
+              "schedule": null,
+              "lifespan": {
+                "enabled": false
+              },
+              "source": {
+                "kind": "draft",
+                "id": "d1",
+                "ownerDid": "did:plc:mira"
+              }
+            },
+            {
+              "did": "did:plc:mira"
+            },
+            "function",
+            false
+          ]
+        ]
+      }
+    },
+    {
+      "id": "delete-fails",
+      "fn": "post",
+      "input": {
+        "deleteDraft": "throw"
+      },
+      "output": {
+        "result": {
+          "posts": [
+            {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+              "cid": "c"
+            }
+          ],
+          "root": {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+            "cid": "c"
+          },
+          "written": [
+            {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+              "cid": "c",
+              "record": {
+                "text": "hello"
+              }
+            }
+          ]
+        },
+        "notes": [
+          "It’s still in your drafts: delete it there when you’re ready."
+        ],
+        "timer": null,
+        "deleted": false,
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ],
+          [
+            "targetFor",
+            "did:plc:mira"
+          ],
+          [
+            "publish",
+            {
+              "posts": [
+                {
+                  "id": "p",
+                  "text": "hello",
+                  "images": [],
+                  "video": null,
+                  "record": null,
+                  "card": null
+                }
+              ],
+              "reply": null,
+              "tags": [],
+              "langs": [
+                "en"
+              ],
+              "labels": [],
+              "gates": {
+                "custom": false,
+                "reply": [
+                  {
+                    "type": "following"
+                  }
+                ],
+                "quotes": true
+              },
+              "asDid": "did:plc:mira",
+              "schedule": null,
+              "lifespan": {
+                "enabled": false
+              },
+              "source": {
+                "kind": "draft",
+                "id": "d1",
+                "ownerDid": "did:plc:mira"
+              }
+            },
+            {
+              "did": "did:plc:mira"
+            },
+            "function",
+            false
+          ],
+          [
+            "emitPostsChanged",
+            "did:plc:mira",
+            [
+              {
+                "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                "cid": "c",
+                "record": {
+                  "text": "hello"
+                }
+              }
+            ]
+          ],
+          [
+            "deleteDraft",
+            null,
+            "d1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "emit-throws",
+      "fn": "post",
+      "input": {
+        "emit": "throw"
+      },
+      "output": {
+        "$error": {
+          "message": "listener broke",
+          "code": null
+        },
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ],
+          [
+            "targetFor",
+            "did:plc:mira"
+          ],
+          [
+            "publish",
+            {
+              "posts": [
+                {
+                  "id": "p",
+                  "text": "hello",
+                  "images": [],
+                  "video": null,
+                  "record": null,
+                  "card": null
+                }
+              ],
+              "reply": null,
+              "tags": [],
+              "langs": [
+                "en"
+              ],
+              "labels": [],
+              "gates": {
+                "custom": false,
+                "reply": [
+                  {
+                    "type": "following"
+                  }
+                ],
+                "quotes": true
+              },
+              "asDid": "did:plc:mira",
+              "schedule": null,
+              "lifespan": {
+                "enabled": false
+              },
+              "source": {
+                "kind": "draft",
+                "id": "d1",
+                "ownerDid": "did:plc:mira"
+              }
+            },
+            {
+              "did": "did:plc:mira"
+            },
+            "function",
+            false
+          ],
+          [
+            "emitPostsChanged",
+            "did:plc:mira",
+            [
+              {
+                "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                "cid": "c",
+                "record": {
+                  "text": "hello"
+                }
+              }
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": "no-written",
+      "fn": "post",
+      "input": {
+        "publish": {
+          "result": {
+            "posts": [],
+            "root": {
+              "uri": "at://x/app.bsky.feed.post/1"
+            }
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "posts": [],
+          "root": {
+            "uri": "at://x/app.bsky.feed.post/1"
+          }
+        },
+        "notes": [],
+        "timer": null,
+        "deleted": true,
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ],
+          [
+            "targetFor",
+            "did:plc:mira"
+          ],
+          [
+            "publish",
+            {
+              "posts": [
+                {
+                  "id": "p",
+                  "text": "hello",
+                  "images": [],
+                  "video": null,
+                  "record": null,
+                  "card": null
+                }
+              ],
+              "reply": null,
+              "tags": [],
+              "langs": [
+                "en"
+              ],
+              "labels": [],
+              "gates": {
+                "custom": false,
+                "reply": [
+                  {
+                    "type": "following"
+                  }
+                ],
+                "quotes": true
+              },
+              "asDid": "did:plc:mira",
+              "schedule": null,
+              "lifespan": {
+                "enabled": false
+              },
+              "source": {
+                "kind": "draft",
+                "id": "d1",
+                "ownerDid": "did:plc:mira"
+              }
+            },
+            {
+              "did": "did:plc:mira"
+            },
+            "function",
+            false
+          ],
+          [
+            "emitPostsChanged",
+            "did:plc:mira",
+            []
+          ],
+          [
+            "deleteDraft",
+            null,
+            "d1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "timer-failed",
+      "fn": "post",
+      "input": {
+        "open": {
+          "state": {
+            "posts": [
+              {
+                "id": "p",
+                "text": "hello",
+                "images": [],
+                "video": null,
+                "record": null,
+                "card": null
+              }
+            ],
+            "reply": null,
+            "tags": [],
+            "langs": [
+              "en"
+            ],
+            "labels": [],
+            "gates": {
+              "custom": false,
+              "reply": null,
+              "quotes": true
+            },
+            "asDid": "did:plc:mira",
+            "schedule": null,
+            "lifespan": {
+              "enabled": true
+            },
+            "source": {
+              "kind": "draft",
+              "id": "d1",
+              "ownerDid": "did:plc:mira"
+            }
+          },
+          "missing": []
+        },
+        "timerRoom": "",
+        "arm": {
+          "status": "failed",
+          "error": {
+            "message": "No room"
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "posts": [
+            {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+              "cid": "c"
+            }
+          ],
+          "root": {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+            "cid": "c"
+          },
+          "written": [
+            {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+              "cid": "c",
+              "record": {
+                "text": "hello"
+              }
+            }
+          ]
+        },
+        "notes": [
+          "It went out without its timer: No room"
+        ],
+        "timer": {
+          "status": "failed",
+          "error": {
+            "message": "No room"
+          }
+        },
+        "deleted": true,
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ],
+          [
+            "timerRoom",
+            {
+              "enabled": true
+            }
+          ],
+          [
+            "targetFor",
+            "did:plc:mira"
+          ],
+          [
+            "publish",
+            {
+              "posts": [
+                {
+                  "id": "p",
+                  "text": "hello",
+                  "images": [],
+                  "video": null,
+                  "record": null,
+                  "card": null
+                }
+              ],
+              "reply": null,
+              "tags": [],
+              "langs": [
+                "en"
+              ],
+              "labels": [],
+              "gates": {
+                "custom": false,
+                "reply": [
+                  {
+                    "type": "following"
+                  }
+                ],
+                "quotes": true
+              },
+              "asDid": "did:plc:mira",
+              "schedule": null,
+              "lifespan": {
+                "enabled": true
+              },
+              "source": {
+                "kind": "draft",
+                "id": "d1",
+                "ownerDid": "did:plc:mira"
+              }
+            },
+            {
+              "did": "did:plc:mira"
+            },
+            "function",
+            false
+          ],
+          [
+            "emitPostsChanged",
+            "did:plc:mira",
+            [
+              {
+                "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                "cid": "c",
+                "record": {
+                  "text": "hello"
+                }
+              }
+            ]
+          ],
+          [
+            "armTimer",
+            {
+              "posts": [
+                {
+                  "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                  "cid": "c"
+                }
+              ],
+              "root": {
+                "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                "cid": "c"
+              },
+              "written": [
+                {
+                  "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                  "cid": "c",
+                  "record": {
+                    "text": "hello"
+                  }
+                }
+              ]
+            },
+            {
+              "enabled": true
+            }
+          ],
+          [
+            "deleteDraft",
+            null,
+            "d1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "timer-failed-quietly",
+      "fn": "post",
+      "input": {
+        "open": {
+          "state": {
+            "posts": [
+              {
+                "id": "p",
+                "text": "hello",
+                "images": [],
+                "video": null,
+                "record": null,
+                "card": null
+              }
+            ],
+            "reply": null,
+            "tags": [],
+            "langs": [
+              "en"
+            ],
+            "labels": [],
+            "gates": {
+              "custom": false,
+              "reply": null,
+              "quotes": true
+            },
+            "asDid": "did:plc:mira",
+            "schedule": null,
+            "lifespan": {
+              "enabled": true,
+              "lifespanSeconds": 3600
+            },
+            "source": {
+              "kind": "draft",
+              "id": "d1",
+              "ownerDid": "did:plc:mira"
+            }
+          },
+          "missing": []
+        },
+        "timerRoom": "",
+        "arm": {
+          "status": "failed"
+        }
+      },
+      "output": {
+        "result": {
+          "posts": [
+            {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+              "cid": "c"
+            }
+          ],
+          "root": {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+            "cid": "c"
+          },
+          "written": [
+            {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+              "cid": "c",
+              "record": {
+                "text": "hello"
+              }
+            }
+          ]
+        },
+        "notes": [
+          "It went out without its timer."
+        ],
+        "timer": {
+          "status": "failed",
+          "error": null
+        },
+        "deleted": true,
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ],
+          [
+            "timerRoom",
+            {
+              "enabled": true,
+              "lifespanSeconds": 3600
+            }
+          ],
+          [
+            "targetFor",
+            "did:plc:mira"
+          ],
+          [
+            "publish",
+            {
+              "posts": [
+                {
+                  "id": "p",
+                  "text": "hello",
+                  "images": [],
+                  "video": null,
+                  "record": null,
+                  "card": null
+                }
+              ],
+              "reply": null,
+              "tags": [],
+              "langs": [
+                "en"
+              ],
+              "labels": [],
+              "gates": {
+                "custom": false,
+                "reply": [
+                  {
+                    "type": "following"
+                  }
+                ],
+                "quotes": true
+              },
+              "asDid": "did:plc:mira",
+              "schedule": null,
+              "lifespan": {
+                "enabled": true,
+                "lifespanSeconds": 3600
+              },
+              "source": {
+                "kind": "draft",
+                "id": "d1",
+                "ownerDid": "did:plc:mira"
+              }
+            },
+            {
+              "did": "did:plc:mira"
+            },
+            "function",
+            false
+          ],
+          [
+            "emitPostsChanged",
+            "did:plc:mira",
+            [
+              {
+                "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                "cid": "c",
+                "record": {
+                  "text": "hello"
+                }
+              }
+            ]
+          ],
+          [
+            "armTimer",
+            {
+              "posts": [
+                {
+                  "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                  "cid": "c"
+                }
+              ],
+              "root": {
+                "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                "cid": "c"
+              },
+              "written": [
+                {
+                  "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                  "cid": "c",
+                  "record": {
+                    "text": "hello"
+                  }
+                }
+              ]
+            },
+            {
+              "enabled": true,
+              "lifespanSeconds": 3600
+            }
+          ],
+          [
+            "deleteDraft",
+            null,
+            "d1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "timer-armed",
+      "fn": "post",
+      "input": {
+        "open": {
+          "state": {
+            "posts": [
+              {
+                "id": "p",
+                "text": "hello",
+                "images": [],
+                "video": null,
+                "record": null,
+                "card": null
+              }
+            ],
+            "reply": null,
+            "tags": [],
+            "langs": [
+              "en"
+            ],
+            "labels": [],
+            "gates": {
+              "custom": false,
+              "reply": null,
+              "quotes": true
+            },
+            "asDid": "did:plc:mira",
+            "schedule": null,
+            "lifespan": {
+              "enabled": true,
+              "lifespanSeconds": 3600
+            },
+            "source": {
+              "kind": "draft",
+              "id": "d1",
+              "ownerDid": "did:plc:mira"
+            }
+          },
+          "missing": []
+        },
+        "timerRoom": "",
+        "arm": {
+          "status": "armed"
+        }
+      },
+      "output": {
+        "result": {
+          "posts": [
+            {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+              "cid": "c"
+            }
+          ],
+          "root": {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+            "cid": "c"
+          },
+          "written": [
+            {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+              "cid": "c",
+              "record": {
+                "text": "hello"
+              }
+            }
+          ]
+        },
+        "notes": [],
+        "timer": {
+          "status": "armed",
+          "error": null
+        },
+        "deleted": true,
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ],
+          [
+            "timerRoom",
+            {
+              "enabled": true,
+              "lifespanSeconds": 3600
+            }
+          ],
+          [
+            "targetFor",
+            "did:plc:mira"
+          ],
+          [
+            "publish",
+            {
+              "posts": [
+                {
+                  "id": "p",
+                  "text": "hello",
+                  "images": [],
+                  "video": null,
+                  "record": null,
+                  "card": null
+                }
+              ],
+              "reply": null,
+              "tags": [],
+              "langs": [
+                "en"
+              ],
+              "labels": [],
+              "gates": {
+                "custom": false,
+                "reply": [
+                  {
+                    "type": "following"
+                  }
+                ],
+                "quotes": true
+              },
+              "asDid": "did:plc:mira",
+              "schedule": null,
+              "lifespan": {
+                "enabled": true,
+                "lifespanSeconds": 3600
+              },
+              "source": {
+                "kind": "draft",
+                "id": "d1",
+                "ownerDid": "did:plc:mira"
+              }
+            },
+            {
+              "did": "did:plc:mira"
+            },
+            "function",
+            false
+          ],
+          [
+            "emitPostsChanged",
+            "did:plc:mira",
+            [
+              {
+                "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                "cid": "c",
+                "record": {
+                  "text": "hello"
+                }
+              }
+            ]
+          ],
+          [
+            "armTimer",
+            {
+              "posts": [
+                {
+                  "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                  "cid": "c"
+                }
+              ],
+              "root": {
+                "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                "cid": "c"
+              },
+              "written": [
+                {
+                  "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                  "cid": "c",
+                  "record": {
+                    "text": "hello"
+                  }
+                }
+              ]
+            },
+            {
+              "enabled": true,
+              "lifespanSeconds": 3600
+            }
+          ],
+          [
+            "deleteDraft",
+            null,
+            "d1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "timer-no-arm",
+      "fn": "post",
+      "input": {
+        "open": {
+          "state": {
+            "posts": [
+              {
+                "id": "p",
+                "text": "hello",
+                "images": [],
+                "video": null,
+                "record": null,
+                "card": null
+              }
+            ],
+            "reply": null,
+            "tags": [],
+            "langs": [
+              "en"
+            ],
+            "labels": [],
+            "gates": {
+              "custom": false,
+              "reply": null,
+              "quotes": true
+            },
+            "asDid": "did:plc:mira",
+            "schedule": null,
+            "lifespan": {
+              "enabled": true,
+              "lifespanSeconds": 3600
+            },
+            "source": {
+              "kind": "draft",
+              "id": "d1",
+              "ownerDid": "did:plc:mira"
+            }
+          },
+          "missing": []
+        },
+        "timerRoom": ""
+      },
+      "output": {
+        "result": {
+          "posts": [
+            {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+              "cid": "c"
+            }
+          ],
+          "root": {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+            "cid": "c"
+          },
+          "written": [
+            {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+              "cid": "c",
+              "record": {
+                "text": "hello"
+              }
+            }
+          ]
+        },
+        "notes": [],
+        "timer": null,
+        "deleted": true,
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ],
+          [
+            "timerRoom",
+            {
+              "enabled": true,
+              "lifespanSeconds": 3600
+            }
+          ],
+          [
+            "targetFor",
+            "did:plc:mira"
+          ],
+          [
+            "publish",
+            {
+              "posts": [
+                {
+                  "id": "p",
+                  "text": "hello",
+                  "images": [],
+                  "video": null,
+                  "record": null,
+                  "card": null
+                }
+              ],
+              "reply": null,
+              "tags": [],
+              "langs": [
+                "en"
+              ],
+              "labels": [],
+              "gates": {
+                "custom": false,
+                "reply": [
+                  {
+                    "type": "following"
+                  }
+                ],
+                "quotes": true
+              },
+              "asDid": "did:plc:mira",
+              "schedule": null,
+              "lifespan": {
+                "enabled": true,
+                "lifespanSeconds": 3600
+              },
+              "source": {
+                "kind": "draft",
+                "id": "d1",
+                "ownerDid": "did:plc:mira"
+              }
+            },
+            {
+              "did": "did:plc:mira"
+            },
+            "function",
+            false
+          ],
+          [
+            "emitPostsChanged",
+            "did:plc:mira",
+            [
+              {
+                "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                "cid": "c",
+                "record": {
+                  "text": "hello"
+                }
+              }
+            ]
+          ],
+          [
+            "deleteDraft",
+            null,
+            "d1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "timer-gone",
+      "fn": "post",
+      "input": {
+        "open": {
+          "state": {
+            "posts": [
+              {
+                "id": "p",
+                "text": "hello",
+                "images": [],
+                "video": null,
+                "record": null,
+                "card": null
+              }
+            ],
+            "reply": null,
+            "tags": [],
+            "langs": [
+              "en"
+            ],
+            "labels": [],
+            "gates": {
+              "custom": false,
+              "reply": null,
+              "quotes": true
+            },
+            "asDid": "did:plc:mira",
+            "schedule": null,
+            "lifespan": {
+              "enabled": true,
+              "lifespanSeconds": 3600
+            },
+            "source": {
+              "kind": "draft",
+              "id": "d1",
+              "ownerDid": "did:plc:mira"
+            }
+          },
+          "missing": []
+        },
+        "timerRoom": "full"
+      },
+      "output": {
+        "result": {
+          "posts": [
+            {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+              "cid": "c"
+            }
+          ],
+          "root": {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+            "cid": "c"
+          },
+          "written": [
+            {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+              "cid": "c",
+              "record": {
+                "text": "hello"
+              }
+            }
+          ]
+        },
+        "notes": [
+          "It went without your default timer. full"
+        ],
+        "timer": null,
+        "deleted": true,
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ],
+          [
+            "timerRoom",
+            {
+              "enabled": true,
+              "lifespanSeconds": 3600
+            }
+          ],
+          [
+            "targetFor",
+            "did:plc:mira"
+          ],
+          [
+            "publish",
+            {
+              "posts": [
+                {
+                  "id": "p",
+                  "text": "hello",
+                  "images": [],
+                  "video": null,
+                  "record": null,
+                  "card": null
+                }
+              ],
+              "reply": null,
+              "tags": [],
+              "langs": [
+                "en"
+              ],
+              "labels": [],
+              "gates": {
+                "custom": false,
+                "reply": [
+                  {
+                    "type": "following"
+                  }
+                ],
+                "quotes": true
+              },
+              "asDid": "did:plc:mira",
+              "schedule": null,
+              "lifespan": {
+                "enabled": false,
+                "lifespanSeconds": 3600
+              },
+              "source": {
+                "kind": "draft",
+                "id": "d1",
+                "ownerDid": "did:plc:mira"
+              }
+            },
+            {
+              "did": "did:plc:mira"
+            },
+            "function",
+            false
+          ],
+          [
+            "emitPostsChanged",
+            "did:plc:mira",
+            [
+              {
+                "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+                "cid": "c",
+                "record": {
+                  "text": "hello"
+                }
+              }
+            ]
+          ],
+          [
+            "deleteDraft",
+            null,
+            "d1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "schedules",
+      "fn": "schedule",
+      "input": {
+        "agent": true,
+        "scheduledFor": "2026-11-14T09:00:00.000Z",
+        "queued": true,
+        "loadImage": true
+      },
+      "output": {
+        "row": {
+          "id": "row1"
+        },
+        "notes": [],
+        "deleted": true,
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            "agent"
+          ],
+          [
+            "serializeForSchedule",
+            {
+              "posts": [
+                {
+                  "id": "p",
+                  "text": "hello",
+                  "images": [],
+                  "video": null,
+                  "record": null,
+                  "card": null
+                }
+              ],
+              "reply": null,
+              "tags": [],
+              "langs": [
+                "en"
+              ],
+              "labels": [],
+              "gates": {
+                "custom": false,
+                "reply": [
+                  {
+                    "type": "following"
+                  }
+                ],
+                "quotes": true
+              },
+              "asDid": "did:plc:mira",
+              "schedule": null,
+              "lifespan": {
+                "enabled": false
+              },
+              "source": {
+                "kind": "draft",
+                "id": "d1",
+                "ownerDid": "did:plc:mira"
+              }
+            },
+            {
+              "now": 1794484800000,
+              "scheduledFor": "2026-11-14T09:00:00.000Z",
+              "queued": true,
+              "resolveMention": "function",
+              "loadImage": "function"
+            }
+          ],
+          [
+            "createScheduled",
+            "did:plc:mira",
+            {
+              "scheduledFor": "2026-11-14T09:00:00.000Z",
+              "queued": true,
+              "payload": {}
+            }
+          ],
+          [
+            "deleteDraft",
+            "agent",
+            "d1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "schedules-at",
+      "fn": "schedule",
+      "input": {
+        "scheduledFor": "2026-11-14T09:00:00.000Z"
+      },
+      "output": {
+        "row": {
+          "id": "row1"
+        },
+        "notes": [],
+        "deleted": true,
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ],
+          [
+            "serializeForSchedule",
+            {
+              "posts": [
+                {
+                  "id": "p",
+                  "text": "hello",
+                  "images": [],
+                  "video": null,
+                  "record": null,
+                  "card": null
+                }
+              ],
+              "reply": null,
+              "tags": [],
+              "langs": [
+                "en"
+              ],
+              "labels": [],
+              "gates": {
+                "custom": false,
+                "reply": [
+                  {
+                    "type": "following"
+                  }
+                ],
+                "quotes": true
+              },
+              "asDid": "did:plc:mira",
+              "schedule": null,
+              "lifespan": {
+                "enabled": false
+              },
+              "source": {
+                "kind": "draft",
+                "id": "d1",
+                "ownerDid": "did:plc:mira"
+              }
+            },
+            {
+              "now": 1794484800000,
+              "scheduledFor": "2026-11-14T09:00:00.000Z",
+              "queued": false,
+              "resolveMention": "function",
+              "loadImage": "undefined"
+            }
+          ],
+          [
+            "createScheduled",
+            "did:plc:mira",
+            {
+              "scheduledFor": "2026-11-14T09:00:00.000Z",
+              "queued": false,
+              "payload": {}
+            }
+          ],
+          [
+            "deleteDraft",
+            null,
+            "d1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "needs-backend",
+      "fn": "schedule",
+      "input": {
+        "requester": false
+      },
+      "output": {
+        "$error": {
+          "message": "Scheduling needs this account signed in for a long session.",
+          "code": "NEEDS_BACKEND"
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "refused",
+      "fn": "schedule",
+      "input": {
+        "scheduledFor": "x",
+        "create": {
+          "throws": "q",
+          "code": "QUOTA_EXCEEDED"
+        }
+      },
+      "output": {
+        "$error": {
+          "message": "q",
+          "code": "QUOTA_EXCEEDED"
+        },
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ],
+          [
+            "serializeForSchedule",
+            {
+              "posts": [
+                {
+                  "id": "p",
+                  "text": "hello",
+                  "images": [],
+                  "video": null,
+                  "record": null,
+                  "card": null
+                }
+              ],
+              "reply": null,
+              "tags": [],
+              "langs": [
+                "en"
+              ],
+              "labels": [],
+              "gates": {
+                "custom": false,
+                "reply": [
+                  {
+                    "type": "following"
+                  }
+                ],
+                "quotes": true
+              },
+              "asDid": "did:plc:mira",
+              "schedule": null,
+              "lifespan": {
+                "enabled": false
+              },
+              "source": {
+                "kind": "draft",
+                "id": "d1",
+                "ownerDid": "did:plc:mira"
+              }
+            },
+            {
+              "now": 1794484800000,
+              "scheduledFor": "x",
+              "queued": false,
+              "resolveMention": "function",
+              "loadImage": "undefined"
+            }
+          ],
+          [
+            "createScheduled",
+            "did:plc:mira",
+            {
+              "scheduledFor": "x",
+              "queued": false,
+              "payload": {}
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "serialize-refuses",
+      "fn": "schedule",
+      "input": {
+        "scheduledFor": "x",
+        "serialize": "throw"
+      },
+      "output": {
+        "$error": {
+          "message": "Write something first.",
+          "code": "EMPTY"
+        },
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ],
+          [
+            "serializeForSchedule",
+            {
+              "posts": [
+                {
+                  "id": "p",
+                  "text": "hello",
+                  "images": [],
+                  "video": null,
+                  "record": null,
+                  "card": null
+                }
+              ],
+              "reply": null,
+              "tags": [],
+              "langs": [
+                "en"
+              ],
+              "labels": [],
+              "gates": {
+                "custom": false,
+                "reply": [
+                  {
+                    "type": "following"
+                  }
+                ],
+                "quotes": true
+              },
+              "asDid": "did:plc:mira",
+              "schedule": null,
+              "lifespan": {
+                "enabled": false
+              },
+              "source": {
+                "kind": "draft",
+                "id": "d1",
+                "ownerDid": "did:plc:mira"
+              }
+            },
+            {
+              "now": 1794484800000,
+              "scheduledFor": "x",
+              "queued": false,
+              "resolveMention": "function",
+              "loadImage": "undefined"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "schedule-delete-fails",
+      "fn": "schedule",
+      "input": {
+        "scheduledFor": "2026-11-14T09:00:00.000Z",
+        "deleteDraft": "throw"
+      },
+      "output": {
+        "row": {
+          "id": "row1"
+        },
+        "notes": [
+          "It’s still in your drafts: delete it there when you’re ready."
+        ],
+        "deleted": false,
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ],
+          [
+            "resolveDefaultGates",
+            {},
+            null
+          ],
+          [
+            "serializeForSchedule",
+            {
+              "posts": [
+                {
+                  "id": "p",
+                  "text": "hello",
+                  "images": [],
+                  "video": null,
+                  "record": null,
+                  "card": null
+                }
+              ],
+              "reply": null,
+              "tags": [],
+              "langs": [
+                "en"
+              ],
+              "labels": [],
+              "gates": {
+                "custom": false,
+                "reply": [
+                  {
+                    "type": "following"
+                  }
+                ],
+                "quotes": true
+              },
+              "asDid": "did:plc:mira",
+              "schedule": null,
+              "lifespan": {
+                "enabled": false
+              },
+              "source": {
+                "kind": "draft",
+                "id": "d1",
+                "ownerDid": "did:plc:mira"
+              }
+            },
+            {
+              "now": 1794484800000,
+              "scheduledFor": "2026-11-14T09:00:00.000Z",
+              "queued": false,
+              "resolveMention": "function",
+              "loadImage": "undefined"
+            }
+          ],
+          [
+            "createScheduled",
+            "did:plc:mira",
+            {
+              "scheduledFor": "2026-11-14T09:00:00.000Z",
+              "queued": false,
+              "payload": {}
+            }
+          ],
+          [
+            "deleteDraft",
+            null,
+            "d1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "schedule-media-missing",
+      "fn": "schedule",
+      "input": {
+        "scheduledFor": "x",
+        "open": {
+          "state": {
+            "posts": [
+              {
+                "id": "p",
+                "text": "hello",
+                "images": [],
+                "video": null,
+                "record": null,
+                "card": null
+              }
+            ],
+            "reply": null,
+            "tags": [],
+            "langs": [
+              "en"
+            ],
+            "labels": [],
+            "gates": {
+              "custom": false,
+              "reply": null,
+              "quotes": true
+            },
+            "asDid": "did:plc:mira",
+            "schedule": null,
+            "lifespan": {
+              "enabled": false
+            },
+            "source": {
+              "kind": "draft",
+              "id": "d1",
+              "ownerDid": "did:plc:mira"
+            }
+          },
+          "missing": [
+            "virga-media:2"
+          ]
+        }
+      },
+      "output": {
+        "$error": {
+          "message": "This draft’s images were saved on another device. Open it to attach them again, then post it.",
+          "code": "MEDIA_MISSING"
+        },
+        "calls": [
+          [
+            "openDraft",
+            "d1",
+            "did:plc:mira",
+            {}
+          ]
+        ]
+      }
+    },
+    {
+      "id": "file",
+      "fn": "blobImageLoader",
+      "input": {
+        "pdsUrl": "https://pds.example/",
+        "image": {
+          "file": {
+            "$file": true,
+            "name": "f.jpg",
+            "type": "image/jpeg",
+            "size": 2
+          }
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "$file": true,
+          "name": "f.jpg",
+          "type": "image/jpeg",
+          "size": 2
+        }
+      }
+    },
+    {
+      "id": "blob",
+      "fn": "blobImageLoader",
+      "input": {
+        "pdsUrl": "https://pds.example/",
+        "image": {
+          "blob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkrei"
+            },
+            "mimeType": "image/jpeg",
+            "size": 1
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.sync.getBlob?did=did%3Aplc%3Amira&cid=bafkrei",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png"
+              },
+              "body": {
+                "$bytes": "AQID"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$file": true,
+          "type": "image/png",
+          "size": 3
+        }
+      }
+    },
+    {
+      "id": "blob-by-cid",
+      "fn": "blobImageLoader",
+      "input": {
+        "pdsUrl": "https://pds.example",
+        "image": {
+          "blob": {
+            "cid": "bafcid",
+            "mimeType": "image/jpeg"
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.sync.getBlob?did=did%3Aplc%3Amira&cid=bafcid",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "IMAGE/JPEG; q=1"
+              },
+              "body": {
+                "$bytes": "CQ=="
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$file": true,
+          "type": "image/jpeg;q=1",
+          "size": 1
+        }
+      }
+    },
+    {
+      "id": "nothing",
+      "fn": "blobImageLoader",
+      "input": {
+        "pdsUrl": "https://pds.example",
+        "image": {}
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "refused",
+      "fn": "blobImageLoader",
+      "input": {
+        "pdsUrl": "https://p",
+        "image": {
+          "blob": {
+            "ref": {
+              "$link": "x"
+            },
+            "mimeType": "image/png"
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://p/xrpc/com.atproto.sync.getBlob?did=did%3Aplc%3Amira&cid=x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"BlobNotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "blobImageLoader",
+      "input": {
+        "pdsUrl": "https://pds.example",
+        "image": {
+          "blob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "b"
+            },
+            "mimeType": "image/jpeg",
+            "size": 1
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.sync.getBlob?did=did%3Aplc%3Amira&cid=b",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "no-pds",
+      "fn": "blobImageLoader",
+      "input": {
+        "image": {
+          "blob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "b"
+            },
+            "mimeType": "image/jpeg",
+            "size": 1
+          }
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "odd-did-and-cid",
+      "fn": "blobImageLoader",
+      "input": {
+        "pdsUrl": "https://pds.example//",
+        "did": "did:web:a b/c",
+        "image": {
+          "blob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "f/g h"
+            },
+            "mimeType": "image/jpeg",
+            "size": 1
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.sync.getBlob?did=did%3Aweb%3Aa%20b%2Fc&cid=f%2Fg%20h",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png"
+              },
+              "body": {
+                "$bytes": ""
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$file": true,
+          "type": "image/png",
+          "size": 0
+        }
+      }
+    }
+  ]
+}

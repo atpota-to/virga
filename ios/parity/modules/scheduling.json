@@ -5,8 +5,15 @@
   "summary": "Scheduled posts and the queue: serializing, the service, the calendar and reordering, and the posting pages' models.",
   "files": {
     "src/posting/pages/draftActions.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Pages/DraftActions.swift"
+      ],
+      "fixtures": [
+        "scheduling.draftActions"
+      ],
+      "note": "prepareDraft, postDraftNow and scheduleDraft take their I/O as DraftActionDeps<Target> (live(...) wires Drafts.openDraft, PostingSettingsStore.resolveDefaultGates through the agent's gates, the timer limits from ScheduleService.getLimits, Publish.publish, Drafts.deleteDraft, ScheduleSerialize, ScheduleService.createScheduled and the timer service, as DraftsPage.jsx does). The agent is the account's XRPCAgent?. blobImageLoader reads the PDS through transport and makes its file through ComposerFiles. Not reproduced: draftPostBlock on a row without text (summarizeDraft always gives one) reads it as empty, where the web throws reading text.trim().",
+      "synced": "cde9ebd3f92b"
     },
     "src/posting/pages/hubModel.js": {
       "status": "ported",
