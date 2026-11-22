@@ -220,6 +220,7 @@ struct DialogSheet<Inner: View, Foot: View>: ViewModifier {
 /// (`.lib-dialog`). A sheet sized by its content is iOS 18's; before that
 /// a wider window keeps the system's form sheet, at `detents`.
 struct DialogSheetSizing: ViewModifier {
+  @Environment(\.virgaTheme) private var theme
   let phone: Bool
   let detents: Set<PresentationDetent>
   var width: CGFloat = Measure.Dialog.width
@@ -229,8 +230,11 @@ struct DialogSheetSizing: ViewModifier {
     if phone {
       content.presentationDetents(detents)
     } else if #available(iOS 18.0, *) {
+      // `min(width, 100vw - 32px)`, and a set height `min(height, 100svh - 48px)`.
       content
-        .frame(idealWidth: width, idealHeight: height)
+        .frame(
+          idealWidth: min(width, theme.windowWidth - Measure.Dialog.windowSpaceAcross),
+          idealHeight: height.map { min($0, theme.windowHeight - Measure.Dialog.windowSpaceDown) })
         .presentationSizing(.form.fitted(horizontal: true, vertical: true))
     } else {
       content.presentationDetents(detents)

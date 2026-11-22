@@ -177,6 +177,45 @@ struct ComposerSheetSizing: ViewModifier {
   }
 }
 
+/// How each of the composer's dialogs is sized over it, as the web sizes
+/// each (DialogSheetSizing).
+extension ComposerDialog {
+  /// Up to this window width it is a phone's sheet, held at its detents:
+  /// the library and the template editor fill the screen from 760 down
+  /// (library.css), the alt text from 640 down (adviser.css), and the rest
+  /// with the composer they open over (composer.css, 640).
+  var phoneWidth: CGFloat {
+    switch self {
+    case .library, .saveTemplate: return Breakpoint.tablet
+    default: return Breakpoint.composer
+    }
+  }
+
+  /// Its width on a wider window: the library's `.lib-dialog` 980, the
+  /// template editor's `.tpl-dialog` and the alt text's `.alt-dialog` 640,
+  /// the rest the kit's `.dialog` 520.
+  var sheetWidth: CGFloat {
+    switch self {
+    case .library: return Measure.Dialog.libraryWidth
+    case .saveTemplate, .alt: return Measure.Dialog.wideWidth
+    default: return Measure.Dialog.width
+    }
+  }
+
+  /// `.lib-dialog { height: min(720px, 100svh - 48px) }`; the rest are as
+  /// tall as what's in them.
+  var sheetHeight: CGFloat? {
+    if case .library = self { return Measure.Dialog.libraryHeight }
+    return nil
+  }
+
+  /// A phone's sheet: the library, the template editor and the timer the
+  /// whole height (`isTall`), the rest half the screen to start with.
+  var detents: Set<PresentationDetent> {
+    isTall ? [.large] : [.medium, .large]
+  }
+}
+
 extension View {
   /// The composer's host over this view (AppRoot's signed-in content).
   public func composerHost(_ host: ComposerHost) -> some View {

@@ -152,8 +152,12 @@ struct ComposerSheet: View {
       // `.composer-drop`: over the post area, the head or bar and the foot left clear.
       .overlay { if dropOver { ComposerDropHint() } }
       .sheet(item: $controller.dialog) { dialog in
+        // On a phone at its detents; wider, the web's centred modal, its
+        // own width and as tall as what's in it (the library 980 by 720).
         ComposerDialogView(controller: controller, dialog: dialog)
-          .presentationDetents(dialog.isTall ? [.large] : [.medium, .large])
+          .dialogSheetSizing(
+            phone: theme.windowWidth <= dialog.phoneWidth, detents: dialog.detents, width: dialog.sheetWidth,
+            height: dialog.sheetHeight)
           .presentationBackground(theme.surface)
           .presentationCornerRadius(Measure.Dialog.radius)
       }

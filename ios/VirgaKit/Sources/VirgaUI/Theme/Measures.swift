@@ -543,6 +543,9 @@ public enum Measure {
     /// `.dialog.lib-dialog { width: min(980px, 100vw - 32px); height: min(720px, 100svh - 48px) }`
     public static let libraryWidth: CGFloat = 980
     public static let libraryHeight: CGFloat = 720
+    /// What a dialog leaves of the window: `100vw - 32px` across, `100svh - 48px` down.
+    public static let windowSpaceAcross: CGFloat = 32
+    public static let windowSpaceDown: CGFloat = 48
     public static let radius: CGFloat = 16
     /// `.dialog-head { padding: 20px 16px 8px 24px }`; a phone's 16 10 8 18.
     public static let head = EdgeInsets(top: 20, leading: 24, bottom: 8, trailing: 16)
