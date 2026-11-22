@@ -17,9 +17,34 @@ import {
   parseEffects,
   timerBucket,
 } from '../../../harness/fakeServer.js';
+import {
+  anchoredRepeat,
+  nextOccurrence,
+} from '../../../src/posting/schedule/repeat.js';
 import { each } from './_helpers.js';
 
-export const sources = ['harness/fakeServer.js'];
+export const sources = [
+  'harness/fakeServer.js',
+  'src/posting/schedule/repeat.js',
+];
+
+const HOUR = 3_600_000;
+
+// What the fake server takes from repeat.js (its stand-in on iOS until
+// VirgaPosting's Repeat is merged): fakeServer.test.js's cases, across
+// clock changes, a half-hour change and month ends, and some odd rules.
+const REPEATS = [
+  ['day', 'Europe/Paris', '2026-10-23T07:00:00Z'],
+  ['day', 'Europe/Paris', '2026-03-27T01:30:00Z'],
+  ['week', 'America/New_York', '2026-03-02T14:00:00Z'],
+  ['2weeks', 'America/New_York', '2026-10-20T03:30:00Z'],
+  ['month', 'UTC', '2026-01-31T09:00:00Z'],
+  ['month', 'Pacific/Auckland', '2026-10-31T10:30:00Z'],
+  ['month', 'Asia/Kolkata', '2027-12-29T18:45:00Z'],
+  ['week', 'Australia/Lord_Howe', '2026-09-30T12:00:00Z'],
+  ['day', 'europe/london', '2026-11-12T12:00:00Z'],
+  ['month', '+05:30', '2026-11-30T23:00:00Z'],
+];
 
 const GATE = 'app.bsky.feed.threadgate';
 const LIST = 'at://did:plc:x/app.bsky.graph.list/moots';
@@ -439,6 +464,70 @@ const ANALYZE = [
 
 export default async function cases() {
   return [
+    ...(await each(
+      'repeat',
+      [
+        ...REPEATS.map(([every, tz, at]) => ({
+          $id: `${every} ${tz} ${at}`,
+          rule: { every },
+          at,
+          tz,
+        })),
+        {
+          $id: 'count',
+          rule: { every: 'week', count: 3 },
+          at: '2026-11-02T09:00:00Z',
+          tz: 'UTC',
+        },
+        {
+          $id: 'until',
+          rule: { every: 'week', until: '2026-11-16' },
+          at: '2026-11-02T09:00:00Z',
+          tz: 'UTC',
+        },
+        {
+          $id: 'until-before',
+          rule: { every: 'week', until: '2026-11-15' },
+          at: '2026-11-02T09:00:00Z',
+          tz: 'UTC',
+        },
+        {
+          $id: 'anchor-2',
+          rule: { every: 'month', count: 6 },
+          at: '2026-11-15T10:00:00Z',
+          tz: 'Europe/London',
+          occurrence: 2,
+        },
+        {
+          $id: 'no-every',
+          rule: { every: 'hour' },
+          at: '2026-11-15T10:00:00Z',
+          tz: 'UTC',
+        },
+        {
+          $id: 'bad-zone',
+          rule: { every: 'day' },
+          at: '2026-11-15T10:00:00Z',
+          tz: 'Mars/Olympus',
+        },
+      ],
+      ({ rule, at, tz, occurrence = 1 }) => {
+        const anchored = anchoredRepeat(rule, at, tz, occurrence);
+        const start = Date.parse(at);
+        const next = [];
+        for (const offset of [
+          -1,
+          0,
+          1,
+          36 * HOUR,
+          9 * 24 * HOUR,
+          200 * 24 * HOUR,
+        ])
+          for (const from of [1, 2, 7, null])
+            next.push(nextOccurrence(anchored, from, start + offset));
+        return { anchored, next };
+      },
+    )),
     ...(await each(
       'narrowAllow',
       NARROW.map(([wanted, existing], i) => ({

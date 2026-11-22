@@ -1,9 +1,1674 @@
 {
   "name": "demo-server.rules",
   "sources": [
-    "harness/fakeServer.js"
+    "harness/fakeServer.js",
+    "src/posting/schedule/repeat.js"
   ],
   "cases": [
+    {
+      "id": "day Europe/Paris 2026-10-23T07:00:00Z",
+      "fn": "repeat",
+      "input": {
+        "rule": {
+          "every": "day"
+        },
+        "at": "2026-10-23T07:00:00Z",
+        "tz": "Europe/Paris"
+      },
+      "output": {
+        "anchored": {
+          "every": "day",
+          "tz": "Europe/Paris",
+          "until": null,
+          "count": null,
+          "anchor": {
+            "date": "2026-10-23",
+            "time": "09:00",
+            "occurrence": 1
+          }
+        },
+        "next": [
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-10-24T07:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-10-25T08:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-10-30T08:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-10-24T07:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-10-24T07:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-10-25T08:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-10-30T08:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-10-24T07:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-10-24T07:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-10-25T08:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-10-30T08:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-10-24T07:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-10-25T08:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-10-25T08:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-10-30T08:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-10-25T08:00:00.000Z"
+          },
+          {
+            "occurrence": 10,
+            "scheduledFor": "2026-11-01T08:00:00.000Z"
+          },
+          {
+            "occurrence": 10,
+            "scheduledFor": "2026-11-01T08:00:00.000Z"
+          },
+          {
+            "occurrence": 10,
+            "scheduledFor": "2026-11-01T08:00:00.000Z"
+          },
+          {
+            "occurrence": 10,
+            "scheduledFor": "2026-11-01T08:00:00.000Z"
+          },
+          {
+            "occurrence": 202,
+            "scheduledFor": "2027-05-12T07:00:00.000Z"
+          },
+          {
+            "occurrence": 202,
+            "scheduledFor": "2027-05-12T07:00:00.000Z"
+          },
+          {
+            "occurrence": 202,
+            "scheduledFor": "2027-05-12T07:00:00.000Z"
+          },
+          {
+            "occurrence": 202,
+            "scheduledFor": "2027-05-12T07:00:00.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "day Europe/Paris 2026-03-27T01:30:00Z",
+      "fn": "repeat",
+      "input": {
+        "rule": {
+          "every": "day"
+        },
+        "at": "2026-03-27T01:30:00Z",
+        "tz": "Europe/Paris"
+      },
+      "output": {
+        "anchored": {
+          "every": "day",
+          "tz": "Europe/Paris",
+          "until": null,
+          "count": null,
+          "anchor": {
+            "date": "2026-03-27",
+            "time": "02:30",
+            "occurrence": 1
+          }
+        },
+        "next": [
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-03-28T01:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-29T01:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-04-03T00:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-03-28T01:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-03-28T01:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-29T01:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-04-03T00:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-03-28T01:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-03-28T01:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-29T01:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-04-03T00:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-03-28T01:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-29T01:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-29T01:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-04-03T00:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-29T01:30:00.000Z"
+          },
+          {
+            "occurrence": 11,
+            "scheduledFor": "2026-04-06T00:30:00.000Z"
+          },
+          {
+            "occurrence": 11,
+            "scheduledFor": "2026-04-06T00:30:00.000Z"
+          },
+          {
+            "occurrence": 11,
+            "scheduledFor": "2026-04-06T00:30:00.000Z"
+          },
+          {
+            "occurrence": 11,
+            "scheduledFor": "2026-04-06T00:30:00.000Z"
+          },
+          {
+            "occurrence": 202,
+            "scheduledFor": "2026-10-14T00:30:00.000Z"
+          },
+          {
+            "occurrence": 202,
+            "scheduledFor": "2026-10-14T00:30:00.000Z"
+          },
+          {
+            "occurrence": 202,
+            "scheduledFor": "2026-10-14T00:30:00.000Z"
+          },
+          {
+            "occurrence": 202,
+            "scheduledFor": "2026-10-14T00:30:00.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "week America/New_York 2026-03-02T14:00:00Z",
+      "fn": "repeat",
+      "input": {
+        "rule": {
+          "every": "week"
+        },
+        "at": "2026-03-02T14:00:00Z",
+        "tz": "America/New_York"
+      },
+      "output": {
+        "anchored": {
+          "every": "week",
+          "tz": "America/New_York",
+          "until": null,
+          "count": null,
+          "anchor": {
+            "date": "2026-03-02",
+            "time": "09:00",
+            "occurrence": 1
+          }
+        },
+        "next": [
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-03-09T13:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-16T13:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-04-20T13:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-03-09T13:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-03-09T13:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-16T13:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-04-20T13:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-03-09T13:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-03-09T13:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-16T13:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-04-20T13:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-03-09T13:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-03-09T13:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-16T13:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-04-20T13:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-03-09T13:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-16T13:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-16T13:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-04-20T13:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-16T13:00:00.000Z"
+          },
+          {
+            "occurrence": 30,
+            "scheduledFor": "2026-09-21T13:00:00.000Z"
+          },
+          {
+            "occurrence": 30,
+            "scheduledFor": "2026-09-21T13:00:00.000Z"
+          },
+          {
+            "occurrence": 30,
+            "scheduledFor": "2026-09-21T13:00:00.000Z"
+          },
+          {
+            "occurrence": 30,
+            "scheduledFor": "2026-09-21T13:00:00.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "2weeks America/New_York 2026-10-20T03:30:00Z",
+      "fn": "repeat",
+      "input": {
+        "rule": {
+          "every": "2weeks"
+        },
+        "at": "2026-10-20T03:30:00Z",
+        "tz": "America/New_York"
+      },
+      "output": {
+        "anchored": {
+          "every": "2weeks",
+          "tz": "America/New_York",
+          "until": null,
+          "count": null,
+          "anchor": {
+            "date": "2026-10-19",
+            "time": "23:30",
+            "occurrence": 1
+          }
+        },
+        "next": [
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-03T04:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-17T04:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-01-26T04:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-03T04:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-03T04:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-17T04:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-01-26T04:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-03T04:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-03T04:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-17T04:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-01-26T04:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-03T04:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-03T04:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-17T04:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-01-26T04:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-03T04:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-03T04:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-17T04:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-01-26T04:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-03T04:30:00.000Z"
+          },
+          {
+            "occurrence": 16,
+            "scheduledFor": "2027-05-18T03:30:00.000Z"
+          },
+          {
+            "occurrence": 16,
+            "scheduledFor": "2027-05-18T03:30:00.000Z"
+          },
+          {
+            "occurrence": 16,
+            "scheduledFor": "2027-05-18T03:30:00.000Z"
+          },
+          {
+            "occurrence": 16,
+            "scheduledFor": "2027-05-18T03:30:00.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "month UTC 2026-01-31T09:00:00Z",
+      "fn": "repeat",
+      "input": {
+        "rule": {
+          "every": "month"
+        },
+        "at": "2026-01-31T09:00:00Z",
+        "tz": "UTC"
+      },
+      "output": {
+        "anchored": {
+          "every": "month",
+          "tz": "UTC",
+          "until": null,
+          "count": null,
+          "anchor": {
+            "date": "2026-01-31",
+            "time": "09:00",
+            "occurrence": 1
+          }
+        },
+        "next": [
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-02-28T09:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-31T09:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-08-31T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-02-28T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-02-28T09:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-31T09:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-08-31T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-02-28T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-02-28T09:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-31T09:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-08-31T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-02-28T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-02-28T09:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-31T09:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-08-31T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-02-28T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-02-28T09:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-03-31T09:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-08-31T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-02-28T09:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-08-31T09:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-08-31T09:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-08-31T09:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-08-31T09:00:00.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "month Pacific/Auckland 2026-10-31T10:30:00Z",
+      "fn": "repeat",
+      "input": {
+        "rule": {
+          "every": "month"
+        },
+        "at": "2026-10-31T10:30:00Z",
+        "tz": "Pacific/Auckland"
+      },
+      "output": {
+        "anchored": {
+          "every": "month",
+          "tz": "Pacific/Auckland",
+          "until": null,
+          "count": null,
+          "anchor": {
+            "date": "2026-10-31",
+            "time": "23:30",
+            "occurrence": 1
+          }
+        },
+        "next": [
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-30T10:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-31T10:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-05-31T11:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-30T10:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-30T10:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-31T10:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-05-31T11:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-30T10:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-30T10:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-31T10:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-05-31T11:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-30T10:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-30T10:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-31T10:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-05-31T11:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-30T10:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-30T10:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-31T10:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-05-31T11:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-30T10:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-05-31T11:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-05-31T11:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-05-31T11:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-05-31T11:30:00.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "month Asia/Kolkata 2027-12-29T18:45:00Z",
+      "fn": "repeat",
+      "input": {
+        "rule": {
+          "every": "month"
+        },
+        "at": "2027-12-29T18:45:00Z",
+        "tz": "Asia/Kolkata"
+      },
+      "output": {
+        "anchored": {
+          "every": "month",
+          "tz": "Asia/Kolkata",
+          "until": null,
+          "count": null,
+          "anchor": {
+            "date": "2027-12-30",
+            "time": "00:15",
+            "occurrence": 1
+          }
+        },
+        "next": [
+          {
+            "occurrence": 2,
+            "scheduledFor": "2028-01-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2028-02-28T18:45:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2028-07-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2028-01-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2028-01-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2028-02-28T18:45:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2028-07-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2028-01-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2028-01-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2028-02-28T18:45:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2028-07-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2028-01-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2028-01-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2028-02-28T18:45:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2028-07-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2028-01-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2028-01-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2028-02-28T18:45:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2028-07-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2028-01-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2028-07-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2028-07-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2028-07-29T18:45:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2028-07-29T18:45:00.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "week Australia/Lord_Howe 2026-09-30T12:00:00Z",
+      "fn": "repeat",
+      "input": {
+        "rule": {
+          "every": "week"
+        },
+        "at": "2026-09-30T12:00:00Z",
+        "tz": "Australia/Lord_Howe"
+      },
+      "output": {
+        "anchored": {
+          "every": "week",
+          "tz": "Australia/Lord_Howe",
+          "until": null,
+          "count": null,
+          "anchor": {
+            "date": "2026-09-30",
+            "time": "22:30",
+            "occurrence": 1
+          }
+        },
+        "next": [
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-10-07T11:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-10-14T11:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-11-18T11:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-10-07T11:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-10-07T11:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-10-14T11:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-11-18T11:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-10-07T11:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-10-07T11:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-10-14T11:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-11-18T11:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-10-07T11:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-10-07T11:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-10-14T11:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-11-18T11:30:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-10-07T11:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-10-14T11:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-10-14T11:30:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-11-18T11:30:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-10-14T11:30:00.000Z"
+          },
+          {
+            "occurrence": 30,
+            "scheduledFor": "2027-04-21T12:00:00.000Z"
+          },
+          {
+            "occurrence": 30,
+            "scheduledFor": "2027-04-21T12:00:00.000Z"
+          },
+          {
+            "occurrence": 30,
+            "scheduledFor": "2027-04-21T12:00:00.000Z"
+          },
+          {
+            "occurrence": 30,
+            "scheduledFor": "2027-04-21T12:00:00.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "day europe/london 2026-11-12T12:00:00Z",
+      "fn": "repeat",
+      "input": {
+        "rule": {
+          "every": "day"
+        },
+        "at": "2026-11-12T12:00:00Z",
+        "tz": "europe/london"
+      },
+      "output": {
+        "anchored": {
+          "every": "day",
+          "tz": "europe/london",
+          "until": null,
+          "count": null,
+          "anchor": {
+            "date": "2026-11-12",
+            "time": "12:00",
+            "occurrence": 1
+          }
+        },
+        "next": [
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-13T12:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-14T12:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-11-19T12:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-13T12:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-13T12:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-14T12:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-11-19T12:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-13T12:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-13T12:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-14T12:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-11-19T12:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-13T12:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-14T12:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-14T12:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2026-11-19T12:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-14T12:00:00.000Z"
+          },
+          {
+            "occurrence": 11,
+            "scheduledFor": "2026-11-22T12:00:00.000Z"
+          },
+          {
+            "occurrence": 11,
+            "scheduledFor": "2026-11-22T12:00:00.000Z"
+          },
+          {
+            "occurrence": 11,
+            "scheduledFor": "2026-11-22T12:00:00.000Z"
+          },
+          {
+            "occurrence": 11,
+            "scheduledFor": "2026-11-22T12:00:00.000Z"
+          },
+          {
+            "occurrence": 202,
+            "scheduledFor": "2027-06-01T11:00:00.000Z"
+          },
+          {
+            "occurrence": 202,
+            "scheduledFor": "2027-06-01T11:00:00.000Z"
+          },
+          {
+            "occurrence": 202,
+            "scheduledFor": "2027-06-01T11:00:00.000Z"
+          },
+          {
+            "occurrence": 202,
+            "scheduledFor": "2027-06-01T11:00:00.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "month +05:30 2026-11-30T23:00:00Z",
+      "fn": "repeat",
+      "input": {
+        "rule": {
+          "every": "month"
+        },
+        "at": "2026-11-30T23:00:00Z",
+        "tz": "+05:30"
+      },
+      "output": {
+        "anchored": {
+          "every": "month",
+          "tz": "+05:30",
+          "until": null,
+          "count": null,
+          "anchor": {
+            "date": "2026-12-01",
+            "time": "04:30",
+            "occurrence": 1
+          }
+        },
+        "next": [
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-12-31T23:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2027-01-31T23:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-06-30T23:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-12-31T23:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-12-31T23:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2027-01-31T23:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-06-30T23:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-12-31T23:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-12-31T23:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2027-01-31T23:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-06-30T23:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-12-31T23:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-12-31T23:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2027-01-31T23:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-06-30T23:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-12-31T23:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-12-31T23:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2027-01-31T23:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-06-30T23:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-12-31T23:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-06-30T23:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-06-30T23:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-06-30T23:00:00.000Z"
+          },
+          {
+            "occurrence": 8,
+            "scheduledFor": "2027-06-30T23:00:00.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "count",
+      "fn": "repeat",
+      "input": {
+        "rule": {
+          "every": "week",
+          "count": 3
+        },
+        "at": "2026-11-02T09:00:00Z",
+        "tz": "UTC"
+      },
+      "output": {
+        "anchored": {
+          "every": "week",
+          "tz": "UTC",
+          "until": null,
+          "count": 3,
+          "anchor": {
+            "date": "2026-11-02",
+            "time": "09:00",
+            "occurrence": 1
+          }
+        },
+        "next": [
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-16T09:00:00.000Z"
+          },
+          null,
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-16T09:00:00.000Z"
+          },
+          null,
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-16T09:00:00.000Z"
+          },
+          null,
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-16T09:00:00.000Z"
+          },
+          null,
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-16T09:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-16T09:00:00.000Z"
+          },
+          null,
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-16T09:00:00.000Z"
+          },
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "until",
+      "fn": "repeat",
+      "input": {
+        "rule": {
+          "every": "week",
+          "until": "2026-11-16"
+        },
+        "at": "2026-11-02T09:00:00Z",
+        "tz": "UTC"
+      },
+      "output": {
+        "anchored": {
+          "every": "week",
+          "tz": "UTC",
+          "until": "2026-11-16",
+          "count": null,
+          "anchor": {
+            "date": "2026-11-02",
+            "time": "09:00",
+            "occurrence": 1
+          }
+        },
+        "next": [
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-16T09:00:00.000Z"
+          },
+          null,
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-16T09:00:00.000Z"
+          },
+          null,
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-16T09:00:00.000Z"
+          },
+          null,
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-16T09:00:00.000Z"
+          },
+          null,
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-16T09:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-16T09:00:00.000Z"
+          },
+          null,
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-11-16T09:00:00.000Z"
+          },
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "until-before",
+      "fn": "repeat",
+      "input": {
+        "rule": {
+          "every": "week",
+          "until": "2026-11-15"
+        },
+        "at": "2026-11-02T09:00:00Z",
+        "tz": "UTC"
+      },
+      "output": {
+        "anchored": {
+          "every": "week",
+          "tz": "UTC",
+          "until": "2026-11-15",
+          "count": null,
+          "anchor": {
+            "date": "2026-11-02",
+            "time": "09:00",
+            "occurrence": 1
+          }
+        },
+        "next": [
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          null,
+          null,
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          null,
+          null,
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          null,
+          null,
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          null,
+          null,
+          {
+            "occurrence": 2,
+            "scheduledFor": "2026-11-09T09:00:00.000Z"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "anchor-2",
+      "fn": "repeat",
+      "input": {
+        "rule": {
+          "every": "month",
+          "count": 6
+        },
+        "at": "2026-11-15T10:00:00Z",
+        "tz": "Europe/London",
+        "occurrence": 2
+      },
+      "output": {
+        "anchored": {
+          "every": "month",
+          "tz": "Europe/London",
+          "until": null,
+          "count": 6,
+          "anchor": {
+            "date": "2026-11-15",
+            "time": "10:00",
+            "occurrence": 2
+          }
+        },
+        "next": [
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-15T10:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-15T10:00:00.000Z"
+          },
+          null,
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-15T10:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-15T10:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-15T10:00:00.000Z"
+          },
+          null,
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-15T10:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-15T10:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-15T10:00:00.000Z"
+          },
+          null,
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-15T10:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-15T10:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-15T10:00:00.000Z"
+          },
+          null,
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-15T10:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-15T10:00:00.000Z"
+          },
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-15T10:00:00.000Z"
+          },
+          null,
+          {
+            "occurrence": 3,
+            "scheduledFor": "2026-12-15T10:00:00.000Z"
+          },
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "no-every",
+      "fn": "repeat",
+      "input": {
+        "rule": {
+          "every": "hour"
+        },
+        "at": "2026-11-15T10:00:00Z",
+        "tz": "UTC"
+      },
+      "output": {
+        "anchored": null,
+        "next": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "bad-zone",
+      "fn": "repeat",
+      "input": {
+        "rule": {
+          "every": "day"
+        },
+        "at": "2026-11-15T10:00:00Z",
+        "tz": "Mars/Olympus"
+      },
+      "output": {
+        "anchored": null,
+        "next": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    },
     {
       "id": "narrow#0",
       "fn": "narrowAllow",

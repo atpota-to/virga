@@ -57,6 +57,24 @@ import VirgaTestSupport
     try Self.check("evaluateConditions") { try FakeServer.evaluateConditions($0.input["conditions"], $0["counts"]).json }
   }
 
+  /// The stand-in for repeat.js's anchoredRepeat and nextOccurrence.
+  @Test func repeatStandIn() throws {
+    try Self.check("repeat") { c in
+      let anchored = ServerRepeat.anchoredRepeat(
+        c.input["rule"], c.input["at"], c.input["tz"], occurrence: c.input["occurrence"] ?? 1)
+      let start = JSDate.parse(c["at"].stringValue ?? "", timeZone: .gmt)
+      var next: [JSONValue] = []
+      for offset in [-1, 0, 1, 36 * 3_600_000, 9 * 86_400_000, 200 * 86_400_000] as [Double] {
+        for from in [1, 2, 7, JSONValue.null] as [JSONValue] {
+          let found = ServerRepeat.nextOccurrence(anchored, from, nowMs: start + offset)
+          next.append(
+            found.map { ["occurrence": .number($0.occurrence), "scheduledFor": .string($0.scheduledFor)] } ?? .null)
+        }
+      }
+      return ["anchored": anchored ?? .null, "next": .array(next)]
+    }
+  }
+
   @Test func analyzePost() throws {
     try Self.check("analyzePost") {
       FakeServer.analyzePost(
