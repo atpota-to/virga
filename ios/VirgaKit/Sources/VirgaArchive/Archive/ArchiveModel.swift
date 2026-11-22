@@ -121,7 +121,9 @@ public final class ArchiveModel {
 
   /// The account.
   public let did: String
-  public let handle: String?
+  /// The account's handle, for the exports: the app sets it again when the
+  /// profile's fresh read arrives (the hook takes it on every render).
+  public var handle: String?
   /// The account's signed-in agent (nil: nothing to sync with).
   public let agent: XRPCAgent?
   let env: ArchiveEnvironment

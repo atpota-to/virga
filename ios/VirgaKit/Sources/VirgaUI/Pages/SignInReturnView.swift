@@ -51,14 +51,14 @@ public struct SignInReturnView: View {
             .accessibilityAddTraits(.isHeader)
             .accessibilityIdentifier("return-title")
           Text(OAuthClient.callbackErrorMessage(error))
-            .virgaText(.textLg, lineHeight: ThemeKit.landingLedeLineHeight)
-            .foregroundStyle(theme.ink2)
-            .fixedSize(horizontal: false, vertical: true)
+            .modifier(LandingLede())
           Button(session.session != nil ? "Back to Virga" : "Back to the start") { leave() }
             .buttonStyle(.virga(.primary, size: .large))
           Disclosure("Details") {
+            // `.return-code` sets its own size (--text-xs) on the code, in
+            // place of base.css's 0.92em.
             Text(detail)
-              .font(theme.codeFont(around: theme.textXs))
+              .font(Font.system(size: theme.scaled(theme.textXs), design: .monospaced))
               .foregroundStyle(theme.muted)
               .textSelection(.enabled)
               .padding(.top, Measure.Landing.codeSpaceAbove)
@@ -72,6 +72,20 @@ public struct SignInReturnView: View {
   private func leave() {
     session.clearError()
     navigate("/")
+  }
+}
+
+/// `.landing-lede`: --text-lg in --ink-2, held to 52ch; --text-md from 560 down.
+struct LandingLede: ViewModifier {
+  @Environment(\.virgaTheme) private var theme
+
+  func body(content: Content) -> some View {
+    let size = theme.isPhone ? theme.textMd : theme.textLg
+    content
+      .virgaText(theme.isPhone ? .textMd : .textLg, lineHeight: ThemeKit.landingLedeLineHeight)
+      .foregroundStyle(theme.ink2)
+      .fixedSize(horizontal: false, vertical: true)
+      .frame(maxWidth: theme.points(ThemeKit.landingLedeMaxWidth, inTextOf: size), alignment: .leading)
   }
 }
 
@@ -117,7 +131,8 @@ public struct AppStatus: View {
         .offset(y: geometry.size.height * Measure.Landing.statusTopShare)
         .opacity(shown ? 1 : 0)
     }
-    .background(PageGround().ignoresSafeArea())
+    // The body's sky (base.css), as every page outside the shell has it.
+    .background(alignment: .top) { SkyWash().ignoresSafeArea() }
     .onAppear {
       if let animation = theme.motion.status {
         withAnimation(animation) { shown = true }

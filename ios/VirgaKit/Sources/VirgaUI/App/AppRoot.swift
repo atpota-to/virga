@@ -70,7 +70,7 @@ public struct AppRoot: View {
     if let document = LegalDocuments.documentFor(navigator.path) {
       LegalPageView(docKey: document)
     } else if session.loading {
-      AppStatus("Opening Virga…")
+      AppStatus(session.returning ? "Signing you in…" : "Opening Virga…")
     } else if let error = session.error {
       SignInReturnView(error: error)
     } else if let did = session.did, session.session != nil, session.agent != nil {
@@ -80,8 +80,21 @@ public struct AppRoot: View {
     }
   }
 
+  /// The agreement's answer for the account drawn: the model's once it has
+  /// been told of this account, and until then decided afresh here, from
+  /// the same note and the same rule (useTermsAcceptance decides in the
+  /// same render), so the app is never drawn for an account on the strength
+  /// of the last one's answer. The model is told just after this body
+  /// (`.onChange(of: subject)`) and comes to the same answer.
+  private func termsStatus(for did: String) -> TermsStatus {
+    if terms.did.jsEquals(did) { return terms.status }
+    let mode = session.mode
+    let canAsk = mode == "backend" && session.backendFor(did) != nil
+    return Acceptance.startingStatus(entry: Acceptance.readAcceptance(app.stores.keyValue, did), mode: mode, canAsk: canAsk)
+  }
+
   @ViewBuilder private func signedIn(_ did: String) -> some View {
-    switch terms.status {
+    switch termsStatus(for: did) {
     case .checking:
       // Asking the server whether this account agreed somewhere else: the
       // same line as the app starting, so nothing flashes before the answer.
@@ -96,9 +109,11 @@ public struct AppRoot: View {
       .composerHost(composer)
       .task {
         // A compose link opened while signed out (PendingCompose), now
-        // there is an account to post as.
+        // there is an account to post as. It is kept in the tab store
+        // (sessionStorage: "for this tab only"), which the sign-in comes
+        // back into and a new launch starts without.
         let now = Date().timeIntervalSince1970 * 1000
-        if let kept = PendingCompose.takePendingCompose(store: app.stores.keyValue, now: now) { navigator.navigate(kept) }
+        if let kept = PendingCompose.takePendingCompose(store: app.stores.tab, now: now) { navigator.navigate(kept) }
       }
       .sessionNotices()
     }
@@ -113,7 +128,7 @@ public struct AppRoot: View {
     } else {
       let search = url.query.map { "?\($0)" } ?? ""
       let now = Date().timeIntervalSince1970 * 1000
-      _ = PendingCompose.rememberPendingCompose(ComposeIntent.intentComposePath, search, store: app.stores.keyValue, now: now)
+      _ = PendingCompose.rememberPendingCompose(ComposeIntent.intentComposePath, search, store: app.stores.tab, now: now)
     }
     return true
   }

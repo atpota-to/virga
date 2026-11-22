@@ -42,7 +42,7 @@ public final class SessionNoticesModel {
     self.tabStorage = tabStorage
     self.pending = PendingReauthModel(onRelogin: { _ in })
     pending.onRelogin = { [weak self] account in try await self?.reauth(account) }
-    pending.onError = { [weak self] error in self?.show(OAuthClient.signInErrorMessage(error), danger: true) }
+    pending.onError = { [weak self] error in self?.showSignInError(error) }
     listeners.append(events.addListener(AccountCopy.reauthRequestEvent) { [weak self] event in self?.onReauthRequest(event) })
     listeners.append(events.addListener(Accounts.sessionExpiredEvent) { [weak self] event in self?.onExpired(event) })
     listeners.append(events.addListener(AccountCopy.sessionNoticeEvent) { [weak self] event in self?.onNotice(event) })
@@ -72,7 +72,7 @@ public final class SessionNoticesModel {
         do {
           try await reauth(target)
         } catch {
-          show(OAuthClient.signInErrorMessage(error), danger: true)
+          showSignInError(error)
         }
       }
     } else {
@@ -103,6 +103,13 @@ public final class SessionNoticesModel {
     notice = Notice(text: text, danger: danger)
   }
 
+  /// A sign-in that couldn't start says so; one called off (Cancel on the
+  /// system's sign-in sheet) has nothing to say.
+  func showSignInError(_ error: any Error) {
+    if SignInTrip.calledOff(error) { return }
+    show(OAuthClient.signInErrorMessage(error), danger: true)
+  }
+
   public func dismissNotice() { notice = nil }
   public func dismissStuck() { stuck = nil }
 
@@ -114,9 +121,20 @@ public final class SessionNoticesModel {
       do {
         try await reauth(stuck)
       } catch {
-        show(OAuthClient.signInErrorMessage(error), danger: true)
+        showSignInError(error)
       }
     }
+  }
+}
+
+/// A sign-in trip's end, as the flow reads it.
+enum SignInTrip {
+  /// Called off: the system's sign-in sheet was cancelled, or the reader
+  /// came back from the host (an AbortError, code CANCELLED, "navigated
+  /// back"). The web never sees these here, since its page leaves; the
+  /// flow's own rule (tripFailureNotice) has nothing to say about them.
+  static func calledOff(_ error: any Error) -> Bool {
+    SignInFlow.tripFailureNotice(error, nil) == nil
   }
 }
 
