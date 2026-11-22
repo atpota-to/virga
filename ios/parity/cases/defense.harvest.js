@@ -89,19 +89,54 @@ const dids = (prefix, n, from = 0) =>
   Array.from({ length: n }, (_, i) => `did:plc:${prefix}${from + i}`);
 
 /**
+ * The getBacklinks `source` of each source `/links/all` lists more than once.
+ * A path with and without its leading dot is one source (flattenSources
+ * strips the dot), so the harvest reads it twice, with the same request.
+ */
+function sharedSources(answer) {
+  const seen = new Set();
+  const shared = new Set();
+  const links = answer?.links || answer || {};
+  for (const [collection, paths] of Object.entries(links)) {
+    if (!paths || typeof paths !== 'object') continue;
+    for (const path of Object.keys(paths)) {
+      const source = `${collection}:${path.startsWith('.') ? path.slice(1) : path}`;
+      if (seen.has(source)) shared.add(source);
+      seen.add(source);
+    }
+  }
+  return shared;
+}
+
+/**
  * The fake Constellation: `/links/all` answers `sources` (or `sourcesAnswer`,
  * an answer as _fetch.js takes it); each source's getBacklinks calls take the
  * next of `pages[source]` in turn: a page (answered as JSON), 'fail' (a 404,
  * which Constellation's client doesn't retry), 'offline', or an answer. Past
  * the end, a 404.
+ *
+ * A source listed twice is read twice, by two of the harvest's lanes, with
+ * the same request, so turns can't say which reader got which answer: here
+ * JavaScript's scheduling decides, and the Swift replay, which matches
+ * requests sent side by side in any order, can't follow it. Constellation
+ * answers one request the same whoever sends it, and so does this fake: such
+ * a source is scripted with one answer (or none, a 404), given to every
+ * request for it. A script with turns for one is refused.
  */
 function constellation({ sources: answer, sourcesAnswer, pages = {} }) {
+  const shared = sharedSources(answer);
+  for (const source of shared) {
+    if ((pages[source]?.length ?? 0) > 1)
+      throw new Error(
+        `${source} is listed twice, so its readers send the same request: script it with one answer, not turns`,
+      );
+  }
   const turns = new Map();
   return (request) => {
     const url = new URL(request.url);
     if (url.pathname === '/links/all') return sourcesAnswer ?? json(answer);
     const source = url.searchParams.get('source');
-    const n = turns.get(source) ?? 0;
+    const n = shared.has(source) ? 0 : (turns.get(source) ?? 0);
     turns.set(source, n + 1);
     const next = (pages[source] ?? [])[n];
     if (next === undefined || next === 'fail')
@@ -327,6 +362,8 @@ const scripts = {
       [...QUOTES, 2, 2],
       [...QUOTES_WITH_MEDIA, 1, 1],
       [...GATE, 1, 1],
+      // LIKES without its dot: still a like, and the same source, so the
+      // harvest reads LIKES' page a second time and counts it again.
       ['app.bsky.feed.like', 'subject.uri', 1],
       ['app.bsky.feed.post', '.reply.parent.uri.x', 1],
       ['app.bsky.feed.post', '.embed.record', 1],
@@ -361,7 +398,6 @@ const scripts = {
       [sourceOf(QUOTES)]: [page(['did:plc:quoter', 'did:plc:busy'])],
       [sourceOf(QUOTES_WITH_MEDIA)]: [page(['did:plc:quoter'])],
       [sourceOf(GATE)]: [page(['did:plc:author'])],
-      'app.bsky.feed.like:subject.uri': [page(['did:plc:nodot'])],
       'app.bsky.feed.post:reply.parent.uri.x': [page(['did:plc:x1'])],
       'app.bsky.feed.post:embed.record': [page(['did:plc:x2'])],
       'app.bsky.graph.listitem:subject': [page(['did:plc:lister'])],
@@ -644,6 +680,9 @@ async function crowd(rkey) {
 }
 
 export default async function cases() {
+  // Every script's fake built first, outside `each`, so one it refuses fails
+  // the generator rather than being recorded as that case's $throws.
+  for (const c of inputs) constellation(c.script());
   const posts = postsBetween(20, 140);
   // One at a time: each swaps the global fetch and Date.
   const crowds = [];
