@@ -169,6 +169,8 @@ public struct LandingView: View {
   @Environment(\.navigate) private var navigate
   @Environment(PreferencesModel.self) private var preferences: PreferencesModel?
   @State private var toasts = ToastCenter()
+  /// How far the page has scrolled, for the strip over the status bar.
+  @State private var sky = SkyScroll()
 
   public init() {}
 
@@ -201,12 +203,28 @@ public struct LandingView: View {
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Legal")
       }
+      .background {
+        // Where the content's top is as it scrolls (VirgaPage's way).
+        GeometryReader { geometry in
+          Color.clear.onChange(of: geometry.frame(in: .named(Self.space)).minY, initial: true) { _, y in
+            sky.report(y)
+          }
+        }
+      }
     }
+    .coordinateSpace(name: Self.space)
     .background(PageGround().ignoresSafeArea())
+    // The page never draws under the clock: the browser's chrome takes the
+    // sky's top (preferences.jsx's theme-color), and the page scrolls under
+    // it. The top of the sky is held there, as VirgaPage holds it.
+    .overlay(alignment: .top) { StatusBarSky(scroll: sky) }
     .overlay { ToastStack(center: toasts) }
     .environment(toasts)
     .accessibilityIdentifier("landing")
   }
+
+  /// The page's scroll view's own space.
+  static var space: String { "virga-landing" }
 
   private var mainSpaceAbove: CGFloat {
     Measure.Landing.mainSpaceAbove.of(theme.windowHeight)
