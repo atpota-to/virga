@@ -18,7 +18,10 @@
 // column at most --content-max wide plus its margins, centred. On a phone's
 // front page of a part the app bar (the mark and the account) comes first,
 // in the content (Shell/MobileNav.swift); then, where there is no sidebar
-// to say it, the sync's strip (Shell/SyncStatus.swift).
+// to say it, the sync's strip (Shell/SyncStatus.swift). A tap on the page
+// itself, off its controls and fields, ends editing, as a click there
+// takes the focus from a field on the web; a drag down puts the keyboard
+// away as it goes, as iOS pages do.
 //
 //   VirgaPage(header: PageHeaderModel(title: "Reports", sub: "Every number Virga works out, one page each.")) {
 //     VirgaSection(title: "Followers") { … }
@@ -26,6 +29,7 @@
 
 #if canImport(UIKit)
 import SwiftUI
+import UIKit
 import VirgaArchive
 import VirgaCore
 
@@ -399,6 +403,14 @@ public struct VirgaPage<Content: View>: View {
           }
         }
       }
+      // Behind everything on the page, so a press on a control or a field
+      // is theirs: a tap on the page itself ends editing (a field's blur).
+      .background {
+        Color.clear
+          .contentShape(Rectangle())
+          .onTapGesture { Self.endEditing() }
+          .accessibilityHidden(true)
+      }
     }
     .coordinateSpace(name: Self.space)
     .scrollDismissesKeyboard(.interactively)
@@ -414,6 +426,11 @@ public struct VirgaPage<Content: View>: View {
 
   /// The page's scroll view's own space.
   static var space: String { "virga-page" }
+
+  /// Whatever field has the focus gives it up, and the keyboard goes.
+  static func endEditing() {
+    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+  }
 }
 
 /// `.page-header-in, .page-body`: the page's column, at most --content-max

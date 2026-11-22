@@ -154,7 +154,8 @@ COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
 - Page structure: `PageHeader(PageHeaderModel(title:sub:access:crumbs:), titleTools:,
   period:, actions:, extra:)` (pass the period picker as `period:` and the rest as `actions:`:
   a phone puts the period first and the rest at the far end; a lone primary action sits beside
-  the title), `VirgaPage`, `PageColumn`, `VirgaSection(title:sub:trailing:flush:caption:)` (a
+  the title), `VirgaPage` (a tap on the page itself, off its controls, ends editing, as a
+  field's blur), `PageColumn`, `VirgaSection(title:sub:trailing:flush:caption:)` (a
   small Segmented as `trailing` says so, and goes under the line on a phone), `SectionFoot(count:
   letOut:)` (`letOut:` the size of a ghost button that starts it), `VirgaRow(roomy:time:) { }
   actions: { }`, `RowWords`.
