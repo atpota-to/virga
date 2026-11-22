@@ -26,6 +26,15 @@ enum ComposerMeasure {
   static let blockGap: CGFloat = 10
   static let blocksGap: CGFloat = 12
   static let threadPostSpaceBelow: CGFloat = 18
+  /// `.post-block::before { top: 4px; bottom: 4px; left: -14px; width: 2px }`
+  /// (left −12 at 760 and under; down a thread, bottom 0, the last post's 18).
+  static let sideLineInset: CGFloat = 4
+  static let sideLineWidth: CGFloat = 2
+  static let sideLineLead: CGFloat = 14
+  static let phoneSideLineLead: CGFloat = 12
+  /// `.post-problems { padding-left: 18px }`; `.split-offer { row-gap: 8px }`.
+  static let problemsInset: CGFloat = 18
+  static let splitOfferRowGap: CGFloat = 8
   /// `.post-block-head { min-height: 30px }`
   static let headHeight: CGFloat = 30
   /// `.post-editor-input { font-size: 1.25rem; font-weight: 500;
@@ -123,6 +132,26 @@ enum ComposerMeasure {
   /// phone's `8px 12px 10px 20px`.
   static let foot = EdgeInsets(top: 12, leading: 24, bottom: 16, trailing: 24)
   static let phoneFoot = EdgeInsets(top: 8, leading: 20, bottom: 10, trailing: 12)
+  /// `.suggest-pop { margin-top: 6px }` (and `.post-editor-note`'s),
+  /// `.suggest-list { padding: 6px }`, `.suggest-item { gap: 10px;
+  /// min-height: 40px; padding: 6px 10px }`, `.suggest-text { line-height:
+  /// 1.3 }`, `.suggest-status { padding: 12px 14px }`, `.suggest-foot {
+  /// min-height: 42px; padding: 8px 16px }`; who to mention closes 150 ms
+  /// after the field loses focus.
+  static let suggestTop: CGFloat = 6
+  static let suggestListPadding: CGFloat = 6
+  static let suggestItemGap: CGFloat = 10
+  static let suggestItemHeight: CGFloat = 40
+  static let suggestItemPadding = EdgeInsets(top: 6, leading: 10, bottom: 6, trailing: 10)
+  static let suggestLineHeight: Double = 1.3
+  static let suggestStatusPadding = EdgeInsets(top: 12, leading: 14, bottom: 12, trailing: 14)
+  static let suggestFootHeight: CGFloat = 42
+  static let suggestFootPadding = EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+  static let suggestCloseDelay: Double = 0.15
+  /// The language suggestions close 120 ms after the field loses focus.
+  static let languagesCloseDelay: Double = 0.12
+  /// How long after opening the first post takes the caret (Composer.jsx's 40 ms).
+  static let focusDelay: Double = 0.04
   /// `.callout-actions { gap: 6px }`
   static let calloutActionsGap: CGFloat = 6
   /// `.composer-skeleton .post-block { gap: 12px; padding: 6px 0 4px }`,

@@ -16,7 +16,8 @@ import VirgaPosting
 import VirgaSession
 
 /// Up to three languages: the chosen ones as tokens, and a search field
-/// that suggests more (by name or code).
+/// that suggests more (by name or code). The suggestions open as the field
+/// takes focus, is pressed or is typed in, and close once one is added.
 struct LanguagePicker: View {
   @Environment(\.virgaTheme) private var theme
   @Binding var value: [String]
@@ -24,6 +25,9 @@ struct LanguagePicker: View {
   var hint: String?
   var disabled = false
   @State private var query = ""
+  @State private var open = false
+  /// The query is being cleared by an add, not typed: it doesn't reopen the list.
+  @State private var clearing = false
   @FocusState private var focused: Bool
 
   static let max = 3
@@ -32,7 +36,7 @@ struct LanguagePicker: View {
     let chosen = Array(value.prefix(Self.max))
     let full = chosen.count >= Self.max
     let options =
-      focused && !full
+      open && focused && !full
       ? ComposerLanguages.searchLanguages(
         .string(query), chosen: chosen, preferred: Locale.preferredLanguages, limit: 6) : []
     VStack(alignment: .leading, spacing: theme.space2) {
@@ -53,6 +57,21 @@ struct LanguagePicker: View {
         .disabled(disabled || full)
         .autocorrectionDisabled()
         .textInputAutocapitalization(.never)
+        .simultaneousGesture(TapGesture().onEnded { open = true })
+        .onChange(of: focused) { _, now in
+          if now {
+            open = true
+          } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + ComposerMeasure.languagesCloseDelay) { open = false }
+          }
+        }
+        .onChange(of: query) { _, _ in
+          if clearing {
+            clearing = false
+          } else {
+            open = true
+          }
+        }
         .onSubmit { add(options.first?.code, chosen: chosen) }
         .accessibilityLabel(label)
       if !options.isEmpty {
@@ -61,21 +80,19 @@ struct LanguagePicker: View {
             Button {
               add(option.code, chosen: chosen)
             } label: {
-              HStack {
+              HStack(spacing: ComposerMeasure.suggestItemGap) {
                 Text(option.name).foregroundStyle(theme.ink)
                 Spacer(minLength: 0)
                 Text(option.code).virgaText(.textSm).foregroundStyle(theme.muted)
               }
-              .padding(.horizontal, theme.space3)
-              .frame(minHeight: Measure.Touch.target)
-              .contentShape(Rectangle())
+              .suggestRow()
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier("language-\(option.code)")
           }
         }
-        .background(theme.surface, in: RoundedRectangle(cornerRadius: theme.radiusLg))
-        .overlay(RoundedRectangle(cornerRadius: theme.radiusLg).strokeBorder(theme.line))
+        .padding(ComposerMeasure.suggestListPadding)
+        .suggestPop()
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Languages")
       }
@@ -85,7 +102,9 @@ struct LanguagePicker: View {
   private func add(_ code: String?, chosen: [String]) {
     guard let code, !chosen.jsIncludes(code), chosen.count < Self.max else { return }
     value = chosen + [code]
+    if !query.isEmpty { clearing = true }
     query = ""
+    open = false
   }
 }
 

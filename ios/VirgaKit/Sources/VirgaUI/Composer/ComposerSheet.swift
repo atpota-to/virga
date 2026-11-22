@@ -91,6 +91,15 @@ struct ComposerSheet: View {
   @Environment(ToastCenter.self) private var toasts
   @Bindable var controller: ComposerController
 
+  /// The caret in the first post, 40 ms after it's drawn, on a wide screen.
+  private func focusFirstPost() {
+    guard !theme.composerNarrow else { return }
+    let controller = self.controller
+    DispatchQueue.main.asyncAfter(deadline: .now() + ComposerMeasure.focusDelay) {
+      if controller.focusPostId == nil, let first = controller.state.posts.first?.id { controller.focusPostId = first }
+    }
+  }
+
   private var title: String {
     let state = controller.state
     if state.reply != nil { return "Reply" }
@@ -144,8 +153,19 @@ struct ComposerSheet: View {
     .overlay { ToastStack(center: toasts) }
     // ADVISER: the adviser's sheet, and its account while the composer is open.
     .adviserSheet(controller.adviser)
-    .onAppear { controller.configureAdviser(open: true) }
+    .onAppear {
+      controller.configureAdviser(open: true)
+      controller.narrow = theme.composerNarrow
+      focusFirstPost()
+    }
     .onDisappear { controller.configureAdviser(open: false) }
+    // Opening, or loading a new post into it, puts the caret in the first
+    // post on a wide screen (the web's effect on [open, generation, narrow]).
+    .onChange(of: controller.generation) { _, _ in focusFirstPost() }
+    .onChange(of: theme.composerNarrow) { _, narrow in
+      controller.narrow = narrow
+      focusFirstPost()
+    }
     .onChange(of: controller.asDid) { _, _ in controller.configureAdviser(open: true) }
     .sheet(item: $controller.ask, onDismiss: { if controller.askResolve != nil { controller.answer(nil) } }) { ask in
       ConfirmDialog(ask: ask) { controller.answer($0) }

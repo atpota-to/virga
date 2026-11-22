@@ -150,14 +150,30 @@ struct PostBlock: View {
       foot
     }
     .padding(.bottom, thread ? ComposerMeasure.threadPostSpaceBelow : 0)
-    .overlay(alignment: .leading) {
-      // The line beside the post being written in.
-      if thread && controller.activeIndex == index {
-        Rectangle().fill(theme.accent).frame(width: 2).offset(x: -theme.space3)
-      }
-    }
+    .overlay(alignment: .leading) { sideLine(thread: thread) }
     .accessibilityElement(children: .contain)
     .accessibilityLabel(label)
+  }
+
+  /// The line down the post's side, out in the gutter (`.post-block::before`):
+  /// unseen beside a single post until it's written in; down a thread, a
+  /// quiet line through every post (the last ending at its words); the
+  /// focus ring's colour while the post has the caret.
+  private func sideLine(thread: Bool) -> some View {
+    let focused = controller.editingPostId.map { $0.jsEquals(post.id) } ?? false
+    let colour = focused ? theme.focusRing : thread ? theme.line2 : Color.clear
+    let last = index == total - 1
+    let below: CGFloat = thread ? (last ? ComposerMeasure.threadPostSpaceBelow : 0) : ComposerMeasure.sideLineInset
+    return Capsule()
+      .fill(colour)
+      .frame(width: ComposerMeasure.sideLineWidth)
+      .frame(maxHeight: .infinity)
+      .padding(.top, ComposerMeasure.sideLineInset)
+      .padding(.bottom, below)
+      .offset(x: -(theme.composerToolsInFoot ? ComposerMeasure.phoneSideLineLead : ComposerMeasure.sideLineLead))
+      .animation(theme.motion.control, value: focused)
+      .allowsHitTesting(false)
+      .accessibilityHidden(true)
   }
 
   private var head: some View {
@@ -226,11 +242,20 @@ struct PostBlock: View {
     let codes = ["TOO_MANY_BYTES", "IMAGE_MISSING", "VIDEO_MISSING", "RECORD_UNRESOLVED", "ALT_TOO_LONG"]
     let list = controller.model.problems(now: Date()).filter { $0.postIndex == index && codes.contains($0.code) }
     if !list.isEmpty {
-      VStack(alignment: .leading, spacing: theme.space1) {
+      // `ul.post-problems`: a bulleted list, hung 18 in (role="status").
+      VStack(alignment: .leading, spacing: 0) {
         ForEach(list, id: \.code) { p in
-          Text(p.message).virgaText(.textSm).foregroundStyle(theme.danger)
+          HStack(alignment: .firstTextBaseline, spacing: 0) {
+            Text("•")
+              .virgaText(.textSm)
+              .frame(width: ComposerMeasure.problemsInset)
+              .accessibilityHidden(true)
+            Text(p.message).virgaText(.textSm).fixedSize(horizontal: false, vertical: true)
+          }
         }
       }
+      .foregroundStyle(theme.danger)
+      .composerAnnounces(list.map(\.message).joined(separator: " "))
     }
   }
 
@@ -289,29 +314,50 @@ struct SplitOffer: View {
       count > max && offer ? ThreadEdits.splitTexts(controller.state.posts, post.id, numbering: numbered ? .counter : .off) : nil
     if let parts {
       let first = numbered ? parts.first.flatMap { ThreadSplit.readCounter($0) } : nil
+      // The sentence takes the first line; the box and the buttons share
+      // the next (the buttons at its right), wrapping only when they don't fit.
       Callout(systemImage: ComposerGlyph.split) {
-        VStack(alignment: .leading, spacing: theme.space2) {
+        VStack(alignment: .leading, spacing: ComposerMeasure.splitOfferRowGap) {
           Text(
             "This is \(AppLocale.fmtInt(Double(count - max))) characters over the \(max) limit. As a thread it would be \(AppLocale.fmtInt(Double(parts.count))) posts."
           )
-          Toggle(isOn: Binding(get: { numbered }, set: { numberChoice = $0 })) {
-            Text("Number them") + Text(first.map { " (\($0.number)/\($0.total) and so on)" } ?? "").foregroundColor(theme.muted)
-          }
-          .toggleStyle(.virgaCheck)
-          .disabled(disabled)
-          HStack(spacing: theme.space2) {
-            // An outline: the one ink button in the composer is the one that sends.
-            Button("Split into a thread") { controller.split(post.id, numbered: numbered) }
-              .buttonStyle(.virga(size: .small))
-              .disabled(disabled)
-              .accessibilityIdentifier("split-\(index)")
-            Button("Not now") { controller.dismissSplit() }
-              .buttonStyle(.virga(.ghost, size: .small))
+          ViewThatFits(in: .horizontal) {
+            HStack(alignment: .center, spacing: theme.points(ThemeKit.calloutGap)) {
+              numberBox(numbered: numbered, first: first)
+              Spacer(minLength: 0)
+              actions(numbered: numbered)
+            }
+            VStack(alignment: .leading, spacing: ComposerMeasure.splitOfferRowGap) {
+              numberBox(numbered: numbered, first: first)
+              actions(numbered: numbered)
+            }
           }
         }
       }
       .accessibilityElement(children: .contain)
       .accessibilityLabel("Split this post into a thread")
+    }
+  }
+
+  /// Number them: in --ink-2, small (`.split-offer-number`).
+  private func numberBox(numbered: Bool, first: ThreadCounter?) -> some View {
+    Toggle(isOn: Binding(get: { numbered }, set: { numberChoice = $0 })) {
+      Text("Number them") + Text(first.map { " (\($0.number)/\($0.total) and so on)" } ?? "").foregroundColor(theme.muted)
+    }
+    .toggleStyle(.virgaCheck)
+    .foregroundStyle(theme.ink2)
+    .disabled(disabled)
+  }
+
+  private func actions(numbered: Bool) -> some View {
+    HStack(spacing: ComposerMeasure.calloutActionsGap) {
+      // An outline: the one ink button in the composer is the one that sends.
+      Button("Split into a thread") { controller.split(post.id, numbered: numbered) }
+        .buttonStyle(.virga(size: .small))
+        .disabled(disabled)
+        .accessibilityIdentifier("split-\(index)")
+      Button("Not now") { controller.dismissSplit() }
+        .buttonStyle(.virga(.ghost, size: .small))
     }
   }
 }

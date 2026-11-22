@@ -325,7 +325,9 @@ extension ComposerController {
     guard let plan else { return }
     dispatch(plan.action)
     threadUndo = plan.undo
-    focusPostId = focus
+    // The button pressed goes away with the offer, so the caret goes back
+    // to the post (not on a phone, where it would raise the keys).
+    if !narrow { focusPostId = focus }
   }
 
   var undoable: Bool { threadUndo.map { ThreadEdits.undoStands(state.posts, $0) } ?? false }
@@ -335,7 +337,7 @@ extension ComposerController {
     else { return }
     dispatch(action)
     threadUndo = nil
-    focusPostId = undo["made"]?[0]?["id"]?.stringValue
+    if !narrow { focusPostId = undo["made"]?[0]?["id"]?.stringValue }
   }
 
   func split(_ postId: String, numbered: Bool) {

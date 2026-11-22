@@ -153,12 +153,18 @@ public final class ComposerController {
   var ask: ComposerAsk?
   var threadUndo: JSONValue?
   var activeIndex = 0
+  /// The post whose text has the caret now (`:focus-within`), nil when none.
+  var editingPostId: String?
   var splitDismissed = false
   var postNow = false
   var generation = 0
   var gatesInfo: (did: String, status: String, source: String?, notice: String?)?
   /// The editor that should take the caret, by post id, once it's drawn.
   var focusPostId: String?
+  /// Whether the sheet fills a phone's screen (640 and under), as the sheet
+  /// last drew it: the caret isn't put in a post there unasked, since the
+  /// keyboard would cover what was just opened.
+  @ObservationIgnored var narrow = false
   /// Continue a thread's list: `{ status, items, error }`.
   var continueState: (status: String, items: [JSONValue], error: String) = (status: "idle", items: [], error: "")
   /// What Save as a template starts the editor from.

@@ -17,6 +17,7 @@
 // it over the shortcut's range.
 
 #if canImport(UIKit)
+import CoreText
 import SwiftUI
 import UIKit
 import UniformTypeIdentifiers
@@ -68,12 +69,15 @@ struct PostEditor: View {
     // colours on characters that moved.
     let segments = detected.text == text ? detected.segments : []
     let notes = ComposerEditing.misleadingLinkNotes(.string(text)) + (pasteNote.isEmpty ? [] : [pasteNote])
-    VStack(alignment: .leading, spacing: theme.space2) {
+    let note = notes.joined(separator: " ")
+    VStack(alignment: .leading, spacing: ComposerMeasure.suggestTop) {
       field(text: text, segments: segments)
       if !notes.isEmpty {
-        Text(notes.joined(separator: " "))
+        // role="status": a misleading link, or a paste refused, read out.
+        Text(note)
           .virgaText(.textSm)
           .foregroundStyle(theme.muted)
+          .composerAnnounces(note)
       }
       if let mention, mention.range.query.jsEquals(partial?.query ?? "\u{0}") {
         MentionList(mention: mention) { actor in pick(actor) }
@@ -122,7 +126,16 @@ struct PostEditor: View {
         onSelection: { range in
           controller.selections[postId] = TextSelection(start: range.location, end: range.location + range.length)
         },
-        onFocus: { controller.activeIndex = controller.indexOfPost(postId) },
+        onFocus: {
+          controller.activeIndex = controller.indexOfPost(postId)
+          controller.editingPostId = postId
+        },
+        onBlur: {
+          if controller.editingPostId.map({ $0.jsEquals(postId) }) ?? false { controller.editingPostId = nil }
+          // Who to mention closes as the field loses focus, a beat later so
+          // a press on one of them still lands.
+          DispatchQueue.main.asyncAfter(deadline: .now() + ComposerMeasure.suggestCloseDelay) { mention = nil }
+        },
         onRequestsDone: {
           controller.pendingCaret[postId] = nil
           if controller.focusPostId.map({ $0.jsEquals(postId) }) ?? false { controller.focusPostId = nil }
@@ -204,33 +217,93 @@ struct PostEditor: View {
   }
 }
 
-/// UIPasteboard's items as media.js reads a clipboard: each image as a file
-/// (written to a temporary file, its ref the path), each string as one.
+/// UIPasteboard's items as media.js reads a clipboard: one file per pasted
+/// picture (written to a temporary file, its ref the path), each string as
+/// one. A pasteboard item often holds the same picture under several types
+/// (PNG, JPEG, UIKit's image), where a browser's clipboard has one file:
+/// each item gives one picture, its first of PNG, JPEG, HEIC or GIF, else
+/// its image as PNG.
 enum PasteboardItems {
+  static let preferred: [UTType] = [.png, .jpeg, .heic, .gif]
+
   static func read(_ board: UIPasteboard) -> [PastedItem] {
     var out: [PastedItem] = []
     for item in board.items {
-      for (identifier, value) in item {
-        guard let type = UTType(identifier) else { continue }
-        if type.conforms(to: .image) {
-          let data: Data?
-          if let raw = value as? Data {
-            data = raw
-          } else if let image = value as? UIImage {
-            data = image.pngData()
-          } else {
-            data = nil
-          }
-          let mime = (value is UIImage ? UTType.png : type).preferredMIMEType ?? "image/png"
-          let file = data.flatMap { TemporaryComposerFiles.write($0, mime: mime, name: "pasted") }
-          out.append(PastedItem(kind: "file", type: mime, file: file))
-        } else if type.conforms(to: .text) {
-          out.append(PastedItem(kind: "string", type: "text/plain", file: nil))
-        }
+      if let picture = picture(item) {
+        out.append(picture)
+      } else if item.keys.contains(where: { UTType($0)?.conforms(to: .text) ?? false }) {
+        out.append(PastedItem(kind: "string", type: "text/plain", file: nil))
       }
     }
     return out
   }
+
+  /// The item's one picture, or nil when it holds none.
+  static func picture(_ item: [String: Any]) -> PastedItem? {
+    for type in preferred {
+      if let data = item[type.identifier] as? Data {
+        let mime = type.preferredMIMEType ?? "image/png"
+        return PastedItem(kind: "file", type: mime, file: TemporaryComposerFiles.write(data, mime: mime, name: "pasted"))
+      }
+    }
+    for (identifier, value) in item {
+      guard let type = UTType(identifier), type.conforms(to: .image) else { continue }
+      if let data = value as? Data {
+        let mime = type.preferredMIMEType ?? "image/png"
+        return PastedItem(kind: "file", type: mime, file: TemporaryComposerFiles.write(data, mime: mime, name: "pasted"))
+      }
+      if let image = value as? UIImage {
+        let mime = UTType.png.preferredMIMEType ?? "image/png"
+        return PastedItem(kind: "file", type: mime, file: image.pngData().flatMap { TemporaryComposerFiles.write($0, mime: mime, name: "pasted") })
+      }
+    }
+    return nil
+  }
+}
+
+/// `.suggest-pop`: on the surface, with a hairline edge and the medium
+/// shadow, its list 6 in from the edge.
+struct SuggestPopStyle: ViewModifier {
+  @Environment(\.virgaTheme) private var theme
+
+  func body(content: Content) -> some View {
+    content
+      .background(theme.surface, in: RoundedRectangle(cornerRadius: theme.radiusLg))
+      .clipShape(RoundedRectangle(cornerRadius: theme.radiusLg))
+      .overlay(RoundedRectangle(cornerRadius: theme.radiusLg).strokeBorder(theme.line))
+      .virgaShadow(theme.shadow(theme.tokens.shadowMd))
+  }
+}
+
+/// `.suggest-item`: a row of a list of suggestions, 40 tall at least, on the radius.
+struct SuggestRowStyle: ViewModifier {
+  @Environment(\.virgaTheme) private var theme
+
+  func body(content: Content) -> some View {
+    content
+      .padding(ComposerMeasure.suggestItemPadding)
+      .frame(maxWidth: .infinity, minHeight: ComposerMeasure.suggestItemHeight, alignment: .leading)
+      .contentShape(RoundedRectangle(cornerRadius: theme.radius))
+  }
+}
+
+/// `.suggest-status`: why there's nothing to suggest (role="status").
+struct SuggestStatus: View {
+  @Environment(\.virgaTheme) private var theme
+  let text: String
+
+  var body: some View {
+    Text(text)
+      .virgaText(.textSm)
+      .foregroundStyle(theme.muted)
+      .padding(ComposerMeasure.suggestStatusPadding)
+      .composerAnnounces(text)
+  }
+}
+
+extension View {
+  func suggestPop() -> some View { modifier(SuggestPopStyle()) }
+  func suggestRow() -> some View { modifier(SuggestRowStyle()) }
 }
 
 /// `.suggest-pop`: who the mention might be, and its status line.
@@ -241,18 +314,19 @@ struct MentionList: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
-      ForEach(Array(mention.items.enumerated()), id: \.offset) { _, actor in
-        row(actor)
-      }
-      if mention.items.isEmpty {
-        Text(status)
-          .virgaText(.textSm)
-          .foregroundStyle(theme.muted)
-          .padding(theme.space3)
+      if !mention.items.isEmpty {
+        VStack(alignment: .leading, spacing: 0) {
+          ForEach(Array(mention.items.enumerated()), id: \.offset) { _, actor in
+            row(actor)
+          }
+        }
+        .padding(ComposerMeasure.suggestListPadding)
+      } else {
+        SuggestStatus(text: status)
       }
     }
-    .background(theme.surface, in: RoundedRectangle(cornerRadius: theme.radiusLg))
-    .overlay(RoundedRectangle(cornerRadius: theme.radiusLg).strokeBorder(theme.line))
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .suggestPop()
     .accessibilityElement(children: .contain)
     .accessibilityLabel("Accounts to mention")
   }
@@ -271,17 +345,17 @@ struct MentionList: View {
     return Button {
       pick(actor)
     } label: {
-      HStack(spacing: theme.space2) {
+      HStack(spacing: ComposerMeasure.suggestItemGap) {
         Avatar(src: actor["avatar"]?.stringValue, name: name, size: .small)
         VStack(alignment: .leading, spacing: 0) {
-          Text(name).virgaText(.textBase, weight: VirgaWeight.medium).foregroundStyle(theme.ink)
-          Text("@\(handle)").virgaText(.textSm).foregroundStyle(theme.muted)
+          Text(name).virgaText(.textBase, weight: VirgaWeight.medium, lineHeight: ComposerMeasure.suggestLineHeight)
+            .foregroundStyle(theme.ink).lineLimit(1)
+          Text("@\(handle)").virgaText(.textSm, lineHeight: ComposerMeasure.suggestLineHeight)
+            .foregroundStyle(theme.muted).lineLimit(1)
         }
         Spacer(minLength: 0)
       }
-      .padding(.horizontal, theme.space3)
-      .padding(.vertical, theme.space2)
-      .contentShape(Rectangle())
+      .suggestRow()
     }
     .buttonStyle(.plain)
     .accessibilityLabel("\(name), @\(handle)")
@@ -289,7 +363,7 @@ struct MentionList: View {
 }
 
 /// `.suggest-pop` for "/": the templates the shortcut could mean, or why
-/// there are none.
+/// there are none, and Open the library at its foot.
 struct SlashList: View {
   @Environment(\.virgaTheme) private var theme
   let controller: ComposerController
@@ -304,29 +378,30 @@ struct SlashList: View {
       templates, parentText: controller.state.reply?.text ?? "", usage: controller.templateUsage(), replying: replying)
     let matches = PostTemplates.matchShortcut(ranked, slash.query, replying: replying, limit: 5)
     VStack(alignment: .leading, spacing: 0) {
-      ForEach(Array(matches.enumerated()), id: \.offset) { _, template in
-        row(template)
-      }
-      if matches.isEmpty {
-        Text(status(templates))
-          .virgaText(.textSm)
-          .foregroundStyle(theme.muted)
-          .padding(theme.space3)
+      if !matches.isEmpty {
+        VStack(alignment: .leading, spacing: 0) {
+          ForEach(Array(matches.enumerated()), id: \.offset) { _, template in
+            row(template)
+          }
+        }
+        .padding(ComposerMeasure.suggestListPadding)
+      } else {
+        SuggestStatus(text: status(templates))
       }
       Rectangle().fill(theme.line).frame(height: 1)
       Button(action: onOpenLibrary) {
         Label("Open the library", systemImage: ComposerGlyph.library)
           .virgaText(.textSm, weight: VirgaWeight.medium)
           .foregroundStyle(theme.ink)
-          .padding(.horizontal, theme.space3)
-          .frame(maxWidth: .infinity, minHeight: Measure.Touch.target, alignment: .leading)
+          .padding(ComposerMeasure.suggestFootPadding)
+          .frame(maxWidth: .infinity, minHeight: ComposerMeasure.suggestFootHeight, alignment: .leading)
           .contentShape(Rectangle())
       }
       .buttonStyle(.plain)
       .accessibilityIdentifier("slash-open-library")
     }
-    .background(theme.surface, in: RoundedRectangle(cornerRadius: theme.radiusLg))
-    .overlay(RoundedRectangle(cornerRadius: theme.radiusLg).strokeBorder(theme.line))
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .suggestPop()
     .accessibilityElement(children: .contain)
     .accessibilityLabel("Templates")
     .accessibilityIdentifier("slash-templates")
@@ -344,16 +419,14 @@ struct SlashList: View {
     return Button {
       pick(template)
     } label: {
-      HStack(spacing: theme.space2) {
-        Text(name).virgaText(.textBase, weight: VirgaWeight.medium).foregroundStyle(theme.ink)
+      HStack(spacing: ComposerMeasure.suggestItemGap) {
+        Text(name).virgaText(.textBase, weight: VirgaWeight.medium).foregroundStyle(theme.ink).lineLimit(1)
         if !template.shortcut.isEmpty {
-          Text("/\(template.shortcut)").virgaText(.textSm).foregroundStyle(theme.muted)
+          Text("/\(template.shortcut)").virgaText(.textSm).foregroundStyle(theme.muted).lineLimit(1)
         }
         Spacer(minLength: 0)
       }
-      .padding(.horizontal, theme.space3)
-      .frame(minHeight: Measure.Touch.target)
-      .contentShape(Rectangle())
+      .suggestRow()
     }
     .buttonStyle(.plain)
     .accessibilityLabel(template.shortcut.isEmpty ? name : "\(name), /\(template.shortcut)")
@@ -373,16 +446,37 @@ struct EditorStyle {
   @MainActor
   init(theme: VirgaTheme) {
     let size = theme.scaled(ComposerMeasure.editorSize)
-    if theme.hasTypeface, let face = VirgaTypeface.face(size: size, weight: ComposerMeasure.editorWeight) {
-      font = unsafeBitCast(face, to: UIFont.self)
+    if theme.hasTypeface, let face = Self.face(size: size, weight: ComposerMeasure.editorWeight) {
+      font = face
     } else {
       font = UIFont.systemFont(ofSize: size, weight: .medium)
     }
     ink = UIColor(theme.ink)
     faint = UIColor(theme.faint)
-    tint = UIColor(theme.accent)
+    // `caret-color: var(--ink)`. A text view's selection follows its tint
+    // too, so the selection is ink where the web's is the accent at 28%.
+    tint = UIColor(theme.ink)
     lineHeight = size * ComposerMeasure.editorLineHeight
     kern = size * ComposerMeasure.editorTracking
+  }
+
+  @MainActor private static var faces: [String: UIFont] = [:]
+
+  /// The face in its own figures (`font-variant-numeric: normal`): a post's
+  /// words aren't a table, so unlike the rest of Virga they aren't tabular.
+  @MainActor
+  static func face(size: CGFloat, weight: Double) -> UIFont? {
+    guard VirgaTypeface.isRegistered else { return nil }
+    let key = "\(size)|\(weight)"
+    if let held = faces[key] { return held }
+    let attributes: [String: Any] = [
+      kCTFontNameAttribute as String: VirgaTypeface.postScriptName,
+      kCTFontVariationAttribute as String: [NSNumber(value: VirgaTypeface.weightAxis): NSNumber(value: weight)],
+    ]
+    let descriptor = CTFontDescriptorCreateWithAttributes(attributes as CFDictionary)
+    let made = unsafeBitCast(CTFontCreateWithFontDescriptor(descriptor, size, nil), to: UIFont.self)
+    faces[key] = made
+    return made
   }
 
   var base: [NSAttributedString.Key: Any] {
@@ -465,6 +559,8 @@ struct HighlightedTextView: UIViewRepresentable {
   /// The whole selection, as it changes (the controller's `selectionOf`).
   var onSelection: (NSRange) -> Void
   var onFocus: () -> Void
+  /// The field lost focus (the web's blur).
+  var onBlur: () -> Void
   var onRequestsDone: () -> Void
   var onPaste: (NSRange) -> Bool
   var onSend: () -> Void
@@ -553,6 +649,10 @@ struct HighlightedTextView: UIViewRepresentable {
 
     func textViewDidBeginEditing(_ textView: UITextView) {
       parent.onFocus()
+    }
+
+    func textViewDidEndEditing(_ textView: UITextView) {
+      parent.onBlur()
     }
   }
 }
