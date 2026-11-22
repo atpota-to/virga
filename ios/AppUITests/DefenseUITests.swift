@@ -95,13 +95,22 @@ final class DefenseUITests: XCTestCase {
     // On a part's front page the phone's app bar is in the page and scrolls
     // away with it (as `.appbar` on the web): back to the top for Search.
     var swipes = 0
-    while search.frame.minY < 0 && swipes < 6 {
+    while (search.frame.minY < 0 || !search.isHittable) && swipes < 6 {
       app.swipeDown()
       swipes += 1
     }
+    // As go() does in the other tests: a tap while the page still settles
+    // from the swipe is dropped (run 80, iPhone), so wait until Search can
+    // be pressed, and press once more if the palette isn't coming.
+    let pressable = expectation(for: NSPredicate(format: "isHittable == true"), evaluatedWith: search)
+    wait(for: [pressable], timeout: 10)
     search.tap()
     let field = element(app, "palette-field")
+    if !field.waitForExistence(timeout: 3), search.isHittable { search.tap() }
     XCTAssertTrue(field.waitForExistence(timeout: 5), "the palette didn't open")
+    // The field can exist before it has the keyboard (PostingPagesUITests,
+    // 5cc4d4b): a tap gives it the keyboard, and changes nothing otherwise.
+    field.tap()
     field.typeText(title)
     let option = element(app, "palette-go:\(path)")
     XCTAssertTrue(option.waitForExistence(timeout: 5), "no \(title) in the palette")
