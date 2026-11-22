@@ -65,6 +65,10 @@ extension Measure {
     public static let inlineFieldGap: CGFloat = 8
     /// `.field-inline .input { padding-left: 10px }`
     public static let inlineFieldPadding: CGFloat = 10
+    /// `@media (max-width: 640px)`: a table with many columns is set as a list (`.table--stack`).
+    public static let stackedTableMax: CGFloat = 640
+    /// `.col-check { width: 36px }`: the tick box's column, its padding in it.
+    public static let checkColumn: CGFloat = 36
     /// `.table-person { gap: 12px }`
     public static let personGap: CGFloat = 12
     /// `.activity { gap: 7px }`

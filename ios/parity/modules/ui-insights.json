@@ -186,11 +186,11 @@
       "synced": "6187f4fa5818"
     },
     "src/tools/FollowCleanup.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Tools/FollowCleanupTool.swift"
       ],
-      "note": "Every follow once (the earliest record), with its interactions (all, and the last year), whether they follow you, and the activity on its card; the header's line; the callout before the follows are read; the activity check (ArchiveModel.checkActivity through the session's network, its progress with Stop, which cancels it, then the toast), Quiet after 30/90/180/365 days; the four filter figures; the line over the table (the sort, Show/Hide kept, Export 'follows'; or the count selected with Clear, Keep, don’t suggest and Unfollow n; or Unfollowing n of m…); Select all shown; each row (its tick box, face, name struck through once unfollowed, handle and Kept, Unfollow or Undo, its error, and the meta line: the activity with its dot, followed, follows you, interactions); Show 50 more; the caption; and the confirm dialog. The kept list is KeepListModel 'cleanup'. Not here: the table's columns from 641 wide (every row is set as the web's phone sets it).",
+      "note": "Every follow once (the earliest record), with its interactions (all, and the last year), whether they follow you, and the activity on its card; the header's line; the callout before the follows are read; the activity check (ArchiveModel.checkActivity through the session's network, its progress with Stop, which cancels it, then the toast), Quiet after 30/90/180/365 days; the four filter figures; the line over the table (the sort, Show/Hide kept, Export 'follows'; or the count selected with Clear, Keep, don’t suggest and Unfollow n; or Unfollowing n of m…); the table from 641 wide (CleanupTable: the tick box with Select every account shown in the head, the account taking what the other columns leave with its name and handle ending in an ellipsis, Follows you, Last active with its dot, Interactions, Followed, and Unfollow or Undo with its error; a ticked row tinted past the sides; an unfollowed row muted, its name struck through), and narrower as the web's phone sets it (Select all shown; each row's tick box, face, name, handle and Kept, its button and error, and the meta line: the activity with its dot, followed, follows you, interactions); while rows are ticked each row's own button steps back, keeping its place; Show 50 more; the caption; and the confirm dialog. The kept list is KeepListModel 'cleanup'.",
       "synced": "186dcedd56f3"
     },
     "src/tools/Identity.jsx": {
@@ -202,20 +202,20 @@
       "synced": "05e789a0d6ed"
     },
     "src/tools/InteractionLookup.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Tools/InteractionLookupTool.swift",
         "ios/VirgaKit/Sources/VirgaUI/Tools/InteractionChosen.swift"
       ],
-      "note": "The chosen account in the address (?who= on the navigator, cleared when the page is left), an address that names a handle looked up through Atproto.getProfile on the session's transport (missing or failed in a warn callout); PersonSearch (matchPeople's seven, the lookup option for a whole handle or DID, 'Looking up @…', the not-found and couldn’t-reach lines, the hint, Return taking the first); StartingPoint with its legend, PairCount and Show 12 more; Chosen: the person (Open on Bluesky, Choose someone else, the three facts), By kind, each way (bars to the largest, the sum, first and latest), Interactions per month (both ways, the line under the chart and its table, the caption), the posts they engaged with (or the line why not) and your replies and quotes, Every interaction (Direction and Kind, Export as one file or a choice, each event's date, glyph, phrase, words and its post), and How this is counted. Not here: the suggestions float over the page on the web and open under the field here, and the ↑/↓/Escape keys of the combobox.",
+      "note": "The chosen account in the address (?who= on the navigator, cleared when the page is left), an address that names a handle looked up through Atproto.getProfile on the session's transport (missing or failed in a warn callout); PersonSearch (matchPeople's seven floating over the page 6 under the field, the lookup option for a whole handle or DID, 'Looking up @…', the not-found and couldn’t-reach lines, the hint; on a hardware keyboard ↑ and ↓ open the suggestions and move through them, round at the ends, the pointer's row becoming the active one, Return taking it and Escape closing them, the active one read as the field's value); StartingPoint with its legend, PairCount and Show 12 more; Chosen: the person (Open on Bluesky, Choose someone else, the three facts), By kind, each way (bars to the largest, the sum, first and latest), Interactions per month (both ways, the line under the chart and its table, the caption), the posts they engaged with (or the line why not) and your replies and quotes, Every interaction (Direction and Kind, Export as one file or a choice, each event's date, glyph, phrase, words and its post), and How this is counted.",
       "synced": "6cd82245b3d9"
     },
     "src/tools/ListsYoureOn.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Tools/ListsTool.swift"
       ],
-      "note": "Before lists are read: the sentence and Sync now; none: No lists here. Then the three filter figures (Every list, Moderation lists with their subscribers, Curation lists), the count with Export ('lists'), and each list as the web's phone sets the table's row, at every width: its name (or Untitled list) as the way to it on Bluesky with its kind at the right (Moderation a step louder), and a meta line of by @owner, its subscribers (moderation lists only) and when you were added, a cell with nothing to say left out (an owner whose name hasn't been read is left out, as on a phone). Not here: the table's columns from 641 wide, and the owner's 'Unknown account' with the DID as its title.",
+      "note": "Before lists are read: the sentence and Sync now; none: No lists here. Then the three filter figures (Every list, Moderation lists with their subscribers, Curation lists), the count with Export ('lists'), and the lists: from 641 wide a table (ListsTable: List, the way to it on Bluesky, or Untitled list; Made by, @owner or Unknown account with the DID as its pointer's tip and its hint; Kind, Moderation a step louder; Subscribers, moderation lists only, or —; You were added, or —); narrower as the web's phone sets the row: the name with its kind at the right and a meta line of by @owner, its subscribers and when you were added, a cell with nothing to say left out (an owner whose name hasn't been read is left out, as on a phone).",
       "synced": "ad96bd914617"
     },
     "src/tools/ToolPage.jsx": {
