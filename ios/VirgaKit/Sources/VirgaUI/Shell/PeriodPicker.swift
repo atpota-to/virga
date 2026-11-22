@@ -4,9 +4,8 @@
 // The window every chart answers for, kept across visits (the period
 // preference): one of the presets, or a range of dates. The picker sits in
 // a page's header: the presets and Custom, which opens a dialog of two days,
-// checked as they are picked. Beside the sidebar Custom says its range once
-// there is one; on a phone the key is its calendar alone, its words kept
-// as its name. The days are the active time zone's (Periods.dayKey).
+// checked as they are picked. Custom says its range once there is one;
+// from 560 down the key is its calendar alone, its words kept as its name. The days are the active time zone's (Periods.dayKey).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -102,7 +101,8 @@ public struct PeriodPicker: View {
         SegmentedOption(
           Self.customKey, custom ? period.label : "Custom", systemImage: Glyph.calendarRange,
           accessibilityLabel: custom ? "Custom range: \(period.label). Change the dates" : "Custom range of dates",
-          iconOnly: !theme.hasSidebar))
+          // From 560 down only (shell.css): the calendar alone, its words its name.
+          iconOnly: theme.isPhone))
     }
     return out
   }

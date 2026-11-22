@@ -108,8 +108,8 @@ public final class ShellDashboards {
     last = id
   }
 
-  /// Where the Dashboards tab and the sidebar's word go: the one last looked
-  /// at, else the first.
+  /// Where the tab bar's Dashboards goes: the one last looked at, else the
+  /// first. (The sidebar's word goes to the first, Sidebar.jsx's.)
   public var homeId: String? {
     if let last, dashboard(last) != nil { return last }
     return dashboards.first?.id

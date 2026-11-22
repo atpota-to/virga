@@ -180,11 +180,14 @@ public struct Sidebar: View {
     var dashSubs: [NavSub] = dashboards.dashboards.map { d in
       NavSub(id: d.id, label: d.name, to: "/dashboard/\(d.id)", current: Optional(d.id).jsEquals(shown))
     }
+    // The word goes to the dashboard shown, else the first (the tab bar's
+    // goes to the last looked at).
+    let named = shown.flatMap { $0.isEmpty ? nil : $0 }
     let create: @MainActor () -> Void = { [actions] in actions?.creatingDashboard = true }
     dashSubs.append(NavSub(id: "new", label: "New dashboard", to: "", current: false, action: create))
     out.append(
       Part(
-        id: "dashboard", label: "Dashboards", systemImage: Glyph.dashboards, to: "/dashboard/\(shown ?? dashboards.homeId ?? "")",
+        id: "dashboard", label: "Dashboards", systemImage: Glyph.dashboards, to: "/dashboard/\(named ?? dashboards.dashboards.first?.id ?? "")",
         open: route.section == .dashboard, current: false, subs: dashSubs))
     out.append(
       Part(

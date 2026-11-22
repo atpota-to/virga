@@ -87,10 +87,13 @@ struct FirstRunPage: View {
 
   private func row(_ glyph: String, _ words: Text) -> some View {
     HStack(alignment: .top, spacing: Measure.FirstRun.itemGap) {
+      // Every glyph fits the same 16-point box, as the web's icons do (the
+      // two people and the cloud are wider than the rest at a font size).
       Image(systemName: glyph)
-        .font(.system(size: Measure.FirstRun.icon))
+        .resizable()
+        .scaledToFit()
         .foregroundStyle(theme.ink)
-        .frame(width: Measure.FirstRun.icon)
+        .frame(width: Measure.FirstRun.icon, height: Measure.FirstRun.icon)
         .padding(.top, Measure.FirstRun.iconSpaceAbove)
         .accessibilityHidden(true)
       words

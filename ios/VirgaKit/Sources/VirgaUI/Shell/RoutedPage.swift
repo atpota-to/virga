@@ -138,9 +138,7 @@ public struct RoutedPage: View {
       if let report = ReportsRegistry.reportByKey[key] {
         ReportPage(report: report)
       } else {
-        VirgaPage(PageHeaderModel(title: "There’s no report called “\(key)”", crumbs: [Crumb("Reports", to: "/reports")])) {
-          EmptyView()
-        }
+        NoReportPage(key: key)
       }
     } else {
       ReportsIndex()
@@ -239,6 +237,20 @@ struct UnbuiltToolPage: View {
       access: tool.map { [$0.access] } ?? [], crumbs: [Crumb("Tools", to: "/tools")])
     return VirgaPage(header) {
       Button("See every tool") { navigate("/tools") }
+        .buttonStyle(.virga)
+    }
+  }
+}
+
+/// A report address that names none: its header, and the one way on
+/// (ReportPage.jsx's empty block).
+struct NoReportPage: View {
+  @Environment(\.navigate) private var navigate
+  let key: String
+
+  var body: some View {
+    VirgaPage(PageHeaderModel(title: "There’s no report called “\(key)”", crumbs: [Crumb("Reports", to: "/reports")])) {
+      Button("See every report") { navigate("/reports") }
         .buttonStyle(.virga)
     }
   }
