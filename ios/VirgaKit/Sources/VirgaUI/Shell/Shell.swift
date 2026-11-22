@@ -25,7 +25,9 @@
 // of the page (a phone's, and beside the folded rail) isn't drawn.
 //
 // The command palette opens from Search (the sidebar's, the app bar's) and
-// from ⌘K on a hardware keyboard; toasts show at the foot of the window.
+// from ⌘K on a hardware keyboard. Toasts are the app's one ToastCenter, the
+// composer host's (above the account, as App.jsx's ToastProvider is), shown
+// at the foot of the window.
 // New dashboard's dialog is the shell's (from the sidebar and the palette):
 // a dashboard made empty opens with ?edit=1, for customizing. The palette's
 // Customize this dashboard puts ?edit=1 in the address and makes the
@@ -69,7 +71,6 @@ public struct ShellView: View {
   @State private var palette = PaletteState()
   /// The sky beside the sidebar, moved by the page's scroll.
   @State private var deskSky = SkyScroll()
-  @State private var toasts = ToastCenter()
   @State private var actions = ShellActions()
 
   /// - Parameters:
@@ -96,7 +97,6 @@ public struct ShellView: View {
     Group {
       if desk { side } else { stack }
     }
-    .overlay { ToastStack(center: toasts).padding(.bottom, desk ? 0 : theme.tabbarH) }
     .commandPalette(palette)
     .background {
       // ⌘K, from anywhere (a hardware keyboard), as the web's shortcut.
@@ -112,7 +112,6 @@ public struct ShellView: View {
       NewDashboardDialog { actions.creatingDashboard = false }
     }
     .environment(palette)
-    .environment(toasts)
     .environment(actions)
     .environment(\.showsSyncBanner, (!desk || collapsed) && !firstRun)
     .environment(\.virgaTheme, ShellFigureSize.declared(in: theme, sidebar: desk ? (collapsed ? .rail : .sidebar) : .phone))
@@ -120,6 +119,29 @@ public struct ShellView: View {
     .environment(accountDialogs)
     .environment(dashboards)
     .onChange(of: navigator.path, initial: true) { _, _ in followDashboard() }
+    .onChange(of: archive?.syncError) { _, error in announceSyncError(error) }
+  }
+
+  /// The web's role="alert" lines about a sync that failed, read out once
+  /// when it fails: the first build's page says the error; Settings › Data
+  /// says "The last sync had problems." and the error; elsewhere the strip
+  /// (a phone's, and beside the rail) says that line alone. Beside the open
+  /// sidebar, whose card has no alert, nothing is read.
+  private func announceSyncError(_ error: String?) {
+    guard let error, !error.isEmpty else { return }
+    let route = navigator.route
+    let line = "The last sync had problems."
+    let words: String
+    if firstRun {
+      words = error
+    } else if route.section == .settings && route.page == "data" {
+      words = "\(line) \(error)"
+    } else if !desk || collapsed {
+      words = line
+    } else {
+      return
+    }
+    UIAccessibility.post(notification: .announcement, argument: words)
   }
 
   // MARK: Phone

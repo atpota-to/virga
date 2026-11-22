@@ -128,7 +128,7 @@ public struct Sidebar: View {
       .buttonStyle(.virga(.primary, icon: true))
       .accessibilityLabel("New post")
       .accessibilityIdentifier("sidebar-new-post")
-      PaletteButton()
+      PaletteButton(glyph: Measure.Palette.railIcon)
       SidebarScroll {
         VStack(spacing: Measure.Sidebar.railNavGap) {
           ForEach(sections) { section in
@@ -153,7 +153,10 @@ public struct Sidebar: View {
     return Button {
       preferences.setPref(\.sidebar, collapsed ? .expanded : .collapsed)
     } label: {
+      // PanelLeftClose at 16 open, PanelLeftOpen at 18 on the rail; iOS's
+      // own sidebar button is the one glyph either way.
       Image(systemName: Glyph.foldSidebar)
+        .font(.system(size: collapsed ? Measure.Sidebar.railFoldIcon : Measure.Sidebar.foldIcon))
     }
     .buttonStyle(.virga(.ghost, size: collapsed ? .medium : .small, icon: true))
     .accessibilityLabel(label)
@@ -387,5 +390,8 @@ extension Measure.Sidebar {
   static let scrollFade: CGFloat = 24
   /// `@media (min-width: 900px) and (max-height: 860px) { .sidebar { gap: 16px } }`
   static let shortGap: CGFloat = 16
+  /// The fold button's glyph: 16 open, 18 on the rail (Sidebar.jsx).
+  static let foldIcon: CGFloat = 16
+  static let railFoldIcon: CGFloat = 18
 }
 #endif

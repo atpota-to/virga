@@ -79,6 +79,7 @@ public final class ComposerHost {
 /// The host's sheet, its toasts and its autosave flush, over `content`.
 struct ComposerHostModifier: ViewModifier {
   @Environment(\.virgaTheme) private var theme
+  @Environment(\.horizontalSizeClass) private var sizeClass
   @Environment(\.scenePhase) private var scenePhase
   @Environment(AppModel.self) private var app
   @Environment(SessionModel.self) private var session
@@ -87,8 +88,14 @@ struct ComposerHostModifier: ViewModifier {
   func body(content: Content) -> some View {
     content
       .environment(host)
+      // The app's one ToastCenter (App.jsx's ToastProvider, above the
+      // account), so the shell's toasts and the composer's share a column
+      // and outlive a switch of account.
+      .environment(host.toasts)
       .overlay {
-        ToastStack(center: host.toasts).padding(.bottom, theme.hasSidebar ? 0 : theme.tabbarH)
+        // Over a phone's tab bar (the shell's: under 900, or a compact width).
+        let desk = theme.hasSidebar && sizeClass != .compact
+        ToastStack(center: host.toasts).padding(.bottom, desk ? 0 : theme.tabbarH)
       }
       .sheet(isPresented: sheetBinding) {
         if let controller = host.controller {

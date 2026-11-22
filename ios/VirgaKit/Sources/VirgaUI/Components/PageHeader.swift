@@ -188,9 +188,15 @@ public struct PageHeader: View {
     HStack(spacing: Measure.PageHeader.gap) {
       ForEach(Array(model.crumbs.enumerated()), id: \.offset) { index, crumb in
         if let to = crumb.to {
-          Button(crumb.label) { navigate(to) }
-            .buttonStyle(.plain)
-            .accessibilityAddTraits(.isLink)
+          Button {
+            navigate(to)
+          } label: {
+            // Pressed through 44 points (DESIGN.md's Touch), its look unchanged.
+            Text(crumb.label)
+              .touchReach(horizontal: 0, vertical: max(0, (Measure.Touch.target - theme.textSm * CGFloat(ThemeKit.bodyLineHeight)) / 2))
+          }
+          .buttonStyle(.plain)
+          .accessibilityAddTraits(.isLink)
         } else {
           Text(crumb.label)
         }
