@@ -311,6 +311,13 @@ struct HubPostCounts: View {
 /// and the network the session reads through.
 @MainActor
 enum PostingPages {
+  /// `a === b` for the ids a page compares (strings by code unit).
+  static func sameValue(_ a: JSONValue?, _ b: JSONValue?) -> Bool {
+    if case .string(let x)? = a, case .string(let y)? = b { return x.jsEquals(y) }
+    if case .number(let x)? = a, case .number(let y)? = b { return x == y }
+    return false
+  }
+
   /// `postingDeviceId()`.
   static func deviceId(_ app: AppModel) -> String? {
     Drafts.postingDeviceId(app.stores.keyValue)
@@ -320,6 +327,25 @@ enum PostingPages {
   /// them (read once; a page that changes them has its own model).
   static func settings(_ app: AppModel, _ did: String?) -> PostingSettings {
     PostingSettingsStore.readPostingSettings(did, store: app.stores.keyValue, language: Locale.preferredLanguages.first.map(JSONValue.string))
+  }
+
+  /// What publishing needs besides the account: the composer's temporary
+  /// files, ImageIO and the session's network.
+  static func media(_ app: AppModel) -> PublishMedia {
+    PublishMedia(
+      files: TemporaryComposerFiles(), encoder: ImageIOEncoder(), transport: app.archiveEnvironment.transport,
+      clock: app.archiveEnvironment.clock)
+  }
+
+  /// This device's draft media store for `did` (the web's IndexedDB store).
+  static func draftMedia(_ app: AppModel, _ did: String) -> any DraftMediaStore {
+    DraftMedia.openDraftMedia(did, storage: DraftMediaStorage(store: app.stores.files, files: TemporaryComposerFiles()))
+  }
+
+  /// `targetFor(did)` as publish.js takes it.
+  static func target(_ app: AppModel, _ did: String) async throws -> PublishTarget {
+    let target = try await app.session.targetFor(did)
+    return PublishTarget(did: target.did, agent: target.agent, pdsUrl: target.pdsUrl)
   }
 
   /// The archive's posts as rows (`archive.posts`), when it is `did`'s.
