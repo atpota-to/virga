@@ -61,6 +61,19 @@ final class DefenseUITests: XCTestCase {
     }
   }
 
+  /// Swipes the page up until all of `target` is on the screen, clear of its
+  /// bottom edge, for a field about to be typed in: a field counts as
+  /// hittable with a sliver of it showing, and a tap on that sliver at the
+  /// iPad's bottom edge doesn't focus it (as VirgaUITests' chart note).
+  private func scrollWhollyInto(_ app: XCUIApplication, _ target: XCUIElement) {
+    let bottom = app.windows.firstMatch.frame.maxY - 120
+    var tries = 0
+    while (!target.isHittable || target.frame.maxY > bottom) && tries < 8 {
+      app.swipeUp()
+      tries += 1
+    }
+  }
+
   private func buildTheArchive(_ app: XCUIApplication) {
     XCTAssertTrue(element(app, "first-run-title").waitForExistence(timeout: 15), "no first build's page")
     element(app, "first-run-build").tap()
@@ -181,7 +194,7 @@ final class DefenseUITests: XCTestCase {
     }
     let name = element(app, "defense-list-name")
     if name.exists {
-      scrollTo(app, name)
+      scrollWhollyInto(app, name)
       name.tap()
       name.typeText("Pile-ons")
     }
