@@ -119,7 +119,10 @@ func sortedByJSON(_ list: JSONValue?) -> JSONValue {
       }
       let uploads = (c.input["state"]?["posts"]?.arrayValue ?? []).reduce(0) { $0 + ($1["images"]?.arrayValue?.count ?? 0) }
       checkReplay(c, sent: transport.requests, result: result, waits: timers.waits, ordered: uploads <= 1)
-      checkPart(sortedByJSON(.array(events.withLock { $0 })), sortedByJSON(c.output["events"]), c, "events")
+      // Strict about nulls: an event's member the web leaves undefined is absent, one it sets to null is null.
+      let d = Parity.diff(
+        sortedByJSON(.array(events.withLock { $0 })), sortedByJSON(c.output["events"]), path: "events", strictNulls: true)
+      #expect(d == nil, "\(c) events: \(d ?? "")")
       checkPart(.array(await encoder.calls), c.output["calls"] ?? [], c, "calls")
     }
   }

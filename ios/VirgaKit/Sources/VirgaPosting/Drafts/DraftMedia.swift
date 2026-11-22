@@ -327,8 +327,12 @@ public enum DraftMedia {
     return out
   }
 
-  /// `{ ...item, ...patch }` at `at`, in a copy of the state.
-  static func withItem(_ state: JSONValue, _ at: At, _ patch: [String: JSONValue]) -> JSONValue {
+  /// `{ ...item, ...patch }` at `at`, in a copy of the state. `undefined`
+  /// names the patch's members the web sets to undefined, which JSON leaves
+  /// out, so the item's own go too.
+  static func withItem(_ state: JSONValue, _ at: At, _ patch: [String: JSONValue], undefined: [String] = [])
+    -> JSONValue
+  {
     var out = state
     var posts = ComposerJS.list(state["posts"])
     guard posts.indices.contains(at.postIndex) else { return state }
@@ -336,12 +340,14 @@ public enum DraftMedia {
     if at.kind == "video" {
       var video = ComposerJS.spread(post["video"])
       for (key, value) in patch { video[key] = value }
+      for key in undefined { video[key] = nil }
       post = .object(ComposerJS.spread(post).merging(["video": .object(video)]) { $1 })
     } else {
       var images = ComposerJS.list(post["images"])
       if let index = at.imageIndex, images.indices.contains(index) {
         var image = ComposerJS.spread(images[index])
         for (key, value) in patch { image[key] = value }
+        for key in undefined { image[key] = nil }
         images[index] = .object(image)
       }
       post = .object(ComposerJS.spread(post).merging(["images": .array(images)]) { $1 })
@@ -430,7 +436,10 @@ public enum DraftMedia {
         continue
       }
       var patch: [String: JSONValue] = ["file": file, "mime": entry.type.truthy ?? item["mime"].truthy ?? ""]
-      if let size = entry.size.nonNull ?? file["size"] { patch["size"] = size }
+      // `size: entry.size ?? entry.file.size`: undefined when the file has
+      // none either, which leaves the item without its own.
+      let size = entry.size.nonNull ?? file["size"]
+      if let size { patch["size"] = size }
       if at.kind == "image", !(item["previewUrl"]?.isTruthy ?? false), let makePreviewUrl {
         do {
           let url = try makePreviewUrl(file)
@@ -439,7 +448,7 @@ public enum DraftMedia {
           // No preview; the composer shows the file's name.
         }
       }
-      next = withItem(next, at, patch)
+      next = withItem(next, at, patch, undefined: size == nil ? ["size"] : [])
     }
     return Loaded(state: next, missing: missing)
   }

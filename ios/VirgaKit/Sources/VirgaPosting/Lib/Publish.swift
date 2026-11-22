@@ -349,10 +349,13 @@ public enum Publish {
           if isAbort(error) { throw error }
           throw uploadFailure(error, "An image couldn’t be uploaded")
         }
-        report([
-          "phase": "uploaded", "kind": "image", "postIndex": .number(Double(item.postIndex)),
-          "id": image["id"] ?? .null, "blob": blob, "blobDid": .string(target.did),
-        ])
+        var event: JSONValue = [
+          "phase": "uploaded", "kind": "image", "postIndex": .number(Double(item.postIndex)), "blob": blob,
+          "blobDid": .string(target.did),
+        ]
+        // `id: image.id`: undefined (no member) when the image has none.
+        if let id = image["id"] { event["id"] = id }
+        report(event)
       } else {
         throw PublishError("MEDIA_MISSING", "An image needs to be added again before this can be posted.")
       }
@@ -388,6 +391,7 @@ public enum Publish {
               report(event)
             }
             blobs[postIndex]["video"] = result.blob
+            // `jobId: result.jobId`, which video.js gives as `jobId || null`.
             report([
               "phase": "uploaded", "kind": "video", "postIndex": .number(index), "blob": result.blob,
               "blobDid": .string(target.did), "jobId": result.jobId.map(JSONValue.string) ?? .null,

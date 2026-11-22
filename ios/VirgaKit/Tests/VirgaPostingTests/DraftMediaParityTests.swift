@@ -96,7 +96,7 @@ func storeJSON(_ media: any DraftMediaStore) async -> JSONValue {
     ]
     for c in try cases(Self.f, "loadDraftMedia") {
       let media = try await Self.seeded(c)
-      let reopened = try JSONValue.parse(Self.reopened)
+      let reopened = try c.input["state"] ?? JSONValue.parse(Self.reopened)
       let loaded = await DraftMedia.loadDraftMedia(
         Self.alice, reopened, media: media, makePreviewUrl: previews[c.string("preview") ?? "none"] ?? nil)
       let result: JSONValue = ["state": loaded.state, "missing": .array(loaded.missing.map(JSONValue.string))]
