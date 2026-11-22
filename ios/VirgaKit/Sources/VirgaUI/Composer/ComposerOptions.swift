@@ -127,6 +127,9 @@ struct ComposerOptions: View {
             .offset(x: ComposerMeasure.moreRight, y: ComposerMeasure.moreTop)
             .accessibilityIdentifier("option-more")
         }
+        // Over the note under the row, which a 44-point ⋯ at 11 reaches, as
+        // a positioned `.composer-more` paints over what follows it.
+        .zIndex(1)
         // The tags field opens after the whole row on a wide screen, inside
         // the row's padding (the ⋯'s room at the right).
         if controller.tagsOpen {
