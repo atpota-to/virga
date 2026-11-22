@@ -13,10 +13,10 @@
 // marked chip, named as it is asked or as it fills itself) and its facts
 // take the row's width under them.
 //
+// Use opens the composer (ComposerHost) with the template's intent.
+//
 // iOS additions: /posting/templates/new opens the editor on a new template,
-// and /posting/templates/<rkey> on that one, once it's read. Use opens the
-// composer through `\.openComposer` when the composer has set it, and goes
-// to the composer's address until then. A blank's chip is drawn on a tint
+// and /posting/templates/<rkey> on that one, once it's read. A blank's chip is drawn on a tint
 // in the run of words (a dashed edge can't be drawn inside text); the
 // focus after a delete is the system's to place.
 
@@ -30,7 +30,7 @@ import VirgaSession
 struct TemplatesPage: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(\.navigate) private var navigate
-  @Environment(\.openComposer) private var openComposer
+  @Environment(ComposerHost.self) private var composer: ComposerHost?
   @Environment(AppModel.self) private var app
   @Environment(ToastCenter.self) private var toasts: ToastCenter?
   let did: String?
@@ -299,12 +299,10 @@ struct TemplatesPage: View {
     }
   }
 
+  /// `composer.open({ asDid, templateId })`.
   private func use(_ t: PostTemplate) {
-    if let openComposer {
-      openComposer(["asDid": did.map(JSONValue.string) ?? .null, "templateId": .string(t.rkey)])
-    } else {
-      navigate("/posting/compose")
-    }
+    let intent: JSONValue = ["asDid": did.map(JSONValue.string) ?? .null, "templateId": .string(t.rkey)]
+    if let composer { composer.open(intent) } else { navigate("/posting/compose") }
   }
 }
 

@@ -7,6 +7,7 @@
 import Foundation
 import VirgaArchive
 import VirgaCore
+import VirgaRepo
 
 /// The archive as a report reads it: whose it is, the rows and meta the
 /// archive holds (`ArchiveData`), and `nowMs`, where every window ends (the
@@ -37,8 +38,8 @@ public struct ReportArchive: Sendable {
   public var blocks: [BlockRow] { data.blocks }
   public var inbound: [EngagementEvent] { data.inbound }
   public var outbound: [EngagementEvent] { data.outbound }
-  // The repo's records (`atmosphere`) are `data.atmosphere`: their type is
-  // VirgaRepo's, which this target doesn't import by name.
+  /// The repo's records as atmosphere rows (what the Atmosphere report reads).
+  public var atmosphere: [AtmosphereRow] { data.atmosphere }
   public var meta: ArchiveMeta { data.meta }
   public var rev: Int { data.rev }
   public var followRev: Int { data.followRev }

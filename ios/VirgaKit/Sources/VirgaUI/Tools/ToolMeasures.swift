@@ -75,7 +75,7 @@ extension Measure {
     public static let activityGap: CGFloat = 7
     /// `.cleanup-table tbody tr { padding-left: 80px }` less the face's
     /// `margin-left: -46px`: the tick box's column on a phone.
-    public static let checkColumn: CGFloat = 34
+    public static let phoneCheckColumn: CGFloat = 34
     /// `.table-scroll--bleed { margin: 0 -10px }`: a chosen row's tint let out past the sides.
     public static let selectedBleed: CGFloat = 10
 

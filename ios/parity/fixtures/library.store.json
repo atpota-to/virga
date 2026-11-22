@@ -1,0 +1,2617 @@
+{
+  "name": "library.store",
+  "sources": [
+    "src/posting/library/store.js"
+  ],
+  "cases": [
+    {
+      "id": "STALE_MS",
+      "fn": "STALE_MS",
+      "input": {},
+      "output": 300000
+    },
+    {
+      "id": "STORE_SHELVES",
+      "fn": "STORE_SHELVES",
+      "input": {},
+      "output": [
+        "archive",
+        "posts",
+        "replies",
+        "saved",
+        "links",
+        "feeds",
+        "lists"
+      ]
+    },
+    {
+      "id": "IDLE_ENTRY",
+      "fn": "IDLE_ENTRY",
+      "input": {},
+      "output": {
+        "status": "idle",
+        "error": null,
+        "data": null,
+        "cursor": null,
+        "fetchedAt": 0,
+        "refreshing": false,
+        "loadingMore": false,
+        "loadMoreError": null,
+        "seq": 0
+      }
+    },
+    {
+      "id": "postsSource#1",
+      "fn": "postsSource",
+      "input": {
+        "entry": {
+          "status": "loading"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postsSource#2",
+      "fn": "postsSource",
+      "input": {
+        "entry": {
+          "status": "ready",
+          "data": {
+            "items": [
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a",
+                "at": "2026-10-01T00:00:00Z",
+                "text": "one",
+                "replyTo": null,
+                "likes": 5
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/b",
+                "at": "2026-10-02T00:00:00Z",
+                "text": "two",
+                "replyTo": "did:plc:other",
+                "likes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a1",
+                "rkey": "a1",
+                "at": "2026-10-02T00:00:00.000Z",
+                "text": "First line\nsecond",
+                "replyTo": null,
+                "hasMedia": true,
+                "likes": 3,
+                "reposts": 1,
+                "replies": 0,
+                "quotes": 0
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a2",
+                "at": "2026-10-03T00:00:00.000Z",
+                "text": "Continuing my thread",
+                "replyTo": "did:plc:self",
+                "likes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a3",
+                "at": "2025-01-03T00:00:00.000Z",
+                "text": "Replying to someone",
+                "replyTo": "did:plc:other",
+                "hasMedia": false,
+                "likes": 10,
+                "reposts": 2,
+                "replies": 1,
+                "quotes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a4",
+                "at": "2026-08-01T00:00:00.000Z"
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a5",
+                "at": "2026-07-01T00:00:00.000Z",
+                "text": "",
+                "hasMedia": 1
+              },
+              {
+                "uri": "at://did:plc:other/app.bsky.feed.post/b1",
+                "at": "2026-10-05T00:00:00.000Z",
+                "text": "Someone else"
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a6",
+                "at": "yesterday",
+                "text": "When?",
+                "likes": 2
+              },
+              {
+                "at": "2026-10-05T00:00:00.000Z",
+                "text": "No uri"
+              },
+              {}
+            ]
+          }
+        }
+      },
+      "output": "archive"
+    },
+    {
+      "id": "postsSource#3",
+      "fn": "postsSource",
+      "input": {
+        "entry": {
+          "status": "ready",
+          "data": {
+            "items": []
+          }
+        }
+      },
+      "output": "feed"
+    },
+    {
+      "id": "postsSource#4",
+      "fn": "postsSource",
+      "input": {
+        "entry": {
+          "status": "ready",
+          "data": null
+        }
+      },
+      "output": "feed"
+    },
+    {
+      "id": "postsSource#5",
+      "fn": "postsSource",
+      "input": {
+        "entry": {
+          "status": "error"
+        }
+      },
+      "output": "feed"
+    },
+    {
+      "id": "postsSource#6",
+      "fn": "postsSource",
+      "input": {
+        "entry": {
+          "status": "idle"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postsSource#7",
+      "fn": "postsSource",
+      "input": {},
+      "output": null
+    },
+    {
+      "id": "posts-archive",
+      "fn": "buildShelfItems",
+      "input": {
+        "shelfId": "posts",
+        "archive": {
+          "status": "ready",
+          "data": {
+            "items": [
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a",
+                "at": "2026-10-01T00:00:00Z",
+                "text": "one",
+                "replyTo": null,
+                "likes": 5
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/b",
+                "at": "2026-10-02T00:00:00Z",
+                "text": "two",
+                "replyTo": "did:plc:other",
+                "likes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a1",
+                "rkey": "a1",
+                "at": "2026-10-02T00:00:00.000Z",
+                "text": "First line\nsecond",
+                "replyTo": null,
+                "hasMedia": true,
+                "likes": 3,
+                "reposts": 1,
+                "replies": 0,
+                "quotes": 0
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a2",
+                "at": "2026-10-03T00:00:00.000Z",
+                "text": "Continuing my thread",
+                "replyTo": "did:plc:self",
+                "likes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a3",
+                "at": "2025-01-03T00:00:00.000Z",
+                "text": "Replying to someone",
+                "replyTo": "did:plc:other",
+                "hasMedia": false,
+                "likes": 10,
+                "reposts": 2,
+                "replies": 1,
+                "quotes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a4",
+                "at": "2026-08-01T00:00:00.000Z"
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a5",
+                "at": "2026-07-01T00:00:00.000Z",
+                "text": "",
+                "hasMedia": 1
+              },
+              {
+                "uri": "at://did:plc:other/app.bsky.feed.post/b1",
+                "at": "2026-10-05T00:00:00.000Z",
+                "text": "Someone else"
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a6",
+                "at": "yesterday",
+                "text": "When?",
+                "likes": 2
+              },
+              {
+                "at": "2026-10-05T00:00:00.000Z",
+                "text": "No uri"
+              },
+              {}
+            ]
+          }
+        },
+        "feed": {
+          "status": "ready",
+          "data": {
+            "items": [
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/f",
+                "cid": "cid-f",
+                "author": {
+                  "did": "did:plc:self",
+                  "handle": "h.example"
+                },
+                "record": {
+                  "text": "x",
+                  "createdAt": "2026-10-01T00:00:00Z"
+                },
+                "likeCount": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/g",
+                "cid": "cid-g",
+                "author": {
+                  "did": "did:plc:self",
+                  "handle": "h.example"
+                },
+                "record": {
+                  "text": "x",
+                  "createdAt": "2026-10-01T00:00:00Z"
+                },
+                "likeCount": 7
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/h",
+                "cid": "cid-h",
+                "author": {
+                  "did": "did:plc:self",
+                  "handle": "h.example"
+                },
+                "record": {
+                  "text": "reply",
+                  "createdAt": "2026-09-01T00:00:00Z"
+                }
+              }
+            ]
+          }
+        },
+        "did": "did:plc:self"
+      },
+      "output": {
+        "items": [
+          {
+            "id": "post:at://did:plc:other/app.bsky.feed.post/b1",
+            "shelf": "posts",
+            "label": "Post · Oct 5",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/a2",
+            "shelf": "posts",
+            "label": "Your post · Oct 3",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/a1",
+            "shelf": "posts",
+            "label": "Your post · Oct 2",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/a",
+            "shelf": "posts",
+            "label": "Your post · Oct 1",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/a4",
+            "shelf": "posts",
+            "label": "Your post · Aug 1",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/a5",
+            "shelf": "posts",
+            "label": "Your post · Jul 1",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/a6",
+            "shelf": "posts",
+            "label": "Your post",
+            "embedView": "$undefined"
+          }
+        ],
+        "total": 7
+      }
+    },
+    {
+      "id": "replies-archive",
+      "fn": "buildShelfItems",
+      "input": {
+        "shelfId": "replies",
+        "archive": {
+          "status": "ready",
+          "data": {
+            "items": [
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a",
+                "at": "2026-10-01T00:00:00Z",
+                "text": "one",
+                "replyTo": null,
+                "likes": 5
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/b",
+                "at": "2026-10-02T00:00:00Z",
+                "text": "two",
+                "replyTo": "did:plc:other",
+                "likes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a1",
+                "rkey": "a1",
+                "at": "2026-10-02T00:00:00.000Z",
+                "text": "First line\nsecond",
+                "replyTo": null,
+                "hasMedia": true,
+                "likes": 3,
+                "reposts": 1,
+                "replies": 0,
+                "quotes": 0
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a2",
+                "at": "2026-10-03T00:00:00.000Z",
+                "text": "Continuing my thread",
+                "replyTo": "did:plc:self",
+                "likes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a3",
+                "at": "2025-01-03T00:00:00.000Z",
+                "text": "Replying to someone",
+                "replyTo": "did:plc:other",
+                "hasMedia": false,
+                "likes": 10,
+                "reposts": 2,
+                "replies": 1,
+                "quotes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a4",
+                "at": "2026-08-01T00:00:00.000Z"
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a5",
+                "at": "2026-07-01T00:00:00.000Z",
+                "text": "",
+                "hasMedia": 1
+              },
+              {
+                "uri": "at://did:plc:other/app.bsky.feed.post/b1",
+                "at": "2026-10-05T00:00:00.000Z",
+                "text": "Someone else"
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a6",
+                "at": "yesterday",
+                "text": "When?",
+                "likes": 2
+              },
+              {
+                "at": "2026-10-05T00:00:00.000Z",
+                "text": "No uri"
+              },
+              {}
+            ]
+          }
+        },
+        "did": "did:plc:self"
+      },
+      "output": {
+        "items": [
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/b",
+            "shelf": "replies",
+            "label": "Your reply · Oct 2",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/a3",
+            "shelf": "replies",
+            "label": "Your reply · Jan 3, 2025",
+            "embedView": "$undefined"
+          }
+        ],
+        "total": 2
+      }
+    },
+    {
+      "id": "posts-engagement",
+      "fn": "buildShelfItems",
+      "input": {
+        "shelfId": "posts",
+        "archive": {
+          "status": "ready",
+          "data": {
+            "items": [
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a",
+                "at": "2026-10-01T00:00:00Z",
+                "text": "one",
+                "replyTo": null,
+                "likes": 5
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/b",
+                "at": "2026-10-02T00:00:00Z",
+                "text": "two",
+                "replyTo": "did:plc:other",
+                "likes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a1",
+                "rkey": "a1",
+                "at": "2026-10-02T00:00:00.000Z",
+                "text": "First line\nsecond",
+                "replyTo": null,
+                "hasMedia": true,
+                "likes": 3,
+                "reposts": 1,
+                "replies": 0,
+                "quotes": 0
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a2",
+                "at": "2026-10-03T00:00:00.000Z",
+                "text": "Continuing my thread",
+                "replyTo": "did:plc:self",
+                "likes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a3",
+                "at": "2025-01-03T00:00:00.000Z",
+                "text": "Replying to someone",
+                "replyTo": "did:plc:other",
+                "hasMedia": false,
+                "likes": 10,
+                "reposts": 2,
+                "replies": 1,
+                "quotes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a4",
+                "at": "2026-08-01T00:00:00.000Z"
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a5",
+                "at": "2026-07-01T00:00:00.000Z",
+                "text": "",
+                "hasMedia": 1
+              },
+              {
+                "uri": "at://did:plc:other/app.bsky.feed.post/b1",
+                "at": "2026-10-05T00:00:00.000Z",
+                "text": "Someone else"
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a6",
+                "at": "yesterday",
+                "text": "When?",
+                "likes": 2
+              },
+              {
+                "at": "2026-10-05T00:00:00.000Z",
+                "text": "No uri"
+              },
+              {}
+            ]
+          }
+        },
+        "did": "did:plc:self",
+        "sort": "engagement"
+      },
+      "output": {
+        "items": [
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/a",
+            "shelf": "posts",
+            "label": "Your post · Oct 1",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/a1",
+            "shelf": "posts",
+            "label": "Your post · Oct 2",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/a6",
+            "shelf": "posts",
+            "label": "Your post",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/a2",
+            "shelf": "posts",
+            "label": "Your post · Oct 3",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:other/app.bsky.feed.post/b1",
+            "shelf": "posts",
+            "label": "Post · Oct 5",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/a4",
+            "shelf": "posts",
+            "label": "Your post · Aug 1",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/a5",
+            "shelf": "posts",
+            "label": "Your post · Jul 1",
+            "embedView": "$undefined"
+          }
+        ],
+        "total": 7
+      }
+    },
+    {
+      "id": "posts-query",
+      "fn": "buildShelfItems",
+      "input": {
+        "shelfId": "posts",
+        "archive": {
+          "status": "ready",
+          "data": {
+            "items": [
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a",
+                "at": "2026-10-01T00:00:00Z",
+                "text": "one",
+                "replyTo": null,
+                "likes": 5
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/b",
+                "at": "2026-10-02T00:00:00Z",
+                "text": "two",
+                "replyTo": "did:plc:other",
+                "likes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a1",
+                "rkey": "a1",
+                "at": "2026-10-02T00:00:00.000Z",
+                "text": "First line\nsecond",
+                "replyTo": null,
+                "hasMedia": true,
+                "likes": 3,
+                "reposts": 1,
+                "replies": 0,
+                "quotes": 0
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a2",
+                "at": "2026-10-03T00:00:00.000Z",
+                "text": "Continuing my thread",
+                "replyTo": "did:plc:self",
+                "likes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a3",
+                "at": "2025-01-03T00:00:00.000Z",
+                "text": "Replying to someone",
+                "replyTo": "did:plc:other",
+                "hasMedia": false,
+                "likes": 10,
+                "reposts": 2,
+                "replies": 1,
+                "quotes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a4",
+                "at": "2026-08-01T00:00:00.000Z"
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a5",
+                "at": "2026-07-01T00:00:00.000Z",
+                "text": "",
+                "hasMedia": 1
+              },
+              {
+                "uri": "at://did:plc:other/app.bsky.feed.post/b1",
+                "at": "2026-10-05T00:00:00.000Z",
+                "text": "Someone else"
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a6",
+                "at": "yesterday",
+                "text": "When?",
+                "likes": 2
+              },
+              {
+                "at": "2026-10-05T00:00:00.000Z",
+                "text": "No uri"
+              },
+              {}
+            ]
+          }
+        },
+        "did": "did:plc:self",
+        "query": "ONE"
+      },
+      "output": {
+        "items": [
+          {
+            "id": "post:at://did:plc:other/app.bsky.feed.post/b1",
+            "shelf": "posts",
+            "label": "Post · Oct 5",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/a",
+            "shelf": "posts",
+            "label": "Your post · Oct 1",
+            "embedView": "$undefined"
+          }
+        ],
+        "total": 2
+      }
+    },
+    {
+      "id": "posts-limit",
+      "fn": "buildShelfItems",
+      "input": {
+        "shelfId": "posts",
+        "archive": {
+          "status": "ready",
+          "data": {
+            "items": [
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a",
+                "at": "2026-10-01T00:00:00Z",
+                "text": "one",
+                "replyTo": null,
+                "likes": 5
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/b",
+                "at": "2026-10-02T00:00:00Z",
+                "text": "two",
+                "replyTo": "did:plc:other",
+                "likes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a1",
+                "rkey": "a1",
+                "at": "2026-10-02T00:00:00.000Z",
+                "text": "First line\nsecond",
+                "replyTo": null,
+                "hasMedia": true,
+                "likes": 3,
+                "reposts": 1,
+                "replies": 0,
+                "quotes": 0
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a2",
+                "at": "2026-10-03T00:00:00.000Z",
+                "text": "Continuing my thread",
+                "replyTo": "did:plc:self",
+                "likes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a3",
+                "at": "2025-01-03T00:00:00.000Z",
+                "text": "Replying to someone",
+                "replyTo": "did:plc:other",
+                "hasMedia": false,
+                "likes": 10,
+                "reposts": 2,
+                "replies": 1,
+                "quotes": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a4",
+                "at": "2026-08-01T00:00:00.000Z"
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a5",
+                "at": "2026-07-01T00:00:00.000Z",
+                "text": "",
+                "hasMedia": 1
+              },
+              {
+                "uri": "at://did:plc:other/app.bsky.feed.post/b1",
+                "at": "2026-10-05T00:00:00.000Z",
+                "text": "Someone else"
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/a6",
+                "at": "yesterday",
+                "text": "When?",
+                "likes": 2
+              },
+              {
+                "at": "2026-10-05T00:00:00.000Z",
+                "text": "No uri"
+              },
+              {}
+            ]
+          }
+        },
+        "did": "did:plc:self",
+        "limit": 1
+      },
+      "output": {
+        "items": [
+          {
+            "id": "post:at://did:plc:other/app.bsky.feed.post/b1",
+            "shelf": "posts",
+            "label": "Post · Oct 5",
+            "embedView": "$undefined"
+          }
+        ],
+        "total": 7
+      }
+    },
+    {
+      "id": "posts-feed",
+      "fn": "buildShelfItems",
+      "input": {
+        "shelfId": "posts",
+        "archive": {
+          "status": "ready",
+          "data": {
+            "items": []
+          }
+        },
+        "feed": {
+          "status": "ready",
+          "data": {
+            "items": [
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/f",
+                "cid": "cid-f",
+                "author": {
+                  "did": "did:plc:self",
+                  "handle": "h.example"
+                },
+                "record": {
+                  "text": "x",
+                  "createdAt": "2026-10-01T00:00:00Z"
+                },
+                "likeCount": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/g",
+                "cid": "cid-g",
+                "author": {
+                  "did": "did:plc:self",
+                  "handle": "h.example"
+                },
+                "record": {
+                  "text": "x",
+                  "createdAt": "2026-10-01T00:00:00Z"
+                },
+                "likeCount": 7
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/h",
+                "cid": "cid-h",
+                "author": {
+                  "did": "did:plc:self",
+                  "handle": "h.example"
+                },
+                "record": {
+                  "text": "reply",
+                  "createdAt": "2026-09-01T00:00:00Z"
+                }
+              }
+            ]
+          }
+        },
+        "did": "did:plc:self"
+      },
+      "output": {
+        "items": [
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/f",
+            "shelf": "posts",
+            "label": "Your post · Oct 1",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/g",
+            "shelf": "posts",
+            "label": "Your post · Oct 1",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/h",
+            "shelf": "posts",
+            "label": "Your post · Sep 1",
+            "embedView": "$undefined"
+          }
+        ],
+        "total": null
+      }
+    },
+    {
+      "id": "posts-feed-engagement",
+      "fn": "buildShelfItems",
+      "input": {
+        "shelfId": "posts",
+        "archive": {
+          "status": "error"
+        },
+        "feed": {
+          "status": "ready",
+          "data": {
+            "items": [
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/f",
+                "cid": "cid-f",
+                "author": {
+                  "did": "did:plc:self",
+                  "handle": "h.example"
+                },
+                "record": {
+                  "text": "x",
+                  "createdAt": "2026-10-01T00:00:00Z"
+                },
+                "likeCount": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/g",
+                "cid": "cid-g",
+                "author": {
+                  "did": "did:plc:self",
+                  "handle": "h.example"
+                },
+                "record": {
+                  "text": "x",
+                  "createdAt": "2026-10-01T00:00:00Z"
+                },
+                "likeCount": 7
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/h",
+                "cid": "cid-h",
+                "author": {
+                  "did": "did:plc:self",
+                  "handle": "h.example"
+                },
+                "record": {
+                  "text": "reply",
+                  "createdAt": "2026-09-01T00:00:00Z"
+                }
+              }
+            ]
+          }
+        },
+        "did": "did:plc:self",
+        "sort": "engagement"
+      },
+      "output": {
+        "items": [
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/g",
+            "shelf": "posts",
+            "label": "Your post · Oct 1",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/f",
+            "shelf": "posts",
+            "label": "Your post · Oct 1",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/h",
+            "shelf": "posts",
+            "label": "Your post · Sep 1",
+            "embedView": "$undefined"
+          }
+        ],
+        "total": null
+      }
+    },
+    {
+      "id": "replies-feed",
+      "fn": "buildShelfItems",
+      "input": {
+        "shelfId": "replies",
+        "archive": {
+          "status": "ready",
+          "data": {
+            "items": []
+          }
+        },
+        "feed": {
+          "status": "ready",
+          "data": {
+            "items": [
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/f",
+                "cid": "cid-f",
+                "author": {
+                  "did": "did:plc:self",
+                  "handle": "h.example"
+                },
+                "record": {
+                  "text": "x",
+                  "createdAt": "2026-10-01T00:00:00Z"
+                },
+                "likeCount": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/g",
+                "cid": "cid-g",
+                "author": {
+                  "did": "did:plc:self",
+                  "handle": "h.example"
+                },
+                "record": {
+                  "text": "x",
+                  "createdAt": "2026-10-01T00:00:00Z"
+                },
+                "likeCount": 7
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/h",
+                "cid": "cid-h",
+                "author": {
+                  "did": "did:plc:self",
+                  "handle": "h.example"
+                },
+                "record": {
+                  "text": "reply",
+                  "createdAt": "2026-09-01T00:00:00Z"
+                }
+              }
+            ]
+          }
+        },
+        "did": "did:plc:self"
+      },
+      "output": {
+        "items": [
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/f",
+            "shelf": "replies",
+            "label": "Your reply · Oct 1",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/g",
+            "shelf": "replies",
+            "label": "Your reply · Oct 1",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/h",
+            "shelf": "replies",
+            "label": "Your reply · Sep 1",
+            "embedView": "$undefined"
+          }
+        ],
+        "total": null
+      }
+    },
+    {
+      "id": "posts-loading",
+      "fn": "buildShelfItems",
+      "input": {
+        "shelfId": "posts",
+        "archive": {
+          "status": "loading"
+        },
+        "feed": {
+          "status": "ready",
+          "data": {
+            "items": [
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/f",
+                "cid": "cid-f",
+                "author": {
+                  "did": "did:plc:self",
+                  "handle": "h.example"
+                },
+                "record": {
+                  "text": "x",
+                  "createdAt": "2026-10-01T00:00:00Z"
+                },
+                "likeCount": 1
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/g",
+                "cid": "cid-g",
+                "author": {
+                  "did": "did:plc:self",
+                  "handle": "h.example"
+                },
+                "record": {
+                  "text": "x",
+                  "createdAt": "2026-10-01T00:00:00Z"
+                },
+                "likeCount": 7
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/h",
+                "cid": "cid-h",
+                "author": {
+                  "did": "did:plc:self",
+                  "handle": "h.example"
+                },
+                "record": {
+                  "text": "reply",
+                  "createdAt": "2026-09-01T00:00:00Z"
+                }
+              }
+            ]
+          }
+        },
+        "did": "did:plc:self"
+      },
+      "output": {
+        "items": [
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/f",
+            "shelf": "posts",
+            "label": "Your post · Oct 1",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/g",
+            "shelf": "posts",
+            "label": "Your post · Oct 1",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/h",
+            "shelf": "posts",
+            "label": "Your post · Sep 1",
+            "embedView": "$undefined"
+          }
+        ],
+        "total": null
+      }
+    },
+    {
+      "id": "posts-nothing",
+      "fn": "buildShelfItems",
+      "input": {
+        "shelfId": "posts",
+        "did": "did:plc:self"
+      },
+      "output": {
+        "items": [],
+        "total": null
+      }
+    },
+    {
+      "id": "saved",
+      "fn": "buildShelfItems",
+      "input": {
+        "shelfId": "saved",
+        "entry": {
+          "status": "ready",
+          "data": {
+            "items": [
+              {
+                "uri": "at://did:plc:other/app.bsky.feed.post/s",
+                "cid": "cid-s",
+                "author": {
+                  "did": "did:plc:other",
+                  "handle": "h.example"
+                },
+                "record": {
+                  "text": "x",
+                  "createdAt": "2026-10-01T00:00:00Z"
+                }
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.post/stamina",
+                "cid": "cid-stamina",
+                "author": {
+                  "did": "did:plc:self",
+                  "handle": "you.example"
+                },
+                "record": {
+                  "text": "A few words on stamina, since it comes up a lot.\nIt refills at 2 a minute.",
+                  "createdAt": "2026-09-02T12:00:00Z"
+                }
+              }
+            ]
+          }
+        },
+        "did": "did:plc:self"
+      },
+      "output": {
+        "items": [
+          {
+            "id": "post:at://did:plc:other/app.bsky.feed.post/s",
+            "shelf": "saved",
+            "label": "Post by @h.example · Oct 1",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "post:at://did:plc:self/app.bsky.feed.post/stamina",
+            "shelf": "saved",
+            "label": "Your post · Sep 2",
+            "embedView": "$undefined"
+          }
+        ],
+        "total": null
+      }
+    },
+    {
+      "id": "links",
+      "fn": "buildShelfItems",
+      "input": {
+        "shelfId": "links",
+        "entry": {
+          "status": "ready",
+          "data": {
+            "items": [
+              {
+                "url": "https://a.example"
+              },
+              {
+                "url": "https://www.b.example/x/"
+              }
+            ]
+          }
+        }
+      },
+      "output": {
+        "items": [
+          {
+            "id": "link:https://a.example",
+            "shelf": "links",
+            "label": "Link · a.example",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "link:https://www.b.example/x/",
+            "shelf": "links",
+            "label": "Link · b.example",
+            "embedView": "$undefined"
+          }
+        ],
+        "total": null
+      }
+    },
+    {
+      "id": "feeds",
+      "fn": "buildShelfItems",
+      "input": {
+        "shelfId": "feeds",
+        "entry": {
+          "status": "ready",
+          "data": {
+            "items": [
+              {
+                "uri": "at://x/app.bsky.feed.generator/own"
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.generator/moths",
+                "cid": "cf1",
+                "displayName": "Moth photos",
+                "description": "Posts tagged #mothing",
+                "creator": {
+                  "did": "did:plc:self",
+                  "handle": "you.example"
+                },
+                "indexedAt": "2026-10-01T00:00:00.000Z"
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.generator/moths",
+                "cid": "cf1",
+                "displayName": "Moth photos",
+                "description": "Posts tagged #mothing",
+                "creator": {
+                  "did": "did:plc:self",
+                  "handle": "you.example"
+                },
+                "indexedAt": "2026-10-01T00:00:00.000Z"
+              }
+            ],
+            "saved": [
+              {
+                "uri": "at://x/app.bsky.feed.generator/own"
+              },
+              {
+                "uri": "at://y/app.bsky.feed.generator/s"
+              },
+              {
+                "uri": "at://did:plc:other/app.bsky.feed.generator/quiet",
+                "cid": "cf2",
+                "displayName": "  Quiet\n hours ",
+                "description": "Slower posts\nfrom people you follow",
+                "creator": {
+                  "did": "did:plc:other",
+                  "handle": "luna.example"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "output": {
+        "items": [
+          {
+            "id": "feed:at://x/app.bsky.feed.generator/own",
+            "shelf": "feeds",
+            "label": "Feed · yours",
+            "group": "yours",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "feed:at://did:plc:self/app.bsky.feed.generator/moths",
+            "shelf": "feeds",
+            "label": "Feed · yours",
+            "group": "yours",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "feed:at://y/app.bsky.feed.generator/s",
+            "shelf": "feeds",
+            "label": "Feed · saved",
+            "group": "saved",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "feed:at://did:plc:other/app.bsky.feed.generator/quiet",
+            "shelf": "feeds",
+            "label": "Feed · saved",
+            "group": "saved",
+            "embedView": "$undefined"
+          }
+        ],
+        "total": null
+      }
+    },
+    {
+      "id": "feeds-no-saved",
+      "fn": "buildShelfItems",
+      "input": {
+        "shelfId": "feeds",
+        "entry": {
+          "status": "ready",
+          "data": {
+            "items": [
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.generator/moths",
+                "cid": "cf1",
+                "displayName": "Moth photos",
+                "description": "Posts tagged #mothing",
+                "creator": {
+                  "did": "did:plc:self",
+                  "handle": "you.example"
+                },
+                "indexedAt": "2026-10-01T00:00:00.000Z"
+              }
+            ]
+          }
+        }
+      },
+      "output": {
+        "items": [
+          {
+            "id": "feed:at://did:plc:self/app.bsky.feed.generator/moths",
+            "shelf": "feeds",
+            "label": "Feed · yours",
+            "group": "yours",
+            "embedView": "$undefined"
+          }
+        ],
+        "total": null
+      }
+    },
+    {
+      "id": "lists",
+      "fn": "buildShelfItems",
+      "input": {
+        "shelfId": "lists",
+        "entry": {
+          "status": "ready",
+          "data": {
+            "items": [
+              {
+                "uri": "at://did:plc:self/app.bsky.graph.list/people",
+                "cid": "cl1",
+                "name": "Moth people",
+                "description": "Accounts who post about moths",
+                "purpose": "app.bsky.graph.defs#curatelist",
+                "creator": {
+                  "did": "did:plc:self",
+                  "handle": "you.example"
+                },
+                "indexedAt": "2026-09-01T00:00:00.000Z"
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.graph.list/mods",
+                "name": "Spam",
+                "purpose": "app.bsky.graph.defs#modlist"
+              },
+              {
+                "uri": "at://did:plc:self/app.bsky.graph.list/ref",
+                "name": "",
+                "purpose": "app.bsky.graph.defs#referencelist"
+              },
+              {
+                "uri": "at://did:plc:other/app.bsky.graph.list/l",
+                "name": "Theirs",
+                "creator": {
+                  "handle": "luna.example"
+                }
+              },
+              {}
+            ]
+          }
+        }
+      },
+      "output": {
+        "items": [
+          {
+            "id": "list:at://did:plc:self/app.bsky.graph.list/people",
+            "shelf": "lists",
+            "label": "List · curation",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "list:at://did:plc:self/app.bsky.graph.list/mods",
+            "shelf": "lists",
+            "label": "List · moderation",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "list:at://did:plc:self/app.bsky.graph.list/ref",
+            "shelf": "lists",
+            "label": "List",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "list:at://did:plc:other/app.bsky.graph.list/l",
+            "shelf": "lists",
+            "label": "List",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "list:",
+            "shelf": "lists",
+            "label": "List",
+            "embedView": "$undefined"
+          }
+        ],
+        "total": null
+      }
+    },
+    {
+      "id": "lists-idle",
+      "fn": "buildShelfItems",
+      "input": {
+        "shelfId": "lists",
+        "entry": {
+          "status": "idle",
+          "data": null
+        }
+      },
+      "output": {
+        "items": [],
+        "total": null
+      }
+    },
+    {
+      "id": "unknown",
+      "fn": "buildShelfItems",
+      "input": {
+        "shelfId": "search",
+        "entry": {
+          "status": "ready",
+          "data": {
+            "items": [
+              {
+                "uri": "at://did:plc:self/app.bsky.feed.generator/moths",
+                "cid": "cf1",
+                "displayName": "Moth photos",
+                "description": "Posts tagged #mothing",
+                "creator": {
+                  "did": "did:plc:self",
+                  "handle": "you.example"
+                },
+                "indexedAt": "2026-10-01T00:00:00.000Z"
+              }
+            ]
+          }
+        }
+      },
+      "output": {
+        "items": [],
+        "total": null
+      }
+    },
+    {
+      "id": "groups",
+      "fn": "templateShelf",
+      "input": {
+        "templates": [
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/a",
+            "cid": "cid-a",
+            "rkey": "a",
+            "name": "Alpha",
+            "text": "x",
+            "variables": [],
+            "embed": null,
+            "use": "any",
+            "group": "Help",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/b",
+            "cid": "cid-b",
+            "rkey": "b",
+            "name": "Beta",
+            "text": "x",
+            "variables": [],
+            "embed": null,
+            "use": "any",
+            "group": "",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/c",
+            "cid": "cid-c",
+            "rkey": "c",
+            "name": "Gamma",
+            "text": "x",
+            "variables": [],
+            "embed": null,
+            "use": "reply",
+            "group": "",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/d",
+            "cid": "cid-d",
+            "rkey": "d",
+            "name": "Delta",
+            "text": "x",
+            "variables": [],
+            "embed": null,
+            "use": "any",
+            "group": "Help",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          }
+        ],
+        "usage": {
+          "d": {
+            "count": 2
+          }
+        },
+        "context": {
+          "their": null,
+          "my": {
+            "handle": "me.example"
+          },
+          "today": "October 14"
+        },
+        "embeds": {},
+        "replying": false
+      },
+      "output": {
+        "items": [
+          {
+            "id": "template:d",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:a",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:b",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:c",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          }
+        ],
+        "sections": [
+          {
+            "id": "group:Help",
+            "heading": "Help",
+            "muted": false,
+            "items": [
+              "template:d",
+              "template:a"
+            ]
+          },
+          {
+            "id": "ungrouped",
+            "heading": "Other templates",
+            "muted": false,
+            "items": [
+              "template:b"
+            ]
+          },
+          {
+            "id": "elsewhere",
+            "heading": "For replies",
+            "muted": true,
+            "items": [
+              "template:c"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "for-posts",
+      "fn": "templateShelf",
+      "input": {
+        "templates": [
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/a",
+            "cid": "cid-a",
+            "rkey": "a",
+            "name": "Alpha",
+            "text": "x",
+            "variables": [],
+            "embed": null,
+            "use": "post",
+            "group": "",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/c",
+            "cid": "cid-c",
+            "rkey": "c",
+            "name": "Gamma",
+            "text": "x",
+            "variables": [],
+            "embed": null,
+            "use": "reply",
+            "group": "",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          }
+        ],
+        "context": {
+          "their": null,
+          "my": {
+            "handle": "me.example"
+          },
+          "today": "October 14"
+        },
+        "embeds": {},
+        "replying": false
+      },
+      "output": {
+        "items": [
+          {
+            "id": "template:a",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:c",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          }
+        ],
+        "sections": [
+          {
+            "id": "ungrouped",
+            "heading": "For new posts",
+            "muted": false,
+            "items": [
+              "template:a"
+            ]
+          },
+          {
+            "id": "elsewhere",
+            "heading": "For replies",
+            "muted": true,
+            "items": [
+              "template:c"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "for-replies",
+      "fn": "templateShelf",
+      "input": {
+        "templates": [
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/a",
+            "cid": "cid-a",
+            "rkey": "a",
+            "name": "Alpha",
+            "text": "x",
+            "variables": [],
+            "embed": null,
+            "use": "post",
+            "group": "",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/c",
+            "cid": "cid-c",
+            "rkey": "c",
+            "name": "Gamma",
+            "text": "x",
+            "variables": [],
+            "embed": null,
+            "use": "reply",
+            "group": "",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          }
+        ],
+        "context": {
+          "their": null,
+          "my": {
+            "handle": "me.example"
+          },
+          "today": "October 14"
+        },
+        "embeds": {},
+        "replying": true
+      },
+      "output": {
+        "items": [
+          {
+            "id": "template:c",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:a",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          }
+        ],
+        "sections": [
+          {
+            "id": "ungrouped",
+            "heading": "For replies",
+            "muted": false,
+            "items": [
+              "template:c"
+            ]
+          },
+          {
+            "id": "elsewhere",
+            "heading": "For new posts",
+            "muted": true,
+            "items": [
+              "template:a"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "embeds",
+      "fn": "templateShelf",
+      "input": {
+        "templates": [
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/q",
+            "cid": "cid-q",
+            "rkey": "q",
+            "name": "Q",
+            "text": "x",
+            "variables": [],
+            "embed": {
+              "$type": "app.bsky.embed.record",
+              "record": {
+                "uri": "at://did:plc:self/app.bsky.feed.post/q",
+                "cid": "c"
+              }
+            },
+            "use": "any",
+            "group": "",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/gone",
+            "cid": "cid-gone",
+            "rkey": "gone",
+            "name": "GONE",
+            "text": "x",
+            "variables": [],
+            "embed": {
+              "$type": "app.bsky.embed.record",
+              "record": {
+                "uri": "at://did:plc:self/app.bsky.feed.post/gone",
+                "cid": "c"
+              }
+            },
+            "use": "any",
+            "group": "",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/unknown",
+            "cid": "cid-unknown",
+            "rkey": "unknown",
+            "name": "UNKNOWN",
+            "text": "x",
+            "variables": [],
+            "embed": {
+              "$type": "app.bsky.embed.record",
+              "record": {
+                "uri": "at://did:plc:self/app.bsky.feed.post/unknown",
+                "cid": "c"
+              }
+            },
+            "use": "any",
+            "group": "",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/link",
+            "cid": "cid-link",
+            "rkey": "link",
+            "name": "Link",
+            "text": "x",
+            "variables": [],
+            "embed": {
+              "$type": "app.bsky.embed.external",
+              "external": {
+                "uri": "https://docs.example.org/start",
+                "title": "Getting started",
+                "description": ""
+              }
+            },
+            "use": "any",
+            "group": "",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          }
+        ],
+        "context": {
+          "their": null,
+          "my": {
+            "handle": "me.example"
+          },
+          "today": "October 14"
+        },
+        "embeds": {
+          "at://did:plc:self/app.bsky.feed.post/q": {
+            "uri": "at://did:plc:self/app.bsky.feed.post/q",
+            "author": {
+              "handle": "me.example"
+            }
+          },
+          "at://did:plc:self/app.bsky.feed.post/gone": "missing"
+        }
+      },
+      "output": {
+        "items": [
+          {
+            "id": "template:gone",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "missing"
+          },
+          {
+            "id": "template:link",
+            "shelf": "templates",
+            "label": "Template · attaches a link",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:q",
+            "shelf": "templates",
+            "label": "Template · quotes a post",
+            "embedView": {
+              "uri": "at://did:plc:self/app.bsky.feed.post/q",
+              "author": {
+                "handle": "me.example"
+              }
+            }
+          },
+          {
+            "id": "template:unknown",
+            "shelf": "templates",
+            "label": "Template · quotes a post",
+            "embedView": "$undefined"
+          }
+        ],
+        "sections": [
+          {
+            "id": "ungrouped",
+            "heading": null,
+            "muted": false,
+            "items": [
+              "template:gone",
+              "template:link",
+              "template:q",
+              "template:unknown"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "groups-spaced",
+      "fn": "templateShelf",
+      "input": {
+        "templates": [
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/a",
+            "cid": "cid-a",
+            "rkey": "a",
+            "name": "A",
+            "text": "x",
+            "variables": [],
+            "embed": null,
+            "use": "any",
+            "group": " Help ",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/b",
+            "cid": "cid-b",
+            "rkey": "b",
+            "name": "B",
+            "text": "x",
+            "variables": [],
+            "embed": null,
+            "use": "any",
+            "group": "Help",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/c",
+            "cid": "cid-c",
+            "rkey": "c",
+            "name": "C",
+            "text": "x",
+            "variables": [],
+            "embed": null,
+            "use": "any",
+            "group": "Other",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/d",
+            "cid": "cid-d",
+            "rkey": "d",
+            "name": "D",
+            "text": "x",
+            "variables": [],
+            "embed": null,
+            "use": "any",
+            "group": "help",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          }
+        ],
+        "context": {
+          "their": {
+            "name": "Moss Hollow",
+            "firstName": "Moss",
+            "handle": "moss.example"
+          },
+          "my": {
+            "handle": "you.example"
+          },
+          "today": "October 14"
+        },
+        "replying": true
+      },
+      "output": {
+        "items": [
+          {
+            "id": "template:a",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:b",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:d",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:c",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          }
+        ],
+        "sections": [
+          {
+            "id": "group:Help",
+            "heading": "Help",
+            "muted": false,
+            "items": [
+              "template:a",
+              "template:b"
+            ]
+          },
+          {
+            "id": "group:help",
+            "heading": "help",
+            "muted": false,
+            "items": [
+              "template:d"
+            ]
+          },
+          {
+            "id": "group:Other",
+            "heading": "Other",
+            "muted": false,
+            "items": [
+              "template:c"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "all-elsewhere",
+      "fn": "templateShelf",
+      "input": {
+        "templates": [
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/p",
+            "cid": "cid-p",
+            "rkey": "p",
+            "name": "P",
+            "text": "x",
+            "variables": [],
+            "embed": null,
+            "use": "post",
+            "group": "",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          }
+        ],
+        "context": {
+          "their": {
+            "name": "Moss Hollow",
+            "firstName": "Moss",
+            "handle": "moss.example"
+          },
+          "my": {
+            "handle": "you.example"
+          },
+          "today": "October 14"
+        },
+        "replying": true
+      },
+      "output": {
+        "items": [
+          {
+            "id": "template:p",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          }
+        ],
+        "sections": [
+          {
+            "id": "elsewhere",
+            "heading": "For new posts",
+            "muted": true,
+            "items": [
+              "template:p"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "fixtures",
+      "fn": "templateShelf",
+      "input": {
+        "templates": [
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/stamina",
+            "cid": "cid-stamina",
+            "rkey": "stamina",
+            "name": "Why stamina?",
+            "text": "I wrote a little about that here.",
+            "variables": [],
+            "embed": {
+              "$type": "app.bsky.embed.record",
+              "record": {
+                "uri": "at://did:plc:self/app.bsky.feed.post/stamina",
+                "cid": "cid-stamina"
+              }
+            },
+            "use": "reply",
+            "group": "",
+            "shortcut": "stamina",
+            "keywords": [
+              "stamina"
+            ],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/idea",
+            "cid": "cid-idea",
+            "rkey": "idea",
+            "name": "Thanks for the idea",
+            "text": "Thank you, {{their.firstName}}. I like the idea of {{idea}}, and it is on our list. {{when}}",
+            "variables": [
+              {
+                "key": "idea",
+                "label": "What did they suggest?"
+              },
+              {
+                "key": "when",
+                "label": "When?",
+                "kind": "choice",
+                "choices": [
+                  "Soon.",
+                  "Someday."
+                ],
+                "optional": true
+              }
+            ],
+            "embed": null,
+            "use": "reply",
+            "group": "",
+            "shortcut": "idea",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/app",
+            "cid": "cid-app",
+            "rkey": "app",
+            "name": "Is there an app?",
+            "text": "It runs in the browser, so there's nothing to download.",
+            "variables": [],
+            "embed": null,
+            "use": "any",
+            "group": "",
+            "shortcut": "app",
+            "keywords": [
+              "download",
+              "app"
+            ],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/walk",
+            "cid": "cid-walk",
+            "rkey": "walk",
+            "name": "Weekly walk",
+            "text": "Out for the weekly walk.",
+            "variables": [],
+            "embed": null,
+            "use": "post",
+            "group": "",
+            "shortcut": "",
+            "keywords": [
+              "stamina"
+            ],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/docs",
+            "cid": "cid-docs",
+            "rkey": "docs",
+            "name": "Docs",
+            "text": "",
+            "variables": [],
+            "embed": {
+              "$type": "app.bsky.embed.external",
+              "external": {
+                "uri": "https://docs.example.org/start",
+                "title": "Getting started",
+                "description": ""
+              }
+            },
+            "use": "any",
+            "group": "",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/feed",
+            "cid": "cid-feed",
+            "rkey": "feed",
+            "name": "Feed",
+            "text": "Try this feed",
+            "variables": [],
+            "embed": {
+              "$type": "app.bsky.embed.record",
+              "record": {
+                "uri": "at://did:plc:other/app.bsky.feed.generator/moths",
+                "cid": "cf"
+              }
+            },
+            "use": "any",
+            "group": "Feeds",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/list",
+            "cid": "cid-list",
+            "rkey": "list",
+            "name": "",
+            "text": "\n\n  First line of a list template\nsecond",
+            "variables": [],
+            "embed": {
+              "$type": "app.bsky.embed.record",
+              "record": {
+                "uri": "at://did:plc:other/app.bsky.graph.list/people",
+                "cid": "cl"
+              }
+            },
+            "use": "reply",
+            "group": "Feeds",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/pics",
+            "cid": "cid-pics",
+            "rkey": "pics",
+            "name": "Pics",
+            "text": "x",
+            "variables": [],
+            "embed": {
+              "$type": "app.bsky.embed.images",
+              "images": []
+            },
+            "use": "any",
+            "group": "",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/pics2",
+            "cid": "cid-pics2",
+            "rkey": "pics2",
+            "name": "Pics only",
+            "text": "",
+            "variables": [],
+            "embed": {
+              "$type": "app.bsky.embed.images",
+              "images": []
+            },
+            "use": "any",
+            "group": "",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/me",
+            "cid": "cid-me",
+            "rkey": "me",
+            "name": "Me",
+            "text": "I'm {{my.handle}}, {{their.firstName}}. Today is {{today}}.",
+            "variables": [],
+            "embed": null,
+            "use": "any",
+            "group": "Hello",
+            "shortcut": "",
+            "keywords": [],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          },
+          {
+            "uri": "at://did:plc:self/net.anisota.feed.template/family",
+            "cid": "cid-family",
+            "rkey": "family",
+            "name": "👨‍👩‍👧‍👦 Family  night",
+            "text": "Bring 👨‍👩‍👧‍👦 and {{thing}} 🌿",
+            "variables": [
+              {
+                "key": "thing",
+                "label": "Bring what?"
+              }
+            ],
+            "embed": null,
+            "use": "any",
+            "group": "Hello",
+            "shortcut": "fam-night",
+            "keywords": [
+              "family",
+              "Ünïcode"
+            ],
+            "langs": [],
+            "createdAt": null,
+            "updatedAt": null
+          }
+        ],
+        "context": {
+          "their": {
+            "name": "Moss Hollow",
+            "firstName": "Moss",
+            "handle": "moss.example"
+          },
+          "my": {
+            "handle": "you.example"
+          },
+          "today": "October 14"
+        },
+        "replying": true,
+        "usage": {
+          "idea": {
+            "count": 3
+          },
+          "app": {
+            "count": 3
+          }
+        }
+      },
+      "output": {
+        "items": [
+          {
+            "id": "template:list",
+            "shelf": "templates",
+            "label": "Template · attaches a list",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:feed",
+            "shelf": "templates",
+            "label": "Template · attaches a feed",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:family",
+            "shelf": "templates",
+            "label": "Template · asks a question",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:me",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:app",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:idea",
+            "shelf": "templates",
+            "label": "Template · asks 2 questions",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:docs",
+            "shelf": "templates",
+            "label": "Template · attaches a link",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:pics",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:pics2",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:stamina",
+            "shelf": "templates",
+            "label": "Template · quotes a post",
+            "embedView": "$undefined"
+          },
+          {
+            "id": "template:walk",
+            "shelf": "templates",
+            "label": "Template",
+            "embedView": "$undefined"
+          }
+        ],
+        "sections": [
+          {
+            "id": "group:Feeds",
+            "heading": "Feeds",
+            "muted": false,
+            "items": [
+              "template:list",
+              "template:feed"
+            ]
+          },
+          {
+            "id": "group:Hello",
+            "heading": "Hello",
+            "muted": false,
+            "items": [
+              "template:family",
+              "template:me"
+            ]
+          },
+          {
+            "id": "ungrouped",
+            "heading": "Other templates",
+            "muted": false,
+            "items": [
+              "template:app",
+              "template:idea",
+              "template:docs",
+              "template:pics",
+              "template:pics2",
+              "template:stamina"
+            ]
+          },
+          {
+            "id": "elsewhere",
+            "heading": "For new posts",
+            "muted": true,
+            "items": [
+              "template:walk"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "none",
+      "fn": "templateShelf",
+      "input": {
+        "templates": null
+      },
+      "output": {
+        "items": [],
+        "sections": []
+      }
+    },
+    {
+      "id": "remoteQueryFor#1",
+      "fn": "remoteQueryFor",
+      "input": {
+        "query": " a "
+      },
+      "output": ""
+    },
+    {
+      "id": "remoteQueryFor#2",
+      "fn": "remoteQueryFor",
+      "input": {
+        "query": " ab "
+      },
+      "output": "ab"
+    },
+    {
+      "id": "remoteQueryFor#3",
+      "fn": "remoteQueryFor",
+      "input": {
+        "query": "/idea"
+      },
+      "output": ""
+    },
+    {
+      "id": "remoteQueryFor#4",
+      "fn": "remoteQueryFor",
+      "input": {
+        "query": " /idea"
+      },
+      "output": ""
+    },
+    {
+      "id": "remoteQueryFor#5",
+      "fn": "remoteQueryFor",
+      "input": {
+        "query": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "remoteQueryFor#6",
+      "fn": "remoteQueryFor",
+      "input": {
+        "query": null
+      },
+      "output": ""
+    },
+    {
+      "id": "remoteQueryFor#7",
+      "fn": "remoteQueryFor",
+      "input": {
+        "query": 5
+      },
+      "output": ""
+    },
+    {
+      "id": "remoteQueryFor#8",
+      "fn": "remoteQueryFor",
+      "input": {
+        "query": "😀"
+      },
+      "output": "😀"
+    },
+    {
+      "id": "remoteQueryFor#9",
+      "fn": "remoteQueryFor",
+      "input": {
+        "query": "abc",
+        "minChars": 4
+      },
+      "output": ""
+    },
+    {
+      "id": "remoteQueryFor#10",
+      "fn": "remoteQueryFor",
+      "input": {
+        "query": "abcd",
+        "minChars": 4
+      },
+      "output": "abcd"
+    },
+    {
+      "id": "remoteQueryFor#11",
+      "fn": "remoteQueryFor",
+      "input": {
+        "query": "é",
+        "minChars": 1
+      },
+      "output": "é"
+    }
+  ]
+}

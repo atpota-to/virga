@@ -1,0 +1,71 @@
+// Ports src/posting/composer/composer.css (the composer's measures)
+// Ports src/posting/posting.css (.composer-dialog's width)
+//
+// The measures composer.css writes as numbers, each citing its rule, as
+// Theme/Measures.swift does for the shell's sheets.
+
+#if canImport(UIKit)
+import SwiftUI
+import VirgaCore
+
+enum ComposerMeasure {
+  /// `.dialog.composer-dialog { width: min(640px, 100vw - 32px) }`
+  static let dialogWidth: CGFloat = 640
+  /// `.composer { gap: 14px }`
+  static let gap: CGFloat = 14
+  /// `.composer-dialog .dialog-body { padding: 0 20px 20px }` on a phone.
+  static let phoneSide: CGFloat = 20
+  static let side: CGFloat = 24
+  /// `.post-block { gap: 10px }`, `.post-blocks { gap: 12px }`, a thread's
+  /// post `padding-bottom: 18px`.
+  static let blockGap: CGFloat = 10
+  static let blocksGap: CGFloat = 12
+  static let threadPostSpaceBelow: CGFloat = 18
+  /// `.post-block-head { min-height: 30px }`
+  static let headHeight: CGFloat = 30
+  /// `.post-editor-input { font-size: 1.25rem; font-weight: 500;
+  /// letter-spacing: -0.012em; line-height: 1.4; min-height: 88px }`
+  static let editorSize: CGFloat = 20
+  static let editorWeight: Double = 500
+  static let editorTracking: CGFloat = -0.012
+  static let editorLineHeight: CGFloat = 1.4
+  static let editorMinHeight: CGFloat = 88
+  /// `.composer-options { gap: 2px 18px; padding-top: 10px }`, a rule in ink above.
+  static let optionsRowGap: CGFloat = 2
+  static let optionsGap: CGFloat = 18
+  static let optionsTop: CGFloat = 10
+  /// `.composer-option { gap: 6px; min-height: 32px }`
+  static let optionGap: CGFloat = 6
+  static let optionHeight: CGFloat = 32
+  /// `.image-grid { gap: 6px }`, `.image-tile { min-height: 96px; aspect-ratio: 4/3 }`
+  static let gridGap: CGFloat = 6
+  static let tileMinHeight: CGFloat = 96
+  static let tileAspect: CGFloat = 4.0 / 3.0
+  /// `.image-tile { --picture-scrim: rgb(15 27 51 / 0.72) }`, the one colour
+  /// that isn't a token (over a picture).
+  static let pictureScrim = ThemeColor(css: "rgb(15 27 51 / 0.72)") ?? .transparent
+  /// `.image-alt { bottom: 8px; left: 8px; min-height: 28px; padding: 0 10px }`
+  static let altInset: CGFloat = 8
+  static let altHeight: CGFloat = 28
+  static let altPadding: CGFloat = 10
+  /// `.embed-card { gap: 12px; padding: 12px }`, `.link-thumb { 72 × 72 }`
+  static let embedGap: CGFloat = 12
+  static let embedPadding: CGFloat = 12
+  static let thumb: CGFloat = 72
+  static let thumbLarge: CGFloat = 160
+  /// `.post-as-button { gap: 8px; min-height: 32px }`
+  static let postAsGap: CGFloat = 8
+  /// `.reply-context { gap: 6px }`
+  static let replyGap: CGFloat = 6
+  /// `.composer-busy { gap: 6px 12px }`, `.composer-actions { gap: 8px 12px }`
+  static let busyGap: CGFloat = 12
+  static let actionsGap: CGFloat = 12
+  /// `.publish-main { min-width: 88px }`
+  static let publishMinWidth: CGFloat = 88
+  /// `.composer-dialog .dialog-actions { padding: 12px 24px 16px }`; a
+  /// phone's `8px 12px 10px 20px`.
+  static let foot = EdgeInsets(top: 12, leading: 24, bottom: 16, trailing: 24)
+  static let phoneFoot = EdgeInsets(top: 8, leading: 20, bottom: 10, trailing: 12)
+}
+
+#endif

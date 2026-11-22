@@ -13,52 +13,98 @@
       "swift": []
     },
     "src/posting/composer/Composer.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController+Actions.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerSheet.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerOptions.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerServices.swift"
+      ],
+      "note": "Ported: opening from an intent (normalizeIntent, seedFromIntent, setting aside what was being written, the notices), restoring what was kept (keptPostFor, takeSetAside, openAside, elsewhereNotices), loading a reply or a quote, posting as another account (changeAsDid, gatesForAccount), the default reply settings, adding pictures (picked, pasted, an intent's described ones) and a video (uploaded as soon as it's added), quotes and link cards found in the text, splitting, renumbering and its undo, removing and adding posts, the settings row (tags, language, replies, timer, More › Start over), the busy line, the slow and hard publish watch, publishErrorView, the posted toast and resetting after a send, the autosave (flushed on Close and when the app goes to the background). Publishing goes through ComposerPublisher (VirgaUI/Composer/ComposerServices.swift); until publish.js's port is wired, UnavailablePublisher shows the web's busy line and then says publishing isn't in the iOS app yet, and Schedule, Add to queue and Save as draft do the same. Link cards come through ComposerLinkCards, a stand-in for linkCard.js's fetchLinkCard over the session's transport. Not yet, because what they call isn't ported: scheduling and the weekly queue (WhenPicker, the queue's next slot, submitSchedule), drafts (saveDraft, loading a draft or a scheduled post, the draft media store, finishSource), the timer (LifespanEditor, getLimits, the default timer, armAfterPublish), the adviser (Check this post, the gate before posting), the library and templates (applyPlan, applyTemplate, Save as a template, Continue a thread), the duplicate guard (publish.js's), drag and drop, and the posted toast's View it on Bluesky link (the shell's toasts are words only). On a phone the main button is in the foot under the thumb (ios/DESIGN.md), not in the web's top bar.",
+      "synced": "9be49b62b520"
     },
     "src/posting/composer/ComposerContext.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerHost.swift"
+      ],
+      "synced": "dabf2324bec8"
     },
     "src/posting/composer/ComposerDialogs.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerDialogs.swift"
+      ],
+      "note": "ConfirmDialog, MetaDialog, GatesDialog and VideoAltDialog are ported. LifespanDialog says the timer isn't in the iOS app yet (LifespanEditor.jsx isn't ported); ContinueThreadDialog waits for the library's sources (readArchivePosts, fetchOwnPosts).",
+      "synced": "65d002b47fa1"
     },
     "src/posting/composer/EmbedCards.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/EmbedCards.swift"
+      ],
+      "synced": "89b1c9d312b2"
     },
     "src/posting/composer/LanguagePicker.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerParts.swift"
+      ],
+      "note": "Return adds the first suggestion; a hardware keyboard's arrows don't move through them.",
+      "synced": "c409955cb92e"
     },
     "src/posting/composer/MediaGrid.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/MediaGrid.swift"
+      ],
+      "synced": "9dee6592d05c"
     },
     "src/posting/composer/PostAsPicker.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerParts.swift"
+      ],
+      "synced": "0891fb0836b4"
     },
     "src/posting/composer/PostBlock.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/PostBlock.swift"
+      ],
+      "note": "PostTools' library button (Quote or attach from your library) waits for the library's port; pictures and a video come from PhotosPicker.",
+      "synced": "5593d9cac230"
     },
     "src/posting/composer/PostEditor.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/PostEditor.swift"
+      ],
+      "note": "The highlights are attributes on a UITextView's own text rather than a layer under a transparent textarea. Not yet: the \"/\" templates (library/model.js's detectSlashCommand, rankTemplatesForSlash and applying a template aren't ported), and a hardware keyboard's arrows through the mention suggestions.",
+      "synced": "e2081a195f8b"
     },
     "src/posting/composer/PublishButton.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerParts.swift"
+      ],
+      "synced": "f2a126c3d792"
     },
     "src/posting/composer/ReplyContext.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/EmbedCards.swift"
+      ],
+      "synced": "234392054cc0"
     },
     "src/posting/composer/TagsField.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerParts.swift"
+      ],
+      "note": "Backspace in an empty field doesn't take the last tag off (SwiftUI's TextField doesn't say when it's pressed).",
+      "synced": "8f62ce7d6bc0"
     },
     "src/posting/library/LibraryDialog.jsx": {
       "status": "pending",
@@ -106,11 +152,11 @@
       "swift": []
     },
     "src/posting/pages/TemplatesPage.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Posting/TemplatesPage.swift"
       ],
-      "note": "The page over the account's own TemplatesModel (useTemplates) and TemplateUsage (readTemplateUsage, sortTemplatesForShelf): the permission notice with Sign in again when the sign-in can't write templates; the read-again failure over the last ones seen; the bones while the first read runs; the failure with Try again; No templates yet with New template; then the count and its line with New template, the groups (Other templates for those without one), and each row: the name as the way into the editor with its /shortcut, Use and the ⋯ (Edit, Delete with its dialog and toast) on the name's line, the words with each blank marked (named as it is asked, or as it fills itself; No text: it only attaches something), and the facts (who it's for, the questions, what it attaches, the words that suggest it, how often it was used here). The editor is TemplateEditor. Not yet: Use opens the composer only once VirgaUI's composer sets \\.openComposer (the slot; until then it goes to the composer's address). iOS additions: /posting/templates/new and /posting/templates/<rkey> open the editor. A blank's chip is drawn on a tint in the run of words; the focus after a delete is the system's.",
+      "note": "The page over the account's own TemplatesModel (useTemplates) and TemplateUsage (readTemplateUsage, sortTemplatesForShelf): the permission notice with Sign in again when the sign-in can't write templates; the read-again failure over the last ones seen; the bones while the first read runs; the failure with Try again; No templates yet with New template; then the count and its line with New template, the groups (Other templates for those without one), and each row: the name as the way into the editor with its /shortcut, Use and the ⋯ (Edit, Delete with its dialog and toast) on the name's line, the words with each blank marked (named as it is asked, or as it fills itself; No text: it only attaches something), and the facts (who it's for, the questions, what it attaches, the words that suggest it, how often it was used here). The editor is TemplateEditor. Use opens the composer (ComposerHost) with the template's intent; the composer reads the template once library/model.js is ported. iOS additions: /posting/templates/new and /posting/templates/<rkey> open the editor. A blank's chip is drawn on a tint in the run of words; the focus after a delete is the system's.",
       "synced": "8c1a4a3607f8"
     },
     "src/posting/pages/TimersPage.jsx": {
@@ -146,16 +192,23 @@
       "swift": []
     },
     "src/posting/ui/AltTextDialog.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerDialogs.swift"
+      ],
+      "note": "The writer's part: the image, its description and the count. Describing and revising it for the writer needs the adviser's AI service (aiService.js, altTextModel.js, altTextFollowUp.js), not ported; the web shows no Generate button without a server requester either. ALT_TEXT_MAX_GRAPHEMES is written here until altTextModel.js's port.",
+      "synced": "238c2db53cce"
     },
     "src/posting/ui/ComposerDefaults.jsx": {
       "status": "pending",
       "swift": []
     },
     "src/posting/ui/GatesEditor.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerDialogs.swift"
+      ],
+      "synced": "e2152ec2eb90"
     },
     "src/posting/ui/LifespanDefaults.jsx": {
       "status": "pending",
@@ -170,8 +223,12 @@
       "swift": []
     },
     "src/posting/ui/PostPreview.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/EmbedCards.swift"
+      ],
+      "note": "Only the compact form the composer uses (who wrote it and its words), read straight from the view: postPreview.js isn't ported, so there's no time, embed line or counts.",
+      "synced": "961de3ed1b7a"
     },
     "src/posting/ui/PostingHeader.jsx": {
       "status": "partial",

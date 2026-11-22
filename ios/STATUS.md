@@ -34,6 +34,7 @@ when the port is complete.
 | posting-text | VirgaPosting | ported, audited | facets, links, mentions, hashtags, thread splitting, gates, embeds, compose intents, the posting events bus (mentions' default fetch still to be wired) |
 | timers | VirgaPosting | ported, audited | the timer rule model and every sentence in five locales and seven zones, the lifespan editor's model; the server calls wait behind `TimerRequester` |
 | templates | VirgaPosting | ported, audited | postTemplates, templateUsage, editorDrafts, templateService, TemplatesModel (useTemplates), the template editor's model |
+| library | VirgaPosting | ported, audited | the library's model, sources, store, LibraryModel (useLibrary) and its UI helpers; one port of localeCompare for the whole app in VirgaCore (JSCollation) |
 | insights | VirgaInsights | ported, audited | routes, the dashboard catalog and layouts, registries, settings sections, the command palette's commands, lucide → SF Symbol mapping; the reports' models, chart notes and follower milestones, the share card's spec and drawing, the Interaction lookup's model |
 | composer | VirgaPosting | ported, audited | composerModel, the composer's modules, autosave, posting settings, the posting queue and repeats, images and video (the pixel work behind ImageEncoder), loaders, pendingCompose, the adviser's setup and analysis; the seams to VirgaBackend's timers, Mentions' fetch and the archive's postsChanged |
 | defense | VirgaDefense | ported, audited | bands, scoring, canary candidates, the radar's layout, the moderator's commands, plans, history, limits; harvest, scan, veto, the service calls, the page model, DefenseAccountModel and DefenseListsModel |
@@ -48,13 +49,10 @@ Each logic step is a port and then an independent audit (see
 ios/porting/README.md); the briefs are in `ios/porting/port-wave.workflow.js`.
 The order follows the dependencies between the web modules.
 
-1. **Tidy-ups the 2026-11-21 merges left:**
-   - Two ports of JavaScript's `localeCompare` grew apart in parallel: VirgaInsights' `Support/JSCollation.swift` (a table-driven ICU root, audited hard) and VirgaPosting's `Support/LocaleCompare.swift` (Foundation's ICU with a trailing tab). Move one into VirgaCore, with the `sensitivity: 'base'` mode templates need, and have both domains' fixtures pass on it.
-   - Add VirgaRepo to VirgaInsights' dependencies so ReportArchive can offer `atmosphere` (notes/insights.md).
-   - Wire DemoSession into VirgaUI's demo mode in place of its stub transport (notes/demo-world.md, the last section, says how), so the UI tests and screenshots show a built archive.
+1. ~~**Tidy-ups the 2026-11-21 merges left**~~ Done on 2026-11-22: one localeCompare in VirgaCore, VirgaInsights on VirgaRepo, demo mode on DemoSession.
 2. ~~**Composer**~~ Done on 2026-11-22 (notes/composer.md).
 3. **Publishing and drafts** (needs the composer): `publish.js`, `publishRecord.js`, `linkCard.js`, `drafts/*.js`.
-4. **Scheduling, adviser, library** (need 2 and 3): `src/posting/schedule/*` (the rest), `pages/scheduleModel.js`, `hubModel.js`, `postedModel.js`, `draftActions.js`; `src/posting/adviser/*`, `ui/postPreview.js`, `ui/backendAccess.js`; `src/posting/library/*` (it builds on the templates).
+4. **Scheduling and the adviser** (need 2 and 3; the library is done): `src/posting/schedule/*` (the rest), `pages/scheduleModel.js`, `hubModel.js`, `postedModel.js`, `draftActions.js`; `src/posting/adviser/*`, `ui/postPreview.js`, `ui/backendAccess.js`; `src/posting/library/*` (it builds on the templates).
 5. ~~**The rest of VirgaDemo**~~ Done on 2026-11-22 (notes/demo-world.md).
 6. **The SwiftUI layer, continued** (VirgaUI; `ios/DESIGN.md` is the guide, CI's `iOS app` job the compiler, its screenshots the eyes):
    - Dashboards and reports with Swift Charts, sharing a chart with `ImageRenderer` (drawShareImage over a ShareCanvas), the tools.
@@ -85,8 +83,8 @@ The order follows the dependencies between the web modules.
   up.
 - **Fixtures** live in the repository (about 22 MB). Keep new ones under
   about 1 MB each.
-- **Bugs.** `ios/porting/WEB-BUGS.md` lists 84 bugs in the web app the
-  porters found and reproduced rather than fixed. Thirteen are visible to people.
+- **Bugs.** `ios/porting/WEB-BUGS.md` lists 87 bugs in the web app the
+  porters found and reproduced rather than fixed. Fourteen are visible to people.
 - **Harness limits.** The fixture writer's `toJSON` in
   `ios/parity/cases/_helpers.js` keeps a `__proto__` key since 2026-11-21
   (no fixture changed). It is still recursive, so a value nested about

@@ -249,11 +249,11 @@ public final class TemplateService {
       // Ungrouped templates sit after every group.
       if ga.isEmpty { return 1 }
       if gb.isEmpty { return -1 }
-      let byName = LocaleCompare.compare(ga, gb, locale: locale, sensitivity: .base)
-      return byName != 0 ? byName : (LocaleCompare.codeUnitLess(ga, gb) ? -1 : 1)
+      let byName = JSCollation.localeCompare(ga, gb, locale: locale, sensitivity: .base)
+      return byName != 0 ? byName : (ga.utf16.lexicographicallyPrecedes(gb.utf16) ? -1 : 1)
     }
-    let names = LocaleCompare.compare(a.name, b.name, locale: locale, sensitivity: .base)
-    return names != 0 ? names : LocaleCompare.compare(a.rkey, b.rkey, locale: locale)
+    let names = JSCollation.localeCompare(a.name, b.name, locale: locale, sensitivity: .base)
+    return names != 0 ? names : JSCollation.localeCompare(a.rkey, b.rkey, locale: locale)
   }
 
   /// Hear of every change to any account's templates: `(did, templates)`.

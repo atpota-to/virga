@@ -4,10 +4,7 @@
 //
 // What the posting pages share: the bones a list loads under, a read that
 // failed with Try again, and the question every delete asks first. Also
-// countPhrase (src/posting/pages/hubModel.js), and the slot the composer
-// fills: until VirgaUI's composer sets `\.openComposer`, a page that would
-// open it goes to the composer's address (/posting/compose) instead, as
-// New post does.
+// countPhrase (src/posting/pages/hubModel.js).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -29,35 +26,6 @@ enum PostingHeader {
 enum PostingWords {
   static func countPhrase(_ n: Int, _ one: String, _ many: String? = nil) -> String {
     "\(AppLocale.formatNumber(n)) \(n == 1 ? one : (many ?? "\(one)s"))"
-  }
-}
-
-/// `composer.open(intent)`: the composer's own, once it is in the app.
-/// The intent is the web's object (`{ asDid, templateId }`, …).
-struct ComposerOpener {
-  let open: @MainActor (JSONValue) -> Void
-
-  init(_ open: @escaping @MainActor (JSONValue) -> Void) {
-    self.open = open
-  }
-
-  @MainActor
-  func callAsFunction(_ intent: JSONValue) {
-    open(intent)
-  }
-}
-
-private struct ComposerOpenerKey: EnvironmentKey {
-  static let defaultValue: ComposerOpener? = nil
-}
-
-extension EnvironmentValues {
-  /// THE COMPOSER'S SLOT: set by VirgaUI/Composer when it lands, so Use on
-  /// a template (and anything else that opens the composer with an intent)
-  /// opens it. Nil until then.
-  var openComposer: ComposerOpener? {
-    get { self[ComposerOpenerKey.self] }
-    set { self[ComposerOpenerKey.self] = newValue }
   }
 }
 
