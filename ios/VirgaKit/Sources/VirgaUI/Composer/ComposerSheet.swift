@@ -129,6 +129,13 @@ struct ComposerSheet: View {
             .padding(.horizontal, theme.composerNarrow ? ComposerMeasure.phoneSide : ComposerMeasure.side)
             .padding(.top, theme.composerNarrow ? ComposerMeasure.phoneBodyTop : ComposerMeasure.bodyTop)
             .padding(.bottom, ComposerMeasure.bodyBottom)
+            // A post's "@" or "/" suggestions, under its editor, brought
+            // into view as they open (ComposerReveals, PostEditor.swift).
+            .environment(\.composerScroller, ComposerScroller { [motion = theme.motion.control] id in
+              DispatchQueue.main.async {
+                withAnimation(motion) { proxy.scrollTo(id) }
+              }
+            })
         }
         // SCHEDULE: the when panel opens under the post's settings, which on
         // a phone can be below the foot of the sheet: brought into view.
