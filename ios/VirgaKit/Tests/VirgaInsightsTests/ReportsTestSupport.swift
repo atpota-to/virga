@@ -11,12 +11,15 @@ import VirgaTestSupport
 @testable import VirgaInsights
 
 enum ReportFixtures {
-  /// Each archive's JSON, by name.
+  /// Each archive's JSON, by name: insights.archives', and those a fixture
+  /// holds of its own (insights.interaction's).
   static let archives: [String: JSONValue] = {
     var out: [String: JSONValue] = [:]
-    for c in (try? Parity.cases("insights.archives", fn: "archive")) ?? [] {
-      guard let text = c.output.stringValue, let json = try? JSONValue.parse(text) else { continue }
-      out[c.id] = json
+    for fixture in ["insights.archives", "insights.interaction"] {
+      for c in (try? Parity.cases(fixture, fn: "archive")) ?? [] {
+        guard let text = c.output.stringValue, let json = try? JSONValue.parse(text) else { continue }
+        out[c.id] = json
+      }
     }
     return out
   }()

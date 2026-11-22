@@ -158,8 +158,17 @@
       "synced": "4c893aae30dd"
     },
     "src/tools/interactionModel.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Tools/InteractionModel.swift",
+        "ios/VirgaKit/Sources/VirgaInsights/Tools/InteractionModel+Types.swift"
+      ],
+      "fixtures": [
+        "insights.interaction",
+        "insights.archives"
+      ],
+      "note": "All of it; nothing in it reads the network (InteractionLookup.jsx resolves a typed handle itself, VirgaUI). The web's `self` is `isSelf`. The timeline runs to the archive's nowMs, or the `nowMs:` given, or the device clock (the web's Date.now()). kindsLine takes the byKind entries in the object's order (`entries:`; integer-like keys first, as Object.keys orders them) or a dictionary (unknown kinds then go by name). Deliberate differences, in input the app never has: kinds and directions are looked up as own keys, so 'toString' gives no phrase (the web's plain-object lookup returns the inherited function) and an unknown kind is never counted in totals (the web's totals['constructor'] is a function); an event at a time outside Date's range gets at \"\" where the web's toISOString throws.",
+      "synced": "26ae471ebdf3"
     },
     "src/tools/keep.js": {
       "status": "ported",
