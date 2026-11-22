@@ -45,7 +45,6 @@ struct BestTimeBody: View {
     let m = ReportModels.bestTimeModel(archive, window, archive.nowMs ?? SyncStatus.now(), block: block)
     let sentence = WidgetParts.bestTimeSentence(m)
     let zone = AppLocale.activeTimeZone().identifier.replacingOccurrences(of: "_", with: " ")
-    let phone = theme.isPhone
     let hours = Segmented(
       label: "Hours per column",
       options: [SegmentedOption(1, "Hourly"), SegmentedOption(2, "2 hours"), SegmentedOption(4, "4 hours")],
@@ -54,16 +53,13 @@ struct BestTimeBody: View {
       .accessibilityIdentifier("best-time-statement")
     VirgaSection {
       // The heading, with the hours per column at its right; on a phone
-      // under its words, 8 below them (`.card-head > .segmented` at 560).
-      VStack(alignment: .leading, spacing: 0) {
-        SectionHead(
-          "What a typical post earns, by when it was posted",
-          sub: "\(AppLocale.formatNumber(m.posts)) posts and threads over \(Periods.periodPhrase(window)), in \(zone) time",
-          trailing: phone ? nil : AnyView(hours))
-        if phone {
-          hours.padding(.top, Measure.Tools.phoneHeadControlSpaceAbove)
-        }
-      }
+      // the kit's head puts them under its words, 8 below them
+      // (`.card-head > .segmented` at 560).
+      SectionHead(
+        "What a typical post earns, by when it was posted",
+        sub: "\(AppLocale.formatNumber(m.posts)) posts and threads over \(Periods.periodPhrase(window)), in \(zone) time",
+        trailing: AnyView(hours)
+      )
       .padding(.bottom, theme.points(ThemeKit.cardHeadSpaceBelow))
       Heatmap(
         rows: WidgetParts.bestTimeRows(m), columns: ReportModels.hourColumns(block).map { HeatmapColumn(label: $0.label, span: $0.span) },

@@ -133,8 +133,6 @@ extension Measure {
     public static let bestTableWidth: CGFloat = 448
     /// charts.css `.an-tableview .table thead th { position: sticky; padding-top: 8px }`
     public static let stickyHeadSpaceAbove: CGFloat = 8
-    /// controls.css `@media (max-width: 560px) { .card-head:has(> :nth-child(2)) > .segmented { margin-top: 8px } }`
-    public static let phoneHeadControlSpaceAbove: CGFloat = 8
     /// `.report-split`: two columns from this wide (reports.css), one under it.
     public static let splitMin: CGFloat = 400
 
