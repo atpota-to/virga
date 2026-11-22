@@ -151,9 +151,18 @@ struct ComposerSheet: View {
       .scrollDismissesKeyboard(.interactively)
       // `.composer-drop`: over the post area, the head or bar and the foot left clear.
       .overlay { if dropOver { ComposerDropHint() } }
+      // The toasts are the host's one stack, at the window's corner beside a
+      // wider window's dialog, as the web's `.toasts` are. A phone's sheet
+      // covers that stack, so it draws its own over the post area, above
+      // the foot, where they don't hide Save as draft and Schedule.
+      .overlay { if theme.composerNarrow { ToastStack(center: toasts) } }
       .sheet(item: $controller.dialog) { dialog in
+        // On a phone at its detents; wider, the web's centred modal, its
+        // own width and as tall as what's in it (the library 980 by 720).
         ComposerDialogView(controller: controller, dialog: dialog)
-          .presentationDetents(dialog.isTall ? [.large] : [.medium, .large])
+          .dialogSheetSizing(
+            phone: theme.windowWidth <= dialog.phoneWidth, detents: dialog.detents, width: dialog.sheetWidth,
+            height: dialog.sheetHeight)
           .presentationBackground(theme.surface)
           .presentationCornerRadius(Measure.Dialog.radius)
       }
@@ -162,7 +171,6 @@ struct ComposerSheet: View {
     .background(theme.surface)
     // Files dropped anywhere on the composer go to the post being written.
     .composerDrop(controller, over: $dropOver)
-    .overlay { ToastStack(center: toasts) }
     // ADVISER: the adviser's sheet, and its account while the composer is open.
     .adviserSheet(controller.adviser)
     .onAppear {

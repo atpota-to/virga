@@ -195,7 +195,9 @@ struct DraftsPage: View {
         ) { scheduledFor, queued in
           try await schedule(row, scheduledFor: scheduledFor, queued: queued)
         }
-        .presentationDetents([.large])
+        // A phone's sheet the whole height; wider, the web's `.dialog`, 520
+        // wide and as tall as what's in it.
+        .dialogSheetSizing(phone: theme.isPhone, detents: [.large])
         .presentationBackground(theme.surface)
         .presentationCornerRadius(Measure.Dialog.radius)
       }
