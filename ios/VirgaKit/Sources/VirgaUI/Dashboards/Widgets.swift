@@ -20,9 +20,9 @@
 // follower growth, new followers, engagement over time, engagement rate,
 // posting cadence and Best time; every other card is MoreWidget's
 // (MoreWidgets.swift). The posting cards (scheduled posts, timers, what
-// goes out next, drafts) say what an account without a long session can't
-// have, and otherwise that they need the posting pages, which aren't
-// ported. The chart cards carry the notes, and the follower cards the
+// goes out next, drafts) are MoreWidget's too: they read what the Posting
+// overview reads, and say what an account without a long session can't
+// have. The chart cards carry the notes, and the follower cards the
 // milestones (ChartNotesModels.marks, useChartMarks).
 
 #if canImport(UIKit)

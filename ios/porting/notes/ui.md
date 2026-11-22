@@ -525,7 +525,7 @@ THE POSTING PAGES (Posting/: HubPage, DraftsPage, PostedPage, TimersPage, TimerD
   through at least 44 points (DESIGN.md › Touch), where the web's `inset: -12px -6px` gives 42.85.
 - Still hand-built: Drafts' and Timers' empty blocks (the kit's EmptyState takes neither a button with
   an icon nor a sentence with a link), and the kit's VirgaRow doesn't yet let a ⋯ reach past its actions
-  group as HubCornerRow does.
+  group as HubCornerRow does (VirgaRow has no callers outside its previews, so no screen shows it yet).
 
 COMPOSER TIMER (Composer/ComposerController+Timer.swift, Composer/LifespanDialog.swift)
 - The post's timer is the state's `lifespan`; `model.lifespanTouched` (ComposerStateModel) says the writer

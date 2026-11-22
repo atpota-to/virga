@@ -401,6 +401,8 @@ struct PostingWidgetTimers {
   var unavailable: Bool
 }
 
+// Isolated as PostingLoad is, said outright: it calls `follow`.
+@MainActor
 extension PostingLoad where Value == PostingWidgetScheduled {
   /// `useScheduled(did, limit)`: the account's scheduled posts, read again on
   /// the scheduling event, nothing read without a long session.
