@@ -5,12 +5,12 @@
 // foot on the right with the confirm in ink. The web draws it as a modal at
 // every width (at most 520 wide, --surface with a --line edge, 16-point
 // corners and --shadow-lg over --scrim); on iOS it is a sheet, on --surface
-// with those corners: wider than a phone, 520 wide and as tall as what's in
+// with those corners: wider than a phone 520 wide and as tall as what's in
 // it, as the web's is (DialogSheetSizing), and on a phone rising from the
-// foot. From 560 down its buttons share the foot in equal
-// halves, 44 tall, or, for a dialog whose buttons say too much to share a
-// line (`stackActions`, `.dialog--stack-actions`), go one under the other,
-// the one that does it first. Swiping it down is the web's Escape: it
+// foot. From 560 down its buttons share the foot in equal halves, 44 tall,
+// or, for a dialog whose buttons say too much to share a line
+// (`stackActions`, `.dialog--stack-actions`), go one under the other, the
+// one that does it first. Swiping it down is the web's Escape: it
 // closes. A dialog built with `autofocus: true` focuses, when it opens,
 // the field inside it marked `.dialogAutofocus()` (the web's
 // `[data-autofocus]`); the focus is the dialog's own, inside its sheet.
