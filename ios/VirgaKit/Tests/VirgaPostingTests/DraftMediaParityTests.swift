@@ -256,6 +256,38 @@ func storeJSON(_ media: any DraftMediaStore) async -> JSONValue {
     _ = await DraftMedia.deleteDatabase(DraftMedia.postingDbName(kept), files: store)
   }
 
+  /// Saving a draft again, and pruning, only look at the entries: the
+  /// bytes are handed back as a file (a copy, on the device) only when a
+  /// draft is opened, as IndexedDB's get hands back its stored File.
+  @Test func checksReadEntriesWithoutCopyingTheBytes() async throws {
+    let (storage, _, files) = Self.storage()
+    let media = FileStoreDraftMedia(did: Self.alice, storage: storage)
+    let picked = try await files.makeFile(Data([1, 2, 3]), name: "a.jpg", type: "image/jpeg", lastModified: 5)
+    let state: JSONValue = [
+      "asDid": .string(Self.alice),
+      "posts": [["id": "p1", "images": [["id": "i1", "file": picked.json, "mime": "image/jpeg"]]]],
+    ]
+    let saved = try await DraftMedia.storeDraftMedia(Self.alice, state, media: media, now: 42, newRef: CountingUUIDs().ref)
+    let made = await files.snapshot.count
+    // Saved again: the file is held already, so nothing is copied or written.
+    let again = try await DraftMedia.storeDraftMedia(Self.alice, saved.state, media: media, now: 99)
+    #expect(again.refs == saved.refs)
+    #expect(await files.snapshot.count == made)
+    let held = try #require(await media.entry(saved.refs[0]))
+    #expect(held.savedAt == 42)
+    #expect(held.type == "image/jpeg")
+    #expect(held.file?["name"] == "a.jpg")
+    #expect(held.file?["size"] == 3)
+    #expect(await media.entry("virga-media:none") == nil)
+    // A prune reads when each was saved, and copies nothing either.
+    #expect(await DraftMedia.pruneDraftMedia(Self.alice, [], media: media, savedBefore: 10).isEmpty)
+    #expect(await files.snapshot.count == made)
+    // Opening the draft hands the file back.
+    let opened = await DraftMedia.loadDraftMedia(Self.alice, ["posts": [["id": "p1", "images": [["localRef": .string(saved.refs[0])]]]]], media: media)
+    #expect(opened.missing.isEmpty)
+    #expect(await files.snapshot.count == made + 1)
+  }
+
   /// Refs come back in key order, as IndexedDB's getAllKeys gives them, and
   /// pruning leaves new files and the ones kept.
   @Test func prunesInKeyOrder() async throws {

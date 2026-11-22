@@ -72,9 +72,18 @@ public protocol DraftMediaStore: Sendable {
   func put(_ entries: [DraftMediaEntry]) async throws
   /// The entry kept under `ref`, or nil.
   func get(_ ref: String) async -> DraftMediaEntry?
+  /// The entry kept under `ref` as stored, without handing its bytes back
+  /// as a file (`file` holds only the file's fields), or nil: what a check
+  /// that it is held, or of when it was saved, needs. `get` gives a copy of
+  /// the bytes each time.
+  func entry(_ ref: String) async -> DraftMediaEntry?
   func remove(_ refs: [String]) async
   /// Every ref held.
   func refs() async -> [String]
+}
+
+extension DraftMediaStore {
+  public func entry(_ ref: String) async -> DraftMediaEntry? { await get(ref) }
 }
 
 /// Draft media in memory: kept in the order first put (a Map's), for the run.
@@ -172,6 +181,13 @@ public struct FileStoreDraftMedia: DraftMediaStore {
       for folder in written { try? await storage.store.delete(folder) }
       throw error
     }
+  }
+
+  /// `entry.json` alone: the file's bytes are neither read nor copied.
+  public func entry(_ ref: String) async -> DraftMediaEntry? {
+    guard let stored = try? await storage.store.readJSON("\(folder(ref))/entry.json", as: Stored.self) else { return nil }
+    return DraftMediaEntry(
+      ref: stored.ref, file: stored.file, name: stored.name, type: stored.type, size: stored.size, savedAt: stored.savedAt)
   }
 
   public func get(_ ref: String) async -> DraftMediaEntry? {
@@ -413,7 +429,7 @@ public enum DraftMedia {
       let item = at.item
       guard isFileLike(item["file"]), let file = item["file"] else { continue }
       var ref = isVirgaLocalRef(item["localRef"]) ? item["localRef"]?.stringValue : nil
-      if let held = ref, await store.get(held) != nil { continue }
+      if let held = ref, await store.entry(held) != nil { continue }
       // A new file, or one attached again over another app's path, which
       // this device could never look up.
       if ref == nil {
@@ -520,7 +536,7 @@ public enum DraftMedia {
     if let savedBefore {
       var old: [String] = []
       for ref in drop {
-        let entry = await store.get(ref)
+        let entry = await store.entry(ref)
         // Every entry this module writes has a savedAt; one without can't
         // be from a save in progress.
         let fresh = entry.map { ComposerJS.greaterOrEqual($0.savedAt, .number(savedBefore)) } ?? false

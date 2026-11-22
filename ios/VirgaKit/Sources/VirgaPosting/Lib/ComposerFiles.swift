@@ -6,8 +6,9 @@
 // card image becomes a new file (`new File([blob], 'thumbnail', { type })`),
 // and a draft's media are kept in the draft media store and handed back as
 // files. ComposerFiles is that File API: VirgaUI keeps files as temporary
-// files (with `ref` their path) and the draft media store's bytes in place;
-// tests and the demo use InMemoryComposerFiles.
+// files (with `ref` their path), and a draft's kept media handed back
+// become new ones (the store's `get`; a check that media are held reads
+// only their entries); tests and the demo use InMemoryComposerFiles.
 //
 // No web module of its own: on the web these are the browser's File objects.
 
