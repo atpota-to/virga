@@ -88,17 +88,17 @@ struct AccountsSettings: View {
           .fixedSize(horizontal: false, vertical: true)
           .frame(maxWidth: theme.measure, alignment: .leading)
         SettingsBody {
-          SettingsRow(label: "Browser session") {
+          SettingsRow(label: "Browser session", kind: .prose) {
             note(
               "The sign-in is kept by this browser, which talks to your account’s server directly. It lasts as long as that server allows an app that runs only in a browser, which is usually up to two weeks."
             )
           }
-          SettingsRow(label: "Long session through Virga’s server") {
+          SettingsRow(label: "Long session through Virga’s server", kind: .prose) {
             note(
               "The sign-in is held by Virga’s server (\(host)), which passes your requests on to your account and stays signed in for as long as you keep using it. Scheduled posts, post timers and the post adviser need one, because they run while this browser is closed."
             )
           }
-          SettingsRow(label: "Signing out") {
+          SettingsRow(label: "Signing out", kind: .prose) {
             note(
               "Signing out ends the session in this browser only: your other browsers and devices stay signed in. Scheduled posts and post timers keep running while any browser or device is signed in to Virga with a long session for the account; signing out of the last one stops them until you sign in that way again. Your archive is never sent to Virga’s server."
                 + (session.authMode != "backend" ? " This copy of Virga signs new accounts in through the browser." : ""))

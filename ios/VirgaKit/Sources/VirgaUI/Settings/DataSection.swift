@@ -101,12 +101,16 @@ struct DataSection: View {
               .accessibilityIdentifier("data-cancel-sync")
           }
           .padding(.vertical, theme.rowPadLg)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          // `.settings-sync` is a row like any other: a hairline under it.
+          .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
         } else {
           if let error = archive.syncError {
             Callout(tone: .danger) {
               Text("The last sync had problems.").font(theme.font(.textBase, weight: VirgaWeight.semibold)) + Text(" \(error)")
             }
-            .padding(.top, theme.rowPadLg)
+            .padding(.top, Measure.Settings.calloutSpaceAbove)
+            .padding(.bottom, Measure.Settings.calloutSpaceBelow)
             .accessibilityIdentifier("data-sync-error")
           }
           SettingsRow(
@@ -162,7 +166,7 @@ struct DataSection: View {
       }
 
       SettingsSectionView(title: "Storage in this browser", sub: nil) {
-        SettingsRow(label: "Kept on this device", hint: storageHint(archive), compactControl: true) {
+        SettingsRow(label: "Kept on this device", hint: storageHint(archive), compactControl: true, kind: .state) {
           // Only the case to find is marked; kept, the line says where.
           if !archive.data.persistent {
             Badge("This session only", tone: .warn)
@@ -180,7 +184,9 @@ struct DataSection: View {
           } label: {
             Label("Delete the archive…", systemImage: Glyph.trash)
           }
-          .buttonStyle(.virga(.danger))
+          // The quiet outline with its words in red (`is-danger`); the red
+          // fill is the confirm dialog's.
+          .buttonStyle(.virga(destructive: true))
           .disabled(!archive.data.loaded || archive.sync != nil)
           .accessibilityIdentifier("data-delete")
         }
@@ -216,7 +222,8 @@ struct DataSection: View {
 
   /// `archiveLine(archive, counts)`: "1,031 posts, 9,732 repo records and
   /// 4,810 followers that can be listed · synced 4m ago"; before the first
-  /// build, only when.
+  /// build, only when. The dot goes with the words before it when the line
+  /// breaks there, and "synced 4m ago" stays in one piece (`.settings-when`).
   static func archiveLine(_ archive: ArchiveModel) -> Text {
     let when = SyncStatus.when(archive)
     guard archive.data.meta.posts != nil else { return Text(when) }
@@ -224,7 +231,8 @@ struct DataSection: View {
     let held =
       "\(counted(counts.posts, "post", "posts")), \(counted(counts.records, "repo record", "repo records")) and \(counted(counts.followers, "follower", "followers")) that can be listed"
     let lowered = String(when.prefix(1)).jsLowercased() + when.dropFirst()
-    return Text(held) + Text(" · ") + Text(lowered)
+    let whole = lowered.replacingOccurrences(of: " ", with: "\u{00A0}")
+    return Text(held + "\u{00A0}· " + whole)
   }
 }
 

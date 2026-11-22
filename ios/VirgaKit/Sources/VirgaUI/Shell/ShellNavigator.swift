@@ -11,8 +11,8 @@
 //
 // On a phone the address is also a NavigationStack's path: the front page
 // of its part at the root, and the pages above it (ShellRoutes.parentOf,
-// followed up) pushed over it, so the system's back button and its swipe
-// say "‹ Reports" and go there. `stack` is that path; setting it (a swipe
+// followed up) pushed over it, so the way back ("‹ Reports", AppBarBack)
+// and the swipe back go there. `stack` is that path; setting it (a swipe
 // back) moves the address to the page that is left on top.
 //
 // A new page plugs in by its address: RoutedPage (RoutedPage.swift) maps
@@ -112,8 +112,8 @@ public final class ShellNavigator {
 
   // MARK: Titles
 
-  /// Shell.jsx's title for the page the path names: the tab's, and what the
-  /// back button says on the page above.
+  /// Shell.jsx's title for the page the path names: the tab's, and what
+  /// VoiceOver reads for the page.
   public static func title(_ route: AppRoute, dashboardName: String?, defenseEnabled: Bool) -> String {
     switch route.section {
     case .dashboard:

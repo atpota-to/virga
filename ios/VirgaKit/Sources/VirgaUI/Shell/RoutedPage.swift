@@ -2,6 +2,7 @@
 // Ports src/posting/ui/PostingHeader.jsx (the header a posting page has)
 // Ports src/posting/PostingPage.jsx (the page the address names, NeedsBackend in its place)
 // Ports src/tools/ToolPage.jsx (ToolHeader, and the page of a tool that isn't built)
+// Ports src/reports/ReportPage.jsx (NoReportPage: a report address that names none)
 //
 // Every route resolves to a view here. A page that has been ported is its
 // own view; one that hasn't is UnportedPage: its real header (the title and
@@ -20,10 +21,10 @@
 //   case .reports where route.page == "followers":
 //     FollowersReport()
 //
-// The navigation bar (a phone's, on a page inside a part), the app bar in
-// the page (a phone's, on a part's front page), and the page's title for
-// VoiceOver and the back button are put on here, so a page draws only
-// itself.
+// The navigation bar (a phone's, on a page inside a part, with ‹ and the
+// name of the page above), the app bar in the page (a phone's, on a part's
+// front page), and the page's title for VoiceOver are put on here, so a
+// page draws only itself.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -77,7 +78,7 @@ public struct RoutedPage: View {
     content(route, dashboard: dashboard)
       .navigationTitle(title)
       .navigationBarTitleDisplayMode(.inline)
-      .modifier(PageChrome(showsBrand: ShellRoutes.parentOf(route) == nil, phone: chrome == .phone))
+      .modifier(PageChrome(back: ShellRoutes.parentOf(route), phone: chrome == .phone))
   }
 
   /// The archive's say first: opening, or the first build; then the page.
@@ -138,9 +139,7 @@ public struct RoutedPage: View {
       if let report = ReportsRegistry.reportByKey[key] {
         ReportPage(report: report)
       } else {
-        VirgaPage(PageHeaderModel(title: "There’s no report called “\(key)”", crumbs: [Crumb("Reports", to: "/reports")])) {
-          EmptyView()
-        }
+        NoReportPage(key: key)
       }
     } else {
       ReportsIndex()
@@ -191,21 +190,35 @@ public struct RoutedPage: View {
 
 /// The navigation bar a page has. On a phone's front page of a part, none:
 /// the app bar is the top of the page's content (VirgaPage draws it). On a
-/// page inside a part, the system's back button and the account, clear over
-/// the sky. Beside the sidebar, none.
+/// page inside a part, ‹ and the name of the page above (AppBarBack, in
+/// place of the system's back button, with the swipe back kept), Search and
+/// the account, clear over the sky. Beside the sidebar, none.
 struct PageChrome: ViewModifier {
-  let showsBrand: Bool
+  /// The way up (routes.js parentOf); nil on a part's front page.
+  let back: ParentLink?
   let phone: Bool
 
   func body(content: Content) -> some View {
-    if phone && showsBrand {
+    if phone, let back {
+      content
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+          ToolbarItem(placement: .topBarLeading) {
+            AppBarBack(link: back)
+          }
+          .withoutSharedGlass()
+        }
+        .toolbar { AppBarToolbar() }
+        .skyNavigationBar()
+        .background {
+          SwipeBackKeeper()
+            .frame(width: 0, height: 0)
+            .accessibilityHidden(true)
+        }
+    } else if phone {
       content
         .environment(\.showsAppBar, true)
         .toolbar(.hidden, for: .navigationBar)
-    } else if phone {
-      content
-        .toolbar { AppBarToolbar() }
-        .skyNavigationBar()
     } else {
       content
         .toolbar(.hidden, for: .navigationBar)
@@ -225,6 +238,20 @@ struct UnbuiltToolPage: View {
       access: tool.map { [$0.access] } ?? [], crumbs: [Crumb("Tools", to: "/tools")])
     return VirgaPage(header) {
       Button("See every tool") { navigate("/tools") }
+        .buttonStyle(.virga)
+    }
+  }
+}
+
+/// A report address that names none: its header, and the one way on
+/// (ReportPage.jsx's empty block).
+struct NoReportPage: View {
+  @Environment(\.navigate) private var navigate
+  let key: String
+
+  var body: some View {
+    VirgaPage(PageHeaderModel(title: "There’s no report called “\(key)”", crumbs: [Crumb("Reports", to: "/reports")])) {
+      Button("See every report") { navigate("/reports") }
         .buttonStyle(.virga)
     }
   }

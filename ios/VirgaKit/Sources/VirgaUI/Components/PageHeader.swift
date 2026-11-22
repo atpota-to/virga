@@ -298,6 +298,7 @@ public struct PageHeader: View {
     HStack(spacing: Measure.PageHeader.gap) {
       ForEach(Array(model.crumbs.enumerated()), id: \.offset) { index, crumb in
         if let to = crumb.to {
+          // CrumbStyle presses it through 44 points (DESIGN.md's Touch).
           Button(crumb.label) { navigate(to) }
             .buttonStyle(CrumbStyle())
             .accessibilityAddTraits(.isLink)

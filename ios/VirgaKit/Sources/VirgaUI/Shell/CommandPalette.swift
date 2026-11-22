@@ -17,7 +17,7 @@
 // beside the sidebar, where there is a keyboard to press.
 //
 // Run: a command with an address goes there through the navigator; New
-// post goes to the composer's address (the composer isn't ported); Sync
+// post goes to the composer's address, which opens it; Sync
 // runs the archive's sync; the period and the sky set the preference (the
 // period says, in a toast, what the charts show now); another account
 // opens as the account menu opens it; New dashboard opens the shell's
@@ -202,6 +202,10 @@ struct CommandPalette: View {
               ForEach(group.items) { command in
                 let at = flat.firstIndex { $0.id.jsEquals(command.id) } ?? -1
                 option(command, highlighted: at == current, phone: phone, showsHint: !phone || searching)
+                  // The option under the iPad's pointer is the one Return runs.
+                  .onContinuousHover { phase in
+                    if case .active = phase, at >= 0, at != current { active = at }
+                  }
                   .id(command.id)
               }
             }
@@ -244,8 +248,10 @@ struct CommandPalette: View {
               if showsHint, let hint = command.hint { self.hint(hint) }
             }
           } else {
+            // The title keeps its words; only the hint gives way.
             HStack(alignment: .firstTextBaseline, spacing: Measure.Palette.optionGap) {
               title(command)
+                .layoutPriority(1)
               if let hint = command.hint { self.hint(hint) }
             }
           }
@@ -459,20 +465,31 @@ struct CommandPaletteSheet: ViewModifier {
 /// "Search or jump to": the button that opens the palette, as a ghost icon
 /// (the app bar's, the rail's).
 struct PaletteButton: View {
+  @Environment(\.virgaTheme) private var theme
   @Environment(PaletteState.self) private var palette: PaletteState?
   var size: KitSize = .medium
+  /// The glass: 20 in the app bar, 18 on the rail.
+  var glyph: CGFloat = Measure.AppBar.icon
 
   var body: some View {
     Button {
       palette?.isOpen = true
     } label: {
+      // In ink, where a ghost button's own is --ink-2 (`.appbar .btn--icon`,
+      // `.sidebar[data-collapsed] .sidebar-search-icon`).
       Image(systemName: Glyph.search)
-        .font(.system(size: Measure.AppBar.icon))
+        .font(.system(size: glyph))
+        .foregroundStyle(theme.ink)
     }
     .buttonStyle(.virga(.ghost, size: size, icon: true))
     .accessibilityLabel("Search or jump to")
     .accessibilityIdentifier("palette-open")
   }
+}
+
+extension Measure.Palette {
+  /// The rail's Search: `<Search size={18}>`.
+  static let railIcon: CGFloat = 18
 }
 
 /// `.sidebar-search`: the open sidebar's row that opens the palette, with

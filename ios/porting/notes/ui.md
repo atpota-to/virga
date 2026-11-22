@@ -158,15 +158,20 @@ COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
   view), `BesideOrUnder` (a wrapping flex row of two), `.touchReach`, `.touchTarget`,
   `.virgaFocusOutline` (put on the Button or Menu itself, or inside a ButtonStyle's body: it
   binds its own FocusState and also reads `isFocused`).
-- Toasts: `ToastCenter` (in the shell's environment) and `ToastStack`.
+- Toasts: `ToastCenter` and `ToastStack`. The app has one center, `ComposerHost.toasts`
+  (App.jsx's ToastProvider, above the account): `.composerHost(_:)` draws it and ShellView puts
+  it in the shell's environment, so every page's toasts and the composer's share one column, at
+  most three, and outlive a switch of account.
 
 SHELL (Shell/)
 - From 900 wide: Virga's own layout, an HStack of the sidebar (272, or the 72 rail when
   folded; no ground, on the sky) and the page, held to `--shell-max` and centred; no
   NavigationSplitView (iOS 26 gives its sidebar a floating panel). Below 900: a
   NavigationStack, the app bar drawn in the page's content on a top-level page
-  (`AppBarRow`, the navigation bar hidden), the system's back button on inner pages, and
-  Virga's own TabBar in `.safeAreaInset`.
+  (`AppBarRow`, the navigation bar hidden), and on inner pages `AppBarBack` (‹ and the
+  page above, parentOf's label, in the bar's leading place: iOS 26's own back button is a
+  bare chevron) with the system's button hidden and its edge swipe kept by
+  `SwipeBackKeeper`; Virga's own TabBar in `.safeAreaInset`.
 - `ShellNavigator`: `path`/`search`/`hash`, `navigate()` on Router.hrefFor, `route` from
   ShellRoutes.parseRoute, `title()`. From any view: `@Environment(\.navigate) var navigate;
   navigate("/reports/followers")`. On a phone the stack path is the parentOf chain.
@@ -179,7 +184,15 @@ SHELL (Shell/)
   built), `SyncStatus.swift` (the sidebar's sync card, the phone's strip, Sync now in the
   account menu), the period picker and its custom range (`PeriodPicker`, `usePeriod` as
   PreferencesModel extensions), and the command palette (Search in the app bar and the
-  sidebar, ⌘K; recent commands under `virga:palette-recent`).
+  sidebar, ⌘K; recent commands under `virga:palette-recent`). A sync that fails is read out
+  once by ShellView, in the words of the page's role="alert" line.
+- Settings rows: `SettingsRow(label:hint:block:compactControl:kind:)`, where `kind`
+  (`SettingsControlKind`: `.button`, `.segmented`, `.toggle`, `.state`, `.prose`; a switch
+  by default where `compactControl` is set, else a button) says how far the control is
+  drawn up to centre it on the name's first line, as settings.css does on a touch screen.
+  A select is `SettingsSelect` (a Menu over a Picker, its words in ink), laid out by
+  `SettingsSelects`; the sky's and the accent's grids are `ChoiceGrid` (auto-fill columns
+  from the grid's own width), radio groups on a hardware keyboard.
 
 CHARTS (Charts/), in Swift Charts over bucket indices
 - `SeriesChart(series: [ChartPoint], seriesLabel:, secondary: ChartSecondary?, stacked:, trend:,
@@ -522,8 +535,11 @@ LIVE SKY (Sky/, and VirgaCore/Hillside/ for everything that isn't drawing)
   description, once the share sheet has gone (one sheet at a time). New post (the sidebar's,
   the tab bar's round button) opens the composer in place, over the page it was pressed on, as
   Shell.jsx's does; VirgaUITests' `testNewPostOpensTheComposer` checks it opens and that Close
-  shuts it.
+  shuts it. The palette's New post still goes through /posting/compose (OpenComposerPage opens
+  the composer and moves to /posting), and the n shortcut isn't there yet.
 - Customize is the web's phone path at every width (each card a line, opened by its name to its
   size, Settings and Remove); the wide screen's grid with the chosen card's floating tools and
   the library beside it isn't drawn. VirgaUITests opens the first line (`arrange-open-<type>`)
   before it presses `card-settings-<type>`.
+- The sidebar's fold button is the system's one sidebar glyph, open and folded, where the
+  web draws PanelLeftClose and PanelLeftOpen.

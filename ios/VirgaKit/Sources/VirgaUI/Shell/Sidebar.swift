@@ -130,7 +130,7 @@ public struct Sidebar: View {
       .buttonStyle(.virga(.primary, icon: true))
       .accessibilityLabel("New post")
       .accessibilityIdentifier("sidebar-new-post")
-      PaletteButton()
+      PaletteButton(glyph: Measure.Palette.railIcon)
       SidebarScroll {
         VStack(spacing: Measure.Sidebar.railNavGap) {
           ForEach(sections) { section in
@@ -155,7 +155,10 @@ public struct Sidebar: View {
     return Button {
       preferences.setPref(\.sidebar, collapsed ? .expanded : .collapsed)
     } label: {
+      // PanelLeftClose at 16 open, PanelLeftOpen at 18 on the rail; iOS's
+      // own sidebar button is the one glyph either way.
       Image(systemName: Glyph.foldSidebar)
+        .font(.system(size: collapsed ? Measure.Sidebar.railFoldIcon : Measure.Sidebar.foldIcon))
     }
     .buttonStyle(.virga(.ghost, size: collapsed ? .medium : .small, icon: true))
     .accessibilityLabel(label)
@@ -182,11 +185,14 @@ public struct Sidebar: View {
     var dashSubs: [NavSub] = dashboards.dashboards.map { d in
       NavSub(id: d.id, label: d.name, to: "/dashboard/\(d.id)", current: Optional(d.id).jsEquals(shown))
     }
+    // The word goes to the dashboard shown, else the first (the tab bar's
+    // goes to the last looked at).
+    let named = shown.flatMap { $0.isEmpty ? nil : $0 }
     let create: @MainActor () -> Void = { [actions] in actions?.creatingDashboard = true }
     dashSubs.append(NavSub(id: "new", label: "New dashboard", to: "", current: false, action: create))
     out.append(
       Part(
-        id: "dashboard", label: "Dashboards", systemImage: Glyph.dashboards, to: "/dashboard/\(shown ?? dashboards.homeId ?? "")",
+        id: "dashboard", label: "Dashboards", systemImage: Glyph.dashboards, to: "/dashboard/\(named ?? dashboards.dashboards.first?.id ?? "")",
         open: route.section == .dashboard, current: false, subs: dashSubs))
     out.append(
       Part(
@@ -386,5 +392,8 @@ extension Measure.Sidebar {
   static let scrollFade: CGFloat = 24
   /// `@media (min-width: 900px) and (max-height: 860px) { .sidebar { gap: 16px } }`
   static let shortGap: CGFloat = 16
+  /// The fold button's glyph: 16 open, 18 on the rail (Sidebar.jsx).
+  static let foldIcon: CGFloat = 16
+  static let railFoldIcon: CGFloat = 18
 }
 #endif
