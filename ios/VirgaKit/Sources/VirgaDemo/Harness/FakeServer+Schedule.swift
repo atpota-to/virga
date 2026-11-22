@@ -780,12 +780,8 @@ extension DemoServer {
         s.scheduled[i].updated_at = t()
         dropMedia(&s, s.scheduled[i], stored: i)
         note(&s, "skipped \(s.scheduled[i].id)")
-        return ServerAnswer(
-          200,
-          [
-            "success": true, "data": next.map { Self.rowShape(s.scheduled[$0]) } ?? .null, "skipped": id,
-            "ended": .bool(next == nil),
-          ])
+        let data: JSONValue = next.map { Self.rowShape(s.scheduled[$0]) } ?? .null
+        return ServerAnswer(200, ["success": true, "data": data, "skipped": id, "ended": .bool(next == nil)])
       } else if field("stopRepeat")?.isTruthy == true {
         guard let i = found, ["pending", "failed"].contains(s.scheduled[i].status),
           s.scheduled[i].payload["repeat"]?.isTruthy == true

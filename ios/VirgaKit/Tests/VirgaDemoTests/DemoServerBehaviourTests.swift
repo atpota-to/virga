@@ -364,7 +364,8 @@ func refusal(_ body: () async throws -> Void) async -> BackendError? {
     #expect(rows.first { $0["postUri"] == .string(gated) }?["status"] == "acted")
     #expect(try s.posts().contains { $0.uri == gated })
     let gate = try HarnessRepo.listCollection(s.mira, Self.gate).first { $0.value["post"] == .string(gated) }
-    #expect(gate?.value["allow"] == [["$type": "app.bsky.feed.threadgate#followingRule"]])
+    let following: JSONValue = [["$type": "app.bsky.feed.threadgate#followingRule"]]
+    #expect(gate?.value["allow"] == following)
   }
 
   @Test func listsEveryTimerAsVirgasAndCallsOneOff() async throws {
@@ -401,7 +402,8 @@ func refusal(_ body: () async throws -> Void) async -> BackendError? {
     #expect(res["data"]?["clientKey"] == "virga")
     #expect(res["data"]?["conditions"]?["clauses"] == [])
     #expect(res["data"]?["lifespanSeconds"] == 7200)
-    #expect(res["data"]?["effects"] == [["action": "limitReplies", "allow": ["following"]]])
+    let effects: JSONValue = [["action": "limitReplies", "allow": ["following"]]]
+    #expect(res["data"]?["effects"] == effects)
     #expect(res["data"]?["checkAt"] == .string(World.iso(WorkerSetup.now + 2 * WorkerSetup.hour)))
     let after = try await req.request("/api/self-destruct/list")["data"]?.arrayValue?.first { $0["id"] == live["id"] }
     #expect(after?["lifespanSeconds"] == 7200)
@@ -444,17 +446,18 @@ func refusal(_ body: () async throws -> Void) async -> BackendError? {
     s.advance(2 * WorkerSetup.hour)
     _ = await s.server.runCron()
     let timerFor = { (p: WorldPost) in s.server.timers.first { $0.post_uri == Self.uri(p.rkey) } }
-    #expect(try HarnessRepo.readRecord(s.mira, Self.gate, mentioned.rkey)?.value["allow"] == [["$type": "app.bsky.feed.threadgate#mentionRule"]])
-    #expect(
-      timerFor(mentioned)?.acted
-        == [
-          [
-            "action": "limitReplies", "ok": false,
-            "detail": "left the reply settings alone; the rule would have opened them up",
-          ]
-        ])
-    #expect(try HarnessRepo.readRecord(s.mira, Self.gate, both.rkey)?.value["allow"] == [["$type": "app.bsky.feed.threadgate#followerRule"]])
-    #expect(timerFor(both)?.acted == [["action": "limitReplies", "ok": true, "detail": "replies limited to your followers"]])
+    let mentionOnly: JSONValue = [["$type": "app.bsky.feed.threadgate#mentionRule"]]
+    let followersOnly: JSONValue = [["$type": "app.bsky.feed.threadgate#followerRule"]]
+    let leftAlone: JSONValue = [
+      ["action": "limitReplies", "ok": false, "detail": "left the reply settings alone; the rule would have opened them up"]
+    ]
+    let narrowed: JSONValue = [["action": "limitReplies", "ok": true, "detail": "replies limited to your followers"]]
+    let mentionedGate = try HarnessRepo.readRecord(s.mira, Self.gate, mentioned.rkey)
+    #expect(mentionedGate?.value["allow"] == mentionOnly)
+    #expect(timerFor(mentioned)?.acted == leftAlone)
+    let bothGate = try HarnessRepo.readRecord(s.mira, Self.gate, both.rkey)
+    #expect(bothGate?.value["allow"] == followersOnly)
+    #expect(timerFor(both)?.acted == narrowed)
     #expect(try HarnessRepo.readRecord(s.mira, Self.gate, reply.rkey) == nil)
     #expect(timerFor(reply)?.acted[0]?["detail"]?.stringValue?.contains("this post is a reply") == true)
   }
@@ -604,16 +607,18 @@ func refusal(_ body: () async throws -> Void) async -> BackendError? {
     var extra = payload
     extra["gates"] = ["threadgate": [], "postgate": .null]
     let row = try await s.create(req, s.body(["Count me in", "and I’ll bring the ladder"], at: s.now + WorkerSetup.hour, payload: extra))
-    #expect(row["payload"]?["reply"] == ["root": ref, "parent": ref])
+    let refs: JSONValue = ["root": ref, "parent": ref]
+    #expect(row["payload"]?["reply"] == refs)
     #expect(row["payload"]?["replyTo"]?["handle"] == .string(World.lab.handle))
     #expect(row["payload"]?["gates"] == ["threadgate": .null, "postgate": .null])
     s.advance(WorkerSetup.hour + 1000)
     #expect(await s.server.runCron().published.map(\.id) == [row["id"]?.stringValue ?? ""])
     let keys = row["payload"]?["rkeys"]?.arrayValue?.compactMap(\.stringValue) ?? []
     let first = try #require(try HarnessRepo.readRecord(s.mira, "app.bsky.feed.post", keys[0]))
-    #expect(first.value["reply"] == ["root": ref, "parent": ref])
+    #expect(first.value["reply"] == refs)
     let second = try #require(try HarnessRepo.readRecord(s.mira, "app.bsky.feed.post", keys[1]))
-    #expect(second.value["reply"] == ["root": ref, "parent": ["uri": .string(first.uri), "cid": .string(first.cid)]])
+    let underFirst: JSONValue = ["root": ref, "parent": ["uri": .string(first.uri), "cid": .string(first.cid)]]
+    #expect(second.value["reply"] == underFirst)
     #expect(try HarnessRepo.listCollection(s.mira, "app.bsky.feed.threadgate").contains { $0.value["post"] == .string(first.uri) } == false)
   }
 
@@ -657,12 +662,9 @@ func refusal(_ body: () async throws -> Void) async -> BackendError? {
     #expect(row["occurrence"] == 1)
     #expect(row["status"] == "pending")
     #expect(row["seriesId"]?.isTruthy == true)
-    #expect(
-      row["payload"]?["repeat"]
-        == [
-          "every": "day", "tz": "UTC", "until": .null, "count": 3,
-          "anchor": ["date": "2026-11-12", "time": "13:00", "occurrence": 1],
-        ])
+    let anchor: JSONValue = ["date": "2026-11-12", "time": "13:00", "occurrence": 1]
+    let rule: JSONValue = ["every": "day", "tz": "UTC", "until": .null, "count": 3, "anchor": anchor]
+    #expect(row["payload"]?["repeat"] == rule)
     let used = try await req.request("/api/limits/status")["usage"]?["scheduledPosts"]
     s.advance(WorkerSetup.hour + 1000)
     #expect(await s.server.runCron().published.map(\.id) == [row["id"]?.stringValue ?? ""])
@@ -751,7 +753,9 @@ func refusal(_ body: () async throws -> Void) async -> BackendError? {
       _ = await s.server.runCron()
     }
     let rows = try await s.list(req).filter { $0["seriesId"] == row["seriesId"] }
-    #expect(rows.map { [$0["occurrence"] ?? .null, $0["status"] ?? .null] } == [[1, "failed"], [2, "pending"]])
+    let wanted: [JSONValue] = [[1, "failed"], [2, "pending"]]
+    let got: [JSONValue] = rows.map { .array([$0["occurrence"] ?? .null, $0["status"] ?? .null]) }
+    #expect(got == wanted)
     #expect(rows.first?["payload"]?["repeat"] == nil)
     #expect(rows.last?["payload"]?["repeat"]?["every"] == "day")
   }
