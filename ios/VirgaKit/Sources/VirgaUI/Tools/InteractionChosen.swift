@@ -120,45 +120,21 @@ struct LookupPersonCard: View {
     let name = ToolPeople.displayName(card, who)
     let rel = model.relationship
     VStack(alignment: .leading, spacing: Measure.Tools.personCardGap) {
-      FlowLayout(spacing: Measure.Tools.identityGap, lineSpacing: theme.space3, alignment: .center) {
-        HStack(alignment: .center, spacing: Measure.Tools.identityGap) {
+      // `.lookup-person-top`: the actions at the line's end while it holds
+      // them beside the name block's 220, else on a line of their own.
+      ViewThatFits(in: .horizontal) {
+        HStack(alignment: .center, spacing: Measure.Tools.personTopGap) {
           Avatar(src: card?.avatar, name: card?.avatarName ?? "?", size: .large)
-          VStack(alignment: .leading, spacing: 0) {
-            Text(name)
-              .virgaText(
-                .textLead, weight: VirgaWeight.semibold, lineHeight: Measure.Tools.identityNameLineHeight,
-                tracking: Measure.Tools.identityNameTracking)
-              .foregroundStyle(theme.ink)
-              .fixedSize(horizontal: false, vertical: true)
-              .accessibilityIdentifier("lookup-name")
-            if let handle = card?.handle, card?.displayName != nil {
-              Text("@\(handle)").virgaText(.textBase).foregroundStyle(theme.muted)
-            }
-            // Without a card the name above is the DID already.
-            if card?.handle != nil {
-              Text(who)
-                .font(theme.codeFont(around: theme.textSm))
-                .foregroundStyle(theme.muted)
-                .lineLimit(1)
-                .truncationMode(.tail)
-                .textSelection(.enabled)
-            }
-          }
+          main(name: name)
+            .frame(minWidth: 0, idealWidth: Measure.Tools.personMainBasis, maxWidth: .infinity, alignment: .leading)
+          actions.fixedSize()
         }
-        FlowLayout(
-          spacing: theme.gap(ThemeKit.headActionsGap).column, lineSpacing: theme.gap(ThemeKit.headActionsGap).row, alignment: .center
-        ) {
-          Button {
-            if let url = ToolPeople.profileUrl(card, who) { openURL(url) }
-          } label: {
-            Label("Open on Bluesky", systemImage: Glyph.externalLink)
+        VStack(alignment: .leading, spacing: Measure.Tools.personTopLineGap) {
+          HStack(alignment: .center, spacing: Measure.Tools.personTopGap) {
+            Avatar(src: card?.avatar, name: card?.avatarName ?? "?", size: .large)
+            main(name: name).frame(maxWidth: .infinity, alignment: .leading)
           }
-          .buttonStyle(.linkAction)
-          Button(action: onClear) {
-            Label("Choose someone else", systemImage: Glyph.close)
-          }
-          .buttonStyle(.linkAction)
-          .accessibilityIdentifier("lookup-clear")
+          actions
         }
       }
       if !model.isSelf {
@@ -178,6 +154,51 @@ struct LookupPersonCard: View {
     }
     .accessibilityElement(children: .contain)
     .accessibilityLabel("The account")
+  }
+
+  /// `.lookup-person-main`: the name, the handle under a name that isn't
+  /// it, and the DID.
+  private func main(name: String) -> some View {
+    VStack(alignment: .leading, spacing: 0) {
+      Text(name)
+        .virgaText(
+          .textLead, weight: VirgaWeight.semibold, lineHeight: Measure.Tools.identityNameLineHeight,
+          tracking: Measure.Tools.identityNameTracking)
+        .foregroundStyle(theme.ink)
+        .fixedSize(horizontal: false, vertical: true)
+        .accessibilityIdentifier("lookup-name")
+      if let handle = card?.handle, card?.displayName != nil {
+        Text("@\(handle)").virgaText(.textBase).foregroundStyle(theme.muted)
+      }
+      // Without a card the name above is the DID already.
+      if card?.handle != nil {
+        Text(who)
+          .font(theme.codeFont(around: theme.textSm))
+          .foregroundStyle(theme.muted)
+          .lineLimit(1)
+          .truncationMode(.tail)
+          .textSelection(.enabled)
+      }
+    }
+  }
+
+  /// `.head-actions.lookup-person-actions`: Open on Bluesky, Choose someone else.
+  private var actions: some View {
+    FlowLayout(
+      spacing: theme.gap(ThemeKit.headActionsGap).column, lineSpacing: theme.gap(ThemeKit.headActionsGap).row, alignment: .center
+    ) {
+      Button {
+        if let url = ToolPeople.profileUrl(card, who) { openURL(url) }
+      } label: {
+        Label("Open on Bluesky", systemImage: Glyph.externalLink)
+      }
+      .buttonStyle(.linkAction)
+      Button(action: onClear) {
+        Label("Choose someone else", systemImage: Glyph.close)
+      }
+      .buttonStyle(.linkAction)
+      .accessibilityIdentifier("lookup-clear")
+    }
   }
 }
 

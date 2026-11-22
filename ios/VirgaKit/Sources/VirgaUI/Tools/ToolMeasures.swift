@@ -200,6 +200,13 @@ extension Measure {
     public static let phoneLegendSpaceAbove: CGFloat = 8
     /// `.lookup-person { gap: 16px }`
     public static let personCardGap: CGFloat = 16
+    /// `.lookup-person-top { flex-wrap: wrap; gap: 12px 16px }` with
+    /// `.lookup-person-main { flex: 1 1 220px }`: the name block grows and
+    /// pushes the actions to the column's edge, and they wrap under it when
+    /// the line can't hold them beside its 220.
+    public static let personTopGap: CGFloat = 16
+    public static let personTopLineGap: CGFloat = 12
+    public static let personMainBasis: CGFloat = 220
     /// `.report-split.lookup-top`: the totals beside the timeline from 1000 wide,
     /// `grid-template-columns: minmax(300px, 1fr) minmax(0, 2fr)`.
     public static let lookupTopSplit: CGFloat = 1000
