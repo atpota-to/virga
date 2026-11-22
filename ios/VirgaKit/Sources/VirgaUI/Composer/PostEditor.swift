@@ -423,9 +423,14 @@ struct SlashList: View {
       pick(template)
     } label: {
       HStack(spacing: ComposerMeasure.suggestItemGap) {
-        Text(name).virgaText(.textBase, weight: VirgaWeight.medium).foregroundStyle(theme.ink).lineLimit(1)
-        if !template.shortcut.isEmpty {
-          Text("/\(template.shortcut)").virgaText(.textSm).foregroundStyle(theme.muted).lineLimit(1)
+        // `.suggest-text`: the name over its shortcut, a column at line-height 1.3.
+        VStack(alignment: .leading, spacing: 0) {
+          Text(name).virgaText(.textBase, weight: VirgaWeight.medium, lineHeight: ComposerMeasure.suggestLineHeight)
+            .foregroundStyle(theme.ink).lineLimit(1)
+          if !template.shortcut.isEmpty {
+            Text("/\(template.shortcut)").virgaText(.textSm, lineHeight: ComposerMeasure.suggestLineHeight)
+              .foregroundStyle(theme.muted).lineLimit(1)
+          }
         }
         Spacer(minLength: 0)
       }
