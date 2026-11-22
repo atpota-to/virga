@@ -178,6 +178,9 @@ public struct RoutedPage: View {
         .id(app.session.did ?? "")
     } else if pageKey == "library" {
       LibraryScreen(did: app.session.did).id(app.session.did ?? "")
+    } else if pageKey == "scheduled" {
+      // SCHEDULE: Scheduled posts (Posting/ScheduledPage.swift).
+      ScheduledPage(app: app, did: did).id(did ?? "")
     } else {
       UnportedPage(PostingHeader.model(pageKey))
     }
