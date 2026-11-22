@@ -106,7 +106,7 @@ struct WhenPicker: View {
         now = ScheduleText.now()
       }
     }
-    .task(id: queue) { await readTaken() }
+    .task(id: "\(queue)|\(requester?.did ?? "")") { await readTaken() }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("when-picker")
   }

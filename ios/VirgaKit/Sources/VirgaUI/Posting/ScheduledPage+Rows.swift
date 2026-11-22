@@ -406,7 +406,8 @@ struct QueueHandle: View {
     .buttonStyle(.plain)
     .disabled(disabled)
     .opacity(disabled ? Measure.Schedule.handleDisabledOpacity : 1)
-    .simultaneousGesture(
+    // The handle takes the drag before the page's scroll does (`touch-action: none`).
+    .highPriorityGesture(
       DragGesture(minimumDistance: 0, coordinateSpace: .named(ScheduledRowView.space))
         .onChanged { value in if !disabled { onDrag(value.location.y) } }
         .onEnded { _ in onDrop() }

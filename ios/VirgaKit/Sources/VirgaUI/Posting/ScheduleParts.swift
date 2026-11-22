@@ -446,7 +446,9 @@ struct CalendarDayHead: View {
     let date = JSDate.fields(day.date, timeZone: zone).map { "\($0.date)" } ?? ""
     let long = AppLocale.toLocaleDateString(
       day.date, DateFormatOptions(weekday: "long", month: "long", day: "numeric"), locale: locale, timeZone: zone)
-    let wide = theme.windowWidth > Measure.Schedule.calWideHead + theme.pagePad * 2
+    // `@container (min-width: 520px)`: the page's column, beside the sidebar where there is one.
+    let column = Swift.min(theme.contentMax, theme.windowWidth - (theme.hasSidebar ? theme.sidebarW : 0) - theme.pagePad * 2)
+    let wide = column >= Measure.Schedule.calWideHead
     Group {
       if wide {
         HStack(spacing: Measure.Schedule.calHeadGap) {
