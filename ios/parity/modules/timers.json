@@ -24,8 +24,7 @@
       "synced": "e974adb593e5"
     },
     "src/posting/timers/timerService.js": {
-      "status": "partial",
-      "note": "server calls wired to VirgaBackend in wave 2 (composer chain). Everything else is ported and held to timers.timerService: the helpers, the create body, and every flow (createTimer and its confirmation, armAfterPublish, listTimers, loadTimerUsage, cancelTimer, the availability probe) through the TimerRequester seam; VirgaBackend (VirgaNetwork) has yet to conform to TimerRequester, and its request error to TimerErrorConvertible.",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaPosting/Timers/TimerService.swift"
       ],
@@ -33,7 +32,8 @@
         "timers.timerService",
         "timers.fuzz"
       ],
-      "synced": "047760f94b49"
+      "synced": "047760f94b49",
+      "note": "VirgaNetwork's VirgaBackend is the TimerRequester, and its BackendError TimerErrorConvertible (VirgaPosting/Wiring.swift, with behaviour tests over MockTransport)."
     },
     "src/posting/ui/lifespanModel.js": {
       "status": "ported",
