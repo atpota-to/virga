@@ -135,7 +135,10 @@ final class AdviserUITests: XCTestCase {
         snapshot("adviser-style-unread")
       }
     }
-    element(app, "dialog-close").tap()
+    if element(app, "style-dialog").exists, element(app, "dialog-close").exists {
+      element(app, "dialog-close").tap()
+      XCTAssertTrue(element(app, "style-dialog").waitForNonExistence(timeout: 5), "the style dialog stayed open")
+    }
 
     // The composer, with a post the adviser has things to say about.
     let newPost = element(app, isDesk(app) ? "sidebar-new-post" : "tab-new-post")
