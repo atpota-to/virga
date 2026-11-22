@@ -263,6 +263,30 @@ public enum DraftMedia {
     handles.withLock { $0.removeAll() }
   }
 
+  /// Whether `name` is one of the posting databases (`virga-posting:<did>`).
+  public static func isPostingDbName(_ name: String) -> Bool {
+    name.utf16.count > postingDbPrefix.utf16.count && PostingJS.hasPrefix(name, postingDbPrefix)
+  }
+
+  /// `indexedDB.deleteDatabase(name)` for the posting databases: removes
+  /// `virga-posting:<did>`'s folder from `files` (every kept picture and
+  /// video), and forgets the account's open store, as the web's handle
+  /// closes and forgets itself on the delete's versionchange. False for a
+  /// name that isn't a posting database's, or when the files can't be
+  /// removed. The app routes the session's `deleteDatabase` here for these
+  /// names.
+  public static func deleteDatabase(_ name: String, files: any FileStore) async -> Bool {
+    guard isPostingDbName(name) else { return false }
+    let did = String(jsUnits: Array(name.utf16).dropFirst(postingDbPrefix.utf16.count))
+    _ = handles.withLock { $0.removeValue(forKey: JSKey(did)) }
+    do {
+      try await files.delete(pathSegment(name))
+      return true
+    } catch {
+      return false
+    }
+  }
+
   /// A path segment for a database name or a ref: every unit outside
   /// `[A-Za-z0-9_-]` escaped as `%XX` of its UTF-8 bytes, so it can never be
   /// `.`, `..` or hold a `/`.

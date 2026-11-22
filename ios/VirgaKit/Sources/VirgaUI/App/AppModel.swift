@@ -230,12 +230,15 @@ public final class AppModel {
     AnalyticsStore.resetAnalyticsStore()
   }
 
-  /// The session's `deleteDatabase`: `virga-analytics:<did>` is the
-  /// archive's store, deleted from the app's file store. The posting store
-  /// (`virga-posting:<did>`) isn't ported yet, so there is nothing of it to
-  /// delete, and the answer is that nothing went.
+  /// The session's `deleteDatabase`, over the app's file store:
+  /// `virga-posting:<did>` is the posting store (the drafts' kept pictures
+  /// and videos, DraftMedia's), and any other name goes to the archive's
+  /// (`virga-analytics:<did>`), which says whether it was one of its own.
   static func deleteDatabase(files: any FileStore) -> @Sendable (String) async -> Bool {
-    { name in await AnalyticsStore.deleteDatabase(name, files: files) }
+    { name in
+      if DraftMedia.isPostingDbName(name) { return await DraftMedia.deleteDatabase(name, files: files) }
+      return await AnalyticsStore.deleteDatabase(name, files: files)
+    }
   }
 
   // MARK: Building it
