@@ -140,39 +140,6 @@ struct RecordCard: View {
   }
 }
 
-/// A post, small: who wrote it and its words. The composer draws its posts
-/// with PostPreviewCard now; the library's detail (Library/LibraryPanel.swift)
-/// still calls this, until it draws LibraryPanel.jsx's `<PostPreview view />`.
-struct ComposerPostPreview: View {
-  @Environment(\.virgaTheme) private var theme
-  let view: JSONValue?
-  let text: String?
-
-  var body: some View {
-    let author = view?["author"]
-    let handle = author?["handle"]?.stringValue
-    let display = author?["displayName"]?.stringValue.flatMap { $0.isEmpty ? nil : $0 }
-    let name = display ?? handle.map { "@\($0)" }
-    let words = view?["record"]?["text"]?.stringValue ?? text ?? ""
-    VStack(alignment: .leading, spacing: theme.space1) {
-      if let name {
-        HStack(spacing: theme.space2) {
-          Avatar(src: author?["avatar"]?.stringValue, name: name, size: .small)
-          Text(name).virgaText(.textSm, weight: VirgaWeight.semibold).foregroundStyle(theme.ink)
-          if let handle, display != nil {
-            Text("@\(handle)").virgaText(.textSm).foregroundStyle(theme.muted).lineLimit(1)
-          }
-        }
-      }
-      Text(words.isEmpty ? "No text" : words)
-        .virgaText(.textSm)
-        .foregroundStyle(words.isEmpty ? theme.muted : theme.ink2)
-        .lineLimit(3)
-    }
-    .accessibilityElement(children: .combine)
-  }
-}
-
 /// A picture at an https address (a feed's or a list's avatar), filling
 /// its frame; nothing while it loads or when it won't.
 struct RemotePicture: View {

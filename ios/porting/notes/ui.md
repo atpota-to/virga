@@ -750,8 +750,8 @@ COMPOSER (Composer/)
   is a callout's words with its buttons at the right.
 - Layouts: `ComposerImageGridLayout` (the image grid by count), `ComposerAspectBox` (a video at its
   own shape up to 320), `ComposerVideoPreview` (one AVPlayer per file). Posts shown small are
-  `PostPreviewCard(compact: true)`; `ComposerPostPreview` is left only for Library/LibraryPanel's
-  detail, until it draws LibraryPanel.jsx's `<PostPreview view />`. `.suggestPop()`/`.suggestRow()`
+  `PostPreviewCard(compact: true)`, and the library's detail draws the full card, as
+  LibraryPanel.jsx's `<PostPreview view />` does. `.suggestPop()`/`.suggestRow()`
   are `.suggest-pop` and `.suggest-item`, for the mention, "/" and language lists.
 - Posting as: one line; its list a popover (`presentationCompactAdaptation(.popover)`), closed by a
   press outside it. ComposerUITests closes it on the system's dismiss region
