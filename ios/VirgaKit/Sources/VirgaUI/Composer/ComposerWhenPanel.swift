@@ -173,15 +173,13 @@ struct ComposerSourceWarning: View {
   var body: some View {
     let warning = controller.scheduling.sourceWarning
     if !warning.isEmpty {
-      Callout(tone: .danger) {
-        VStack(alignment: .leading, spacing: theme.space2) {
-          Text(warning)
-          HStack(spacing: theme.space2) {
-            Button("Cancel the scheduled copy") { controller.retryCancelSource() }
-              .buttonStyle(.virga(size: .small))
-            Button("Close") { controller.resetAfterSend(controller.state.asDid) }
-              .buttonStyle(.virga(.ghost, size: .small))
-          }
+      // role="alert": its words, and the two ways on at their right.
+      Callout(tone: .danger, alert: warning) {
+        ComposerCalloutLine(warning) {
+          Button("Cancel the scheduled copy") { controller.retryCancelSource() }
+            .buttonStyle(.virga(size: .small))
+          Button("Close") { controller.resetAfterSend(controller.state.asDid) }
+            .buttonStyle(.virga(.ghost, size: .small))
         }
       }
       .accessibilityElement(children: .contain)

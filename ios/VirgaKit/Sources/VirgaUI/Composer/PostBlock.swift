@@ -61,38 +61,46 @@ enum PickedMedia {
 }
 
 /// The ways to add to a post: pictures, a video, something from the library.
+/// Under each post they are the small size with 17-point pictures; in a
+/// phone's foot (`inFoot`) the medium size with 20.
 struct PostTools: View {
   @Environment(\.virgaTheme) private var theme
   let controller: ComposerController
   let post: PostDraft
   let disabled: Bool
+  var inFoot = false
   @State private var pickedImages: [PhotosPickerItem] = []
   @State private var pickedVideo: PhotosPickerItem?
 
   var body: some View {
     let hasMedia = !post.images.isEmpty || post.video != nil
     let room = max(0, ComposerModel.maxImages - post.images.count)
+    let style = VirgaButtonStyle(.ghost, size: inFoot ? .medium : .small, icon: true)
+    let glyph = inFoot ? ComposerMeasure.footToolGlyph : ComposerMeasure.postToolGlyph
     HStack(spacing: 2) {
       PhotosPicker(selection: $pickedImages, maxSelectionCount: max(1, room), matching: .images) {
-        Image(systemName: ComposerGlyph.images)
+        Image(systemName: ComposerGlyph.images).virgaGlyph(glyph)
       }
-      .buttonStyle(.virga(.ghost, size: .small, icon: true))
+      .buttonStyle(style)
       .disabled(disabled || post.video != nil || post.images.count >= ComposerModel.maxImages)
+      .help("Add images")
       .accessibilityLabel("Add images")
       .accessibilityIdentifier("add-images")
       PhotosPicker(selection: $pickedVideo, matching: .videos) {
-        Image(systemName: ComposerGlyph.video)
+        Image(systemName: ComposerGlyph.video).virgaGlyph(glyph)
       }
-      .buttonStyle(.virga(.ghost, size: .small, icon: true))
+      .buttonStyle(style)
       .disabled(disabled || hasMedia)
+      .help("Add a video")
       .accessibilityLabel("Add a video")
       Button {
         controller.openLibrary(post.id, range: nil)
       } label: {
-        Image(systemName: ComposerGlyph.library)
+        Image(systemName: ComposerGlyph.library).virgaGlyph(glyph)
       }
-      .buttonStyle(.virga(.ghost, size: .small, icon: true))
+      .buttonStyle(style)
       .disabled(disabled)
+      .help("Quote or attach from your library")
       .accessibilityLabel("Quote or attach from your library")
       .accessibilityIdentifier("open-library")
     }
@@ -234,7 +242,10 @@ struct PostBlock: View {
     let numbered = numberChoice ?? (controller.settings.threadNumbering == "counter")
     let parts = over ? ThreadEdits.splitTexts(controller.state.posts, post.id, numbering: numbered ? .counter : .off) : nil
     return HStack(spacing: theme.space3) {
-      if !theme.composerToolsInFoot { PostTools(controller: controller, post: post, disabled: disabled) }
+      if !theme.composerToolsInFoot {
+        // On the post's edge, not a button's padding in from it.
+        PostTools(controller: controller, post: post, disabled: disabled).padding(.leading, -ComposerMeasure.postToolsLead)
+      }
       if !offer && parts != nil {
         Button("Split into a thread") { controller.split(post.id, numbered: numbered) }
           .buttonStyle(.linkAction)

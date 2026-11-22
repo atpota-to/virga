@@ -203,6 +203,7 @@ struct LinkCardView: View {
     }
     .padding(ComposerMeasure.embedPadding)
     .overlay(RoundedRectangle(cornerRadius: theme.radiusLg).strokeBorder(theme.line))
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("link-card")
   }
 }
@@ -231,17 +232,20 @@ struct LinkCardDialog: View {
       DialogForm {
         FieldHint(card.url)
         FieldStack("Title") {
-          TextField("", text: $title).virgaField(invalid: titleCount > ComposerLinkCards.titleMax)
+          VirgaTextField("", text: $title)
+            .virgaField(invalid: titleCount > ComposerLinkCards.titleMax)
+            .accessibilityLabel("Title")
           FieldHint("\(titleCount) of \(ComposerLinkCards.titleMax)", isOver: titleCount > ComposerLinkCards.titleMax)
         }
         FieldStack("Description") {
-          TextField("", text: $description, axis: .vertical).lineLimit(3...6)
+          VirgaTextField("", text: $description, axis: .vertical).lineLimit(3...6)
             .virgaTextArea(invalid: descCount > ComposerLinkCards.descriptionMax, editor: false)
+            .accessibilityLabel("Description")
           FieldHint("\(descCount) of \(ComposerLinkCards.descriptionMax)", isOver: descCount > ComposerLinkCards.descriptionMax)
         }
         imageField
         if !error.isEmpty {
-          Callout(tone: .danger) { Text(error) }
+          Callout(tone: .danger, error)
         }
       }
     } actions: {
@@ -343,16 +347,16 @@ struct ReplyContext: View {
       .accessibilityElement(children: .combine)
       .accessibilityLabel("Replying to")
     } else if !error.isEmpty {
-      Callout(tone: .danger) {
-        VStack(alignment: .leading, spacing: theme.space2) {
-          Text(error)
-          HStack(spacing: theme.space2) {
-            Button(action: onRetry) { Label("Try again", systemImage: ComposerGlyph.retry) }
-              .buttonStyle(.virga(size: .small))
-            Button("Post it on its own", action: onRemove).buttonStyle(.virga(.ghost, size: .small))
-          }
+      // role="alert": why, and the ways on at its right.
+      Callout(tone: .danger, alert: error) {
+        ComposerCalloutLine(error) {
+          Button(action: onRetry) { Label("Try again", systemImage: ComposerGlyph.retry) }
+            .buttonStyle(.virga(size: .small))
+          Button("Post it on its own", action: onRemove).buttonStyle(.virga(.ghost, size: .small))
         }
       }
+      .accessibilityElement(children: .contain)
+      .accessibilityLabel("Replying to")
     } else if let reply {
       replying(reply)
     }

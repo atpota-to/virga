@@ -261,9 +261,10 @@ struct DescribeDialog: View {
             .accessibilityHidden(true)
         }
         FieldStack(fieldLabel) {
-          TextField(placeholder, text: $text, axis: .vertical)
+          VirgaTextField(placeholder, text: $text, axis: .vertical)
             .lineLimit(5...12)
             .virgaTextArea(invalid: over, editor: false)
+            .accessibilityLabel(fieldLabel)
             .accessibilityIdentifier("describe-text")
           FieldHint(countLabel(count), isOver: over)
         }
@@ -336,9 +337,9 @@ struct ContinueThreadDialog: View {
           .accessibilityLabel("Your recent posts")
         }
         if status == "error" {
-          Callout(tone: .danger) {
-            VStack(alignment: .leading, spacing: theme.space2) {
-              Text(error.isEmpty ? "Couldn’t read your recent posts." : error)
+          let words = error.isEmpty ? "Couldn’t read your recent posts." : error
+          Callout(tone: .danger, alert: words) {
+            ComposerCalloutLine(words) {
               Button("Try again", action: onRetry).buttonStyle(.virga(size: .small))
             }
           }

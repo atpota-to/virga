@@ -18,6 +18,74 @@ import VirgaCore
 import VirgaPosting
 import VirgaSession
 
+extension ComposerController {
+  /// A draft or a scheduled post that couldn't be opened.
+  var loadError: String? {
+    if case .failed(let text, _)? = loads["scheduled"] ?? loads["draft"] { return text }
+    return nil
+  }
+
+  /// The post the foot's tools add to: the one being written in.
+  var toolsIndex: Int { min(activeIndex, max(0, state.posts.count - 1)) }
+
+  /// The foot's tools are there for a post that's on screen: not while a
+  /// draft or a scheduled post is opening, nor when it couldn't be opened.
+  var footToolsShown: Bool {
+    state.posts.indices.contains(toolsIndex) && loadError == nil && loads["scheduled"] != .loading
+      && loads["draft"] != .loading
+  }
+}
+
+/// What the web marks role="status", role="alert" or aria-live, read out to
+/// VoiceOver as it appears or changes.
+enum ComposerAnnounce {
+  static func post(_ text: String?) {
+    guard let text, !text.isEmpty else { return }
+    UIAccessibility.post(notification: .announcement, argument: text)
+  }
+}
+
+/// `role="status"`: the words read out when they appear and when they change.
+struct ComposerAnnounces: ViewModifier {
+  let text: String
+
+  func body(content: Content) -> some View {
+    content
+      .onAppear { ComposerAnnounce.post(text) }
+      .onChange(of: text) { _, next in ComposerAnnounce.post(next) }
+  }
+}
+
+extension View {
+  func composerAnnounces(_ text: String) -> some View {
+    modifier(ComposerAnnounces(text: text))
+  }
+}
+
+/// A callout's words, and its buttons at the right (`.callout-actions {
+/// margin-left: auto; gap: 6px }`): a notice and the error centre them on
+/// the words, the others hang them from the top.
+struct ComposerCalloutLine<Actions: View>: View {
+  @Environment(\.virgaTheme) private var theme
+  let text: String
+  var centred = false
+  let actions: Actions
+
+  init(_ text: String, centred: Bool = false, @ViewBuilder actions: () -> Actions) {
+    self.text = text
+    self.centred = centred
+    self.actions = actions()
+  }
+
+  var body: some View {
+    HStack(alignment: centred ? .center : .top, spacing: theme.points(ThemeKit.calloutGap)) {
+      Text(text).frame(maxWidth: .infinity, alignment: .leading)
+      HStack(spacing: ComposerMeasure.calloutActionsGap) { actions }
+        .fixedSize()
+    }
+  }
+}
+
 struct ComposerSheet: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(ToastCenter.self) private var toasts
@@ -42,7 +110,8 @@ struct ComposerSheet: View {
         ScrollView {
           ComposerBody(controller: controller)
             .padding(.horizontal, theme.composerNarrow ? ComposerMeasure.phoneSide : ComposerMeasure.side)
-            .padding(.bottom, theme.space4)
+            .padding(.top, theme.composerNarrow ? ComposerMeasure.phoneBodyTop : ComposerMeasure.bodyTop)
+            .padding(.bottom, ComposerMeasure.bodyBottom)
         }
         // SCHEDULE: the when panel opens under the post's settings, which on
         // a phone can be below the foot of the sheet: brought into view.
@@ -50,6 +119,15 @@ struct ComposerSheet: View {
           guard open else { return }
           DispatchQueue.main.async {
             withAnimation(theme.motion.control) { proxy.scrollTo(ComposerWhenPanel.anchor) }
+          }
+        }
+        // The error is brought into view as it's shown (the web's
+        // scrollIntoView, block 'nearest'): it is drawn last, under the
+        // settings, which on a phone can be below the foot.
+        .onChange(of: controller.error) { _, next in
+          guard next != nil else { return }
+          DispatchQueue.main.async {
+            withAnimation(theme.motion.control) { proxy.scrollTo(ComposerStatus.errorAnchor) }
           }
         }
       }
@@ -145,15 +223,10 @@ struct ComposerBody: View {
   @Environment(\.virgaTheme) private var theme
   let controller: ComposerController
 
-  /// A draft or a scheduled post that couldn't be opened.
-  private var loadError: String? {
-    if case .failed(let text, _)? = controller.loads["scheduled"] ?? controller.loads["draft"] { return text }
-    return nil
-  }
-
   var body: some View {
     let state = controller.state
     let disabled = controller.disabled
+    let loadError = controller.loadError
     VStack(alignment: .leading, spacing: ComposerMeasure.gap) {
       PostAsPicker(
         asDid: controller.asDid, locked: state.source?.kind == "scheduled",
@@ -163,19 +236,15 @@ struct ComposerBody: View {
       ComposerNotices(controller: controller)
       ComposerSourceWarning(controller: controller)  // SCHEDULE
       if let loadError {
-        Callout(tone: .danger) {
-          VStack(alignment: .leading, spacing: theme.space2) {
-            Text(loadError)
+        Callout(tone: .danger, alert: loadError) {
+          ComposerCalloutLine(loadError) {
             Button("Write a new post instead") { controller.startOver(confirm: false) }
               .buttonStyle(.virga(size: .small))
           }
         }
       } else if controller.loads["draft"] == .loading || controller.loads["scheduled"] == .loading {
-        // The composer's shape while a draft or a scheduled post is read (ComposerSkeleton).
-        LibrarySkeleton(rows: 3)
-          .accessibilityElement()
-          .accessibilityLabel(controller.loads["scheduled"] != nil ? "Opening the scheduled post" : "Opening the draft")
-          .accessibilityIdentifier("composer-skeleton")
+        // The composer's shape while a draft or a scheduled post is read.
+        ComposerSkeleton(label: controller.loads["scheduled"] != nil ? "Opening the scheduled post" : "Opening the draft")
       } else {
         ComposerPosts(controller: controller, disabled: disabled)
         ComposerOptions(controller: controller, disabled: disabled)
@@ -203,9 +272,9 @@ struct ComposerAccountNotice: View {
 
   var body: some View {
     if controller.signedOut {
-      Callout(tone: .warn) {
-        VStack(alignment: .leading, spacing: theme.space2) {
-          Text("This account is signed out. Sign back in to post as it, or choose another account.")
+      let words = "This account is signed out. Sign back in to post as it, or choose another account."
+      Callout(tone: .warn, alert: words) {
+        ComposerCalloutLine(words) {
           Button("Sign back in") { AccountCopy.requestReauth(controller.asDid, immediate: true) }
             .buttonStyle(.virga(size: .small))
         }
@@ -223,15 +292,12 @@ struct ComposerNotices: View {
 
   var body: some View {
     ForEach(controller.notices) { notice in
-      Callout(tone: notice.tone == .warn ? .warn : .plain) {
-        HStack(alignment: .top, spacing: theme.space2) {
-          VStack(alignment: .leading, spacing: theme.space2) {
-            Text(notice.text)
-            if let label = notice.actionLabel, let action = notice.action {
-              Button(label, action: action).buttonStyle(.virga(size: .small))
-            }
+      // role="status": read out as it comes.
+      Callout(tone: notice.tone == .warn ? .warn : .plain, alert: notice.text) {
+        ComposerCalloutLine(notice.text, centred: true) {
+          if let label = notice.actionLabel, let action = notice.action {
+            Button(label, action: action).buttonStyle(.virga(size: .small))
           }
-          Spacer(minLength: 0)
           Button {
             controller.notices.removeAll { $0.key == notice.key }
           } label: {
@@ -241,6 +307,7 @@ struct ComposerNotices: View {
           .accessibilityLabel("Dismiss")
         }
       }
+      .accessibilityElement(children: .contain)
       .accessibilityIdentifier("composer-notice")
     }
   }
@@ -277,17 +344,16 @@ struct ComposerPosts: View {
         reply: state.reply, selfDid: controller.asDid, loading: replyLoading, error: replyError, disabled: disabled,
         onRetry: { controller.retryReply() }, onRemove: { controller.dropReply() })
       if let quoteError {
-        Callout(tone: .warn) { Text(quoteError) }
+        Callout(tone: .warn, alert: quoteError) { Text(quoteError) }
       }
       if let templateError {
-        Callout(tone: .warn) { Text(templateError) }
+        Callout(tone: .warn, alert: templateError) { Text(templateError) }
           .accessibilityIdentifier("composer-template-error")
       }
       if controller.undoable, let undo = controller.threadUndo {
-        Callout {
-          HStack(spacing: theme.space2) {
-            Text(ThreadEdits.undoLine(undo, fmt: { AppLocale.fmtInt(Double($0)) }))
-            Spacer(minLength: 0)
+        let line = ThreadEdits.undoLine(undo, fmt: { AppLocale.fmtInt(Double($0)) })
+        Callout(alert: line) {
+          ComposerCalloutLine(line, centred: true) {
             Button("Undo") { controller.undoThreadEdit() }
               .buttonStyle(.virga(size: .small))
               .disabled(disabled)
@@ -324,7 +390,7 @@ struct ComposerPosts: View {
         .accessibilityIdentifier("add-post")
       }
       if !controller.mediaNote.isEmpty {
-        Callout(tone: .warn) { Text(controller.mediaNote) }
+        Callout(tone: .warn, alert: controller.mediaNote) { Text(controller.mediaNote) }
       }
     }
   }
@@ -335,6 +401,9 @@ struct ComposerStatus: View {
   @Environment(\.virgaTheme) private var theme
   let controller: ComposerController
 
+  /// The error's place in the composer's scroll, to bring it into view.
+  static let errorAnchor = "composer-error-line"
+
   var body: some View {
     // ADVISER: while it reads, its line in the busy line's place.
     if let reading = controller.adviser.busy {
@@ -343,10 +412,11 @@ struct ComposerStatus: View {
         onKeepEditing: { controller.adviser.keepEditing() })
     }
     if let busy = controller.busy, !busy.adviser {
+      let line = busy.slow ? ComposerSubmit.slowPublishNote : busy.line ?? "Working…"
       VStack(alignment: .leading, spacing: theme.space2) {
         ProgressLine(value: nil)
         HStack(spacing: ComposerMeasure.busyGap) {
-          Text(busy.slow ? ComposerSubmit.slowPublishNote : busy.line ?? "Working…")
+          Text(line)
             .virgaText(.textSm)
             .foregroundStyle(theme.ink2)
             .accessibilityIdentifier("composer-busy")
@@ -357,23 +427,32 @@ struct ComposerStatus: View {
         }
       }
       .accessibilityElement(children: .contain)
+      // role="status" aria-live="polite": each step read out.
+      .composerAnnounces(line)
     }
     if let error = controller.error {
-      Callout(tone: .danger) {
-        VStack(alignment: .leading, spacing: theme.space2) {
-          Text(error.text).accessibilityIdentifier("composer-error")
+      // role="alert", centred on its words with Sign back in at the right.
+      Callout(tone: .danger, alert: error.text) {
+        HStack(alignment: .center, spacing: theme.points(ThemeKit.calloutGap)) {
+          Text(error.text)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityIdentifier("composer-error")
           if error.reauth {
             Button("Sign back in") { AccountCopy.requestReauth(controller.asDid, immediate: true) }
               .buttonStyle(.virga(size: .small))
+              .fixedSize()
           }
         }
       }
+      .id(Self.errorAnchor)
     }
   }
 }
 
-/// The foot: the post's tools (a phone's), why the main button is off, the
-/// ways that have a button of their own, and the main button.
+/// The foot: the post's tools (760 and under), why the main button is off,
+/// the ways that have a button of their own, and the main button. No rule
+/// over it: the space says it is the dialog's foot. On a phone a why that
+/// has to be read takes a line of its own over the tools and the buttons.
 struct ComposerFoot: View {
   @Environment(\.virgaTheme) private var theme
   let controller: ComposerController
@@ -387,48 +466,149 @@ struct ComposerFoot: View {
     let why =
       controller.busy != nil
       ? "" : !primaryReason.isEmpty ? primaryReason : model.draftFallback ? "Over 300 characters: it can be saved as a draft." : ""
+    // An empty post, or one over the limit, says so where it is written
+    // once the post's tools are in the foot (760 and under).
+    let shown = theme.composerToolsInFoot && passing ? "" : why
+    let narrow = theme.composerNarrow
+    VStack(alignment: .leading, spacing: ComposerMeasure.actionsRowGap) {
+      if narrow && !shown.isEmpty {
+        whyLine(shown).padding(.trailing, ComposerMeasure.phoneWhyTrailing)
+      }
+      HStack(spacing: narrow ? ComposerMeasure.phoneActionsGap : ComposerMeasure.actionsGap) {
+        if theme.composerToolsInFoot && controller.footToolsShown {
+          let index = controller.toolsIndex
+          PostTools(controller: controller, post: state.posts[index], disabled: controller.disabled, inFoot: true)
+            .padding(.leading, -ComposerMeasure.footToolsLead)
+        }
+        if narrow {
+          Spacer(minLength: 0)
+        } else {
+          whyLine(shown).frame(maxWidth: .infinity, alignment: .leading)
+        }
+        ComposerAlso(controller: controller, model: model)
+        // On a phone the main button is in the bar at the top of the sheet.
+        if !narrow {
+          PublishButton(
+            state: state, model: model, busy: controller.sendBusy, also: controller.also,  // ADVISER: sendBusy
+            footnote: controller.usageLine.isEmpty ? "" : "\(controller.usageLine).",  // SCHEDULE
+            onAction: { controller.runAction($0) })
+        }
+      }
+      .frame(minHeight: narrow ? Measure.Touch.target : nil)
+    }
+    .padding(narrow ? ComposerMeasure.phoneFoot : ComposerMeasure.foot)
+    .background(theme.surface)
+    // aria-live="polite": the reason the main button is off, read out as it changes.
+    .onChange(of: why) { _, next in ComposerAnnounce.post(next) }
+  }
+
+  private func whyLine(_ text: String) -> some View {
+    Text(text)
+      .virgaText(.textSm, lineHeight: ComposerMeasure.whyLineHeight)
+      .foregroundStyle(theme.muted)
+      .fixedSize(horizontal: false, vertical: true)
+      .accessibilityIdentifier("composer-why")
+  }
+}
+
+/// Save as draft (words alone) and Schedule (the outline), beside the main
+/// button; each says why when it's off (its title). Schedule says it in
+/// words alone in a phone's foot of 350 or less, so the foot keeps one line.
+struct ComposerAlso: View {
+  @Environment(\.virgaTheme) private var theme
+  let controller: ComposerController
+  let model: ComposerActionSet
+
+  var body: some View {
+    let state = controller.state
     let also = controller.also
     let busy = controller.sendBusy  // ADVISER
-    let toolsIndex = min(controller.activeIndex, max(0, state.posts.count - 1))
     let narrow = theme.composerNarrow
-    VStack(spacing: 0) {
-      Rectangle().fill(theme.line).frame(height: 1)
-      HStack(spacing: ComposerMeasure.actionsGap) {
-        if theme.composerToolsInFoot, state.posts.indices.contains(toolsIndex) {
-          PostTools(controller: controller, post: state.posts[toolsIndex], disabled: controller.disabled)
-        }
-        Text(narrow && passing ? "" : why)
-          .virgaText(.textSm)
-          .foregroundStyle(theme.muted)
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .accessibilityIdentifier("composer-why")
+    let draft = model.actions.draft
+    let schedule = model.actions.schedule
+    // The kit's padding taken back: 10 a side on a wide screen, none on a phone.
+    let kitPad = theme.points(ThemeKit.buttonPadding.left)
+    let footWidth = theme.windowWidth - ComposerMeasure.phoneFoot.leading - ComposerMeasure.phoneFoot.trailing
+    let scheduleIcon = !(narrow && footWidth <= ComposerMeasure.footWordsOnly)
+    if !also.isEmpty {
+      HStack(spacing: narrow ? ComposerMeasure.phoneAlsoGap : ComposerMeasure.alsoGap) {
         if also.contains(PublishActions.draft) {
           Button(ComposerActions.actionLabel(PublishActions.draft, state)) { controller.runAction(PublishActions.draft) }
             .buttonStyle(.virga(.ghost))
-            .disabled(busy || model.actions.draft.disabled)
+            .disabled(busy || draft.disabled)
+            .padding(.horizontal, -(kitPad - (narrow ? 0 : ComposerMeasure.draftPadding)))
+            .help(draft.reason ?? "")
+            .accessibilityHint(draft.disabled ? draft.reason ?? "" : "")
             .accessibilityIdentifier("save-draft")
         }
         if also.contains(PublishActions.schedule) {
           Button {
             controller.runAction(PublishActions.schedule)
           } label: {
-            Label(ComposerActions.actionLabel(PublishActions.schedule, state, short: true), systemImage: ComposerGlyph.schedule)
+            if scheduleIcon {
+              Label(ComposerActions.actionLabel(PublishActions.schedule, state, short: true), systemImage: ComposerGlyph.schedule)
+            } else {
+              Text(ComposerActions.actionLabel(PublishActions.schedule, state, short: true))
+            }
           }
           .buttonStyle(.virga)
-          .disabled(busy || model.actions.schedule.disabled)
+          .disabled(busy || schedule.disabled)
+          .help(schedule.reason ?? "")
+          .accessibilityHint(schedule.disabled ? schedule.reason ?? "" : "")
           .accessibilityIdentifier("composer-schedule")
         }
-        // On a phone the main button is in the bar at the top of the sheet.
-        if !narrow {
-          PublishButton(
-            state: state, model: model, busy: busy, also: also,
-            footnote: controller.usageLine.isEmpty ? "" : "\(controller.usageLine).",  // SCHEDULE
-            onAction: { controller.runAction($0) })
+      }
+      .fixedSize()
+    }
+  }
+}
+
+/// The composer's shape while a draft or a scheduled post is read: a post
+/// of three lines (the last 45% wide) over the settings' three chips.
+struct ComposerSkeleton: View {
+  @Environment(\.virgaTheme) private var theme
+  let label: String
+
+  var body: some View {
+    let phone = theme.composerNarrow
+    VStack(alignment: .leading, spacing: ComposerMeasure.gap) {
+      VStack(alignment: .leading, spacing: ComposerMeasure.skeletonLineGap) {
+        line(nil)
+        line(nil)
+        line(ComposerMeasure.skeletonShortLine)
+      }
+      .padding(.top, ComposerMeasure.skeletonTop)
+      .padding(.bottom, ComposerMeasure.skeletonBottom)
+      VStack(alignment: .leading, spacing: 0) {
+        Rectangle().fill(theme.rule).frame(height: 1)
+        if phone {
+          VStack(alignment: .leading, spacing: ComposerMeasure.skeletonChipGap) { chips }
+        } else {
+          HStack(spacing: ComposerMeasure.skeletonChipGap) { chips }
+            .padding(.top, ComposerMeasure.optionsTop)
         }
       }
-      .padding(narrow ? ComposerMeasure.phoneFoot : ComposerMeasure.foot)
     }
-    .background(theme.surface)
+    .accessibilityElement()
+    .accessibilityLabel(label)
+    .accessibilityIdentifier("composer-skeleton")
+    .composerAnnounces("\(label)…")
+  }
+
+  @ViewBuilder private var chips: some View {
+    ForEach(0..<3, id: \.self) { _ in
+      Capsule().fill(theme.surface3)
+        .frame(width: ComposerMeasure.skeletonChip.width, height: ComposerMeasure.skeletonChip.height)
+    }
+  }
+
+  private func line(_ share: CGFloat?) -> some View {
+    GeometryReader { box in
+      RoundedRectangle(cornerRadius: theme.radiusSm)
+        .fill(theme.surface3)
+        .frame(width: box.size.width * (share ?? 1))
+    }
+    .frame(height: ComposerMeasure.skeletonLine)
   }
 }
 

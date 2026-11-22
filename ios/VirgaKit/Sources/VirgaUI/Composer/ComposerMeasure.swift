@@ -13,9 +13,14 @@ enum ComposerMeasure {
   static let dialogWidth: CGFloat = 640
   /// `.composer { gap: 14px }`
   static let gap: CGFloat = 14
-  /// `.composer-dialog .dialog-body { padding: 0 20px 20px }` on a phone.
+  /// `.composer-dialog .dialog-body { padding-top: 6px }` over `.dialog-body
+  /// { padding: 4px 24px 20px }`; a phone's `0 20px 20px`, with the bar's
+  /// `margin-bottom: -6px` leaving 8 under it (the composer's gap less 6).
   static let phoneSide: CGFloat = 20
   static let side: CGFloat = 24
+  static let bodyTop: CGFloat = 6
+  static let phoneBodyTop: CGFloat = 8
+  static let bodyBottom: CGFloat = 20
   /// `.post-block { gap: 10px }`, `.post-blocks { gap: 12px }`, a thread's
   /// post `padding-bottom: 18px`.
   static let blockGap: CGFloat = 10
@@ -81,14 +86,55 @@ enum ComposerMeasure {
   /// `.reply-context { gap: 6px }`
   static let replyGap: CGFloat = 6
   /// `.composer-busy { gap: 6px 12px }`, `.composer-actions { gap: 8px 12px }`
+  /// (a phone's `column-gap: 8px`), `.composer-why { line-height: 1.35 }`
+  /// (a phone's line of its own, `padding-right: 8px`).
   static let busyGap: CGFloat = 12
   static let actionsGap: CGFloat = 12
-  /// `.publish-main { min-width: 88px }`
+  static let actionsRowGap: CGFloat = 8
+  static let phoneActionsGap: CGFloat = 8
+  static let whyLineHeight: Double = 1.35
+  static let phoneWhyTrailing: CGFloat = 8
+  /// `.composer-also { gap: 8px }` (16 on a phone), `.btn.composer-also-draft
+  /// { padding: 0 10px }` (0 on a phone), and Schedule's picture dropped in a
+  /// foot of 350 or less (`@container composer-foot (max-width: 350px)`).
+  static let alsoGap: CGFloat = 8
+  static let phoneAlsoGap: CGFloat = 16
+  static let draftPadding: CGFloat = 10
+  static let footWordsOnly: CGFloat = 350
+  /// `.composer-tools { margin-left: -12px }` on touch (their pictures on the
+  /// dialog's edge), `.post-block-actions { margin-left: -7px }`; the foot's
+  /// are the medium size with 20-point pictures, a post's the small with 17.
+  static let footToolsLead: CGFloat = 12
+  static let postToolsLead: CGFloat = 7
+  static let footToolGlyph: CGFloat = 20
+  static let postToolGlyph: CGFloat = 17
+  /// `.publish-main { min-width: 88px }` (0 at 640 and under), its right
+  /// padding 14 before the caret; `.publish-caret { width: 40px; padding:
+  /// 0 4px 0 0; border-left: 1px solid color-mix(on-btn 28%) }`; a half that
+  /// can't run keeps the ink, its words at 55%; their pictures are 16.
   static let publishMinWidth: CGFloat = 88
+  static let publishMainTrailing: CGFloat = 14
+  static let publishCaretWidth: CGFloat = 40
+  static let publishCaretInset: CGFloat = 4
+  static let publishSeamInk: Double = 0.28
+  static let publishOffInk: Double = 0.55
+  static let publishGlyph: CGFloat = 16
   /// `.composer-dialog .dialog-actions { padding: 12px 24px 16px }`; a
   /// phone's `8px 12px 10px 20px`.
   static let foot = EdgeInsets(top: 12, leading: 24, bottom: 16, trailing: 24)
   static let phoneFoot = EdgeInsets(top: 8, leading: 20, bottom: 10, trailing: 12)
+  /// `.callout-actions { gap: 6px }`
+  static let calloutActionsGap: CGFloat = 6
+  /// `.composer-skeleton .post-block { gap: 12px; padding: 6px 0 4px }`,
+  /// `.skeleton-line { height: 14px }` (`--short` 45%), `.skeleton-chip {
+  /// 96 × 24 }`, `.composer-skeleton .composer-options { gap: 8px }`.
+  static let skeletonLineGap: CGFloat = 12
+  static let skeletonTop: CGFloat = 6
+  static let skeletonBottom: CGFloat = 4
+  static let skeletonLine: CGFloat = 14
+  static let skeletonShortLine: CGFloat = 0.45
+  static let skeletonChip = CGSize(width: 96, height: 24)
+  static let skeletonChipGap: CGFloat = 8
   /// `.composer-bar { gap: 10px; min-height: 56px; padding: 6px 12px 6px 20px }`
   /// (the safe area's inset is the sheet's own), `.composer-bar-close {
   /// min-height: 44px; font-weight: 500 }`.

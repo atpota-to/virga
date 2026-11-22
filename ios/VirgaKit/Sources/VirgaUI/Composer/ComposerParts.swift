@@ -47,7 +47,7 @@ struct LanguagePicker: View {
           }
         }
       }
-      TextField(full ? "Three languages is the most a post can have" : "Add a language", text: $query)
+      VirgaTextField(full ? "Three languages is the most a post can have" : "Add a language", text: $query)
         .virgaField()
         .focused($focused)
         .disabled(disabled || full)
@@ -309,19 +309,37 @@ struct PublishButton: View {
     let p = model.actions[primary]
     let listed = Self.order.filter { $0 != primary && !also.contains($0) }
     let caretOff = listed.allSatisfy { model.actions[$0].disabled }
-    HStack(spacing: 1) {
+    // Nothing here can run: the two halves dim as one button, as any other
+    // button that can't be pressed does.
+    let allOff = (busy || p.disabled) && (busy || caretOff)
+    let height = theme.points(ThemeKit.touchButtonHeight)
+    let radius = height / 2
+    // One ink pill: the main half's right corners square where the caret
+    // follows it, a seam between them.
+    HStack(spacing: 0) {
       Button {
         onAction(primary)
       } label: {
         Label(busy ? "Working…" : ComposerActions.actionLabel(primary, state, short: true), systemImage: Self.icon(primary))
-          .frame(minWidth: ComposerMeasure.publishMinWidth)
       }
-      .buttonStyle(.virga(.primary))
+      .buttonStyle(
+        PublishHalfStyle(
+          shape: UnevenRoundedRectangle(
+            topLeadingRadius: radius, bottomLeadingRadius: radius, bottomTrailingRadius: listed.isEmpty ? radius : 0,
+            topTrailingRadius: listed.isEmpty ? radius : 0),
+          leading: theme.points(ThemeKit.buttonPadding.left),
+          trailing: listed.isEmpty ? theme.points(ThemeKit.buttonPadding.right) : ComposerMeasure.publishMainTrailing,
+          minWidth: theme.composerNarrow ? 0 : ComposerMeasure.publishMinWidth, fadesWhenOff: !allOff))
       .disabled(busy || p.disabled)
+      .help(p.disabled ? (p.reason ?? "") : "")
       .accessibilityHint(p.disabled ? (p.reason ?? "") : "")
       .accessibilityIdentifier("publish")
       .keyboardShortcut(.return, modifiers: .command)
       if !listed.isEmpty {
+        Rectangle()
+          .fill(theme.onBtn.opacity(ComposerMeasure.publishSeamInk))
+          .frame(width: 1, height: height)
+          .accessibilityHidden(true)
         Menu {
           ForEach(listed, id: \.self) { action in
             item(action, primaryReason: p.disabled ? p.reason : nil)
@@ -330,21 +348,19 @@ struct PublishButton: View {
             Text(footnote)
           }
         } label: {
-          let side = theme.points(ThemeKit.touchButtonHeight)
-          Image(systemName: ComposerGlyph.chevronDown)
-            .font(.system(size: 15, weight: .semibold))
-            .foregroundStyle(theme.onBtn)
-            .frame(width: side, height: side)
-            .background(theme.btn, in: Circle())
-            .contentShape(Circle())
+          PublishCaret(
+            shape: UnevenRoundedRectangle(
+              topLeadingRadius: 0, bottomLeadingRadius: 0, bottomTrailingRadius: radius, topTrailingRadius: radius),
+            fadesWhenOff: !allOff)
         }
         .menuOrder(.fixed)
         .disabled(busy || caretOff)
-        .opacity(busy || caretOff ? 0.45 : 1)
         .accessibilityLabel("More ways to send it")
         .accessibilityIdentifier("publish-more")
       }
     }
+    .opacity(allOff ? ThemeKit.disabledOpacity : 1)
+    .fixedSize()
   }
 
   @ViewBuilder
@@ -358,6 +374,74 @@ struct PublishButton: View {
       if let hint { Text(hint) }
     }
     .disabled(a.disabled)
+  }
+}
+/// One half of the send button: the primary's ink (pressed, its hover's),
+/// its words in --on-btn. A half that can't run while the other can keeps
+/// the ink and fades only its words (`.publish-main:disabled`), so the two
+/// stay one button; when neither can, the pill dims as one instead.
+struct PublishHalfStyle: ButtonStyle {
+  let shape: UnevenRoundedRectangle
+  let leading: CGFloat
+  let trailing: CGFloat
+  let minWidth: CGFloat
+  let fadesWhenOff: Bool
+
+  func makeBody(configuration: Configuration) -> some View {
+    PublishHalfBody(
+      label: configuration.label, isPressed: configuration.isPressed, shape: shape, leading: leading, trailing: trailing,
+      minWidth: minWidth, fadesWhenOff: fadesWhenOff)
+  }
+}
+
+struct PublishHalfBody<Label: View>: View {
+  @Environment(\.virgaTheme) private var theme
+  @Environment(\.isEnabled) private var isEnabled
+  let label: Label
+  let isPressed: Bool
+  let shape: UnevenRoundedRectangle
+  let leading: CGFloat
+  let trailing: CGFloat
+  let minWidth: CGFloat
+  let fadesWhenOff: Bool
+
+  var body: some View {
+    let ink = theme.color(ThemeKit.primaryButtonInk)
+    let height = theme.points(ThemeKit.touchButtonHeight)
+    label
+      .labelStyle(InlineLabelStyle(gap: theme.points(ThemeKit.buttonGap)))
+      .virgaText(size: theme.points(ThemeKit.buttonFontSize), weight: ThemeKit.primaryButtonWeight, lineHeight: Measure.Lines.button)
+      .lineLimit(1)
+      .fixedSize(horizontal: true, vertical: false)
+      .foregroundStyle(!isEnabled && fadesWhenOff ? ink.opacity(ComposerMeasure.publishOffInk) : ink)
+      .padding(.leading, leading)
+      .padding(.trailing, trailing)
+      .frame(minWidth: minWidth, minHeight: height)
+      .background(shape.fill(theme.color(isPressed ? ThemeKit.primaryButtonHoverFill : ThemeKit.primaryButtonFill)))
+      .contentShape(Rectangle().inset(by: -(Measure.Touch.target - height) / 2))
+      .animation(theme.motion.control, value: isPressed)
+      .virgaFocusOutline(Capsule())
+  }
+}
+
+/// The send button's caret: 40 wide, its chevron a little left of centre
+/// (`.publish-caret { width: 40px; padding: 0 4px 0 0 }`).
+struct PublishCaret: View {
+  @Environment(\.virgaTheme) private var theme
+  @Environment(\.isEnabled) private var isEnabled
+  let shape: UnevenRoundedRectangle
+  let fadesWhenOff: Bool
+
+  var body: some View {
+    let ink = theme.color(ThemeKit.primaryButtonInk)
+    let height = theme.points(ThemeKit.touchButtonHeight)
+    Image(systemName: ComposerGlyph.chevronDown)
+      .virgaGlyph(ComposerMeasure.publishGlyph, weight: .semibold, beside: theme.points(ThemeKit.buttonFontSize))
+      .foregroundStyle(!isEnabled && fadesWhenOff ? ink.opacity(ComposerMeasure.publishOffInk) : ink)
+      .padding(.trailing, ComposerMeasure.publishCaretInset)
+      .frame(width: ComposerMeasure.publishCaretWidth, height: height)
+      .background(shape.fill(theme.color(ThemeKit.primaryButtonFill)))
+      .contentShape(Rectangle())
   }
 }
 #endif
