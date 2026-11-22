@@ -86,16 +86,34 @@
       "swift": []
     },
     "src/posting/schedule/postingQueue.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/PostingQueue.swift"
+      ],
+      "fixtures": [
+        "composer.queue"
+      ],
+      "synced": "b6fb386df68a"
     },
     "src/posting/schedule/publishActions.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/PublishActions.swift"
+      ],
+      "fixtures": [
+        "composer.queue"
+      ],
+      "synced": "a343e1593f12"
     },
     "src/posting/schedule/repeat.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/Repeat.swift"
+      ],
+      "fixtures": [
+        "composer.repeat"
+      ],
+      "synced": "7b14ef887b3a"
     },
     "src/posting/settings.js": {
       "status": "pending",

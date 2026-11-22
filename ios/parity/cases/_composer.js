@@ -152,3 +152,36 @@ export const blob = (cid, mimeType = 'image/jpeg', size = 1) => ({
   mimeType,
   size,
 });
+
+/**
+ * Runs `fn` with the clock held at `now`: `Date.now()` and a bare
+ * `new Date()` give it, every other Date is a real one. For web code that
+ * reads the clock itself (repeat.js's "this year", autosave's stamps).
+ */
+export function atNow(now, fn) {
+  const Real = globalThis.Date;
+  class HeldDate extends Real {
+    constructor(...args) {
+      if (args.length === 0) super(now);
+      else super(...args);
+    }
+
+    static now() {
+      return now;
+    }
+  }
+  globalThis.Date = HeldDate;
+  try {
+    const out = fn();
+    if (out && typeof out.then === 'function') {
+      return out.finally(() => {
+        globalThis.Date = Real;
+      });
+    }
+    globalThis.Date = Real;
+    return out;
+  } catch (error) {
+    globalThis.Date = Real;
+    throw error;
+  }
+}
