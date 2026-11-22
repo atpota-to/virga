@@ -242,6 +242,10 @@ struct TemplatesPage: View {
       HStack(alignment: .center, spacing: Measure.Templates.rowColumnGap) {
         name(t, canWrite: canWrite)
           .frame(maxWidth: .infinity, alignment: .leading)
+        // `.row-actions { margin-top: -6px }`, and the 44-point ⋯ reaching
+        // 6 past it above and below (`.row-actions .btn--ghost.btn--icon {
+        // margin-block: -6px }`), so the name's line is the 32 of Use less
+        // the lift, not the ⋯'s 44.
         HStack(spacing: theme.points(ThemeKit.rowActionsGap)) {
           Button("Use") { use(t) }
             .buttonStyle(.virga(size: .small))
@@ -256,9 +260,11 @@ struct TemplatesPage: View {
                 .item(MenuItem("Delete", key: "delete", systemImage: Glyph.trash, destructive: true) { deleting = t }),
               ]
             )
+            .padding(.vertical, -Measure.Section.rowActionsLift)
             .padding(.trailing, theme.isPhone ? -Measure.Settings.dashMenuOutset : 0)
           }
         }
+        .padding(.top, -Measure.Section.rowActionsLift)
       }
       TemplateText(text: t.text)
       MetaLine(meta)

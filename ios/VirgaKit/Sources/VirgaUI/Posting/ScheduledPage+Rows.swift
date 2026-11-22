@@ -182,10 +182,15 @@ struct ScheduledRowView: View {
       whenCell(time: time)
       main(facts: facts, status: status, series: series)
         .frame(maxWidth: .infinity, alignment: .leading)
+      // `.row-actions { margin-top: -6px }`, and the 44-point ⋯ reaching 6
+      // past it above and below (`.row-actions .btn--ghost.btn--icon {
+      // margin-block: -6px }`), so the group is the 32 of a small button,
+      // centred on the row's first line.
       HStack(spacing: theme.points(ThemeKit.rowActionsGap)) {
         primary(actions: actions, busy: busy)
         if !menu.isEmpty {
           MoreMenu(label: "More for the post at \(time)", entries: menu)
+            .padding(.vertical, -Measure.Section.rowActionsLift)
         }
       }
       .padding(.top, -Measure.Section.rowActionsLift)
@@ -713,11 +718,13 @@ struct TimerNoteRow: View {
       .fixedSize()
   }
 
-  /// `.row-actions`: Set a timer, then the ✕.
+  /// `.row-actions`: Set a timer, then the ✕, whose 44-point box reaches 6
+  /// past the group above and below (`.row-actions .btn--ghost.btn--icon {
+  /// margin-block: -6px }`), so the group is Set a timer's 32.
   private func actions(_ note: TimerNoteActions, busy: Bool) -> some View {
     HStack(spacing: theme.points(ThemeKit.rowActionsGap)) {
       if let arm = note.arm { setTimer(arm) }
-      if note.dismiss { dismiss(busy: busy) }
+      if note.dismiss { dismiss(busy: busy).padding(.vertical, -Measure.Section.rowActionsLift) }
     }
   }
 
