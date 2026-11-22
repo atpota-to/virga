@@ -62,6 +62,7 @@ public struct RoutedPage: View {
   @Environment(ShellDashboards.self) private var dashboards
   @Environment(AppModel.self) private var app
   @Environment(ArchiveModel.self) private var archive: ArchiveModel?
+  @Environment(ShellActions.self) private var actions: ShellActions?
   private let path: String
 
   public init(path: String) {
@@ -100,8 +101,9 @@ public struct RoutedPage: View {
     switch route.section {
     case .dashboard:
       if let dashboard {
+        // Made again by Customize this dashboard (Shell.jsx's `customizing` key).
         DashboardPage(dashboard: dashboard)
-          .id(dashboard.id)
+          .id("\(dashboard.id)#\(actions?.customizing ?? 0)")
       } else {
         // An address that names no dashboard goes to the first (Shell).
         PageLoading("")

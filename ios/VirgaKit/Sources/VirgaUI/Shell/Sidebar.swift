@@ -16,9 +16,11 @@
 // and the account there instead, and Sync now is in the account's menu.
 //
 // Under New post, "Search or jump to…" with its shortcut opens the command
-// palette (a search glyph on the rail).
+// palette (a search glyph on the rail). The dashboards' pages end with New
+// dashboard, which opens the shell's dialog (ShellActions).
 //
-// Not here yet: New dashboard (its dialog comes with the dashboards).
+// On a screen too short for the whole list, the parts scroll between the
+// top and the foot, fading 24 points at the edge with more behind it.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -26,12 +28,14 @@ import VirgaArchive
 import VirgaCore
 import VirgaInsights
 
-/// One page under a part: its words, where it goes, and whether it is the page.
+/// One page under a part: its words, where it goes, and whether it is the
+/// page; or an action in the list (`.nav-sub-action`: New dashboard).
 struct NavSub: Identifiable {
   var id: String
   var label: String
   var to: String
   var current: Bool
+  var action: (@MainActor () -> Void)? = nil
 }
 
 public struct Sidebar: View {
@@ -42,6 +46,7 @@ public struct Sidebar: View {
   @Environment(PreferencesModel.self) private var preferences
   @Environment(AppModel.self) private var app
   @Environment(ArchiveModel.self) private var archive: ArchiveModel?
+  @Environment(ShellActions.self) private var actions: ShellActions?
   private let firstRun: Bool
 
   /// - Parameter firstRun: whether the page is the first build's.
@@ -65,7 +70,9 @@ public struct Sidebar: View {
   // MARK: Open
 
   private var open: some View {
-    VStack(alignment: .leading, spacing: Measure.Sidebar.gap) {
+    // A laptop's short screen: the parts sit closer (and the card drops its counts).
+    let short = theme.windowHeight <= Measure.Sync.countsHiddenAtHeight
+    return VStack(alignment: .leading, spacing: short ? Measure.Sidebar.shortGap : Measure.Sidebar.gap) {
       HStack(spacing: Measure.Sidebar.doGap) {
         Brand()
         Spacer(minLength: 0)
@@ -82,7 +89,7 @@ public struct Sidebar: View {
       .environment(\.virgaFillsWidth, true)
       .accessibilityIdentifier("sidebar-new-post")
       SidebarSearch()
-      ScrollView(.vertical, showsIndicators: false) {
+      SidebarScroll {
         VStack(alignment: .leading, spacing: Measure.Sidebar.navGap) {
           ForEach(sections) { section in
             NavSectionView(section: section, collapsed: false)
@@ -115,13 +122,14 @@ public struct Sidebar: View {
       .accessibilityLabel("New post")
       .accessibilityIdentifier("sidebar-new-post")
       PaletteButton()
-      ScrollView(.vertical, showsIndicators: false) {
+      SidebarScroll {
         VStack(spacing: Measure.Sidebar.railNavGap) {
           ForEach(sections) { section in
             NavSectionView(section: section, collapsed: true)
           }
         }
         .padding(.vertical, Measure.Sidebar.navGap)
+        .frame(maxWidth: .infinity)
       }
       VStack(spacing: Measure.Sidebar.doGap) {
         fold
@@ -162,13 +170,15 @@ public struct Sidebar: View {
     let page = route.page
     var out: [Part] = []
     let shown = dashboards.dashboard(route.dashboard)?.id ?? route.dashboard
+    var dashSubs: [NavSub] = dashboards.dashboards.map { d in
+      NavSub(id: d.id, label: d.name, to: "/dashboard/\(d.id)", current: Optional(d.id).jsEquals(shown))
+    }
+    let create: @MainActor () -> Void = { [actions] in actions?.creatingDashboard = true }
+    dashSubs.append(NavSub(id: "new", label: "New dashboard", to: "", current: false, action: create))
     out.append(
       Part(
         id: "dashboard", label: "Dashboards", systemImage: Glyph.dashboards, to: "/dashboard/\(shown ?? dashboards.homeId ?? "")",
-        open: route.section == .dashboard, current: false,
-        subs: dashboards.dashboards.map { d in
-          NavSub(id: d.id, label: d.name, to: "/dashboard/\(d.id)", current: Optional(d.id).jsEquals(shown))
-        }))
+        open: route.section == .dashboard, current: false, subs: dashSubs))
     out.append(
       Part(
         id: "reports", label: "Reports", systemImage: Glyph.reports, to: "/reports", open: route.section == .reports,
@@ -256,7 +266,7 @@ struct NavSectionView: View {
     VStack(alignment: .leading, spacing: 0) {
       ForEach(section.subs) { sub in
         Button {
-          navigate(sub.to)
+          if let action = sub.action { action() } else { navigate(sub.to) }
         } label: {
           Text(sub.label)
             .virgaText(.textBase, weight: sub.current ? VirgaWeight.semibold : VirgaWeight.regular)
@@ -305,5 +315,67 @@ struct NavSectionView: View {
     .accessibilityAddTraits(section.open ? [.isSelected] : [])
     .accessibilityIdentifier("nav-\(section.id)")
   }
+}
+/// `.sidebar-scroll`: the parts' list, scrolling on a screen too short
+/// for it, faded 24 points at the edge with more behind it
+/// (useOverflowEdge's data-overflow: start, end or both).
+struct SidebarScroll<Content: View>: View {
+  @State private var viewport: CGFloat = 0
+  @State private var edges = OverflowEdges()
+  private let content: Content
+  private let space = "sidebar-scroll"
+
+  init(@ViewBuilder content: () -> Content) {
+    self.content = content()
+  }
+
+  var body: some View {
+    ScrollView(.vertical, showsIndicators: false) {
+      content
+        .background(
+          GeometryReader { geometry in
+            Color.clear.preference(key: SidebarListFrame.self, value: geometry.frame(in: .named(space)))
+          }
+        )
+    }
+    .coordinateSpace(name: space)
+    .background(
+      GeometryReader { geometry in
+        Color.clear
+          .onAppear { viewport = geometry.size.height }
+          .onChange(of: geometry.size.height) { _, height in viewport = height }
+      }
+    )
+    .onPreferenceChange(SidebarListFrame.self) { frame in
+      let next = OverflowEdges(start: frame.minY < -1, end: frame.maxY > viewport + 1)
+      if next != edges { edges = next }
+    }
+    .mask(fade)
+  }
+
+  private var fade: some View {
+    let width = Measure.Sidebar.scrollFade
+    return VStack(spacing: 0) {
+      LinearGradient(colors: [Color.black.opacity(edges.start ? 0 : 1), .black], startPoint: .top, endPoint: .bottom)
+        .frame(height: width)
+      Color.black
+      LinearGradient(colors: [.black, Color.black.opacity(edges.end ? 0 : 1)], startPoint: .top, endPoint: .bottom)
+        .frame(height: width)
+    }
+  }
+}
+
+private struct SidebarListFrame: PreferenceKey {
+  static let defaultValue: CGRect = .zero
+  static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
+    value = nextValue()
+  }
+}
+
+extension Measure.Sidebar {
+  /// `.sidebar-scroll[data-overflow]`: the fade, 24 at the edge with more behind it.
+  static let scrollFade: CGFloat = 24
+  /// `@media (min-width: 900px) and (max-height: 860px) { .sidebar { gap: 16px } }`
+  static let shortGap: CGFloat = 16
 }
 #endif

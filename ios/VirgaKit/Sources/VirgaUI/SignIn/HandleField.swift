@@ -9,7 +9,11 @@
 // handle in the field and looks it up at once; a search that fails shows
 // nothing, since the field works without suggestions. On the front page
 // the list floats under the field, with what floats has; in a dialog it
-// takes its place in the layout.
+// takes its place in the layout. On a hardware keyboard it is a combobox:
+// ↑ and ↓ move through the suggestions (round through the field itself:
+// moveActive), Return takes the marked one (or, with none marked, signs
+// in as the field always does), Escape puts the list away and Tab leaves
+// it closed.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -35,10 +39,14 @@ struct HandleField: View {
   @State private var typed = false
   /// A suggestion just taken is in the field now; it isn't searched for.
   @State private var skip: String?
+  /// The suggestion the arrows have marked, -1 for none (the field itself).
+  @State private var active = -1
+  /// Escape (or Tab) put the list away; the arrows or new answers bring it back.
+  @State private var closed = false
 
   var body: some View {
     let height = theme.points(size == .large ? ThemeKit.largeInputHeight : ThemeKit.touchInputHeight)
-    let showing = focus.wrappedValue && !items.isEmpty
+    let showing = focus.wrappedValue && !items.isEmpty && !closed
     VStack(alignment: .leading, spacing: 0) {
       ZStack(alignment: .leading) {
         TextField(
@@ -57,7 +65,39 @@ struct HandleField: View {
         .autocorrectionDisabled()
         .keyboardType(.URL)
         .submitLabel(.go)
-        .onSubmit(onSubmit)
+        .onSubmit {
+          if showing && items.indices.contains(active) {
+            pick(items[active])
+          } else {
+            onSubmit()
+          }
+        }
+        .onKeyPress(keys: [.upArrow, .downArrow]) { press in
+          if items.isEmpty { return .ignored }
+          let down = press.key == .downArrow
+          if !showing {
+            closed = false
+            active = down ? 0 : items.count - 1
+          } else {
+            active = SignInSuggest.moveActive(active, items.count, down ? "ArrowDown" : "ArrowUp")
+          }
+          return .handled
+        }
+        .onKeyPress(.escape) {
+          // The list goes away; the dialog the field may be in stays.
+          if !showing { return .ignored }
+          closed = true
+          active = -1
+          return .handled
+        }
+        .onKeyPress(.tab) {
+          if showing {
+            closed = true
+            active = -1
+          }
+          return .ignored
+        }
+        .accessibilityValue(showing && items.indices.contains(active) ? "@\(items[active].handle ?? "")" : "")
         .disabled(disabled)
         .virgaField(invalid: invalid, size: size, leading: Measure.SignIn.fieldLeading)
         .accessibilityIdentifier("handle-field")
@@ -85,6 +125,9 @@ struct HandleField: View {
     }
     .zIndex(1)
     .task(id: value) { await suggest() }
+    .onChange(of: focus.wrappedValue) { _, focused in
+      if !focused { active = -1 }
+    }
   }
 
   /// The debounce, then the search (cancelled by the next keystroke).
@@ -99,6 +142,8 @@ struct HandleField: View {
       let found = try await app.lookups.suggest(query)
       if Task.isCancelled { return }
       items = found
+      active = -1
+      closed = false
     } catch {
       if Task.isCancelled { return }
       items = []
@@ -107,7 +152,7 @@ struct HandleField: View {
 
   private var suggestions: some View {
     VStack(alignment: .leading, spacing: 0) {
-      ForEach(items, id: \.did) { item in
+      ForEach(Array(items.enumerated()), id: \.element.did) { index, item in
         Button {
           pick(item)
         } label: {
@@ -136,7 +181,8 @@ struct HandleField: View {
           .frame(minHeight: Measure.SignIn.suggestionHeight)
           .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(HandleSuggestionStyle(marked: index == active))
+        .accessibilityAddTraits(index == active ? .isSelected : [])
         .accessibilityIdentifier("suggestion-\(item.handle ?? item.did)")
       }
     }
@@ -148,7 +194,44 @@ struct HandleField: View {
     let handle = item.handle ?? ""
     skip = handle
     items = []
+    active = -1
     onPick(handle)
+  }
+}
+
+/// `.handle-suggestion`: the row the arrows have marked (the one Return
+/// takes) on --hover with 2 points of ink at its edge, to be told from the
+/// one the pointer is over, which is only shaded (--surface-2).
+struct HandleSuggestionStyle: ButtonStyle {
+  let marked: Bool
+
+  func makeBody(configuration: Configuration) -> some View {
+    HandleSuggestionBody(label: configuration.label, marked: marked, pressed: configuration.isPressed)
+  }
+}
+
+struct HandleSuggestionBody<Label: View>: View {
+  @Environment(\.virgaTheme) private var theme
+  let label: Label
+  let marked: Bool
+  let pressed: Bool
+  @State private var hovered = false
+
+  var body: some View {
+    let shape = RoundedRectangle(cornerRadius: theme.radius)
+    label
+      .background {
+        if marked {
+          shape.fill(theme.hover)
+            .overlay(alignment: .leading) {
+              Rectangle().fill(theme.ink).frame(width: Measure.SignIn.suggestionMark)
+            }
+            .clipShape(shape)
+        } else if hovered || pressed {
+          shape.fill(theme.surface2)
+        }
+      }
+      .onHover { hovered = $0 }
   }
 }
 #endif

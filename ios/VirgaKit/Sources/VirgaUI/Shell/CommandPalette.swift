@@ -20,9 +20,10 @@
 // post goes to the composer's address (the composer isn't ported); Sync
 // runs the archive's sync; the period and the sky set the preference (the
 // period says, in a toast, what the charts show now); another account
-// opens as the account menu opens it. "Customize this dashboard" and "New
-// dashboard" aren't offered until the dashboards' editing is ported. What
-// was used last is kept under the web's key (virga:palette-recent).
+// opens as the account menu opens it; New dashboard opens the shell's
+// dialog, and Customize this dashboard (on a dashboard) opens it for
+// customizing (ShellActions). What was used last is kept under the web's
+// key (virga:palette-recent).
 
 #if canImport(UIKit)
 import Observation
@@ -37,6 +38,9 @@ import VirgaSession
 @Observable
 final class PaletteState {
   var isOpen = false
+  /// Run once the sheet has gone (New dashboard's dialog opens then, as a
+  /// sheet can't open while another is going).
+  var afterClose: (@MainActor () -> Void)?
 }
 
 /// `PALETTE_RECENT_KEY`, and the list kept under it.
@@ -64,15 +68,13 @@ struct CommandPalette: View {
   @Environment(ShellDashboards.self) private var dashboards
   @Environment(ArchiveModel.self) private var archive: ArchiveModel?
   @Environment(ToastCenter.self) private var toasts: ToastCenter?
+  @Environment(ShellActions.self) private var actions: ShellActions?
+  @Environment(PaletteState.self) private var paletteState: PaletteState?
 
   @State private var query = ""
   @State private var active = 0
   @State private var recent: [String] = []
   @FocusState private var fieldFocused: Bool
-
-  /// The commands the dashboards' editing would run, not offered until it
-  /// is ported.
-  static let unported: Set<String> = ["customize", "newDashboard"]
 
   private var commands: [Command] {
     let route = navigator.route
@@ -93,7 +95,7 @@ struct CommandPalette: View {
     // The dashboard the shell shows: the one the address names, if any.
     context.route = CommandContext.Route(
       section: route.section.rawValue, dashboard: route.section == .dashboard ? dashboards.dashboard(route.dashboard)?.id : nil)
-    return Commands.buildCommands(context).filter { !Self.unported.contains($0.do ?? "") }
+    return Commands.buildCommands(context)
   }
 
   var body: some View {
@@ -315,6 +317,8 @@ struct CommandPalette: View {
     switch command.do ?? "" {
     case "newPost": return Glyph.newPost
     case "sync": return Glyph.refresh
+    case "customize": return Glyph.customize
+    case "newDashboard": return Glyph.plus
     case "period": return Glyph.calendarRange
     default: break
     }
@@ -387,6 +391,14 @@ struct CommandPalette: View {
       }
     case "sky":
       if let sky = command.arg.flatMap(SkyChoice.init(rawValue:)) { preferences.setPref(\.sky, sky) }
+    case "customize":
+      let route = navigator.route
+      if route.section == .dashboard, let id = dashboards.dashboard(route.dashboard)?.id {
+        actions?.customize(id, navigator: navigator)
+      }
+    case "newDashboard":
+      let open: @MainActor () -> Void = { [actions] in actions?.creatingDashboard = true }
+      if let paletteState { paletteState.afterClose = open } else { open() }
     case "switchAccount":
       if let arg = command.arg, let account = session.accounts.first(where: { $0.did.jsEquals(arg) }) {
         AccountActions.open(account, session: session)
@@ -431,7 +443,11 @@ struct CommandPaletteSheet: ViewModifier {
 
   func body(content: Content) -> some View {
     content
-      .sheet(isPresented: $state.isOpen) {
+      .sheet(isPresented: $state.isOpen, onDismiss: {
+        let next = state.afterClose
+        state.afterClose = nil
+        next?()
+      }) {
         CommandPalette()
           .presentationDetents([.large])
           .presentationBackground(theme.surface)
