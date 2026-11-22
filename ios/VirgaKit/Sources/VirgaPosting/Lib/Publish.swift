@@ -295,13 +295,16 @@ public enum Publish {
 
   /// The video upload publish makes by default: Bluesky's video service, as
   /// the write account, over `media`'s transport and clock.
-  public static func defaultUploadVideo(media: PublishMedia, now: @escaping @Sendable () -> Double) -> UploadVideo {
+  public static func defaultUploadVideo(
+    media: PublishMedia, now: @escaping @Sendable () -> Double,
+    randomBytes: @escaping @Sendable (Int) -> [UInt8] = { Video.systemRandomBytes($0) }
+  ) -> UploadVideo {
     { target, file, onProgress in
       let data = try await media.files.bytes(of: file)
       return try await Video.uploadVideo(
         VideoTarget(did: target.did, pdsUrl: target.pdsUrl, agent: target.agent),
         VideoFile(type: file.type, size: file.size, data: data), onProgress: onProgress, now: now,
-        transport: media.transport, clock: media.clock)
+        transport: media.transport, clock: media.clock, randomBytes: randomBytes)
     }
   }
 

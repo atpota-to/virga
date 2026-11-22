@@ -28,7 +28,6 @@ import {
 
 export const sources = ['src/posting/lib/linkCard.js'];
 
-const CARDYB = 'https://cardyb.bsky.app/v1/extract?url=';
 const BLOB = {
   $type: 'blob',
   ref: { $link: rawCid('thumb') },

@@ -25,8 +25,15 @@
       "synced": "813a280f31fb"
     },
     "src/posting/lib/publish.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/Publish.swift"
+      ],
+      "fixtures": [
+        "publish.publish"
+      ],
+      "note": "The web's options map to Swift's: `signal` is the task's cancellation (uploads stop; a write once started runs to the end), `fetch`, `compress` and `decode` are PublishMedia's transport and ImageEncoder, a File's bytes come through ComposerFiles, and record keys come from the injected `mintTid` (the web's nextTid). A post whose `text` isn't a string reads as '' in publishSignature and buildPostRecords, where the web throws a TypeError, as composerModel's port reads it.",
+      "synced": "cb827ebfceab"
     },
     "src/posting/lib/publishRecord.js": {
       "status": "ported",
