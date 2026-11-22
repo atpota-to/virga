@@ -9,11 +9,11 @@
       "swift": []
     },
     "src/posting/PostingSettingsSection.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
       ],
-      "note": "Whose settings (every signed-in account, and the open one even when it needs a sign-in, by accountName with its @handle) when there is more than one, then the cards over that account's PostingSettingsModel (usePostingSettings), made again for another account: New posts, and with a long session the Weekly queue, the Default timer and the Post adviser. Not yet: the Post adviser's settings (AdviserSettings.jsx: its heading and that it isn't in the app yet) and, for an account without a long session, NeedsBackend.jsx (that it isn't in the app yet).",
+      "note": "Whose settings (every signed-in account, and the open one even when it needs a sign-in, by accountName with its @handle) when there is more than one, then the cards over that account's PostingSettingsModel (usePostingSettings), made again for another account: New posts, and with a long session the Weekly queue, the Default timer and the Post adviser (AdviserSettingsCard); without one, NeedsBackend in their place.",
       "synced": "981c47d09ca4"
     },
     "src/posting/composer/Composer.jsx": {
@@ -189,16 +189,28 @@
       "synced": "ac722e1dce2e"
     },
     "src/posting/ui/AdviserBusy.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserBusyLine.swift"
+      ],
+      "note": "Reading your draft with readExpectation's line (slower than usual after SLOW_READ_AFTER_MS), the bar, the goals it is checking, and Keep editing and Publish anyway (the gate's) as small buttons, equal shares on a phone; read out as it appears. Brought into view by the composer rather than scrolled to.",
+      "synced": "ce0c10db929e"
     },
     "src/posting/ui/AdviserSettings.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserSettingsCard.swift"
+      ],
+      "note": "Post adviser in Settings › Posting, over the account's PostingSettingsModel: NeedsBackend for an account that can't use AI; Use the post adviser (nextPostingAdviserState, the recommended setup the first time), Check before posting, Stop me, Which posts, Read replies with their conversation, Your goals (the two presets, Post less about some topics with its topics, Goals in your own words with its count), Proofread (the three checks, Notes for the proofread, Your writing style with Learn my style or See or change it, which opens StyleDialog), the month's three usage lines, What’s sent, and to whom, and a refused change's message. Which posts is a column of check boxes acting as radios.",
+      "synced": "b625e1f7a742"
     },
     "src/posting/ui/AdviserSheet.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserReadSheet.swift"
+      ],
+      "note": "The sheet over AdviserGateModel's read (sheetActions, sheetTitle, sheetContextLine, adviserSheetModel, adviserWritingTally, adviserDraftLabel): the notices (error, limit, empty, needsText), the verdict, the marked post (each post's index, a fix struck through with its replacement, a link in the words that takes it, the replacement underlined in the ok colour once taken, a flagged passage underlined in its tone with its numbers raised), the tally with Fix all, the notes (a numbered note lights its passage for a moment; others with their tone's glyph), Fine against, the context line, the usage line, the skeleton while busy, and its foot (Keep editing, Save as draft, Publish or Publish anyway, or Close). A numbered note lights its passage instead of scrolling to it.",
+      "synced": "35d71f3a93a7"
     },
     "src/posting/ui/AltTextDialog.jsx": {
       "status": "partial",
@@ -236,15 +248,20 @@
       "swift": []
     },
     "src/posting/ui/NeedsBackend.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/NeedsBackendNotice.swift"
+      ],
+      "note": "BackendAccess's four cases: nothing when ready or for no account; The long session has ended with Sign back in; Needs a long session with Reconnect for a longer session (AccountActions.lengthen), or with the line that this copy offers none. Its server glyph goes on a phone, as the web's does.",
+      "synced": "731af4254f94"
     },
     "src/posting/ui/PostPreview.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostPreviewCard.swift",
         "ios/VirgaKit/Sources/VirgaUI/Composer/EmbedCards.swift"
       ],
-      "note": "Only the compact form the composer uses (who wrote it and its words), read straight from the view: postPreview.js isn't ported, so there's no time, embed line or counts.",
+      "note": "PostPreviewCard over VirgaPosting's postPreviewModel: who wrote it (the picture, the name, the handle), when (relative, the date on the pointer's tip), its words or No text, what's attached, the counts (replies, reposts, quotes, likes) and the way to it on Bluesky, and the compact form; a hairline round it. The composer's own ComposerPostPreview (EmbedCards.swift) is the compact form it draws for what a post replies to or quotes.",
       "synced": "961de3ed1b7a"
     },
     "src/posting/ui/PostingHeader.jsx": {
@@ -273,8 +290,12 @@
       "synced": "e35a7f8135dc"
     },
     "src/posting/ui/StyleDialog.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserStyleDialog.swift"
+      ],
+      "note": "A full-height sheet with one StyleSession per opening over the account's requester: NeedsBackend without AI, the intro, how many posts to read and Read my posts, the three stages with the posts gathered, the failure (a warning for the monthly limit), How you write (editable) with its line and · not kept yet, What should change?, Refine with my note, Read my posts again with the count, the usage line, and Forget my style, Close or Cancel, Keep this (styleProfileFrom, forgetStyleProfile), a refused save's message.",
+      "synced": "fe2c9d7e0bd4"
     },
     "src/posting/ui/TimerDialog.jsx": {
       "status": "pending",

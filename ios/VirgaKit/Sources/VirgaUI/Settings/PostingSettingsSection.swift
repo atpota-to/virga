@@ -19,11 +19,14 @@
 // scheduleModel.js's (weeklyCount, weekSummary, slotLabel, zoneLabel,
 // moveToZone), written here until the scheduling pages' model is ported.
 //
+// The post adviser's settings are AdviserSettingsCard (Adviser/), and an
+// account without a long session sees NeedsBackendNotice in the server's
+// cards' place.
+//
 // Not yet: the timer's rule editor (LifespanEditor.jsx) and how many timers
 // the account has in use (scheduleService.js's getLimits), so the default
 // timer shows its rule in a sentence with the editor's place saying it
-// isn't here; the post adviser's settings (AdviserSettings.jsx); and the
-// long-session notice (NeedsBackend.jsx), whose place says the same.
+// isn't here.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -87,13 +90,9 @@ struct PostingSettingsCards: View {
         if server {
           QueueSettingsCard(model: model)
           LifespanDefaultsCard(model: model)
-          // THE ADVISER'S PLACE: AdviserSettings.jsx, when it is ported.
-          SettingsSectionView(title: "Post adviser", sub: "Reads a post against goals you set, and proofreads it, before it goes out.") {
-            SettingsText(Unported.section)
-          }
+          AdviserSettingsCard(did: did, model: model)
         } else {
-          // NEEDSBACKEND'S PLACE: NeedsBackend.jsx, when it is ported.
-          SettingsText(Unported.section)
+          NeedsBackendNotice(did: did)
         }
       }
     }
