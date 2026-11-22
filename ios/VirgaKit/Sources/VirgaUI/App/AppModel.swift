@@ -217,8 +217,13 @@ public final class AppModel {
   public static let shared: AppModel = {
     VirgaTypeface.registerIfNeeded()
     let defaults = UserDefaults.standard
-    let flags = AppConfig.Flags(infoDictionary: Bundle.main.infoDictionary ?? [:])
+    var flags = AppConfig.Flags(infoDictionary: Bundle.main.infoDictionary ?? [:])
     if defaults.bool(forKey: "VirgaDemo") {
+      // The demo may turn Defense on whatever the build says (`-VirgaDefense
+      // on`, and `-VirgaDefenseModerator on` for its moderator), so the UI
+      // tests reach its pages; the grant is the harness's
+      // (`-VirgaDemoFlags "defense=on"`).
+      flags = demoFlags(flags, defense: defaults.string(forKey: "VirgaDefense"), moderator: defaults.string(forKey: "VirgaDefenseModerator"))
       return demo(
         flags: flags,
         search: demoSearch(
@@ -227,6 +232,15 @@ public final class AppModel {
     }
     return device(flags: flags)
   }()
+
+  /// The build's flags with the demo's own say on Defense: "on" turns it
+  /// (or its moderator) on, anything else leaves the build's word.
+  static func demoFlags(_ flags: AppConfig.Flags, defense: String?, moderator: String?) -> AppConfig.Flags {
+    let on = defense == "on" || flags.defenseEnabled
+    return AppConfig.Flags(
+      authMode: flags.authMode, backendURL: flags.backendURL, defenseEnabled: on,
+      defenseModeratorEnabled: moderator == "on" || flags.defenseModeratorEnabled)
+  }
 
   /// Signed in through Virga's server, over the device's stores.
   static func device(flags: AppConfig.Flags) -> AppModel {

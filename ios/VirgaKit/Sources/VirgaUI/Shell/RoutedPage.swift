@@ -160,18 +160,9 @@ public struct RoutedPage: View {
     return UnportedPage(PageHeaderModel(title: page?.title ?? "Posting", sub: page?.desc, access: page?.access ?? [], crumbs: crumbs))
   }
 
-  @ViewBuilder
+  /// Defense/DefensePage.swift: a scan (the front page), its lists and their history.
   private func defense(_ key: String?) -> some View {
-    if let key, key != "scan", let page = DefenseRoutes.defensePageByKey[key] {
-      UnportedPage(PageHeaderModel(title: page.title, sub: page.desc, access: ["lists"], crumbs: [Crumb("Defense", to: DefenseRoutes.defenseBase)]))
-    } else {
-      UnportedPage(
-        PageHeaderModel(
-          title: "Defense",
-          sub:
-            "Everyone who engaged with a post, sorted by how close each of them is to you, before anything is done about any of them.",
-          access: ["read"]))
-    }
+    DefensePage(pageKey: key ?? "scan")
   }
 }
 
