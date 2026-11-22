@@ -421,7 +421,9 @@ struct BandsCard: View {
           means
         }
       } else {
-        HStack(alignment: .firstTextBaseline, spacing: theme.space4) {
+        // The mark and name centred on the row (`.defense-band dt {
+        // display: flex; align-items: center }`, the dt the row's height).
+        HStack(alignment: .center, spacing: theme.space4) {
           word.frame(width: Measure.Defense.bandLabel, alignment: .leading)
           means.frame(maxWidth: .infinity, alignment: .leading)
         }

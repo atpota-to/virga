@@ -47,9 +47,11 @@ struct RadarView: View {
         stage(side: geometry.size.width, placed: placed)
       }
       .aspectRatio(1, contentMode: .fit)
-      .frame(maxWidth: Measure.Defense.radarMax)
       RadarLegend(byBand: model.byBand)
     }
+    // `.radar { max-width: 600px; margin: 0 auto }` holds the stage and the
+    // legend both, so the legend wraps within the radar's width.
+    .frame(maxWidth: Measure.Defense.radarMax)
     .frame(maxWidth: .infinity)
   }
 
