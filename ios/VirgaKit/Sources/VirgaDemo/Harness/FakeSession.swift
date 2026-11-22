@@ -26,6 +26,7 @@
 // targetFor, backendFor, capabilitiesFor and checkAccount.
 
 import Foundation
+import VirgaArchive
 import VirgaCore
 import VirgaNetwork
 import VirgaSession
@@ -117,9 +118,9 @@ public final class DemoSession {
   /// The network every request of this session goes to.
   public let transport: DemoTransport
   /// The web's localStorage and sessionStorage, and the Keychain.
-  public let storage: InMemoryKeyValueStore
-  public let tabStorage: InMemoryKeyValueStore
-  public let secrets: InMemorySecretStore
+  public let storage: any KeyValueStore
+  public let tabStorage: any KeyValueStore
+  public let secrets: any SecretStore
   public let clock: NetworkClock
   public let timeZone: TimeZone
   /// The DID documents read so far (atproto.js's cache), this session's own.
@@ -137,23 +138,26 @@ public final class DemoSession {
   ///   - clock: `Date.now()` and the waits (the network's latency, the
   ///     session checks' pauses, the sign-in sheet's half second).
   ///   - timeZone: the zone a written time without an offset is read in.
-  ///   - storage: the device's key-value store (a fresh one by default);
-  ///     the follower sweeps are counted there, as the web counts them in
+  ///   - storage, tabStorage, secrets: the device's stores (fresh ones in
+  ///     memory by default, so nothing outlives the demo); the follower
+  ///     sweeps are counted in `storage`, as the web counts them in
   ///     localStorage.
   ///   - randomBytes: the server's tokens' randomness.
   public init(
     options: DemoOptions = DemoOptions(),
     clock: NetworkClock = .live,
     timeZone: TimeZone = .gmt,
-    storage: InMemoryKeyValueStore = InMemoryKeyValueStore(),
+    storage: any KeyValueStore = InMemoryKeyValueStore(),
+    tabStorage: any KeyValueStore = InMemoryKeyValueStore(),
+    secrets: any SecretStore = InMemorySecretStore(),
     randomBytes: (@Sendable (Int) -> [UInt8])? = nil
   ) {
     self.options = options
     self.clock = clock
     self.timeZone = timeZone
     self.storage = storage
-    tabStorage = InMemoryKeyValueStore()
-    secrets = InMemorySecretStore()
+    self.tabStorage = tabStorage
+    self.secrets = secrets
     let harness = DemoHarness(
       flags: options.flags, now: options.now, clock: clock, timeZone: timeZone,
       sweepCounter: FakeXrpc.localStorageCounter(storage), randomBytes: randomBytes)
@@ -210,6 +214,17 @@ public final class DemoSession {
   /// The provider's first effect: restore the open account.
   public func start() async {
     await model.start()
+  }
+
+  /// What VirgaArchive's ArchiveModel reads the demo through: this
+  /// session's network, clock, zone and DID documents, with the archive in
+  /// `files` (memory only when nil).
+  public func archiveEnvironment(
+    files: (any FileStore)?, registry: AnalyticsStoreRegistry = AnalyticsStoreRegistry(), locale: String? = nil
+  ) -> ArchiveEnvironment {
+    ArchiveEnvironment(
+      files: files, registry: registry, transport: transport, clock: clock, didDocuments: didDocuments, timeZone: timeZone,
+      locale: locale)
   }
 
   /// `window.__harness.expire(handle)`.

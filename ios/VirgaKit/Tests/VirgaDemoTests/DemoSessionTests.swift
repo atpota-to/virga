@@ -79,7 +79,8 @@ enum DemoSessions {
     #expect(session.model.accounts.count == 2)
     #expect(session.model.accounts.allSatisfy { $0.status == .needsSignIn })
     #expect(session.server.tokens.isEmpty)
-    #expect(session.secrets.snapshot.isEmpty)
+    #expect(Accounts.readBackendToken(session.secrets, World.me.did) == nil)
+    #expect(Accounts.readBackendToken(session.secrets, World.lab.did) == nil)
   }
 
   @Test func startsTheExpiredAccountSignedOutAndOpensTheOther() async {
@@ -182,9 +183,7 @@ enum DemoSessions {
     let world = try #require(session.world.world(World.me.did))
     let archive = ArchiveModel(
       agent: session.model.agent, did: World.me.did, handle: World.me.handle,
-      environment: ArchiveEnvironment(
-        files: InMemoryFileStore(), registry: AnalyticsStoreRegistry(), transport: session.transport, clock: DemoSessions.clock,
-        didDocuments: session.didDocuments, timeZone: .gmt, locale: "en-GB"))
+      environment: session.archiveEnvironment(files: InMemoryFileStore(), locale: "en-GB"))
     await archive.start()
     #expect(archive.isBuilt == false)
     await archive.runSync()
