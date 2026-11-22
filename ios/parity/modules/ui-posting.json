@@ -242,12 +242,16 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
       ],
-      "note": "Default timer: Start new posts with a timer (its hint when off), the rule in a sentence (describeTimer), under the row when on and behind The rule it will use: … when off, saved never pinned to a time, the refusal, and the caption with See posts on a timer. Not yet: the rule's editor (LifespanEditor.jsx), whose place says it isn't in the app yet, and the timers in use (scheduleService.js's getLimits and timerLimitsLine), so the caption starts at its second sentence as the web's does when the limits can't be read.",
+      "note": "Default timer: Start new posts with a timer (its hint when off), the rule's editor (LifespanRuleEditor, a length and never a set time, its changes keeping the timer on or off as it is) under the row when on and behind The rule it will use: … when off, saved never pinned to a time, the refusal, and the caption with See posts on a timer. Not yet: the timers in use (scheduleService.js's getLimits and timerLimitsLine), so the caption starts at its second sentence as the web's does when the limits can't be read.",
       "synced": "ae76e34b01e2"
     },
     "src/posting/ui/LifespanEditor.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/LifespanRuleEditor.swift"
+      ],
+      "note": "LifespanRuleEditor over LifespanModel and SelfDestruct: the switch with its line (showToggle), Delete it after or Act on it after (the five shown lengths, Other… with Length and Unit and its hint, and Or a set time on the system's date and time picker within pinBounds, with Clear), What happens then (the effects, Limit replies closed to a reply), Who can still reply (Nobody, the three groups, the writer's curation lists read through PublicAppView, and the most Bluesky takes), Conditions (optional) with Unless or Only if it reaches, a row per condition (what it counts, how it compares, how many, Remove) and Add a condition, Count quotes from, When there’s more than one, If it does or doesn’t (keep, or another window with At most), the rule in a sentence (editorNotes' summary, This post gets no timer. or No timer.) and its notes. The time is read again every thirty seconds. A row added or removed leaves the focus where the system puts it.",
+      "synced": "4088289d3846"
     },
     "src/posting/ui/NeedsBackend.jsx": {
       "status": "ported",

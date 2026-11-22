@@ -23,10 +23,11 @@
 // account without a long session sees NeedsBackendNotice in the server's
 // cards' place.
 //
-// Not yet: the timer's rule editor (LifespanEditor.jsx) and how many timers
-// the account has in use (scheduleService.js's getLimits), so the default
-// timer shows its rule in a sentence with the editor's place saying it
-// isn't here.
+// The default timer's rule is LifespanRuleEditor (LifespanEditor.jsx).
+//
+// Not yet: how many timers the account has in use (scheduleService.js's
+// getLimits), so the default timer's caption starts at its second sentence,
+// as the web's does when the limits can't be read.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -89,7 +90,7 @@ struct PostingSettingsCards: View {
         ComposerDefaultsCard(did: did, model: model, transport: app.archiveEnvironment.transport)
         if server {
           QueueSettingsCard(model: model)
-          LifespanDefaultsCard(model: model)
+          LifespanDefaultsCard(did: did, model: model)
           AdviserSettingsCard(did: did, model: model)
         } else {
           NeedsBackendNotice(did: did)
@@ -384,6 +385,8 @@ struct TimezonePicker: View {
 struct LifespanDefaultsCard: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(\.navigate) private var navigate
+  @Environment(AppModel.self) private var app
+  let did: String?
   let model: PostingSettingsModel
   @State private var error: String?
 
@@ -404,12 +407,12 @@ struct LifespanDefaultsCard: View {
       }
       if lifespan.enabled {
         // A block row with no label: the editor alone, as a row.
-        editor(rule)
+        editor(lifespan)
           .padding(.vertical, theme.rowPadLg)
           .frame(maxWidth: .infinity, alignment: .leading)
           .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
       } else {
-        Disclosure("The rule it will use: \(Self.sentenceClause(rule))") { editor(rule) }
+        Disclosure("The rule it will use: \(Self.sentenceClause(rule))") { editor(lifespan) }
           .padding(.vertical, theme.rowPadLg)
           .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
       }
@@ -422,13 +425,19 @@ struct LifespanDefaultsCard: View {
     .accessibilityIdentifier("posting-default-timer")
   }
 
-  /// THE TIMER EDITOR'S PLACE: LifespanEditor.jsx, when it is ported. The
-  /// editor ends with its rule in a sentence, so that is here already.
-  private func editor(_ rule: String) -> some View {
-    VStack(alignment: .leading, spacing: theme.space3) {
-      Text(rule).virgaText(.textBase).foregroundStyle(theme.ink2).fixedSize(horizontal: false, vertical: true)
-      Text(Unported.section).virgaText(.textSm).foregroundStyle(theme.muted)
-    }
+  /// The rule's editor (LifespanRuleEditor), always on, a length never a
+  /// set time; what it changes keeps the timer on or off as it is.
+  private func editor(_ lifespan: TimerRule) -> some View {
+    var on = lifespan
+    on.enabled = true
+    return LifespanRuleEditor(
+      value: on,
+      onChange: { next in
+        var kept = next
+        kept.enabled = lifespan.enabled
+        save(kept)
+      },
+      did: did, allowExactTime: false, showToggle: false, transport: app.archiveEnvironment.transport)
   }
 
   private var caption: some View {

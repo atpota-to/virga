@@ -283,8 +283,12 @@
       "synced": "428ed1747963"
     },
     "src/posting/pages/schedule.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/LifespanRuleEditor.swift"
+      ],
+      "note": "The timer's rule editor (.lifespan-editor, .lse-*: the switch row, the blocks and their legends, the chips, Other…'s fields, the sub-questions, the condition rows, the checks, the spare row, the sentence), in Measure.Lifespan. The scheduling pages' own come with them.",
+      "synced": "6e4ceba4938b"
     },
     "src/posting/posting.css": {
       "status": "partial",
