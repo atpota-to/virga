@@ -75,6 +75,8 @@ public final class AdviserAbortSignal: Sendable {
   /// when the signal aborts (or the caller is cancelled), so the request
   /// stops and the caller sees its CancellationError.
   public func run<T: Sendable>(_ work: @escaping @Sendable () async throws -> T) async throws -> T {
+    // An aborted signal sends nothing.
+    if aborted { throw CancellationError() }
     let task = Task { try await work() }
     let id = onAbort { task.cancel() }
     defer { removeHandler(id) }
