@@ -25,7 +25,9 @@
 // latency=<ms>, now=<time>, appview=…), and the two kept from before,
 // `-VirgaDemoTerms YES` (terms=ask: the agreement screen first) and
 // `-VirgaDemoSignedOut YES` (signedout: the front page, both accounts
-// remembered).
+// remembered). `-VirgaDemoPrefs '<json>'` starts it with those preferences
+// stored (`{"sky":"night","liveSky":true}`), as a browser's localStorage
+// would hold them.
 
 #if canImport(UIKit)
 import Foundation
@@ -232,7 +234,8 @@ public final class AppModel {
         flags: flags,
         search: demoSearch(
           flags: defaults.string(forKey: "VirgaDemoFlags"), askTerms: defaults.bool(forKey: "VirgaDemoTerms"),
-          signedOut: defaults.bool(forKey: "VirgaDemoSignedOut")))
+          signedOut: defaults.bool(forKey: "VirgaDemoSignedOut")),
+        prefs: defaults.string(forKey: "VirgaDemoPrefs"))
     }
     return device(flags: flags)
   }()
@@ -275,8 +278,9 @@ public final class AppModel {
   /// The made-up world (VirgaDemo's DemoSession), signed in, nothing
   /// persisted. The app's own session model runs over the demo session's
   /// environment, with the archive's two hooks wired as on a device.
-  static func demo(flags: AppConfig.Flags, search: String) -> AppModel {
+  static func demo(flags: AppConfig.Flags, search: String, prefs: String? = nil) -> AppModel {
     let stores = AppStores.inMemory()
+    if let prefs { try? stores.keyValue.setItem(Preferences.preferencesKey, prefs) }
     let demo = DemoSession(
       options: DemoOptions.read(search), timeZone: .current, storage: stores.keyValue, tabStorage: stores.tab,
       secrets: stores.secrets)

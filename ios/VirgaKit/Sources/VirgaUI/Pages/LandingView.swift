@@ -10,7 +10,9 @@
 //
 // LandingFrame is the frame every page outside the shell has (the front
 // page, a legal page, the agreement screen, a sign-in that didn't
-// complete): the bar with the mark, the main column, the foot.
+// complete): the bar with the mark, the main column, the foot. On the
+// front page the live sky is over its sky when it has been asked for, and
+// five taps on the mark turn it on or off, as anywhere else in Virga.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -22,8 +24,11 @@ struct LandingFrame<Bar: View, Main: View, Foot: View>: View {
   private let bar: Bar
   private let main: Main
   private let foot: Foot
+  /// The live sky over the sky (the front page's, when it is on).
+  private let liveSky: Bool
 
-  init(@ViewBuilder bar: () -> Bar, @ViewBuilder main: () -> Main, @ViewBuilder foot: () -> Foot) {
+  init(liveSky: Bool = false, @ViewBuilder bar: () -> Bar, @ViewBuilder main: () -> Main, @ViewBuilder foot: () -> Foot) {
+    self.liveSky = liveSky
     self.bar = bar()
     self.main = main()
     self.foot = foot()
@@ -49,7 +54,7 @@ struct LandingFrame<Bar: View, Main: View, Foot: View>: View {
     .frame(maxWidth: maxWidth + theme.pagePad * 2, alignment: .leading)
     .frame(maxWidth: .infinity)
     .frame(minHeight: theme.windowHeight, alignment: .top)
-    .skyBackground()
+    .skyBackground(live: liveSky)
   }
 }
 
@@ -70,13 +75,15 @@ func pageLink(_ words: String, to href: String) -> AttributedString {
 public struct LandingView: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(\.navigate) private var navigate
+  @Environment(PreferencesModel.self) private var preferences: PreferencesModel?
+  @State private var toasts = ToastCenter()
 
   public init() {}
 
   public var body: some View {
     ScrollView {
-      LandingFrame {
-        Brand()
+      LandingFrame(liveSky: preferences?.prefs.liveSky == true) {
+        SkyTapsButton { Brand() }
           .accessibilityAddTraits(.isHeader)
       } main: {
         VStack(alignment: .leading, spacing: theme.hasSidebar ? Measure.Landing.heroGap : Measure.Landing.phoneHeroGap) {
@@ -102,6 +109,8 @@ public struct LandingView: View {
       }
     }
     .background(PageGround().ignoresSafeArea())
+    .overlay { ToastStack(center: toasts) }
+    .environment(toasts)
     .accessibilityIdentifier("landing")
   }
 

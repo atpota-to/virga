@@ -14,8 +14,8 @@
 // Dashboards (DashboardsSection.swift), Posting (PostingSettingsSection.swift),
 // Appearance (the sky, the accent with its swatches, contrast, density, the
 // sidebar, numbers and dates), Permissions, and About (with the Terms and
-// the Privacy Policy, and when the repo was last read). Appearance's live
-// sky waits for the hillside.
+// the Privacy Policy, and when the repo was last read). Appearance ends
+// with the live sky's switch (Sky/LiveSky.swift draws it).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -344,6 +344,17 @@ struct AppearanceSection: View {
         }
       }
       formats
+      SettingsRow(
+        label: "Live sky",
+        hint:
+          "Clouds that drift across the sky at the top of the page: the 3D scene from Virga’s first version. It uses WebGL and some battery, holds still if you’ve asked your device for reduced motion, and is left out in high contrast. Five taps on the Virga mark turn it on or off from anywhere.",
+        compactControl: true
+      ) {
+        Toggle("Show the live sky", isOn: Binding(get: { preferences.prefs.liveSky }, set: { preferences.setPref(\.liveSky, $0) }))
+          .labelsHidden()
+          .toggleStyle(.virgaSwitch)
+          .accessibilityIdentifier("live-sky")
+      }
     }
   }
 

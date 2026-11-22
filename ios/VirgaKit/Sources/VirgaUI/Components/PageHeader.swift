@@ -269,7 +269,7 @@ public struct VirgaPage<Content: View>: View {
     .coordinateSpace(name: Self.space)
     .scrollDismissesKeyboard(.interactively)
     .overlay(alignment: .top) {
-      if showsAppBar { StatusBarSky() }
+      if showsAppBar { StatusBarSky(scroll: sky) }
     }
     // The sky from the window's top, moved by the scroll; beside the
     // sidebar the shell draws it once behind both.

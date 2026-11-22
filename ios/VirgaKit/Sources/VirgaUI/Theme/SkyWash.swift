@@ -14,6 +14,10 @@
 //
 // The navigation bar is clear over the sky and takes `--sky-top`
 // (Sky.skyColor) once the page scrolls under it: `.skyNavigationBar()`.
+//
+// With the live sky on (Settings › Appearance, or five taps on the mark),
+// its band is drawn over the top of the wash and moved with it
+// (Sky/LiveSky.swift), on every page of the shell and on the front page.
 
 #if canImport(UIKit)
 import Observation
@@ -78,6 +82,7 @@ public final class SkyScroll {
 /// moved up by the page's scroll, the ground under it.
 public struct PageSky: View {
   @Environment(\.virgaTheme) private var theme
+  @Environment(PreferencesModel.self) private var preferences: PreferencesModel?
   private let scroll: SkyScroll
 
   public init(scroll: SkyScroll) {
@@ -88,6 +93,9 @@ public struct PageSky: View {
     ZStack(alignment: .top) {
       theme.bg
       SkyWash().offset(y: scroll.offset)
+      if preferences?.prefs.liveSky == true {
+        LiveSky(inView: scroll.offset > -theme.skyEnd).offset(y: scroll.offset)
+      }
     }
     .ignoresSafeArea()
     .allowsHitTesting(false)
@@ -98,10 +106,14 @@ public struct PageSky: View {
 extension View {
   /// The sky as the background of a page's scroll content: it scrolls with
   /// the page, and reaches under the status bar at the top. (Pages draw
-  /// PageSky instead, so the sky's top is the window's top.)
-  public func skyBackground() -> some View {
+  /// PageSky instead, so the sky's top is the window's top.) `live`: the
+  /// live sky over its top, where the page has it (the front page).
+  public func skyBackground(live: Bool = false) -> some View {
     background(alignment: .top) {
-      SkyWash().ignoresSafeArea(edges: .top)
+      ZStack(alignment: .top) {
+        SkyWash().ignoresSafeArea(edges: .top)
+        if live { LiveSky().ignoresSafeArea(edges: .top) }
+      }
     }
   }
 

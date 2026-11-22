@@ -31,6 +31,10 @@ public struct LiveSky: View {
   /// LiveSky.jsx's `depth`: a paler blue at the top, for a page with a lot
   /// of words on its sky.
   static let depth = 0.55
+  /// How far a phone's page scrolls before the strip over its status bar is
+  /// in (StatusBarSky): clear at rest, so the live sky runs up under the
+  /// clock. The web has no status bar to keep clear, so no counterpart.
+  static let stripFade: CGFloat = 24
 
   @Environment(PreferencesModel.self) private var preferences: PreferencesModel?
   private let inView: Bool

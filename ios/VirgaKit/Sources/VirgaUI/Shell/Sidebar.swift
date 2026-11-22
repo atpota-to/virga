@@ -21,6 +21,8 @@
 //
 // On a screen too short for the whole list, the parts scroll between the
 // top and the foot, fading 24 points at the edge with more behind it.
+//
+// Five taps on the mark turn the live sky on or off (Sky/SkyTapsButton.swift).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -75,7 +77,7 @@ public struct Sidebar: View {
     let short = theme.windowHeight <= Measure.Sync.countsHiddenAtHeight
     return VStack(alignment: .leading, spacing: short ? Measure.Sidebar.shortGap : Measure.Sidebar.gap) {
       HStack(spacing: Measure.Sidebar.doGap) {
-        Brand()
+        SkyTapsButton { Brand() }
         Spacer(minLength: 0)
         fold
       }
@@ -118,7 +120,7 @@ public struct Sidebar: View {
 
   private var rail: some View {
     VStack(spacing: Measure.Sidebar.gap) {
-      Brand(showsName: false)
+      SkyTapsButton { Brand(showsName: false) }
         .frame(minHeight: Measure.Sidebar.topHeight)
       Button {
         newPost()
