@@ -539,7 +539,7 @@ struct FilterCards: View {
 
   var body: some View {
     let phone = theme.isPhone
-    let layout = FiguresLayout(
+    let layout = FilterCardsLayout(
       columnGap: phone ? Measure.Tools.phoneFilterColumnGap : theme.space6, rowGap: Measure.Tools.filterRowGap,
       minWidth: Measure.Tools.filterMin, phone: phone
     )
@@ -563,7 +563,7 @@ struct FilterCards: View {
   /// `.filter-card-count`'s size: `clamp(1.75rem, 20cqi, 2.75rem)` of each
   /// card; on a phone `clamp(1.75rem, (100cqi - 20px) / 10, 2.75rem)` of the
   /// row, so every card's is the same.
-  private func countSize(_ layout: FiguresLayout, phone: Bool) -> CGFloat {
+  private func countSize(_ layout: FilterCardsLayout, phone: Bool) -> CGFloat {
     guard width > 0, !choices.isEmpty else { return Measure.Tools.filterCountMax }
     let share: CGFloat
     if phone {
@@ -574,6 +574,60 @@ struct FilterCards: View {
       share = card * Measure.Tools.filterCountShare
     }
     return Swift.min(Swift.max(share, Measure.Tools.filterCountMin), Measure.Tools.filterCountMax)
+  }
+}
+
+/// `.filter-cards { grid-template-columns: repeat(auto-fit, minmax(min(100%,
+/// 168px), 1fr)) }`: as many columns of at least 168 as fit, each line's cards
+/// as tall as its tallest; on a phone two to a line, an odd last one taking
+/// the whole line (`.filter-card:last-child:nth-child(odd)`).
+struct FilterCardsLayout: Layout {
+  var columnGap: CGFloat
+  var rowGap: CGFloat
+  var minWidth: CGFloat
+  var phone: Bool
+
+  func columns(_ width: CGFloat, count: Int) -> Int {
+    if phone { return min(2, max(1, count)) }
+    let fit = Int((width + columnGap) / (minWidth + columnGap))
+    return max(1, min(count, fit))
+  }
+
+  func frames(_ width: CGFloat, subviews: Subviews) -> [CGRect] {
+    let count = subviews.count
+    let cols = columns(width, count: count)
+    let cellWidth = (width - columnGap * CGFloat(cols - 1)) / CGFloat(cols)
+    var out: [CGRect] = []
+    var y: CGFloat = 0
+    var index = 0
+    while index < count {
+      let rowCount = min(cols, count - index)
+      let span = phone && rowCount == 1 && cols == 2
+      let w = span ? width : cellWidth
+      var rowHeight: CGFloat = 0
+      for i in 0..<rowCount {
+        rowHeight = max(rowHeight, subviews[index + i].sizeThatFits(ProposedViewSize(width: w, height: nil)).height)
+      }
+      for i in 0..<rowCount {
+        out.append(CGRect(x: CGFloat(i) * (cellWidth + columnGap), y: y, width: w, height: rowHeight))
+      }
+      y += rowHeight + rowGap
+      index += rowCount
+    }
+    return out
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    let width = proposal.width ?? Measure.Tools.filterMin * CGFloat(max(1, subviews.count))
+    return CGSize(width: width, height: frames(width, subviews: subviews).map(\.maxY).max() ?? 0)
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    for (index, frame) in frames(bounds.width, subviews: subviews).enumerated() {
+      subviews[index].place(
+        at: CGPoint(x: bounds.minX + frame.minX, y: bounds.minY + frame.minY),
+        proposal: ProposedViewSize(width: frame.width, height: frame.height))
+    }
   }
 }
 
