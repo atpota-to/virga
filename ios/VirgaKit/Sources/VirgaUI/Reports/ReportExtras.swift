@@ -137,7 +137,7 @@ struct FollowerLists: View {
         let near = postsByDay
         VStack(alignment: .leading, spacing: 0) {
           ForEach(m.biggestDays, id: \.t) { d in
-            DayRow(day: d, post: near[d.t] ?? near[d.t - 86_400_000])
+            BiggestDayRow(day: d, post: near[d.t] ?? near[d.t - 86_400_000])
           }
         }
       }
@@ -161,7 +161,8 @@ struct FollowerLists: View {
 
 /// `.day-row`: the day, how many, and the post that may explain it, in
 /// columns of 64 and 52 on the baseline, the post cut short on one line.
-struct DayRow: View {
+/// (Not `DayRow`: that is the weekly schedule's, WeeklySchedulePage.jsx's.)
+struct BiggestDayRow: View {
   @Environment(\.virgaTheme) private var theme
   let day: DayCount
   let post: PostRow?
