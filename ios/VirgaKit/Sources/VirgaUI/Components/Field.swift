@@ -279,7 +279,7 @@ public struct VirgaSelect<Value: Hashable>: View {
       .pickerStyle(.inline)
       .labelsHidden()
     } label: {
-      SelectFace(current: current)
+      SelectFieldFace(current: current)
         .virgaField(invalid: invalid, size: size)
     }
     .menuOrder(.fixed)
@@ -289,7 +289,7 @@ public struct VirgaSelect<Value: Hashable>: View {
 }
 
 /// What a select shows: its value, then the chevron at the end.
-struct SelectFace: View {
+struct SelectFieldFace: View {
   @Environment(\.virgaTheme) private var theme
   let current: String
 

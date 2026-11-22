@@ -284,13 +284,13 @@ public enum Measure {
   /// dashboards.css.
   public enum Dashboard {
     /// `.stat { gap: 8px; padding-top: 16px; border-top: 2px }` (12 at 560
-    /// and under), its head 8 apart, the label's glyph 14 and 6 from its
-    /// words, the number's line 16 from the trend (`.stat-value {
-    /// letter-spacing: -0.04em }`). A report tile's padding (reports.css
-    /// `.report-tile`) is 16 at every width.
+    /// and under, which the dashboards' own measures hold), its head 8
+    /// apart, the label's glyph 14 and 6 from its words, the number's line
+    /// 16 from the trend (`.stat-value { letter-spacing: -0.04em }`). A
+    /// report tile's padding (reports.css `.report-tile`) is 16 at every
+    /// width.
     public static let statGap: CGFloat = 8
     public static let statPaddingTop: CGFloat = 16
-    public static let phoneStatPaddingTop: CGFloat = 12
     public static let statHeadGap: CGFloat = 8
     public static let statLabelGap: CGFloat = 6
     public static let statIcon: CGFloat = 14
