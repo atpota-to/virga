@@ -215,7 +215,11 @@ extension ComposerController {
     let editingRow = editing != nil ? scheduling.row : nil
     let settings = self.settings
     let attempt = startBusy(action, queued ? "Finding the next open time" : "Scheduling")
-    defer { endBusy(attempt) }
+    let background = BackgroundSend("Scheduling")
+    defer {
+      background.end()
+      endBusy(attempt)
+    }
     do {
       let limitsNow = await refreshLimits(did)
       let room = ScheduleService.scheduledRoomProblem(limitsNow, editing: editing != nil)

@@ -377,7 +377,11 @@ struct DraftsPage: View {
     notice = nil
     let settings = PostingPages.settings(app, did).json
     Task {
-      defer { busy = nil }
+      let background = BackgroundSend("Posting")
+      defer {
+        background.end()
+        busy = nil
+      }
       do {
         let agent = try await app.session.agentFor(did)
         let out = try await DraftActions.postDraftNow(view, did: did, settings: settings, agent: agent, deps: try await deps(did))
@@ -396,7 +400,11 @@ struct DraftsPage: View {
     guard let did, let view = list.views.first(where: { PostingPages.sameValue($0["id"], row["id"]) }) else { return }
     busy = row["id"]?.jsString
     notice = nil
-    defer { busy = nil }
+    let background = BackgroundSend("Scheduling")
+    defer {
+      background.end()
+      busy = nil
+    }
     let settings = PostingPages.settings(app, did).json
     do {
       let agent = try await app.session.agentFor(did)

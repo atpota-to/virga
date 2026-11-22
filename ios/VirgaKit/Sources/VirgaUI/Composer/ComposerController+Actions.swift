@@ -190,6 +190,8 @@ extension ComposerController {
     let transport = self.transport
     patchVideo(postId, file, ["status": "uploading", "progress": 0, "error": .null])
     let task = Task {
+      let background = BackgroundSend("Uploading a video")
+      defer { background.end() }
       do {
         guard let ref = file.ref else { throw VideoError("The video needs to be added again.", code: "VIDEO_FAILED") }
         let data = try Data(contentsOf: URL(fileURLWithPath: ref))
@@ -474,7 +476,11 @@ extension ComposerController {
       return
     }
     let attempt = startBusy(PublishActions.post, "Getting it ready")
-    defer { endBusy(attempt) }
+    let background = BackgroundSend("Posting")
+    defer {
+      background.end()
+      endBusy(attempt)
+    }
     var late = false
     do {
       // The same post twice within a couple of minutes is refused before
