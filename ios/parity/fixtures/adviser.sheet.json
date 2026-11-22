@@ -1,0 +1,7146 @@
+{
+  "name": "adviser.sheet",
+  "sources": [
+    "src/posting/adviser/sheet.js",
+    "src/posting/adviser/sheetView.js"
+  ],
+  "cases": [
+    {
+      "id": "sheetViewConstants",
+      "fn": "sheetViewConstants",
+      "input": {},
+      "output": {
+        "VERDICT_COPY": {
+          "ok": "No issues with your goals",
+          "caution": "Worth a second look",
+          "conflict": "Goes against a goal you set"
+        },
+        "STATUS_WORDS": {
+          "conflict": "goes against it",
+          "caution": "worth a look"
+        },
+        "WRITING_TYPE_LABELS": {
+          "typo": "Typo",
+          "grammar": "Grammar",
+          "clarity": "Clarity"
+        }
+      }
+    },
+    {
+      "id": "first-occurrence-first-post",
+      "fn": "placeAdviserMarks",
+      "input": {
+        "posts": [
+          "no slip here",
+          "teh cat and teh dog"
+        ],
+        "fixes": [
+          {
+            "key": "fix:0",
+            "found": "teh"
+          }
+        ]
+      },
+      "output": {
+        "posts": [
+          {
+            "text": "no slip here",
+            "segments": [
+              {
+                "type": "text",
+                "text": "no slip here"
+              }
+            ]
+          },
+          {
+            "text": "teh cat and teh dog",
+            "segments": [
+              {
+                "type": "fix",
+                "key": "fix:0",
+                "text": "teh"
+              },
+              {
+                "type": "text",
+                "text": " cat and teh dog"
+              }
+            ]
+          }
+        ],
+        "placed": [
+          "fix:0"
+        ]
+      }
+    },
+    {
+      "id": "fix-inside-span",
+      "fn": "placeAdviserMarks",
+      "input": {
+        "posts": [
+          "you clearly havent read it. ok"
+        ],
+        "spans": [
+          {
+            "key": "check:0",
+            "excerpt": "you clearly havent read it."
+          }
+        ],
+        "fixes": [
+          {
+            "key": "fix:0",
+            "found": "havent"
+          }
+        ]
+      },
+      "output": {
+        "posts": [
+          {
+            "text": "you clearly havent read it. ok",
+            "segments": [
+              {
+                "type": "span",
+                "keys": [
+                  "check:0"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "you clearly "
+                  },
+                  {
+                    "type": "fix",
+                    "key": "fix:0",
+                    "text": "havent"
+                  },
+                  {
+                    "type": "text",
+                    "text": " read it."
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": " ok"
+              }
+            ]
+          }
+        ],
+        "placed": [
+          "check:0",
+          "fix:0"
+        ]
+      }
+    },
+    {
+      "id": "overlapping-passages-merge",
+      "fn": "placeAdviserMarks",
+      "input": {
+        "posts": [
+          "AI sucks, anti people suck, the end"
+        ],
+        "spans": [
+          {
+            "key": "a",
+            "excerpt": "AI sucks"
+          },
+          {
+            "key": "b",
+            "excerpt": "anti people suck"
+          },
+          {
+            "key": "c",
+            "excerpt": "AI sucks, anti people suck"
+          }
+        ]
+      },
+      "output": {
+        "posts": [
+          {
+            "text": "AI sucks, anti people suck, the end",
+            "segments": [
+              {
+                "type": "span",
+                "keys": [
+                  "a",
+                  "c",
+                  "b"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "AI sucks, anti people suck"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": ", the end"
+              }
+            ]
+          }
+        ],
+        "placed": [
+          "a",
+          "c",
+          "b"
+        ]
+      }
+    },
+    {
+      "id": "touching-passages-apart",
+      "fn": "placeAdviserMarks",
+      "input": {
+        "posts": [
+          "one two"
+        ],
+        "spans": [
+          {
+            "key": "a",
+            "excerpt": "one"
+          },
+          {
+            "key": "b",
+            "excerpt": " two"
+          }
+        ]
+      },
+      "output": {
+        "posts": [
+          {
+            "text": "one two",
+            "segments": [
+              {
+                "type": "span",
+                "keys": [
+                  "a"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "one"
+                  }
+                ]
+              },
+              {
+                "type": "span",
+                "keys": [
+                  "b"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": " two"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "placed": [
+          "a",
+          "b"
+        ]
+      }
+    },
+    {
+      "id": "crossing-and-overlapping-fixes",
+      "fn": "placeAdviserMarks",
+      "input": {
+        "posts": [
+          "alpha beta gamma delta"
+        ],
+        "spans": [
+          {
+            "key": "a",
+            "excerpt": "beta gamma"
+          }
+        ],
+        "fixes": [
+          {
+            "key": "f",
+            "found": "alpha beta"
+          },
+          {
+            "key": "g",
+            "found": "delta"
+          },
+          {
+            "key": "h",
+            "found": "elt"
+          }
+        ]
+      },
+      "output": {
+        "posts": [
+          {
+            "text": "alpha beta gamma delta",
+            "segments": [
+              {
+                "type": "text",
+                "text": "alpha "
+              },
+              {
+                "type": "span",
+                "keys": [
+                  "a"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "beta gamma"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": " "
+              },
+              {
+                "type": "fix",
+                "key": "g",
+                "text": "delta"
+              }
+            ]
+          }
+        ],
+        "placed": [
+          "a",
+          "g"
+        ]
+      }
+    },
+    {
+      "id": "spanning-two-posts",
+      "fn": "placeAdviserMarks",
+      "input": {
+        "posts": [
+          "end of one",
+          "start of two"
+        ],
+        "spans": [
+          {
+            "key": "s",
+            "excerpt": "one\n\nstart"
+          }
+        ],
+        "fixes": [
+          {
+            "key": "f",
+            "found": ""
+          }
+        ]
+      },
+      "output": {
+        "posts": [
+          {
+            "text": "end of one",
+            "segments": [
+              {
+                "type": "text",
+                "text": "end of one"
+              }
+            ]
+          },
+          {
+            "text": "start of two",
+            "segments": [
+              {
+                "type": "text",
+                "text": "start of two"
+              }
+            ]
+          }
+        ],
+        "placed": []
+      }
+    },
+    {
+      "id": "same-start-different-ends",
+      "fn": "placeAdviserMarks",
+      "input": {
+        "posts": [
+          "abcdefghij"
+        ],
+        "spans": [
+          {
+            "key": "long",
+            "excerpt": "abcdefgh"
+          },
+          {
+            "key": "short",
+            "excerpt": "abc"
+          },
+          {
+            "key": "mid",
+            "excerpt": "cdef"
+          },
+          {
+            "key": "late",
+            "excerpt": "hij"
+          }
+        ],
+        "fixes": [
+          {
+            "key": "x",
+            "found": "b"
+          },
+          {
+            "key": "y",
+            "found": "gh"
+          },
+          {
+            "key": "z",
+            "found": "ij"
+          }
+        ]
+      },
+      "output": {
+        "posts": [
+          {
+            "text": "abcdefghij",
+            "segments": [
+              {
+                "type": "span",
+                "keys": [
+                  "short",
+                  "long",
+                  "mid",
+                  "late"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "a"
+                  },
+                  {
+                    "type": "fix",
+                    "key": "x",
+                    "text": "b"
+                  },
+                  {
+                    "type": "text",
+                    "text": "cdef"
+                  },
+                  {
+                    "type": "fix",
+                    "key": "y",
+                    "text": "gh"
+                  },
+                  {
+                    "type": "fix",
+                    "key": "z",
+                    "text": "ij"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "placed": [
+          "short",
+          "long",
+          "mid",
+          "late",
+          "x",
+          "y",
+          "z"
+        ]
+      }
+    },
+    {
+      "id": "fixes-out-of-order",
+      "fn": "placeAdviserMarks",
+      "input": {
+        "posts": [
+          "one two three four five"
+        ],
+        "fixes": [
+          {
+            "key": "d",
+            "found": "four"
+          },
+          {
+            "key": "b",
+            "found": "two"
+          },
+          {
+            "key": "e",
+            "found": "five"
+          },
+          {
+            "key": "a",
+            "found": "one"
+          }
+        ]
+      },
+      "output": {
+        "posts": [
+          {
+            "text": "one two three four five",
+            "segments": [
+              {
+                "type": "fix",
+                "key": "a",
+                "text": "one"
+              },
+              {
+                "type": "text",
+                "text": " "
+              },
+              {
+                "type": "fix",
+                "key": "b",
+                "text": "two"
+              },
+              {
+                "type": "text",
+                "text": " three "
+              },
+              {
+                "type": "fix",
+                "key": "d",
+                "text": "four"
+              },
+              {
+                "type": "text",
+                "text": " "
+              },
+              {
+                "type": "fix",
+                "key": "e",
+                "text": "five"
+              }
+            ]
+          }
+        ],
+        "placed": [
+          "d",
+          "b",
+          "e",
+          "a"
+        ]
+      }
+    },
+    {
+      "id": "fix-same-as-span",
+      "fn": "placeAdviserMarks",
+      "input": {
+        "posts": [
+          "exactly this"
+        ],
+        "spans": [
+          {
+            "key": "s",
+            "excerpt": "exactly this"
+          }
+        ],
+        "fixes": [
+          {
+            "key": "f",
+            "found": "exactly this"
+          }
+        ]
+      },
+      "output": {
+        "posts": [
+          {
+            "text": "exactly this",
+            "segments": [
+              {
+                "type": "span",
+                "keys": [
+                  "s"
+                ],
+                "children": [
+                  {
+                    "type": "fix",
+                    "key": "f",
+                    "text": "exactly this"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "placed": [
+          "s",
+          "f"
+        ]
+      }
+    },
+    {
+      "id": "two-fixes-same-text",
+      "fn": "placeAdviserMarks",
+      "input": {
+        "posts": [
+          "teh teh"
+        ],
+        "fixes": [
+          {
+            "key": "f1",
+            "found": "teh"
+          },
+          {
+            "key": "f2",
+            "found": "teh"
+          }
+        ]
+      },
+      "output": {
+        "posts": [
+          {
+            "text": "teh teh",
+            "segments": [
+              {
+                "type": "fix",
+                "key": "f1",
+                "text": "teh"
+              },
+              {
+                "type": "text",
+                "text": " teh"
+              }
+            ]
+          }
+        ],
+        "placed": [
+          "f1"
+        ]
+      }
+    },
+    {
+      "id": "unicode-offsets",
+      "fn": "placeAdviserMarks",
+      "input": {
+        "posts": [
+          "👩‍👩‍👧 café naïve 😀 smile",
+          "café again"
+        ],
+        "spans": [
+          {
+            "key": "emoji",
+            "excerpt": "😀"
+          },
+          {
+            "key": "nfd",
+            "excerpt": "café"
+          }
+        ],
+        "fixes": [
+          {
+            "key": "nfc",
+            "found": "café"
+          },
+          {
+            "key": "smile",
+            "found": "smile"
+          }
+        ]
+      },
+      "output": {
+        "posts": [
+          {
+            "text": "👩‍👩‍👧 café naïve 😀 smile",
+            "segments": [
+              {
+                "type": "text",
+                "text": "👩‍👩‍👧 "
+              },
+              {
+                "type": "fix",
+                "key": "nfc",
+                "text": "café"
+              },
+              {
+                "type": "text",
+                "text": " naïve "
+              },
+              {
+                "type": "span",
+                "keys": [
+                  "emoji"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "😀"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": " "
+              },
+              {
+                "type": "fix",
+                "key": "smile",
+                "text": "smile"
+              }
+            ]
+          },
+          {
+            "text": "café again",
+            "segments": [
+              {
+                "type": "span",
+                "keys": [
+                  "nfd"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "café"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": " again"
+              }
+            ]
+          }
+        ],
+        "placed": [
+          "emoji",
+          "nfd",
+          "nfc",
+          "smile"
+        ]
+      }
+    },
+    {
+      "id": "loose-entries",
+      "fn": "placeAdviserMarks",
+      "input": {
+        "posts": [
+          "a b c",
+          5,
+          null,
+          "b"
+        ],
+        "spans": [
+          null,
+          {
+            "key": "n",
+            "excerpt": 5
+          },
+          {
+            "key": "w",
+            "excerpt": "  "
+          },
+          {
+            "key": "b",
+            "excerpt": "b"
+          }
+        ],
+        "fixes": [
+          {
+            "key": "c",
+            "found": "c"
+          },
+          null,
+          {
+            "key": "x"
+          }
+        ]
+      },
+      "output": {
+        "posts": [
+          {
+            "text": "a b c",
+            "segments": [
+              {
+                "type": "text",
+                "text": "a "
+              },
+              {
+                "type": "span",
+                "keys": [
+                  "b"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "b"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": " "
+              },
+              {
+                "type": "fix",
+                "key": "c",
+                "text": "c"
+              }
+            ]
+          },
+          {
+            "text": "",
+            "segments": []
+          },
+          {
+            "text": "",
+            "segments": []
+          },
+          {
+            "text": "b",
+            "segments": [
+              {
+                "type": "text",
+                "text": "b"
+              }
+            ]
+          }
+        ],
+        "placed": [
+          "b",
+          "c"
+        ]
+      }
+    },
+    {
+      "id": "no-posts",
+      "fn": "placeAdviserMarks",
+      "input": {
+        "spans": [
+          {
+            "key": "a",
+            "excerpt": "a"
+          }
+        ]
+      },
+      "output": {
+        "posts": [],
+        "placed": []
+      }
+    },
+    {
+      "id": "posts-not-a-list",
+      "fn": "placeAdviserMarks",
+      "input": {
+        "posts": "abc",
+        "spans": [
+          {
+            "key": "a",
+            "excerpt": "a"
+          }
+        ]
+      },
+      "output": {
+        "posts": [],
+        "placed": []
+      }
+    },
+    {
+      "id": "same-key-twice",
+      "fn": "placeAdviserMarks",
+      "input": {
+        "posts": [
+          "a b a"
+        ],
+        "spans": [
+          {
+            "key": "k",
+            "excerpt": "a"
+          },
+          {
+            "key": "k",
+            "excerpt": "b"
+          }
+        ],
+        "fixes": [
+          {
+            "key": "k",
+            "found": "a b"
+          }
+        ]
+      },
+      "output": {
+        "posts": [
+          {
+            "text": "a b a",
+            "segments": [
+              {
+                "type": "span",
+                "keys": [
+                  "k"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "a"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": " "
+              },
+              {
+                "type": "span",
+                "keys": [
+                  "k"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "b"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": " a"
+              }
+            ]
+          }
+        ],
+        "placed": [
+          "k"
+        ]
+      }
+    },
+    {
+      "id": "adviserVerdict#1",
+      "fn": "adviserVerdict",
+      "input": {
+        "result": {
+          "overallStatus": "caution",
+          "checks": [
+            {
+              "status": "ok"
+            }
+          ]
+        }
+      },
+      "output": "caution"
+    },
+    {
+      "id": "adviserVerdict#2",
+      "fn": "adviserVerdict",
+      "input": {
+        "result": {
+          "overallStatus": "odd",
+          "checks": [
+            {
+              "status": "ok"
+            },
+            {
+              "status": "conflict"
+            }
+          ]
+        }
+      },
+      "output": "conflict"
+    },
+    {
+      "id": "adviserVerdict#3",
+      "fn": "adviserVerdict",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "status": "caution"
+            }
+          ]
+        }
+      },
+      "output": "caution"
+    },
+    {
+      "id": "adviserVerdict#4",
+      "fn": "adviserVerdict",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "status": "ok"
+            }
+          ]
+        }
+      },
+      "output": "ok"
+    },
+    {
+      "id": "adviserVerdict#5",
+      "fn": "adviserVerdict",
+      "input": {
+        "result": {
+          "checks": [],
+          "overallStatus": "conflict"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "adviserVerdict#6",
+      "fn": "adviserVerdict",
+      "input": {
+        "result": {
+          "overallStatus": "ok",
+          "checks": [
+            {
+              "status": "conflict"
+            }
+          ]
+        }
+      },
+      "output": "ok"
+    },
+    {
+      "id": "adviserVerdict#7",
+      "fn": "adviserVerdict",
+      "input": {
+        "result": {
+          "overallStatus": "conflict",
+          "checks": [
+            null
+          ]
+        }
+      },
+      "output": "conflict"
+    },
+    {
+      "id": "adviserVerdict#8",
+      "fn": "adviserVerdict",
+      "input": {
+        "result": {
+          "checks": [
+            null,
+            "x",
+            {
+              "status": "caution"
+            },
+            {
+              "status": "conflict"
+            }
+          ]
+        }
+      },
+      "output": "conflict"
+    },
+    {
+      "id": "adviserVerdict#9",
+      "fn": "adviserVerdict",
+      "input": {
+        "result": {
+          "checks": "x"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "adviserVerdict#10",
+      "fn": "adviserVerdict",
+      "input": {
+        "result": null
+      },
+      "output": null
+    },
+    {
+      "id": "adviserVerdict#11",
+      "fn": "adviserVerdict",
+      "input": {
+        "result": {
+          "overallStatus": "OK",
+          "checks": [
+            {}
+          ]
+        }
+      },
+      "output": "ok"
+    },
+    {
+      "id": "conflict-read",
+      "fn": "adviserSheetModel",
+      "input": {
+        "result": {
+          "sentiment": {
+            "label": "negative",
+            "score": -0.6
+          },
+          "overallStatus": "conflict",
+          "suggestion": "Lead with the numbers.",
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "caution",
+              "note": "Weary.",
+              "excerpt": "Honestly exhausted."
+            },
+            {
+              "id": "lessConfrontational",
+              "label": "Less confrontational",
+              "status": "conflict",
+              "note": "Aimed at people.",
+              "excerpt": "has not read past the headline"
+            },
+            {
+              "id": "limitTopic",
+              "label": "Limit AI topic",
+              "status": "ok",
+              "note": "Fine.",
+              "excerpt": null
+            },
+            {
+              "id": "custom",
+              "label": "Custom goals",
+              "status": "caution",
+              "note": "Hmm.",
+              "excerpt": "not in the draft"
+            }
+          ],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh",
+                "replacement": "the",
+                "note": "Swapped letters."
+              },
+              {
+                "type": "clarity",
+                "found": "The sample was small",
+                "replacement": null,
+                "note": "Small compared to what?"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "Honestly exhausted. Anyone who disagrees has not read past the headline. The sample was small, teh end."
+        ]
+      },
+      "output": {
+        "verdict": "conflict",
+        "tone": "negative",
+        "posts": [
+          {
+            "text": "Honestly exhausted. Anyone who disagrees has not read past the headline. The sample was small, teh end.",
+            "segments": [
+              {
+                "type": "span",
+                "keys": [
+                  "check:0"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "Honestly exhausted."
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": " Anyone who disagrees "
+              },
+              {
+                "type": "span",
+                "keys": [
+                  "check:1"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "has not read past the headline"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": ". "
+              },
+              {
+                "type": "span",
+                "keys": [
+                  "note:1"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "The sample was small"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": ", "
+              },
+              {
+                "type": "fix",
+                "key": "fix:0",
+                "text": "teh"
+              },
+              {
+                "type": "text",
+                "text": " end."
+              }
+            ]
+          }
+        ],
+        "marks": {
+          "check:1": {
+            "number": 1,
+            "tone": "conflict"
+          },
+          "check:0": {
+            "number": 2,
+            "tone": "caution"
+          },
+          "note:1": {
+            "number": 3,
+            "tone": "note"
+          }
+        },
+        "notes": [
+          {
+            "key": "check:1",
+            "kind": "goal",
+            "tone": "conflict",
+            "label": "Less confrontational",
+            "number": 1
+          },
+          {
+            "key": "check:0",
+            "kind": "goal",
+            "tone": "caution",
+            "label": "Reduce negativity",
+            "number": 2
+          },
+          {
+            "key": "check:3",
+            "kind": "goal",
+            "tone": "caution",
+            "label": "Custom goals",
+            "number": null
+          },
+          {
+            "key": "note:1",
+            "kind": "writing",
+            "tone": "note",
+            "type": "clarity",
+            "detail": "Small compared to what?",
+            "number": 3
+          }
+        ],
+        "met": [
+          "Limit AI topic"
+        ],
+        "fixes": [
+          {
+            "key": "fix:0",
+            "issue": {
+              "type": "typo",
+              "found": "teh",
+              "replacement": "the",
+              "note": "Swapped letters."
+            }
+          }
+        ],
+        "writingNoteCount": 1,
+        "writingRequested": true
+      }
+    },
+    {
+      "id": "no-goal-checks",
+      "fn": "adviserSheetModel",
+      "input": {
+        "result": {
+          "checks": [],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": []
+          }
+        },
+        "posts": [
+          "hi"
+        ]
+      },
+      "output": {
+        "verdict": null,
+        "tone": null,
+        "posts": [
+          {
+            "text": "hi",
+            "segments": [
+              {
+                "type": "text",
+                "text": "hi"
+              }
+            ]
+          }
+        ],
+        "marks": {},
+        "notes": [],
+        "met": [],
+        "fixes": [],
+        "writingNoteCount": 0,
+        "writingRequested": true
+      }
+    },
+    {
+      "id": "nothing",
+      "fn": "adviserSheetModel",
+      "input": {
+        "result": null
+      },
+      "output": {
+        "verdict": null,
+        "tone": null,
+        "posts": [],
+        "marks": {},
+        "notes": [],
+        "met": [],
+        "fixes": [],
+        "writingNoteCount": 0,
+        "writingRequested": false
+      }
+    },
+    {
+      "id": "typos",
+      "fn": "adviserSheetModel",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh cat",
+                "replacement": "the cat"
+              },
+              {
+                "type": "typo",
+                "found": "teh mat",
+                "replacement": "the mat"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "teh cat sat on teh mat and then their was more"
+        ]
+      },
+      "output": {
+        "verdict": null,
+        "tone": null,
+        "posts": [
+          {
+            "text": "teh cat sat on teh mat and then their was more",
+            "segments": [
+              {
+                "type": "fix",
+                "key": "fix:0",
+                "text": "teh cat"
+              },
+              {
+                "type": "text",
+                "text": " sat on "
+              },
+              {
+                "type": "fix",
+                "key": "fix:1",
+                "text": "teh mat"
+              },
+              {
+                "type": "text",
+                "text": " and then their was more"
+              }
+            ]
+          }
+        ],
+        "marks": {},
+        "notes": [],
+        "met": [],
+        "fixes": [
+          {
+            "key": "fix:0",
+            "issue": {
+              "type": "typo",
+              "found": "teh cat",
+              "replacement": "the cat"
+            }
+          },
+          {
+            "key": "fix:1",
+            "issue": {
+              "type": "typo",
+              "found": "teh mat",
+              "replacement": "the mat"
+            }
+          }
+        ],
+        "writingNoteCount": 0,
+        "writingRequested": true
+      }
+    },
+    {
+      "id": "mixed",
+      "fn": "adviserSheetModel",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh cat",
+                "replacement": "the cat"
+              },
+              {
+                "type": "grammar",
+                "found": "their was",
+                "replacement": "there was"
+              },
+              {
+                "type": "clarity",
+                "found": "and then",
+                "replacement": null,
+                "note": "Then what?"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "teh cat sat on teh mat and then their was more"
+        ]
+      },
+      "output": {
+        "verdict": null,
+        "tone": null,
+        "posts": [
+          {
+            "text": "teh cat sat on teh mat and then their was more",
+            "segments": [
+              {
+                "type": "fix",
+                "key": "fix:0",
+                "text": "teh cat"
+              },
+              {
+                "type": "text",
+                "text": " sat on teh mat "
+              },
+              {
+                "type": "span",
+                "keys": [
+                  "note:2"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "and then"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": " "
+              },
+              {
+                "type": "fix",
+                "key": "fix:1",
+                "text": "their was"
+              },
+              {
+                "type": "text",
+                "text": " more"
+              }
+            ]
+          }
+        ],
+        "marks": {
+          "note:2": {
+            "number": 1,
+            "tone": "note"
+          }
+        },
+        "notes": [
+          {
+            "key": "note:2",
+            "kind": "writing",
+            "tone": "note",
+            "type": "clarity",
+            "detail": "Then what?",
+            "number": 1
+          }
+        ],
+        "met": [],
+        "fixes": [
+          {
+            "key": "fix:0",
+            "issue": {
+              "type": "typo",
+              "found": "teh cat",
+              "replacement": "the cat"
+            }
+          },
+          {
+            "key": "fix:1",
+            "issue": {
+              "type": "grammar",
+              "found": "their was",
+              "replacement": "there was"
+            }
+          }
+        ],
+        "writingNoteCount": 1,
+        "writingRequested": true
+      }
+    },
+    {
+      "id": "no-proofread",
+      "fn": "adviserSheetModel",
+      "input": {
+        "result": {
+          "checks": []
+        },
+        "posts": [
+          "hi"
+        ]
+      },
+      "output": {
+        "verdict": null,
+        "tone": null,
+        "posts": [
+          {
+            "text": "hi",
+            "segments": [
+              {
+                "type": "text",
+                "text": "hi"
+              }
+            ]
+          }
+        ],
+        "marks": {},
+        "notes": [],
+        "met": [],
+        "fixes": [],
+        "writingNoteCount": 0,
+        "writingRequested": false
+      }
+    },
+    {
+      "id": "ok",
+      "fn": "adviserSheetModel",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "ok"
+            }
+          ],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": []
+          }
+        },
+        "posts": [
+          "x"
+        ]
+      },
+      "output": {
+        "verdict": "ok",
+        "tone": null,
+        "posts": [
+          {
+            "text": "x",
+            "segments": [
+              {
+                "type": "text",
+                "text": "x"
+              }
+            ]
+          }
+        ],
+        "marks": {},
+        "notes": [],
+        "met": [
+          "Reduce negativity"
+        ],
+        "fixes": [],
+        "writingNoteCount": 0,
+        "writingRequested": true
+      }
+    },
+    {
+      "id": "conflict",
+      "fn": "adviserSheetModel",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "limitTopic",
+              "label": "Limit topics",
+              "status": "conflict"
+            }
+          ],
+          "overallStatus": "conflict"
+        },
+        "posts": [
+          "about politics"
+        ]
+      },
+      "output": {
+        "verdict": "conflict",
+        "tone": null,
+        "posts": [
+          {
+            "text": "about politics",
+            "segments": [
+              {
+                "type": "text",
+                "text": "about politics"
+              }
+            ]
+          }
+        ],
+        "marks": {},
+        "notes": [
+          {
+            "key": "check:0",
+            "kind": "goal",
+            "tone": "conflict",
+            "label": "Limit topics",
+            "number": null
+          }
+        ],
+        "met": [],
+        "fixes": [],
+        "writingNoteCount": 0,
+        "writingRequested": false
+      }
+    },
+    {
+      "id": "typo",
+      "fn": "adviserSheetModel",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "ok"
+            }
+          ],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "the the",
+                "replacement": "the"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "see the the thing"
+        ]
+      },
+      "output": {
+        "verdict": "ok",
+        "tone": null,
+        "posts": [
+          {
+            "text": "see the the thing",
+            "segments": [
+              {
+                "type": "text",
+                "text": "see "
+              },
+              {
+                "type": "fix",
+                "key": "fix:0",
+                "text": "the the"
+              },
+              {
+                "type": "text",
+                "text": " thing"
+              }
+            ]
+          }
+        ],
+        "marks": {},
+        "notes": [],
+        "met": [
+          "Reduce negativity"
+        ],
+        "fixes": [
+          {
+            "key": "fix:0",
+            "issue": {
+              "type": "typo",
+              "found": "the the",
+              "replacement": "the"
+            }
+          }
+        ],
+        "writingNoteCount": 0,
+        "writingRequested": true
+      }
+    },
+    {
+      "id": "loose-checks",
+      "fn": "adviserSheetModel",
+      "input": {
+        "result": {
+          "overallStatus": "odd",
+          "checks": [
+            null,
+            "text",
+            [],
+            {
+              "status": "conflict",
+              "excerpt": "x"
+            },
+            {
+              "id": "idOnly",
+              "status": "caution",
+              "excerpt": "y"
+            },
+            {
+              "label": "",
+              "id": "",
+              "status": "ok"
+            },
+            {
+              "label": 0,
+              "id": 7,
+              "status": "ok"
+            },
+            {
+              "status": "CONFLICT",
+              "label": "Shouting"
+            }
+          ],
+          "sentiment": {
+            "label": 5
+          },
+          "writing": []
+        },
+        "posts": [
+          "x y z"
+        ]
+      },
+      "output": {
+        "verdict": "conflict",
+        "tone": null,
+        "posts": [
+          {
+            "text": "x y z",
+            "segments": [
+              {
+                "type": "span",
+                "keys": [
+                  "check:1"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "x"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": " "
+              },
+              {
+                "type": "span",
+                "keys": [
+                  "check:2"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "y"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": " z"
+              }
+            ]
+          }
+        ],
+        "marks": {
+          "check:1": {
+            "number": 1,
+            "tone": "conflict"
+          },
+          "check:2": {
+            "number": 2,
+            "tone": "caution"
+          }
+        },
+        "notes": [
+          {
+            "key": "check:1",
+            "kind": "goal",
+            "tone": "conflict",
+            "label": "Goal",
+            "number": 1
+          },
+          {
+            "key": "check:2",
+            "kind": "goal",
+            "tone": "caution",
+            "label": "idOnly",
+            "number": 2
+          }
+        ],
+        "met": [
+          "Goal",
+          "Goal",
+          7,
+          "Shouting"
+        ],
+        "fixes": [],
+        "writingNoteCount": 0,
+        "writingRequested": true
+      }
+    },
+    {
+      "id": "loose-issues",
+      "fn": "adviserSheetModel",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              null,
+              {
+                "found": "  "
+              },
+              {
+                "found": 5,
+                "replacement": "five"
+              },
+              {
+                "type": "typo",
+                "found": "same",
+                "replacement": "same"
+              },
+              {
+                "found": "kept",
+                "note": 7
+              },
+              {
+                "type": {
+                  "odd": true
+                },
+                "found": "odd",
+                "replacement": "even"
+              },
+              {
+                "type": "grammar",
+                "found": "missing",
+                "replacement": "gone"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "same kept odd",
+          "nothing"
+        ]
+      },
+      "output": {
+        "verdict": null,
+        "tone": null,
+        "posts": [
+          {
+            "text": "same kept odd",
+            "segments": [
+              {
+                "type": "span",
+                "keys": [
+                  "note:0"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "same"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": " "
+              },
+              {
+                "type": "span",
+                "keys": [
+                  "note:1"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "kept"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": " "
+              },
+              {
+                "type": "fix",
+                "key": "fix:2",
+                "text": "odd"
+              }
+            ]
+          },
+          {
+            "text": "nothing",
+            "segments": [
+              {
+                "type": "text",
+                "text": "nothing"
+              }
+            ]
+          }
+        ],
+        "marks": {
+          "note:0": {
+            "number": 1,
+            "tone": "note"
+          },
+          "note:1": {
+            "number": 2,
+            "tone": "note"
+          }
+        },
+        "notes": [
+          {
+            "key": "note:0",
+            "kind": "writing",
+            "tone": "note",
+            "type": "typo",
+            "detail": "",
+            "number": 1
+          },
+          {
+            "key": "note:1",
+            "kind": "writing",
+            "tone": "note",
+            "detail": "",
+            "number": 2
+          }
+        ],
+        "met": [],
+        "fixes": [
+          {
+            "key": "fix:2",
+            "issue": {
+              "type": {
+                "odd": true
+              },
+              "found": "odd",
+              "replacement": "even"
+            }
+          },
+          {
+            "key": "fix:3",
+            "issue": {
+              "type": "grammar",
+              "found": "missing",
+              "replacement": "gone"
+            }
+          }
+        ],
+        "writingNoteCount": 2,
+        "writingRequested": true
+      }
+    },
+    {
+      "id": "writing-not-an-object",
+      "fn": "adviserSheetModel",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "status": "ok",
+              "label": "A"
+            }
+          ],
+          "writing": "yes"
+        },
+        "posts": [
+          "a"
+        ]
+      },
+      "output": {
+        "verdict": "ok",
+        "tone": null,
+        "posts": [
+          {
+            "text": "a",
+            "segments": [
+              {
+                "type": "text",
+                "text": "a"
+              }
+            ]
+          }
+        ],
+        "marks": {},
+        "notes": [],
+        "met": [
+          "A"
+        ],
+        "fixes": [],
+        "writingNoteCount": 0,
+        "writingRequested": false
+      }
+    },
+    {
+      "id": "thread-and-unicode",
+      "fn": "adviserSheetModel",
+      "input": {
+        "result": {
+          "overallStatus": "caution",
+          "checks": [
+            {
+              "id": "a",
+              "label": "A",
+              "status": "caution",
+              "excerpt": "😀 here"
+            },
+            {
+              "id": "b",
+              "label": "B",
+              "status": "conflict",
+              "excerpt": "café"
+            }
+          ],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "herre",
+                "replacement": "here"
+              },
+              {
+                "type": "clarity",
+                "found": "😀",
+                "note": "Which?"
+              },
+              {
+                "type": "grammar",
+                "found": "second",
+                "replacement": "Second"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "first 😀 here and herre",
+          "second café",
+          "third café"
+        ]
+      },
+      "output": {
+        "verdict": "caution",
+        "tone": null,
+        "posts": [
+          {
+            "text": "first 😀 here and herre",
+            "segments": [
+              {
+                "type": "text",
+                "text": "first "
+              },
+              {
+                "type": "span",
+                "keys": [
+                  "note:1",
+                  "check:0"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "😀 here"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": " and "
+              },
+              {
+                "type": "fix",
+                "key": "fix:0",
+                "text": "herre"
+              }
+            ]
+          },
+          {
+            "text": "second café",
+            "segments": [
+              {
+                "type": "fix",
+                "key": "fix:2",
+                "text": "second"
+              },
+              {
+                "type": "text",
+                "text": " "
+              },
+              {
+                "type": "span",
+                "keys": [
+                  "check:1"
+                ],
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "café"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "text": "third café",
+            "segments": [
+              {
+                "type": "text",
+                "text": "third café"
+              }
+            ]
+          }
+        ],
+        "marks": {
+          "check:1": {
+            "number": 1,
+            "tone": "conflict"
+          },
+          "check:0": {
+            "number": 2,
+            "tone": "caution"
+          },
+          "note:1": {
+            "number": 3,
+            "tone": "note"
+          }
+        },
+        "notes": [
+          {
+            "key": "check:1",
+            "kind": "goal",
+            "tone": "conflict",
+            "label": "B",
+            "number": 1
+          },
+          {
+            "key": "check:0",
+            "kind": "goal",
+            "tone": "caution",
+            "label": "A",
+            "number": 2
+          },
+          {
+            "key": "note:1",
+            "kind": "writing",
+            "tone": "note",
+            "type": "clarity",
+            "detail": "Which?",
+            "number": 3
+          }
+        ],
+        "met": [],
+        "fixes": [
+          {
+            "key": "fix:0",
+            "issue": {
+              "type": "typo",
+              "found": "herre",
+              "replacement": "here"
+            }
+          },
+          {
+            "key": "fix:2",
+            "issue": {
+              "type": "grammar",
+              "found": "second",
+              "replacement": "Second"
+            }
+          }
+        ],
+        "writingNoteCount": 1,
+        "writingRequested": true
+      }
+    },
+    {
+      "id": "conflict-read/",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "sentiment": {
+            "label": "negative",
+            "score": -0.6
+          },
+          "overallStatus": "conflict",
+          "suggestion": "Lead with the numbers.",
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "caution",
+              "note": "Weary.",
+              "excerpt": "Honestly exhausted."
+            },
+            {
+              "id": "lessConfrontational",
+              "label": "Less confrontational",
+              "status": "conflict",
+              "note": "Aimed at people.",
+              "excerpt": "has not read past the headline"
+            },
+            {
+              "id": "limitTopic",
+              "label": "Limit AI topic",
+              "status": "ok",
+              "note": "Fine.",
+              "excerpt": null
+            },
+            {
+              "id": "custom",
+              "label": "Custom goals",
+              "status": "caution",
+              "note": "Hmm.",
+              "excerpt": "not in the draft"
+            }
+          ],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh",
+                "replacement": "the",
+                "note": "Swapped letters."
+              },
+              {
+                "type": "clarity",
+                "found": "The sample was small",
+                "replacement": null,
+                "note": "Small compared to what?"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "Honestly exhausted. Anyone who disagrees has not read past the headline. The sample was small, teh end."
+        ],
+        "taken": []
+      },
+      "output": {
+        "tally": "1 typo · 1 note",
+        "found": true
+      }
+    },
+    {
+      "id": "conflict-read/fix:0",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "sentiment": {
+            "label": "negative",
+            "score": -0.6
+          },
+          "overallStatus": "conflict",
+          "suggestion": "Lead with the numbers.",
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "caution",
+              "note": "Weary.",
+              "excerpt": "Honestly exhausted."
+            },
+            {
+              "id": "lessConfrontational",
+              "label": "Less confrontational",
+              "status": "conflict",
+              "note": "Aimed at people.",
+              "excerpt": "has not read past the headline"
+            },
+            {
+              "id": "limitTopic",
+              "label": "Limit AI topic",
+              "status": "ok",
+              "note": "Fine.",
+              "excerpt": null
+            },
+            {
+              "id": "custom",
+              "label": "Custom goals",
+              "status": "caution",
+              "note": "Hmm.",
+              "excerpt": "not in the draft"
+            }
+          ],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh",
+                "replacement": "the",
+                "note": "Swapped letters."
+              },
+              {
+                "type": "clarity",
+                "found": "The sample was small",
+                "replacement": null,
+                "note": "Small compared to what?"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "Honestly exhausted. Anyone who disagrees has not read past the headline. The sample was small, teh end."
+        ],
+        "taken": [
+          "fix:0"
+        ]
+      },
+      "output": {
+        "tally": "1 note · 1 fixed",
+        "found": true
+      }
+    },
+    {
+      "id": "conflict-read/fix:0+fix:1",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "sentiment": {
+            "label": "negative",
+            "score": -0.6
+          },
+          "overallStatus": "conflict",
+          "suggestion": "Lead with the numbers.",
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "caution",
+              "note": "Weary.",
+              "excerpt": "Honestly exhausted."
+            },
+            {
+              "id": "lessConfrontational",
+              "label": "Less confrontational",
+              "status": "conflict",
+              "note": "Aimed at people.",
+              "excerpt": "has not read past the headline"
+            },
+            {
+              "id": "limitTopic",
+              "label": "Limit AI topic",
+              "status": "ok",
+              "note": "Fine.",
+              "excerpt": null
+            },
+            {
+              "id": "custom",
+              "label": "Custom goals",
+              "status": "caution",
+              "note": "Hmm.",
+              "excerpt": "not in the draft"
+            }
+          ],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh",
+                "replacement": "the",
+                "note": "Swapped letters."
+              },
+              {
+                "type": "clarity",
+                "found": "The sample was small",
+                "replacement": null,
+                "note": "Small compared to what?"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "Honestly exhausted. Anyone who disagrees has not read past the headline. The sample was small, teh end."
+        ],
+        "taken": [
+          "fix:0",
+          "fix:1"
+        ]
+      },
+      "output": {
+        "tally": "1 note · 1 fixed",
+        "found": true
+      }
+    },
+    {
+      "id": "conflict-read/fix:1+other",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "sentiment": {
+            "label": "negative",
+            "score": -0.6
+          },
+          "overallStatus": "conflict",
+          "suggestion": "Lead with the numbers.",
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "caution",
+              "note": "Weary.",
+              "excerpt": "Honestly exhausted."
+            },
+            {
+              "id": "lessConfrontational",
+              "label": "Less confrontational",
+              "status": "conflict",
+              "note": "Aimed at people.",
+              "excerpt": "has not read past the headline"
+            },
+            {
+              "id": "limitTopic",
+              "label": "Limit AI topic",
+              "status": "ok",
+              "note": "Fine.",
+              "excerpt": null
+            },
+            {
+              "id": "custom",
+              "label": "Custom goals",
+              "status": "caution",
+              "note": "Hmm.",
+              "excerpt": "not in the draft"
+            }
+          ],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh",
+                "replacement": "the",
+                "note": "Swapped letters."
+              },
+              {
+                "type": "clarity",
+                "found": "The sample was small",
+                "replacement": null,
+                "note": "Small compared to what?"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "Honestly exhausted. Anyone who disagrees has not read past the headline. The sample was small, teh end."
+        ],
+        "taken": [
+          "fix:1",
+          "other"
+        ]
+      },
+      "output": {
+        "tally": "1 typo · 1 note",
+        "found": true
+      }
+    },
+    {
+      "id": "conflict-read/fix:2",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "sentiment": {
+            "label": "negative",
+            "score": -0.6
+          },
+          "overallStatus": "conflict",
+          "suggestion": "Lead with the numbers.",
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "caution",
+              "note": "Weary.",
+              "excerpt": "Honestly exhausted."
+            },
+            {
+              "id": "lessConfrontational",
+              "label": "Less confrontational",
+              "status": "conflict",
+              "note": "Aimed at people.",
+              "excerpt": "has not read past the headline"
+            },
+            {
+              "id": "limitTopic",
+              "label": "Limit AI topic",
+              "status": "ok",
+              "note": "Fine.",
+              "excerpt": null
+            },
+            {
+              "id": "custom",
+              "label": "Custom goals",
+              "status": "caution",
+              "note": "Hmm.",
+              "excerpt": "not in the draft"
+            }
+          ],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh",
+                "replacement": "the",
+                "note": "Swapped letters."
+              },
+              {
+                "type": "clarity",
+                "found": "The sample was small",
+                "replacement": null,
+                "note": "Small compared to what?"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "Honestly exhausted. Anyone who disagrees has not read past the headline. The sample was small, teh end."
+        ],
+        "taken": [
+          "fix:2"
+        ]
+      },
+      "output": {
+        "tally": "1 typo · 1 note",
+        "found": true
+      }
+    },
+    {
+      "id": "no-goal-checks/",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": []
+          }
+        },
+        "posts": [
+          "hi"
+        ],
+        "taken": []
+      },
+      "output": {
+        "tally": "no slips",
+        "found": false
+      }
+    },
+    {
+      "id": "no-goal-checks/fix:0",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": []
+          }
+        },
+        "posts": [
+          "hi"
+        ],
+        "taken": [
+          "fix:0"
+        ]
+      },
+      "output": {
+        "tally": "no slips",
+        "found": false
+      }
+    },
+    {
+      "id": "no-goal-checks/fix:0+fix:1",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": []
+          }
+        },
+        "posts": [
+          "hi"
+        ],
+        "taken": [
+          "fix:0",
+          "fix:1"
+        ]
+      },
+      "output": {
+        "tally": "no slips",
+        "found": false
+      }
+    },
+    {
+      "id": "no-goal-checks/fix:1+other",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": []
+          }
+        },
+        "posts": [
+          "hi"
+        ],
+        "taken": [
+          "fix:1",
+          "other"
+        ]
+      },
+      "output": {
+        "tally": "no slips",
+        "found": false
+      }
+    },
+    {
+      "id": "no-goal-checks/fix:2",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": []
+          }
+        },
+        "posts": [
+          "hi"
+        ],
+        "taken": [
+          "fix:2"
+        ]
+      },
+      "output": {
+        "tally": "no slips",
+        "found": false
+      }
+    },
+    {
+      "id": "nothing/",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": null,
+        "taken": []
+      },
+      "output": {
+        "tally": null,
+        "found": false
+      }
+    },
+    {
+      "id": "nothing/fix:0",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": null,
+        "taken": [
+          "fix:0"
+        ]
+      },
+      "output": {
+        "tally": null,
+        "found": false
+      }
+    },
+    {
+      "id": "nothing/fix:0+fix:1",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": null,
+        "taken": [
+          "fix:0",
+          "fix:1"
+        ]
+      },
+      "output": {
+        "tally": null,
+        "found": false
+      }
+    },
+    {
+      "id": "nothing/fix:1+other",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": null,
+        "taken": [
+          "fix:1",
+          "other"
+        ]
+      },
+      "output": {
+        "tally": null,
+        "found": false
+      }
+    },
+    {
+      "id": "nothing/fix:2",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": null,
+        "taken": [
+          "fix:2"
+        ]
+      },
+      "output": {
+        "tally": null,
+        "found": false
+      }
+    },
+    {
+      "id": "typos/",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh cat",
+                "replacement": "the cat"
+              },
+              {
+                "type": "typo",
+                "found": "teh mat",
+                "replacement": "the mat"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "teh cat sat on teh mat and then their was more"
+        ],
+        "taken": []
+      },
+      "output": {
+        "tally": "2 typos",
+        "found": true
+      }
+    },
+    {
+      "id": "typos/fix:0",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh cat",
+                "replacement": "the cat"
+              },
+              {
+                "type": "typo",
+                "found": "teh mat",
+                "replacement": "the mat"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "teh cat sat on teh mat and then their was more"
+        ],
+        "taken": [
+          "fix:0"
+        ]
+      },
+      "output": {
+        "tally": "1 typo · 1 fixed",
+        "found": true
+      }
+    },
+    {
+      "id": "typos/fix:0+fix:1",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh cat",
+                "replacement": "the cat"
+              },
+              {
+                "type": "typo",
+                "found": "teh mat",
+                "replacement": "the mat"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "teh cat sat on teh mat and then their was more"
+        ],
+        "taken": [
+          "fix:0",
+          "fix:1"
+        ]
+      },
+      "output": {
+        "tally": "2 fixed",
+        "found": false
+      }
+    },
+    {
+      "id": "typos/fix:1+other",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh cat",
+                "replacement": "the cat"
+              },
+              {
+                "type": "typo",
+                "found": "teh mat",
+                "replacement": "the mat"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "teh cat sat on teh mat and then their was more"
+        ],
+        "taken": [
+          "fix:1",
+          "other"
+        ]
+      },
+      "output": {
+        "tally": "1 typo · 1 fixed",
+        "found": true
+      }
+    },
+    {
+      "id": "typos/fix:2",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh cat",
+                "replacement": "the cat"
+              },
+              {
+                "type": "typo",
+                "found": "teh mat",
+                "replacement": "the mat"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "teh cat sat on teh mat and then their was more"
+        ],
+        "taken": [
+          "fix:2"
+        ]
+      },
+      "output": {
+        "tally": "2 typos",
+        "found": true
+      }
+    },
+    {
+      "id": "mixed/",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh cat",
+                "replacement": "the cat"
+              },
+              {
+                "type": "grammar",
+                "found": "their was",
+                "replacement": "there was"
+              },
+              {
+                "type": "clarity",
+                "found": "and then",
+                "replacement": null,
+                "note": "Then what?"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "teh cat sat on teh mat and then their was more"
+        ],
+        "taken": []
+      },
+      "output": {
+        "tally": "2 slips · 1 note",
+        "found": true
+      }
+    },
+    {
+      "id": "mixed/fix:0",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh cat",
+                "replacement": "the cat"
+              },
+              {
+                "type": "grammar",
+                "found": "their was",
+                "replacement": "there was"
+              },
+              {
+                "type": "clarity",
+                "found": "and then",
+                "replacement": null,
+                "note": "Then what?"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "teh cat sat on teh mat and then their was more"
+        ],
+        "taken": [
+          "fix:0"
+        ]
+      },
+      "output": {
+        "tally": "1 slip · 1 note · 1 fixed",
+        "found": true
+      }
+    },
+    {
+      "id": "mixed/fix:0+fix:1",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh cat",
+                "replacement": "the cat"
+              },
+              {
+                "type": "grammar",
+                "found": "their was",
+                "replacement": "there was"
+              },
+              {
+                "type": "clarity",
+                "found": "and then",
+                "replacement": null,
+                "note": "Then what?"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "teh cat sat on teh mat and then their was more"
+        ],
+        "taken": [
+          "fix:0",
+          "fix:1"
+        ]
+      },
+      "output": {
+        "tally": "1 note · 2 fixed",
+        "found": true
+      }
+    },
+    {
+      "id": "mixed/fix:1+other",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh cat",
+                "replacement": "the cat"
+              },
+              {
+                "type": "grammar",
+                "found": "their was",
+                "replacement": "there was"
+              },
+              {
+                "type": "clarity",
+                "found": "and then",
+                "replacement": null,
+                "note": "Then what?"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "teh cat sat on teh mat and then their was more"
+        ],
+        "taken": [
+          "fix:1",
+          "other"
+        ]
+      },
+      "output": {
+        "tally": "1 typo · 1 note · 1 fixed",
+        "found": true
+      }
+    },
+    {
+      "id": "mixed/fix:2",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "teh cat",
+                "replacement": "the cat"
+              },
+              {
+                "type": "grammar",
+                "found": "their was",
+                "replacement": "there was"
+              },
+              {
+                "type": "clarity",
+                "found": "and then",
+                "replacement": null,
+                "note": "Then what?"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "teh cat sat on teh mat and then their was more"
+        ],
+        "taken": [
+          "fix:2"
+        ]
+      },
+      "output": {
+        "tally": "2 slips · 1 note",
+        "found": true
+      }
+    },
+    {
+      "id": "no-proofread/",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": []
+        },
+        "posts": [
+          "hi"
+        ],
+        "taken": []
+      },
+      "output": {
+        "tally": null,
+        "found": false
+      }
+    },
+    {
+      "id": "no-proofread/fix:0",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": []
+        },
+        "posts": [
+          "hi"
+        ],
+        "taken": [
+          "fix:0"
+        ]
+      },
+      "output": {
+        "tally": null,
+        "found": false
+      }
+    },
+    {
+      "id": "no-proofread/fix:0+fix:1",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": []
+        },
+        "posts": [
+          "hi"
+        ],
+        "taken": [
+          "fix:0",
+          "fix:1"
+        ]
+      },
+      "output": {
+        "tally": null,
+        "found": false
+      }
+    },
+    {
+      "id": "no-proofread/fix:1+other",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": []
+        },
+        "posts": [
+          "hi"
+        ],
+        "taken": [
+          "fix:1",
+          "other"
+        ]
+      },
+      "output": {
+        "tally": null,
+        "found": false
+      }
+    },
+    {
+      "id": "no-proofread/fix:2",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": []
+        },
+        "posts": [
+          "hi"
+        ],
+        "taken": [
+          "fix:2"
+        ]
+      },
+      "output": {
+        "tally": null,
+        "found": false
+      }
+    },
+    {
+      "id": "ok/",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "ok"
+            }
+          ],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": []
+          }
+        },
+        "posts": [
+          "x"
+        ],
+        "taken": []
+      },
+      "output": {
+        "tally": "no slips",
+        "found": false
+      }
+    },
+    {
+      "id": "ok/fix:0",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "ok"
+            }
+          ],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": []
+          }
+        },
+        "posts": [
+          "x"
+        ],
+        "taken": [
+          "fix:0"
+        ]
+      },
+      "output": {
+        "tally": "no slips",
+        "found": false
+      }
+    },
+    {
+      "id": "ok/fix:0+fix:1",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "ok"
+            }
+          ],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": []
+          }
+        },
+        "posts": [
+          "x"
+        ],
+        "taken": [
+          "fix:0",
+          "fix:1"
+        ]
+      },
+      "output": {
+        "tally": "no slips",
+        "found": false
+      }
+    },
+    {
+      "id": "ok/fix:1+other",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "ok"
+            }
+          ],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": []
+          }
+        },
+        "posts": [
+          "x"
+        ],
+        "taken": [
+          "fix:1",
+          "other"
+        ]
+      },
+      "output": {
+        "tally": "no slips",
+        "found": false
+      }
+    },
+    {
+      "id": "ok/fix:2",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "ok"
+            }
+          ],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": []
+          }
+        },
+        "posts": [
+          "x"
+        ],
+        "taken": [
+          "fix:2"
+        ]
+      },
+      "output": {
+        "tally": "no slips",
+        "found": false
+      }
+    },
+    {
+      "id": "conflict/",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "limitTopic",
+              "label": "Limit topics",
+              "status": "conflict"
+            }
+          ],
+          "overallStatus": "conflict"
+        },
+        "posts": [
+          "about politics"
+        ],
+        "taken": []
+      },
+      "output": {
+        "tally": null,
+        "found": true
+      }
+    },
+    {
+      "id": "conflict/fix:0",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "limitTopic",
+              "label": "Limit topics",
+              "status": "conflict"
+            }
+          ],
+          "overallStatus": "conflict"
+        },
+        "posts": [
+          "about politics"
+        ],
+        "taken": [
+          "fix:0"
+        ]
+      },
+      "output": {
+        "tally": null,
+        "found": true
+      }
+    },
+    {
+      "id": "conflict/fix:0+fix:1",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "limitTopic",
+              "label": "Limit topics",
+              "status": "conflict"
+            }
+          ],
+          "overallStatus": "conflict"
+        },
+        "posts": [
+          "about politics"
+        ],
+        "taken": [
+          "fix:0",
+          "fix:1"
+        ]
+      },
+      "output": {
+        "tally": null,
+        "found": true
+      }
+    },
+    {
+      "id": "conflict/fix:1+other",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "limitTopic",
+              "label": "Limit topics",
+              "status": "conflict"
+            }
+          ],
+          "overallStatus": "conflict"
+        },
+        "posts": [
+          "about politics"
+        ],
+        "taken": [
+          "fix:1",
+          "other"
+        ]
+      },
+      "output": {
+        "tally": null,
+        "found": true
+      }
+    },
+    {
+      "id": "conflict/fix:2",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "limitTopic",
+              "label": "Limit topics",
+              "status": "conflict"
+            }
+          ],
+          "overallStatus": "conflict"
+        },
+        "posts": [
+          "about politics"
+        ],
+        "taken": [
+          "fix:2"
+        ]
+      },
+      "output": {
+        "tally": null,
+        "found": true
+      }
+    },
+    {
+      "id": "typo/",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "ok"
+            }
+          ],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "the the",
+                "replacement": "the"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "see the the thing"
+        ],
+        "taken": []
+      },
+      "output": {
+        "tally": "1 typo",
+        "found": true
+      }
+    },
+    {
+      "id": "typo/fix:0",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "ok"
+            }
+          ],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "the the",
+                "replacement": "the"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "see the the thing"
+        ],
+        "taken": [
+          "fix:0"
+        ]
+      },
+      "output": {
+        "tally": "1 fixed",
+        "found": false
+      }
+    },
+    {
+      "id": "typo/fix:0+fix:1",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "ok"
+            }
+          ],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "the the",
+                "replacement": "the"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "see the the thing"
+        ],
+        "taken": [
+          "fix:0",
+          "fix:1"
+        ]
+      },
+      "output": {
+        "tally": "1 fixed",
+        "found": false
+      }
+    },
+    {
+      "id": "typo/fix:1+other",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "ok"
+            }
+          ],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "the the",
+                "replacement": "the"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "see the the thing"
+        ],
+        "taken": [
+          "fix:1",
+          "other"
+        ]
+      },
+      "output": {
+        "tally": "1 typo",
+        "found": true
+      }
+    },
+    {
+      "id": "typo/fix:2",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "id": "reduceNegativity",
+              "label": "Reduce negativity",
+              "status": "ok"
+            }
+          ],
+          "overallStatus": "ok",
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "the the",
+                "replacement": "the"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "see the the thing"
+        ],
+        "taken": [
+          "fix:2"
+        ]
+      },
+      "output": {
+        "tally": "1 typo",
+        "found": true
+      }
+    },
+    {
+      "id": "loose-checks/",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "overallStatus": "odd",
+          "checks": [
+            null,
+            "text",
+            [],
+            {
+              "status": "conflict",
+              "excerpt": "x"
+            },
+            {
+              "id": "idOnly",
+              "status": "caution",
+              "excerpt": "y"
+            },
+            {
+              "label": "",
+              "id": "",
+              "status": "ok"
+            },
+            {
+              "label": 0,
+              "id": 7,
+              "status": "ok"
+            },
+            {
+              "status": "CONFLICT",
+              "label": "Shouting"
+            }
+          ],
+          "sentiment": {
+            "label": 5
+          },
+          "writing": []
+        },
+        "posts": [
+          "x y z"
+        ],
+        "taken": []
+      },
+      "output": {
+        "tally": "no slips",
+        "found": true
+      }
+    },
+    {
+      "id": "loose-checks/fix:0",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "overallStatus": "odd",
+          "checks": [
+            null,
+            "text",
+            [],
+            {
+              "status": "conflict",
+              "excerpt": "x"
+            },
+            {
+              "id": "idOnly",
+              "status": "caution",
+              "excerpt": "y"
+            },
+            {
+              "label": "",
+              "id": "",
+              "status": "ok"
+            },
+            {
+              "label": 0,
+              "id": 7,
+              "status": "ok"
+            },
+            {
+              "status": "CONFLICT",
+              "label": "Shouting"
+            }
+          ],
+          "sentiment": {
+            "label": 5
+          },
+          "writing": []
+        },
+        "posts": [
+          "x y z"
+        ],
+        "taken": [
+          "fix:0"
+        ]
+      },
+      "output": {
+        "tally": "no slips",
+        "found": true
+      }
+    },
+    {
+      "id": "loose-checks/fix:0+fix:1",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "overallStatus": "odd",
+          "checks": [
+            null,
+            "text",
+            [],
+            {
+              "status": "conflict",
+              "excerpt": "x"
+            },
+            {
+              "id": "idOnly",
+              "status": "caution",
+              "excerpt": "y"
+            },
+            {
+              "label": "",
+              "id": "",
+              "status": "ok"
+            },
+            {
+              "label": 0,
+              "id": 7,
+              "status": "ok"
+            },
+            {
+              "status": "CONFLICT",
+              "label": "Shouting"
+            }
+          ],
+          "sentiment": {
+            "label": 5
+          },
+          "writing": []
+        },
+        "posts": [
+          "x y z"
+        ],
+        "taken": [
+          "fix:0",
+          "fix:1"
+        ]
+      },
+      "output": {
+        "tally": "no slips",
+        "found": true
+      }
+    },
+    {
+      "id": "loose-checks/fix:1+other",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "overallStatus": "odd",
+          "checks": [
+            null,
+            "text",
+            [],
+            {
+              "status": "conflict",
+              "excerpt": "x"
+            },
+            {
+              "id": "idOnly",
+              "status": "caution",
+              "excerpt": "y"
+            },
+            {
+              "label": "",
+              "id": "",
+              "status": "ok"
+            },
+            {
+              "label": 0,
+              "id": 7,
+              "status": "ok"
+            },
+            {
+              "status": "CONFLICT",
+              "label": "Shouting"
+            }
+          ],
+          "sentiment": {
+            "label": 5
+          },
+          "writing": []
+        },
+        "posts": [
+          "x y z"
+        ],
+        "taken": [
+          "fix:1",
+          "other"
+        ]
+      },
+      "output": {
+        "tally": "no slips",
+        "found": true
+      }
+    },
+    {
+      "id": "loose-checks/fix:2",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "overallStatus": "odd",
+          "checks": [
+            null,
+            "text",
+            [],
+            {
+              "status": "conflict",
+              "excerpt": "x"
+            },
+            {
+              "id": "idOnly",
+              "status": "caution",
+              "excerpt": "y"
+            },
+            {
+              "label": "",
+              "id": "",
+              "status": "ok"
+            },
+            {
+              "label": 0,
+              "id": 7,
+              "status": "ok"
+            },
+            {
+              "status": "CONFLICT",
+              "label": "Shouting"
+            }
+          ],
+          "sentiment": {
+            "label": 5
+          },
+          "writing": []
+        },
+        "posts": [
+          "x y z"
+        ],
+        "taken": [
+          "fix:2"
+        ]
+      },
+      "output": {
+        "tally": "no slips",
+        "found": true
+      }
+    },
+    {
+      "id": "loose-issues/",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              null,
+              {
+                "found": "  "
+              },
+              {
+                "found": 5,
+                "replacement": "five"
+              },
+              {
+                "type": "typo",
+                "found": "same",
+                "replacement": "same"
+              },
+              {
+                "found": "kept",
+                "note": 7
+              },
+              {
+                "type": {
+                  "odd": true
+                },
+                "found": "odd",
+                "replacement": "even"
+              },
+              {
+                "type": "grammar",
+                "found": "missing",
+                "replacement": "gone"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "same kept odd",
+          "nothing"
+        ],
+        "taken": []
+      },
+      "output": {
+        "tally": "2 slips · 2 notes",
+        "found": true
+      }
+    },
+    {
+      "id": "loose-issues/fix:0",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              null,
+              {
+                "found": "  "
+              },
+              {
+                "found": 5,
+                "replacement": "five"
+              },
+              {
+                "type": "typo",
+                "found": "same",
+                "replacement": "same"
+              },
+              {
+                "found": "kept",
+                "note": 7
+              },
+              {
+                "type": {
+                  "odd": true
+                },
+                "found": "odd",
+                "replacement": "even"
+              },
+              {
+                "type": "grammar",
+                "found": "missing",
+                "replacement": "gone"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "same kept odd",
+          "nothing"
+        ],
+        "taken": [
+          "fix:0"
+        ]
+      },
+      "output": {
+        "tally": "2 slips · 2 notes",
+        "found": true
+      }
+    },
+    {
+      "id": "loose-issues/fix:0+fix:1",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              null,
+              {
+                "found": "  "
+              },
+              {
+                "found": 5,
+                "replacement": "five"
+              },
+              {
+                "type": "typo",
+                "found": "same",
+                "replacement": "same"
+              },
+              {
+                "found": "kept",
+                "note": 7
+              },
+              {
+                "type": {
+                  "odd": true
+                },
+                "found": "odd",
+                "replacement": "even"
+              },
+              {
+                "type": "grammar",
+                "found": "missing",
+                "replacement": "gone"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "same kept odd",
+          "nothing"
+        ],
+        "taken": [
+          "fix:0",
+          "fix:1"
+        ]
+      },
+      "output": {
+        "tally": "2 slips · 2 notes",
+        "found": true
+      }
+    },
+    {
+      "id": "loose-issues/fix:1+other",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              null,
+              {
+                "found": "  "
+              },
+              {
+                "found": 5,
+                "replacement": "five"
+              },
+              {
+                "type": "typo",
+                "found": "same",
+                "replacement": "same"
+              },
+              {
+                "found": "kept",
+                "note": 7
+              },
+              {
+                "type": {
+                  "odd": true
+                },
+                "found": "odd",
+                "replacement": "even"
+              },
+              {
+                "type": "grammar",
+                "found": "missing",
+                "replacement": "gone"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "same kept odd",
+          "nothing"
+        ],
+        "taken": [
+          "fix:1",
+          "other"
+        ]
+      },
+      "output": {
+        "tally": "2 slips · 2 notes",
+        "found": true
+      }
+    },
+    {
+      "id": "loose-issues/fix:2",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [],
+          "writing": {
+            "issues": [
+              null,
+              {
+                "found": "  "
+              },
+              {
+                "found": 5,
+                "replacement": "five"
+              },
+              {
+                "type": "typo",
+                "found": "same",
+                "replacement": "same"
+              },
+              {
+                "found": "kept",
+                "note": 7
+              },
+              {
+                "type": {
+                  "odd": true
+                },
+                "found": "odd",
+                "replacement": "even"
+              },
+              {
+                "type": "grammar",
+                "found": "missing",
+                "replacement": "gone"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "same kept odd",
+          "nothing"
+        ],
+        "taken": [
+          "fix:2"
+        ]
+      },
+      "output": {
+        "tally": "1 slip · 2 notes · 1 fixed",
+        "found": true
+      }
+    },
+    {
+      "id": "writing-not-an-object/",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "status": "ok",
+              "label": "A"
+            }
+          ],
+          "writing": "yes"
+        },
+        "posts": [
+          "a"
+        ],
+        "taken": []
+      },
+      "output": {
+        "tally": null,
+        "found": false
+      }
+    },
+    {
+      "id": "writing-not-an-object/fix:0",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "status": "ok",
+              "label": "A"
+            }
+          ],
+          "writing": "yes"
+        },
+        "posts": [
+          "a"
+        ],
+        "taken": [
+          "fix:0"
+        ]
+      },
+      "output": {
+        "tally": null,
+        "found": false
+      }
+    },
+    {
+      "id": "writing-not-an-object/fix:0+fix:1",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "status": "ok",
+              "label": "A"
+            }
+          ],
+          "writing": "yes"
+        },
+        "posts": [
+          "a"
+        ],
+        "taken": [
+          "fix:0",
+          "fix:1"
+        ]
+      },
+      "output": {
+        "tally": null,
+        "found": false
+      }
+    },
+    {
+      "id": "writing-not-an-object/fix:1+other",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "status": "ok",
+              "label": "A"
+            }
+          ],
+          "writing": "yes"
+        },
+        "posts": [
+          "a"
+        ],
+        "taken": [
+          "fix:1",
+          "other"
+        ]
+      },
+      "output": {
+        "tally": null,
+        "found": false
+      }
+    },
+    {
+      "id": "writing-not-an-object/fix:2",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "checks": [
+            {
+              "status": "ok",
+              "label": "A"
+            }
+          ],
+          "writing": "yes"
+        },
+        "posts": [
+          "a"
+        ],
+        "taken": [
+          "fix:2"
+        ]
+      },
+      "output": {
+        "tally": null,
+        "found": false
+      }
+    },
+    {
+      "id": "thread-and-unicode/",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "overallStatus": "caution",
+          "checks": [
+            {
+              "id": "a",
+              "label": "A",
+              "status": "caution",
+              "excerpt": "😀 here"
+            },
+            {
+              "id": "b",
+              "label": "B",
+              "status": "conflict",
+              "excerpt": "café"
+            }
+          ],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "herre",
+                "replacement": "here"
+              },
+              {
+                "type": "clarity",
+                "found": "😀",
+                "note": "Which?"
+              },
+              {
+                "type": "grammar",
+                "found": "second",
+                "replacement": "Second"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "first 😀 here and herre",
+          "second café",
+          "third café"
+        ],
+        "taken": []
+      },
+      "output": {
+        "tally": "2 slips · 1 note",
+        "found": true
+      }
+    },
+    {
+      "id": "thread-and-unicode/fix:0",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "overallStatus": "caution",
+          "checks": [
+            {
+              "id": "a",
+              "label": "A",
+              "status": "caution",
+              "excerpt": "😀 here"
+            },
+            {
+              "id": "b",
+              "label": "B",
+              "status": "conflict",
+              "excerpt": "café"
+            }
+          ],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "herre",
+                "replacement": "here"
+              },
+              {
+                "type": "clarity",
+                "found": "😀",
+                "note": "Which?"
+              },
+              {
+                "type": "grammar",
+                "found": "second",
+                "replacement": "Second"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "first 😀 here and herre",
+          "second café",
+          "third café"
+        ],
+        "taken": [
+          "fix:0"
+        ]
+      },
+      "output": {
+        "tally": "1 slip · 1 note · 1 fixed",
+        "found": true
+      }
+    },
+    {
+      "id": "thread-and-unicode/fix:0+fix:1",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "overallStatus": "caution",
+          "checks": [
+            {
+              "id": "a",
+              "label": "A",
+              "status": "caution",
+              "excerpt": "😀 here"
+            },
+            {
+              "id": "b",
+              "label": "B",
+              "status": "conflict",
+              "excerpt": "café"
+            }
+          ],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "herre",
+                "replacement": "here"
+              },
+              {
+                "type": "clarity",
+                "found": "😀",
+                "note": "Which?"
+              },
+              {
+                "type": "grammar",
+                "found": "second",
+                "replacement": "Second"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "first 😀 here and herre",
+          "second café",
+          "third café"
+        ],
+        "taken": [
+          "fix:0",
+          "fix:1"
+        ]
+      },
+      "output": {
+        "tally": "1 slip · 1 note · 1 fixed",
+        "found": true
+      }
+    },
+    {
+      "id": "thread-and-unicode/fix:1+other",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "overallStatus": "caution",
+          "checks": [
+            {
+              "id": "a",
+              "label": "A",
+              "status": "caution",
+              "excerpt": "😀 here"
+            },
+            {
+              "id": "b",
+              "label": "B",
+              "status": "conflict",
+              "excerpt": "café"
+            }
+          ],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "herre",
+                "replacement": "here"
+              },
+              {
+                "type": "clarity",
+                "found": "😀",
+                "note": "Which?"
+              },
+              {
+                "type": "grammar",
+                "found": "second",
+                "replacement": "Second"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "first 😀 here and herre",
+          "second café",
+          "third café"
+        ],
+        "taken": [
+          "fix:1",
+          "other"
+        ]
+      },
+      "output": {
+        "tally": "2 slips · 1 note",
+        "found": true
+      }
+    },
+    {
+      "id": "thread-and-unicode/fix:2",
+      "fn": "adviserWritingTally",
+      "input": {
+        "result": {
+          "overallStatus": "caution",
+          "checks": [
+            {
+              "id": "a",
+              "label": "A",
+              "status": "caution",
+              "excerpt": "😀 here"
+            },
+            {
+              "id": "b",
+              "label": "B",
+              "status": "conflict",
+              "excerpt": "café"
+            }
+          ],
+          "writing": {
+            "issues": [
+              {
+                "type": "typo",
+                "found": "herre",
+                "replacement": "here"
+              },
+              {
+                "type": "clarity",
+                "found": "😀",
+                "note": "Which?"
+              },
+              {
+                "type": "grammar",
+                "found": "second",
+                "replacement": "Second"
+              }
+            ]
+          }
+        },
+        "posts": [
+          "first 😀 here and herre",
+          "second café",
+          "third café"
+        ],
+        "taken": [
+          "fix:2"
+        ]
+      },
+      "output": {
+        "tally": "1 typo · 1 note · 1 fixed",
+        "found": true
+      }
+    },
+    {
+      "id": "adviserWritingTallyNone#1",
+      "fn": "adviserWritingTallyNone",
+      "input": {
+        "model": null
+      },
+      "output": null
+    },
+    {
+      "id": "adviserWritingTallyNone#2",
+      "fn": "adviserWritingTallyNone",
+      "input": {
+        "model": {
+          "writingRequested": false
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "adviserDraftLabel#1",
+      "fn": "adviserDraftLabel",
+      "input": {
+        "scenario": "post",
+        "withContext": true
+      },
+      "output": "your post"
+    },
+    {
+      "id": "adviserDraftLabel#2",
+      "fn": "adviserDraftLabel",
+      "input": {
+        "scenario": "post",
+        "withContext": false
+      },
+      "output": "your post"
+    },
+    {
+      "id": "adviserDraftLabel#3",
+      "fn": "adviserDraftLabel",
+      "input": {
+        "scenario": "thread",
+        "withContext": true
+      },
+      "output": "your thread"
+    },
+    {
+      "id": "adviserDraftLabel#4",
+      "fn": "adviserDraftLabel",
+      "input": {
+        "scenario": "thread",
+        "withContext": false
+      },
+      "output": "your thread"
+    },
+    {
+      "id": "adviserDraftLabel#5",
+      "fn": "adviserDraftLabel",
+      "input": {
+        "scenario": "reply",
+        "withContext": true
+      },
+      "output": "your reply · read with its thread"
+    },
+    {
+      "id": "adviserDraftLabel#6",
+      "fn": "adviserDraftLabel",
+      "input": {
+        "scenario": "reply",
+        "withContext": false
+      },
+      "output": "your reply"
+    },
+    {
+      "id": "adviserDraftLabel#7",
+      "fn": "adviserDraftLabel",
+      "input": {
+        "scenario": "selfReply",
+        "withContext": true
+      },
+      "output": "your reply · read with your thread"
+    },
+    {
+      "id": "adviserDraftLabel#8",
+      "fn": "adviserDraftLabel",
+      "input": {
+        "scenario": "selfReply",
+        "withContext": false
+      },
+      "output": "your reply"
+    },
+    {
+      "id": "adviserDraftLabel#9",
+      "fn": "adviserDraftLabel",
+      "input": {
+        "scenario": "quote",
+        "withContext": true
+      },
+      "output": "your quote post · read with the quoted post"
+    },
+    {
+      "id": "adviserDraftLabel#10",
+      "fn": "adviserDraftLabel",
+      "input": {
+        "scenario": "quote",
+        "withContext": false
+      },
+      "output": "your quote post"
+    },
+    {
+      "id": "adviserDraftLabel#11",
+      "fn": "adviserDraftLabel",
+      "input": {
+        "scenario": "unknown",
+        "withContext": true
+      },
+      "output": "your post"
+    },
+    {
+      "id": "adviserDraftLabel#12",
+      "fn": "adviserDraftLabel",
+      "input": {
+        "scenario": "unknown",
+        "withContext": false
+      },
+      "output": "your post"
+    },
+    {
+      "id": "adviserDraftLabel#13",
+      "fn": "adviserDraftLabel",
+      "input": {
+        "scenario": "",
+        "withContext": true
+      },
+      "output": "your post"
+    },
+    {
+      "id": "adviserDraftLabel#14",
+      "fn": "adviserDraftLabel",
+      "input": {
+        "scenario": "",
+        "withContext": false
+      },
+      "output": "your post"
+    },
+    {
+      "id": "adviserDraftLabel#15",
+      "fn": "adviserDraftLabel",
+      "input": {
+        "scenario": null,
+        "withContext": true
+      },
+      "output": "your post"
+    },
+    {
+      "id": "adviserDraftLabel#16",
+      "fn": "adviserDraftLabel",
+      "input": {
+        "scenario": null,
+        "withContext": false
+      },
+      "output": "your post"
+    },
+    {
+      "id": "sheetTitle#1",
+      "fn": "sheetTitle",
+      "input": {
+        "read": {
+          "mode": "gate"
+        }
+      },
+      "output": "Before this goes out"
+    },
+    {
+      "id": "sheetTitle#2",
+      "fn": "sheetTitle",
+      "input": {
+        "read": {
+          "mode": "manual"
+        }
+      },
+      "output": "Post adviser"
+    },
+    {
+      "id": "sheetTitle#3",
+      "fn": "sheetTitle",
+      "input": {
+        "read": null
+      },
+      "output": "Post adviser"
+    },
+    {
+      "id": "sheetTitle#4",
+      "fn": "sheetTitle",
+      "input": {
+        "read": {
+          "mode": "Gate"
+        }
+      },
+      "output": "Post adviser"
+    },
+    {
+      "id": "sheetActions#1",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "limitTopic",
+                "label": "Limit topics",
+                "status": "conflict"
+              }
+            ],
+            "overallStatus": "conflict"
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        }
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish anyway"
+        },
+        "draft": true,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#2",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "limitTopic",
+                "label": "Limit topics",
+                "status": "conflict"
+              }
+            ],
+            "overallStatus": "conflict"
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        },
+        "canPublish": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": true,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#3",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "limitTopic",
+                "label": "Limit topics",
+                "status": "conflict"
+              }
+            ],
+            "overallStatus": "conflict"
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        },
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish anyway"
+        },
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#4",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "limitTopic",
+                "label": "Limit topics",
+                "status": "conflict"
+              }
+            ],
+            "overallStatus": "conflict"
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        },
+        "canPublish": false,
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#5",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        }
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish"
+        },
+        "draft": true,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#6",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        },
+        "canPublish": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": true,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#7",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        },
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish"
+        },
+        "draft": false,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#8",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        },
+        "canPublish": false,
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#9",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the"
+                }
+              ]
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        }
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish anyway"
+        },
+        "draft": true,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#10",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the"
+                }
+              ]
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        },
+        "canPublish": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": true,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#11",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the"
+                }
+              ]
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        },
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish anyway"
+        },
+        "draft": false,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#12",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the"
+                }
+              ]
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        },
+        "canPublish": false,
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#13",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the"
+                }
+              ]
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [
+            "fix:0"
+          ]
+        }
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish"
+        },
+        "draft": true,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#14",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the"
+                }
+              ]
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [
+            "fix:0"
+          ]
+        },
+        "canPublish": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": true,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#15",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the"
+                }
+              ]
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [
+            "fix:0"
+          ]
+        },
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish"
+        },
+        "draft": false,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#16",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the"
+                }
+              ]
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [
+            "fix:0"
+          ]
+        },
+        "canPublish": false,
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#17",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the"
+                }
+              ]
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": "fix:0"
+        }
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish"
+        },
+        "draft": true,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#18",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the"
+                }
+              ]
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": "fix:0"
+        },
+        "canPublish": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": true,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#19",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the"
+                }
+              ]
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": "fix:0"
+        },
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish"
+        },
+        "draft": false,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#20",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the"
+                }
+              ]
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": "fix:0"
+        },
+        "canPublish": false,
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#21",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the"
+                }
+              ]
+            }
+          },
+          "posts": null,
+          "taken": []
+        }
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish anyway"
+        },
+        "draft": true,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#22",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the"
+                }
+              ]
+            }
+          },
+          "posts": null,
+          "taken": []
+        },
+        "canPublish": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": true,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#23",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the"
+                }
+              ]
+            }
+          },
+          "posts": null,
+          "taken": []
+        },
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish anyway"
+        },
+        "draft": false,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#24",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the"
+                }
+              ]
+            }
+          },
+          "posts": null,
+          "taken": []
+        },
+        "canPublish": false,
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#25",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": null,
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        }
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish"
+        },
+        "draft": true,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#26",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": null,
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        },
+        "canPublish": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": true,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#27",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": null,
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        },
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish"
+        },
+        "draft": false,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#28",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": null,
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        },
+        "canPublish": false,
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#29",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "error"
+        }
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish anyway"
+        },
+        "draft": true,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#30",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "error"
+        },
+        "canPublish": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": true,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#31",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "error"
+        },
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish anyway"
+        },
+        "draft": false,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#32",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "error"
+        },
+        "canPublish": false,
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#33",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "error",
+          "mode": "manual"
+        }
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish anyway"
+        },
+        "draft": true,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#34",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "error",
+          "mode": "manual"
+        },
+        "canPublish": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": true,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#35",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "error",
+          "mode": "manual"
+        },
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish anyway"
+        },
+        "draft": false,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#36",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "error",
+          "mode": "manual"
+        },
+        "canPublish": false,
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#37",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "needsText"
+        }
+      },
+      "output": {
+        "closeOnly": true,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#38",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "needsText"
+        },
+        "canPublish": false
+      },
+      "output": {
+        "closeOnly": true,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#39",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "needsText"
+        },
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": true,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#40",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "needsText"
+        },
+        "canPublish": false,
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": true,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#41",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "empty"
+        }
+      },
+      "output": {
+        "closeOnly": true,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#42",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "empty"
+        },
+        "canPublish": false
+      },
+      "output": {
+        "closeOnly": true,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#43",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "empty"
+        },
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": true,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#44",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "empty"
+        },
+        "canPublish": false,
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": true,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#45",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "limit"
+        }
+      },
+      "output": {
+        "closeOnly": true,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#46",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "limit"
+        },
+        "canPublish": false
+      },
+      "output": {
+        "closeOnly": true,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#47",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "limit"
+        },
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": true,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#48",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "limit"
+        },
+        "canPublish": false,
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": true,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#49",
+      "fn": "sheetActions",
+      "input": {
+        "read": null
+      },
+      "output": {
+        "closeOnly": true,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#50",
+      "fn": "sheetActions",
+      "input": {
+        "read": null,
+        "canPublish": false
+      },
+      "output": {
+        "closeOnly": true,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#51",
+      "fn": "sheetActions",
+      "input": {
+        "read": null,
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": true,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#52",
+      "fn": "sheetActions",
+      "input": {
+        "read": null,
+        "canPublish": false,
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": true,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#53",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "mode": "manual",
+          "status": "ready",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "x"
+          ]
+        }
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish"
+        },
+        "draft": true,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#54",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "mode": "manual",
+          "status": "ready",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "x"
+          ]
+        },
+        "canPublish": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": true,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#55",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "mode": "manual",
+          "status": "ready",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "x"
+          ]
+        },
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish"
+        },
+        "draft": false,
+        "primary": "publish"
+      }
+    },
+    {
+      "id": "sheetActions#56",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "mode": "manual",
+          "status": "ready",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "x"
+          ]
+        },
+        "canPublish": false,
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#57",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "manual",
+          "result": {
+            "checks": [
+              {
+                "id": "limitTopic",
+                "label": "Limit topics",
+                "status": "conflict"
+              }
+            ],
+            "overallStatus": "conflict"
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        }
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish anyway"
+        },
+        "draft": true,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#58",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "manual",
+          "result": {
+            "checks": [
+              {
+                "id": "limitTopic",
+                "label": "Limit topics",
+                "status": "conflict"
+              }
+            ],
+            "overallStatus": "conflict"
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        },
+        "canPublish": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": true,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#59",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "manual",
+          "result": {
+            "checks": [
+              {
+                "id": "limitTopic",
+                "label": "Limit topics",
+                "status": "conflict"
+              }
+            ],
+            "overallStatus": "conflict"
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        },
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": {
+          "label": "Publish anyway"
+        },
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetActions#60",
+      "fn": "sheetActions",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "manual",
+          "result": {
+            "checks": [
+              {
+                "id": "limitTopic",
+                "label": "Limit topics",
+                "status": "conflict"
+              }
+            ],
+            "overallStatus": "conflict"
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": []
+        },
+        "canPublish": false,
+        "canSaveDraft": false
+      },
+      "output": {
+        "closeOnly": false,
+        "publish": null,
+        "draft": false,
+        "primary": "edit"
+      }
+    },
+    {
+      "id": "sheetContextLine#1",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "contextKind": "reply",
+          "context": {
+            "thread": [
+              {
+                "author": "a",
+                "text": "b"
+              },
+              {
+                "author": "a",
+                "text": "b"
+              },
+              {
+                "author": "a",
+                "text": "b"
+              }
+            ]
+          }
+        }
+      },
+      "output": "Read with the conversation: 3 posts, up to the one you’re replying to."
+    },
+    {
+      "id": "sheetContextLine#2",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "contextKind": "reply",
+          "context": {
+            "thread": [
+              {
+                "author": "a",
+                "text": "b"
+              }
+            ]
+          }
+        }
+      },
+      "output": "Read with the post you’re replying to."
+    },
+    {
+      "id": "sheetContextLine#3",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "contextKind": "quote",
+          "context": {
+            "thread": [
+              {
+                "author": "a",
+                "text": "b"
+              }
+            ]
+          }
+        }
+      },
+      "output": "Read with the post you’re quoting."
+    },
+    {
+      "id": "sheetContextLine#4",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "contextKind": "quote",
+          "context": {
+            "thread": [
+              {
+                "author": "a",
+                "text": "b"
+              },
+              {
+                "author": "a",
+                "text": "b"
+              },
+              {
+                "author": "a",
+                "text": "b"
+              },
+              {
+                "author": "a",
+                "text": "b"
+              }
+            ]
+          }
+        }
+      },
+      "output": "Read with the post you’re quoting."
+    },
+    {
+      "id": "sheetContextLine#5",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "contextKind": "selfReply",
+          "context": {
+            "thread": [
+              {
+                "author": "a",
+                "text": "b"
+              },
+              {
+                "author": "a",
+                "text": "b"
+              }
+            ]
+          }
+        }
+      },
+      "output": "Read with the 2 posts of yours above it."
+    },
+    {
+      "id": "sheetContextLine#6",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "contextKind": "selfReply",
+          "context": {
+            "thread": [
+              {
+                "author": "a",
+                "text": "b"
+              }
+            ]
+          }
+        }
+      },
+      "output": "Read with your post above it."
+    },
+    {
+      "id": "sheetContextLine#7",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "contextKind": "reply",
+          "context": {
+            "thread": []
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "sheetContextLine#8",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "contextKind": "reply",
+          "context": null,
+          "scenario": "reply",
+          "readTheRoom": false
+        }
+      },
+      "output": "Replies and quotes can be read with the posts they answer. Turn on “Read replies with their conversation” in Settings › Posting."
+    },
+    {
+      "id": "sheetContextLine#9",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "contextKind": "odd",
+          "context": {
+            "thread": [
+              {
+                "author": "a",
+                "text": "b"
+              },
+              {
+                "author": "a",
+                "text": "b"
+              }
+            ]
+          }
+        }
+      },
+      "output": "Read with the conversation: 2 posts, up to the one you’re replying to."
+    },
+    {
+      "id": "sheetContextLine#10",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "contextKind": "",
+          "context": {
+            "thread": [
+              {
+                "author": "a",
+                "text": "b"
+              },
+              {
+                "author": "a",
+                "text": "b"
+              }
+            ]
+          },
+          "scenario": "quote"
+        }
+      },
+      "output": "Replies and quotes can be read with the posts they answer. Turn on “Read replies with their conversation” in Settings › Posting."
+    },
+    {
+      "id": "sheetContextLine#11",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "contextKind": "reply",
+          "context": {
+            "thread": "abc"
+          }
+        }
+      },
+      "output": "Read with the conversation: 3 posts, up to the one you’re replying to."
+    },
+    {
+      "id": "sheetContextLine#12",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "contextKind": "reply",
+          "context": {
+            "thread": {
+              "length": 2
+            }
+          }
+        }
+      },
+      "output": "Read with the conversation: 2 posts, up to the one you’re replying to."
+    },
+    {
+      "id": "sheetContextLine#13",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "scenario": "reply",
+          "readTheRoom": false
+        }
+      },
+      "output": "Replies and quotes can be read with the posts they answer. Turn on “Read replies with their conversation” in Settings › Posting."
+    },
+    {
+      "id": "sheetContextLine#14",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "scenario": "quote",
+          "readTheRoom": false
+        }
+      },
+      "output": "Replies and quotes can be read with the posts they answer. Turn on “Read replies with their conversation” in Settings › Posting."
+    },
+    {
+      "id": "sheetContextLine#15",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "scenario": "reply",
+          "readTheRoom": true
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "sheetContextLine#16",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "scenario": "post",
+          "readTheRoom": false
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "sheetContextLine#17",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "ready",
+          "mode": "gate",
+          "result": {
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "posts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "scenario": "thread"
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "sheetContextLine#18",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": {
+          "status": "error",
+          "scenario": "reply",
+          "readTheRoom": false
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "sheetContextLine#19",
+      "fn": "sheetContextLine",
+      "input": {
+        "read": null
+      },
+      "output": ""
+    },
+    {
+      "id": "postIndexLabel#1",
+      "fn": "postIndexLabel",
+      "input": {
+        "index": 0,
+        "total": 1
+      },
+      "output": ""
+    },
+    {
+      "id": "postIndexLabel#2",
+      "fn": "postIndexLabel",
+      "input": {
+        "index": 1,
+        "total": 3
+      },
+      "output": "2/3"
+    },
+    {
+      "id": "postIndexLabel#3",
+      "fn": "postIndexLabel",
+      "input": {
+        "index": 0,
+        "total": 2
+      },
+      "output": "1/2"
+    },
+    {
+      "id": "postIndexLabel#4",
+      "fn": "postIndexLabel",
+      "input": {
+        "index": 24,
+        "total": 25
+      },
+      "output": "25/25"
+    },
+    {
+      "id": "postIndexLabel#5",
+      "fn": "postIndexLabel",
+      "input": {
+        "index": 0,
+        "total": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "postIndexLabel#6",
+      "fn": "postIndexLabel",
+      "input": {
+        "index": 2.5,
+        "total": 4
+      },
+      "output": "3.5/4"
+    },
+    {
+      "id": "postIndexLabel#7",
+      "fn": "postIndexLabel",
+      "input": {
+        "index": -1,
+        "total": 2
+      },
+      "output": "0/2"
+    },
+    {
+      "id": "fixAllLabel#1",
+      "fn": "fixAllLabel",
+      "input": {
+        "remaining": 1
+      },
+      "output": "Fix it"
+    },
+    {
+      "id": "fixAllLabel#2",
+      "fn": "fixAllLabel",
+      "input": {
+        "remaining": 3
+      },
+      "output": "Fix all 3"
+    },
+    {
+      "id": "fixAllLabel#3",
+      "fn": "fixAllLabel",
+      "input": {
+        "remaining": 0
+      },
+      "output": "Fix all 0"
+    },
+    {
+      "id": "fixAllLabel#4",
+      "fn": "fixAllLabel",
+      "input": {
+        "remaining": 2
+      },
+      "output": "Fix all 2"
+    },
+    {
+      "id": "fixAllLabel#5",
+      "fn": "fixAllLabel",
+      "input": {
+        "remaining": 12
+      },
+      "output": "Fix all 12"
+    },
+    {
+      "id": "fixAllLabel#6",
+      "fn": "fixAllLabel",
+      "input": {
+        "remaining": 1.5
+      },
+      "output": "Fix all 1.5"
+    }
+  ]
+}
