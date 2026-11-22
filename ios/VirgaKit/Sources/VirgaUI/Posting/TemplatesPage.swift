@@ -188,7 +188,7 @@ struct TemplatesPage: View {
     let grouped = groups(sorted)
     let anyGroup = grouped.contains { !$0.name.isEmpty }
     return VirgaSection(
-      title: PostingWords.countPhrase(model.templates.count, "template"),
+      title: HubModel.countPhrase(Double(model.templates.count), "template"),
       sub: "Type a template’s /shortcut in the composer, or find it in the library.",
       trailing: AnyView(
         Button {

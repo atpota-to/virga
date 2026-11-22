@@ -147,7 +147,10 @@ struct DraftsPage: View {
     VirgaPage(PostingHeader.model("drafts")) {
       PostingPermissionNotice(did: did ?? "", force: scopeError || notice?.scope == true)
       if let notice, !notice.scope {
-        Callout(tone: notice.danger ? .danger : .warn) { Text(notice.text) }
+        // `role={tone === 'danger' ? 'alert' : 'status'}`: a failure is the
+        // words-alone callout's alert; a warning is read out as it arrives.
+        Callout(tone: notice.danger ? .danger : .warn, notice.text)
+          .toolAnnounces(notice.danger ? nil : notice.text, onAppear: true)
           .accessibilityIdentifier("drafts-notice")
       }
       if list.phase == .ready && rows.isEmpty {
@@ -237,7 +240,7 @@ struct DraftsPage: View {
         .accessibilityIdentifier("drafts-list")
       }
       if list.phase == .ready && more {
-        SectionFoot {
+        SectionFoot(letOut: .small) {
           Button(list.loadingMore ? "Loading…" : "Show more") { list.loadMore() }
             .buttonStyle(.virga(.ghost, size: .small))
             .disabled(list.loadingMore)
@@ -505,7 +508,7 @@ struct HubCornerRow<Words: View, Action: View>: View {
     }
     .padding(.vertical, theme.rowPad)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: Measure.Section.hairline) }
   }
 }
 
@@ -543,20 +546,32 @@ struct ScheduleDraftDialog: View {
     let whenMs = TimeValue.ms(when.map(JSONValue.string))
     let tooSoon = !whenMs.isFinite || whenMs < now + 60_000
     let words = (row["text"]?.stringValue ?? "").jsTrimmed()
-    DialogFrame(title: "Schedule this draft", onClose: { if !busy { onClose() } }) {
-      DialogForm {
+    // `.dialog--stack-actions`: on a phone the three buttons go one under
+    // another, Schedule first and Cancel last.
+    DialogFrame(title: "Schedule this draft", onClose: { if !busy { onClose() } }, stackActions: true) {
+      // `.hub-confirm { gap: 12px }`
+      VStack(alignment: .leading, spacing: Measure.Hub.confirmGap) {
         if !words.isEmpty { HubQuote(text: words.jsSlice(0, Measure.Hub.scheduleQuoteMax)) }
         WhenPicker(schedule: queueSettings, value: when, onChange: { when = $0 }, requester: req)
-        if tooSoon && !(when ?? "").isEmpty { FieldHint("Choose a time at least a minute from now.", isOver: true) }
+        if tooSoon && !(when ?? "").isEmpty {
+          // `.field-hint.lib-question-error`: the hint's weight, in red.
+          Text("Choose a time at least a minute from now.")
+            .virgaText(.textSm)
+            .foregroundStyle(theme.danger)
+        }
         if phase == .loading { FieldHint("Looking for the next open time in your queue…") }
         if phase == .ready && slot == nil {
           FieldHint("Your weekly schedule has no open times. Set some in Posting › Weekly schedule to use the queue.")
         }
         if !usage.isEmpty { FieldHint("\(usage).") }
-        if !room.isEmpty { Callout(tone: .warn) { Text(room) } }
+        if !room.isEmpty {
+          // `role="status"`: read out as it arrives.
+          Callout(tone: .warn, room)
+            .toolAnnounces(room, onAppear: true)
+        }
         if phase == .failed { Callout(tone: .warn) { Text("Your queue couldn’t be read, so only a set time can be chosen.") } }
         FieldHint("Once it’s scheduled, the draft is deleted: the scheduled post takes its place.")
-        if !error.isEmpty { Callout(tone: .danger) { Text(error) } }
+        if !error.isEmpty { Callout(tone: .danger, error) }
       }
     } actions: {
       actions(tooSoon: tooSoon)
@@ -575,8 +590,8 @@ struct ScheduleDraftDialog: View {
     app.session.capabilitiesFor(did).canSchedule ? app.session.backendFor(did) : nil
   }
 
-  /// On a phone the three buttons go one under another, Schedule first and
-  /// Cancel last; wider, side by side.
+  /// Cancel, Add to queue, Schedule: side by side wider than a phone, and on
+  /// a phone the dialog's stacked foot puts the last (Schedule) first.
   @ViewBuilder
   private func actions(tooSoon: Bool) -> some View {
     let cancel = Button("Cancel", action: onClose).buttonStyle(.virga).disabled(busy)
@@ -593,17 +608,9 @@ struct ScheduleDraftDialog: View {
       .buttonStyle(.virga(.primary))
       .disabled(busy || tooSoon || !room.isEmpty)
       .accessibilityIdentifier("schedule-draft-confirm")
-    if theme.isPhone {
-      VStack(spacing: theme.space2) {
-        confirm.frame(maxWidth: .infinity)
-        queue.frame(maxWidth: .infinity)
-        cancel.frame(maxWidth: .infinity)
-      }
-    } else {
-      cancel
-      queue
-      confirm
-    }
+    cancel
+    queue
+    confirm
   }
 
   private func read() async {

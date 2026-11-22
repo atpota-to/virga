@@ -444,7 +444,7 @@ struct TimersActed: View {
       ForEach(Array(acted.enumerated()), id: \.offset) { _, step in
         HStack(alignment: .center, spacing: Measure.Hub.actedItemGap) {
           Image(systemName: step.ok ? HubGlyph.acted : HubGlyph.skipped)
-            .font(.system(size: Measure.Hub.actedGlyph))
+            .virgaGlyph(Measure.Hub.actedGlyph, beside: theme.textSm)
             .foregroundStyle(step.ok ? theme.ok : theme.muted)
             .accessibilityHidden(true)
           Text(step.text)

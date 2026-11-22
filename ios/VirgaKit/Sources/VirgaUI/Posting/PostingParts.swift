@@ -3,8 +3,8 @@
 // Ports src/posting/pages/hub.css (.hub-skeleton, .hub-bone, .hub-error, .hub-confirm, .hub-notice)
 //
 // What the posting pages share: the bones a list loads under, a read that
-// failed with Try again, and the question every delete asks first. Also
-// countPhrase (src/posting/pages/hubModel.js).
+// failed with Try again, and the question every delete asks first. A count
+// in words is hubModel.js's countPhrase, ported as `HubModel.countPhrase`.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -37,53 +37,67 @@ enum PostingHeader {
 }
 
 
-/// `countPhrase(n, one, many)`: "3 templates", "1 template".
-enum PostingWords {
-  static func countPhrase(_ n: Int, _ one: String, _ many: String? = nil) -> String {
-    "\(AppLocale.formatNumber(n)) \(n == 1 ? one : (many ?? "\(one)s"))"
-  }
-}
-
 /// `RowSkeleton`: rows of bones while a list loads, pulsing (still under
-/// Reduce Motion).
+/// Reduce Motion). An even row has two lines of words, an odd one one, each
+/// row as tall as its bones. `.hub-row-main { flex: 1 1 320px }` beside the
+/// action bones needs 400 of row, which no phone has: there the action
+/// bones go under the words' bones, 8 down, and those take the full width.
 struct RowSkeleton: View {
   @Environment(\.virgaTheme) private var theme
   var rows = 3
   var actions = 0
-  @State private var dim = false
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
       ForEach(0..<rows, id: \.self) { i in
-        HStack(alignment: .top, spacing: Measure.Templates.rowColumnGap) {
-          GeometryReader { geometry in
-            VStack(alignment: .leading, spacing: Measure.Templates.boneGap) {
-              bone(geometry.size.width * Measure.Templates.boneWidths[i % 5], Measure.Templates.rowBoneHeight)
-              if i % 2 == 0 {
-                bone(geometry.size.width * Measure.Templates.secondBoneWidths[i % 3], Measure.Templates.rowBoneHeight)
-              }
-              bone(geometry.size.width * Measure.Templates.metaBoneWidths[i % 4], Measure.Templates.metaBoneHeight)
-            }
-          }
-          .frame(height: Measure.Templates.rowBoneHeight * 2 + Measure.Templates.metaBoneHeight + Measure.Templates.boneGap * 2)
-          if actions > 0 {
-            HStack(spacing: Measure.Templates.rowGap) {
-              ForEach(0..<actions, id: \.self) { _ in
-                Capsule().fill(theme.line).frame(width: Measure.Templates.buttonBone.width, height: Measure.Templates.buttonBone.height)
-              }
-            }
-          }
-        }
-        .padding(.vertical, theme.rowPad)
-        .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+        row(i)
+          .padding(.vertical, theme.rowPad)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: Measure.Section.hairline) }
       }
     }
-    .opacity(dim ? Measure.Templates.pulseLow : 1)
-    .onAppear {
-      guard !theme.reduceMotion else { return }
-      withAnimation(.easeInOut(duration: Measure.Templates.pulseSeconds / 2).repeatForever(autoreverses: true)) { dim = true }
-    }
+    .hubBonePulse()
     .accessibilityHidden(true)
+  }
+
+  @ViewBuilder
+  private func row(_ i: Int) -> some View {
+    if theme.isPhone {
+      VStack(alignment: .leading, spacing: Measure.Hub.rowRowGap) {
+        words(i)
+        if actions > 0 { actionBones }
+      }
+    } else {
+      HStack(alignment: .top, spacing: Measure.Templates.rowColumnGap) {
+        words(i)
+        if actions > 0 { actionBones }
+      }
+    }
+  }
+
+  /// A line or two of words, then a meta line, at the widths the web gives them.
+  private func words(_ i: Int) -> some View {
+    let second = i % 2 == 0
+    let lines: CGFloat = second ? 2 : 1
+    let height = Measure.Templates.rowBoneHeight * lines + Measure.Templates.metaBoneHeight + Measure.Templates.boneGap * lines
+    return GeometryReader { geometry in
+      VStack(alignment: .leading, spacing: Measure.Templates.boneGap) {
+        bone(geometry.size.width * Measure.Templates.boneWidths[i % 5], Measure.Templates.rowBoneHeight)
+        if second {
+          bone(geometry.size.width * Measure.Templates.secondBoneWidths[i % 3], Measure.Templates.rowBoneHeight)
+        }
+        bone(geometry.size.width * Measure.Templates.metaBoneWidths[i % 4], Measure.Templates.metaBoneHeight)
+      }
+    }
+    .frame(height: height)
+  }
+
+  private var actionBones: some View {
+    HStack(spacing: Measure.Templates.rowGap) {
+      ForEach(0..<actions, id: \.self) { _ in
+        Capsule().fill(theme.line).frame(width: Measure.Templates.buttonBone.width, height: Measure.Templates.buttonBone.height)
+      }
+    }
   }
 
   private func bone(_ width: CGFloat, _ height: CGFloat) -> some View {
@@ -91,15 +105,46 @@ struct RowSkeleton: View {
   }
 }
 
-/// `LoadError`: what happened, in a sentence, and Try again.
+/// `.hub-bone { animation: hub-pulse 1.6s ease-in-out infinite }`, to 45% at
+/// its middle; none under Reduce Motion.
+struct HubBonePulse: ViewModifier {
+  @Environment(\.virgaTheme) private var theme
+  @State private var dim = false
+
+  func body(content: Content) -> some View {
+    content
+      .opacity(dim ? Measure.Templates.pulseLow : 1)
+      .onAppear {
+        guard !theme.reduceMotion else { return }
+        withAnimation(.easeInOut(duration: Measure.Templates.pulseSeconds / 2).repeatForever(autoreverses: true)) { dim = true }
+      }
+  }
+}
+
+extension View {
+  /// The bones' pulse (HubBonePulse).
+  func hubBonePulse() -> some View {
+    modifier(HubBonePulse())
+  }
+}
+
+/// `LoadError`: what happened, in a sentence, and Try again; `role="alert"`,
+/// so VoiceOver reads the sentence as it appears.
 struct LoadError: View {
   @Environment(\.virgaTheme) private var theme
   let message: String
   var onRetry: (() -> Void)?
 
   var body: some View {
-    Callout(tone: .danger, systemImage: "exclamationmark.triangle") {
-      HStack(alignment: .center, spacing: theme.space3) {
+    // `.hub-error { align-items: center }`: the triangle, the sentence and
+    // Try again centred on one another, the callout's 10 between each (the
+    // triangle's 2 above it kept, as the web's margin-top is).
+    Callout(tone: .danger, alert: message) {
+      HStack(alignment: .center, spacing: theme.points(ThemeKit.calloutGap)) {
+        Image(systemName: "exclamationmark.triangle")
+          .virgaGlyph(Measure.Section.calloutIcon, beside: theme.textSm)
+          .padding(.top, Measure.Section.calloutIconSpaceAbove)
+          .accessibilityHidden(true)
         Text(message).frame(maxWidth: .infinity, alignment: .leading)
         if let onRetry {
           Button("Try again", action: onRetry)
@@ -136,13 +181,16 @@ struct PostingConfirm<Message: View>: ViewModifier {
   func body(content: Content) -> some View {
     content
       .virgaDialog(isPresented: Binding(get: { isPresented }, set: { if !busy { isPresented = $0 } }), title: title) {
-        VStack(alignment: .leading, spacing: Measure.Settings.rowGap) {
+        VStack(alignment: .leading, spacing: Measure.Hub.confirmGap) {
           message()
           if !error.isEmpty {
-            Callout(tone: .danger) { Text(error) }
+            // `role="alert"`: read out as it appears.
+            Callout(tone: .danger, error)
           }
         }
         .fixedSize(horizontal: false, vertical: true)
+        // `onClose={busy ? undefined : onClose}`: no swipe away while it works.
+        .interactiveDismissDisabled(busy)
       } actions: {
         Button("Cancel") { isPresented = false }
           .buttonStyle(.virga)

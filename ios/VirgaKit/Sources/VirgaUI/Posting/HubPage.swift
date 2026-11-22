@@ -201,10 +201,8 @@ struct HubPage: View {
     } else if let read = scheduled.data {
       if read.unavailable {
         EmptyState("Scheduling isn’t available on Virga’s server just now.")
-          .padding(.top, theme.space4)
       } else if read.overview.next.isEmpty && read.failedRows.isEmpty {
         EmptyState("Nothing is scheduled. Write a post and choose Schedule, or add it to your queue.")
-          .padding(.top, theme.space4)
       } else {
         let now = SyncStatus.now()
         VStack(alignment: .leading, spacing: 0) {
@@ -252,7 +250,6 @@ struct HubPage: View {
     } else if let read = drafts.data {
       if read.rows.isEmpty {
         EmptyState("No drafts. In the composer, Save draft keeps a post here until you’re ready.")
-          .padding(.top, theme.space4)
       } else {
         let now = SyncStatus.now()
         VStack(alignment: .leading, spacing: 0) {
@@ -263,13 +260,12 @@ struct HubPage: View {
       }
     } else if Scopes.isMissingScopeError(drafts.error) {
       // The notice at the top of the page already asks for the permission
-      // when posting lacks it too; it isn't said twice.
+      // when posting lacks it too; it isn't said twice. It follows the
+      // ruled head directly: only `.card--flush > .hub-error` has 16 above.
       if caps.canPost {
         PostingPermissionNotice(did: did ?? "", force: true)
-          .padding(.top, Measure.Hub.errorAbove)
       } else {
         EmptyState("Your drafts can’t be read until Virga has permission.")
-          .padding(.top, theme.space4)
       }
     } else {
       LoadError(message: "Your drafts couldn’t be read from Bluesky.") { drafts.reload() }
@@ -309,7 +305,6 @@ struct HubPage: View {
         .padding(.top, Measure.Hub.errorAbove)
     } else {
       EmptyState("Nothing posted yet. New post starts one.")
-        .padding(.top, theme.space4)
     }
   }
 }
@@ -548,7 +543,7 @@ struct HubTimedRow<Words: View>: View {
     }
     .padding(.vertical, theme.rowPad)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: Measure.Section.hairline) }
   }
 
   private var dayInk: Color { dayTone == .failed ? theme.danger : theme.ink }
@@ -628,7 +623,7 @@ struct HubDraftRow: View {
     }
     .padding(.vertical, theme.rowPad)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: Measure.Section.hairline) }
     .accessibilityElement(children: .contain)
   }
 }
@@ -644,7 +639,7 @@ struct HubPostedRow: View {
     HubPostWords(row: row, did: did, now: now)
       .padding(.vertical, theme.rowPad)
       .frame(maxWidth: .infinity, alignment: .leading)
-      .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+      .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: Measure.Section.hairline) }
   }
 }
 
