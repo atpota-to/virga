@@ -25,17 +25,16 @@ struct CardSettings: View {
   @State private var period = ""
   @State private var kind = ""
   @State private var rows = ""
-  @FocusState private var titleFocused: Bool
 
   var body: some View {
     let takes = def.options ?? []
-    DialogFrame(title: "\(def.name) settings", onClose: done) {
+    DialogFrame(title: "\(def.name) settings", onClose: done, autofocus: takes.contains("title")) {
       DialogForm {
         if takes.contains("title") {
           FieldStack("Title") {
             TextField(def.name, text: $title)
               .virgaField()
-              .focused($titleFocused)
+              .dialogAutofocus()
               .submitLabel(.done)
               .onSubmit { save(draft) }
               .onChange(of: title) { _, next in if next.count > Layouts.cardTitleMax { title = String(next.prefix(Layouts.cardTitleMax)) } }
@@ -83,7 +82,6 @@ struct CardSettings: View {
       period = card.options?.period ?? ""
       kind = card.options?.kind ?? ""
       rows = card.options?.rows.map { "\($0)" } ?? ""
-      titleFocused = takes.contains("title")
     }
   }
 

@@ -746,15 +746,14 @@ struct RenameDashboard: View {
   let dashboard: Dashboard
   let done: () -> Void
   @State private var value = ""
-  @FocusState private var focused: Bool
 
   var body: some View {
-    DialogFrame(title: "Rename dashboard", onClose: done) {
+    DialogFrame(title: "Rename dashboard", onClose: done, autofocus: true) {
       DialogForm {
         FieldStack("Name") {
           TextField("", text: $value)
             .virgaField()
-            .focused($focused)
+            .dialogAutofocus()
             .submitLabel(.done)
             .onChange(of: value) { _, next in if next.count > 60 { value = String(next.prefix(60)) } }
             .onSubmit(save)
@@ -766,7 +765,6 @@ struct RenameDashboard: View {
     }
     .onAppear {
       value = dashboard.name
-      focused = true
     }
   }
 
@@ -785,15 +783,14 @@ struct NewDashboardDialog: View {
   let done: () -> Void
   @State private var name = ""
   @State private var template = ""
-  @FocusState private var focused: Bool
 
   var body: some View {
-    DialogFrame(title: "New dashboard", onClose: done) {
+    DialogFrame(title: "New dashboard", onClose: done, autofocus: true) {
       DialogForm {
         FieldStack("Name") {
           TextField("Weekly check-in", text: $name)
             .virgaField()
-            .focused($focused)
+            .dialogAutofocus()
             .submitLabel(.done)
             .onChange(of: name) { _, next in if next.count > 60 { name = String(next.prefix(60)) } }
             .onSubmit(create)
@@ -812,7 +809,6 @@ struct NewDashboardDialog: View {
       Button("Cancel", action: done).buttonStyle(.virga)
       Button("Create", action: create).buttonStyle(.virga(.primary))
     }
-    .onAppear { focused = true }
   }
 
   private func choosing(_ key: String) -> Binding<Bool> {
