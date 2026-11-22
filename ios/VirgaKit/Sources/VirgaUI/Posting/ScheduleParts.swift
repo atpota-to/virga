@@ -23,13 +23,14 @@ import VirgaInsights
 import VirgaNetwork
 import VirgaPosting
 
-/// The scheduling pages' icons (lucide's names, as SF Symbols).
+/// The scheduling pages' icons (lucide's names, as SF Symbols). Those the
+/// other posting pages draw too (Send, CalendarClock, Repeat, Trash2) are
+/// HubGlyph's.
 enum ScheduleGlyph {
   static let alert = "exclamationmark.triangle"  // AlertTriangle
   static let up = "arrow.up"  // ArrowUp
   static let down = "arrow.down"  // ArrowDown
   static let ban = "nosign"  // Ban
-  static let calendarClock = "calendar.badge.clock"  // CalendarClock
   static let replyingTo = "arrow.turn.down.right"  // CornerDownRight
   static let grip = "line.3.horizontal"  // GripVertical
   static let hourglass = "hourglass"  // Hourglass
@@ -37,23 +38,15 @@ enum ScheduleGlyph {
   static let listTree = "list.bullet.indent"  // ListTree
   static let lock = "lock"  // Lock
   static let pencil = "pencil"  // Pencil
-  static let repeats = "repeat"  // Repeat
-  static let send = "paperplane"  // Send
   static let skip = "forward.end"  // SkipForward
-  static let trash = "trash"  // Trash2
   static let close = "xmark"  // X
   static let plus = "plus"  // Plus
   static let restart = "arrow.counterclockwise"  // RotateCcw
 }
 
-/// What the scheduling pages say about what went wrong, and the clock.
+/// The scheduling pages' clock. (A thrown error's `err.message` is
+/// PostingPages.message, HubParts.swift.)
 enum ScheduleText {
-  /// `err?.message`, or nil when it has none.
-  static func message(_ error: any Error) -> String? {
-    let said = ComposerController.message(error)
-    return said.isEmpty ? nil : said
-  }
-
   /// `Date.now()`.
   static func now() -> Double { Date().timeIntervalSince1970 * 1000 }
 
@@ -61,30 +54,23 @@ enum ScheduleText {
   static var deviceZone: String { PostingQueue.resolveTimezone(nil) }
 }
 
-/// Ids as the web compares them (`===`): two strings by code unit, two
-/// numbers by value, nothing else.
+/// Lists of ids as the web compares them; two ids are `===` as
+/// PostingPages.sameValue has it (two strings by code unit, two numbers by
+/// value, nothing else).
 enum ScheduleIds {
-  static func same(_ a: JSONValue?, _ b: JSONValue?) -> Bool {
-    switch (a, b) {
-    case (.string(let x)?, .string(let y)?): return x.jsEquals(y)
-    case (.number(let x)?, .number(let y)?): return x == y
-    default: return false
-    }
-  }
-
   /// `ids.includes(id)`.
   static func contains(_ ids: [JSONValue], _ id: JSONValue?) -> Bool {
-    ids.contains { same($0, id) }
+    ids.contains { PostingPages.sameValue($0, id) }
   }
 
   /// `ids.indexOf(id)`, or nil.
   static func index(_ ids: [JSONValue], _ id: JSONValue?) -> Int? {
-    ids.firstIndex { same($0, id) }
+    ids.firstIndex { PostingPages.sameValue($0, id) }
   }
 
   /// `a.join() === b.join()` for two lists of ids.
   static func sameOrder(_ a: [JSONValue], _ b: [JSONValue]) -> Bool {
-    a.count == b.count && zip(a, b).allSatisfy { same($0, $1) }
+    a.count == b.count && zip(a, b).allSatisfy { PostingPages.sameValue($0, $1) }
   }
 
   /// A row's first post's words: `String(row.payload?.posts?.[0]?.record?.text || '')`.
@@ -162,9 +148,9 @@ struct ScheduleLinkedText: View {
 // MARK: - The time zone
 
 /// `TimezoneSelect`: every zone this device knows, this device's first. A
-/// stored zone the device doesn't list is kept, first after it.
+/// stored zone the device doesn't list is kept, first after it. It is the
+/// kit's select (`select.input sched-tz`).
 struct TimezoneSelect: View {
-  @Environment(\.virgaTheme) private var theme
   let value: String
   var disabled = false
   /// The picker's identifier, for the UI tests (the web's `id`).
@@ -185,20 +171,16 @@ struct TimezoneSelect: View {
     if !value.isEmpty && !value.jsEquals(device) && !zones.contains(where: { $0.jsEquals(value) }) {
       zones.insert(value, at: 0)
     }
-    return Picker("Time zone", selection: Binding(get: { value.isEmpty ? device : value }, set: { onChange($0) })) {
-      Text("\(ScheduleModel.zoneLabel(device)) (this device)").tag(device)
-      ForEach(zones, id: \.self) { zone in
-        Text(ScheduleModel.zoneLabel(zone)).tag(zone)
-      }
-    }
-    .pickerStyle(.menu)
-    .tint(theme.ink)
+    var choices: [SelectChoice<String>] = [SelectChoice(device, "\(ScheduleModel.zoneLabel(device)) (this device)")]
+    choices += zones.map { zone in SelectChoice(zone, ScheduleModel.zoneLabel(zone)) }
+    return VirgaSelect(
+      "Time zone", selection: Binding(get: { value.isEmpty ? device : value }, set: { onChange($0) }), options: choices
+    )
     .disabled(disabled)
     .frame(
       minWidth: fill ? nil : Measure.Settings.selectMinWidth, maxWidth: fill ? .infinity : Measure.Settings.selectMaxWidth,
       alignment: .leading
     )
-    .virgaField()
     .accessibilityIdentifier(identifier)
   }
 }
@@ -442,7 +424,7 @@ struct CalendarGrid: View {
     if let s = places.firstIndex(of: r), s < day.slots.count {
       CalendarMark(
         slot: day.slots[s], now: now, occupancy: occupancy, onPick: onPick,
-        lit: highlight.map { h in ScheduleIds.same(day.slots[s].row?["id"], h) } ?? false)
+        lit: highlight.map { h in PostingPages.sameValue(day.slots[s].row?["id"], h) } ?? false)
     } else if r == 0 && day.slots.isEmpty {
       Color.clear.frame(width: Measure.Schedule.markSize, height: Measure.Schedule.markSize)
         .accessibilityElement()
@@ -503,6 +485,9 @@ struct CalendarMark: View {
   let occupancy: Bool
   let onPick: ((JSONValue) -> Void)?
   let lit: Bool
+  /// A keyboard's focus on the pick, drawn round the mark itself
+  /// (`.sched-cal-pick:focus-visible .sched-cal-mark`).
+  @FocusState private var focused: Bool
 
   /// How far a taken time is pressed past its circle: 44 points across.
   static let reach = (Measure.Touch.target - Measure.Schedule.markSize) / 2
@@ -523,10 +508,15 @@ struct CalendarMark: View {
         onPick(row)
       } label: {
         mark
+          .overlay {
+            if focused { focusRing }
+          }
           .frame(width: Measure.Schedule.pickSize, height: Measure.Schedule.pickSize)
           .contentShape(Circle())
       }
       .buttonStyle(.plain)
+      .focused($focused)
+      .focusEffectDisabled()
       .frame(width: Measure.Schedule.markSize, height: Measure.Schedule.markSize)
       // A finger's reach past the gaps (`.sched-cal-pick::after`), without
       // making the grid's row any taller than the others.
@@ -540,6 +530,17 @@ struct CalendarMark: View {
         .accessibilityLabel(label)
         .help(occupancy ? label : "")
     }
+  }
+
+  /// `outline: 2px solid var(--focus-ring); outline-offset: 2px` round the
+  /// circle (3 points wide in high contrast), as base.css's outline is.
+  private var focusRing: some View {
+    let width = theme.isHighContrast ? theme.points(ThemeKit.highContrastFocusOutlineWidth) : theme.points(ThemeKit.focusOutline)
+    let reach = theme.points(ThemeKit.focusOutlineOffset) + width
+    return Circle()
+      .inset(by: -reach)
+      .strokeBorder(theme.color(ThemeKit.focusOutline), lineWidth: width)
+      .allowsHitTesting(false)
   }
 
   private var mark: some View {
@@ -570,9 +571,11 @@ struct CalendarMark: View {
   }
 }
 
-/// `.sched-cal-skeleton`: seven bones while the list is read.
+/// `.sched-cal-skeleton`: seven bones while the list is read, pulsing as
+/// every `.hub-bone` does (still under Reduce Motion).
 struct CalendarSkeleton: View {
   @Environment(\.virgaTheme) private var theme
+  @State private var dim = false
 
   var body: some View {
     HStack(spacing: theme.isPhone ? Measure.Schedule.phoneSkeletonGap : Measure.Schedule.skeletonGap) {
@@ -585,6 +588,11 @@ struct CalendarSkeleton: View {
     }
     .padding(.top, Measure.Schedule.calPadTop)
     .padding(.bottom, Measure.Schedule.calPadBottom)
+    .opacity(dim ? Measure.Templates.pulseLow : 1)
+    .onAppear {
+      guard !theme.reduceMotion else { return }
+      withAnimation(.easeInOut(duration: Measure.Templates.pulseSeconds / 2).repeatForever(autoreverses: true)) { dim = true }
+    }
     .accessibilityHidden(true)
   }
 }
@@ -622,21 +630,29 @@ struct ScheduleActionDialog<Message: View>: ViewModifier {
 
   func body(content: Content) -> some View {
     content
-      .virgaDialog(isPresented: Binding(get: { isPresented }, set: { if !busy { isPresented = $0 } }), title: title) {
+      // `onClose={busy ? undefined : onClose}`: neither Close nor a swipe
+      // takes it away while the action runs. It opens on Keep it
+      // (`data-autofocus`).
+      .virgaDialog(
+        isPresented: Binding(get: { isPresented }, set: { if !busy { isPresented = $0 } }), title: title, autofocus: true
+      ) {
         VStack(alignment: .leading, spacing: Measure.Schedule.confirmGap) {
           message()
           if !error.isEmpty {
-            Callout(tone: .danger) { Text(error) }
+            // `role="alert"`: read out as it appears.
+            Callout(tone: .danger, error)
               .accessibilityIdentifier("schedule-dialog-error")
           }
         }
         .fixedSize(horizontal: false, vertical: true)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("schedule-dialog")
+        .interactiveDismissDisabled(busy)
       } actions: {
         Button(cancelLabel) { isPresented = false }
           .buttonStyle(.virga)
           .disabled(busy)
+          .dialogAutofocus()
           .accessibilityIdentifier("schedule-dialog-keep")
         Button(busy ? busyLabel : confirmLabel) { Task { await confirm() } }
           .buttonStyle(.virga(danger ? .danger : .primary))
@@ -654,7 +670,8 @@ struct ScheduleActionDialog<Message: View>: ViewModifier {
       try await onConfirm()
       isPresented = false
     } catch {
-      self.error = ScheduleText.message(error) ?? "That didn’t work. Try again."
+      let said = PostingPages.message(error)
+      self.error = said.isEmpty ? "That didn’t work. Try again." : said
     }
   }
 }

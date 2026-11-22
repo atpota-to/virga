@@ -51,10 +51,17 @@ final class ScheduledPageModel {
   @ObservationIgnored let transport: any HTTPTransport
   @ObservationIgnored let clock: NetworkClock
   @ObservationIgnored let store: (any KeyValueStore)?
-  /// The account's posting settings (the weekly schedule). A new one after
+  /// The account's posting settings (the weekly schedule), heard while the
+  /// page is up (usePostingSettings). Made in start(), not here: SwiftUI
+  /// makes a page's model again each time the shell redraws and keeps only
+  /// the first, and a PostingSettingsModel listens from the moment it is
+  /// made, so one made here would be a listener left behind. A new one after
   /// the page comes back, since a stopped one no longer hears changes made
   /// on the weekly schedule's page.
-  private(set) var settings: PostingSettingsModel
+  private(set) var settings: PostingSettingsModel?
+  /// The settings as the store held them when the model was made, until
+  /// start() listens.
+  @ObservationIgnored private let stored: PostingSettings
   let load: ScheduledListLoad
 
   var now: Double = ScheduleText.now()
@@ -68,6 +75,8 @@ final class ScheduledPageModel {
   var confirm: ScheduledConfirm?
   /// A row to bring into view (pick), once it's drawn.
   var scrollTarget: String?
+  /// That row's key: its first button takes the focus once it is in view.
+  var focusRow: String?
   /// `timerFor`: the post TimerDialog is open for, from a timer note's
   /// Set a timer (nil: closed).
   var timerFor: PostTimerTarget?
@@ -76,7 +85,6 @@ final class ScheduledPageModel {
 
   @ObservationIgnored private var ticker: Task<Void, Never>?
   @ObservationIgnored private var litTask: Task<Void, Never>?
-  @ObservationIgnored private var settingsStopped = false
 
   init(
     session: SessionModel, store: (any KeyValueStore)?, did: String?, transport: any HTTPTransport, clock: NetworkClock
@@ -88,7 +96,8 @@ final class ScheduledPageModel {
     self.store = store
     let requester = session.backendFor(did)
     self.requester = requester
-    settings = PostingSettingsModel(did: did, store: store, language: Locale.preferredLanguages.first)
+    stored = PostingSettingsStore.readPostingSettings(
+      did, store: store, language: Locale.preferredLanguages.first.map(JSONValue.string))
     load = ScheduledListLoad(
       did: did, requester: requester, withLimits: true,
       events: [PostingEvents.scheduledChangedEvent, PostingEvents.timersChangedEvent])
@@ -97,11 +106,13 @@ final class ScheduledPageModel {
   // MARK: Starting and stopping
 
   /// The read, and the clock: relative times move on, and a post whose
-  /// time has come is looked for again (once a minute, never mid-drag).
+  /// time has come is looked for again (once a minute, never mid-drag). The
+  /// clock starts from now, as the web's page does each time it is drawn
+  /// (`useState(() => Date.now())`).
   func start() {
-    if settingsStopped {
+    now = ScheduleText.now()
+    if settings == nil {
       settings = PostingSettingsModel(did: did, store: store, language: Locale.preferredLanguages.first)
-      settingsStopped = false
     }
     load.start()
     ticker?.cancel()
@@ -114,13 +125,19 @@ final class ScheduledPageModel {
     }
   }
 
+  /// The page has gone. What the web's page would lose with it goes too:
+  /// the message, the lit row, a row picked up.
   func stop() {
     ticker?.cancel()
     ticker = nil
     litTask?.cancel()
+    litTask = nil
     load.stop()
-    settings.stop()
-    settingsStopped = true
+    settings?.stop()
+    settings = nil
+    message = nil
+    lit = nil
+    drag = nil
   }
 
   func tick() {
@@ -134,7 +151,7 @@ final class ScheduledPageModel {
 
   // MARK: What's drawn
 
-  var schedule: JSONValue { settings.settings.queue.json }
+  var schedule: JSONValue { (settings?.settings ?? stored).queue.json }
   var tz: String { PostingQueue.resolveTimezone(schedule) }
 
   var name: String {
@@ -166,6 +183,15 @@ final class ScheduledPageModel {
 
   func isBusy(_ row: JSONValue) -> Bool { busy.contains(ScheduleIds.key(row["id"])) }
 
+  /// `setMessage(...)`. The message is `role="alert"`, read out as it
+  /// appears and as its words change; the same words again are said
+  /// through `announce` (the web's live region), so a refusal met twice is
+  /// still heard.
+  func say(_ next: ScheduledMessage) {
+    if let message, message.text.jsEquals(next.text) { announce = next.text }
+    message = next
+  }
+
   func setRowBusy(_ id: String, _ on: Bool) {
     if on { busy.insert(id) } else { busy.remove(id) }
   }
@@ -177,8 +203,7 @@ final class ScheduledPageModel {
     let rows = self.rows
     guard let plan = try? QueueReorder.planQueueReorder(schedule, rows, order, now: at) else { return }
     if let conflict = plan.conflict {
-      message = ScheduledMessage(danger: false, text: conflict.message)
-      announce = conflict.message
+      say(ScheduledMessage(danger: false, text: conflict.message))
       return
     }
     if plan.moves.isEmpty { return }
@@ -206,8 +231,7 @@ final class ScheduledPageModel {
         error is ReorderPartial
         ? "Couldn’t save the whole new order. The queue below is what’s saved."
         : ScheduledPostError.reorderRefusal(error) ?? "Couldn’t save the new order. The queue below is what’s saved."
-      message = ScheduledMessage(danger: true, text: text)
-      announce = text
+      say(ScheduledMessage(danger: true, text: text))
       redraw = nil
       load.reload()
     }
@@ -218,19 +242,25 @@ final class ScheduledPageModel {
     let same = ScheduleIds.sameOrder(order, movable)
     let at: JSONValue?
     if same {
-      at = rows.first { ScheduleIds.same($0["id"], id) }?["scheduledFor"]
+      at = rows.first { PostingPages.sameValue($0["id"], id) }?["scheduledFor"]
     } else {
       let plan = try? QueueReorder.planQueueReorder(schedule, rows, order, now: ScheduleText.now())
-      at = plan?.assignment.first { ScheduleIds.same($0.id, id) }?.newScheduledFor.map(JSONValue.string)
+      at = plan?.assignment.first { PostingPages.sameValue($0.id, id) }?.newScheduledFor.map(JSONValue.string)
     }
     let place = (ScheduleIds.index(order, id) ?? -1) + 1
     let when = at.flatMap { $0.isTruthy ? $0 : nil }.map { ", \(ScheduleModel.formatInZone($0, tz, now: ScheduleText.now()))" } ?? ""
     return "Place \(place) of \(order.count)\(when)."
   }
 
-  /// A step earlier or later (a phone's arrows, VoiceOver's adjust).
+  /// A step earlier or later (a phone's arrows, VoiceOver's adjust):
+  /// `onStep`. Not while an order is being saved, as the arrows are
+  /// disabled then. Where it lands is said at once, as the keys' moves are
+  /// (`positionPhrase`), since the queue is redrawn only once the plan is
+  /// made.
   func step(_ id: JSONValue, _ delta: Double) {
+    if busy.contains("reorder") { return }
     let order = ScheduleModel.moveId(movable, id, delta)
+    announce = positionPhrase(order, id)
     Task { await commitOrder(order) }
   }
 
@@ -244,7 +274,7 @@ final class ScheduledPageModel {
         drag = QueueDrag(id: id, order: movable, via: .keys)
         announce =
           "Picked up. \(positionPhrase(movable, id)) Use the up and down arrows to move it, and Space to put it down."
-      } else if let drag, ScheduleIds.same(drag.id, id) {
+      } else if let drag, PostingPages.sameValue(drag.id, id) {
         let order = drag.order
         self.drag = nil
         if !ScheduleIds.sameOrder(order, movable) {
@@ -256,13 +286,13 @@ final class ScheduledPageModel {
       }
       return true
     case .earlier, .later:
-      guard let drag, ScheduleIds.same(drag.id, id) else { return false }
+      guard let drag, PostingPages.sameValue(drag.id, id) else { return false }
       let next = ScheduleModel.moveId(drag.order, id, press == .earlier ? -1 : 1)
       self.drag = QueueDrag(id: id, order: next, via: .keys)
       announce = positionPhrase(next, id)
       return true
     case .back:
-      guard let drag, ScheduleIds.same(drag.id, id) else { return false }
+      guard let drag, PostingPages.sameValue(drag.id, id) else { return false }
       self.drag = nil
       announce = "Put back. The order hasn’t changed."
       return true
@@ -276,8 +306,8 @@ final class ScheduledPageModel {
   func dragMoved(_ id: JSONValue, y: CGFloat, others: [(id: JSONValue, midY: CGFloat)]) {
     if busy.contains("reorder") { return }
     if drag == nil { drag = QueueDrag(id: id, order: movable, via: .pointer) }
-    guard let drag, ScheduleIds.same(drag.id, id), drag.via == .pointer else { return }
-    let rest = others.filter { !ScheduleIds.same($0.id, id) }
+    guard let drag, PostingPages.sameValue(drag.id, id), drag.via == .pointer else { return }
+    let rest = others.filter { !PostingPages.sameValue($0.id, id) }
     let index = rest.filter { $0.midY < y }.count
     var ids = rest.map(\.id)
     ids.insert(id, at: Swift.min(index, ids.count))
@@ -295,6 +325,15 @@ final class ScheduledPageModel {
     if !ScheduleIds.sameOrder(order, movable) { Task { await commitOrder(order) } }
   }
 
+  /// `onPointerCancel`: the system took the drag away (a call, Control
+  /// Center, the app sent to the background, a second finger). The row is
+  /// put back and nothing is saved. After a drag that ended as it should,
+  /// there is nothing left to put back.
+  func dragCancelled() {
+    guard let drag, drag.via == .pointer else { return }
+    self.drag = nil
+  }
+
   // MARK: Row actions
 
   func retry(_ row: JSONValue, toasts: ToastCenter?) async {
@@ -307,7 +346,7 @@ final class ScheduledPageModel {
         row["partial"]?.isTruthy ?? false
           ? "The rest of the thread goes out in a moment." : "It goes out again in a moment.")
     } catch {
-      message = ScheduledMessage(danger: true, text: ScheduledPostError.scheduleErrorMessage(error))
+      say(ScheduledMessage(danger: true, text: ScheduledPostError.scheduleErrorMessage(error)))
     }
   }
 
@@ -394,7 +433,7 @@ final class ScheduledPageModel {
     do {
       _ = try await ScheduleService.acknowledgeTimerNote(requester, row["id"])
     } catch {
-      message = ScheduledMessage(danger: true, text: ScheduledPostError.scheduleErrorMessage(error))
+      say(ScheduledMessage(danger: true, text: ScheduledPostError.scheduleErrorMessage(error)))
     }
   }
 
@@ -416,17 +455,18 @@ final class ScheduledPageModel {
     await acknowledge(row)
   }
 
-  /// A taken time in the week, pressed: its row brought into view and lit
-  /// for a moment.
+  /// A taken time in the week, pressed: its row brought into view, its
+  /// first button given the focus, and the row lit for a moment.
   func pick(_ row: JSONValue) {
     let id = row["id"] ?? .null
     scrollTarget = "sched-row-\(ScheduleIds.key(id))"
+    focusRow = ScheduleIds.key(id)
     lit = id
     litTask?.cancel()
     litTask = Task { [weak self] in
       try? await Task.sleep(nanoseconds: UInt64(Measure.Schedule.litSeconds * 1_000_000_000))
       guard !Task.isCancelled, let self else { return }
-      if let lit = self.lit, ScheduleIds.same(lit, id) { self.lit = nil }
+      if let lit = self.lit, PostingPages.sameValue(lit, id) { self.lit = nil }
     }
   }
 }

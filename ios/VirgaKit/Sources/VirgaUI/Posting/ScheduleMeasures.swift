@@ -62,6 +62,11 @@ extension Measure {
     public static let whenDotGap: CGFloat = 6
     /// A phone's `.sched-row.has-corner-menu > .sched-when-cell { padding-right: 40px }`.
     public static let cornerMenuRoom: CGFloat = 40
+    /// A phone's `.sched-row .row-menu { top: calc(var(--row-pad) + 9.5px) }` (the kit's
+    /// `transform: translateY(-50%)` centres the ⋯, or a note's ✕, there: on the time's 13-point line),
+    /// and controls.css's `.has-corner-menu .row-menu { right: -14px }` on a touch screen.
+    public static let cornerMenuCentre: CGFloat = 9.5
+    public static let cornerMenuOutset: CGFloat = 14
     /// A phone's `.sched-row > .row-actions { margin-top: 4px }`.
     public static let phoneActionsAbove: CGFloat = 4
     /// `.sched-row-reply { gap: 5px }`, its arrow `<CornerDownRight size={13} />`.
@@ -124,6 +129,13 @@ extension Measure {
     public static let dayNameWidth: CGFloat = 104
     public static let dayColumnGap: CGFloat = 16
     public static let dayLineGap: CGFloat = 8
+    /// On a touch screen `.sched-day-add { margin-block: -6px }` and `.sched-day-menu { margin-block: -6px }`
+    /// (their 44-point boxes on a line of 32-point tokens, which stays the tokens' height); on a phone
+    /// `.sched-day-menu { margin-block: -12px; margin-right: -14px }`.
+    public static let dayAddReach: CGFloat = 6
+    public static let dayMenuReach: CGFloat = 6
+    public static let phoneDayMenuReach: CGFloat = 12
+    public static let phoneDayMenuOutset: CGFloat = 14
     /// `.sched-copy-days > .check { min-height: 36px }`, 44 on touch.
     public static let copyDayHeight: CGFloat = 44
     /// `.sched-add { gap: 8px }`, `.sched-add-input { width: 128px }`
@@ -159,11 +171,13 @@ extension Measure {
     public static let repeatFieldsGap: CGFloat = 10
     public static let repeatLabelGap: CGFloat = 4
     public static let repeatIcon: CGFloat = 13
-    /// `.sched-when-queue { gap: 8px 10px; padding-top: 12px }`, its glyph `<ListTree size={16} />`.
+    /// `.sched-when-queue { gap: 8px 10px; padding-top: 12px }`, its glyph `<ListTree size={16} />`,
+    /// `.sched-when-queue-text { flex: 1 1 200px }`.
     public static let queueGap: CGFloat = 10
     public static let queueLineGap: CGFloat = 8
     public static let queueTop: CGFloat = 12
     public static let queueIcon: CGFloat = 16
+    public static let queueTextBasis: CGFloat = 200
 
     // MARK: The composer's when panel (composer.css)
 

@@ -63,6 +63,24 @@ struct RowReorder {
   var active: Bool
 }
 
+/// Binds a row's first button to the page's focus, for a pick from the week
+/// (`el.querySelector('button, a').focus()`); nil bindings bind nothing.
+struct ScheduleRowFocus: ViewModifier {
+  let key: String
+  let focus: FocusState<String?>.Binding?
+  let spoken: AccessibilityFocusState<String?>.Binding?
+
+  func body(content: Content) -> some View {
+    if let focus, let spoken {
+      content
+        .focused(focus, equals: key)
+        .accessibilityFocused(spoken, equals: key)
+    } else {
+      content
+    }
+  }
+}
+
 /// Where each movable row is drawn, in the queue's space, for a drag.
 struct QueueRowFrames: PreferenceKey {
   static let defaultValue: [String: CGRect] = [:]
@@ -81,6 +99,10 @@ struct ScheduledRowView: View {
   var reorder: RowReorder?
   /// Where every movable row is, for the drag.
   var frames: [String: CGRect] = [:]
+  /// The page's focus, which a pick from the week moves to this row's
+  /// first button (the queue's rows; nil elsewhere).
+  var focus: FocusState<String?>.Binding?
+  var spoken: AccessibilityFocusState<String?>.Binding?
   let onEdit: (JSONValue) -> Void
 
   static let space = "sched-queue"
@@ -98,7 +120,7 @@ struct ScheduledRowView: View {
     let series = Repeat.rowRepeat(row, now: now)
     let time = ScheduleModel.timeInZone(row["scheduledFor"], tz)
     let busy = model.isBusy(row)
-    let lit = model.lit.map { ScheduleIds.same(id, $0) } ?? false
+    let lit = model.lit.map { PostingPages.sameValue(id, $0) } ?? false
     let active = reorder?.active ?? false
     let menu = menuEntries(actions: actions, series: series)
     Group {
@@ -135,6 +157,14 @@ struct ScheduledRowView: View {
     }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("sched-row-\(ScheduleIds.key(id))")
+  }
+
+  /// The focus a pick from the week gives the row: on its first button,
+  /// the handle (shown wider than a phone) or else Retry or Edit.
+  private func rowFocus(handle: Bool) -> ScheduleRowFocus {
+    let first = !theme.isPhone && reorder?.movable == true
+    let on = first == handle
+    return ScheduleRowFocus(key: ScheduleIds.key(id), focus: on ? focus : nil, spoken: on ? spoken : nil)
   }
 
   // MARK: Wider than a phone
@@ -189,16 +219,11 @@ struct ScheduledRowView: View {
     facts: RowFacts, status: RowStatus, actions: RowActions, series: RowRepeat, time: String, menu: [MenuEntry], busy: Bool
   ) -> some View {
     VStack(alignment: .leading, spacing: Measure.Schedule.phoneRowLineGap) {
-      ZStack(alignment: .topTrailing) {
-        phoneWhen(time: time)
-          .padding(.trailing, menu.isEmpty ? 0 : Measure.Schedule.cornerMenuRoom)
-          .frame(maxWidth: .infinity, alignment: .leading)
-        if !menu.isEmpty {
-          MoreMenu(label: "More for the post at \(time)", entries: menu)
-            .padding(.trailing, -Measure.Settings.dashMenuOutset)
-            .padding(.top, -Measure.Section.rowActionsLift)
-        }
-      }
+      // `.has-corner-menu > .sched-when-cell { padding-right: 40px }`: only
+      // the time's line keeps clear of the ⋯.
+      phoneWhen(time: time)
+        .padding(.trailing, Measure.Schedule.cornerMenuRoom)
+        .frame(maxWidth: .infinity, alignment: .leading)
       main(facts: facts, status: status, series: series)
       let hasPrimary = actions.retry || actions.edit
       if hasPrimary || reorder?.movable == true {
@@ -211,21 +236,45 @@ struct ScheduledRowView: View {
         .padding(.top, Measure.Schedule.phoneActionsAbove)
       }
     }
+    .overlay(alignment: .topTrailing) {
+      if !menu.isEmpty {
+        // `.row-menu`: out of the row's flow, centred 9.5 into it (on the
+        // time's 13-point line), its 44-point box 14 past the column's edge.
+        MoreMenu(label: "More for the post at \(time)", entries: menu)
+          .offset(x: Measure.Schedule.cornerMenuOutset, y: cornerMenuLift)
+      }
+    }
+  }
+
+  /// How far up from the row's content the corner ⋯'s 44-point box starts,
+  /// for its middle to sit 9.5 down.
+  private var cornerMenuLift: CGFloat {
+    Measure.Schedule.cornerMenuCentre - theme.points(ThemeKit.touchGhostIconButtonSize) / 2
   }
 
   /// A phone's first line: the time, then how far off it is (or the day,
-  /// then the hour), a dot between.
+  /// then the hour), a muted dot 6 either side between them, kept with the
+  /// part before it so a wrapped line never starts with it.
   private func phoneWhen(time: String) -> some View {
     let first = showDate ? ScheduleDays.dayInZone(row["scheduledFor"], tz, now: now) : time
     let second =
       showDate ? time : row["status"] == "pending" ? PostingQueue.relativeWhen(row["scheduledFor"], now: now) : ""
-    var line = Text(first).fontWeight(.semibold).foregroundColor(theme.ink)
-    if !second.isEmpty {
-      line = line + Text(" · ").foregroundColor(theme.muted) + Text(second).foregroundColor(theme.muted)
+    return FlowLayout(spacing: 0, lineSpacing: 0, alignment: .center) {
+      HStack(spacing: 0) {
+        Text(first)
+          .virgaText(.textSm, weight: VirgaWeight.semibold, lineHeight: Measure.Schedule.phoneWhenLineHeight)
+          .foregroundStyle(theme.ink)
+        if !second.isEmpty {
+          WhenDot()
+        }
+      }
+      if !second.isEmpty {
+        Text(second)
+          .virgaText(.textSm, lineHeight: Measure.Schedule.phoneWhenLineHeight)
+          .foregroundStyle(theme.muted)
+      }
     }
-    return line
-      .virgaText(.textSm, lineHeight: Measure.Schedule.phoneWhenLineHeight)
-      .fixedSize(horizontal: false, vertical: true)
+    .accessibilityElement(children: .combine)
   }
 
   /// A phone has no drag: the queue moves with these instead.
@@ -290,11 +339,13 @@ struct ScheduledRowView: View {
       }
       .buttonStyle(.virga(size: .small))
       .disabled(busy)
+      .modifier(rowFocus(handle: false))
       .accessibilityIdentifier("sched-retry")
     } else if actions.edit {
       Button("Edit") { onEdit(row) }
         .buttonStyle(.virga(size: .small))
         .disabled(busy)
+        .modifier(rowFocus(handle: false))
         .accessibilityIdentifier("sched-edit")
     }
   }
@@ -308,7 +359,7 @@ struct ScheduledRowView: View {
     if actions.postNow {
       menu.append(
         .item(
-          MenuItem("Post now", key: "now", systemImage: ScheduleGlyph.send, accessibilityIdentifier: "sched-post-now") {
+          MenuItem("Post now", key: "now", systemImage: HubGlyph.post, accessibilityIdentifier: "sched-post-now") {
             model.confirm = ScheduledConfirm(kind: .now, row: row)
           }))
     }
@@ -336,7 +387,7 @@ struct ScheduledRowView: View {
         ? "Dismiss" : series.repeats ? "Remove, and stop repeating" : "Remove from the schedule"
       menu.append(
         .item(
-          MenuItem(label, key: "cancel", systemImage: ScheduleGlyph.trash, destructive: true, accessibilityIdentifier: "sched-cancel") {
+          MenuItem(label, key: "cancel", systemImage: HubGlyph.trash, destructive: true, accessibilityIdentifier: "sched-cancel") {
             model.confirm = ScheduledConfirm(kind: .cancel, row: row)
           }))
     }
@@ -350,15 +401,17 @@ struct ScheduledRowView: View {
   private func handle(_ reorder: RowReorder, facts: RowFacts) -> some View {
     if reorder.movable {
       QueueHandle(
-        label: "Move: \(facts.text.isEmpty ? "a post with media" : facts.text.jsSlice(0, 60))", active: reorder.active,
-        disabled: reorder.disabled,
+        label: "Move: \(facts.text.isEmpty ? "a post with media" : facts.text.jsSlice(0, 60))",
+        value: model.positionPhrase(model.movable, id), active: reorder.active, disabled: reorder.disabled,
+        rowFocus: rowFocus(handle: true),
         onDrag: { y in model.dragMoved(id, y: y, others: others()) },
         onDrop: { model.dragEnded() },
+        onCancel: { model.dragCancelled() },
         onKey: { model.key(id, $0) },
         onAdjust: { delta in model.step(id, delta) })
     } else {
       Image(systemName: ScheduleGlyph.lock)
-        .font(.system(size: Measure.Schedule.lockIcon))
+        .virgaGlyph(Measure.Schedule.lockIcon, beside: theme.textMd, upTo: Measure.Schedule.handleWidth)
         .foregroundStyle(theme.faint)
         .frame(width: Measure.Schedule.handleWidth, height: Measure.Schedule.handleHeight)
         .help("Keeps its time")
@@ -377,22 +430,36 @@ struct ScheduledRowView: View {
   }
 }
 
-/// `.sched-handle`: the grip a queued row is moved by.
+/// `.sched-handle`: the grip a queued row is moved by. Its name is the
+/// web's aria-label and nothing more (the web gives it no title); its value
+/// is where it stands in the queue, for VoiceOver's adjust.
 struct QueueHandle: View {
   @Environment(\.virgaTheme) private var theme
   let label: String
+  /// "Place 2 of 5, Tue, Nov 17, 9:00 AM."
+  let value: String
   let active: Bool
   let disabled: Bool
+  /// The page's focus, for a pick from the week.
+  let rowFocus: ScheduleRowFocus
   let onDrag: (CGFloat) -> Void
   let onDrop: () -> Void
+  /// `onPointerCancel`: the system took the drag away.
+  let onCancel: () -> Void
   let onKey: (ScheduledPageModel.KeyMove) -> Bool
   let onAdjust: (Double) -> Void
+  /// A keyboard's focus here, drawn as `.sched-handle:focus-visible {
+  /// box-shadow: var(--focus) }`.
+  @FocusState private var focused: Bool
+  /// True while a finger holds the handle. SwiftUI puts it back when the
+  /// drag ends and when the system cancels it, which calls no onEnded.
+  @GestureState private var dragging = false
 
   var body: some View {
     Button {
     } label: {
       Image(systemName: ScheduleGlyph.grip)
-        .font(.system(size: Measure.Schedule.gripIcon))
+        .virgaGlyph(Measure.Schedule.gripIcon, beside: theme.textMd, upTo: Measure.Schedule.handleWidth)
         .foregroundStyle(active ? theme.ink : theme.muted)
         .frame(width: Measure.Schedule.handleWidth, height: Measure.Schedule.handleHeight)
         .background(RoundedRectangle(cornerRadius: theme.radiusSm).fill(active ? theme.tint : Color.clear))
@@ -401,9 +468,17 @@ struct QueueHandle: View {
             RoundedRectangle(cornerRadius: theme.radiusSm).strokeBorder(theme.accent, lineWidth: Measure.Schedule.handleRing)
           }
         }
+        .overlay {
+          if focused {
+            FocusRing(layers: theme.tokens.shadow(.focus) ?? [], theme: theme.tokens, radius: theme.radiusSm)
+          }
+        }
         .contentShape(Rectangle())
     }
     .buttonStyle(.plain)
+    .focused($focused)
+    .focusEffectDisabled()
+    .modifier(rowFocus)
     // Pressed through 44 points each way, drawn and laid out at its own 28 by 36.
     .touchReach(
       horizontal: (Measure.Touch.target - Measure.Schedule.handleWidth) / 2,
@@ -413,9 +488,16 @@ struct QueueHandle: View {
     // The handle takes the drag before the page's scroll does (`touch-action: none`).
     .highPriorityGesture(
       DragGesture(minimumDistance: 0, coordinateSpace: .named(ScheduledRowView.space))
+        .updating($dragging) { _, held, _ in held = true }
         .onChanged { value in if !disabled { onDrag(value.location.y) } }
         .onEnded { _ in onDrop() }
     )
+    .onChange(of: dragging) { _, held in
+      // Let go, onEnded has put the row down and this finds nothing to put
+      // back; cancelled, onEnded never came. Heard after the gesture's own
+      // callbacks, so a drag that ended is never undone.
+      if !held { Task { @MainActor in onCancel() } }
+    }
     .onKeyPress(keys: [.space, .return, .upArrow, .downArrow, .escape]) { press in
       let move: ScheduledPageModel.KeyMove
       switch press.key {
@@ -426,8 +508,8 @@ struct QueueHandle: View {
       }
       return onKey(move) ? .handled : .ignored
     }
-    .help(label)
     .accessibilityLabel(label)
+    .accessibilityValue(value)
     .accessibilityHint(ScheduledRowView.moveHelp)
     .accessibilityAddTraits(active ? .isSelected : [])
     .accessibilityAdjustableAction { direction in
@@ -449,7 +531,7 @@ struct ReplyLine: View {
   var body: some View {
     HStack(alignment: .firstTextBaseline, spacing: Measure.Schedule.replyGap) {
       Image(systemName: ScheduleGlyph.replyingTo)
-        .font(.system(size: Measure.Schedule.replyIcon))
+        .virgaGlyph(Measure.Schedule.replyIcon, beside: theme.textSm)
         .foregroundStyle(theme.muted)
         .accessibilityHidden(true)
       Text("Replying to \(reply.who)")
@@ -496,7 +578,7 @@ struct RowMeta: View {
       let count = row["payload"]?["repeat"]?["count"]?.isTruthy ?? false
       let text =
         "\(series.label)\(series.progress.isEmpty ? "" : ", \(series.progress)")\(series.last && !count ? ", the last one" : "")"
-      out.append(.item(MetaItem(text, systemImage: ScheduleGlyph.repeats, isKey: true, id: "repeat")))
+      out.append(.item(MetaItem(text, systemImage: HubGlyph.again, isKey: true, id: "repeat")))
     }
     if series.former && row["status"] == "failed" {
       let occurrence = row["occurrence"]
@@ -551,20 +633,9 @@ struct TimerNoteRow: View {
     let layout = phone ? AnyLayout(VStackLayout(alignment: .leading, spacing: Measure.Schedule.phoneRowLineGap))
       : AnyLayout(HStackLayout(alignment: .top, spacing: Measure.Schedule.rowColumnGap))
     layout {
-      VStack(alignment: .leading, spacing: Measure.Schedule.whenGap) {
-        Text("Went out")
-          .virgaText(phone ? .textSm : .textMd, weight: phone ? VirgaWeight.semibold : VirgaWeight.medium)
-          .foregroundStyle(theme.ink)
-        // Each part kept whole, so a narrow column breaks between them.
-        FlowLayout(spacing: 0, lineSpacing: 0, alignment: .firstTextBaseline) {
-          Text(hour.isEmpty ? day : "\(day),").fixedSize()
-          if !hour.isEmpty { Text(" \(hour)").fixedSize() }
-        }
-        .virgaText(.textSm)
-        .foregroundStyle(theme.muted)
-      }
-      .frame(width: phone ? nil : theme.timeCol, alignment: .leading)
-      .padding(.trailing, phone && note.dismiss ? Measure.Schedule.cornerMenuRoom : 0)
+      wentOut(day: day, hour: hour, phone: phone)
+        .frame(width: phone ? nil : theme.timeCol, alignment: .leading)
+        .padding(.trailing, phone ? Measure.Schedule.cornerMenuRoom : 0)
       VStack(alignment: .leading, spacing: Measure.Schedule.mainGap) {
         Group {
           if facts.text.isEmpty {
@@ -588,7 +659,12 @@ struct TimerNoteRow: View {
     }
     .overlay(alignment: .topTrailing) {
       if note.dismiss && phone {
-        dismiss(busy: busy).padding(.trailing, -Measure.Settings.dashMenuOutset)
+        // `.row-menu`, as a queued row's ⋯: centred 9.5 into the row, 14
+        // past the column's edge.
+        dismiss(busy: busy)
+          .offset(
+            x: Measure.Schedule.cornerMenuOutset,
+            y: Measure.Schedule.cornerMenuCentre - theme.points(ThemeKit.touchGhostIconButtonSize) / 2)
       }
     }
     .padding(.vertical, theme.rowPad)
@@ -597,6 +673,44 @@ struct TimerNoteRow: View {
     .opacity(busy ? Measure.Schedule.busyOpacity : 1)
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("sched-note-\(ScheduleIds.key(row["id"]))")
+  }
+
+  /// "Went out" where a time would lead, then when it did. Wider, over the
+  /// day and the hour; on a phone one wrapping line, a muted dot 6 either
+  /// side after "Went out" (`.sched-when-cell` as a row). The day and the
+  /// hour are each kept whole, so a narrow line breaks between them.
+  @ViewBuilder
+  private func wentOut(day: String, hour: String, phone: Bool) -> some View {
+    if phone {
+      FlowLayout(spacing: 0, lineSpacing: 0, alignment: .center) {
+        HStack(spacing: 0) {
+          Text("Went out")
+            .virgaText(.textSm, weight: VirgaWeight.semibold, lineHeight: Measure.Schedule.phoneWhenLineHeight)
+            .foregroundStyle(theme.ink)
+          WhenDot()
+        }
+        whenPart(hour.isEmpty ? day : "\(day),", lineHeight: Measure.Schedule.phoneWhenLineHeight)
+        if !hour.isEmpty { whenPart(" \(hour)", lineHeight: Measure.Schedule.phoneWhenLineHeight) }
+      }
+      .accessibilityElement(children: .combine)
+    } else {
+      VStack(alignment: .leading, spacing: Measure.Schedule.whenGap) {
+        Text("Went out")
+          .virgaText(.textMd, weight: VirgaWeight.medium)
+          .foregroundStyle(theme.ink)
+        FlowLayout(spacing: 0, lineSpacing: 0, alignment: .center) {
+          whenPart(hour.isEmpty ? day : "\(day),", lineHeight: nil)
+          if !hour.isEmpty { whenPart(" \(hour)", lineHeight: nil) }
+        }
+      }
+    }
+  }
+
+  private func whenPart(_ text: String, lineHeight: Double?) -> some View {
+    Text(text)
+      .virgaText(.textSm, lineHeight: lineHeight)
+      .foregroundStyle(theme.muted)
+      .fixedSize()
   }
 
   /// `.row-actions`: Set a timer, then the ✕.
@@ -642,6 +756,19 @@ struct DayLabel: View {
       .frame(maxWidth: .infinity, alignment: .leading)
       .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
       .accessibilityAddTraits(.isHeader)
+  }
+}
+/// A phone's `.sched-when-cell > :not(:last-child)::after`: a muted dot,
+/// 400, 6 from the words on each side.
+struct WhenDot: View {
+  @Environment(\.virgaTheme) private var theme
+
+  var body: some View {
+    Text("·")
+      .virgaText(.textSm, lineHeight: Measure.Schedule.phoneWhenLineHeight)
+      .foregroundStyle(theme.muted)
+      .padding(.horizontal, Measure.Schedule.whenDotGap)
+      .accessibilityHidden(true)
   }
 }
 #endif

@@ -32,6 +32,11 @@ struct ScheduledPage: View {
   let did: String?
   @State private var model: ScheduledPageModel
   @State private var frames: [String: CGRect] = [:]
+  /// Where a pick from the week puts the focus: the row's first button
+  /// (`el.querySelector('button, a').focus()`), for a keyboard and for
+  /// VoiceOver.
+  @FocusState private var keyRow: String?
+  @AccessibilityFocusState private var spokenRow: String?
 
   init(app: AppModel, did: String?) {
     self.did = did
@@ -62,6 +67,11 @@ struct ScheduledPage: View {
         guard let target else { return }
         withAnimation(theme.motion.control) { proxy.scrollTo(target, anchor: .center) }
         model.scrollTarget = nil
+        if let row = model.focusRow {
+          model.focusRow = nil
+          keyRow = row
+          spokenRow = row
+        }
       }
     }
     .task { model.start() }
@@ -101,8 +111,13 @@ struct ScheduledPage: View {
       .accessibilityIdentifier("sched-unavailable")
     }
     if let message = model.message {
-      Callout(tone: message.danger ? .danger : .warn, systemImage: ScheduleGlyph.alert) {
-        HStack(alignment: .center, spacing: theme.space3) {
+      // `role="alert"`. `.sched-message { align-items: center }`: the glyph,
+      // the words and Dismiss centred on one another, 10 apart.
+      Callout(tone: message.danger ? .danger : .warn, alert: message.text) {
+        HStack(alignment: .center, spacing: theme.points(ThemeKit.calloutGap)) {
+          Image(systemName: ScheduleGlyph.alert)
+            .virgaGlyph(Measure.Section.calloutIcon, beside: theme.textSm)
+            .accessibilityHidden(true)
           Text(message.text).frame(maxWidth: .infinity, alignment: .leading)
           Button("Dismiss") { model.message = nil }
             .buttonStyle(.virga(.ghost, size: .small))
@@ -204,11 +219,12 @@ struct ScheduledPage: View {
       ) {
         navigate(PostingRoutes.postingPageByKey["schedule"]?.path ?? "/posting/schedule")
       }
-      .padding(.top, theme.space4)
+      .accessibilityElement(children: .contain)
       .accessibilityIdentifier("sched-queue-empty")
     } else {
+      // EmptyState keeps the 16 under the section's rule itself.
       EmptyState("Nothing in the queue. Every time above is open: add a post and it takes the next one.")
-        .padding(.top, theme.space4)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("sched-queue-empty")
     }
   }
@@ -226,7 +242,7 @@ struct ScheduledPage: View {
         } else if let row = entry.row {
           ScheduledRowView(
             row: row, model: model, reorder: canReorder ? reorder(row, movable: movable) : nil, frames: frames,
-            onEdit: edit
+            focus: $keyRow, spoken: $spokenRow, onEdit: edit
           )
           .id("sched-row-\(ScheduleIds.key(row["id"]))")
         }
@@ -243,7 +259,7 @@ struct ScheduledPage: View {
     return RowReorder(
       movable: index != nil, first: index == 0, last: index == movable.count - 1,
       disabled: model.busy.contains("reorder"),
-      active: model.drag.map { ScheduleIds.same($0.id, row["id"]) } ?? false)
+      active: model.drag.map { PostingPages.sameValue($0.id, row["id"]) } ?? false)
   }
 
   // MARK: At a set time
@@ -256,7 +272,7 @@ struct ScheduledPage: View {
         Button {
           open(["asDid": did.map(JSONValue.string) ?? .null, "mode": "schedule"])
         } label: {
-          Label("Schedule a post", systemImage: ScheduleGlyph.calendarClock)
+          Label("Schedule a post", systemImage: HubGlyph.schedule)
         }
         .buttonStyle(.linkAction)
         .accessibilityIdentifier("sched-schedule-a-post")),
@@ -267,7 +283,6 @@ struct ScheduledPage: View {
       } else if model.load.list != nil {
         if rows.isEmpty {
           EmptyState("Nothing scheduled for a set time. Write a post and choose Schedule to pick when it goes out.")
-            .padding(.top, theme.space4)
         } else {
           VStack(alignment: .leading, spacing: 0) {
             ForEach(ScheduleListEntry.entries(rows, tz: model.tz, now: model.now)) { entry in
@@ -290,10 +305,7 @@ struct ScheduledPage: View {
   private var limitsLine: some View {
     let line = ScheduleModel.scheduledLimitsLine(model.load.limits)
     if loading {
-      RoundedRectangle(cornerRadius: theme.radiusSm)
-        .fill(theme.line)
-        .frame(width: Measure.Schedule.limitsBoneWidth, height: Measure.Templates.metaBoneHeight)
-        .accessibilityHidden(true)
+      LimitsBone()
     } else if !line.isEmpty {
       Text(line)
         .virgaText(.textSm)
@@ -320,6 +332,11 @@ struct ScheduledPage: View {
 struct ScheduledDialogs: ViewModifier {
   @Environment(ToastCenter.self) private var toasts: ToastCenter?
   let model: ScheduledPageModel
+  /// The question last asked. `model.confirm` goes nil as a sheet starts to
+  /// slide away, and the sheet is still drawn until it has gone; its words
+  /// come from this, so they don't change under it (the web unmounts the
+  /// dialog's content at once).
+  @State private var asked: ScheduledConfirm?
 
   private func shown(_ kind: ScheduledConfirm.Kind) -> Binding<Bool> {
     Binding(
@@ -327,7 +344,7 @@ struct ScheduledDialogs: ViewModifier {
       set: { if !$0, model.confirm?.kind == kind { model.confirm = nil } })
   }
 
-  private var row: JSONValue? { model.confirm?.row }
+  private var row: JSONValue? { (model.confirm ?? asked)?.row }
   private var failed: Bool { row?["status"] == "failed" }
   private var text: String { row.map { ScheduleModel.rowFacts($0, now: model.now).text } ?? "" }
   private var series: RowRepeat? { row.map { Repeat.rowRepeat($0, now: ScheduleText.now()) } }
@@ -371,6 +388,9 @@ struct ScheduledDialogs: ViewModifier {
 
   func body(content: Content) -> some View {
     content
+      .onChange(of: model.confirm) { _, next in
+        if let next { asked = next }
+      }
       .scheduleActionDialog(
         isPresented: shown(.cancel), title: failed ? "Dismiss this post?" : "Remove this scheduled post?",
         confirmLabel: failed ? "Dismiss" : "Remove", busyLabel: "Removing…", danger: true, onConfirm: run
@@ -397,6 +417,25 @@ struct ScheduledDialogs: ViewModifier {
         Text(stopWords)
         if !text.isEmpty { HubQuote(text: text.jsSlice(0, Measure.Schedule.quoteMax)) }
       }
+  }
+}
+/// The allowance line's bone while the list is read: a plain `.hub-bone`
+/// (11 tall, 260 wide), pulsing as every bone does (still under Reduce
+/// Motion).
+struct LimitsBone: View {
+  @Environment(\.virgaTheme) private var theme
+  @State private var dim = false
+
+  var body: some View {
+    RoundedRectangle(cornerRadius: theme.radiusSm)
+      .fill(theme.line)
+      .frame(width: Measure.Schedule.limitsBoneWidth, height: Measure.Templates.rowBoneHeight)
+      .opacity(dim ? Measure.Templates.pulseLow : 1)
+      .onAppear {
+        guard !theme.reduceMotion else { return }
+        withAnimation(.easeInOut(duration: Measure.Templates.pulseSeconds / 2).repeatForever(autoreverses: true)) { dim = true }
+      }
+      .accessibilityHidden(true)
   }
 }
 #endif
