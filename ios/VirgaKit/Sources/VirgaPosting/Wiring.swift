@@ -12,6 +12,10 @@
 //   bus (`PostingEvents.postsChangedListener(target:)`), so a post made or
 //   deleted here reaches the archive's model as virga:posts-changed does
 //   on the web.
+// - Gates: the write account's XRPCAgent as gates.js's agent
+//   (`XRPCGatesAgent`, which posting settings' resolveDefaultGates and
+//   updatePostGates take), and XRPCError naming its lexicon error, so a
+//   RecordNotFound reads as one.
 
 import Foundation
 import VirgaArchive
@@ -73,4 +77,45 @@ extension PostingEvents {
       return stop ?? {}
     }
   }
+}
+
+// MARK: - Gates
+
+/// An XRPCAgent as gates.js uses one: `agent.app.bsky.actor.getPreferences`
+/// and `agent.com.atproto.repo.getRecord / putRecord / deleteRecord`, with
+/// the SDK's parameters and bodies. (A wrapper, not a conformance: the
+/// template service's putRecord and deleteRecord already answer a body.)
+public struct XRPCGatesAgent: GatesAgent {
+  public let agent: XRPCAgent
+
+  public init(_ agent: XRPCAgent) { self.agent = agent }
+
+  public func getPreferences() async throws -> JSONValue {
+    try await agent.query("app.bsky.actor.getPreferences").data
+  }
+
+  public func getRecord(repo: String, collection: String, rkey: String) async throws -> JSONValue {
+    let params: XRPCParams = ["repo": .string(repo), "collection": .string(collection), "rkey": .string(rkey)]
+    return try await agent.query("com.atproto.repo.getRecord", params).data
+  }
+
+  public func putRecord(repo: String, collection: String, rkey: String, record: JSONValue) async throws {
+    let input: JSONValue = ["repo": .string(repo), "collection": .string(collection), "rkey": .string(rkey), "record": record]
+    _ = try await agent.procedure("com.atproto.repo.putRecord", input: .json(input))
+  }
+
+  public func deleteRecord(repo: String, collection: String, rkey: String) async throws {
+    let input: JSONValue = ["repo": .string(repo), "collection": .string(collection), "rkey": .string(rkey)]
+    _ = try await agent.procedure("com.atproto.repo.deleteRecord", input: .json(input))
+  }
+}
+
+extension XRPCAgent {
+  /// This agent as gates.js's (`readDefaultGates`, `updatePostGates`).
+  public var gatesAgent: XRPCGatesAgent { XRPCGatesAgent(self) }
+}
+
+extension XRPCError: XRPCErrorDescribing {
+  /// `err.error`: the lexicon's error name (`RecordNotFound`).
+  public var xrpcError: String? { error }
 }

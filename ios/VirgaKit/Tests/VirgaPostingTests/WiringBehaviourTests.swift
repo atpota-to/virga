@@ -95,3 +95,71 @@ extension MentionResolverBehaviour {
     #expect(env.postsChanged != nil)
   }
 }
+
+@Suite struct GatesAgentWiring {
+  static let post = "at://did:plc:mira/app.bsky.feed.post/3kpost"
+
+  @Test func readsTheAccountsBlueskyDefault() async throws {
+    let mock = MockTransport()
+    mock.on(
+      .path("/xrpc/app.bsky.actor.getPreferences"),
+      respond: .json([
+        "preferences": [
+          [
+            "$type": "app.bsky.actor.defs#postInteractionSettingsPref",
+            "threadgateAllowRules": [["$type": "app.bsky.feed.threadgate#mentionRule"]],
+            "postgateEmbeddingRules": [["$type": "app.bsky.feed.postgate#disableRule"]],
+          ]
+        ]
+      ]))
+    let agent = XRPCAgent(service: "https://pds.example", transport: mock)
+    let gates = await Gates.readDefaultGates(agent.gatesAgent)
+    #expect(gates == PostGates(reply: [.mention], quotes: false))
+    #expect(mock.requests.first?.url == "https://pds.example/xrpc/app.bsky.actor.getPreferences")
+    // As posting settings resolve a fresh post's defaults.
+    let settings = PostingSettingsStore.defaultPostingSettings(language: "en")
+    let resolved = await PostingSettingsStore.resolveDefaultGates(settings, agent: agent.gatesAgent)
+    #expect(resolved.source == "bluesky")
+    #expect(resolved.gates["quotes"] == false)
+  }
+
+  @Test func writesAndClearsAPostsGates() async throws {
+    let mock = MockTransport()
+    // Neither gate exists yet: the lexicon's RecordNotFound reads as none.
+    mock.on(
+      .path("/xrpc/com.atproto.repo.getRecord"),
+      respond: .json(["error": "RecordNotFound", "message": "Could not locate record"], status: 400))
+    mock.on(.path("/xrpc/com.atproto.repo.putRecord"), respond: .json(["uri": "x", "cid": "y"]))
+    let agent = XRPCAgent(service: "https://pds.example", transport: mock)
+    let out = try await Gates.updatePostGates(
+      agent.gatesAgent, uri: Self.post, reply: [ReplyRule.follower], quotes: false, now: Date(timeIntervalSince1970: 1_700_000_000))
+    #expect(out == PostGates(reply: [.follower], quotes: false))
+    let reads = mock.requests.filter { $0.url.contains("getRecord") }.map(\.url)
+    #expect(reads.contains(
+      "https://pds.example/xrpc/com.atproto.repo.getRecord?repo=did%3Aplc%3Amira&collection=app.bsky.feed.threadgate&rkey=3kpost"))
+    let writes = mock.requests.filter { $0.url.hasSuffix("putRecord") }
+    #expect(writes.count == 2)
+    let first = try JSONValue.parse(String(decoding: writes[0].body ?? Data(), as: UTF8.self))
+    #expect(first["repo"] == "did:plc:mira")
+    #expect(first["collection"] == "app.bsky.feed.threadgate")
+    #expect(first["rkey"] == "3kpost")
+    #expect(first["record"]?["post"] == .string(Self.post))
+    #expect(writes[0].method == "POST")
+  }
+
+  @Test func aRefusedReadIsNotTakenForNone() async throws {
+    let mock = MockTransport()
+    mock.on(
+      .path("/xrpc/com.atproto.repo.getRecord"),
+      respond: .json(["error": "InternalServerError", "message": "boom"], status: 500))
+    let agent = XRPCAgent(service: "https://pds.example", transport: mock)
+    await #expect(throws: XRPCError.self) {
+      _ = try await Gates.updatePostGates(
+        agent.gatesAgent, uri: Self.post, reply: [ReplyRule]?.none, quotes: true,
+        now: Date(timeIntervalSince1970: 1_700_000_000))
+    }
+    #expect(!mock.requests.contains { $0.url.hasSuffix("putRecord") || $0.url.hasSuffix("deleteRecord") })
+    let notFound = XRPCError(statusCode: 400, error: "RecordNotFound", message: "gone")
+    #expect((notFound as XRPCErrorDescribing).xrpcError == "RecordNotFound")
+  }
+}
