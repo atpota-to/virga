@@ -56,19 +56,24 @@ enum ScheduleText {
 
 /// Lists of ids as the web compares them; two ids are `===` as
 /// PostingPages.sameValue has it (two strings by code unit, two numbers by
-/// value, nothing else).
+/// value, nothing else). PostingPages is the main actor's, so the three
+/// that compare are too (their callers, the page and its model, are);
+/// `firstText` and `key` stay free for ScheduleListEntry.
 enum ScheduleIds {
   /// `ids.includes(id)`.
+  @MainActor
   static func contains(_ ids: [JSONValue], _ id: JSONValue?) -> Bool {
     ids.contains { PostingPages.sameValue($0, id) }
   }
 
   /// `ids.indexOf(id)`, or nil.
+  @MainActor
   static func index(_ ids: [JSONValue], _ id: JSONValue?) -> Int? {
     ids.firstIndex { PostingPages.sameValue($0, id) }
   }
 
   /// `a.join() === b.join()` for two lists of ids.
+  @MainActor
   static func sameOrder(_ a: [JSONValue], _ b: [JSONValue]) -> Bool {
     a.count == b.count && zip(a, b).allSatisfy { PostingPages.sameValue($0, $1) }
   }
@@ -533,9 +538,11 @@ struct CalendarMark: View {
   }
 
   /// `outline: 2px solid var(--focus-ring); outline-offset: 2px` round the
-  /// circle (3 points wide in high contrast), as base.css's outline is.
+  /// circle. Two points in high contrast too: theme.css's 3px
+  /// (`:root[data-contrast='high'] :focus-visible`) is the pick's, whose
+  /// own outline is none, not the mark's.
   private var focusRing: some View {
-    let width = theme.isHighContrast ? theme.points(ThemeKit.highContrastFocusOutlineWidth) : theme.points(ThemeKit.focusOutline)
+    let width = theme.points(ThemeKit.focusOutline)
     let reach = theme.points(ThemeKit.focusOutlineOffset) + width
     return Circle()
       .inset(by: -reach)

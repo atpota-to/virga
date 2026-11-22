@@ -258,14 +258,21 @@ final class ScheduledPageModel {
 
   /// A step earlier or later (a phone's arrows, VoiceOver's adjust):
   /// `onStep`. Not while an order is being saved, as the arrows are
-  /// disabled then. Where it lands is said at once, as the keys' moves are
-  /// (`positionPhrase`), since the queue is redrawn only once the plan is
-  /// made.
+  /// disabled then.
   func step(_ id: JSONValue, _ delta: Double) {
     if busy.contains("reorder") { return }
-    let order = ScheduleModel.moveId(movable, id, delta)
-    announce = positionPhrase(order, id)
-    Task { await commitOrder(order) }
+    Task { await commitOrder(ScheduleModel.moveId(movable, id, delta)) }
+  }
+
+  /// VoiceOver's adjust on the handle: a step, and where it lands said at
+  /// once, as the keys' moves are (`positionPhrase`), since the queue is
+  /// redrawn only once the plan is made and VoiceOver reads the handle's
+  /// value before that. The phone's arrows say nothing more than the web's
+  /// do.
+  func adjust(_ id: JSONValue, _ delta: Double) {
+    if busy.contains("reorder") { return }
+    announce = positionPhrase(ScheduleModel.moveId(movable, id, delta), id)
+    step(id, delta)
   }
 
   /// The keys on a handle: Space or Return picks it up and puts it down,

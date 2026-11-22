@@ -560,7 +560,7 @@ struct QueueLine: Layout {
     var height: CGFloat = 0
   }
 
-  func plan(_ width: CGFloat?, _ subviews: Subviews) -> Plan {
+  func measure(_ width: CGFloat?, _ subviews: Subviews) -> Plan {
     var out = Plan()
     guard subviews.count >= 2 else { return out }
     let hasButton = subviews.count > 2
@@ -578,14 +578,14 @@ struct QueueLine: Layout {
   }
 
   func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-    let plan = plan(proposal.width, subviews)
+    let plan = measure(proposal.width, subviews)
     let ideal = plan.glyph.width + gap + plan.words.width + (subviews.count > 2 ? gap + plan.button.width : 0)
     return CGSize(width: proposal.width ?? ideal, height: plan.height)
   }
 
   func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
     guard subviews.count >= 2 else { return }
-    let plan = plan(bounds.width, subviews)
+    let plan = measure(bounds.width, subviews)
     let x = bounds.minX
     subviews[0].place(
       at: CGPoint(x: x, y: bounds.minY + (plan.line - plan.glyph.height) / 2),

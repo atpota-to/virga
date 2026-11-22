@@ -408,7 +408,7 @@ struct ScheduledRowView: View {
         onDrop: { model.dragEnded() },
         onCancel: { model.dragCancelled() },
         onKey: { model.key(id, $0) },
-        onAdjust: { delta in model.step(id, delta) })
+        onAdjust: { delta in model.adjust(id, delta) })
     } else {
       Image(systemName: ScheduleGlyph.lock)
         .virgaGlyph(Measure.Schedule.lockIcon, beside: theme.textMd, upTo: Measure.Schedule.handleWidth)
