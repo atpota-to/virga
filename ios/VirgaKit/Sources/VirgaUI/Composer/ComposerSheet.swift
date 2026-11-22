@@ -361,6 +361,7 @@ struct ComposerFoot: View {
           Button(ComposerActions.actionLabel(PublishActions.draft, state)) { controller.runAction(PublishActions.draft) }
             .buttonStyle(.virga(.ghost))
             .disabled(busy || model.actions.draft.disabled)
+            .accessibilityIdentifier("save-draft")
         }
         if also.contains(PublishActions.schedule) {
           Button {
