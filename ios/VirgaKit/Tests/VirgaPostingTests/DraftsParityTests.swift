@@ -8,6 +8,7 @@ import Foundation
 import Testing
 import VirgaCore
 import VirgaNetwork
+import VirgaSession
 import VirgaTestSupport
 @testable import VirgaPosting
 
@@ -342,6 +343,10 @@ struct DraftsScript {
     #expect(made?.code == "DRAFT_LIMIT")
     #expect(made?.message == Drafts.draftLimitMessage)
     #expect(made?.cause is XRPCError)
+    // Read as the web's Error object: `code` set on it, and no longer the AppView's refusal.
+    #expect(JSErrorFields(made)?.codeString == "DRAFT_LIMIT")
+    #expect(JSErrorFields(made)?.message == Drafts.draftLimitMessage)
+    #expect(!Drafts.isDraftLimitError(made))
     #expect(!Drafts.isDraftLimitError(XRPCError(statusCode: 500, error: "InternalServerError", message: "offline")))
   }
 }
