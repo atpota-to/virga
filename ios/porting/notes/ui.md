@@ -108,13 +108,14 @@ THEME (Theme/)
 COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
 - Buttons: `.buttonStyle(.virga(.primary, size: .large, icon:, isOn:, destructive:))` for the
   quiet, primary, ghost and danger tiers in small, medium and large (danger keeps the deep
-  red at night; a button keeps its words, `fixedSize`); `.linkAction` (its own 1-point line
+  red at night; a button keeps its words, `fixedSize`; a destructive ghost keeps its words red); `.linkAction` (its own 1-point line
   at a 3-point offset, 2 while open or pressed; a Label's title is underlined, not its icon);
   `MoreLink(_, to:)`. The kit's sizes are `KitSize`.
 - `Segmented(label:options:selection:size:)` (scrolls with faded edges, the pressed key
   brought clear of the fade only when it is under it, keys held at their bold width; an
   option's web `title` is `SegmentedOption(hint:)`, and `minWidth:` a key's least width, as a
-  kind filter's glyph-only keys have, 32 at 760 and under), `ChipStyle`, `TokenView`/`TokenRow`,
+  kind filter's glyph-only keys have, 32 at 760 and under), `ChipStyle(isOn:wraps:)` (`wraps`: a long
+  answer wraps in its chip, from its start), `TokenView`/`TokenRow`,
   `Badge`, `MetaLine`/`MetaPiece` (the dot 6 after its word), `StateDot`, `Avatar`,
   `AccessLine`.
 - `.toggleStyle(.virgaSwitch)` draws the capsule and its knob and no words, as the web's
@@ -314,12 +315,19 @@ TEMPLATES AND POSTING (Templates/, Posting/, Settings/PostingSettingsSection.swi
   `start()` in `.task` and `stop()` on disappear; the app sets `TemplateService.shared` with its
   key-value store at launch (AppModel).
 - `.templateEditor(isPresented:did:template:seed:onSaved:onDeleting:)` is TemplateEditor.jsx, a
-  full-height sheet over `DialogFrame` whose foot holds the prompts. Its reads (recent posts, a
-  quote's view, a pasted link) are `TemplateEditorSources`, written over PublicAppView until
-  library/sources.js is ported; a web page's link card waits for linkCard.js (`linkCard`).
-- `TemplateQuestions(template:context:…onDone:)`, `ChoiceGroup` and `TemplatePreviewView` are
-  for the composer's library: it passes `preview:` from previewFor once library/model.js is
-  ported; until then `LibraryPreview.forTemplate` works out a template on its own.
+  full-height sheet over `DialogFrame` (no dialog foot) with the editor's own, `TemplateEditorFoot`
+  (`.tpl-actions`: a hairline over it on the dialog's ground, Delete apart at its start, the buttons at
+  their own widths, the prompts in their place), in its bottom safe area. `.templateEditor(item:did:
+  template:onDismiss:)` opens it on an Identifiable's template and keeps that template while the
+  sheet goes down (the Templates page). Its reads (recent posts, a quote's view, a pasted link) go
+  through LibrarySources (fetchOwnPosts, hydrateEmbedViews, resolveRecordLink, resolveExternalLink);
+  a web page's link card is `LinkCard.fetchLinkCard(transport:)`. The recent posts are read in a task
+  of their own: a `.task(id:)` keyed on the status it sets cancels its own read.
+- `TemplateQuestions(template:context:…autoFocus:preview:onDone:)`, `ChoiceGroup` (its answers
+  `ChipStyle(isOn:wraps: true)`, wrapping in their chips) and `TemplatePreviewView` are for the
+  composer's library, which passes `preview:` from `Library.previewFor` within the post under way; on
+  its own a template previews through `TemplateQuestions.defaultPreview` (previewFor of
+  itemFromTemplate). `TemplateBones(shares:titleFirst:)` is `.lib-bone-card`.
 - Posting/PostingParts.swift: `PostingHeader.model(key)`, `RowSkeleton`, `LoadError`,
   `.postingConfirm(isPresented:title:onConfirm:message:)` (hubParts' ConfirmDialog) and
   `PostingWords.countPhrase`. Use opens the composer through `ComposerHost`.
@@ -347,6 +355,10 @@ ADVISER (Adviser/, Composer/ComposerController+Adviser.swift, Posting/)
   `adviser-verdict`, `adviser-fix-all`, `adviser-sheet-keep-editing`, `adviser-sheet-publish`).
   The marked draft is one `Text` of runs: a fix is a link (`adviser-fix:<key>`) the sheet's
   `openURL` action takes, a span is underlined in its tone, and a numbered note lights its passage.
+  VoiceOver reads each post through a label in the web's hidden words (Post 1/2, Change “x” to “y”,
+  Fixed:, note 1), each fix still to take an accessibility action of its own. adviser.css's phone
+  rules (640 and under: the busy line's equal shares, the alt picture's 180, the revise column,
+  Forget my style's own line) follow `theme.composerNarrow`.
 - `.adviserStyleDialog(isPresented:did:model:)` is StyleDialog.jsx (`style-dialog`, `style-read`,
   `style-summary`, `style-keep`); `AdviserSettingsCard(did:model:)` AdviserSettings.jsx
   (`posting-adviser`, `adviser-enabled`, `adviser-learn-style`), saving `["adviser": json]`
@@ -651,10 +663,30 @@ LIBRARY (Library/)
   in a new post opens the composer with `attach: plan.json`). VirgaPosting has a `LibraryPage` (a
   shelf's read), hence the page's name.
 - `LibraryWiring.environment(app)` builds `LibraryEnvironment` (the session's transport, the
-  account's archive, the link-card stand-in, the usage store). Each dialog and page makes its own
+  account's archive, LinkCard's fetcher, the usage store). Each dialog and page makes its own
   `LibraryModel` and its own `TemplatesModel` (the model's `stop()` stops its templates model).
 - The template editor and questions read through `LibrarySources` and preview with
   `Library.previewFor`; `TemplateAttachSummary` lives in Templates/TemplateQuestions.swift.
+- The panel's columns come from its own width (`LibraryColumns`, measured by a GeometryReader: the
+  web's `container: lib`); narrow (760 and under, the detail in the list's place) is the window's.
+  In `.dialog` mode it fills its sheet (LibraryDialog: the kit's `DialogHead`, then the panel, no
+  outer ScrollView): the list and the detail each scroll by themselves, and on a phone the use
+  button is held at the sheet's foot (`\.libraryPinsActions` on the detail's ScrollView, read by
+  `LibraryPinnedActions`, which TemplateQuestions' actions take too). In `.page` mode the page
+  scrolls and the detail is held 24 under its top beside the list (`LibraryStickyTop`, over the
+  `.scrollView` coordinate space). The shelves are `LibraryShelfRow` (`.lib-shelf`: a ScrollRow of
+  words with their counts), the search the panel's own (its clear button, Escape, the dialog's
+  autofocus), a shelf's or a search's failure `LibraryStatus`.
+- A post not read yet has `view: .null`: the detail tests `view.isTruthy` (bones, then
+  `PostPreviewCard(view:)` in full, or why it couldn't be read), and hydrates unless it has a truthy
+  view and a cid. A read called off by choosing another row isn't a failure.
+- The dialog puts its plan in from its `.onDisappear`, once its sheet has gone: what applyPlan asks
+  (Replace the link card?, Replace what this post quotes?) is a sheet of the composer's, which
+  can't come up while the library's is still going down.
+- Identifiers: `library-dialog`, `library-panel`, `library-search`, `library-list`, `library-row`,
+  `library-empty`, `library-detail`, `library-use`, `library-new-template`, `template-questions`,
+  `template-question-<n>`, `template-questions-use`, `template-preview`; the dialog's Close is
+  DialogHead's `dialog-close`.
 
 LIVE SKY (Sky/, and VirgaCore/Hillside/ for everything that isn't drawing)
 - The pure parts are VirgaCore's, held to the web's own code by hillside.scene, hillside.clouds,
