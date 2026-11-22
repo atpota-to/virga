@@ -95,7 +95,11 @@ struct ScanResultView: View {
           }
           .buttonStyle(.linkAction)
           .accessibilityIdentifier("defense-rescan")
-        })
+        }
+        // Both actions in full beside the title, which takes what they leave:
+        // the phone's `.card-head { grid-template-columns: minmax(0, 1fr) auto }`
+        // with `.link-action { white-space: nowrap }`.
+        .fixedSize(horizontal: true, vertical: false))
     )
     // The post's words are held to two lines (`.defense-post-quote {
     // -webkit-line-clamp: 2 }`); the title and the actions are one line each.

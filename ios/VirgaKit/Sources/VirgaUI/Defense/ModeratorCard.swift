@@ -65,7 +65,9 @@ struct ModeratorCard: View {
           }
           .buttonStyle(.virga)
           .disabled(busy)
-          .padding(.top, theme.space5)
+          // `.defense-actions { margin-top: var(--space-5) }`, collapsed
+          // with the heading's 16 under it: 20 in all.
+          .padding(.top, theme.space5 - theme.points(ThemeKit.cardHeadSpaceBelow))
           .accessibilityIdentifier("defense-moderator-link")
         }
       } else {
@@ -82,9 +84,12 @@ struct ModeratorCard: View {
     .accessibilityIdentifier("defense-moderator")
   }
 
+  /// The moderator's profile, a link in the sentence: ink with a line
+  /// under it (base.css's `a`).
   private func profile(_ handle: String) -> AttributedString {
     var name = AttributedString("@\(handle)")
     name.link = URL(string: "https://bsky.app/profile/\(handle)")
+    name.underlineStyle = Text.LineStyle.single
     return name
   }
 
@@ -98,7 +103,7 @@ struct ModeratorCard: View {
     let choices: [SelectChoice<String>] =
       [SelectChoice("", "Ask me which")] + all.map { SelectChoice(DefenseListRows.id($0), DefenseListRows.name($0)) }
     return VStack(alignment: .leading, spacing: theme.space3) {
-      Text(words).virgaText(.textBase).foregroundStyle(theme.ink2).tint(theme.ink).fixedSize(horizontal: false, vertical: true)
+      Text(words).virgaText(.textBase).foregroundStyle(theme.ink).tint(theme.ink).fixedSize(horizontal: false, vertical: true)
       if all.count > 1 {
         FieldStack("“block @someone” adds to") {
           VirgaSelect(
@@ -127,7 +132,7 @@ struct ModeratorCard: View {
     send += profile(handle)
     send += AttributedString(" in a DM, from this account, within fifteen minutes:")
     return VStack(alignment: .leading, spacing: theme.space3) {
-      Text(send).virgaText(.textBase).foregroundStyle(theme.ink2).tint(theme.ink).fixedSize(horizontal: false, vertical: true)
+      Text(send).virgaText(.textBase).foregroundStyle(theme.ink).tint(theme.ink).fixedSize(horizontal: false, vertical: true)
       // 1.125rem, which grows with Dynamic Type as a rem does with the
       // browser's text size; its tracking an em of that.
       let codeSize = theme.scaled(Measure.Defense.codeSize)
