@@ -5,7 +5,10 @@
 // row, read at a glance, with the exact number beside it. The label column
 // is the list's own: 136 for words (200 when the labels are NSIDs, set a
 // step smaller), the bar at least 96 (60), so every list of words on a page
-// starts its bars on one line; at most 640 wide. A label that is cut short
+// starts its bars on one line; at most 640 wide. As a CSS grid sizes
+// `minmax(0, 136px) minmax(96px, 1fr) auto`, the label column takes its
+// whole width first and the bar what is left past its least, so the list
+// measures its width and its widest value to give the labels theirs. A label that is cut short
 // says the whole of it to VoiceOver, with the row's value; the row's title
 // (its tooltip on the web) is the hint. In high contrast the track has an
 // edge in --line-soft (theme.css).
@@ -47,6 +50,10 @@ public struct BarList: View {
   private let format: (Double) -> String
   private let max: Double?
   private let label: String?
+  /// The list's width and its widest value, which the label column's
+  /// width is worked out from.
+  @State private var listWidth: CGFloat?
+  @State private var valueWidth: CGFloat = 0
 
   public init(rows: [BarListRow], format: ((Double) -> String)? = nil, max: Double? = nil, accessibilityLabel: String? = nil) {
     self.rows = rows
@@ -59,6 +66,13 @@ public struct BarList: View {
     if !rows.isEmpty {
       let top = max ?? Swift.max(rows.map(\.value).max() ?? 0, 1)
       let nsids = rows.contains { $0.code }
+      let labelMax = nsids ? Measure.Chart.barLabelCode : Measure.Chart.barLabel
+      let trackMin = nsids ? Measure.Chart.barTrackCode : Measure.Chart.barTrack
+      // `minmax(0, var(--barlist-label))` grows to its limit before the
+      // `minmax(var(--barlist-track), 1fr)` track grows past its least.
+      let labelWidth = listWidth.map {
+        Swift.min(labelMax, Swift.max(0, $0 - 2 * Measure.Chart.barColumnGap - trackMin - valueWidth))
+      }
       Grid(alignment: .leading, horizontalSpacing: Measure.Chart.barColumnGap, verticalSpacing: Measure.Chart.barRowGap) {
         ForEach(rows) { row in
           GridRow {
@@ -74,7 +88,7 @@ public struct BarList: View {
                 .lineLimit(1)
                 .truncationMode(.tail)
             }
-            .frame(maxWidth: nsids ? Measure.Chart.barLabelCode : Measure.Chart.barLabel, alignment: .leading)
+            .frame(minWidth: labelWidth, maxWidth: labelWidth ?? labelMax, alignment: .leading)
             GeometryReader { geometry in
               ZStack(alignment: .leading) {
                 Capsule().fill(theme.tint)
@@ -89,13 +103,16 @@ public struct BarList: View {
                 }
               }
             }
-            .frame(minWidth: nsids ? Measure.Chart.barTrackCode : Measure.Chart.barTrack, maxWidth: .infinity)
+            .frame(minWidth: trackMin, maxWidth: .infinity)
             .frame(height: Measure.Chart.barTrackHeight)
             .accessibilityHidden(true)
             Text(row.display ?? format(row.value))
               .virgaText(.textBase, weight: VirgaWeight.semibold)
               .foregroundStyle(theme.ink)
               .lineLimit(1)
+              // The `auto` column: a value is never cut, and the widest sets it.
+              .fixedSize(horizontal: true, vertical: false)
+              .background(GeometryReader { Color.clear.preference(key: BarValueWidthKey.self, value: $0.size.width) })
               .gridColumnAlignment(.trailing)
           }
           // Read as the web's row is: its label, then its value; the title
@@ -105,10 +122,26 @@ public struct BarList: View {
           .accessibilityHint(row.title.flatMap { $0.jsEquals(row.label) ? nil : $0 } ?? "")
         }
       }
+      .onPreferenceChange(BarValueWidthKey.self) { valueWidth = $0 }
+      .background(
+        GeometryReader { geometry in
+          Color.clear
+            .onAppear { listWidth = geometry.size.width }
+            .onChange(of: geometry.size.width) { _, next in listWidth = next }
+        }
+      )
       .frame(maxWidth: Measure.Chart.barListMax, alignment: .leading)
       .accessibilityElement(children: .contain)
       .accessibilityLabel(label ?? "")
     }
+  }
+}
+
+/// The widest of a bar list's values (the `auto` column).
+private struct BarValueWidthKey: PreferenceKey {
+  static let defaultValue: CGFloat = 0
+  static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+    value = Swift.max(value, nextValue())
   }
 }
 #endif
