@@ -445,6 +445,31 @@ final class FakePostingEvents: @unchecked Sendable {
     #expect(m.sync == nil)
   }
 
+  /// A People list left (or its `.task(id:)` started again) before the
+  /// profiles come: the read goes on, as the web's hydrateActors takes no
+  /// signal, and the cards land, though the DIDs are now marked as tried.
+  @Test(.timeLimit(.minutes(1))) func peopleAskedForGetTheirCardsWhenTheListGoesFirst() async {
+    let transport = MockTransport()
+    let asked = Locked(false)
+    let answer = Locked(false)
+    transport.on(.path("/xrpc/app.bsky.actor.getProfiles"), times: 1) { _ in
+      asked.set(true)
+      while !answer.wrappedValue { try await Task.sleep(nanoseconds: 1_000_000) }
+      // A request on the wire is called off with its task, as URLSession's is.
+      try Task.checkCancellation()
+      return .json(["profiles": [["did": "did:plc:alice", "handle": "alice.test", "displayName": "Alice"]]])
+    }
+    transport.on(.path("/xrpc/app.bsky.actor.getProfiles"), respond: .networkError())
+    let m = model(transport)
+    let list = Task { await m.wantActors(["did:plc:alice"]) }
+    while !asked.wrappedValue { await Task.yield() }
+    list.cancel()
+    answer.set(true)
+    await list.value
+    #expect(m.actors["did:plc:alice"]?.handle == "alice.test")
+    #expect(m.actors["did:plc:alice"]?.displayName == "Alice")
+  }
+
   @Test(.timeLimit(.minutes(1))) func hearsOfPostsMadeAndDeletedElsewhere() async throws {
     let transport = MockTransport()
     smallWorld(transport)
