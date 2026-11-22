@@ -232,7 +232,7 @@ struct PostBlock: View {
   @ViewBuilder private var attachments: some View {
     ImageGrid(
       images: post.images, processing: controller.processing[post.id] ?? 0,
-      requireAltText: controller.settings.requireAltText, disabled: disabled,
+      requireAltText: controller.settings.requireAltText, disabled: disabled, transport: controller.transport,
       onAlt: { id in controller.dialog = .alt(postId: post.id, imageId: id) },
       onMove: { from, to in controller.dispatch(.moveImage(index: index, from: from, to: to)) },
       onRemove: { id in

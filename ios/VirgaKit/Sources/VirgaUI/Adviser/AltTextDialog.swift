@@ -10,16 +10,21 @@
 // The post's text goes along so the description fits the post. Without a
 // requester it is the composer's own dialog (DescribeDialog.altText).
 // Over VirgaPosting's AIService, AltTextModel and AltTextFollowUp; the
-// image's bytes are the composer's prepared file. ⌘↩ saves.
+// image's bytes are the composer's prepared file, or, for a draft's image
+// kept only as a posted blob, its preview fetched over the session's
+// network (the web's fileFromPreview). ⌘↩ saves.
 
 #if canImport(UIKit)
 import SwiftUI
 import UIKit
 import VirgaCore
+import VirgaNetwork
 import VirgaPosting
 
 struct AltTextDialog: View {
   @Environment(\.virgaTheme) private var theme
+  /// The session's network, the composer's own, for a preview that isn't a local file.
+  @Environment(AppModel.self) private var app
   let image: ComposerImage
   let requester: (any AIRequester)?
   let did: String?
@@ -57,7 +62,9 @@ struct AltTextDialog: View {
     DialogFrame(title: "Alt text", onClose: onClose, hasActions: true, autofocus: true) {
       VStack(alignment: .leading, spacing: Measure.Adviser.dialogBodyGap) {
         if let preview = image.previewUrl {
-          AltTextPreview(url: preview, cap: theme.composerNarrow ? Measure.Adviser.phoneAltPreviewMax : Measure.Adviser.altPreviewMax)
+          AltTextPreview(
+            url: preview, cap: theme.composerNarrow ? Measure.Adviser.phoneAltPreviewMax : Measure.Adviser.altPreviewMax,
+            transport: app.archiveEnvironment.transport)
         }
         if canGenerate && !canRevise { kindChoice }
         description(count: count, canGenerate: canGenerate, canRevise: canRevise)
@@ -257,8 +264,9 @@ struct AltTextDialog: View {
     limited = false
     defer { if id == run { pending = nil } }
     do {
+      let (file, read) = try await source(app.archiveEnvironment.transport)
       let generated = try await AIService.generateAltTextForFile(
-        requester, image.file ?? previewFile(), read: Self.readBytes, payload: request.json, store: store)
+        requester, file, read: read, payload: request.json, store: store)
       if id != run { return }
       guard let next = AltTextModel.afterGeneration(before: before, generated: .string(generated), mode: mode, selected: selected) else {
         error = "The description came back empty. Try again, or write your own."
@@ -284,6 +292,27 @@ struct AltTextDialog: View {
     }
   }
 
+  /// The image to describe and how to read its bytes: the composer's file;
+  /// else its preview, a local file, or a draft's image kept only as a
+  /// posted blob (its CDN address), fetched as the web's fileFromPreview
+  /// fetches it, its type the response's (else image/jpeg).
+  private func source(_ transport: any HTTPTransport) async throws
+    -> (ComposerFile?, @Sendable (ComposerFile) async throws -> Data)
+  {
+    if let file = image.file { return (file, Self.readBytes) }
+    guard let preview = image.previewUrl, let url = URL(string: preview), url.scheme == "https" || url.scheme == "http"
+    else { return (previewFile(), Self.readBytes) }
+    let response = try await transport.send(HTTPRequest(url: preview, timeoutMs: 15_000))
+    guard response.ok, !response.body.isEmpty else { throw AIServiceErrorBuilder.noImage }
+    let body = response.body
+    let essence = response.headers.get("content-type")?.split(separator: ";").first.map {
+      $0.trimmingCharacters(in: .whitespaces).lowercased()
+    }
+    let type = essence.flatMap { $0.isEmpty ? nil : $0 } ?? "image/jpeg"
+    let file = ComposerFile(name: "image", type: type, size: Double(body.count))
+    return (file, { _ in body })
+  }
+
   /// The image as a file, from its preview when the composer kept no file.
   private func previewFile() -> ComposerFile? {
     guard let preview = image.previewUrl else { return nil }
@@ -307,11 +336,14 @@ struct AltTextDialog: View {
 
 /// `.alt-dialog-preview`: the whole picture (`object-fit: contain`), no
 /// larger than it is, at most the dialog's width and `cap` tall, centred,
-/// its edge and its --surface-3 ground round the picture itself.
+/// its edge and its --surface-3 ground round the picture itself. A preview
+/// that isn't a local file (a draft's posted image) is read through
+/// `transport`, as `<img src>` loads it.
 struct AltTextPreview: View {
   @Environment(\.virgaTheme) private var theme
   let url: String
   let cap: CGFloat
+  var transport: (any HTTPTransport)?
   @State private var image: UIImage?
 
   var body: some View {
@@ -334,11 +366,8 @@ struct AltTextPreview: View {
     .frame(maxWidth: .infinity)
     .accessibilityHidden(true)
     .task(id: url) {
-      guard let parsed = URL(string: url), parsed.isFileURL else {
-        image = nil
-        return
-      }
-      image = UIImage(contentsOfFile: parsed.path)
+      image = nil
+      image = await LocalPicture.picture(url, transport: transport)
     }
   }
 }
