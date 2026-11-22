@@ -851,11 +851,15 @@ LIVE SKY (Sky/, and VirgaCore/Hillside/ for everything that isn't drawing)
 ## Known gaps and deliberate differences
 
 - Left for later steps: dragging cards; "Keep it when space runs low" (iOS has nothing to ask).
-- Pictures dropped on the composer (ComposerDrop.swift: Composer.jsx's dropProps and
-  `.composer-drop`) go into the post being written, images only and not while it is busy, with
-  "Drop images to add them to the post" in a dashed accent line over the sheet while a drag
-  carrying one is over it. No UI test drags one in: XCUITest can't bring a drag from another
-  app, so it is checked by CI's compile and by hand.
+- Files dropped on the composer (ComposerDrop.swift: Composer.jsx's dropProps and dropFiles,
+  `.composer-drop`) go to the post being written (the active one, else the first) through
+  addFiles with allowVideo false: pictures are added, and a video, sound or PDF is left out with
+  the web's note. Nothing is taken while it is busy. While a drag of files is over the composer,
+  "Drop images to add them to the post" lies over the post area in a dashed accent line, the head
+  or bar and the foot left clear. Every picture's load starts inside the drop's action, as the
+  dropped payload is readable only until it returns. Dragged text and links are the post's text
+  view's. No UI test drags one in: XCUITest can't bring a drag from another app, so it is checked
+  by CI's compile and by hand.
 - Copy is the web's word for word, including words that only fit a browser ("This
   browser's region", "Forget X on this browser", "Saving the repo to this browser"). Worth
   raising on the web side rather than changing on one side.

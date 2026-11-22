@@ -90,6 +90,8 @@ struct ComposerSheet: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(ToastCenter.self) private var toasts
   @Bindable var controller: ComposerController
+  /// A drag of files is over the composer (`dragOver`).
+  @State private var dropOver = false
 
   /// The caret in the first post, 40 ms after it's drawn, on a wide screen,
   /// while nothing else has it (the web's check that focus is idle): a
@@ -147,6 +149,8 @@ struct ComposerSheet: View {
         }
       }
       .scrollDismissesKeyboard(.interactively)
+      // `.composer-drop`: over the post area, the head or bar and the foot left clear.
+      .overlay { if dropOver { ComposerDropHint() } }
       .sheet(item: $controller.dialog) { dialog in
         ComposerDialogView(controller: controller, dialog: dialog)
           .presentationDetents(dialog.isTall ? [.large] : [.medium, .large])
@@ -156,8 +160,8 @@ struct ComposerSheet: View {
       ComposerFoot(controller: controller)
     }
     .background(theme.surface)
-    // Pictures dropped on the composer go into the post being written.
-    .composerDrop(controller)
+    // Files dropped anywhere on the composer go to the post being written.
+    .composerDrop(controller, over: $dropOver)
     .overlay { ToastStack(center: toasts) }
     // ADVISER: the adviser's sheet, and its account while the composer is open.
     .adviserSheet(controller.adviser)
