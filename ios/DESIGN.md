@@ -230,7 +230,10 @@ One look per job. Use these, in these places, and nothing else.
   `--surface` with a `--line` edge, corners of 16 and `--shadow-lg`, over
   `--scrim`; from 560 down its buttons share the foot in equal halves, 44
   tall. On iPhone present it as a sheet. The composer fills the screen from
-  640 down, with the main button under the thumb.
+  640 down, with a bar of its own held at the top while the post scrolls
+  under it (composer.css `.composer-bar`): Close, its title and the send
+  button, where the keyboard can't cover them; the tools, Save as draft and
+  Schedule stay at the foot, above the home indicator.
 - **Info tip** (`InfoTip.jsx`): a small (i) beside a number that explains it:
   a popover in ink (`--btn`) with the page's colour written on it, up to 280
   wide.
@@ -311,7 +314,7 @@ should the app (an iPad held upright gets the phone's shell). The breakpoints:
 | 900 and wider | the sidebar: the six parts as words with their icons, only the part you are in opened out into its pages; no ground, on the sky; New post (ink) and Search over it; folds to a 72-point rail of icons. The page's column is centred beside it, the two held together. |
 | 899 and narrower | the app bar (the mark, or ‹ the page above on an inner page; Search; the account, whose menu has Settings and Sync now), scrolling away with the sky; the tab bar along the bottom (the parts as icons, the one you are in with its name on an `--accent-tint` pill; New post as a round ink button at its end); the page's margin 20 (16 compact), its top 8, the title 28, a shorter sky. |
 | 760 and narrower | body text 15. |
-| 640 and narrower | the composer (and the adviser beside it) fill the screen, as a full-height sheet with the main button under the thumb. |
+| 640 and narrower | the composer (and the adviser beside it) fill the screen, as a full-height sheet with Close, its title and the send button in a bar held at the top, where the keyboard can't cover them. |
 | 560 and narrower | figures two to a row; a section's heading keeps one thing beside its title and puts a small Segmented under it; a list's filters stack; the page's controls go under its words; a row's ⋯ moves to its top corner. |
 | 429 and narrower | the current tab is a tinted disc, its name read out but not shown. In high contrast, from 374 down, it has a 2-point ink ring (`ThemeKit.highContrastCurrentTabRing`). theme.css's comment means the ring for every disc, but its query says 374 while shell.css starts the disc at 429; that is reported to the web side, and the app follows the stylesheet until it is settled. |
 
