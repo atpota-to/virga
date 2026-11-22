@@ -78,6 +78,12 @@ public struct AppRoot: View {
       .onChange(of: signedIn, initial: true) { _, dids in
         ScanStore.shared.keepScansFor(dids)
       }
+      // An account removed takes its unsent post with it, while the sheet is
+      // down too, and whichever state is drawn: the composer's host outlives
+      // the shell, so with the last account gone nothing is signed in, and
+      // a late patch (a video still processing) must find nobody to save for.
+      .onChange(of: session.accounts.map(\.did)) { _, _ in composer.controller?.forgetGoneAccounts() }
+      .onChange(of: session.did) { _, _ in composer.controller?.forgetGoneAccounts() }
       .onOpenURL { url in
         if openCompose(url) { return }
         finishReturn(url)

@@ -118,9 +118,6 @@ struct ComposerHostModifier: ViewModifier {
         }
       }
       .onChange(of: host.opens) { _, _ in start() }
-      // An account removed takes its unsent post with it, while the sheet is down too.
-      .onChange(of: session.accounts.map(\.did)) { _, _ in host.controller?.forgetGoneAccounts() }
-      .onChange(of: session.did) { _, _ in host.controller?.forgetGoneAccounts() }
       .onChange(of: scenePhase) { _, phase in
         if phase == .background { host.controller?.flush() }
       }
