@@ -164,6 +164,30 @@ export async function withTimers(
   }
 }
 
+/** crypto.randomUUID counting up from 1, while `fn` runs. */
+export async function withUuids(fn) {
+  const own = Object.getOwnPropertyDescriptor(globalThis, 'crypto');
+  const real = globalThis.crypto;
+  let n = 0;
+  Object.defineProperty(globalThis, 'crypto', {
+    configurable: true,
+    value: {
+      getRandomValues: (bytes) => real.getRandomValues(bytes),
+      subtle: real.subtle,
+      randomUUID: () => {
+        n += 1;
+        return `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
+      },
+    },
+  });
+  try {
+    return await fn();
+  } finally {
+    if (own) Object.defineProperty(globalThis, 'crypto', own);
+    else delete globalThis.crypto;
+  }
+}
+
 /* ---- the agent ---------------------------------------------------------- */
 
 /** The write account's agent, through Virga's server (make it inside the recorded function). */

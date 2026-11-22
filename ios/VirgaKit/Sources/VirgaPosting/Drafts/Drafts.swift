@@ -205,7 +205,7 @@ public enum Drafts {
     if error["error"]?.stringValue == "DraftLimitReached" || error["code"]?.stringValue == "DraftLimitReached" {
       return true
     }
-    if error["name"]?.stringValue == "DraftLimitReachedError" { return true }
+    // (The SDK's DraftLimitReachedError is an XRPCError whose `error` says so.)
     return str(error["message"]).contains("DraftLimitReached")
   }
 
