@@ -445,8 +445,9 @@ struct PostingPagesError: Error, LocalizedError {
   var errorDescription: String? { message }
 }
 
-/// The kit's ⋯ for a row, with a spinner in place of the dots while the
-/// row works.
+/// The kit's ⋯ for a row (MoreMenu's menu and glyph), with a spinner in
+/// place of the dots while the row works. It stays the one labelled menu
+/// throughout, as the web's Menu does, so VoiceOver keeps it and its focus.
 struct DraftsRowMenu: View {
   @Environment(\.virgaTheme) private var theme
   let label: String
@@ -454,13 +455,31 @@ struct DraftsRowMenu: View {
   let working: Bool
 
   var body: some View {
+    let side = theme.points(ThemeKit.touchGhostIconButtonSize)
+    Menu {
+      MenuContent(entries: entries)
+    } label: {
+      glyph(side: side)
+        .frame(width: side, height: side)
+        .contentShape(Circle())
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(label)
+    }
+    .menuOrder(.fixed)
+    .virgaFocusOutline(Circle())
+    .accessibilityLabel(label)
+    .accessibilityIdentifier("row-menu")
+  }
+
+  @ViewBuilder
+  private func glyph(side: CGFloat) -> some View {
     if working {
       HubSpinner()
-        .frame(width: theme.points(ThemeKit.touchGhostIconButtonSize), height: theme.points(ThemeKit.touchGhostIconButtonSize))
-        .accessibilityLabel(label)
     } else {
-      MoreMenu(label: label, entries: entries)
-        .accessibilityIdentifier("row-menu")
+      // MoreMenu's dots: grown with Dynamic Type, kept inside the circle.
+      Image(systemName: Glyph.more)
+        .virgaGlyph(theme.points(ThemeKit.menuItemIconSize), weight: .medium, upTo: side / 2)
+        .foregroundStyle(theme.color(ThemeKit.ghostButtonInk))
     }
   }
 }
@@ -493,9 +512,13 @@ struct HubCornerRow<Words: View, Action: View>: View {
       } else {
         HStack(alignment: .top, spacing: Measure.Hub.rowColumnGap) {
           words.frame(maxWidth: .infinity, alignment: .leading)
+          // `.row-actions { margin-top: -6px }`, and the 44-point ⋯ reaching
+          // 6 past it above and below (`.row-actions .btn--ghost.btn--icon {
+          // margin-block: -6px }`), so the group is the 32 of a small button,
+          // centred on the words' first line.
           HStack(spacing: theme.points(ThemeKit.rowActionsGap)) {
             if let button { button }
-            if let menu { menu }
+            if let menu { menu.padding(.vertical, -Measure.Section.rowActionsLift) }
           }
           .padding(.top, -Measure.Section.rowActionsLift)
         }
