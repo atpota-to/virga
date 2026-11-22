@@ -13,8 +13,8 @@
 // Once opened, the composer's state stays (the controller is the host's),
 // closed, so what was being written is still there the next time. It is a
 // sheet: on a phone the whole height, with the send button in a bar at
-// the top; on a wider window the composer's 640-point dialog. The scene going
-// to the background flushes the autosave.
+// the top; on a wider window the composer's 640-point dialog, as tall as
+// what's in it. The scene going to the background flushes the autosave.
 //
 // Its ToastCenter is the app's one (App.jsx's ToastProvider, above the
 // account): the host puts it in the environment of everything under it and
@@ -154,8 +154,10 @@ struct ComposerHostModifier: ViewModifier {
 }
 
 /// A phone's sheet is the whole height; a wider window's is the composer's
-/// own dialog, 640 wide (posting.css's `.composer-dialog`) where the system
-/// lets a sheet be sized.
+/// own dialog, 640 wide (posting.css's `.composer-dialog`) and as tall as
+/// what's in it, its foot straight under the post's settings (composer.css:
+/// a flex column up to `max-height: calc(100svh - 48px)`, which the system
+/// keeps it inside), where the system lets a sheet be sized.
 struct ComposerSheetSizing: ViewModifier {
   let phone: Bool
 
@@ -168,7 +170,7 @@ struct ComposerSheetSizing: ViewModifier {
     } else if #available(iOS 18.0, *) {
       content
         .frame(idealWidth: ComposerMeasure.dialogWidth)
-        .presentationSizing(.form.fitted(horizontal: true, vertical: false))
+        .presentationSizing(.form.fitted(horizontal: true, vertical: true))
     } else {
       content
     }
