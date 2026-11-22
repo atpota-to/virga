@@ -85,11 +85,27 @@ final class LiveSkyUITests: XCTestCase {
     wait(for: [drawn], timeout: seconds)
   }
 
-  /// Five taps on the mark, each well within a second and a half of the last.
+  /// Five taps on the mark, each within a second and a half of the last, as
+  /// useSkyTaps counts them. XCTest waits for the app to settle before every
+  /// tap, and a drawing live sky can stretch that past the window (run 60:
+  /// 1.55 seconds between the first two taps on an iPhone), so the count
+  /// starts again. The test times its own taps and keeps on until five in a
+  /// row came under 1.3 seconds apart; it stops there, so the app's count,
+  /// restarted at zero once it acts, can't reach five a second time.
   private func tapTheMarkFiveTimes(_ app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
     let mark = element(app, "brand")
     XCTAssertTrue(mark.waitForExistence(timeout: 10), "no mark to tap", file: file, line: line)
-    for _ in 0..<5 { mark.tap() }
+    var run = 0
+    var last = Date.distantPast
+    var taps = 0
+    while run < 5, taps < 15 {
+      mark.tap()
+      let now = Date()
+      run = now.timeIntervalSince(last) < 1.3 ? run + 1 : 1
+      last = now
+      taps += 1
+    }
+    XCTAssertEqual(run, 5, "no five taps in a row came close enough together", file: file, line: line)
   }
 
   /// The settings page's Appearance, from the account menu.
