@@ -37,6 +37,16 @@ enum DemoNetwork {
     }
   }
 
+  /// `toJSON(value)`: numbers that aren't finite as null, as a fixture holds them.
+  static func toJSON(_ value: JSONValue) -> JSONValue {
+    switch value {
+    case .number(let n): return n.isFinite ? value : .null
+    case .array(let items): return .array(items.map(toJSON))
+    case .object(let members): return .object(members.mapValues(toJSON))
+    default: return value
+    }
+  }
+
   /// `thrown(error)`: the message, and the name, status and error when it
   /// has them.
   static func thrown(_ error: any Error) -> JSONValue {
