@@ -4,13 +4,13 @@
 // Bluesky's language filters read), named in the reader's language, and
 // the self-labels the composer offers.
 //
-// The web names languages with Intl.DisplayNames. Its English names for
-// the 184 codes are a table here (ComposerLanguageNames, from Node 22's
-// ICU, held to it by composer.composer's fixture), with the regional names
-// CLDR has for the tags people post in (pt-BR "Brazilian Portuguese").
-// Another tag with a region or script is named "Language (Region)" from
-// Foundation's region names, which can differ from ICU's; a locale that
-// isn't English names through Foundation. Names sort with localeCompare
+// The web names languages with Intl.DisplayNames. Its English names are
+// tables here (ComposerLanguageNames, ComposerLanguages+Names.swift, from
+// Node 22's ICU, held to it by composer.editor's fixture): every code it
+// names, CLDR's names for the tags people post in (pt-BR "Brazilian
+// Portuguese"), and the script and region names for a tag it names as
+// "Language (Script, Region)". A locale that isn't English names through
+// Foundation, which can differ from ICU's. Names sort with localeCompare
 // (LocaleCompare, through `compareNames`).
 
 import Foundation
@@ -72,18 +72,81 @@ public enum ComposerLanguages {
       if let name = ComposerLanguageNames.regional.first(where: { $0.key.jsLowercased() == lower })?.value {
         return name
       }
+      return englishTagName(code)
     }
-    // A tag with a region or script: "Language (Region)".
+    // Another locale's names come from Foundation, which can differ from
+    // ICU's: "Language (Script, Region)", or nil for a variant.
     let parts = PostingQueue.split(code, 0x2D)
     guard parts.count >= 2, let base = displayName(parts[0], locale: locale) else {
-      return english ? nil : Locale(identifier: locale).localizedString(forLanguageCode: code)
+      return Locale(identifier: locale).localizedString(forLanguageCode: code)
     }
-    let speaker = Locale(identifier: english ? "en_US" : locale)
-    let rest = parts[1]
-    let region =
-      rest.utf16.count == 4
-      ? speaker.localizedString(forScriptCode: rest) : speaker.localizedString(forRegionCode: rest.jsUppercased())
-    return region.map { "\(base) (\($0))" }
+    let speaker = Locale(identifier: locale)
+    var names: [String] = []
+    for part in parts.dropFirst() {
+      let name: String?
+      switch subtagKind(part) {
+      case .script: name = speaker.localizedString(forScriptCode: titlecased(part))
+      case .region: name = speaker.localizedString(forRegionCode: part.jsUppercased())
+      default: name = nil
+      }
+      guard let name else { return nil }
+      names.append(name)
+    }
+    return "\(base) (\(names.joined(separator: ", ")))"
+  }
+
+  enum SubtagKind { case script, region, variant, other }
+
+  /// What a subtag after the language is, by its shape (BCP 47).
+  static func subtagKind(_ part: String) -> SubtagKind {
+    let units = Array(part.utf16)
+    func letter(_ u: UInt16) -> Bool { (u | 0x20) >= 0x61 && (u | 0x20) <= 0x7A }
+    func digit(_ u: UInt16) -> Bool { u >= 0x30 && u <= 0x39 }
+    if units.count == 4 && units.allSatisfy(letter) { return .script }
+    if (units.count == 2 && units.allSatisfy(letter)) || (units.count == 3 && units.allSatisfy(digit)) {
+      return .region
+    }
+    let alnum = units.allSatisfy { letter($0) || digit($0) }
+    if alnum && ((5...8).contains(units.count) || (units.count == 4 && digit(units[0]))) { return .variant }
+    return .other
+  }
+
+  static func titlecased(_ part: String) -> String {
+    String(part.prefix(1)).uppercased() + part.dropFirst().lowercased()
+  }
+
+  /// A tag CLDR has no name of its own for, as ICU names it in English:
+  /// "Language (Script, Region, VARIANT)", each part by its name or, when
+  /// ICU has none, its code ("English (XX)", "xx (United States)"). Nil for
+  /// one DisplayNames refuses (a subtag out of place or of no known shape)
+  /// and for a bare code it can't name. A variant ICU knows by name
+  /// ("1996") is written as its code here.
+  static func englishTagName(_ code: String) -> String? {
+    let parts = PostingQueue.split(code, 0x2D)
+    let lang = parts[0].jsLowercased()
+    let langUnits = Array(lang.utf16)
+    guard (2...3).contains(langUnits.count), langUnits.allSatisfy({ $0 >= 0x61 && $0 <= 0x7A }), parts.count >= 2 else {
+      return nil
+    }
+    var names: [String] = []
+    var i = 1
+    if i < parts.count, subtagKind(parts[i]) == .script {
+      let script = titlecased(parts[i])
+      names.append(ComposerLanguageNames.scripts[script] ?? script)
+      i += 1
+    }
+    if i < parts.count, subtagKind(parts[i]) == .region {
+      let region = parts[i].jsUppercased()
+      names.append(ComposerLanguageNames.regions[region] ?? region)
+      i += 1
+    }
+    while i < parts.count {
+      guard subtagKind(parts[i]) == .variant else { return nil }
+      names.append(parts[i].jsUppercased())
+      i += 1
+    }
+    let base = ComposerLanguageNames.english[lang] ?? lang
+    return "\(base) (\(names.joined(separator: ", ")))"
   }
 
   /// Languages matching `query` (by name or code), the chosen ones left
@@ -147,217 +210,4 @@ public enum ComposerLanguages {
   }
 
   public static func labelsSummary(_ labels: [String]) -> String { labelsSummary(labels.map(JSONValue.string)) }
-}
-
-/// Intl.DisplayNames' English names (Node 22's ICU).
-enum ComposerLanguageNames {
-  static let english: [String: String] = [
-    "aa": "Afar",
-    "ab": "Abkhazian",
-    "ae": "Avestan",
-    "af": "Afrikaans",
-    "ak": "Akan",
-    "am": "Amharic",
-    "an": "Aragonese",
-    "ar": "Arabic",
-    "as": "Assamese",
-    "av": "Avaric",
-    "ay": "Aymara",
-    "az": "Azerbaijani",
-    "ba": "Bashkir",
-    "be": "Belarusian",
-    "bg": "Bulgarian",
-    "bi": "Bislama",
-    "bm": "Bambara",
-    "bn": "Bangla",
-    "bo": "Tibetan",
-    "br": "Breton",
-    "bs": "Bosnian",
-    "ca": "Catalan",
-    "ce": "Chechen",
-    "ch": "Chamorro",
-    "co": "Corsican",
-    "cr": "Cree",
-    "cs": "Czech",
-    "cu": "Church Slavic",
-    "cv": "Chuvash",
-    "cy": "Welsh",
-    "da": "Danish",
-    "de": "German",
-    "dv": "Divehi",
-    "dz": "Dzongkha",
-    "ee": "Ewe",
-    "el": "Greek",
-    "en": "English",
-    "eo": "Esperanto",
-    "es": "Spanish",
-    "et": "Estonian",
-    "eu": "Basque",
-    "fa": "Persian",
-    "ff": "Fula",
-    "fi": "Finnish",
-    "fj": "Fijian",
-    "fo": "Faroese",
-    "fr": "French",
-    "fy": "Western Frisian",
-    "ga": "Irish",
-    "gd": "Scottish Gaelic",
-    "gl": "Galician",
-    "gn": "Guarani",
-    "gu": "Gujarati",
-    "gv": "Manx",
-    "ha": "Hausa",
-    "he": "Hebrew",
-    "hi": "Hindi",
-    "ho": "Hiri Motu",
-    "hr": "Croatian",
-    "ht": "Haitian Creole",
-    "hu": "Hungarian",
-    "hy": "Armenian",
-    "hz": "Herero",
-    "ia": "Interlingua",
-    "id": "Indonesian",
-    "ie": "Interlingue",
-    "ig": "Igbo",
-    "ii": "Sichuan Yi",
-    "ik": "Inupiaq",
-    "io": "Ido",
-    "is": "Icelandic",
-    "it": "Italian",
-    "iu": "Inuktitut",
-    "ja": "Japanese",
-    "jv": "Javanese",
-    "ka": "Georgian",
-    "kg": "Kongo",
-    "ki": "Kikuyu",
-    "kj": "Kuanyama",
-    "kk": "Kazakh",
-    "kl": "Kalaallisut",
-    "km": "Khmer",
-    "kn": "Kannada",
-    "ko": "Korean",
-    "kr": "Kanuri",
-    "ks": "Kashmiri",
-    "ku": "Kurdish",
-    "kv": "Komi",
-    "kw": "Cornish",
-    "ky": "Kyrgyz",
-    "la": "Latin",
-    "lb": "Luxembourgish",
-    "lg": "Ganda",
-    "li": "Limburgish",
-    "ln": "Lingala",
-    "lo": "Lao",
-    "lt": "Lithuanian",
-    "lu": "Luba-Katanga",
-    "lv": "Latvian",
-    "mg": "Malagasy",
-    "mh": "Marshallese",
-    "mi": "Māori",
-    "mk": "Macedonian",
-    "ml": "Malayalam",
-    "mn": "Mongolian",
-    "mr": "Marathi",
-    "ms": "Malay",
-    "mt": "Maltese",
-    "my": "Burmese",
-    "na": "Nauru",
-    "nb": "Norwegian Bokmål",
-    "nd": "North Ndebele",
-    "ne": "Nepali",
-    "ng": "Ndonga",
-    "nl": "Dutch",
-    "nn": "Norwegian Nynorsk",
-    "no": "Norwegian",
-    "nr": "South Ndebele",
-    "nv": "Navajo",
-    "ny": "Nyanja",
-    "oc": "Occitan",
-    "oj": "Ojibwa",
-    "om": "Oromo",
-    "or": "Odia",
-    "os": "Ossetic",
-    "pa": "Punjabi",
-    "pi": "Pali",
-    "pl": "Polish",
-    "ps": "Pashto",
-    "pt": "Portuguese",
-    "qu": "Quechua",
-    "rm": "Romansh",
-    "rn": "Rundi",
-    "ro": "Romanian",
-    "ru": "Russian",
-    "rw": "Kinyarwanda",
-    "sa": "Sanskrit",
-    "sc": "Sardinian",
-    "sd": "Sindhi",
-    "se": "Northern Sami",
-    "sg": "Sango",
-    "si": "Sinhala",
-    "sk": "Slovak",
-    "sl": "Slovenian",
-    "sm": "Samoan",
-    "sn": "Shona",
-    "so": "Somali",
-    "sq": "Albanian",
-    "sr": "Serbian",
-    "ss": "Swati",
-    "st": "Southern Sotho",
-    "su": "Sundanese",
-    "sv": "Swedish",
-    "sw": "Swahili",
-    "ta": "Tamil",
-    "te": "Telugu",
-    "tg": "Tajik",
-    "th": "Thai",
-    "ti": "Tigrinya",
-    "tk": "Turkmen",
-    "tl": "Filipino",
-    "tn": "Tswana",
-    "to": "Tongan",
-    "tr": "Turkish",
-    "ts": "Tsonga",
-    "tt": "Tatar",
-    "tw": "Akan",
-    "ty": "Tahitian",
-    "ug": "Uyghur",
-    "uk": "Ukrainian",
-    "ur": "Urdu",
-    "uz": "Uzbek",
-    "ve": "Venda",
-    "vi": "Vietnamese",
-    "vo": "Volapük",
-    "wa": "Walloon",
-    "wo": "Wolof",
-    "xh": "Xhosa",
-    "yi": "Yiddish",
-    "yo": "Yoruba",
-    "za": "Zhuang",
-    "zh": "Chinese",
-    "zu": "Zulu",
-  ]
-
-  /// CLDR's own names for tags with a region or script.
-  static let regional: [String: String] = [
-    "en-AU": "Australian English",
-    "en-CA": "Canadian English",
-    "en-GB": "British English",
-    "en-US": "American English",
-    "es-ES": "European Spanish",
-    "es-MX": "Mexican Spanish",
-    "es-419": "Latin American Spanish",
-    "fr-CA": "Canadian French",
-    "fr-CH": "Swiss French",
-    "de-AT": "Austrian German",
-    "de-CH": "Swiss High German",
-    "nl-BE": "Flemish",
-    "pt-BR": "Brazilian Portuguese",
-    "pt-PT": "European Portuguese",
-    "zh-Hans": "Simplified Chinese",
-    "zh-Hant": "Traditional Chinese",
-    "ro-MD": "Moldavian",
-    "sw-CD": "Congo Swahili",
-    "ar-001": "Modern Standard Arabic",
-    "fa-AF": "Dari",
-  ]
 }

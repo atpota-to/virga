@@ -99,12 +99,13 @@
     "src/posting/composer/languages.js": {
       "status": "partial",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerLanguages.swift"
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerLanguages.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerLanguages+Names.swift"
       ],
       "fixtures": [
         "composer.editor"
       ],
-      "note": "Intl.DisplayNames' English names for the 184 codes and CLDR's regional names are a table taken from Node 22's ICU (held to the fixture). Other tags with a region or script are named 'Language (Region)' from Foundation's region names, and a locale that isn't English through Foundation; both can differ from ICU's. Sorting goes through VirgaPosting's LocaleCompare (ComposerLanguages.compareNames), to move to VirgaCore's consolidated localeCompare at the merge.",
+      "note": "Intl.DisplayNames' English names are tables taken from Node 22's ICU (78.3), held to the fixture: every two- and three-letter code it names, CLDR's names for a language in a region or script (pt-BR 'Brazilian Portuguese'), and the script and region names it puts after a language ('English (Latin, United States)'). Not reproduced: a variant ICU knows by name ('de-AT-1996' is 'Austrian German (German orthography of 1996)'; the port writes the variant's code), the dialect names of three-letter or numeric aliases ('eng-US', 'en-840') and deprecated regions ('ab-SU'), and extlang tags ('zh-yue'). A locale that isn't English names through Foundation, which can differ from ICU. Sorting goes through VirgaPosting's LocaleCompare (ComposerLanguages.compareNames), to move to VirgaCore's consolidated localeCompare at the merge.",
       "synced": "fac34e76eafd"
     },
     "src/posting/composer/loaders.js": {

@@ -13196,6 +13196,278 @@
       "output": "123"
     },
     {
+      "id": "languageName#199",
+      "fn": "languageName",
+      "input": {
+        "code": "en-Latn-US"
+      },
+      "output": "English (Latin, United States)"
+    },
+    {
+      "id": "languageName#200",
+      "fn": "languageName",
+      "input": {
+        "code": "zh-Hant-HK"
+      },
+      "output": "Chinese (Traditional, Hong Kong SAR China)"
+    },
+    {
+      "id": "languageName#201",
+      "fn": "languageName",
+      "input": {
+        "code": "zh-Hans-CN"
+      },
+      "output": "Chinese (Simplified, China)"
+    },
+    {
+      "id": "languageName#202",
+      "fn": "languageName",
+      "input": {
+        "code": "sr-Latn-RS"
+      },
+      "output": "Serbian (Latin, Serbia)"
+    },
+    {
+      "id": "languageName#203",
+      "fn": "languageName",
+      "input": {
+        "code": "fr-Latn-CA"
+      },
+      "output": "French (Latin, Canada)"
+    },
+    {
+      "id": "languageName#204",
+      "fn": "languageName",
+      "input": {
+        "code": "az-Cyrl-AZ"
+      },
+      "output": "Azerbaijani (Cyrillic, Azerbaijan)"
+    },
+    {
+      "id": "languageName#205",
+      "fn": "languageName",
+      "input": {
+        "code": "en-Latn"
+      },
+      "output": "English (Latin)"
+    },
+    {
+      "id": "languageName#206",
+      "fn": "languageName",
+      "input": {
+        "code": "en-150"
+      },
+      "output": "English (Europe)"
+    },
+    {
+      "id": "languageName#207",
+      "fn": "languageName",
+      "input": {
+        "code": "fr-029"
+      },
+      "output": "French (Caribbean)"
+    },
+    {
+      "id": "languageName#208",
+      "fn": "languageName",
+      "input": {
+        "code": "yue"
+      },
+      "output": "Cantonese"
+    },
+    {
+      "id": "languageName#209",
+      "fn": "languageName",
+      "input": {
+        "code": "fil"
+      },
+      "output": "Filipino"
+    },
+    {
+      "id": "languageName#210",
+      "fn": "languageName",
+      "input": {
+        "code": "haw"
+      },
+      "output": "Hawaiian"
+    },
+    {
+      "id": "languageName#211",
+      "fn": "languageName",
+      "input": {
+        "code": "iw"
+      },
+      "output": "Hebrew"
+    },
+    {
+      "id": "languageName#212",
+      "fn": "languageName",
+      "input": {
+        "code": "in"
+      },
+      "output": "Indonesian"
+    },
+    {
+      "id": "languageName#213",
+      "fn": "languageName",
+      "input": {
+        "code": "eng"
+      },
+      "output": "English"
+    },
+    {
+      "id": "languageName#214",
+      "fn": "languageName",
+      "input": {
+        "code": "und"
+      },
+      "output": "Root"
+    },
+    {
+      "id": "languageName#215",
+      "fn": "languageName",
+      "input": {
+        "code": "mul"
+      },
+      "output": "Multiple languages"
+    },
+    {
+      "id": "languageName#216",
+      "fn": "languageName",
+      "input": {
+        "code": "yue-HK"
+      },
+      "output": "Cantonese (Hong Kong SAR China)"
+    },
+    {
+      "id": "languageName#217",
+      "fn": "languageName",
+      "input": {
+        "code": "xx-US"
+      },
+      "output": "Xx (United States)"
+    },
+    {
+      "id": "languageName#218",
+      "fn": "languageName",
+      "input": {
+        "code": "en-XX"
+      },
+      "output": "English (XX)"
+    },
+    {
+      "id": "languageName#219",
+      "fn": "languageName",
+      "input": {
+        "code": "en-Qaaa"
+      },
+      "output": "English (Qaaa)"
+    },
+    {
+      "id": "languageName#220",
+      "fn": "languageName",
+      "input": {
+        "code": "en-Zzzz"
+      },
+      "output": "English (Unknown Script)"
+    },
+    {
+      "id": "languageName#221",
+      "fn": "languageName",
+      "input": {
+        "code": "en-999"
+      },
+      "output": "English (Unknown Region)"
+    },
+    {
+      "id": "languageName#222",
+      "fn": "languageName",
+      "input": {
+        "code": "en-ZZ"
+      },
+      "output": "English (Unknown Region)"
+    },
+    {
+      "id": "languageName#223",
+      "fn": "languageName",
+      "input": {
+        "code": "en-basiceng"
+      },
+      "output": "English (BASICENG)"
+    },
+    {
+      "id": "languageName#224",
+      "fn": "languageName",
+      "input": {
+        "code": "en-US-Latn"
+      },
+      "output": "en-US-Latn"
+    },
+    {
+      "id": "languageName#225",
+      "fn": "languageName",
+      "input": {
+        "code": "en-x-foo"
+      },
+      "output": "en-x-foo"
+    },
+    {
+      "id": "languageName#226",
+      "fn": "languageName",
+      "input": {
+        "code": "en-UK"
+      },
+      "output": "British English"
+    },
+    {
+      "id": "languageName#227",
+      "fn": "languageName",
+      "input": {
+        "code": "sr-ME"
+      },
+      "output": "Montenegrin"
+    },
+    {
+      "id": "languageName#228",
+      "fn": "languageName",
+      "input": {
+        "code": "pa-Arab-PK"
+      },
+      "output": "Punjabi (Arabic, Pakistan)"
+    },
+    {
+      "id": "languageName#229",
+      "fn": "languageName",
+      "input": {
+        "code": "ja-Jpan-JP"
+      },
+      "output": "Japanese (Japanese, Japan)"
+    },
+    {
+      "id": "languageName#230",
+      "fn": "languageName",
+      "input": {
+        "code": "MM"
+      },
+      "output": "MM"
+    },
+    {
+      "id": "languageName#231",
+      "fn": "languageName",
+      "input": {
+        "code": "my-MM"
+      },
+      "output": "Burmese (Myanmar [Burma])"
+    },
+    {
+      "id": "languageName#232",
+      "fn": "languageName",
+      "input": {
+        "code": "EN-latn-us"
+      },
+      "output": "English (Latin, United States)"
+    },
+    {
       "id": "en-GB/ff",
       "fn": "languageName",
       "input": {
