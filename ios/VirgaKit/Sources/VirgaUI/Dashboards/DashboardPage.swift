@@ -637,11 +637,7 @@ struct ReportLibrary: View {
   @State private var category = "all"
 
   var body: some View {
-    let wanted = Commands.fold(query.jsTrimmed())
-    let shown = Catalog.widgetList.filter { w in
-      (category == "all" || w.category.jsEquals(category))
-        && (wanted.isEmpty || Commands.fold("\(w.name) \(w.desc)").contains(wanted))
-    }
+    let shown = Catalog.libraryMatches(query: query, category: category)
     let phone = theme.isPhone
     VStack(alignment: .leading, spacing: 0) {
       DialogHead(title: "Report library", onClose: onClose)
