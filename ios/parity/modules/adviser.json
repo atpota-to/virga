@@ -5,16 +5,36 @@
   "summary": "The post adviser: its gate, analysis, style, usage and alt text.",
   "files": {
     "src/posting/adviser/aiService.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Adviser/AIService.swift"
+      ],
+      "fixtures": [
+        "adviser.aiService"
+      ],
+      "note": "Calls go through AIRequester (VirgaBackend conforms; SessionModel.backendFor(did) gives one). The read's AbortSignal is AdviserAbortSignal (Gate.swift): checked before sending, never handed to a request already sent. generateAltTextForFile takes the file and a reader for its bytes (the web's blob.arrayBuffer()); its blobToBase64 is a fileprivate stand-in with scheduleSerialize.js's behaviour until the scheduling port is merged, which should switch it. Errors are AIServiceError (name, message, status, code, detail, payload, canceled) and JSErrorConvertible. aiErrorMessage's NEEDS_BACKEND without a message is nil (the web's undefined).",
+      "synced": "6c6b753bcb5e"
     },
     "src/posting/adviser/altTextFollowUp.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Adviser/AltTextFollowUp.swift"
+      ],
+      "fixtures": [
+        "adviser.altText"
+      ],
+      "synced": "f0fce720ab16"
     },
     "src/posting/adviser/altTextModel.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Adviser/AltTextModel.swift"
+      ],
+      "fixtures": [
+        "adviser.altText"
+      ],
+      "note": "Counts and the allowance line take the locale (by default AppLocale's active one) and `now` explicitly.",
+      "synced": "2884ae9a0139"
     },
     "src/posting/adviser/analysis.js": {
       "status": "ported",
@@ -27,52 +47,131 @@
       "synced": "9d082ad3a196"
     },
     "src/posting/adviser/context.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Adviser/Context.swift"
+      ],
+      "fixtures": [
+        "adviser.context"
+      ],
+      "note": "States are read as the web reads them (JSONValue; ComposerState overloads). gatherReplyContext reads through PublicAppView.publicXrpc under withinMs (its wait injected as `sleep`) and the read's signal. Where the web would throw on a malformed state (adviserSource over `posts` that isn't a list), the port reads it as empty.",
+      "synced": "9bebf25b4c37"
     },
     "src/posting/adviser/gate.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Adviser/Gate.swift"
+      ],
+      "fixtures": [
+        "adviser.gate"
+      ],
+      "note": "startAdviserRead's timer is injected (PublishWatch.SetTimer/ClearTimer, task timers by default); the work runs on a task of its own that the read never cancels. AdviserAbortSignal stands in for the AbortController/AbortSignal pair; `signal.run` is fetch's `{ signal }`.",
+      "synced": "f591aebd7400"
     },
     "src/posting/adviser/gateController.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Adviser/GateController.swift"
+      ],
+      "fixtures": [
+        "adviser.gate"
+      ],
+      "note": "AdviserGateController (@MainActor): check(state, mode:) starts at once and hands back an AdviserCheck whose `decision` ends once; the sheet is AdviserSheetRead (its `json` is sheetFor's object). Kept as the web has it (a web bug): when a manual check of an empty post (or one with nothing set up) starts while another's sheet is open, the first sheet's settling clears the new sheet's decision, so the new sheet can't be decided from the sheet (cancel or a new check still ends it).",
+      "synced": "315d77c8f3f8"
     },
     "src/posting/adviser/sheet.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Adviser/Sheet.swift"
+      ],
+      "fixtures": [
+        "adviser.sheet"
+      ],
+      "note": "placeAdviserMarks' `placed` Set is a list in its insertion order. DRAFT_LABELS and CONTEXT_LABELS are looked up as own keys (prototype names such as 'constructor' are not reproduced).",
+      "synced": "0985d970f836"
     },
     "src/posting/adviser/sheetView.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Adviser/SheetView.swift"
+      ],
+      "fixtures": [
+        "adviser.sheet"
+      ],
+      "synced": "975dbf461f0c"
     },
     "src/posting/adviser/style.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Adviser/Style.swift"
+      ],
+      "fixtures": [
+        "adviser.style"
+      ],
+      "note": "Reads through PublicAppView.publicXrpc and AIService.synthesizeStyle; `now` is a clock read once at the start (the web's default `new Date()`).",
+      "synced": "eeb90f140f21"
     },
     "src/posting/adviser/styleSession.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Adviser/StyleSession.swift"
+      ],
+      "fixtures": [
+        "adviser.style"
+      ],
+      "note": "createStyleSession is StyleSession (@MainActor @Observable), its work and its timer injected (main-actor timers). A running count that hops over from the network after the posts came back is dropped (on the web every count comes first). styleProfileLine takes the date's locale, the count's (the web's activeLocale()) and the zone explicitly.",
+      "synced": "9388cea7363d"
     },
     "src/posting/adviser/usage.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Adviser/Usage.swift"
+      ],
+      "fixtures": [
+        "adviser.usage"
+      ],
+      "note": "AdviserUsageStore over a KeyValueStore (the web's localStorage) and an explicit `now`; the allowances are AdviserUsageFeature, and AdviserUsageFeature.checked(name) throws the web's TypeError for an unknown one. Stored JSON has sorted keys (readers can't tell).",
+      "synced": "09350a44b72c"
     },
     "src/posting/adviser/useAdviserGate.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Adviser/UseAdviserGate.swift"
+      ],
+      "note": "AdviserGateModel (@MainActor @Observable) over AdviserGateController: busy and sheet mirror the controller's view, their props are methods (publishAnyway, keepEditing, closeSheet, publishFromSheet, saveDraftFromSheet, applyFix), the usage line is read again when the usage version moves or the account changes, and a new account ends what's in progress. configure(did:settings:session:) reads the requester and AI access from SessionModel as Composer.jsx does; applyFixes(to:) hands fixes to a ComposerStateModel. Behaviour tests: AdviserGateModelBehaviour.",
+      "synced": "639539cf5694"
     },
     "src/posting/adviser/useAdviserRead.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Adviser/UseAdviserRead.swift"
+      ],
+      "fixtures": [
+        "adviser.gate"
+      ],
+      "note": "createAdviserReader is AdviserReader (readAdviser starts at once and returns the read's task); useAdviserRead is AdviserReadModel. `analyze` is the one set when the read starts (the web reads it a microtask later). Behaviour tests: AdviserReaderBehaviour, AdviserReadModelBehaviour.",
+      "synced": "866be74a33b1"
     },
     "src/posting/ui/backendAccess.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/UI/BackendAccess.swift"
+      ],
+      "fixtures": [
+        "adviser.ui"
+      ],
+      "synced": "2e57c71c47d7"
     },
     "src/posting/ui/postPreview.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/UI/PostPreview.swift"
+      ],
+      "fixtures": [
+        "adviser.ui"
+      ],
+      "note": "Values are read as loosely as the web reads them (JSONValue). A displayName that isn't a string reads as none where the web throws calling trim on it. Counts in the embed line take the locale (by default the active one).",
+      "synced": "47181ade0078"
     }
   }
 }
