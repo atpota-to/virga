@@ -251,8 +251,15 @@ struct TemplateQuestions: View {
   @ViewBuilder
   private func question(_ q: TemplateQuestion, index: Int, given: [String: String], missing: [String]) -> some View {
     let failed = tried && missing.contains { $0.jsEquals(q.key) }
+    // `.lib-optional { font-weight: 400 }`: its own face, as the label's
+    // face (virgaText) is set at the label's weight, which a segment's
+    // fontWeight can't change.
+    let optional: Text =
+      q.optional
+      ? Text(" · optional").font(theme.font(size: theme.points(ThemeKit.fieldLabelFontSize), weight: VirgaWeight.regular))
+        .foregroundColor(theme.muted) : Text("")
     VStack(alignment: .leading, spacing: theme.points(ThemeKit.fieldGap)) {
-      (Text(q.label) + (q.optional ? Text(" · optional").foregroundColor(theme.muted).fontWeight(.regular) : Text("")))
+      (Text(q.label) + optional)
         .virgaText(size: theme.points(ThemeKit.fieldLabelFontSize), weight: ThemeKit.fieldLabelWeight)
         .foregroundStyle(theme.ink)
       if q.kind == "choice" {
