@@ -2,17 +2,21 @@
 //
 // The sky behind every page: `--sky-top` at the top, `--sky-mid` by
 // `--sky-mid-at`, faded into `--bg` by `--sky-end` (ThemeKit.skyWash), with
-// the ground carrying on below. It belongs to the page's content, so it
-// scrolls away as you read: `.skyBackground()` draws it as the background
-// of a scroll view's content, reaching up under the status bar so the
-// system's chrome runs into it. The phone's sky is shorter (the tokens say
-// so at that width), and high contrast has none: its tokens make the wash
-// the flat ground.
+// the ground carrying on below. It belongs to the page, so it scrolls away
+// as you read: PageSky draws it behind the page's scroll view from the very
+// top of the window (under the status bar, so the system's chrome runs into
+// it), moved up by as far as the page has scrolled (SkyScroll), and held at
+// the top when the page is pulled down past it. Beside the sidebar it is
+// drawn once, behind the sidebar and the page together, moved by the page
+// (Shell.swift). The phone's sky is shorter (the tokens say so at that
+// width), and high contrast has none: its tokens make the wash the flat
+// ground.
 //
 // The navigation bar is clear over the sky and takes `--sky-top`
 // (Sky.skyColor) once the page scrolls under it: `.skyNavigationBar()`.
 
 #if canImport(UIKit)
+import Observation
 import SwiftUI
 import VirgaCore
 
@@ -51,9 +55,50 @@ extension VirgaTheme {
   }
 }
 
+/// How far the page's sky has gone up: the page's scroll.
+@MainActor
+@Observable
+public final class SkyScroll {
+  /// Points the page has scrolled, as a negative offset (0 at rest and
+  /// when pulled down past the top).
+  public var offset: CGFloat = 0
+
+  public init() {}
+
+  /// The content's top in the scroll view's own space, as it scrolls: 0 at
+  /// rest. Held at 0 above that, so the sky never leaves the window's top
+  /// (and is the status bar's strip exactly) while the page is at rest.
+  func report(_ y: CGFloat) {
+    let next = min(0, y)
+    if next != offset { offset = next }
+  }
+}
+
+/// The page's sky, behind its scroll view, from the top of the window:
+/// moved up by the page's scroll, the ground under it.
+public struct PageSky: View {
+  @Environment(\.virgaTheme) private var theme
+  private let scroll: SkyScroll
+
+  public init(scroll: SkyScroll) {
+    self.scroll = scroll
+  }
+
+  public var body: some View {
+    ZStack(alignment: .top) {
+      theme.bg
+      SkyWash().offset(y: scroll.offset)
+    }
+    .ignoresSafeArea()
+    .allowsHitTesting(false)
+    .accessibilityHidden(true)
+  }
+}
+
 extension View {
   /// The sky as the background of a page's scroll content: it scrolls with
-  /// the page, and reaches under the status bar at the top.
+  /// the page, and reaches under the status bar at the top. (Pages draw
+  /// PageSky instead, so the sky's top is the window's top.)
   public func skyBackground() -> some View {
     background(alignment: .top) {
       SkyWash().ignoresSafeArea(edges: .top)

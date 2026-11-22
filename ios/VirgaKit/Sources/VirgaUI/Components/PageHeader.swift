@@ -13,8 +13,8 @@
 // The crumbs show only beside the folded rail (the open sidebar says where
 // the page is already, and a phone's back button does).
 //
-// VirgaPage is the page itself: a plain ScrollView with the sky behind its
-// content, the header, then the page's bands, `--section-gap` apart, in a
+// VirgaPage is the page itself: a plain ScrollView with the sky behind it
+// (PageSky, moved by the scroll), the header, then the page's bands, `--section-gap` apart, in a
 // column at most --content-max wide plus its margins, centred. On a phone's
 // front page of a part the app bar (the mark and the account) comes first,
 // in the content (Shell/MobileNav.swift); then, where there is no sidebar
@@ -212,6 +212,9 @@ public struct VirgaPage<Content: View>: View {
   @Environment(\.showsAppBar) private var showsAppBar
   @Environment(\.showsSyncBanner) private var showsSyncBanner
   @Environment(ArchiveModel.self) private var archive: ArchiveModel?
+  /// Beside the sidebar: the shell's sky, which this page moves.
+  @Environment(SkyScroll.self) private var deskSky: SkyScroll?
+  @State private var ownSky = SkyScroll()
   private let header: PageHeader?
   private let contentTop: CGFloat?
   private let content: Content
@@ -237,6 +240,7 @@ public struct VirgaPage<Content: View>: View {
   }
 
   public var body: some View {
+    let sky = deskSky ?? ownSky
     ScrollView {
       VStack(spacing: 0) {
         if showsAppBar { AppBarRow() }
@@ -252,16 +256,30 @@ public struct VirgaPage<Content: View>: View {
           }
         }
       }
-      .skyBackground()
+      .background {
+        // Where the content's top is as it scrolls, for the sky to follow.
+        GeometryReader { geometry in
+          Color.clear.onChange(of: geometry.frame(in: .named(Self.space)).minY, initial: true) { _, y in
+            ownSky.report(y)
+            if let deskSky { deskSky.offset = ownSky.offset }
+          }
+        }
+      }
     }
+    .coordinateSpace(name: Self.space)
     .scrollDismissesKeyboard(.interactively)
     .overlay(alignment: .top) {
       if showsAppBar { StatusBarSky() }
     }
-    // Behind the content: sky above the middle, ground below, so a short
-    // page, or one pulled past its ends, shows no other colour.
-    .background(PageGround().ignoresSafeArea())
+    // The sky from the window's top, moved by the scroll; beside the
+    // sidebar the shell draws it once behind both.
+    .background {
+      if deskSky == nil { PageSky(scroll: sky) }
+    }
   }
+
+  /// The page's scroll view's own space.
+  static var space: String { "virga-page" }
 }
 
 /// `.page-header-in, .page-body`: the page's column, at most --content-max
