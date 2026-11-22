@@ -291,6 +291,7 @@ struct WidgetCard: View {
               .foregroundStyle(theme.ink)
               .accessibilityAddTraits(.isHeader)
             Spacer(minLength: 0)
+            PostChartButton(type: card.type, name: title ?? def.name, options: card.options, period: period)
             Button {
               navigate(def.href)
             } label: {

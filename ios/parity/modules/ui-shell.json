@@ -293,8 +293,13 @@
       "synced": "849c73e6565e"
     },
     "src/share/share.css": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Tools/ToolMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Share/ShareDialog.swift"
+      ],
+      "note": "Measure.Share (the dialog's 640, the 16 between its parts, the description's 110 and 1.45); the picture's box with its --line edge, --radius-lg and --bg in ShareDialog. A phone's dialog is a sheet like any other.",
+      "synced": "5c001a7a1f56"
     },
     "src/shell/CommandPalette.jsx": {
       "status": "partial",
@@ -509,8 +514,14 @@
       "synced": "6fa7f1283fe1"
     },
     "src/tools/tools.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Tools/ToolMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Tools/ToolParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Tools/ToolPage.swift"
+      ],
+      "note": "Measure.Tools names every measure the tool pages use (the list of tools, the statement, the filter figures, the line over a table, the inline select, the activity check, the large search, the unfollow log's groups, the queue's ✕, the best slots, identity, the facts and the timeline, the lookup's field, suggestions, pair counts, legend, totals and events), and dashboards.css's person and post rows as the tools list them; each view draws its rules from them. Not yet: the cleanup and lists tables' columns from 641 wide (both are set as the web's phone sets them at every width), the lookup's suggestions floating over the page (they open under the field), and the hover rules (no pointer).",
+      "synced": "6eb307ebfd93"
     }
   }
 }

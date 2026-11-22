@@ -133,8 +133,12 @@
       "synced": "96555b05c896"
     },
     "src/share/ShareDialog.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Share/ShareDialog.swift"
+      ],
+      "note": "Post this chart as a sheet: the spec from ShareSpec.shareSpec over the card's type, its own settings and the account's notes (Annotations.readAnnotations), for the card's period or the page's; 'There’s nothing on this card to draw yet.'; the picture (ShareImage, the on-screen theme's colours) with its edge, 'Drawing the picture…' or the failure; the description (ShareSpec.shareAltText) in a text area held to 2,000 with its hint, over the limit past 1,800; Save the picture (into Photos, add-only, after asking; a toast says it was saved or couldn't be: iOS's own words, as a browser's download needs none) and Write a post with it, first and on its own line on a phone. Write a post with it opens the composer through the `shareComposer` environment hook (asDid, sharePostText, the PNG and the description) once a composer sets it; until then it is a ShareLink of virga-chart.png with the post's first line. The hook for the dashboards and reports: PostChartButton (a card's ghost icon, 'Post <name> as a picture'), PostChartLink ('Post this chart') and .shareDialog($request, period:) with ShareRequest.",
+      "synced": "117ad4a1eb68"
     },
     "src/tools/ArchiveSearch.jsx": {
       "status": "ported",

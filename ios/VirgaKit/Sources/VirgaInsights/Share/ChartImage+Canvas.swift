@@ -123,6 +123,12 @@ public enum ShareStyle: Hashable, Sendable {
 public struct ShareFont: Hashable, Sendable {
   public var weight: Int
   public var size: Double
+
+  /// A canvas's own font before any is set (VirgaUI's canvas starts from one).
+  public init(weight: Int, size: Double) {
+    self.weight = weight
+    self.size = size
+  }
 }
 
 public enum ShareTextAlign: String, Hashable, Sendable {
