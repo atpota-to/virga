@@ -11,6 +11,7 @@
 
 #if canImport(UIKit)
 import SwiftUI
+import UIKit
 import VirgaCore
 import VirgaPosting
 import VirgaSession
@@ -192,6 +193,11 @@ struct PostAsPicker: View {
         if locked && !lockedReason.isEmpty { FieldHint(lockedReason) }
       } else {
         Button {
+          // Pressing the byline takes the focus from the post being written,
+          // as the web's button does: the keyboard goes, and the sheet stops
+          // scrolling the caret back into view, so the list stays under the
+          // byline instead of losing it off the top.
+          UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
           open.toggle()
         } label: {
           HStack(spacing: ComposerMeasure.postAsGap) {
