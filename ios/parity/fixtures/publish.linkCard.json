@@ -1,0 +1,2644 @@
+{
+  "name": "publish.linkCard",
+  "sources": [
+    "src/posting/lib/linkCard.js"
+  ],
+  "cases": [
+    {
+      "id": "deduped-and-capped",
+      "fn": "normalizeAssociatedRefs",
+      "input": {
+        "raw": [
+          {
+            "uri": "at://a/c/1",
+            "cid": "x"
+          },
+          {
+            "uri": "at://a/c/1",
+            "cid": "y"
+          },
+          {
+            "uri": "https://nope",
+            "cid": "z"
+          },
+          {
+            "uri": "at://a/c/2"
+          },
+          {
+            "uri": "at://b/c/0",
+            "cid": "c"
+          },
+          {
+            "uri": "at://b/c/1",
+            "cid": "c"
+          },
+          {
+            "uri": "at://b/c/2",
+            "cid": "c"
+          },
+          {
+            "uri": "at://b/c/3",
+            "cid": "c"
+          },
+          {
+            "uri": "at://b/c/4",
+            "cid": "c"
+          },
+          {
+            "uri": "at://b/c/5",
+            "cid": "c"
+          }
+        ]
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.strongRef",
+          "uri": "at://a/c/1",
+          "cid": "x"
+        },
+        {
+          "$type": "com.atproto.repo.strongRef",
+          "uri": "at://b/c/0",
+          "cid": "c"
+        },
+        {
+          "$type": "com.atproto.repo.strongRef",
+          "uri": "at://b/c/1",
+          "cid": "c"
+        },
+        {
+          "$type": "com.atproto.repo.strongRef",
+          "uri": "at://b/c/2",
+          "cid": "c"
+        }
+      ]
+    },
+    {
+      "id": "empty",
+      "fn": "normalizeAssociatedRefs",
+      "input": {
+        "raw": []
+      },
+      "output": null
+    },
+    {
+      "id": "string",
+      "fn": "normalizeAssociatedRefs",
+      "input": {
+        "raw": "x"
+      },
+      "output": null
+    },
+    {
+      "id": "null",
+      "fn": "normalizeAssociatedRefs",
+      "input": {
+        "raw": null
+      },
+      "output": null
+    },
+    {
+      "id": "object",
+      "fn": "normalizeAssociatedRefs",
+      "input": {
+        "raw": {
+          "uri": "at://a/c/1",
+          "cid": "x"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "bad-items",
+      "fn": "normalizeAssociatedRefs",
+      "input": {
+        "raw": [
+          null,
+          1,
+          "at://a",
+          true,
+          [],
+          {}
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "trimmed",
+      "fn": "normalizeAssociatedRefs",
+      "input": {
+        "raw": [
+          {
+            "uri": "  at://a/c/1\n",
+            "cid": "\tbafy "
+          }
+        ]
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.strongRef",
+          "uri": "at://a/c/1",
+          "cid": "bafy"
+        }
+      ]
+    },
+    {
+      "id": "blank-cid",
+      "fn": "normalizeAssociatedRefs",
+      "input": {
+        "raw": [
+          {
+            "uri": "at://a/c/1",
+            "cid": "   "
+          }
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "number-uri",
+      "fn": "normalizeAssociatedRefs",
+      "input": {
+        "raw": [
+          {
+            "uri": 5,
+            "cid": "x"
+          }
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "uppercase-scheme",
+      "fn": "normalizeAssociatedRefs",
+      "input": {
+        "raw": [
+          {
+            "uri": "AT://a/c/1",
+            "cid": "x"
+          }
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "bare-scheme",
+      "fn": "normalizeAssociatedRefs",
+      "input": {
+        "raw": [
+          {
+            "uri": "at://",
+            "cid": "x"
+          }
+        ]
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.strongRef",
+          "uri": "at://",
+          "cid": "x"
+        }
+      ]
+    },
+    {
+      "id": "code-units",
+      "fn": "normalizeAssociatedRefs",
+      "input": {
+        "raw": [
+          {
+            "uri": "at://café/c/1",
+            "cid": "x"
+          },
+          {
+            "uri": "at://café/c/1",
+            "cid": "y"
+          }
+        ]
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.strongRef",
+          "uri": "at://café/c/1",
+          "cid": "x"
+        },
+        {
+          "$type": "com.atproto.repo.strongRef",
+          "uri": "at://café/c/1",
+          "cid": "y"
+        }
+      ]
+    },
+    {
+      "id": "exactly-four",
+      "fn": "normalizeAssociatedRefs",
+      "input": {
+        "raw": [
+          {
+            "uri": "at://d/c/0",
+            "cid": "c0"
+          },
+          {
+            "uri": "at://d/c/1",
+            "cid": "c1"
+          },
+          {
+            "uri": "at://d/c/2",
+            "cid": "c2"
+          },
+          {
+            "uri": "at://d/c/3",
+            "cid": "c3"
+          }
+        ]
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.strongRef",
+          "uri": "at://d/c/0",
+          "cid": "c0"
+        },
+        {
+          "$type": "com.atproto.repo.strongRef",
+          "uri": "at://d/c/1",
+          "cid": "c1"
+        },
+        {
+          "$type": "com.atproto.repo.strongRef",
+          "uri": "at://d/c/2",
+          "cid": "c2"
+        },
+        {
+          "$type": "com.atproto.repo.strongRef",
+          "uri": "at://d/c/3",
+          "cid": "c3"
+        }
+      ]
+    },
+    {
+      "id": "full",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://example.com/a",
+        "answer": {
+          "status": 200,
+          "json": {
+            "title": "A page",
+            "description": "About it",
+            "image": "https://cardyb.bsky.app/v1/image?url=x",
+            "url": "https://example.com/final",
+            "associated_refs": [
+              {
+                "uri": "at://did:plc:a/site.standard.document/1",
+                "cid": "bafy1"
+              }
+            ]
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fexample.com%2Fa",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"title\":\"A page\",\"description\":\"About it\",\"image\":\"https://cardyb.bsky.app/v1/image?url=x\",\"url\":\"https://example.com/final\",\"associated_refs\":[{\"uri\":\"at://did:plc:a/site.standard.document/1\",\"cid\":\"bafy1\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "url": "https://example.com/a",
+          "title": "A page",
+          "description": "About it",
+          "thumb": "https://cardyb.bsky.app/v1/image?url=x",
+          "associatedRefs": [
+            {
+              "$type": "com.atproto.repo.strongRef",
+              "uri": "at://did:plc:a/site.standard.document/1",
+              "cid": "bafy1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "clamped",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://example.com",
+        "answer": {
+          "status": 200,
+          "json": {
+            "title": "tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt",
+            "description": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fexample.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"title\":\"tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt\",\"description\":\"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "url": "https://example.com",
+          "title": "tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt",
+          "description": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "thumb": null
+        }
+      }
+    },
+    {
+      "id": "clamped-at-emoji",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://example.com",
+        "answer": {
+          "status": 200,
+          "json": {
+            "title": "ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt👨‍👩‍👧",
+            "description": "ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd😀"
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fexample.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"title\":\"ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt👨‍👩‍👧\",\"description\":\"ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd😀\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "url": "https://example.com",
+          "title": "ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt�",
+          "description": "ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd�",
+          "thumb": null
+        }
+      }
+    },
+    {
+      "id": "error",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://e.com",
+        "answer": {
+          "status": 200,
+          "json": {
+            "error": "nope"
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fe.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"nope\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "error-empty",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://e.com",
+        "answer": {
+          "status": 200,
+          "json": {
+            "error": ""
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fe.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "url": "https://e.com",
+          "title": "",
+          "description": "",
+          "thumb": null
+        }
+      }
+    },
+    {
+      "id": "server-error",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://e.com",
+        "answer": {
+          "status": 500,
+          "json": {}
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fe.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://e.com",
+        "answer": "offline"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fe.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "not-json",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://e.com",
+        "answer": {
+          "status": 200,
+          "text": "<!DOCTYPE html>"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fe.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "<!DOCTYPE html>"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "json-null",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://e.com",
+        "answer": {
+          "status": 200,
+          "json": null
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fe.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "null"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "json-zero",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://e.com",
+        "answer": {
+          "status": 200,
+          "json": 0
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fe.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "0"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "json-array",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://e.com",
+        "answer": {
+          "status": 200,
+          "json": [
+            "x"
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fe.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "[\"x\"]"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "url": "https://e.com",
+          "title": "",
+          "description": "",
+          "thumb": null
+        }
+      }
+    },
+    {
+      "id": "json-string",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://e.com",
+        "answer": {
+          "status": 200,
+          "json": "page"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fe.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "\"page\""
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "url": "https://e.com",
+          "title": "",
+          "description": "",
+          "thumb": null
+        }
+      }
+    },
+    {
+      "id": "odd-types",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://e.com",
+        "answer": {
+          "status": 200,
+          "json": {
+            "title": 42,
+            "description": {
+              "a": 1
+            },
+            "image": 7,
+            "associated_refs": "x"
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fe.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"title\":42,\"description\":{\"a\":1},\"image\":7,\"associated_refs\":\"x\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "url": "https://e.com",
+          "title": "42",
+          "description": "[object Object]",
+          "thumb": null
+        }
+      }
+    },
+    {
+      "id": "image-not-web",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://e.com",
+        "answer": {
+          "status": 200,
+          "json": {
+            "title": "x",
+            "image": "javascript:alert(1)"
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fe.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"title\":\"x\",\"image\":\"javascript:alert(1)\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "url": "https://e.com",
+          "title": "x",
+          "description": "",
+          "thumb": null
+        }
+      }
+    },
+    {
+      "id": "image-relative",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://e.com",
+        "answer": {
+          "status": 200,
+          "json": {
+            "title": "x",
+            "image": "/img.png"
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fe.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"title\":\"x\",\"image\":\"/img.png\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "url": "https://e.com",
+          "title": "x",
+          "description": "",
+          "thumb": null
+        }
+      }
+    },
+    {
+      "id": "image-normalized",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://e.com",
+        "answer": {
+          "status": 200,
+          "json": {
+            "title": "x",
+            "image": "  HTTPS://IMG.Example.com/a b.png "
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fe.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"title\":\"x\",\"image\":\"  HTTPS://IMG.Example.com/a b.png \"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "url": "https://e.com",
+          "title": "x",
+          "description": "",
+          "thumb": "https://img.example.com/a%20b.png"
+        }
+      }
+    },
+    {
+      "id": "not-a-web-address",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "javascript:alert(1)",
+        "answer": {
+          "status": 200,
+          "json": {}
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "ftp",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "ftp://e.com/x",
+        "answer": {
+          "status": 200,
+          "json": {}
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "empty-url",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "",
+        "answer": {
+          "status": 200,
+          "json": {}
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "untrimmed-url",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "  https://e.com/a?q=1&r=é  ",
+        "answer": {
+          "status": 200,
+          "json": {
+            "title": "kept as given"
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=%20%20https%3A%2F%2Fe.com%2Fa%3Fq%3D1%26r%3D%C3%A9%20%20",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"title\":\"kept as given\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "url": "  https://e.com/a?q=1&r=é  ",
+          "title": "kept as given",
+          "description": "",
+          "thumb": null
+        }
+      }
+    },
+    {
+      "id": "unicode-url",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://exämple.com/päge#frag",
+        "answer": {
+          "status": 200,
+          "json": {
+            "title": "T"
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fex%C3%A4mple.com%2Fp%C3%A4ge%23frag",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"title\":\"T\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "url": "https://exämple.com/päge#frag",
+          "title": "T",
+          "description": "",
+          "thumb": null
+        }
+      }
+    },
+    {
+      "id": "caller-deadline",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://e.com",
+        "deadlineMs": 5000,
+        "answer": {
+          "status": 200,
+          "json": {
+            "title": "soon"
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fe.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 5000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"title\":\"soon\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "url": "https://e.com",
+          "title": "soon",
+          "description": "",
+          "thumb": null
+        }
+      }
+    },
+    {
+      "id": "caller-deadline-later",
+      "fn": "fetchLinkCard",
+      "input": {
+        "url": "https://e.com",
+        "deadlineMs": 20000,
+        "answer": {
+          "status": 200,
+          "json": {
+            "title": "later"
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fe.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"title\":\"later\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "url": "https://e.com",
+          "title": "later",
+          "description": "",
+          "thumb": null
+        }
+      }
+    },
+    {
+      "id": "png",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x.png",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x.png",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png",
+              "size": 10
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "uppercase-type",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x.png",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "IMAGE/PNG"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x.png",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "IMAGE/PNG"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAAAA"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png",
+              "size": 12
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-with-params",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x.png",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png; charset=binary"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x.png",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png; charset=binary"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAAAA"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png;charset=binary",
+              "size": 12
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "not-an-image-type",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "text/html"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/html"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAAAA"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/jpeg",
+              "size": 12
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "octet-stream",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "application/octet-stream"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAAAA"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/jpeg",
+              "size": 12
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "decoded",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x.png",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png"
+        },
+        "script": {
+          "decode": {
+            "width": 1200,
+            "height": 630
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x.png",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png",
+              "size": 10
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "not-found",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x.png",
+        "answer": {
+          "status": 404,
+          "text": "gone"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x.png",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "gone"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "The card image couldn’t be fetched (404).",
+        "calls": []
+      }
+    },
+    {
+      "id": "not-a-web-address",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "data:image/png;base64,AAAA",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "$throws": "The card image address isn’t a web address.",
+        "calls": []
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x.png",
+        "answer": "offline"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x.png",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "fetch failed",
+        "calls": []
+      }
+    },
+    {
+      "id": "compress-throws",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x.png",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png"
+        },
+        "script": {
+          "compress": "throw"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x.png",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "$throws": "This image couldn’t be prepared for posting, so it wasn’t added. Try saving it as a JPEG or PNG first.",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png",
+              "size": 10
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "still-too-big",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x.png",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png"
+        },
+        "script": {
+          "compress": {
+            "size": 1006632
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x.png",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "$throws": "This image is still too large after shrinking it, so it wasn’t added.",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png",
+              "size": 10
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "caller-deadline",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x.png",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png"
+        },
+        "deadlineMs": 3000
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x.png",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 3000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png",
+              "size": 10
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "reused",
+      "fn": "uploadCardThumb",
+      "input": {
+        "card": {
+          "thumb": "https://x",
+          "thumbBlob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkreiaf53wc24eek2knhoujvwpbynfwwtmamj24hrr3qqsbuqfoiwi4uq"
+            },
+            "mimeType": "image/jpeg",
+            "size": 10
+          },
+          "thumbBlobDid": "did:plc:writer"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "$type": "blob",
+          "ref": {
+            "$link": "bafkreiaf53wc24eek2knhoujvwpbynfwwtmamj24hrr3qqsbuqfoiwi4uq"
+          },
+          "mimeType": "image/jpeg",
+          "size": 10
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "reused-anything",
+      "fn": "uploadCardThumb",
+      "input": {
+        "card": {
+          "thumb": "https://x",
+          "thumbBlob": "x",
+          "thumbBlobDid": "did:plc:writer"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": "x",
+        "calls": []
+      }
+    },
+    {
+      "id": "other-accounts",
+      "fn": "uploadCardThumb",
+      "input": {
+        "card": {
+          "thumb": "https://img.example/x",
+          "thumbBlob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkreiaf53wc24eek2knhoujvwpbynfwwtmamj24hrr3qqsbuqfoiwi4uq"
+            },
+            "mimeType": "image/jpeg",
+            "size": 10
+          },
+          "thumbBlobDid": "did:plc:other"
+        },
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAA=="
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=image%2Fjpeg",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "AAAAAAA="
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreie6lejitgkeh7gsakw7t23djfk4vj4t2c76wnliagjl7z5ansxs7y\"},\"mimeType\":\"image/jpeg\",\"size\":5}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$type": "blob",
+          "ref": {
+            "$link": "bafkreie6lejitgkeh7gsakw7t23djfk4vj4t2c76wnliagjl7z5ansxs7y"
+          },
+          "mimeType": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png",
+              "size": 10
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "writers-own",
+      "fn": "uploadCardThumb",
+      "input": {
+        "card": {
+          "thumb": null,
+          "thumbFile": {
+            "$file": true,
+            "name": "mine.png",
+            "type": "image/png",
+            "size": 3145728,
+            "lastModified": 0
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=image%2Fjpeg",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "AAAAAAA="
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreie6lejitgkeh7gsakw7t23djfk4vj4t2c76wnliagjl7z5ansxs7y\"},\"mimeType\":\"image/jpeg\",\"size\":5}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$type": "blob",
+          "ref": {
+            "$link": "bafkreie6lejitgkeh7gsakw7t23djfk4vj4t2c76wnliagjl7z5ansxs7y"
+          },
+          "mimeType": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "mine.png",
+              "type": "image/png",
+              "size": 3145728
+            },
+            {
+              "maxSizeMB": 0.95,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "mine.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "own-wins-over-page",
+      "fn": "uploadCardThumb",
+      "input": {
+        "card": {
+          "thumb": "https://img.example/x",
+          "thumbFile": {
+            "$file": true,
+            "name": "mine.png",
+            "type": "image/png",
+            "size": 2048,
+            "lastModified": 0
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=image%2Fjpeg",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "AAAAAAA="
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreie6lejitgkeh7gsakw7t23djfk4vj4t2c76wnliagjl7z5ansxs7y\"},\"mimeType\":\"image/jpeg\",\"size\":5}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$type": "blob",
+          "ref": {
+            "$link": "bafkreie6lejitgkeh7gsakw7t23djfk4vj4t2c76wnliagjl7z5ansxs7y"
+          },
+          "mimeType": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "mine.png",
+              "type": "image/png",
+              "size": 2048
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "mine.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "own-fails",
+      "fn": "uploadCardThumb",
+      "input": {
+        "card": {
+          "thumbFile": {
+            "$file": true,
+            "name": "mine.png",
+            "type": "image/png",
+            "size": 2048,
+            "lastModified": 0
+          }
+        },
+        "script": {
+          "compress": null
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [
+          30000
+        ],
+        "result": null,
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "mine.png",
+              "type": "image/png",
+              "size": 2048
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "no-image",
+      "fn": "uploadCardThumb",
+      "input": {
+        "card": {
+          "thumb": null
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": null,
+        "calls": []
+      }
+    },
+    {
+      "id": "no-card",
+      "fn": "uploadCardThumb",
+      "input": {
+        "card": null
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": null,
+        "calls": []
+      }
+    },
+    {
+      "id": "fetch-fails",
+      "fn": "uploadCardThumb",
+      "input": {
+        "card": {
+          "thumb": "https://x"
+        },
+        "answer": {
+          "status": 404,
+          "text": ""
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://x/",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": ""
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": null,
+        "calls": []
+      }
+    },
+    {
+      "id": "upload-fails",
+      "fn": "uploadCardThumb",
+      "input": {
+        "card": {
+          "thumb": "https://x"
+        },
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png"
+        },
+        "uploads": [
+          "fail:500:upload failed"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://x/",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAA=="
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=image%2Fjpeg",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "AAAAAAA="
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"upload failed\"}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": null,
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png",
+              "size": 10
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "upload-offline",
+      "fn": "uploadCardThumb",
+      "input": {
+        "card": {
+          "thumb": "https://x"
+        },
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png"
+        },
+        "uploads": [
+          "offline"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://x/",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAA=="
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=image%2Fjpeg",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "AAAAAAA="
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": null,
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png",
+              "size": 10
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "bad-address",
+      "fn": "uploadCardThumb",
+      "input": {
+        "card": {
+          "thumb": "not a url"
+        },
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": null,
+        "calls": []
+      }
+    }
+  ]
+}
