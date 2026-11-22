@@ -24,7 +24,7 @@ builds the demo archive takes two to three minutes per device, so keep their num
 down: add screenshots to an existing built-archive test rather than a new one. Every VirgaUI file is wrapped in
 `#if canImport(UIKit)`. VirgaUI builds in Swift 5 language mode.
 
-The UI test classes, each one built-archive test per device: VirgaUITests (the shell, the
+The UI test classes (ScheduleUITests, below, needs no archive build), each one built-archive test per device: VirgaUITests (the shell, the
 dashboards, the reports, the palette, Settings, the sign-in); ToolsUITests
 (`testTheToolsOnTheBuiltArchive`: `tools-built`, `tool-identity`, `tool-best-time`,
 `tool-follow-cleanup` and `-checked` after the activity check, `tool-interaction-lookup`,
@@ -232,8 +232,8 @@ TEMPLATES AND POSTING (Templates/, Posting/, Settings/PostingSettingsSection.swi
   `.postingConfirm(isPresented:title:onConfirm:message:)` (hubParts' ConfirmDialog) and
   `PostingWords.countPhrase`. Use opens the composer through `ComposerHost`.
 - Settings › Posting is `PostingSettingsSection` over `PostingSettingsModel`, with the composer's
-  `LanguagePicker` and `GatesEditor`; `ScheduleWords` holds scheduleModel.js's week sentences and
-  `TimezonePicker` scheduleParts' TimezoneSelect until the scheduling pages are ported. The
+  `LanguagePicker` and `GatesEditor`; its weekly queue reads VirgaPosting's `ScheduleModel` (the
+  week's count and summary, the zone's name, moveToZone) and draws scheduleParts' `TimezoneSelect`. The
   Post adviser's card is `AdviserSettingsCard` when the account can use the server (else
   `NeedsBackendNotice`), and the Default timer's editor is `LifespanRuleEditor` (no exact time,
   no toggle of its own; the switch above it, `default-timer-on`, keeps `enabled`).
@@ -278,6 +278,72 @@ ADVISER (Adviser/, Composer/ComposerController+Adviser.swift, Posting/)
   `settings-posting-adviser`, `settings-posting-timer-editor`, `adviser-style`, `adviser-busy`,
   `adviser-check`, `adviser-gate-busy`, `adviser-gate` (or `adviser-gate-passed`) and
   `alt-text-described`.
+
+SCHEDULING (Posting/Schedule*.swift, Posting/ScheduledPage*.swift, Posting/WeeklySchedulePage.swift,
+Posting/WhenPicker.swift, Composer/ComposerController+Schedule.swift, Composer/ComposerWhenPanel.swift)
+- Over VirgaPosting's Schedule and Pages ports, unchanged (notes/scheduling.md): the rows, the week and
+  the picker's words are ScheduleModel's, the reorder QueueReorder's, the calendar QueueCalendar's, the
+  calls ScheduleService's over the account's `VirgaBackend` (`app.session.backendFor(did)`).
+- `Measure.Schedule` (Posting/ScheduleMeasures.swift) names schedule.css's measures (and the few of
+  hub.css's the rows use, and the toasts' and clocks' durations from the JSX).
+- Posting/ScheduleParts.swift, what more than one page draws: `TimezoneSelect(value:identifier:onChange:)`,
+  `ScheduleSwitch` (the web's Switch), `QueueCalendarView(schedule:rows:now:onPick:occupancy:highlight:
+  caption:lead:after:)` (a SwiftUI Grid; VoiceOver reads it day by day through sort priorities),
+  `.scheduleActionDialog(isPresented:title:confirmLabel:busyLabel:cancelLabel:danger:onConfirm:message:)`
+  (ActionDialog), `ScheduleQuote`, `ScheduleLinkedText` (words with links the navigator follows, through
+  `InternalLink`), `ScheduledListLoad` (hubParts' useLoad over listScheduled, with the limits when asked,
+  read again on `virga:scheduled-changed` / `virga:timers-changed` for the account), and the small
+  helpers `ScheduleIds` (ids compared as `===`), `ScheduleText`, `ScheduleSaid` (a sentence as an error,
+  a `ScheduleErrorObject`), `ScheduleGlyph`.
+- `ScheduledPage(app:did:)` (RoutedPage's `/posting/scheduled`) over `ScheduledPageModel`
+  (ScheduledPage+Model.swift: the clock, busy rows, the message, the optimistic redraw while an order
+  saves, the drag, the lit row, the announcements, the question up). Rows are `ScheduledRowView`
+  (ScheduledPage+Rows.swift) in one flat `ForEach` of `ScheduleListEntry` (day names and rows) so a row
+  keeps its view, and its drag, as it changes day. Reordering: wider than a phone the `QueueHandle`
+  (inline below 900, in the page's margin from 900) takes a drag over the rows' frames
+  (`QueueRowFrames`), the keys (Space or Return, the arrows, Escape) and VoiceOver's adjust; a phone has
+  Move earlier and Move later. Identifiers: `scheduled-page`, `sched-notes`, `sched-failed`, `sched-queue`,
+  `sched-queue-list`, `sched-timed`, `sched-row-<id>`, `sched-note-<id>`, `sched-edit`, `sched-retry`,
+  `sched-handle`, `sched-move-earlier`/`-later`, `sched-add-to-queue`, `sched-schedule-a-post`,
+  `queue-calendar`, `calendar-pick`, `schedule-dialog` (`-keep`, `-confirm`, `-error`), `sched-limits`.
+- `WeeklySchedulePage(app:did:)` (`/posting/schedule`): `DayRow` per weekday in the reader's week
+  (`ScheduleWeek.orderedWeekdays()`), `CopyDaysDialog`, `ScheduleSuggestions.read(archive:…)` over the
+  archive's best times, `ScheduleSplit` (two columns from 1181). Identifiers: `weekly-schedule-page`,
+  `week-times`, `week-day-<key>`, `week-add-<key>`, `week-add-time`, `week-add-confirm`, `copy-day-<key>`,
+  `copy-days-confirm`, `week-reset`, `week-ahead`, `week-off`, `week-repack`, `week-suggestions`.
+- `WhenPicker(schedule:value:onChange:queue:requester:onQueue:min:max:repeatRule:onRepeatChange:
+  repeatBlock:occurrence:)`: the caller passes the account's weekly schedule (its settings' `queue`) and
+  its `VirgaBackend` (nil without a long session), where the web reads them from the did. Drafts'
+  "Schedule this draft" dialog can take it as it is. Identifiers: `when-picker`, `when-date`, `when-time`,
+  `when-pick-<key>`, `when-zone`, `when-problem`, `when-repeat`, `when-ends`, `when-until`, `when-count`,
+  `when-repeat-note`, `when-queue`, `when-queue-slot`, `when-use-queue`.
+- The composer (marked `SCHEDULE` in ComposerController, +Actions, ComposerSheet, ComposerParts):
+  `controller.scheduling` (`ComposerScheduling`: whenOpen, the queue preview, the limits, the source
+  warning, the row opened from) and ComposerController+Schedule.swift (`runSchedule`, `openWhen`,
+  `submitSchedule`, `refreshLimits`, `applyScheduleRoom`, `readQueuePreview`, `loadScheduled`,
+  `finishScheduledSource`, `retryCancelSource`, `nextHour`). `ComposerWhenPanel` (`when-panel`,
+  `when-post-now`, `when-queue-preview`, `when-queue-note`, `when-change`) sits under the post's settings
+  and `ComposerSourceWarning` (`composer-source-warning`) over the post; PublishButton takes the usage
+  line as its `footnote`; the foot's Schedule is `composer-schedule`.
+- ScheduleUITests (`testSchedulingOnTheDemo`, no archive build, over the demo server's seeded rows):
+  `scheduled-posts`, `scheduled-queue`, `scheduled-picked`, `scheduled-timed`, `composer-queue`,
+  `composer-when-queue`, `composer-queued`, `scheduled-reorder`, `scheduled-reordered`, `composer-when`,
+  `composer-when-picked`, `composer-scheduled`, `composer-scheduled-edit`, `scheduled-skip-dialog`,
+  `scheduled-post-now-dialog`, `scheduled-remove-dialog`, `weekly-schedule`, `weekly-schedule-changed`,
+  `weekly-schedule-add`, `weekly-schedule-copy`, `weekly-schedule-reset`, `weekly-schedule-ahead`,
+  `settings-posting-queue` (each `-ipad` on the iPad). A step the demo can't reach is skipped.
+- Coming back to a page: on a phone the weekly schedule is pushed over Scheduled posts, and a page that
+  goes stops its PostingSettingsModel (it no longer hears changes). Both pages make a new one when they
+  appear again (`ScheduledPageModel.start()`, WeeklySchedulePage's `.task`), so a week changed on the
+  pushed page is the one drawn after Back. The week ahead's day heads put the name beside the date from
+  520 wide, measured on the calendar itself (in the weekly schedule's side column it is narrower than
+  the page). The composer brings its when panel into view as it opens (a ScrollViewReader round the
+  sheet's ScrollView, `ComposerWhenPanel.anchor`), as the web's scrollIntoView does.
+- Not yet: Set a timer on a timer note (TimerDialog.jsx comes with the timers' page; the row offers
+  Dismiss), the timers' page's and the timer and when dialogs' rules of schedule.css. Deliberate
+  differences: useFocusAfterRemoval is the system's; the date, the time and a new weekly time are the
+  system's pickers (no 5-minute step, always a whole time); the picker's and a repeat's fields share
+  their row evenly; forced colours have no counterpart.
 
 SHELL, ROUND 6
 - `ShellActions` (in the shell's environment): `creatingDashboard` opens the shell's

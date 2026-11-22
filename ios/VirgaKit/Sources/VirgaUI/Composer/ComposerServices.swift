@@ -51,11 +51,9 @@ public protocol ComposerPublisher: Sendable {
   ) async throws -> ComposerPublishResult
 }
 
-/// The sentences for what the composer can't do on iOS yet.
+/// The sentence for what the composer can't do on iOS yet.
 public enum ComposerUnported {
   public static let publish = "Publishing isn’t in the iOS app yet."
-  public static let schedule = "Scheduling isn’t in the iOS app yet."
-  public static let open = "Opening scheduled posts isn’t in the iOS app yet."
 }
 
 /// A publisher that doesn't (previews, tests): it says publishing isn't in

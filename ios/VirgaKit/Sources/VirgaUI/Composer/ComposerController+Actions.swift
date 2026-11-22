@@ -346,6 +346,7 @@ extension ComposerController {
     case .failed(_, let soft)?: replyBlocks = !soft
     default: replyBlocks = false
     }
+    applyScheduleRoom(&set)  // SCHEDULE: a full allowance is said before anyone tries.
     let blockedByLoad = loads["scheduled"] == .loading || loads["draft"] == .loading || loads["media"] == .loading || replyBlocks
     if blockedByLoad {
       var failed = false
@@ -379,7 +380,7 @@ extension ComposerController {
     case PublishActions.post:
       publishTask = Task { await submitPost() }
     case PublishActions.schedule, PublishActions.queue:
-      unavailable(action, line: action == PublishActions.queue ? "Finding the next open time" : "Scheduling", ComposerUnported.schedule)
+      runSchedule(action)  // SCHEDULE (ComposerController+Schedule.swift)
     case PublishActions.draft:
       publishTask = Task { await saveDraft() }
     default:
@@ -396,23 +397,6 @@ extension ComposerController {
       runAction(set.primary)
     } else {
       error = ComposerErrorLine(text: a.reason ?? "")
-    }
-  }
-
-  /// Scheduling and drafts until their ports are wired: the web's busy
-  /// line, then the sentence that they aren't here yet.
-  func unavailable(_ action: String, line: String, _ sentence: String) {
-    let a = actionSet.actions[action]
-    error = nil
-    if a.disabled {
-      error = ComposerErrorLine(text: a.reason ?? "")
-      return
-    }
-    let attempt = startBusy(action, line)
-    Task {
-      try? await Task.sleep(nanoseconds: 400_000_000)
-      self.endBusy(attempt)
-      self.error = ComposerErrorLine(text: sentence)
     }
   }
 
@@ -555,18 +539,30 @@ extension ComposerController {
     for warning in result.warnings {
       if let text = warning["message"]?.stringValue { toasts.push(text, seconds: 7) }
     }
+    // SCHEDULE: a post that came from a scheduled row takes the row off
+    // (finishSource's scheduled half); if it can't, the post stays to try again.
+    if s.source?.kind == "scheduled" {
+      Task {
+        guard await self.finishScheduledSource(s) else { return }
+        if late && self.changedSince(s) { return }
+        self.resetAfterSend(did)
+      }
+      return
+    }
     // A post that came from a draft: the draft goes (ComposerSubmit's finishSource).
     Task { await finishDraftSource(s) }
     // A post that landed after the composer gave up waiting: only clear
     // what the writer hasn't changed since.
-    if late {
-      let now = state.posts
-      let changed = now.indices.contains { i in
-        !(s.posts.indices.contains(i) && now[i].text.jsEquals(s.posts[i].text))
-      }
-      if changed { return }
-    }
+    if late && changedSince(s) { return }
     resetAfterSend(did)
+  }
+
+  /// Whether the writer has changed the posts' words since `s` was sent.
+  func changedSince(_ s: ComposerState) -> Bool {
+    let now = state.posts
+    return now.indices.contains { i in
+      !(s.posts.indices.contains(i) && now[i].text.jsEquals(s.posts[i].text))
+    }
   }
 
   func resetAfterSend(_ did: String) {
@@ -576,6 +572,7 @@ extension ComposerController {
     if !old.asDid.jsEquals(did) { ComposerRestore.clearKept(old.asDid, store: store, now: now) }
     let home = activeDid.isEmpty ? did : activeDid
     loadState(baseState(home))
+    scheduling.forget()  // SCHEDULE
     notices = []
     showTags = false
     error = nil
@@ -600,6 +597,7 @@ extension ComposerController {
       videoJobs = [:]
       ComposerRestore.clearKept(did, store: store, now: now)
       loadState(baseState(did))
+      scheduling.forget()  // SCHEDULE
       loads = [:]
       notices = []
       error = nil

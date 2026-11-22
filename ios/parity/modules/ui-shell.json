@@ -311,9 +311,10 @@
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerParts.swift",
         "ios/VirgaKit/Sources/VirgaUI/Composer/PostBlock.swift",
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerSheet.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerOptions.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerOptions.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerWhenPanel.swift"
       ],
-      "note": "The composer's sheet, posts, editor (its type and highlights), media, embed cards, settings row, busy line and foot, the language picker, tags, post as and the send button, from the measures in ComposerMeasure.swift. Not yet: the drop target, the skeletons' shimmer, the slash list, the when panel, and the adviser's places.",
+      "note": "The composer's sheet, posts, editor (its type and highlights), media, embed cards, settings row, busy line and foot, the language picker, tags, post as and the send button, from the measures in ComposerMeasure.swift. Not yet: the drop target, the skeletons' shimmer, the slash list, and the adviser's places. The when panel (.when-panel, .when-panel-head), the queue's line (.composer-timer-note) and .link-button are ComposerWhenPanel.swift's.",
       "synced": "4eb1a3099c0c"
     },
     "src/posting/library/library.css": {
@@ -333,17 +334,24 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateMeasures.swift",
         "ios/VirgaKit/Sources/VirgaUI/Posting/TemplatesPage.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Posting/PostingParts.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostingParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduledPage+Rows.swift"
       ],
-      "note": "The Templates page (.hub-row, .tpl-row-item with Use and the ⋯ on the name's line, .tpl-name, .tpl-shortcut-chip, .tpl-chip as a tint, .tpl-group-head), the notice, the empty block, the bones (.hub-skeleton, .hub-bone) and the error. Not yet: the overview's columns and nav, the timed rows, the quotes and the spinner, which come with their pages.",
+      "note": "The Templates page (.hub-row, .tpl-row-item with Use and the ⋯ on the name's line, .tpl-name, .tpl-shortcut-chip, .tpl-chip as a tint, .tpl-group-head), the notice, the empty block, the bones (.hub-skeleton, .hub-bone) and the error. The scheduled posts' rows use .hub-row-main and .hub-row-text, and their questions .hub-quote (ScheduledPage+Rows.swift, ScheduleParts.swift's ScheduleQuote). Not yet: the overview's columns and nav, the timed rows, the quotes and the spinner, which come with their pages.",
       "synced": "428ed1747963"
     },
     "src/posting/pages/schedule.css": {
       "status": "partial",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaUI/Posting/LifespanRuleEditor.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Posting/LifespanRuleEditor.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduleMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduleParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduledPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduledPage+Rows.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/WeeklySchedulePage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/WhenPicker.swift"
       ],
-      "note": "The timer's rule editor (.lifespan-editor, .lse-*: the switch row, the blocks and their legends, the chips, Other…'s fields, the sub-questions, the condition rows, the checks, the spare row, the sentence), in Measure.Lifespan. The scheduling pages' own come with them.",
+      "note": "The timer's rule editor (.lifespan-editor, .lse-*), in Measure.Lifespan; and in Measure.Schedule (ScheduleMeasures.swift) the scheduled posts' page (.sched-page, .sched-message, .sched-groups, .sched-group-label, .sched-row and its lit, moving and busy states, .sched-handle in the row and in the page's margin from 900, .sched-when-cell, .sched-time, .sched-rel, .sched-when-past, .sched-row-why, .sched-row-note, .sched-row-reply, .sched-steps, and the phone's rows), the week ahead (.sched-cal-*: the grid, the times, the days and their heads, the marks open, filled, dashed and lit, the pick's reach, the caption, the skeleton), the weekly schedule (.sched-week-layout's two columns from 1181, .sched-tz-field, .sched-days, .sched-day and the phone's, .sched-copy-days, .sched-add, .sched-week-foot, .sched-suggest*), the shared bits (.sched-tz, .sched-switch, .sched-confirm) and the time picker (.when-picker, .sched-when-fields one under the other below 440, .sched-picks, .sched-when-zone, .when-at, .sched-problem, .sched-repeat, .sched-repeat-fields, .sched-when-queue). Not yet: the timers' page (.sched-rule, .sched-acted, .sched-settled) and the timer and when dialogs (.timer-dialog, .when-dialog, .sched-quote, .sched-dialog-skeleton), which come with the timers' page and Drafts. Forced colours have no counterpart.",
       "synced": "6e4ceba4938b"
     },
     "src/posting/posting.css": {
