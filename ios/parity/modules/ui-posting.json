@@ -9,7 +9,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Shell/RoutedPage.swift"
       ],
-      "note": "RoutedPage's posting case: a page that needs Virga's server (needsBackend) shows NeedsBackend under its header without its access line for an account that can't schedule; Templates is TemplatesPage, keyed by the open account, with the part of the address after it. Not yet: the hub, Drafts, Scheduled, Weekly schedule, Timers, Posted and Library pages, which show their header and that they aren't in the app yet (they wait for the scheduling port).",
+      "note": "RoutedPage's posting case: a page that needs Virga's server (needsBackend) shows NeedsBackend under its header without its access line for an account that can't schedule; Templates is TemplatesPage, keyed by the open account, with the part of the address after it; Scheduled posts and the weekly schedule are ScheduledPage and WeeklySchedulePage, keyed by the open account. Not yet: the hub, Drafts, Timers and Posted pages, which show their header and that they aren't in the app yet.",
       "synced": "bef217b0e836"
     },
     "src/posting/PostingSettingsSection.jsx": {
@@ -29,9 +29,11 @@
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerSheet.swift",
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerOptions.swift",
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerServices.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController+Adviser.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController+Adviser.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController+Schedule.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerWhenPanel.swift"
       ],
-      "note": "Ported: opening from an intent (normalizeIntent, seedFromIntent, setting aside what was being written, the notices), restoring what was kept (keptPostFor, takeSetAside, openAside, elsewhereNotices), loading a reply or a quote, posting as another account (changeAsDid, gatesForAccount), the default reply settings, adding pictures (picked, pasted, an intent's described ones) and a video (uploaded as soon as it's added), quotes and link cards found in the text, splitting, renumbering and its undo, removing and adding posts, the settings row (tags, language, replies, timer, More › Continue a thread, Save as a template and Start over), a \"/\" template applied over its shortcut (applyTemplate, applyPlan: its text and what it attaches), one with blanks through the library's dialog on it, the library's dialog from a post's tools and the slash list (its plan back through applyPlan), Save as a template (the template editor, a reply's through draftFromReply), an intent's attach (the Library page's Use in a new post), Continue a thread (the archive's posts, else the author feed), the phone's bar at the top (Close, the title and the send button, 640 and under), the busy line, the slow and hard publish watch, publishErrorView, the posted toast and resetting after a send, the autosave (flushed on Close and when the app goes to the background). Publishing goes through ComposerPublisher (VirgaUI/Composer/ComposerServices.swift): the app's is PostingPublisher, VirgaPosting's Publish.publish over TemporaryComposerFiles (VirgaUI/Platform), ImageIO and the session's transport, mentions resolved through Mentions.useNetwork. Save as draft (Drafts.createDraft or updateDraft, DraftMedia over the app's file store), opening an intent's draft (loadDraftTarget, openDraft, its media and the post it answers read again), a restored post's media read back (fillMedia), and a posted draft deleted (finishSource's draft half) are here. Link cards are LinkCard.fetchLinkCard. Schedule and Add to queue show the web's busy line and then say scheduling isn't in the iOS app yet. Not yet, because what they call isn't ported: scheduling and the weekly queue (WhenPicker, the queue's next slot, submitSchedule), loading a scheduled post and finishSource's scheduled half, the timer (LifespanEditor, getLimits, the default timer, armAfterPublish), the duplicate guard (publish.js's), drag and drop, and the posted toast's View it on Bluesky link (the shell's toasts are words only). The post adviser (ComposerController+Adviser.swift): useAdviserGate configured for the posting account while the composer is open, the check before sending (its busy line in the composer's, then Getting it ready; Keep editing, Save as draft, a fix taken checked again), Check this post among the post's tools with the month's checks, AdviserBusyLine over the post, the post held still and the send button busy while a read runs, and the adviser's sheet.",
+      "note": "Ported: opening from an intent (normalizeIntent, seedFromIntent, setting aside what was being written, the notices), restoring what was kept (keptPostFor, takeSetAside, openAside, elsewhereNotices), loading a reply or a quote, posting as another account (changeAsDid, gatesForAccount), the default reply settings, adding pictures (picked, pasted, an intent's described ones) and a video (uploaded as soon as it's added), quotes and link cards found in the text, splitting, renumbering and its undo, removing and adding posts, the settings row (tags, language, replies, timer, More › Continue a thread, Save as a template and Start over), a \"/\" template applied over its shortcut (applyTemplate, applyPlan: its text and what it attaches), one with blanks through the library's dialog on it, the library's dialog from a post's tools and the slash list (its plan back through applyPlan), Save as a template (the template editor, a reply's through draftFromReply), an intent's attach (the Library page's Use in a new post), Continue a thread (the archive's posts, else the author feed), the phone's bar at the top (Close, the title and the send button, 640 and under), the busy line, the slow and hard publish watch, publishErrorView, the posted toast and resetting after a send, the autosave (flushed on Close and when the app goes to the background). Publishing goes through ComposerPublisher (VirgaUI/Composer/ComposerServices.swift): the app's is PostingPublisher, VirgaPosting's Publish.publish over TemporaryComposerFiles (VirgaUI/Platform), ImageIO and the session's transport, mentions resolved through Mentions.useNetwork. Save as draft (Drafts.createDraft or updateDraft, DraftMedia over the app's file store), opening an intent's draft (loadDraftTarget, openDraft, its media and the post it answers read again), a restored post's media read back (fillMedia), and a posted draft deleted (finishSource's draft half) are here. Link cards are LinkCard.fetchLinkCard. Scheduling (ComposerController+Schedule.swift, its state ComposerScheduling, and ComposerWhenPanel.swift): the limits read as it opens and for each account (refreshLimits) with a full allowance said on Schedule and Add to queue and the usage line at the send menu's foot; Schedule opening the when panel at the next hour (openWhen, an intent's mode schedule or queue) and sending the post for the time picked; Add to queue through the queue's next open time; submitSchedule (the room, No free timer, the post checked as one going out later, the gates, serializeForSchedule with the repeat's zone and occurrence and a draft's images, createScheduled or updateScheduled, a scheduled draft's draft deleted, scheduledMessage with the move note, the warnings, the limits read again); the when panel (Schedule for later with the WhenPicker, Into your weekly queue with the next open time and Pick a time instead, Post now instead) and Goes into your weekly queue. with Change; an intent's scheduledId opened (loadScheduledTarget, the images read back as files, the when panel open for a time, the reply read again) with its skeleton; a post that went out from a scheduled row taking it off (finishSource's scheduled half) or saying so with Cancel the scheduled copy (retryCancelSource) and Close. Not yet: the timer (LifespanDialog in the composer, the default timer, timerNote, armAfterPublish after a post goes out now), the duplicate guard (publish.js's), drag and drop, and the posted toast's View it on Bluesky link (the shell's toasts are words only). The post adviser (ComposerController+Adviser.swift): useAdviserGate configured for the posting account while the composer is open, the check before sending (its busy line in the composer's, then Getting it ready; Keep editing, Save as draft, a fix taken checked again), Check this post among the post's tools with the month's checks, AdviserBusyLine over the post, the post held still and the send button busy while a read runs, and the adviser's sheet.",
       "synced": "9be49b62b520"
     },
     "src/posting/composer/ComposerContext.jsx": {
@@ -99,7 +101,8 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerParts.swift"
       ],
-      "synced": "f2a126c3d792"
+      "synced": "f2a126c3d792",
+      "note": "The split button and its caret's menu, with the footnote (the allowance in use, scheduledUsageLine) at the menu's foot."
     },
     "src/posting/composer/ReplyContext.jsx": {
       "status": "ported",
@@ -167,8 +170,14 @@
       "swift": []
     },
     "src/posting/pages/ScheduledPage.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduledPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduledPage+Model.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduledPage+Rows.swift"
+      ],
+      "note": "Scheduled posts over scheduleModel (ScheduledPageModel holds the page's state): the read (listScheduled with getLimits, read again on a scheduling or timer event, ScheduledListLoad), the clock once a minute (a post whose time has come read again, never mid-drag), the load failure with Try again, the unavailable server's callout, the message with Dismiss; A timer couldn't be set (Went out over the day and hour, the note, Dismiss through acknowledgeTimerNote); Didn't go out (the day over the hour); Your queue with Add to queue (the composer in queue mode), the week ahead (QueueCalendarView with Change the times, a taken time pressed brings its row into view, lit for two seconds), the empty lines and Set posting times, the rows grouped by zoned day in one run so a row keeps its view as it moves, and Saving the new order…; At a set time with Schedule a post; the allowance line (scheduledLimitsLine) and its bone. A row: its time column (or a phone's first line with the dot), its words (two lines), Replying to, the meta line (going out now a step louder, part of it out as a badge, the series with its progress and the last one, From a repeating post, From the queue, rowTags, the timer with its sentence read out), the reason (red for a failure), Retry (Retry the rest) or Edit, the ⋯ (Edit, Post now, Skip this one, Stop repeating with their hints, then Dismiss / Remove from the schedule / Remove, and stop repeating). Reordering (planQueueReorder, applyAssignment while it moves, reorderScheduled with the fallback's second try, the refusals and REORDER_PARTIAL): wider than a phone a handle (in the page's margin from 900) dragged over the others, or the keys (Space or Return, the arrows, Escape) with the web's announcements, and VoiceOver's adjust; a phone's Move earlier and Move later; a row that keeps its time shows the lock. The four questions (Remove or Dismiss, Post now through postScheduledNow over the app's publish and timer services, Skip it, Stop repeating) with their sentences and the quoted post, and the toasts. Not yet: Set a timer on a timer note (TimerDialog.jsx, which comes with the timers' page); such a row offers Dismiss. useFocusAfterRemoval is the system's: VoiceOver moves on to what took the row's place.",
+      "synced": "68f5738826af"
     },
     "src/posting/pages/TemplatesPage.jsx": {
       "status": "ported",
@@ -183,8 +192,12 @@
       "swift": []
     },
     "src/posting/pages/WeeklySchedulePage.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/WeeklySchedulePage.swift"
+      ],
+      "note": "The header with Posting › Scheduled posts as its crumbs; the error; the notice when the week's zone isn't this device's, with Use <zone> (moveToZone); Times your posts have done well (useSuggestions over the archive's year of best times, block 1, sorted by the reader's week, each day and time unbroken) with Use these times (scheduleFromSuggestions) or Add these times (mergeSuggestionsIntoSchedule) and Stop suggesting; Posting times (weeklyCount, weekSummary), the time zone (TimezoneSelect), the days in the reader's week order (DayRow: the name, the times as tokens with Remove <time> on <days>, No posting times, the + with its form of a time picker, Add and Cancel, the ⋯ with the three Copy to … targets, Copy to other days… and its dialog of checkboxes, and Clear this day), Saved as you go, in this browser. and Start again from the default (its question, back to the shipped week in the week's zone); The week ahead (QueueCalendarView with the queue's counts and See them, or No posting times yet., and the line when the list couldn't be read); the queued posts off these times with Move them onto these times (planQueueReorder, reorderScheduled, the toast or the refusal); and the switch that brings suggestions back. Two columns from 1181 wide (ScheduleSplit, 1.25 to 1). Deliberate differences: the focus after a time is taken off or a day cleared is the system's; the new time is the system's time picker (no 5-minute step).",
+      "synced": "44f7531586a4"
     },
     "src/posting/pages/hubParts.jsx": {
       "status": "partial",
@@ -195,11 +208,12 @@
       "synced": "7e2519aca49f"
     },
     "src/posting/pages/scheduleParts.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduleParts.swift",
         "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
       ],
-      "note": "TimezoneSelect (TimezonePicker: this device's zone first, then the rest, an unknown stored zone kept) and SwitchButton (SettingsSwitch), as Settings › Posting uses them. The rest comes with the scheduling pages.",
+      "note": "TimezoneSelect (this device's zone first, then every zone the device knows sorted by code unit, an unknown stored zone kept), SwitchButton (Settings' SettingsSwitch), Switch (ScheduleSwitch: the words press it too), QueueCalendar (QueueCalendarView over buildCalendarDays: calendarRows' rows with rowLabel, a column a day with today in ink, the marks open, taken, off the week's times and lit, a taken one pressed with onPick, each mark's label, VoiceOver reading day by day, the caption with lead and after, links followed by the navigator), ActionDialog (scheduleActionDialog: Keep it, the busy label, a failure kept in the dialog) and hubParts' useLoad as the pages read the list (ScheduledListLoad). useFocusAfterRemoval is the system's; RowTime, which no page draws, isn't ported.",
       "synced": "ac722e1dce2e"
     },
     "src/posting/ui/AdviserBusy.jsx": {
@@ -297,7 +311,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
       ],
-      "note": "Weekly queue: the posting times a week with the week in a line and Edit the week (to Posting › Weekly schedule), the time zone (this device's first, then every zone the device knows) with the device's zone named when it differs, and Suggest posting times. scheduleModel.js's weeklyCount, weekSummary, slotLabel, zoneLabel and moveToZone are written beside it (ScheduleWords) until the scheduling pages' model is ported; TimeZone.knownTimeZoneIdentifiers stands in for Intl.supportedValuesOf('timeZone').",
+      "note": "Weekly queue: the posting times a week with the week in a line and Edit the week (to Posting › Weekly schedule), the time zone (scheduleParts' TimezoneSelect: this device's first, then every zone the device knows) with the device's zone named when it differs, and Suggest posting times, over VirgaPosting's ScheduleModel (weeklyCount, weekSummary, zoneLabel, moveToZone). TimeZone.knownTimeZoneIdentifiers stands in for Intl.supportedValuesOf('timeZone').",
       "synced": "a81e7aff21f3"
     },
     "src/posting/ui/SettingsParts.jsx": {
@@ -321,8 +335,12 @@
       "swift": []
     },
     "src/posting/ui/WhenPicker.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/WhenPicker.swift"
+      ],
+      "note": "The date and the time on the queue's clock (the system's pickers in its zone, the date held to min and max), the clock every 30 seconds, the quick picks (chips, one sideways row at 760 and under), the zone line with Goes out <when>, whenProblem's sentence, Repeat (its options, off with repeatBlock), Ends (Never, On a date with its default last day, After a number of times with its default count), Last day, Times in all, the note (repeatBlock, repeatProblem or repeatSummary with the occurrence's sentence), and with queue the next open time (listScheduled's queued rows, nextOpenSlot) with Set some, the error's aside and Use this time. Differences: the caller passes the weekly schedule and the account's server session (the web reads them from the did); the pickers always hold a time, so a date can't be typed without one; the fields share their row evenly.",
+      "synced": "821923a84f82"
     }
   }
 }

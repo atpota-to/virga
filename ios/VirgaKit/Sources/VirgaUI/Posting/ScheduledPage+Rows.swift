@@ -114,7 +114,7 @@ struct ScheduledRowView: View {
       Rectangle()
         .fill(active ? theme.tint : lit ? theme.accentTint : Color.clear)
         .padding(.horizontal, -Measure.Schedule.rowBleed)
-        .animation(theme.reduceMotion ? nil : .easeOut(duration: Measure.Schedule.litFadeSeconds), value: lit)
+        .animation(theme.reduceMotion ? nil : Animation.easeOut(duration: Measure.Schedule.litFadeSeconds), value: lit)
     }
     .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
     .overlay(alignment: .topLeading) {
@@ -124,6 +124,7 @@ struct ScheduledRowView: View {
       }
     }
     .opacity(busy ? Measure.Schedule.busyOpacity : 1)
+    .zIndex(active ? 1 : 0)
     .background {
       if reorder?.movable == true {
         GeometryReader { geometry in
