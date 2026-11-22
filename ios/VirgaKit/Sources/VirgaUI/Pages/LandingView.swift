@@ -36,27 +36,57 @@ struct LandingFrame<Bar: View, Main: View, Foot: View>: View {
 
   var body: some View {
     let maxWidth = theme.points(ThemeKit.landingMaxWidth)
-    VStack(alignment: .leading, spacing: 0) {
-      bar
-        .frame(minHeight: theme.points(ThemeKit.landingBarHeight))
-        .padding(.top, theme.points(theme.hasSidebar ? ThemeKit.landingBarSpaceAbove : ThemeKit.phoneLandingBarSpaceAbove))
-      // Over the foot, so what floats from the main column (the handle's
-      // suggestions) is drawn and pressed above it.
-      main.zIndex(1)
-      LandingFootLayout(spacing: Measure.Landing.footColumnGap, lineSpacing: Measure.Landing.footGap) {
-        foot
+    LandingMinHeight {
+      // `.landing { min-height: 100svh }`: the height the scroll view
+      // shows, less the status bar and the home indicator.
+      Color.clear
+        .containerRelativeFrame(.vertical)
+        .accessibilityHidden(true)
+      VStack(alignment: .leading, spacing: 0) {
+        bar
+          .frame(minHeight: theme.points(ThemeKit.landingBarHeight))
+          .padding(.top, theme.points(theme.hasSidebar ? ThemeKit.landingBarSpaceAbove : ThemeKit.phoneLandingBarSpaceAbove))
+        // Over the foot, so what floats from the main column (the handle's
+        // suggestions) is drawn and pressed above it.
+        main.zIndex(1)
+        // `.landing-main { flex: 1 }`: what the screen has to spare goes
+        // under the main column, so the foot is at the bottom.
+        Spacer(minLength: 0)
+        LandingFootLayout(spacing: Measure.Landing.footColumnGap, lineSpacing: Measure.Landing.footGap) {
+          foot
+        }
+        .virgaText(.textSm)
+        .foregroundStyle(theme.muted)
+        .tint(theme.muted)
+        .padding(.top, Measure.Landing.footSpaceAbove)
+        .padding(.bottom, Measure.Landing.footSpaceBelow)
       }
-      .virgaText(.textSm)
-      .foregroundStyle(theme.muted)
-      .tint(theme.muted)
-      .padding(.top, Measure.Landing.footSpaceAbove)
-      .padding(.bottom, Measure.Landing.footSpaceBelow)
+      .padding(.horizontal, theme.pagePad)
+      .frame(maxWidth: maxWidth + theme.pagePad * 2, alignment: .leading)
+      .frame(maxWidth: .infinity)
     }
-    .padding(.horizontal, theme.pagePad)
-    .frame(maxWidth: maxWidth + theme.pagePad * 2, alignment: .leading)
-    .frame(maxWidth: .infinity)
-    .frame(minHeight: theme.windowHeight, alignment: .top)
     .skyBackground(live: liveSky)
+  }
+}
+
+/// `.landing`'s column at least as tall as its first view (the screen's
+/// height, from containerRelativeFrame), its second view (the page) laid
+/// out in all of it, so its spacer can take what the content doesn't fill.
+/// A frame's minHeight would need the number itself, and the window's
+/// height (theme.windowHeight) is taller than what the scroll view shows by
+/// the status bar and the home indicator.
+struct LandingMinHeight: Layout {
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    guard subviews.count == 2 else { return .zero }
+    let screen = subviews[0].sizeThatFits(proposal).height
+    let page = subviews[1].sizeThatFits(ProposedViewSize(width: proposal.width, height: nil))
+    return CGSize(width: proposal.width ?? page.width, height: max(screen, page.height))
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    guard subviews.count == 2 else { return }
+    subviews[0].place(at: bounds.origin, proposal: ProposedViewSize(width: bounds.width, height: nil))
+    subviews[1].place(at: bounds.origin, proposal: ProposedViewSize(bounds.size))
   }
 }
 
