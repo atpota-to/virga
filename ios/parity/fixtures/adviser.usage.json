@@ -1,0 +1,4190 @@
+{
+  "name": "adviser.usage",
+  "sources": [
+    "src/posting/adviser/usage.js"
+  ],
+  "cases": [
+    {
+      "id": "usageConstants",
+      "fn": "usageConstants",
+      "input": {},
+      "output": {
+        "ADVISER_USAGE_KEY_PREFIX": "virga:adviser-usage:",
+        "USAGE_FEATURES": [
+          "adviser",
+          "altText",
+          "style"
+        ],
+        "FREE_MONTHLY_LIMITS": {
+          "adviser": 30,
+          "altText": 15,
+          "style": 3
+        },
+        "key": "virga:adviser-usage:did:plc:writer"
+      }
+    },
+    {
+      "id": "currentMonthKey#1",
+      "fn": "currentMonthKey",
+      "input": {
+        "now": 1794477600000
+      },
+      "output": "2026-11"
+    },
+    {
+      "id": "currentMonthKey#2",
+      "fn": "currentMonthKey",
+      "input": {
+        "now": 1796094000000
+      },
+      "output": "2026-12"
+    },
+    {
+      "id": "currentMonthKey#3",
+      "fn": "currentMonthKey",
+      "input": {
+        "now": 1797724800000
+      },
+      "output": "2026-12"
+    },
+    {
+      "id": "currentMonthKey#4",
+      "fn": "currentMonthKey",
+      "input": {
+        "now": 1798761599999
+      },
+      "output": "2026-12"
+    },
+    {
+      "id": "currentMonthKey#5",
+      "fn": "currentMonthKey",
+      "input": {
+        "now": 1798761600000
+      },
+      "output": "2027-01"
+    },
+    {
+      "id": "currentMonthKey#6",
+      "fn": "currentMonthKey",
+      "input": {
+        "now": 1709208000000
+      },
+      "output": "2024-02"
+    },
+    {
+      "id": "currentMonthKey#7",
+      "fn": "currentMonthKey",
+      "input": {
+        "now": 0
+      },
+      "output": "1970-01"
+    },
+    {
+      "id": "currentMonthKey#8",
+      "fn": "currentMonthKey",
+      "input": {
+        "now": -1
+      },
+      "output": "1969-12"
+    },
+    {
+      "id": "currentMonthKey#9",
+      "fn": "currentMonthKey",
+      "input": {
+        "now": -60576249600000
+      },
+      "output": "50-06"
+    },
+    {
+      "id": "currentMonthKey#10",
+      "fn": "currentMonthKey",
+      "input": {
+        "now": -62193657600000
+      },
+      "output": "-1-03"
+    },
+    {
+      "id": "currentMonthKey#11",
+      "fn": "currentMonthKey",
+      "input": {
+        "now": 8640000000000000
+      },
+      "output": "275760-09"
+    },
+    {
+      "id": "currentMonthKey#12",
+      "fn": "currentMonthKey",
+      "input": {
+        "now": 8640000000000000
+      },
+      "output": "275760-09"
+    },
+    {
+      "id": "currentMonthKey#13",
+      "fn": "currentMonthKey",
+      "input": {
+        "now": 9000000000000000
+      },
+      "output": "NaN-NaN"
+    },
+    {
+      "id": "usageResetsAt#1",
+      "fn": "usageResetsAt",
+      "input": {
+        "now": 1794477600000
+      },
+      "output": {
+        "ms": 1796083200000
+      }
+    },
+    {
+      "id": "usageResetsAt#2",
+      "fn": "usageResetsAt",
+      "input": {
+        "now": 1796094000000
+      },
+      "output": {
+        "ms": 1798761600000
+      }
+    },
+    {
+      "id": "usageResetsAt#3",
+      "fn": "usageResetsAt",
+      "input": {
+        "now": 1797724800000
+      },
+      "output": {
+        "ms": 1798761600000
+      }
+    },
+    {
+      "id": "usageResetsAt#4",
+      "fn": "usageResetsAt",
+      "input": {
+        "now": 1798761599999
+      },
+      "output": {
+        "ms": 1798761600000
+      }
+    },
+    {
+      "id": "usageResetsAt#5",
+      "fn": "usageResetsAt",
+      "input": {
+        "now": 1798761600000
+      },
+      "output": {
+        "ms": 1801440000000
+      }
+    },
+    {
+      "id": "usageResetsAt#6",
+      "fn": "usageResetsAt",
+      "input": {
+        "now": 1709208000000
+      },
+      "output": {
+        "ms": 1709251200000
+      }
+    },
+    {
+      "id": "usageResetsAt#7",
+      "fn": "usageResetsAt",
+      "input": {
+        "now": 0
+      },
+      "output": {
+        "ms": 2678400000
+      }
+    },
+    {
+      "id": "usageResetsAt#8",
+      "fn": "usageResetsAt",
+      "input": {
+        "now": -1
+      },
+      "output": {
+        "ms": 0
+      }
+    },
+    {
+      "id": "usageResetsAt#9",
+      "fn": "usageResetsAt",
+      "input": {
+        "now": -60576249600000
+      },
+      "output": {
+        "ms": -615513600000
+      }
+    },
+    {
+      "id": "usageResetsAt#10",
+      "fn": "usageResetsAt",
+      "input": {
+        "now": -62193657600000
+      },
+      "output": {
+        "ms": -62190979200000
+      }
+    },
+    {
+      "id": "usageResetsAt#11",
+      "fn": "usageResetsAt",
+      "input": {
+        "now": 8640000000000000
+      },
+      "output": {
+        "ms": "NaN"
+      }
+    },
+    {
+      "id": "usageResetsAt#12",
+      "fn": "usageResetsAt",
+      "input": {
+        "now": 8640000000000000
+      },
+      "output": {
+        "ms": "NaN"
+      }
+    },
+    {
+      "id": "usageResetsAt#13",
+      "fn": "usageResetsAt",
+      "input": {
+        "now": 9000000000000000
+      },
+      "output": {
+        "ms": "NaN"
+      }
+    },
+    {
+      "id": "stores-adviser-reads",
+      "fn": "usageScript",
+      "input": {
+        "ops": [
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 4,
+              "limit": 30
+            }
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 4,
+            "limit": 30
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 4,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 4,
+            "limit": 30
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 4,
+                "limit": 30
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "keeps-the-others-beside-it",
+      "fn": "usageScript",
+      "input": {
+        "ops": [
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 4,
+              "limit": 30
+            }
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "altText",
+            "now": 1794477600000,
+            "usage": {
+              "used": 2,
+              "limit": 15
+            }
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "style",
+            "now": 1794477600000,
+            "usage": {
+              "used": 1,
+              "limit": 3
+            }
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "style",
+            "now": 1794477600000
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "altText",
+            "now": 1794477600000
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 4,
+            "limit": 30
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 4,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 2,
+            "limit": 15
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 4,
+                "limit": 30,
+                "altText": {
+                  "month": "2026-11",
+                  "used": 2,
+                  "limit": 15
+                }
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 1,
+            "limit": 3
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 4,
+                "limit": 30,
+                "altText": {
+                  "month": "2026-11",
+                  "used": 2,
+                  "limit": 15
+                },
+                "style": {
+                  "month": "2026-11",
+                  "used": 1,
+                  "limit": 3
+                }
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 1,
+            "limit": 3
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 4,
+                "limit": 30,
+                "altText": {
+                  "month": "2026-11",
+                  "used": 2,
+                  "limit": 15
+                },
+                "style": {
+                  "month": "2026-11",
+                  "used": 1,
+                  "limit": 3
+                }
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 2,
+            "limit": 15
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 4,
+                "limit": 30,
+                "altText": {
+                  "month": "2026-11",
+                  "used": 2,
+                  "limit": 15
+                },
+                "style": {
+                  "month": "2026-11",
+                  "used": 1,
+                  "limit": 3
+                }
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 4,
+            "limit": 30
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 4,
+                "limit": 30,
+                "altText": {
+                  "month": "2026-11",
+                  "used": 2,
+                  "limit": 15
+                },
+                "style": {
+                  "month": "2026-11",
+                  "used": 1,
+                  "limit": 3
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "forgets-last-month",
+      "fn": "usageScript",
+      "input": {
+        "ops": [
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1793487600000,
+            "usage": {
+              "used": 30,
+              "limit": 30
+            }
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "atLimit",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "left",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": {
+            "month": "2026-10",
+            "used": 30,
+            "limit": 30
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-10",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-10",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": false,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-10",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-10",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "answers-without-usage",
+      "fn": "usageScript",
+      "input": {
+        "ops": [
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": "x",
+              "limit": 30
+            }
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 3,
+              "limit": 0
+            }
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": -1,
+              "limit": 30
+            }
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 1,
+              "limit": -3
+            }
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 1
+            }
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": "used"
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": [
+              4,
+              30
+            ]
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 1,
+              "limit": "30"
+            }
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": null,
+          "store": {}
+        },
+        {
+          "value": null,
+          "store": {}
+        },
+        {
+          "value": null,
+          "store": {}
+        },
+        {
+          "value": null,
+          "store": {}
+        },
+        {
+          "value": null,
+          "store": {}
+        },
+        {
+          "value": null,
+          "store": {}
+        },
+        {
+          "value": null,
+          "store": {}
+        },
+        {
+          "value": null,
+          "store": {}
+        },
+        {
+          "value": null,
+          "store": {}
+        }
+      ]
+    },
+    {
+      "id": "fractional-counts",
+      "fn": "usageScript",
+      "input": {
+        "ops": [
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 4.9,
+              "limit": 30.7
+            }
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "left",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 0,
+              "limit": 0.5
+            }
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 0.2,
+              "limit": 1.5
+            }
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "atLimit",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 4,
+            "limit": 30
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 4,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 4,
+            "limit": 30
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 4,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": 26,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 4,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 4,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 0,
+            "limit": 1
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 0,
+                "limit": 1
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 0,
+            "limit": 1
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 0,
+                "limit": 1
+              }
+            }
+          }
+        },
+        {
+          "value": false,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 0,
+                "limit": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "clears-one-leaves-others",
+      "fn": "usageScript",
+      "input": {
+        "ops": [
+          {
+            "op": "mark",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "limit": 30
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "altText",
+            "now": 1794477600000,
+            "usage": {
+              "used": 2,
+              "limit": 15
+            }
+          },
+          {
+            "op": "clear",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "atLimit",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "altText",
+            "now": 1794477600000
+          },
+          {
+            "op": "clear",
+            "did": "did:plc:writer",
+            "feature": "altText",
+            "now": 1794477600000
+          },
+          {
+            "op": "clear",
+            "did": "did:plc:writer",
+            "feature": "style",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 30,
+            "limit": 30
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 2,
+            "limit": 15
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 30,
+                "limit": 30,
+                "altText": {
+                  "month": "2026-11",
+                  "used": 2,
+                  "limit": 15
+                }
+              }
+            }
+          }
+        },
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "altText": {
+                  "month": "2026-11",
+                  "used": 2,
+                  "limit": 15
+                }
+              }
+            }
+          }
+        },
+        {
+          "value": false,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "altText": {
+                  "month": "2026-11",
+                  "used": 2,
+                  "limit": 15
+                }
+              }
+            }
+          }
+        },
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "altText": {
+                  "month": "2026-11",
+                  "used": 2,
+                  "limit": 15
+                }
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 2,
+            "limit": 15
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "altText": {
+                  "month": "2026-11",
+                  "used": 2,
+                  "limit": 15
+                }
+              }
+            }
+          }
+        },
+        {
+          "value": null,
+          "store": {}
+        },
+        {
+          "value": null,
+          "store": {}
+        }
+      ]
+    },
+    {
+      "id": "clear-keeps-unknown-members",
+      "fn": "usageScript",
+      "input": {
+        "initial": {
+          "virga:adviser-usage:did:plc:writer": "{\"month\":\"2026-11\",\"used\":3,\"limit\":30,\"note\":\"x\"}"
+        },
+        "ops": [
+          {
+            "op": "clear",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "clear",
+            "did": "did:plc:writer",
+            "feature": "style",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "note": "x"
+              }
+            }
+          }
+        },
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "note": "x"
+              }
+            }
+          }
+        },
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "note": "x"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "keeps-accounts-apart",
+      "fn": "usageScript",
+      "input": {
+        "ops": [
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 30,
+              "limit": 30
+            }
+          },
+          {
+            "op": "atLimit",
+            "did": "did:plc:other",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "atLimit",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "left",
+            "did": "did:plc:none",
+            "feature": "adviser",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 30,
+            "limit": 30
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": false,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": true,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "unreadable-storage",
+      "fn": "usageScript",
+      "input": {
+        "initial": {
+          "virga:adviser-usage:did:plc:writer": "{not json"
+        },
+        "ops": [
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 1,
+              "limit": 30
+            }
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "text": "{not json"
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 1,
+            "limit": 30
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 1,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 1,
+            "limit": 30
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 1,
+                "limit": 30
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "stored-not-an-object",
+      "fn": "usageScript",
+      "input": {
+        "initial": {
+          "virga:adviser-usage:did:plc:writer": "[1,2,3]"
+        },
+        "ops": [
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "style",
+            "now": 1794477600000,
+            "usage": {
+              "used": 1,
+              "limit": 3
+            }
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": [
+                1,
+                2,
+                3
+              ]
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 1,
+            "limit": 3
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "style": {
+                  "month": "2026-11",
+                  "used": 1,
+                  "limit": 3
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "stored-empty",
+      "fn": "usageScript",
+      "input": {
+        "initial": {
+          "virga:adviser-usage:did:plc:writer": ""
+        },
+        "ops": [
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "clear",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "text": ""
+            }
+          }
+        },
+        {
+          "value": null,
+          "store": {}
+        }
+      ]
+    },
+    {
+      "id": "stored-odd-entries",
+      "fn": "usageScript",
+      "input": {
+        "initial": {
+          "virga:adviser-usage:did:plc:writer": "{\"month\":\"2026-11\",\"used\":\"3\",\"limit\":30,\"altText\":5,\"style\":{\"month\":202611,\"used\":1,\"limit\":3}}"
+        },
+        "ops": [
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "altText",
+            "now": 1794477600000
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "style",
+            "now": 1794477600000
+          },
+          {
+            "op": "atLimit",
+            "did": "did:plc:writer",
+            "feature": "style",
+            "now": 1794477600000
+          },
+          {
+            "op": "left",
+            "did": "did:plc:writer",
+            "feature": "altText",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": "3",
+                "limit": 30,
+                "altText": 5,
+                "style": {
+                  "month": 202611,
+                  "used": 1,
+                  "limit": 3
+                }
+              }
+            }
+          }
+        },
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": "3",
+                "limit": 30,
+                "altText": 5,
+                "style": {
+                  "month": 202611,
+                  "used": 1,
+                  "limit": 3
+                }
+              }
+            }
+          }
+        },
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": "3",
+                "limit": 30,
+                "altText": 5,
+                "style": {
+                  "month": 202611,
+                  "used": 1,
+                  "limit": 3
+                }
+              }
+            }
+          }
+        },
+        {
+          "value": false,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": "3",
+                "limit": 30,
+                "altText": 5,
+                "style": {
+                  "month": 202611,
+                  "used": 1,
+                  "limit": 3
+                }
+              }
+            }
+          }
+        },
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": "3",
+                "limit": 30,
+                "altText": 5,
+                "style": {
+                  "month": 202611,
+                  "used": 1,
+                  "limit": 3
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "stored-null-entry",
+      "fn": "usageScript",
+      "input": {
+        "initial": {
+          "virga:adviser-usage:did:plc:writer": "{\"altText\":null,\"style\":false,\"month\":null}"
+        },
+        "ops": [
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "altText",
+            "now": 1794477600000
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "style",
+            "now": 1794477600000
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "altText": null,
+                "style": false,
+                "month": null
+              }
+            }
+          }
+        },
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "altText": null,
+                "style": false,
+                "month": null
+              }
+            }
+          }
+        },
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "altText": null,
+                "style": false,
+                "month": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "no-store",
+      "fn": "usageScript",
+      "input": {
+        "noStore": true,
+        "ops": [
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 1,
+              "limit": 3
+            }
+          },
+          {
+            "op": "mark",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "limit": 3
+          },
+          {
+            "op": "atLimit",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "left",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "clear",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": null,
+          "store": {}
+        },
+        {
+          "value": null,
+          "store": {}
+        },
+        {
+          "value": null,
+          "store": {}
+        },
+        {
+          "value": false,
+          "store": {}
+        },
+        {
+          "value": null,
+          "store": {}
+        },
+        {
+          "value": null,
+          "store": {}
+        }
+      ]
+    },
+    {
+      "id": "no-account",
+      "fn": "usageScript",
+      "input": {
+        "ops": [
+          {
+            "op": "record",
+            "did": "",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 1,
+              "limit": 3
+            }
+          },
+          {
+            "op": "record",
+            "did": null,
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 1,
+              "limit": 3
+            }
+          },
+          {
+            "op": "read",
+            "did": "",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "mark",
+            "did": null,
+            "feature": "adviser",
+            "now": 1794477600000,
+            "limit": 3
+          },
+          {
+            "op": "clear",
+            "did": "",
+            "feature": "adviser",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": null,
+          "store": {}
+        },
+        {
+          "value": null,
+          "store": {}
+        },
+        {
+          "value": null,
+          "store": {}
+        },
+        {
+          "value": null,
+          "store": {}
+        },
+        {
+          "value": null,
+          "store": {}
+        }
+      ]
+    },
+    {
+      "id": "the-limit-when-the-server-says-so",
+      "fn": "usageScript",
+      "input": {
+        "ops": [
+          {
+            "op": "mark",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "limit": 30
+          },
+          {
+            "op": "atLimit",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "left",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 30,
+            "limit": 30
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": true,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": 0,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "falls-back-to-the-last-limit",
+      "fn": "usageScript",
+      "input": {
+        "ops": [
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 3,
+              "limit": 50
+            }
+          },
+          {
+            "op": "mark",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 3,
+            "limit": 50
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 3,
+                "limit": 50
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 50,
+            "limit": 50
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 50,
+                "limit": 50
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 50,
+            "limit": 50
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 50,
+                "limit": 50
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "falls-back-to-the-free-one",
+      "fn": "usageScript",
+      "input": {
+        "ops": [
+          {
+            "op": "mark",
+            "did": "did:plc:writer",
+            "feature": "altText",
+            "now": 1794477600000,
+            "limit": null
+          },
+          {
+            "op": "mark",
+            "did": "did:plc:writer",
+            "feature": "style",
+            "now": 1794477600000,
+            "limit": 0
+          },
+          {
+            "op": "mark",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "limit": "forty"
+          },
+          {
+            "op": "mark",
+            "did": "did:plc:writer",
+            "feature": "style",
+            "now": 1794477600000,
+            "limit": 7.8
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 15,
+            "limit": 15
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "altText": {
+                  "month": "2026-11",
+                  "used": 15,
+                  "limit": 15
+                }
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 3,
+            "limit": 3
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "altText": {
+                  "month": "2026-11",
+                  "used": 15,
+                  "limit": 15
+                },
+                "style": {
+                  "month": "2026-11",
+                  "used": 3,
+                  "limit": 3
+                }
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 30,
+            "limit": 30
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "altText": {
+                  "month": "2026-11",
+                  "used": 15,
+                  "limit": 15
+                },
+                "style": {
+                  "month": "2026-11",
+                  "used": 3,
+                  "limit": 3
+                },
+                "month": "2026-11",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 7,
+            "limit": 7
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "altText": {
+                  "month": "2026-11",
+                  "used": 15,
+                  "limit": 15
+                },
+                "style": {
+                  "month": "2026-11",
+                  "used": 7,
+                  "limit": 7
+                },
+                "month": "2026-11",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "last-month-limit-is-not-seen",
+      "fn": "usageScript",
+      "input": {
+        "ops": [
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1793487600000,
+            "usage": {
+              "used": 3,
+              "limit": 50
+            }
+          },
+          {
+            "op": "mark",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": {
+            "month": "2026-10",
+            "used": 3,
+            "limit": 50
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-10",
+                "used": 3,
+                "limit": 50
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 30,
+            "limit": 30
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "counts-what-is-left",
+      "fn": "usageScript",
+      "input": {
+        "ops": [
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 12,
+              "limit": 30
+            }
+          },
+          {
+            "op": "left",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 40,
+              "limit": 30
+            }
+          },
+          {
+            "op": "left",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "atLimit",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 12,
+            "limit": 30
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 12,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": 18,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 12,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 40,
+            "limit": 30
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 40,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": 0,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 40,
+                "limit": 30
+              }
+            }
+          }
+        },
+        {
+          "value": true,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 40,
+                "limit": 30
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "unknown-allowance",
+      "fn": "usageScript",
+      "input": {
+        "ops": [
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "harvest",
+            "now": 1794477600000
+          },
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "harvest",
+            "now": 1794477600000,
+            "usage": {
+              "used": 1,
+              "limit": 2
+            }
+          },
+          {
+            "op": "clear",
+            "did": "did:plc:writer",
+            "feature": "Adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "mark",
+            "did": "did:plc:writer",
+            "feature": "",
+            "now": 1794477600000,
+            "limit": 1
+          }
+        ]
+      },
+      "output": [
+        {
+          "$throws": "Not an AI allowance: harvest",
+          "store": {}
+        },
+        {
+          "$throws": "Not an AI allowance: harvest",
+          "store": {}
+        },
+        {
+          "$throws": "Not an AI allowance: Adviser",
+          "store": {}
+        },
+        {
+          "$throws": "Not an AI allowance: ",
+          "store": {}
+        }
+      ]
+    },
+    {
+      "id": "unicode-did",
+      "fn": "usageScript",
+      "input": {
+        "ops": [
+          {
+            "op": "record",
+            "did": "did:plc:é",
+            "feature": "adviser",
+            "now": 1794477600000,
+            "usage": {
+              "used": 1,
+              "limit": 3
+            }
+          },
+          {
+            "op": "read",
+            "did": "did:plc:é",
+            "feature": "adviser",
+            "now": 1794477600000
+          },
+          {
+            "op": "read",
+            "did": "did:plc:é",
+            "feature": "adviser",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 1,
+            "limit": 3
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:é": {
+              "json": {
+                "month": "2026-11",
+                "used": 1,
+                "limit": 3
+              }
+            }
+          }
+        },
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:é": {
+              "json": {
+                "month": "2026-11",
+                "used": 1,
+                "limit": 3
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "2026-11",
+            "used": 1,
+            "limit": 3
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:é": {
+              "json": {
+                "month": "2026-11",
+                "used": 1,
+                "limit": 3
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "invalid-time",
+      "fn": "usageScript",
+      "input": {
+        "ops": [
+          {
+            "op": "record",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 9000000000000000,
+            "usage": {
+              "used": 1,
+              "limit": 3
+            }
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 9000000000000000
+          },
+          {
+            "op": "read",
+            "did": "did:plc:writer",
+            "feature": "adviser",
+            "now": 1794477600000
+          }
+        ]
+      },
+      "output": [
+        {
+          "value": {
+            "month": "NaN-NaN",
+            "used": 1,
+            "limit": 3
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "NaN-NaN",
+                "used": 1,
+                "limit": 3
+              }
+            }
+          }
+        },
+        {
+          "value": {
+            "month": "NaN-NaN",
+            "used": 1,
+            "limit": 3
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "NaN-NaN",
+                "used": 1,
+                "limit": 3
+              }
+            }
+          }
+        },
+        {
+          "value": null,
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "NaN-NaN",
+                "used": 1,
+                "limit": 3
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "adviserUsageLine#1",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "used": 12,
+          "limit": 30
+        }
+      },
+      "output": "18 of 30 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#2",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 15
+        },
+        "feature": "altText"
+      },
+      "output": "14 of 15 free descriptions left this month."
+    },
+    {
+      "id": "adviserUsageLine#3",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "used": 3,
+          "limit": 3
+        },
+        "feature": "style"
+      },
+      "output": "No free style readings left this month. They start again on December 1."
+    },
+    {
+      "id": "adviserUsageLine#4",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        }
+      },
+      "output": "1 of 1 free check left this month."
+    },
+    {
+      "id": "adviserUsageLine#5",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        },
+        "feature": "style"
+      },
+      "output": "1 of 1 free style reading left this month."
+    },
+    {
+      "id": "adviserUsageLine#6",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        },
+        "feature": "altText"
+      },
+      "output": "1 of 1 free description left this month."
+    },
+    {
+      "id": "adviserUsageLine#7",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "used": 45,
+          "limit": 30
+        }
+      },
+      "output": "No free checks left this month. They start again on December 1."
+    },
+    {
+      "id": "adviserUsageLine#8",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1797724800000,
+        "usage": {
+          "used": 30,
+          "limit": 30
+        }
+      },
+      "output": "No free checks left this month. They start again on January 1."
+    },
+    {
+      "id": "adviserUsageLine#9",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1782860400000,
+        "usage": {
+          "used": 15,
+          "limit": 15
+        },
+        "feature": "altText"
+      },
+      "output": "No free descriptions left this month. They start again on July 1."
+    },
+    {
+      "id": "adviserUsageLine#10",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1.5,
+          "limit": 30
+        }
+      },
+      "output": "28.5 of 30 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#11",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "used": 2,
+          "limit": 2.5
+        }
+      },
+      "output": "0.5 of 2.5 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#12",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 1.2
+        }
+      },
+      "output": "0.19999999999999996 of 1.2 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#13",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1234,
+          "limit": 100000
+        }
+      },
+      "output": "98766 of 100000 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#14",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 1e+21
+        }
+      },
+      "output": "1e+21 of 1e+21 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#15",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": null
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#16",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#17",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#18",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "used": -1,
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#19",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 0
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#20",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "used": "1",
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#21",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": "used"
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#22",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 3
+        },
+        "feature": "harvest"
+      },
+      "output": {
+        "$throws": "Not an AI allowance: harvest"
+      }
+    },
+    {
+      "id": "adviserUsageLine#23",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-US",
+        "now": 9000000000000000,
+        "usage": {
+          "used": 3,
+          "limit": 3
+        }
+      },
+      "output": "No free checks left this month. They start again on Invalid Date."
+    },
+    {
+      "id": "adviserUsageLine#24",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "used": 12,
+          "limit": 30
+        }
+      },
+      "output": "18 of 30 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#25",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 15
+        },
+        "feature": "altText"
+      },
+      "output": "14 of 15 free descriptions left this month."
+    },
+    {
+      "id": "adviserUsageLine#26",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "used": 3,
+          "limit": 3
+        },
+        "feature": "style"
+      },
+      "output": "No free style readings left this month. They start again on 1 December."
+    },
+    {
+      "id": "adviserUsageLine#27",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        }
+      },
+      "output": "1 of 1 free check left this month."
+    },
+    {
+      "id": "adviserUsageLine#28",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        },
+        "feature": "style"
+      },
+      "output": "1 of 1 free style reading left this month."
+    },
+    {
+      "id": "adviserUsageLine#29",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        },
+        "feature": "altText"
+      },
+      "output": "1 of 1 free description left this month."
+    },
+    {
+      "id": "adviserUsageLine#30",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "used": 45,
+          "limit": 30
+        }
+      },
+      "output": "No free checks left this month. They start again on 1 December."
+    },
+    {
+      "id": "adviserUsageLine#31",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1797724800000,
+        "usage": {
+          "used": 30,
+          "limit": 30
+        }
+      },
+      "output": "No free checks left this month. They start again on 1 January."
+    },
+    {
+      "id": "adviserUsageLine#32",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1782860400000,
+        "usage": {
+          "used": 15,
+          "limit": 15
+        },
+        "feature": "altText"
+      },
+      "output": "No free descriptions left this month. They start again on 1 July."
+    },
+    {
+      "id": "adviserUsageLine#33",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1.5,
+          "limit": 30
+        }
+      },
+      "output": "28.5 of 30 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#34",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "used": 2,
+          "limit": 2.5
+        }
+      },
+      "output": "0.5 of 2.5 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#35",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 1.2
+        }
+      },
+      "output": "0.19999999999999996 of 1.2 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#36",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1234,
+          "limit": 100000
+        }
+      },
+      "output": "98766 of 100000 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#37",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 1e+21
+        }
+      },
+      "output": "1e+21 of 1e+21 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#38",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": null
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#39",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#40",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#41",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "used": -1,
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#42",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 0
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#43",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "used": "1",
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#44",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": "used"
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#45",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 3
+        },
+        "feature": "harvest"
+      },
+      "output": {
+        "$throws": "Not an AI allowance: harvest"
+      }
+    },
+    {
+      "id": "adviserUsageLine#46",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-GB",
+        "now": 9000000000000000,
+        "usage": {
+          "used": 3,
+          "limit": 3
+        }
+      },
+      "output": "No free checks left this month. They start again on Invalid Date."
+    },
+    {
+      "id": "adviserUsageLine#47",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "used": 12,
+          "limit": 30
+        }
+      },
+      "output": "18 of 30 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#48",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 15
+        },
+        "feature": "altText"
+      },
+      "output": "14 of 15 free descriptions left this month."
+    },
+    {
+      "id": "adviserUsageLine#49",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "used": 3,
+          "limit": 3
+        },
+        "feature": "style"
+      },
+      "output": "No free style readings left this month. They start again on 1 December."
+    },
+    {
+      "id": "adviserUsageLine#50",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        }
+      },
+      "output": "1 of 1 free check left this month."
+    },
+    {
+      "id": "adviserUsageLine#51",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        },
+        "feature": "style"
+      },
+      "output": "1 of 1 free style reading left this month."
+    },
+    {
+      "id": "adviserUsageLine#52",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        },
+        "feature": "altText"
+      },
+      "output": "1 of 1 free description left this month."
+    },
+    {
+      "id": "adviserUsageLine#53",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "used": 45,
+          "limit": 30
+        }
+      },
+      "output": "No free checks left this month. They start again on 1 December."
+    },
+    {
+      "id": "adviserUsageLine#54",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1797724800000,
+        "usage": {
+          "used": 30,
+          "limit": 30
+        }
+      },
+      "output": "No free checks left this month. They start again on 1 January."
+    },
+    {
+      "id": "adviserUsageLine#55",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1782860400000,
+        "usage": {
+          "used": 15,
+          "limit": 15
+        },
+        "feature": "altText"
+      },
+      "output": "No free descriptions left this month. They start again on 1 July."
+    },
+    {
+      "id": "adviserUsageLine#56",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1.5,
+          "limit": 30
+        }
+      },
+      "output": "28.5 of 30 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#57",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "used": 2,
+          "limit": 2.5
+        }
+      },
+      "output": "0.5 of 2.5 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#58",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 1.2
+        }
+      },
+      "output": "0.19999999999999996 of 1.2 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#59",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1234,
+          "limit": 100000
+        }
+      },
+      "output": "98766 of 100000 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#60",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 1e+21
+        }
+      },
+      "output": "1e+21 of 1e+21 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#61",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": null
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#62",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#63",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#64",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "used": -1,
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#65",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 0
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#66",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "used": "1",
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#67",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": "used"
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#68",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 3
+        },
+        "feature": "harvest"
+      },
+      "output": {
+        "$throws": "Not an AI allowance: harvest"
+      }
+    },
+    {
+      "id": "adviserUsageLine#69",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-DE",
+        "now": 9000000000000000,
+        "usage": {
+          "used": 3,
+          "limit": 3
+        }
+      },
+      "output": "No free checks left this month. They start again on Invalid Date."
+    },
+    {
+      "id": "adviserUsageLine#70",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "used": 12,
+          "limit": 30
+        }
+      },
+      "output": "18 of 30 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#71",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 15
+        },
+        "feature": "altText"
+      },
+      "output": "14 of 15 free descriptions left this month."
+    },
+    {
+      "id": "adviserUsageLine#72",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "used": 3,
+          "limit": 3
+        },
+        "feature": "style"
+      },
+      "output": "No free style readings left this month. They start again on 1 December."
+    },
+    {
+      "id": "adviserUsageLine#73",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        }
+      },
+      "output": "1 of 1 free check left this month."
+    },
+    {
+      "id": "adviserUsageLine#74",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        },
+        "feature": "style"
+      },
+      "output": "1 of 1 free style reading left this month."
+    },
+    {
+      "id": "adviserUsageLine#75",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        },
+        "feature": "altText"
+      },
+      "output": "1 of 1 free description left this month."
+    },
+    {
+      "id": "adviserUsageLine#76",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "used": 45,
+          "limit": 30
+        }
+      },
+      "output": "No free checks left this month. They start again on 1 December."
+    },
+    {
+      "id": "adviserUsageLine#77",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1797724800000,
+        "usage": {
+          "used": 30,
+          "limit": 30
+        }
+      },
+      "output": "No free checks left this month. They start again on 1 January."
+    },
+    {
+      "id": "adviserUsageLine#78",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1782860400000,
+        "usage": {
+          "used": 15,
+          "limit": 15
+        },
+        "feature": "altText"
+      },
+      "output": "No free descriptions left this month. They start again on 1 July."
+    },
+    {
+      "id": "adviserUsageLine#79",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1.5,
+          "limit": 30
+        }
+      },
+      "output": "28.5 of 30 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#80",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "used": 2,
+          "limit": 2.5
+        }
+      },
+      "output": "0.5 of 2.5 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#81",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 1.2
+        }
+      },
+      "output": "0.19999999999999996 of 1.2 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#82",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1234,
+          "limit": 100000
+        }
+      },
+      "output": "98766 of 100000 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#83",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 1e+21
+        }
+      },
+      "output": "1e+21 of 1e+21 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#84",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": null
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#85",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#86",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#87",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "used": -1,
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#88",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 0
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#89",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "used": "1",
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#90",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": "used"
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#91",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 3
+        },
+        "feature": "harvest"
+      },
+      "output": {
+        "$throws": "Not an AI allowance: harvest"
+      }
+    },
+    {
+      "id": "adviserUsageLine#92",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-FR",
+        "now": 9000000000000000,
+        "usage": {
+          "used": 3,
+          "limit": 3
+        }
+      },
+      "output": "No free checks left this month. They start again on Invalid Date."
+    },
+    {
+      "id": "adviserUsageLine#93",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "used": 12,
+          "limit": 30
+        }
+      },
+      "output": "18 of 30 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#94",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 15
+        },
+        "feature": "altText"
+      },
+      "output": "14 of 15 free descriptions left this month."
+    },
+    {
+      "id": "adviserUsageLine#95",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "used": 3,
+          "limit": 3
+        },
+        "feature": "style"
+      },
+      "output": "No free style readings left this month. They start again on 1 December."
+    },
+    {
+      "id": "adviserUsageLine#96",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        }
+      },
+      "output": "1 of 1 free check left this month."
+    },
+    {
+      "id": "adviserUsageLine#97",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        },
+        "feature": "style"
+      },
+      "output": "1 of 1 free style reading left this month."
+    },
+    {
+      "id": "adviserUsageLine#98",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        },
+        "feature": "altText"
+      },
+      "output": "1 of 1 free description left this month."
+    },
+    {
+      "id": "adviserUsageLine#99",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "used": 45,
+          "limit": 30
+        }
+      },
+      "output": "No free checks left this month. They start again on 1 December."
+    },
+    {
+      "id": "adviserUsageLine#100",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1797724800000,
+        "usage": {
+          "used": 30,
+          "limit": 30
+        }
+      },
+      "output": "No free checks left this month. They start again on 1 January."
+    },
+    {
+      "id": "adviserUsageLine#101",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1782860400000,
+        "usage": {
+          "used": 15,
+          "limit": 15
+        },
+        "feature": "altText"
+      },
+      "output": "No free descriptions left this month. They start again on 1 July."
+    },
+    {
+      "id": "adviserUsageLine#102",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1.5,
+          "limit": 30
+        }
+      },
+      "output": "28.5 of 30 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#103",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "used": 2,
+          "limit": 2.5
+        }
+      },
+      "output": "0.5 of 2.5 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#104",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 1.2
+        }
+      },
+      "output": "0.19999999999999996 of 1.2 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#105",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1234,
+          "limit": 100000
+        }
+      },
+      "output": "98766 of 100000 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#106",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 1e+21
+        }
+      },
+      "output": "1e+21 of 1e+21 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#107",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": null
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#108",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#109",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#110",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "used": -1,
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#111",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 0
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#112",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "used": "1",
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#113",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": "used"
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#114",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 3
+        },
+        "feature": "harvest"
+      },
+      "output": {
+        "$throws": "Not an AI allowance: harvest"
+      }
+    },
+    {
+      "id": "adviserUsageLine#115",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-CH",
+        "now": 9000000000000000,
+        "usage": {
+          "used": 3,
+          "limit": 3
+        }
+      },
+      "output": "No free checks left this month. They start again on Invalid Date."
+    },
+    {
+      "id": "adviserUsageLine#116",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "used": 12,
+          "limit": 30
+        }
+      },
+      "output": "18 of 30 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#117",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 15
+        },
+        "feature": "altText"
+      },
+      "output": "14 of 15 free descriptions left this month."
+    },
+    {
+      "id": "adviserUsageLine#118",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "used": 3,
+          "limit": 3
+        },
+        "feature": "style"
+      },
+      "output": "No free style readings left this month. They start again on 1 December."
+    },
+    {
+      "id": "adviserUsageLine#119",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        }
+      },
+      "output": "1 of 1 free check left this month."
+    },
+    {
+      "id": "adviserUsageLine#120",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        },
+        "feature": "style"
+      },
+      "output": "1 of 1 free style reading left this month."
+    },
+    {
+      "id": "adviserUsageLine#121",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "used": 0,
+          "limit": 1
+        },
+        "feature": "altText"
+      },
+      "output": "1 of 1 free description left this month."
+    },
+    {
+      "id": "adviserUsageLine#122",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "used": 45,
+          "limit": 30
+        }
+      },
+      "output": "No free checks left this month. They start again on 1 December."
+    },
+    {
+      "id": "adviserUsageLine#123",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1797724800000,
+        "usage": {
+          "used": 30,
+          "limit": 30
+        }
+      },
+      "output": "No free checks left this month. They start again on 1 January."
+    },
+    {
+      "id": "adviserUsageLine#124",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1782860400000,
+        "usage": {
+          "used": 15,
+          "limit": 15
+        },
+        "feature": "altText"
+      },
+      "output": "No free descriptions left this month. They start again on 1 July."
+    },
+    {
+      "id": "adviserUsageLine#125",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1.5,
+          "limit": 30
+        }
+      },
+      "output": "28.5 of 30 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#126",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "used": 2,
+          "limit": 2.5
+        }
+      },
+      "output": "0.5 of 2.5 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#127",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 1.2
+        }
+      },
+      "output": "0.19999999999999996 of 1.2 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#128",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1234,
+          "limit": 100000
+        }
+      },
+      "output": "98766 of 100000 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#129",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 1e+21
+        }
+      },
+      "output": "1e+21 of 1e+21 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLine#130",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": null
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#131",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#132",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#133",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "used": -1,
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#134",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 0
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#135",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "used": "1",
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#136",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": "used"
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLine#137",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 1794477600000,
+        "usage": {
+          "used": 1,
+          "limit": 3
+        },
+        "feature": "harvest"
+      },
+      "output": {
+        "$throws": "Not an AI allowance: harvest"
+      }
+    },
+    {
+      "id": "adviserUsageLine#138",
+      "fn": "adviserUsageLine",
+      "input": {
+        "locale": "en-IN",
+        "now": 9000000000000000,
+        "usage": {
+          "used": 3,
+          "limit": 3
+        }
+      },
+      "output": "No free checks left this month. They start again on Invalid Date."
+    }
+  ]
+}
