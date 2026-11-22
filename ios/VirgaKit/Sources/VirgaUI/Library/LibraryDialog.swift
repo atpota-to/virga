@@ -10,8 +10,8 @@
 // with it in, and New template opens the template editor.
 //
 // Both run VirgaPosting's LibraryModel (useLibrary) over the app's library
-// store, the session's transport, the account's archive and the composer's
-// stand-in for linkCard.js.
+// store, the session's transport, the account's archive and linkCard.js's
+// fetchLinkCard (VirgaPosting's LinkCard).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -21,14 +21,14 @@ import VirgaPosting
 import VirgaSession
 
 /// The library's environment in the app (LibraryEnvironment): the session's
-/// transport, the account's archive, the link-card stand-in, the usage store.
+/// transport, the account's archive, LinkCard's fetcher, the usage store.
 @MainActor
 enum LibraryWiring {
   static func environment(_ app: AppModel) -> LibraryEnvironment {
     let transport = app.archiveEnvironment.transport
     return LibraryEnvironment(
       transport: transport, openStore: LibraryEnvironment.archive(files: app.archiveEnvironment.files),
-      fetchLinkCard: { url in await ComposerLinkCards.fetchLinkCard(url, transport: transport)?.json },
+      fetchLinkCard: LinkCard.fetchLinkCard(transport: transport),
       usageStore: app.stores.keyValue)
   }
 

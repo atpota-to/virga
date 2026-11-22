@@ -48,7 +48,7 @@ enum PickedMedia {
     }
     guard let data = try await item.loadTransferable(type: Data.self) else { return nil }
     let type = types.first { $0.conforms(to: .image) } ?? .jpeg
-    return ComposerFiles.write(data, mime: type.preferredMIMEType ?? "image/jpeg", name: "image")
+    return TemporaryComposerFiles.write(data, mime: type.preferredMIMEType ?? "image/jpeg", name: "image")
   }
 
   static func files(_ items: [PhotosPickerItem]) async -> [ComposerFile] {
