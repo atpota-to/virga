@@ -22,7 +22,7 @@ final class FakeLibrarySession: LibrarySession, @unchecked Sendable {
 }
 
 /// setTimeout the test fires itself.
-@MainActor final class ManualTimers {
+@MainActor final class LibraryManualTimers {
   private(set) var pending: [(id: Int, ms: Double, action: @MainActor () -> Void)] = []
   private var next = 0
 
@@ -85,7 +85,7 @@ let wrenReply: JSONValue = [
   let usage = InMemoryKeyValueStore()
   let service = TemplateService(store: nil, target: nil, locale: "en-US")
   let templateSession = FakeTemplatesSession()
-  let timers = ManualTimers()
+  let timers = LibraryManualTimers()
 
   func environment() -> LibraryEnvironment {
     LibraryEnvironment(

@@ -4,7 +4,7 @@ A snapshot of what the agent that ported this domain handed on (November 2026).
 The code and ios/parity/modules/*.json are the truth; read this for orientation, the API
 map, and the known gaps and deliberate differences.
 
-Status: ported (wave 6, chain B, after the collation step), then audited (wave 6, chain B's audit step; see "Audit" below).
+Status: ported and audited (2026-11-22; wave 6, chain B, after the collation step), then audited (wave 6, chain B's audit step; see "Audit" below).
 
 Parity cases: 1,444 after the audit (library.model 1,181, library.sources 154, library.ui 63, library.store 46); 1,432 at port time. network.publicAppView, which VirgaNetwork already had, is besides. library.model's insertText cases each hold seven insertions, and its ITEMS case holds every item the other cases name. library.model.json is about 1.2 MB, a little over PORTING.md's "about 1 MB".
 Tests at the time: whole package `swift test` on Linux (Swift 6.4.2) passes (9 test binaries; one earlier run hit the known VirgaDefense ScorerBehaviour timing flake, which passed alone and on the rerun), with no build warnings from the library's files. VirgaPostingTests: 336 tests in 52 suites, 61 of them the library's in 7 suites (LibraryModelParity 14, LibrarySourcesParity 9, LibraryUIParity 6, LibraryStoreParity 6, LibraryStoreBehaviour 13, LibraryModelBehaviour 12, LibraryTypedRows 1). `PARITY_ALLOW_PENDING=1 npx vitest run ios/parity`: 4 files, 151 tests pass. `npx eslint ios`: clean.

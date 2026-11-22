@@ -55,13 +55,6 @@ public struct ScheduledTarget<State: Sendable>: Sendable {
   public var row: JSONValue
 }
 
-// The library is being ported in another chain; the merge replaces this
-// with library/model.js's own isOwnThreadRow (VirgaPosting/Library).
-/// Whether an archive row belongs on Your posts (else Your replies).
-private func isOwnThreadRow(_ row: JSONValue?, _ selfDid: String) -> Bool {
-  guard let replyTo = row?["replyTo"], replyTo.isTruthy else { return true }
-  return replyTo.stringValue?.jsEquals(selfDid) ?? false
-}
 
 public enum ComposerLoaders {
   /// A coded error with a sentence to show.
@@ -253,7 +246,7 @@ public enum ComposerLoaders {
     let prefix = "at://\(did)/app.bsky.feed.post/"
     let mine = (rows ?? []).filter { row in
       guard let uri = row["uri"]?.stringValue, PostingJS.hasPrefix(uri, prefix) else { return false }
-      return isOwnThreadRow(row, did)
+      return Library.isOwnThreadRow(row, did)
     }
     // `.slice(0, limit)`: a negative limit counts back from the end.
     return ComposerJS.slice(TimerJS.v8Sorted(mine) { time($1) - time($0) }, 0, limit)

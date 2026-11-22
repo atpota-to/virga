@@ -116,7 +116,7 @@
       "fixtures": [
         "composer.loaders"
       ],
-      "note": "isOwnThreadRow is a private stand-in with library/model.js's code until the library's port (VirgaPosting/Library) is merged; the merge replaces it.",
+      "note": "Reads posts through VirgaNetwork's ports of library/sources.js's network helpers; isOwnThreadRow is the library's (Library.isOwnThreadRow), since the merge of the two chains.",
       "synced": "71bbc3c3937b"
     },
     "src/posting/composer/media.js": {

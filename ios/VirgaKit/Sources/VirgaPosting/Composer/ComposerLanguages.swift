@@ -40,9 +40,9 @@ public enum ComposerLanguages {
     + "za zh zu").components(separatedBy: " ")
 
   /// The one sort the module makes, `a.localeCompare(b)` in the runtime's
-  /// locale. One place, so the port of localeCompare can be switched here.
+  /// locale, through VirgaCore's one port of localeCompare.
   static func compareNames(_ a: String, _ b: String) -> Int {
-    LocaleCompare.compare(a, b, locale: "en-US")
+    JSCollation.localeCompare(a, b, locale: "en-US")
   }
 
   /// "English" for "en", in `locale`; the code itself when there's no name.

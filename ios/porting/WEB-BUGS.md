@@ -97,6 +97,12 @@ visible to people: they are marked **visible**.
 - src/posting/adviser/analysis.js applyWritingFixesToThread throws a TypeError for a thread with a null post once any fix applies.
 - src/posting/composer/actions.js postFacts and src/posting/autosave.js serializePost throw a TypeError on a post whose `images` is a non-array truthy value; hasAutosaveContent counts a string `images` or `tags` as content.
 
+## Library (src/posting/library)
+
+- **visible** src/posting/library/model.js isOwnThreadRow vs isOwnThreadPost: an archive row is on Your posts when its parent is the account's, but the author-feed fallback needs both root and parent to be the account's, so a reply to your own comment inside someone else's thread is on Your posts from the archive and on Your replies from the author feed.
+- src/posting/library/useLibrary.js, model.js libraryContext/asTemplateContext and libraryUi.js templateContextFrom pass no locale to buildTemplateContext, so `{{today}}` in a template used from the library is written in the browser's locale; rankTemplatesForSlash sorts in the browser's locale too.
+- src/posting/library/model.js suggestItems and attachmentsFromState, and sources.js goneError, are plain-object lookups: a record kind 'constructor' is labelled "function Object() { [native code] } by @…".
+
 ## Templates (src/posting/templates, src/posting/library/templateEditorModel.js)
 
 - **visible** src/posting/templates/postTemplates.js wordsOf/keywordMatches: the WORDS regex `/[\p{L}\p{N}](?:[\p{L}\p{N}']*[\p{L}\p{N}])?/gu` has no `\p{M}`, so a word splits at every combining mark: a keyword typed with a decomposed accent ('élise') matches the text 'e lise' and not 'élise', and Devanagari keywords split at their vowel signs.
