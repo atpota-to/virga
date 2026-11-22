@@ -78,6 +78,18 @@ final class VirgaUITests: XCTestCase {
     }
   }
 
+  /// Swipes the page up until all of `target` is on the screen, clear of its
+  /// bottom edge. A field counts as hittable with a sliver of it showing, and
+  /// a tap on that sliver at the iPad's bottom edge doesn't focus it.
+  private func scrollWhollyInto(_ app: XCUIApplication, _ target: XCUIElement) {
+    let bottom = app.windows.firstMatch.frame.maxY - 120
+    var tries = 0
+    while (!target.isHittable || target.frame.maxY > bottom) && tries < 8 {
+      app.swipeUp()
+      tries += 1
+    }
+  }
+
   func testLaunches() {
     let app = launch()
     XCTAssertTrue(app.wait(for: .runningForeground, timeout: 10))
@@ -271,7 +283,7 @@ final class VirgaUITests: XCTestCase {
     element(app, "report-followers").tap()
     waitForTitle(app, "Followers")
     let note = element(app, "chart-note-label")
-    scrollTo(app, note)
+    scrollWhollyInto(app, note)
     if note.exists {
       note.tap()
       // Return puts the keyboard away; then the chart is scrolled back
