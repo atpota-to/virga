@@ -514,7 +514,7 @@ struct ArrangeList: View {
               .frame(maxWidth: .infinity, alignment: .leading)
             value(card, def: def)
               .padding(.leading, Measure.Dashboard.arrangeValueSpaceBefore)
-            Image(systemName: ReportParts.chevronDown)
+            Image(systemName: Glyph.chevronDown)
               .font(.system(size: Measure.Dashboard.arrangeChevron))
               .foregroundStyle(theme.muted)
               .rotationEffect(.degrees(open ? 180 : 0))

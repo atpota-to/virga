@@ -33,10 +33,6 @@ enum ReportParts {
   /// `ModeToggle`'s name for every report chart's modes.
   static let modeLabel = "Chart"
 
-  /// lucide's ChevronDown and ChevronUp (Show all, Show fewer).
-  static let chevronDown = "chevron.down"
-  static let chevronUp = "chevron.up"
-
   /// `unitOptions(units, noun)`: a bucket's keys for a chart's modes.
   static func unitOptions(_ units: [AnalyticsUnit], _ noun: String) -> [SegmentedOption<String>] {
     units.map { u in

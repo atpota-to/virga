@@ -189,7 +189,7 @@ struct ContentRanked: View {
             } label: {
               Label(
                 all ? "Show fewer" : "Show all \(AppLocale.formatNumber(ordered.count))",
-                systemImage: all ? ReportParts.chevronUp : ReportParts.chevronDown)
+                systemImage: all ? Glyph.chevronUp : Glyph.chevronDown)
             }
             .buttonStyle(.linkAction)
           }

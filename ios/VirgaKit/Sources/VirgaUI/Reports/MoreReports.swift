@@ -229,7 +229,7 @@ struct AtmosphereReportView: View {
           Button {
             all.toggle()
           } label: {
-            Label(all ? "Show fewer" : "Show all \(m.ranked.count) collections", systemImage: all ? ReportParts.chevronUp : ReportParts.chevronDown)
+            Label(all ? "Show fewer" : "Show all \(m.ranked.count) collections", systemImage: all ? Glyph.chevronUp : Glyph.chevronDown)
           }
           .buttonStyle(.linkAction)
           .modifier(ChartFootAction())
