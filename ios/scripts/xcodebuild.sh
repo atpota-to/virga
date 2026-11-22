@@ -7,9 +7,9 @@
 #   ios/scripts/xcodebuild.sh build          the app, no tests
 #
 # Picks the newest available iPhone simulator unless SIMULATOR_ID is set;
-# ipad-test picks the newest available iPad unless IPAD_SIMULATOR_ID is set
-# (from 900 points wide the app has its sidebar, which the iPhone never
-# shows). Results go to ios/build/<step>.xcresult.
+# ipad-test picks the newest 13-inch iPad (else the largest available)
+# unless IPAD_SIMULATOR_ID is set: upright it is over 900 points wide, where
+# the app has its sidebar, which the iPhone never shows. Results go to ios/build/<step>.xcresult.
 set -euo pipefail
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ios="$(cd "$here/.." && pwd)"
@@ -17,7 +17,9 @@ step="${1:-app-test}"
 mkdir -p "$ios/build"
 
 # The newest available simulator whose name starts with $1: a Pro first
-# (not the iPad mini's A17 Pro), then the last by name (the larger).
+# (not the iPad mini's A17 Pro), then the last by name (the larger). For
+# iPads a 13-inch one comes before the rest, the largest else: upright it
+# is 1032 points wide, so the app has its sidebar without turning it.
 newest_simulator() {
   xcrun simctl list devices available --json | python3 -c '
 import json, sys, re
@@ -31,7 +33,9 @@ for runtime, devices in data.items():
     version = (int(m.group(1)), int(m.group(2)))
     for d in devices:
         if d.get("isAvailable") and d["name"].startswith(prefix):
-            key = (version, "Pro" in d["name"] and "mini" not in d["name"], d["name"])
+            name = d["name"]
+            big = prefix == "iPad" and "13-inch" in name
+            key = (big, version, "Pro" in name and "mini" not in name, name)
             if best is None or key > best[0]:
                 best = (key, d["udid"], d["name"], runtime)
 if not best:

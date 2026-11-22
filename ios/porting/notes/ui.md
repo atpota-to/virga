@@ -16,7 +16,7 @@ syntax with `swiftc -parse`; the main session merges and pushes; CI's `iOS app` 
 the compiler (Xcode 26.6, iOS 26.5 SDK, an iPhone and an iPad simulator); the UI tests
 (ios/AppUITests) drive demo mode and keep a screenshot of each screen worth seeing
 (XCTAttachment, kept always), which CI exports to the `screenshots` artifact
-(`iphone/` and `ipad/`, the iPad's turned upright). Every VirgaUI file is wrapped in
+(`iphone/` and `ipad/`; the iPad run uses a 13-inch iPad upright, over 900 wide). Every VirgaUI file is wrapped in
 `#if canImport(UIKit)`. VirgaUI builds in Swift 5 language mode.
 
 Things CI's compiler has refused so far, worth avoiding: comparing an optional

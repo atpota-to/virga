@@ -111,9 +111,9 @@ jobs:
       - name: UI tests on an iPad
         run: ios/scripts/xcodebuild.sh ipad-test
       # The UI tests keep a screenshot of each screen worth looking at
-      # (XCTAttachment, kept always), one folder per device, the iPad's
-      # turned upright. Exported whatever the tests did, and skipped quietly
-      # for a result bundle that isn't there.
+      # (XCTAttachment, kept always), one folder per device. Exported
+      # whatever the tests did, and skipped quietly for a result bundle that
+      # isn't there.
       - name: Export the screenshots
         if: always()
         run: |
@@ -127,20 +127,6 @@ jobs:
               echo "No result bundle at $bundle"
             fi
           done
-          # The iPad run is held on its side (landscapeLeft: the camera on
-          # the left), but a screenshot keeps the screen's own portrait
-          # pixels, with the top of the picture along their right edge. A
-          # quarter turn anticlockwise (sips turns clockwise, so 270) stands
-          # each one up; only the portrait-shaped ones are turned.
-          if [ -d ios/build/screenshots/ipad ]; then
-            find ios/build/screenshots/ipad -type f -name '*.png' | while IFS= read -r png; do
-              w="$(sips -g pixelWidth "$png" | awk '/pixelWidth/ {print $2}')"
-              h="$(sips -g pixelHeight "$png" | awk '/pixelHeight/ {print $2}')"
-              if [ -n "$w" ] && [ -n "$h" ] && [ "$h" -gt "$w" ]; then
-                sips -r 270 "$png" --out "$png" > /dev/null || echo "Couldn't turn $png"
-              fi
-            done
-          fi
       - name: Keep the screenshots
         if: always()
         uses: actions/upload-artifact@v4

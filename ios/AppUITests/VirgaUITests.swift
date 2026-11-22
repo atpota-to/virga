@@ -8,8 +8,8 @@
 // per screen), which CI exports from each result bundle into the
 // `screenshots` artifact, a folder per device.
 //
-// The shell differs by the window: from 900 points wide (an iPad, held on
-// its side here so any iPad is that wide) the parts are links down the
+// The shell differs by the window: from 900 points wide (the 13-inch iPad
+// the iPad run uses is 1032 wide upright) the parts are links down the
 // sidebar, with New post under the account at its top; narrower, they are
 // the tab bar's buttons, with the account at the top of a part's front page.
 
@@ -24,7 +24,6 @@ final class VirgaUITests: XCTestCase {
   private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
 
   private func launch(_ extra: [String] = []) -> XCUIApplication {
-    if isPad { XCUIDevice.shared.orientation = .landscapeLeft }
     let app = XCUIApplication()
     app.launchArguments += ["-VirgaDemo", "YES"] + extra
     app.launch()
