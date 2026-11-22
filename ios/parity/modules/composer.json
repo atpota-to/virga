@@ -65,8 +65,17 @@
       "swift": []
     },
     "src/posting/lib/composerModel.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/ComposerModel.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/ComposerModel+Types.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/ComposerModel+Reducer.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/ComposerJS.swift"
+      ],
+      "fixtures": [
+        "composer.composerModel"
+      ],
+      "synced": "c34d64024c05"
     },
     "src/posting/lib/images.js": {
       "status": "pending",
