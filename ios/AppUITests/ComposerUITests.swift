@@ -222,7 +222,13 @@ final class ComposerUITests: XCTestCase {
     let saveDraft = element(app, "save-draft")
     XCTAssertTrue(saveDraft.waitForExistence(timeout: 5), "no Save as draft")
     saveDraft.tap()
-    XCTAssertTrue(text(app, containing: "Draft saved to").waitForExistence(timeout: 20), "the draft wasn't saved")
+    // Its toast is the window's, as on the web: on an iPad it sits at the
+    // window's corner beside the composer's sheet, which can keep it from
+    // the test; the composer's title says Draft as the toast comes up.
+    let saved = app.descendants(matching: .any).matching(
+      NSPredicate(format: "label CONTAINS %@ OR (identifier == 'composer-title' AND label == 'Draft')", "Draft saved to")
+    ).firstMatch
+    XCTAssertTrue(saved.waitForExistence(timeout: 20), "the draft wasn't saved")
     snapshot("composer-draft-saved")
     element(app, "composer-close").tap()
     XCTAssertTrue(element(app, "composer-title").waitForNonExistence(timeout: 5))
