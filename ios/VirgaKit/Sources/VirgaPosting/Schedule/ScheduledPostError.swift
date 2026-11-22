@@ -64,13 +64,13 @@ public enum ScheduledPostError {
   /// prose matching breaks quietly when the server rewords a message. Rows
   /// from an older worker have no code and fall back to the prose.
   public static func friendlyScheduleError(_ raw: JSONValue?, _ code: JSONValue? = nil) -> String {
-    if let known = byCode.jsValue(text(code).jsTrimmed().uppercased()) { return known }
+    if let known = byCode.jsValue(text(code).jsTrimmed().jsUppercased()) { return known }
 
     // Some stored messages are the server's own sentences (its media guard
     // and the time-out retirement); match those first on fragments no PDS
     // or Postgres error could collide with. Not bare 'image':
     // 'InvalidRequest: image file size too large' is a refusal.
-    let s = text(raw).lowercased()
+    let s = text(raw).jsLowercased()
     func has(_ fragment: String) -> Bool { s.jsIndexOf(fragment) >= 0 }
     if has("images for this scheduled post") || has("re-attach") || has("media") || has("missing bytes")
       || has("object not found")
