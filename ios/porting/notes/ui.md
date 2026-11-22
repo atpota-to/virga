@@ -111,7 +111,8 @@ COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
   `MoreLink(_, to:)`. The kit's sizes are `KitSize`.
 - `Segmented(label:options:selection:size:)` (scrolls with faded edges, the pressed key
   brought clear of the fade only when it is under it, keys held at their bold width; an
-  option's web `title` is `SegmentedOption(hint:)`), `ChipStyle`, `TokenView`/`TokenRow`,
+  option's web `title` is `SegmentedOption(hint:)`, and `minWidth:` a key's least width, as a
+  kind filter's glyph-only keys have, 32 at 760 and under), `ChipStyle`, `TokenView`/`TokenRow`,
   `Badge`, `MetaLine`/`MetaPiece` (the dot 6 after its word), `StateDot`, `Avatar`,
   `AccessLine`.
 - `.toggleStyle(.virgaSwitch)` draws the capsule and its knob and no words, as the web's

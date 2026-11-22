@@ -570,11 +570,12 @@ struct LookupEvents: View {
         options: [SegmentedOption("all", "All")]
           + InteractionModel.lookupKinds.map { k -> SegmentedOption<String> in
             // `.kind-filter`: at 760 and under the kinds are their glyphs,
-            // their names kept for VoiceOver. (The web also holds each such
-            // key to 32 wide, Measure.Tools.kindFilterIconKey, which
-            // SegmentedOption has no way to say yet.)
+            // their names kept for VoiceOver, each key at least 32 wide.
             let name = InteractionModel.kindLabel[k] ?? k
-            return SegmentedOption(k, name, systemImage: ToolGlyph.kind(k), accessibilityLabel: name, iconOnly: theme.isTablet)
+            let glyphs = theme.isTablet
+            return SegmentedOption(
+              k, name, systemImage: ToolGlyph.kind(k), accessibilityLabel: name, iconOnly: glyphs,
+              minWidth: glyphs ? Measure.Reports.kindFilterIconKey : nil)
           },
         selection: kind, size: .small
       ) { value in

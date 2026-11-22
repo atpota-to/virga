@@ -541,8 +541,12 @@ struct ReportFilterRow: View {
       Segmented(
         label: "Engagement type",
         options: kinds.map { k in
+          // `.kind-filter`: at 760 and under a kind with a glyph is the
+          // glyph alone, at least 32 wide.
           let glyph = ReportParts.kindGlyph[k.key]
-          return SegmentedOption(k.key, k.label, systemImage: glyph, iconOnly: glyphsOnly && glyph != nil)
+          let alone = glyphsOnly && glyph != nil
+          return SegmentedOption(
+            k.key, k.label, systemImage: glyph, iconOnly: alone, minWidth: alone ? Measure.Reports.kindFilterIconKey : nil)
         },
         selection: $kind, size: .small)
       if report == "people" && following {

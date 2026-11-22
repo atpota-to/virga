@@ -15,6 +15,10 @@ extension Measure.Reports {
   /// `.report-filters-rule { height: 16px; margin: 0 16px }`
   static let filtersRuleHeight: CGFloat = 16
   static let filtersRuleMargin: CGFloat = 16
+  /// `@media (max-width: 760px) { .kind-filter .segmented-key.has-icon {
+  /// min-width: 32px } }`: a kind filter's keys that are their glyph alone
+  /// (the engagement report's, the lookup's Kind).
+  static let kindFilterIconKey: CGFloat = 32
   /// `.report-filter-bar { gap: 32px }`, 16 on a phone; its actions 24 apart.
   static let filterBarGap: CGFloat = 32
   static let phoneFilterBarGap: CGFloat = 16

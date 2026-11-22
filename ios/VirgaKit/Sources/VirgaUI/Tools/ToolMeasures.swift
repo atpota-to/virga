@@ -220,8 +220,6 @@ extension Measure {
     /// `.lookup-kind, .lookup-dir { gap: 6px }` and their glyphs at 14.
     public static let kindGap: CGFloat = 6
     public static let kindGlyph: CGFloat = 14
-    /// reports.css `@media (max-width: 760px) { .kind-filter .segmented-key.has-icon { min-width: 32px } }`
-    public static let kindFilterIconKey: CGFloat = 32
     /// `.lookup-cannot { max-width: 78ch }`, `.lookup-cannot-card .card-sub { margin-top: 6px }`
     public static let cannotMeasure: CGFloat = 78
     public static let cannotSpaceAbove: CGFloat = 6

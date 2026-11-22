@@ -31,12 +31,16 @@ public struct SegmentedOption<Value: Hashable>: Identifiable {
   public var hint: String?
   /// The glyph alone, its words kept as its name (a phone's Custom key).
   public var iconOnly: Bool
+  /// The key's least width, its glyph or words centred in it (a kind
+  /// filter's glyph-only keys: `.kind-filter .segmented-key.has-icon {
+  /// min-width: 32px }`).
+  public var minWidth: CGFloat?
 
   public var id: Value { value }
 
   public init(
     _ value: Value, _ label: String, systemImage: String? = nil, accessibilityLabel: String? = nil, hint: String? = nil,
-    iconOnly: Bool = false
+    iconOnly: Bool = false, minWidth: CGFloat? = nil
   ) {
     self.value = value
     self.label = label
@@ -44,6 +48,7 @@ public struct SegmentedOption<Value: Hashable>: Identifiable {
     self.accessibilityLabel = accessibilityLabel
     self.hint = hint
     self.iconOnly = iconOnly
+    self.minWidth = minWidth
   }
 }
 
@@ -132,7 +137,7 @@ struct SegmentedKey<Value: Hashable>: View {
       }
       .lineLimit(1)
       .foregroundStyle(theme.color(isOn ? ThemeKit.segmentedOnInk : ThemeKit.segmentedKeyInk))
-      .frame(minHeight: theme.points(ThemeKit.touchSegmentedKeyHeight))
+      .frame(minWidth: option.minWidth, minHeight: theme.points(ThemeKit.touchSegmentedKeyHeight))
       .overlay(alignment: .bottom) {
         if isOn {
           Rectangle()
