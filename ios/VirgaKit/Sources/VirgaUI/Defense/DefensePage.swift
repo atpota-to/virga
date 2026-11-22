@@ -15,7 +15,11 @@
 // follow each account. Until the session has it, the page says what it is
 // for and offers to sign in again asking for it (Turn on Defense). A
 // session whose grant nobody has read yet is let try; a scan refused for
-// want of the permission comes back to the same offer.
+// want of the permission comes back to the same offer. Turning Defense on
+// or off here drops the account's scan once the sign-in is back, as the
+// web's page, which leaves for the sign-in and starts again with no scan
+// in memory: a refused scan no longer holds the offer up, and the form is
+// back. (Let Defense make lists, under a scan's result, keeps the scan.)
 //
 // The scan reads Constellation and the public AppView through the
 // session's transport (the made-up world's, in the demo) and the
@@ -86,7 +90,7 @@ struct DefenseScanPage: View {
     ) {
       if needsPermission {
         TurnOnCard(account: defense.account, asking: defense.asking, refused: refused) {
-          Task { await defense.askFor(.scan) }
+          Task { if await defense.askFor(.scan), let did { store.clearScan(did) } }
         }
       } else if let archive {
         ScanFormCard(archive: archive, running: scan.status == .running) { begin($0) }
@@ -110,7 +114,7 @@ struct DefenseScanPage: View {
       }
       if caps.defense == "granted" && !needsPermission {
         DefenseOnCard(account: defense.account, asking: defense.asking) {
-          Task { await defense.askFor(nil) }
+          Task { if await defense.askFor(nil), let did { store.clearScan(did) } }
         }
       }
     }

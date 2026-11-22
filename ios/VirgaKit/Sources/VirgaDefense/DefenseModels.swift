@@ -80,8 +80,14 @@ public final class DefenseAccountModel {
   /// from the host) has nothing to say, as everywhere else in the app
   /// (SignInFlow.tripFailureNotice's rule): the web's page has left by
   /// then, so its catch only ever sees a sign-in that didn't start.
-  public func askFor(_ level: AppConfig.DefenseLevel?) async {
-    guard let account else { return }
+  ///
+  /// Answers whether the sign-in came back. On the web it never does
+  /// here: the page leaves for it and starts again, with no scan in
+  /// memory, so a page that wants that clean start (the scan page) takes
+  /// it from this answer.
+  @discardableResult
+  public func askFor(_ level: AppConfig.DefenseLevel?) async -> Bool {
+    guard let account else { return false }
     asking = .busy
     do {
       let mode = account.mode.isEmpty ? AccountCopy.reauthModeFor(accountMode: account.mode, session.authMode) : account.mode
@@ -89,8 +95,10 @@ public final class DefenseAccountModel {
         Accounts.accountSignInId(account),
         SignInOptions(mode: mode, intent: "reauth", defense: level.map { .string($0.rawValue) } ?? .bool(false), did: account.did))
       asking = nil
+      return true
     } catch {
       asking = SignInFlow.tripFailureNotice(error, nil) == nil ? nil : .error(OAuthClient.signInErrorMessage(error))
+      return false
     }
   }
 }

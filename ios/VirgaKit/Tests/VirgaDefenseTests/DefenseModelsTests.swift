@@ -166,7 +166,8 @@ private func lists(waiting: Int, name: String = "Pile-on") -> JSONValue {
     await eventually { !session.signIns.isEmpty }
     #expect(model.asking == .busy)
     session.release()
-    await asking.value
+    let came = await asking.value
+    #expect(came)
     #expect(model.asking == nil)
   }
 
@@ -197,6 +198,26 @@ private func lists(waiting: Int, name: String = "Pile-on") -> JSONValue {
     session.signInError = BackendError(name: "AbortError", message: "The sign-in was called off", code: "CANCELLED")
     await model.askFor(.lists)
     #expect(model.asking == nil)
+  }
+
+  @Test func answersWhetherTheSignInCameBack() async {
+    // The scan page drops the account's scan on a yes, as the web's page
+    // starts again after its sign-in.
+    let session = FakeSession(did: mira, accounts: [account])
+    let model = DefenseAccountModel(session: session)
+    let came = await model.askFor(.scan)
+    #expect(came)
+    let turnedOff = await model.askFor(nil)
+    #expect(turnedOff)
+    session.signInError = BackendError(name: "AbortError", message: "The sign-in was called off", code: "CANCELLED")
+    let calledOff = await model.askFor(.scan)
+    #expect(!calledOff)
+    session.signInError = Refused()
+    let refused = await model.askFor(.scan)
+    #expect(!refused)
+    session.did = nil
+    let nobody = await model.askFor(.scan)
+    #expect(!nobody)
   }
 
   @Test func signsInByDidWhenThereIsNoHandleAndKeepsTheAccountsMode() async {
