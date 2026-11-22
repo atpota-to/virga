@@ -21,8 +21,15 @@
       "synced": "95dc02927907"
     },
     "src/posting/pages/postedModel.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Pages/PostedModel.swift"
+      ],
+      "fixtures": [
+        "scheduling.postedModel"
+      ],
+      "note": "The account's agent is its XRPCAgent (through Virga's server); the public AppView (PublicAppView.getPosts, VirgaNetwork's) and the PDS's getBlob go through transport, the web's fetch. fetchPostImages makes its files through ComposerFiles; a picture's type is the response's as Node's fetch reads it (LinkCard.blobType). postAgainIntent takes the typed PostAgainSeed (init(json:) reads the web's object).",
+      "synced": "626b752a5f6b"
     },
     "src/posting/pages/scheduleModel.js": {
       "status": "ported",
