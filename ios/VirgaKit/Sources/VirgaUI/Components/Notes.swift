@@ -3,7 +3,11 @@
 //   Callout      something to know before going on, with a rule down its
 //                side (2 points of --line-2); a warning or a failure has
 //                its colour for the rule and the words, and its wash, since
-//                it has to be found.
+//                it has to be found. A failure of words alone,
+//                `Callout(tone: .danger, words)`, is the web's
+//                `role="alert"`: VoiceOver reads it out when it appears
+//                and when its words change. One built round its own
+//                content leaves that to its caller (`alert:`).
 //   EmptyState   one sentence, and at most one way to change that, a quiet
 //                button. No heading and no ink.
 //   NoteText     prose about a setting: muted, small, held to the measure.
@@ -25,11 +29,16 @@ public struct Callout<Content: View>: View {
   @Environment(\.virgaTheme) private var theme
   private let tone: CalloutTone
   private let systemImage: String?
+  private let alert: String?
   private let content: Content
 
-  public init(tone: CalloutTone = .plain, systemImage: String? = nil, @ViewBuilder content: () -> Content) {
+  /// - Parameter alert: words to read out as the web's `role="alert"`
+  ///   does, when the callout appears and when they change (nil reads
+  ///   nothing: the caller announces it, or it isn't an alert).
+  public init(tone: CalloutTone = .plain, systemImage: String? = nil, alert: String? = nil, @ViewBuilder content: () -> Content) {
     self.tone = tone
     self.systemImage = systemImage
+    self.alert = alert
     self.content = content()
   }
 
@@ -79,6 +88,32 @@ public struct Callout<Content: View>: View {
       Rectangle().fill(edge).frame(width: edgeWidth)
     }
     .frame(maxWidth: theme.measure, alignment: .leading)
+    .modifier(CalloutAlert(words: alert))
+  }
+}
+
+extension Callout where Content == Text {
+  /// A callout of words alone. A danger one is `role="alert"`: its words
+  /// are read out when it appears and whenever they change.
+  public init(tone: CalloutTone = .plain, systemImage: String? = nil, _ words: String) {
+    self.init(tone: tone, systemImage: systemImage, alert: tone == .danger ? words : nil) { Text(words) }
+  }
+}
+
+/// `role="alert"`: the words posted to VoiceOver when the callout appears
+/// and again when they change.
+struct CalloutAlert: ViewModifier {
+  let words: String?
+
+  func body(content: Content) -> some View {
+    content
+      .onAppear { post(words) }
+      .onChange(of: words) { _, next in post(next) }
+  }
+
+  private func post(_ text: String?) {
+    guard let text, !text.isEmpty else { return }
+    UIAccessibility.post(notification: .announcement, argument: text)
   }
 }
 

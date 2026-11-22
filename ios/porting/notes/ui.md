@@ -137,7 +137,9 @@ COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
   `[data-autofocus]`: the focus state is the dialog's, inside the sheet, since a caller's
   `@FocusState` outside the sheet doesn't reach a field inside it), `DialogFrame` (the same),
   `ChoiceRow(_, description:, isOn:, kind: .radio | .check)` (rows share one hairline),
-  `InfoTip` (laid out 20 × 16, pressed through 44), `FollowerCountTip`, `Callout(tone:)`,
+  `InfoTip` (laid out 20 × 16, pressed through 44), `FollowerCountTip`, `Callout(tone:)` (a failure
+  of words alone, `Callout(tone: .danger, words)`, is role="alert": read out as it appears and
+  as its words change; built round its own content it takes `alert:` words, or leaves it to the caller),
   `EmptyState` (16 under a flush section's rule), `NoteText`, `ProgressLine(value:)`,
   `Disclosure`.
 - Data: `FiguresView([FigureItem])` (a line of cells shares its label, number and note rows;

@@ -47,8 +47,7 @@ struct ModeratorCard: View {
     ) {
       if !link.isPresent {
         if let error {
-          Callout(tone: .danger) { Text(error) }
-            .toolAnnounces(error, onAppear: true)
+          Callout(tone: .danger, error)
         } else {
           ToolEmptyLine("Reading…")
         }
@@ -73,8 +72,7 @@ struct ModeratorCard: View {
         Callout { Text("Virga’s moderator isn’t set up on this server yet.") }
       }
       if link.isPresent, let error {
-        Callout(tone: .danger) { Text(error) }
-          .toolAnnounces(error, onAppear: true)
+        Callout(tone: .danger, error)
           .padding(.top, theme.space4)
       }
     }

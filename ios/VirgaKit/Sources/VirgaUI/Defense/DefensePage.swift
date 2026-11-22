@@ -177,8 +177,7 @@ struct TurnOnCard: View {
       .padding(.top, theme.space5)
       .accessibilityIdentifier("defense-turn-on")
       if let error = DefenseWords.error(asking) {
-        Callout(tone: .danger) { Text(error) }
-          .toolAnnounces(error, onAppear: true)
+        Callout(tone: .danger, error)
           .padding(.top, theme.space4)
       }
     }
@@ -206,8 +205,7 @@ struct DefenseOnCard: View {
           .disabled(DefenseWords.busy(asking)))
     ) {
       if let error = DefenseWords.error(asking) {
-        Callout(tone: .danger) { Text(error) }
-          .toolAnnounces(error, onAppear: true)
+        Callout(tone: .danger, error)
           .padding(.top, theme.space4)
       }
     }
@@ -368,8 +366,7 @@ struct ScanFailureView: View {
     let linkProblem = error?.code == .link || error?.code == .author
     let message = error?.message ?? scan.error.map { jsMessageOf($0) } ?? ""
     VStack(alignment: .leading, spacing: theme.space3) {
-      Callout(tone: .danger) { Text(message.isEmpty ? "The scan stopped." : message) }
-        .toolAnnounces(message.isEmpty ? "The scan stopped." : message, onAppear: true)
+      Callout(tone: .danger, message.isEmpty ? "The scan stopped." : message)
         .accessibilityIdentifier("defense-failure")
       if !linkProblem {
         Button(action: onRetry) {

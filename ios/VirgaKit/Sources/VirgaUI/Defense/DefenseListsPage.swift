@@ -138,8 +138,7 @@ struct YourListsCard: View {
           .disabled(busy)
       }
       if let error {
-        Callout(tone: .danger) { Text(error) }
-          .toolAnnounces(error, onAppear: true)
+        Callout(tone: .danger, error)
       }
     }
     .frame(maxWidth: Measure.Defense.columnMax, alignment: .leading)
@@ -220,8 +219,7 @@ struct KeptByHandCard: View {
     ) {
       form
       if let error {
-        Callout(tone: .danger) { Text(error) }
-          .toolAnnounces(error, onAppear: true)
+        Callout(tone: .danger, error)
           .padding(.bottom, theme.space4)
       }
       if let archive, !kept.isEmpty {

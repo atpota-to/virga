@@ -64,8 +64,7 @@ struct DefenseHistoryPage: View {
         ToolEmptyLine("Reading the history…")
       } else {
         if let error {
-          Callout(tone: .danger) { Text(error) }
-            .toolAnnounces(error, onAppear: true)
+          Callout(tone: .danger, error)
             .accessibilityIdentifier("defense-history-error")
         }
         approvals

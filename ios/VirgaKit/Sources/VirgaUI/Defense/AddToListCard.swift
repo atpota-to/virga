@@ -65,8 +65,7 @@ struct DefenseWhyNotView: View {
           .buttonStyle(.virga)
           .disabled(busy)
         if let error = DefenseWords.error(asking) {
-          Callout(tone: .danger) { Text(error) }
-            .toolAnnounces(error, onAppear: true)
+          Callout(tone: .danger, error)
         }
       }
     }
@@ -228,8 +227,7 @@ struct AddToListCard: View {
         }
       }
       if let error {
-        Callout(tone: .danger) { Text(error) }
-          .toolAnnounces(error, onAppear: true)
+        Callout(tone: .danger, error)
       }
     }
     .frame(maxWidth: Measure.Defense.columnMax, alignment: .leading)
