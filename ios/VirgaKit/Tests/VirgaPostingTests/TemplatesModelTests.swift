@@ -52,9 +52,12 @@ final class FakeTemplatesSession: TemplatesSession {
   @Test func readsNothingWhenDisabledOrWithoutAnAccount() async throws {
     try cache(bob, [entry("3la", "Cached")])
     let disabled = TemplatesModel(session: session, did: bob, enabled: false, service: service)
-    #expect(disabled.templates.isEmpty && !disabled.loading && !disabled.ready)
+    #expect(disabled.templates.isEmpty)
+    #expect(!disabled.loading)
+    #expect(!disabled.ready)
     let none = TemplatesModel(session: session, did: nil, service: service)
-    #expect(none.templates.isEmpty && !none.loading)
+    #expect(none.templates.isEmpty)
+    #expect(!none.loading)
     disabled.start()
     none.start()
     #expect(service.list(bob).isEmpty)
@@ -70,12 +73,15 @@ final class FakeTemplatesSession: TemplatesSession {
     model.start()
     _ = await model.effectLoad?.value
     #expect(names(model) == ["Also", "Loaded"])
-    #expect(model.ready && !model.loading && model.error == nil)
+    #expect(model.ready)
+    #expect(!model.loading)
+    #expect(model.error == nil)
     #expect(session.asked == [bob])
     // A second model for the account reads what the first confirmed, and loads nothing.
     let second = TemplatesModel(session: session, did: bob, service: service)
     second.start()
-    #expect(second.ready && second.effectLoad == nil)
+    #expect(second.ready)
+    #expect(second.effectLoad == nil)
     #expect(repo.count("list") == 1)
   }
 
@@ -88,7 +94,8 @@ final class FakeTemplatesSession: TemplatesSession {
     model.start()
     _ = await model.effectLoad?.value
     #expect(names(model) == ["From before"])
-    #expect(!model.loading && !model.ready)
+    #expect(!model.loading)
+    #expect(!model.ready)
     #expect(model.error.map(jsMessage) == "network down")
     // reload never throws; it answers what memory holds.
     #expect(await model.reload().map(\.name) == ["From before"])
@@ -133,7 +140,8 @@ final class FakeTemplatesSession: TemplatesSession {
     #expect(names(model) == ["Carol’s"])
     // Turning it off shows nothing.
     model.setAccount(carol, enabled: false)
-    #expect(model.templates.isEmpty && !model.loading)
+    #expect(model.templates.isEmpty)
+    #expect(!model.loading)
   }
 
   @Test func writesGoToTheOpenAccountAndRethrow() async throws {
@@ -172,7 +180,8 @@ final class FakeTemplatesSession: TemplatesSession {
     model.start()
     _ = await model.effectLoad?.value
     #expect(Accounts.isReauthRequiredError(model.error))
-    #expect(model.templates.isEmpty && !model.loading)
+    #expect(model.templates.isEmpty)
+    #expect(!model.loading)
   }
 
   @Test func readsThroughTheSessionsAgentAndVirgasServer() async throws {
