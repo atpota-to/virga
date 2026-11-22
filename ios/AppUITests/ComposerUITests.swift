@@ -275,9 +275,9 @@ final class ComposerUITests: XCTestCase {
       element(app, "composer-close").tap()
       XCTAssertTrue(element(app, "composer-title").waitForNonExistence(timeout: 5))
     }
-    let search = element(app, "palette-open")
-    XCTAssertTrue(search.waitForExistence(timeout: 5))
-    search.tap()
+    let paletteButton = element(app, "palette-open")
+    XCTAssertTrue(paletteButton.waitForExistence(timeout: 5))
+    paletteButton.tap()
     let field = element(app, "palette-field")
     XCTAssertTrue(field.waitForExistence(timeout: 5), "the palette didn't open")
     field.typeText("Library")
