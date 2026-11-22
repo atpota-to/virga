@@ -15,6 +15,7 @@
 #if canImport(UIKit)
 import Observation
 import SwiftUI
+import UIKit
 import VirgaCore
 
 /// The mark, on a 24 grid: `M5 11a7 7 0 0 1 14 0M8.5 14.5l-1 4M12.3 14.5l-1.3 6M16 14.5l-.9 3.2`.
@@ -118,7 +119,7 @@ public final class ToastCenter {
     let toast = Toast(id: next, text: text, danger: danger)
     toasts = Array(toasts.suffix(2)) + [toast]
     // role="status" aria-live="polite": VoiceOver reads it out.
-    AccessibilityNotification.Announcement(text).post()
+    UIAccessibility.post(notification: .announcement, argument: text)
     let id = toast.id
     Task { @MainActor [weak self] in
       try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
