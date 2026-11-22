@@ -92,7 +92,7 @@ struct MoreWidget: View {
     case "posting-next": postingNext
     default:
       placeholder(def.category == "posting" ? Unported.postingCard : Unported.card)
-        .padding(.top, def.options?.contains("rows") == true ? Measure.Dashboard.listBodySpaceAbove : 0)
+        .padding(.top, def.options.contains("rows") ? Measure.Dashboard.listBodySpaceAbove : 0)
     }
   }
 

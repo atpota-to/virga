@@ -336,7 +336,7 @@ struct WidgetCard: View {
       if def.kind == "stat" {
         WidgetBody(card: card, def: def, archive: archive, period: period, title: title)
       } else {
-        let list = def.options?.contains("rows") == true
+        let list = def.options.contains("rows")
         VStack(alignment: .leading, spacing: 0) {
           head(title: title)
             // A list's head is 12 over its rule; any other card's is the kit's 16.
@@ -547,7 +547,7 @@ struct ArrangeList: View {
       WidgetBody(card: card, def: def, archive: archive, period: DashboardPage.period(of: card, else: period, nowMs: 0), title: nil)
         .environment(\.statValueOnly, true)
         .allowsHitTesting(false)
-    } else if def.options?.contains("rows") == true {
+    } else if def.options.contains("rows") {
       Text("\(AppLocale.formatNumber(WidgetParts.rowsShown(card.type, card.size, card.options?.rows))) rows")
         .virgaText(.textSm)
         .foregroundStyle(theme.muted)
