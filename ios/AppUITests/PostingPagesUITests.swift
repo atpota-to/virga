@@ -69,6 +69,11 @@ final class PostingPagesUITests: XCTestCase {
     let field = element(app, "palette-field")
     if !field.waitForExistence(timeout: 3), search.isHittable { search.tap() }
     XCTAssertTrue(field.waitForExistence(timeout: 5), "the palette didn't open")
+    // The palette focuses its field as it opens, and on an iPhone the field
+    // can exist before it has the keyboard (96e5ecc: "Neither element nor
+    // any descendant has keyboard focus"). A tap gives it the keyboard, and
+    // leaves one that already has it as it is.
+    field.tap()
     field.typeText(typing)
     let option = element(app, "palette-go:\(path)")
     XCTAssertTrue(option.waitForExistence(timeout: 5), "no \(title) in the palette")
