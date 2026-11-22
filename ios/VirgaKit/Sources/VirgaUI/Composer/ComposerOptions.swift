@@ -106,6 +106,12 @@ struct ComposerOptions: View {
     }
     word(ComposerGlyph.timer, controller.timerValue, id: "option-timer") { controller.dialog = .timer }
       .accessibilityLabel(controller.timerOn ? "Timer: \(controller.timerValue)" : "Timer: none")
+    // ADVISER: Check this post, the month's checks on the pointer's tip.
+    if controller.adviser.enabled {
+      word(AdviserGlyph.sparkles, "Check this post", id: "option-adviser") { controller.askAdviser() }
+        .help(controller.adviser.usageLine.isEmpty ? "Ask the post adviser what it thinks" : controller.adviser.usageLine)
+        .accessibilityHint(controller.adviser.usageLine)
+    }
     MoreMenu(label: "More for this post", entries: moreEntries(replying: replying))
   }
 
@@ -153,6 +159,12 @@ struct ComposerOptions: View {
     }
     row(ComposerGlyph.timer, "Timer", controller.timerValue, id: "option-timer") { controller.dialog = .timer }
       .accessibilityLabel(controller.timerOn ? "Timer: \(controller.timerValue)" : "Timer: none")
+    // ADVISER: Check this post, with the month's checks as its value.
+    if controller.adviser.enabled {
+      row(AdviserGlyph.sparkles, "Check this post", controller.adviser.usageLine.isEmpty ? nil : controller.adviser.usageLine, id: "option-adviser") {
+        controller.askAdviser()
+      }
+    }
     row(ComposerGlyph.more, "More", nil, chevron: ComposerGlyph.chevronDown, id: "option-more") { moreOpen.toggle() }
     if moreOpen {
       if !replying {

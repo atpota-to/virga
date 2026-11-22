@@ -54,6 +54,11 @@ struct ComposerSheet: View {
     }
     .background(theme.surface)
     .overlay { ToastStack(center: toasts) }
+    // ADVISER: the adviser's sheet, and its account while the composer is open.
+    .adviserSheet(controller.adviser)
+    .onAppear { controller.configureAdviser(open: true) }
+    .onDisappear { controller.configureAdviser(open: false) }
+    .onChange(of: controller.asDid) { _, _ in controller.configureAdviser(open: true) }
     .sheet(item: $controller.ask, onDismiss: { if controller.askResolve != nil { controller.answer(nil) } }) { ask in
       ConfirmDialog(ask: ask) { controller.answer($0) }
         .presentationDetents([.medium])
@@ -112,7 +117,7 @@ struct ComposerBar: View {
         .frame(maxWidth: .infinity)
         .accessibilityAddTraits(.isHeader)
         .accessibilityIdentifier("composer-title")
-      PublishButton(state: controller.state, model: model, busy: controller.busy != nil, also: controller.also) {
+      PublishButton(state: controller.state, model: model, busy: controller.sendBusy, also: controller.also) {  // ADVISER: sendBusy
         controller.runAction($0)
       }
     }
@@ -291,7 +296,13 @@ struct ComposerStatus: View {
   let controller: ComposerController
 
   var body: some View {
-    if let busy = controller.busy {
+    // ADVISER: while it reads, its line in the busy line's place.
+    if let reading = controller.adviser.busy {
+      AdviserBusyLine(
+        busy: reading, onPublishAnyway: controller.adviser.canPublishAnyway ? { controller.adviser.publishAnyway() } : nil,
+        onKeepEditing: { controller.adviser.keepEditing() })
+    }
+    if let busy = controller.busy, !busy.adviser {
       VStack(alignment: .leading, spacing: theme.space2) {
         ProgressLine(value: nil)
         HStack(spacing: ComposerMeasure.busyGap) {
@@ -337,7 +348,7 @@ struct ComposerFoot: View {
       controller.busy != nil
       ? "" : !primaryReason.isEmpty ? primaryReason : model.draftFallback ? "Over 300 characters: it can be saved as a draft." : ""
     let also = controller.also
-    let busy = controller.busy != nil
+    let busy = controller.sendBusy  // ADVISER
     let toolsIndex = min(controller.activeIndex, max(0, state.posts.count - 1))
     let narrow = theme.composerNarrow
     VStack(spacing: 0) {
