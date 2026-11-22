@@ -362,7 +362,10 @@ public final class LibraryStore {
     let account = accountFor(did)
     let key = "shelf:\(shelfId)"
     let e = entry(did, shelfId)
-    let seenThisOpen = account.checked[key].map { $0 == openId } ?? false
+    // `account.checked[key] === openId`: a shelf never ensured reads as
+    // undefined, which an open with no id (nil) matches.
+    let marked: Int? = account.checked[key] ?? nil
+    let seenThisOpen = marked == openId
     account.checked[key] = .some(openId)
     if e.status == "loading" || e.refreshing { return nil }
     if e.status == "idle" { return load(did, shelfId, sources) }

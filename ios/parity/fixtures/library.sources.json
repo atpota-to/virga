@@ -4355,6 +4355,81 @@
       }
     },
     {
+      "id": "no-post-uri",
+      "fn": "fetchRecentLinks",
+      "input": {
+        "feed": [
+          {
+            "post": {
+              "record": {
+                "embed": {
+                  "$type": "app.bsky.embed.external",
+                  "external": {
+                    "uri": "https://card.example/"
+                  }
+                },
+                "facets": [
+                  {
+                    "features": [
+                      {
+                        "$type": "app.bsky.richtext.facet#link",
+                        "uri": "https://facet.example/"
+                      }
+                    ]
+                  }
+                ],
+                "createdAt": "2026-09-01T00:00:00Z"
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Aself&limit=100",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"feed\":[{\"post\":{\"record\":{\"embed\":{\"$type\":\"app.bsky.embed.external\",\"external\":{\"uri\":\"https://card.example/\"}},\"facets\":[{\"features\":[{\"$type\":\"app.bsky.richtext.facet#link\",\"uri\":\"https://facet.example/\"}]}],\"createdAt\":\"2026-09-01T00:00:00Z\"}}}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "items": [
+              {
+                "url": "https://card.example/",
+                "title": "",
+                "description": "",
+                "image": null,
+                "createdAt": "2026-09-01T00:00:00Z"
+              },
+              {
+                "url": "https://facet.example/",
+                "title": "https://facet.example/",
+                "description": "",
+                "image": null,
+                "createdAt": "2026-09-01T00:00:00Z"
+              }
+            ],
+            "cursor": null
+          }
+        }
+      }
+    },
+    {
       "id": "scan-limit",
       "fn": "fetchRecentLinks",
       "input": {
@@ -7458,6 +7533,69 @@
         "result": {
           "error": {
             "message": "That record is gone, so it can’t be attached.",
+            "code": "GONE",
+            "status": null
+          }
+        }
+      }
+    },
+    {
+      "id": "prototype-kind-constructor",
+      "fn": "hydrateAttachment",
+      "input": {
+        "attach": {
+          "kind": "constructor",
+          "uri": "at://x/y/z"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "message": "That function Object() { [native code] } is gone, so it can’t be attached.",
+            "code": "GONE",
+            "status": null
+          }
+        }
+      }
+    },
+    {
+      "id": "prototype-kind-__proto__",
+      "fn": "hydrateAttachment",
+      "input": {
+        "attach": {
+          "kind": "__proto__",
+          "uri": "at://x/y/z"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "message": "That [object Object] is gone, so it can’t be attached.",
+            "code": "GONE",
+            "status": null
+          }
+        }
+      }
+    },
+    {
+      "id": "prototype-kind-toString",
+      "fn": "hydrateAttachment",
+      "input": {
+        "attach": {
+          "kind": "toString",
+          "uri": "at://x/y/z"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "message": "That function toString() { [native code] } is gone, so it can’t be attached.",
             "code": "GONE",
             "status": null
           }

@@ -14999,6 +14999,267 @@
       ]
     },
     {
+      "id": "dst-America/New_York",
+      "fn": "sortItems",
+      "input": {
+        "items": [
+          {
+            "id": "skipped",
+            "at": "2026-03-08T02:30",
+            "score": 1
+          },
+          {
+            "id": "before-skip",
+            "at": "2026-03-08T01:59",
+            "score": 1
+          },
+          {
+            "id": "utc-skip",
+            "at": "2026-03-08T07:15:00Z",
+            "score": 1
+          },
+          {
+            "id": "repeated",
+            "at": "2026-11-01T01:30",
+            "score": 2
+          },
+          {
+            "id": "utc-repeat",
+            "at": "2026-11-01T05:45:00Z",
+            "score": 2
+          },
+          {
+            "id": "london-repeat",
+            "at": "2026-10-25T01:30",
+            "score": 2
+          },
+          {
+            "id": "date-only",
+            "at": "2026-03-08",
+            "score": 0
+          },
+          {
+            "id": "date-only-local",
+            "at": "2026-03-08T00:00",
+            "score": 0
+          },
+          {
+            "id": "offset",
+            "at": "2026-11-01T01:30-04:00",
+            "score": 2
+          }
+        ],
+        "zone": "America/New_York"
+      },
+      "output": [
+        "utc-repeat",
+        "repeated",
+        "offset",
+        "london-repeat",
+        "skipped",
+        "utc-skip",
+        "before-skip",
+        "date-only-local",
+        "date-only"
+      ]
+    },
+    {
+      "id": "dst-Europe/London",
+      "fn": "sortItems",
+      "input": {
+        "items": [
+          {
+            "id": "skipped",
+            "at": "2026-03-08T02:30",
+            "score": 1
+          },
+          {
+            "id": "before-skip",
+            "at": "2026-03-08T01:59",
+            "score": 1
+          },
+          {
+            "id": "utc-skip",
+            "at": "2026-03-08T07:15:00Z",
+            "score": 1
+          },
+          {
+            "id": "repeated",
+            "at": "2026-11-01T01:30",
+            "score": 2
+          },
+          {
+            "id": "utc-repeat",
+            "at": "2026-11-01T05:45:00Z",
+            "score": 2
+          },
+          {
+            "id": "london-repeat",
+            "at": "2026-10-25T01:30",
+            "score": 2
+          },
+          {
+            "id": "date-only",
+            "at": "2026-03-08",
+            "score": 0
+          },
+          {
+            "id": "date-only-local",
+            "at": "2026-03-08T00:00",
+            "score": 0
+          },
+          {
+            "id": "offset",
+            "at": "2026-11-01T01:30-04:00",
+            "score": 2
+          }
+        ],
+        "zone": "Europe/London"
+      },
+      "output": [
+        "utc-repeat",
+        "offset",
+        "repeated",
+        "london-repeat",
+        "utc-skip",
+        "skipped",
+        "before-skip",
+        "date-only",
+        "date-only-local"
+      ]
+    },
+    {
+      "id": "dst-Australia/Lord_Howe",
+      "fn": "sortItems",
+      "input": {
+        "items": [
+          {
+            "id": "skipped",
+            "at": "2026-03-08T02:30",
+            "score": 1
+          },
+          {
+            "id": "before-skip",
+            "at": "2026-03-08T01:59",
+            "score": 1
+          },
+          {
+            "id": "utc-skip",
+            "at": "2026-03-08T07:15:00Z",
+            "score": 1
+          },
+          {
+            "id": "repeated",
+            "at": "2026-11-01T01:30",
+            "score": 2
+          },
+          {
+            "id": "utc-repeat",
+            "at": "2026-11-01T05:45:00Z",
+            "score": 2
+          },
+          {
+            "id": "london-repeat",
+            "at": "2026-10-25T01:30",
+            "score": 2
+          },
+          {
+            "id": "date-only",
+            "at": "2026-03-08",
+            "score": 0
+          },
+          {
+            "id": "date-only-local",
+            "at": "2026-03-08T00:00",
+            "score": 0
+          },
+          {
+            "id": "offset",
+            "at": "2026-11-01T01:30-04:00",
+            "score": 2
+          }
+        ],
+        "zone": "Australia/Lord_Howe"
+      },
+      "output": [
+        "utc-repeat",
+        "offset",
+        "repeated",
+        "london-repeat",
+        "utc-skip",
+        "date-only",
+        "skipped",
+        "before-skip",
+        "date-only-local"
+      ]
+    },
+    {
+      "id": "dst-engagement",
+      "fn": "sortItems",
+      "input": {
+        "items": [
+          {
+            "id": "skipped",
+            "at": "2026-03-08T02:30",
+            "score": 1
+          },
+          {
+            "id": "before-skip",
+            "at": "2026-03-08T01:59",
+            "score": 1
+          },
+          {
+            "id": "utc-skip",
+            "at": "2026-03-08T07:15:00Z",
+            "score": 1
+          },
+          {
+            "id": "repeated",
+            "at": "2026-11-01T01:30",
+            "score": 2
+          },
+          {
+            "id": "utc-repeat",
+            "at": "2026-11-01T05:45:00Z",
+            "score": 2
+          },
+          {
+            "id": "london-repeat",
+            "at": "2026-10-25T01:30",
+            "score": 2
+          },
+          {
+            "id": "date-only",
+            "at": "2026-03-08",
+            "score": 0
+          },
+          {
+            "id": "date-only-local",
+            "at": "2026-03-08T00:00",
+            "score": 0
+          },
+          {
+            "id": "offset",
+            "at": "2026-11-01T01:30-04:00",
+            "score": 2
+          }
+        ],
+        "by": "engagement",
+        "zone": "America/New_York"
+      },
+      "output": [
+        "utc-repeat",
+        "repeated",
+        "offset",
+        "london-repeat",
+        "skipped",
+        "utc-skip",
+        "before-skip",
+        "date-only-local",
+        "date-only"
+      ]
+    },
+    {
       "id": "fixture",
       "fn": "suggestItems",
       "input": {
@@ -19637,6 +19898,150 @@
       "input": {},
       "output": {
         "record": null,
+        "link": null,
+        "media": null
+      }
+    },
+    {
+      "id": "prototype-kind-constructor",
+      "fn": "attachmentsFromState",
+      "input": {
+        "state": {
+          "posts": [
+            {
+              "id": "p",
+              "text": "",
+              "images": [],
+              "video": null,
+              "record": {
+                "kind": "constructor",
+                "uri": "at://x/y/z",
+                "view": {
+                  "creator": {
+                    "handle": "p.example"
+                  },
+                  "name": "N"
+                }
+              },
+              "card": null
+            }
+          ],
+          "reply": null
+        }
+      },
+      "output": {
+        "record": {
+          "by": "function Object() { [native code] } by @p.example",
+          "title": "N"
+        },
+        "link": null,
+        "media": null
+      }
+    },
+    {
+      "id": "prototype-kind-toString",
+      "fn": "attachmentsFromState",
+      "input": {
+        "state": {
+          "posts": [
+            {
+              "id": "p",
+              "text": "",
+              "images": [],
+              "video": null,
+              "record": {
+                "kind": "toString",
+                "uri": "at://x/y/z",
+                "view": {
+                  "creator": {
+                    "handle": "p.example"
+                  },
+                  "name": "N"
+                }
+              },
+              "card": null
+            }
+          ],
+          "reply": null
+        }
+      },
+      "output": {
+        "record": {
+          "by": "function toString() { [native code] } by @p.example",
+          "title": "N"
+        },
+        "link": null,
+        "media": null
+      }
+    },
+    {
+      "id": "prototype-kind-__proto__",
+      "fn": "attachmentsFromState",
+      "input": {
+        "state": {
+          "posts": [
+            {
+              "id": "p",
+              "text": "",
+              "images": [],
+              "video": null,
+              "record": {
+                "kind": "__proto__",
+                "uri": "at://x/y/z",
+                "view": {
+                  "creator": {
+                    "handle": "p.example"
+                  },
+                  "name": "N"
+                }
+              },
+              "card": null
+            }
+          ],
+          "reply": null
+        }
+      },
+      "output": {
+        "record": {
+          "by": "[object Object] by @p.example",
+          "title": "N"
+        },
+        "link": null,
+        "media": null
+      }
+    },
+    {
+      "id": "prototype-kind-hasOwnProperty",
+      "fn": "attachmentsFromState",
+      "input": {
+        "state": {
+          "posts": [
+            {
+              "id": "p",
+              "text": "",
+              "images": [],
+              "video": null,
+              "record": {
+                "kind": "hasOwnProperty",
+                "uri": "at://x/y/z",
+                "view": {
+                  "creator": {
+                    "handle": "p.example"
+                  },
+                  "name": "N"
+                }
+              },
+              "card": null
+            }
+          ],
+          "reply": null
+        }
+      },
+      "output": {
+        "record": {
+          "by": "function hasOwnProperty() { [native code] } by @p.example",
+          "title": "N"
+        },
         "link": null,
         "media": null
       }

@@ -315,6 +315,21 @@ let otherDid = "did:plc:other"
     #expect(sources.count("lists") == 3)
   }
 
+  @Test func anOpenWithNoIdHasSeenAShelfThatWasOnlyRetried() async {
+    // `account.checked[key] === openId`: a shelf never ensured reads as
+    // undefined, and so does an open with no id, so it counts as looked at.
+    let store = LibraryStore()
+    let sources = FakeShelfSources()
+    sources.onLists = { _ in throw Offline() }
+    await store.retry(did: selfDid, shelfId: "lists", sources: sources)
+    #expect(store.entry(selfDid, "lists").status == "error")
+    #expect(store.ensure(did: selfDid, shelfId: "lists", sources: sources, openId: nil) == nil)
+    #expect(sources.count("lists") == 1)
+    // A numbered open tries the error again.
+    await store.ensure(did: selfDid, shelfId: "lists", sources: sources, openId: 1)?.value
+    #expect(sources.count("lists") == 2)
+  }
+
   @Test func keepsTheCopyOnScreenWhenABackgroundRefreshFails() async {
     let t = Locked<Double>(0)
     let store = LibraryStore(now: { t.wrappedValue })

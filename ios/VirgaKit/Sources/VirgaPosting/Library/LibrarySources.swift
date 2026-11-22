@@ -434,21 +434,24 @@ public enum LibrarySources {
         if Library.isString(embed?["$type"], externalEmbed), let uri = embed?["external"]?["uri"], uri.isTruthy {
           // The view's thumb is a URL; the record's is a blob.
           let thumb = post["embed"]?["external"]?["thumb"]
-          add([
+          var link: [String: JSONValue] = [
             "url": uri, "title": .string(str(embed?["external"]?["title"])),
             "description": .string(str(embed?["external"]?["description"])),
-            "image": thumb?.stringValue.map(JSONValue.string) ?? .null, "postUri": post["uri"] ?? .null,
-            "createdAt": createdAt,
-          ])
+            "image": thumb?.stringValue.map(JSONValue.string) ?? .null, "createdAt": createdAt,
+          ]
+          // `postUri: post.uri`: left out (undefined) when the post has none.
+          link["postUri"] = post["uri"]
+          add(link)
         }
         for facet in list(post["record"]?["facets"]) {
           for feature in list(facet["features"]) {
             guard Library.isString(feature["$type"], linkFeature), let uri = feature["uri"]?.stringValue else { continue }
             if isProfileLink(uri) { continue }
-            add([
-              "url": .string(uri), "title": .string(uri), "description": "", "image": .null,
-              "postUri": post["uri"] ?? .null, "createdAt": createdAt,
-            ])
+            var link: [String: JSONValue] = [
+              "url": .string(uri), "title": .string(uri), "description": "", "image": .null, "createdAt": createdAt,
+            ]
+            link["postUri"] = post["uri"]
+            add(link)
           }
         }
       }
@@ -602,7 +605,10 @@ public enum LibrarySources {
   }
 
   static func goneError(_ kind: String) -> LibraryPickError {
-    let noun = ["post": "post", "feed": "feed", "list": "list"][kind] ?? "record"
+    // A plain object: a kind named like an Object.prototype member reads
+    // that member, written as String() writes it (a web bug,
+    // notes/library.md).
+    let noun = ["post": "post", "feed": "feed", "list": "list"].jsValue(kind) ?? Library.objectPrototypeMember(kind) ?? "record"
     return LibraryPickError(code: LibraryPickError.gone, message: "That \(noun) is gone, so it can’t be attached.")
   }
 

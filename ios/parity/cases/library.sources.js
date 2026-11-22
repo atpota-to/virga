@@ -524,6 +524,33 @@ export default async function cases() {
             null,
           ],
         },
+        {
+          // A post with no uri still gives its links, without a postUri.
+          $id: 'no-post-uri',
+          feed: [
+            {
+              post: {
+                record: {
+                  embed: {
+                    $type: 'app.bsky.embed.external',
+                    external: { uri: 'https://card.example/' },
+                  },
+                  facets: [
+                    {
+                      features: [
+                        {
+                          $type: 'app.bsky.richtext.facet#link',
+                          uri: 'https://facet.example/',
+                        },
+                      ],
+                    },
+                  ],
+                  createdAt: '2026-09-01T00:00:00Z',
+                },
+              },
+            },
+          ],
+        },
         { $id: 'scan-limit', pages: 'empty' },
         { $id: 'enough', pages: 'full' },
         { $id: 'empty-page', emptyWithCursor: true },
@@ -927,6 +954,12 @@ export default async function cases() {
             uri: 'at://x/app.bsky.graph.starterpack/s',
           },
         },
+        // goneError's noun table is a plain object (a web bug, see
+        // notes/library.md).
+        ...['constructor', '__proto__', 'toString'].map((kind) => ({
+          $id: `prototype-kind-${kind}`,
+          attach: { kind, uri: 'at://x/y/z' },
+        })),
         {
           $id: 'no-cid-view',
           attach: {

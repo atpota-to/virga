@@ -114,6 +114,18 @@ extension Library {
     "toLocaleString",
   ]
 
+  /// `String(({})[name])` for a name a plain object inherits: what a
+  /// template literal writes for a table lookup that hits Object.prototype
+  /// (V8's text); nil for any other name.
+  static func objectPrototypeMember(_ name: String) -> String? {
+    guard objectPrototypeKeys.contains(name) else { return nil }
+    switch name {
+    case "__proto__": return "[object Object]"
+    case "constructor": return "function Object() { [native code] }"
+    default: return "function \(name)() { [native code] }"
+    }
+  }
+
   static func sharesEnough(_ kind: String, _ shared: [String]) -> Bool {
     if let needed = overlapNeeded(kind), shared.count >= needed { return true }
     return kind == "post" && shared.contains { letterCount($0) >= longWordLetters }

@@ -121,7 +121,11 @@ extension Library {
       let kind = text(post["record"]?["kind"]) ?? "post"
       let handle = text(view?["author"]?["handle"]) ?? text(view?["creator"]?["handle"])
       let nouns = ["post": "Post", "feed": "Feed", "list": "List", "starterpack": "Starter pack"]
-      let noun = nouns.jsValue(kind) ?? "Post"
+      // A plain object: a kind named like an Object.prototype member reads
+      // that member, written as String() writes it (a web bug,
+      // notes/library.md). Without a handle the web's `by` is the member
+      // itself, a function; the port writes its String form there too.
+      let noun = nouns.jsValue(kind) ?? objectPrototypeMember(kind) ?? "Post"
       let title: String
       if kind == "post" {
         title = postTitle(view?.truthy ?? .object([:]))

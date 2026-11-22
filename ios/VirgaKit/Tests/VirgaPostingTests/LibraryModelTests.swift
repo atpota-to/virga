@@ -163,7 +163,7 @@ let wrenReply: JSONValue = [
     #expect(usage.allKeys().isEmpty)
   }
 
-  @Test func readsNothingWithoutAnAccount() {
+  @Test func readsNothingWithoutAnAccount() async {
     let lib = model(did: nil)
     #expect(lib.items("posts").isEmpty)
     #expect(lib.shelves.first { $0.id == "templates" }?.status == "idle")
@@ -172,6 +172,10 @@ let wrenReply: JSONValue = [
     lib.ensure("saved")
     lib.setQuery("clouds")
     #expect(timers.pending.isEmpty)
+    // Using something needs the account's reads: the web's calls on null
+    // sources throw, for a pasted link as for a pick.
+    await #expect(throws: LibrarySourcesError.self) { try await lib.resolveLink("https://docs.example/a") }
+    await #expect(throws: LibrarySourcesError.self) { try await lib.hydrate(LibraryItem(kind: "post")) }
     lib.stop()
   }
 

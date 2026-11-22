@@ -555,6 +555,17 @@ export default async function cases() {
   const c = { id: 'c', at: '2026-10-02T00:00:00Z', score: 5 };
   const d = { id: 'd', at: null, score: 5 };
   const e = { id: 'e', at: '2026-10-02T00:00', score: 0 };
+  const dst = [
+    { id: 'skipped', at: '2026-03-08T02:30', score: 1 },
+    { id: 'before-skip', at: '2026-03-08T01:59', score: 1 },
+    { id: 'utc-skip', at: '2026-03-08T07:15:00Z', score: 1 },
+    { id: 'repeated', at: '2026-11-01T01:30', score: 2 },
+    { id: 'utc-repeat', at: '2026-11-01T05:45:00Z', score: 2 },
+    { id: 'london-repeat', at: '2026-10-25T01:30', score: 2 },
+    { id: 'date-only', at: '2026-03-08', score: 0 },
+    { id: 'date-only-local', at: '2026-03-08T00:00', score: 0 },
+    { id: 'offset', at: '2026-11-01T01:30-04:00', score: 2 },
+  ];
   out.push(
     ...(await eachRef(
       'sortItems',
@@ -567,6 +578,17 @@ export default async function cases() {
         { $id: 'partial-engagement', items: [a, b, c, d, e], by: 'engagement' },
         { $id: 'none', items: null },
         { $id: 'kolkata', items: [a, b, c, d, e], zone: 'Asia/Kolkata' },
+        // Local times are read in the zone, across its DST changes (a
+        // skipped hour, a repeated one), against UTC and date-only times.
+        ...['America/New_York', 'Europe/London', 'Australia/Lord_Howe'].map(
+          (zone) => ({ $id: `dst-${zone}`, items: dst, zone }),
+        ),
+        {
+          $id: 'dst-engagement',
+          items: dst,
+          by: 'engagement',
+          zone: 'America/New_York',
+        },
       ],
       ({ items, by, zone = 'UTC' }) =>
         onClock(
@@ -1312,6 +1334,22 @@ async function contextCases() {
         },
         { $id: 'out-of-range', state: stateWith({}), postIndex: 3 },
         { $id: 'no-state' },
+        // The noun table is a plain object: a kind named like an
+        // Object.prototype member reads that member (a web bug, see
+        // notes/library.md). Only with a handle: without one, `by` is the
+        // member itself (a function), which no JSON or Swift string holds.
+        ...['constructor', 'toString', '__proto__', 'hasOwnProperty'].map(
+          (kind) => ({
+            $id: `prototype-kind-${kind}`,
+            state: stateWith({
+              record: {
+                kind,
+                uri: 'at://x/y/z',
+                view: { creator: { handle: 'p.example' }, name: 'N' },
+              },
+            }),
+          }),
+        ),
       ],
       ({ state, postIndex }) =>
         postIndex === undefined

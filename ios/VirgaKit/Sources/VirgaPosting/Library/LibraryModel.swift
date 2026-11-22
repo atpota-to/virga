@@ -789,9 +789,10 @@ public final class LibraryModel {
     try await planFor(item, answers: .object(answers.mapValues(JSONValue.string)))
   }
 
-  /// A pasted link as an item, or nil.
+  /// A pasted link as an item, or nil. Without an account it fails, as
+  /// hydrate and planFor do (the web's call on null sources throws).
   public func resolveLink(_ text: String) async throws -> LibraryItem? {
-    guard let sources else { return nil }
+    guard let sources else { throw LibrarySourcesError(message: "Not signed in") }
     return try await sources.resolveLink(text)
   }
 }
