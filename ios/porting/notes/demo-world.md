@@ -4,7 +4,7 @@ A snapshot of what the agents that ported and audited this domain handed on (Nov
 The code and ios/parity/modules/*.json are the truth; read this for orientation, the API
 map, and the known gaps and deliberate differences.
 
-Status: ported, audited. The world in an earlier wave; the demo network on 2026-11-21 (the section at the end).
+Status: ported, audited. The world in an earlier wave; the demo network on 2026-11-21 and the rest of the demo's server on 2026-11-22 (the last two sections, which supersede this file's earlier remarks that those routes answer 503).
 Parity cases at port time: 1434, plus 124 added by the audit.
 Tests at the time: Whole package: swift test passes, 534 tests (57+116+1+79+69+77+134+1 across the test binaries), no failures. VirgaDemoTests: 69 tests in 9 suites (62 before; added liveCountsInEveryZone, aWrittenPostsViewInEveryZone, theCachesAcrossWrites and the HarnessParity suite of 4). PARITY_ALLOW_PENDING=1 npx vitest run ios/parity: 75 passed. npx eslint ios: clean. Prettier: clean. The only build warning is SwiftPM's 'found 1 file(s) which are unhandled' for VirgaDemo/README.md, which needs a Package.swift exclude.
 
@@ -260,3 +260,99 @@ TEST SUPPORT:
 - **low** (left as it is), harness/fakeXrpc.js getServiceAuth / mintServiceToken: Not fixed, edge case. Only through a direct FakeAgent.handle call: getServiceAuth with an object `aud` mints a token whose claims JSON keeps JSONValue's key order, not insertion order. Also, 'constructor' with a primitive input answers the primitive, which is what JSON.stringify writes for the wrapper; the fixture leaves those two inputs out because _helpers.js toJSON spreads a String wrapper into indexes. And forwardedQuery writes an inherited function as null, so an agent method that echoes such a param as text reads "null,x" where JS reads the function's source.
 - **low** (left as it is), harness/harness.js createHarness agentFor: Correction to the porter's webBugsNoticed: 'harness.js agentFor passes no sweepCounter, so outside a browser localStorageCounter answers 1 every time' is how it is designed to work, not a bug (in the browser localStorage exists and the count persists). The porter's other five web-bug entries check out against the code and fixtures. createBookmark is only reachable with a custom scope (see above).
 - **low** (left as it is), ios/VirgaKit/Tests/VirgaArchiveTests/ArchiveModelTests.swift: VirgaArchiveTests ArchiveModelBehaviour flakes under CPU load. aMountStoppedBeforeItsStoreOpensDoesNothingMore failed once in one full run and once in five solo runs; in another full run hearsOfPostsMadeAndDeletedElsewhere failed (rev and posts not updated in time). Both depend on timing: the first yields once and races start(). That target passed 6 of 6 solo runs at load average 12, and my diff touches nothing in VirgaArchive, VirgaCore, VirgaNetwork or VirgaSession. Left for the archive's owner.
+
+## The rest of the demo's server (2026-11-22): scheduling, timers, limits, AI, workers, Defense
+
+Parity cases at port time: 209, plus 139 added by the audit.
+Tests at the time: swift test (whole package) passes: 1419 tests in 9 test binaries (194+57+275+99+152+196+144+176+126). VirgaDemoTests has 196 tests in 33 suites; new are DemoServerRulesParity.zone, DemoServerParity.audit (5 scenarios) and SelfReplyChains (2). One earlier full run flaked once in VirgaDefense's ScorerBehaviour, outside this domain (see findings); it passed solo and on the final full run. PARITY_ALLOW_PENDING=1 npx vitest run ios/parity: 150 passed (4 files). npx eslint ios: clean. Prettier: clean on demo-server.rules.js and demo-server.audit.js. New parity cases: 81 zone, 6 describeAllow, 10 timerBucket and 16 evaluateConditions (demo-server.rules, now 302 cases, 162 KB), plus 5 scenarios and 241 steps in the new demo-server.audit (327 KB). The temporary fuzz generator and test were not committed.
+
+### API for the code that builds on it
+
+All of this is in target VirgaDemo, under ios/VirgaKit/Sources/VirgaDemo/Harness/.
+
+DemoServer (FakeServer.swift), public final class DemoServer: Sendable.
+- init(world:terms:limits:aiLimits:seed:aiDelayMs:ai:defenseWrites:moderator:now:sleep:timeZone:randomBytes:uuid:random:tidClockId:agents:). Defaults: terms 'agreed', limits [:], aiLimits [:], seed true, aiDelayMs 900, ai 'ok', defenseWrites true, moderator 'on', sleep NetworkClock.live.sleep, timeZone nil (the world's).
+  - limits and aiLimits are createServer's option objects. FakeServer.limitsOption(HarnessFlags.Limits) and FakeServer.aiLimitsOption(HarnessFlags.AILimits) build them from the flags.
+  - now is cut to whole ms. Seeding is on by default.
+- Properties: featureLimits [String: Int] and aiAllowance [String: Int] (an absent key is unlimited), aiDelayMs, ai, defense: DemoDefense, timeZone, scheduled: [ScheduledRow], timers: [TimerRow], tokens, agreements, log. withRows(_:) reaches into the tables for tests.
+- Workers:
+  - runSchedule() -> [ScheduledRow]
+  - runTimers() -> [TimerRow]
+  - runCron() async -> DemoServer.CronRun {published, settled, listed}
+  - runDefense() async -> Int
+- Routes: handle(method:path:query:headers:body:raw:) and route(_ HTTPRequest, origin:). FakeServer.apiRoutes lists every route of the api table.
+- Row types: ScheduledRow (payload JSONValue; last_error_code JSONValue, because a DOMException's code is the number 5) and TimerRow, both Codable, snake_case, each with .json.
+
+Pure rules, in extension FakeServer (FakeServer+Rules.swift, FakeServer+Adviser.swift).
+- narrowAllow(_:_:) throws -> Narrowed
+- CHANGED: describeAllow(_ entries: JSONValue?) throws -> String. It iterates as for...of does: a list by its items, text by its code points, anything else throws '(entries || []) is not iterable'.
+- parseEffects(_:) / parseConditions(_:) -> Reading
+- CHANGED: timerBucket(conditions:effects:) throws -> String. Effects that aren't a list, or that hold a null, throw V8's TypeErrors.
+- evaluateConditions(_:_:) throws -> Verdict. It now throws for clauses that aren't a list or a null clause; counts compare as JavaScript compares (ToPrimitive, then code-unit text or numbers); metrics are read as String(metric).
+- Also: limitValue, aiLimitValue, seededUuid, analyzePost(text:goals:writingChecks:), the caps constants, strictEquals.
+- The internal jsCompare now applies ToPrimitive (a list is its joined text, an object '[object Object]').
+
+NEW: FakeServer+Zones.swift (fakeServer.js's validateRepeat zone check; it stays at the merge).
+- FakeServer.isZone(_ z: JSONValue?) -> Bool: what new Intl.DateTimeFormat('en-US', { timeZone: z }) accepts.
+- FakeServer.intlZone(named:) -> FakeServer.IntlZone? (.offset(seconds:) | .named(TimeZone), with offsetMs(at:)).
+- FakeServer.offsetSeconds(_:) and FakeServer.caseForms(_:_:).
+- Removed: ServerRepeat.timeZone(named:), ServerRepeat.offsetSeconds and ServerRepeat.isZone.
+
+ServerRepeat (FakeServer+Repeat.swift, internal) is a stand-in for VirgaPosting's Repeat/PostingQueue.
+- anchoredRepeat(_ raw:, _ at:, _ tz:, occurrence: = 1) -> JSONValue?
+- nextOccurrence(_ raw:, _ occurrence:, nowMs:) -> (occurrence, scheduledFor)?
+- tzOffsetMs reads zones through FakeServer.intlZone.
+- At the merge: point FakeServer+Schedule.swift and FakeServer+Workers.swift at Repeat.anchoredRepeat and Repeat.nextOccurrence (RepeatNextOccurrence {occurrence, scheduledFor}) and delete FakeServer+Repeat.swift. Keep FakeServer+Zones.swift, and check that PostingQueue's zone reader accepts every zone FakeServer.isZone accepts.
+
+Workers: DemoServer.selfReplyChain(_ world: AccountWorld, _ uri: String) throws -> [String] is now iterative. Same order as before; RangeError 'Maximum call stack size exceeded' at 9000 deep. A reply cycle fails the timer instead of crashing.
+
+DemoDefense (FakeDefense.swift): unchanged.
+- init(world:writes:moderator:now:note:random:clockId:)
+- writes, moderator, moderatorHandle, tables: DefenseTables, run() async -> Int, static routes.
+
+DemoHarness (Harness+Flags.swift): unchanged.
+- It passes limits, aiLimits, ai, defenseWrites, moderator and clock.sleep to the server.
+- cron() async -> DemoServer.CronRun.
+- startCron() runs the workers every flags.cronSeconds on the harness's clock, the first run one interval in, and does nothing at 0. stopCron() stops them; cronRunning says whether they run.
+- install(latency:cron: = true) also starts the workers.
+
+DemoSession / DemoOptions: unchanged.
+- DemoSession has cron(), startCron() and stopCron(). VirgaUI's demo mode should call session.startCron() once the session is up.
+- DemoOptions carries defenseWrites, moderator, limits, aiLimits, ai and cronSeconds.
+
+Other conventions:
+- JSBase64.atob refuses in Node's order and with Node's words.
+- The server reads a time without an offset in its timeZone.
+- Strings compare by code unit; a client's ids compare as === compares them.
+- Use VirgaNetwork's Optional<JSONValue>.truthy/.nonNull or VirgaDemo's .jsTruthy, never `? x : nil` with a JSONValue.
+
+Fixtures and tests:
+- Fixtures: demo-server.rules (302 cases, now with zone), demo-server.fakeServer (969 KB, at the size budget), demo-server.fakeDefense, and NEW demo-server.audit (5 multi-tick scenarios, 327 KB; replayed by DemoServerParity.audit). New scenarios belong in demo-server.audit or a new fixture, not demo-server.fakeServer.
+- Tests/VirgaDemoTests/DemoServerBehaviourTests.swift has WorkerSetup, BackendTimers, refusal(_:), GatedClock and the new SelfReplyChains suite.
+- JS side: ios/parity/cases/_demoServer.js has the scenario runner (scenarioCases, create/arm/composed/get/post, rootsOf). Build every step lazily (as a function) when it reads the clock.
+
+### Known gaps and deliberate differences
+
+- ServerRepeat (FakeServer+Repeat.swift) is still a stand-in for src/posting/schedule/repeat.js and postingQueue.js's zone arithmetic. At the merge, point FakeServer+Schedule.swift and FakeServer+Workers.swift at VirgaPosting's Repeat.anchoredRepeat and Repeat.nextOccurrence and delete FakeServer+Repeat.swift, but KEEP FakeServer+Zones.swift: FakeServer.isZone is fakeServer.js's own check. Also make sure PostingQueue reads every zone isZone accepts (any case, offsets to +-23:59, U+2212). If it doesn't, validateRepeat now returns no repeat for a rule without an end, as the web would, and the post silently stops repeating.
+- Three IANA links with irregular capitals (Mexico/BajaNorte, America/Knox_IN, GB-Eire) are accepted only as written; Intl accepts any case. Fixing that needs ICU's full id list, which Foundation on Linux doesn't expose.
+- Tzdata differs by environment: Node 22 (ICU 78.3, tz 2026e) puts Africa/Casablanca on +00 for 2026-27, while the container's Foundation says +01. The fixtures avoid that zone; on a device the zone database decides.
+- Lone surrogates: where the web slices user text at a UTF-16 index (timer snippet at 200, the reply hint's fields, a list name at 64, a note at 500, a style guidance at 300, alt-text context at 60, an image's base64 at 2000 before hashing), a cut inside an emoji leaves a lone surrogate on the web and U+FFFD in Swift. This affects every Swift string port; I have not addressed it here.
+- evaluateConditions with counts that aren't an object (null throws as the web does; a number or a list reading __proto__) doesn't reproduce prototype reads. The server's own counts are always an object.
+- The porter's gaps still stand: a stashed image's non-string encoding is kept as text (WorldBlob.mimeType is String?); spawnNext throwing in runSchedule's failure path and Defense run()'s write errors are absorbed where the web would reject the whole run (unreachable); harness.js cron's console.info lines aren't written; VirgaUI must call DemoSession.startCron() in demo mode; DemoDefense mints record keys at the injected now where the web uses Date.now().
+- A mediaId of '__proto__' (an own key in mediaBytes) shows in the row's payload.media in Swift, while on the web it vanishes into the map's prototype. Documented, not reproduced.
+- fakeServer.test.js's 'the client and the server on when a repeating post goes out' and 'what the composer sends, as the real server reads it' compare the client and the fake against server/ code (recurrence.js, the real validateCreate), so they have no Swift counterpart here.
+
+### The audit
+
+- **medium**, harness/fakeServer.js selfReplyChain (Swift: FakeServer+Workers.swift DemoServer.selfReplyChain): selfReplyChain walked the account's own replies by recursion and threw the web's RangeError only 9000 calls deep. With a cycle of replies (two posts written as each other's replies), the stack overflowed before that point: the VirgaDemoTests runner died with signal 11 on Linux. I confirmed this by putting the old version back and replaying the new reply-cycle scenario. An iOS task's stack is smaller still, so the demo server's cron would crash the app where the web marks the timer failed with 'Maximum call stack size exceeded'. Fixed: the walk now keeps its own stack, visits replies in the same depth-first order and stops at the same depth. Covered by the new demo-server.audit 'reply-cycle' scenario and the new SelfReplyChains behaviour tests (branch order against a recursive reference, a chain 3000 deep, a cycle).
+- **low**, harness/fakeServer.js validateRepeat (Swift: FakeServer+Zones.swift, used by FakeServer+Schedule.swift and the FakeServer+Repeat.swift stand-in): validateRepeat's zone check, Intl.DateTimeFormat({ timeZone }), did not behave like Intl. It accepted names Intl refuses: Foundation's own 'GMT+5', 'UTC+5', 'GMT-03:00' and 'GMT+05:00' forms, and tzdata's 'Factory'. It refused names Intl accepts: offsets past 18 hours ('+23:59', '-23:59', '+2359'), offsets written with the U+2212 minus sign, and IANA links in another case ('us/eastern', 'navajo', 'pst', 'systemv/est5', 'gb'). So a repeating post with such a zone got 201 where the web says 400, or the reverse. Fixed: FakeServer.intlZone/isZone (new file FakeServer+Zones.swift) reads a zone as either an offset or a named zone, tries several capitalisations, and refuses the made-up names. Three links with irregular capitals (Mexico/BajaNorte, America/Knox_IN, GB-Eire) are still found only when written exactly. I checked all 1411 names Intl lists, in lower and upper case, plus odd ones, in a temporary fuzz run; 81 of them are now committed as 'zone' cases in demo-server.rules.
+- **low**, harness/fakeServer.js describeAllow, timerBucket, evaluateConditions (Swift: FakeServer+Rules.swift): Three exported pure functions returned an answer where the web throws. describeAllow refused nothing (web: '(entries || []) is not iterable' for a number, true or an object; text is iterated by code point). timerBucket accepted effects that aren't a list, or a list holding null (web: '(effects || []).some is not a function' and 'Cannot read properties of null (reading 'action')'). evaluateConditions accepted clauses that aren't a list, or a null clause (web: 'clauses.filter is not a function' and "Cannot read properties of null (reading 'op')"). Fixed: describeAllow now takes JSONValue? and throws, and timerBucket throws. The server's own calls never hit these, because rows hold parsed rules. Added 6 describeAllow, 10 timerBucket and 16 evaluateConditions cases.
+- **low**, harness/fakeServer.js evaluateConditions (Swift: FakeServer+Rules.swift jsCompare, countOf): jsCompare, used by evaluateConditions, the timer's extension check and validateRepeat's count check, compared a list or an object as a number. JavaScript first turns each side into a primitive (a list becomes its joined text), so two texts compare by code unit: likes [4] >= '1_000' is true on the web and was false in Swift. evaluateConditions also read counts[metric] only for string metrics. The web uses String(metric), so a number metric works there, and a key a plain object inherits (toString, __proto__) is read as the builtin and written as its source text. Fixed, with cases.
+- **low**, harness/fakeServer.js validateRepeat (Swift: FakeServer+Schedule.swift): validateRepeat threw a TypeError whenever anchoredRepeat answered null. The web reads value.anchor only when an end date is set and sets value.count only when a count is set; otherwise it returns { value: null } and the post just doesn't repeat. Today this can't happen, because the zone check and the anchoring read zones the same way. After the merge onto VirgaPosting's Repeat it could. Fixed to follow the web branch for branch.
+- **low**, harness/fakeServer.test.js (Swift: DemoServerBehaviourTests.swift skipsAnOccurrenceStopsRepeatingAndEndsASeries): The Swift port of fakeServer.test.js 'skips an occurrence, stops repeating, and removes a series' left out the half that cancels the waiting occurrence of a monthly series and checks the series is gone, although its comment says it does. Added.
+- **low**, harness/fakeServer.js routes and workers (Swift: DemoServerParityTests.audit): Coverage: the existing fixtures had no end-to-end run of the workers over many ticks. New fixture demo-server.audit (327 KB, kept apart because demo-server.fakeServer is 969 KB) with five scenarios. (1) A daily post with a picture and a timer while the grant is refused: retried after 2, 4, 8 and 16 minutes, it gives up, the series goes on, the older failure makes way, and it is then retried, published late and skipped at its last occurrence. (2) Timers meeting gates and postgates the author set: already limited, closed to everyone, narrowed to a list with hidden replies kept, quoting already off, detached quotes kept, a thread deleted with its own replies, extended twice then spared, and failing every 2 minutes while refused. (3) A row edited into a new media folder, started as a series, moved around a pinned delete time, reordered, failed at the scheduledPosts limit and edited back. (4) 70 rows listed with tied times. (5) A reply cycle. DemoServer already matched scenarios 1 to 4 before any change.
+- **low** (left as it is), harness/fakeServer.js settleTimer: New web bug (left as it is): settleTimer counts a failed timer's last attempt twice. Object.assign sets attempts+1, then resolve('failed') adds 1 again. A timer that gives up while its grant is refused reads attempts 6 with maxAttempts 5 (visible in demo-server.audit 'timer-effects'). Swift reproduces it.
+- **low** (left as it is), harness/fakeServer.js settleTimer / timerShape: New web bug (left as it is): settleTimer never clears last_error or last_error_code once a timer succeeds. A timer that once hit SESSION_UNAVAILABLE and later acts or is deleted still lists that lastError and lastErrorCode. Swift reproduces it.
+- **low** (left as it is), harness/fakeServer.js stashMedia, GET /api/schedule/media: New web bug (not reproduced, documented): stashMedia's map and /api/schedule/media's out are plain objects. A mediaId of '__proto__' whose bytes sit under an own '__proto__' key of mediaBytes is assigned as the object's prototype: it vanishes from the row's payload.media and from the media route, yet publishing still finds the bytes through the prototype. Swift keeps it as an ordinary key. Object.create(null) or a Map would fix it.
+- **low**, harness/fakeServer.js, harness/fakeDefense.js, harness/harness.js: Rechecked the porter's other claims against the code and fixtures. The seven web bugs it listed hold: ALLOW_WORDS prototype keys, the DOMException code 5, the create body's occurrence, a null body giving 500, nextKey reading Date.now(), the undone add job taking its holder's batch, and until accepted without a calendar check. Everything else I compared line by line matched the web: the module map, stamps (fakeServer 8c31068cdf24, fakeDefense 4b44087c04e9, harness c4768f342f72), the // Ports headers, the route order, refusal copy, uuid consumption order, TimSort for the scheduled list and Defense history, stable sorting for the timer list, dropMedia's identity rule, spawnNext, backoff, AI trial commit, Defense run and veto, the atob order, and the cron task with GatedClock. A temporary fuzz run with about 2,900 random inputs to parseConditions, parseEffects, narrowAllow, analyzePost, styleSummary, alt text and the repeat stand-in found nothing beyond the items above.
+- **low** (left as it is), ios/VirgaKit/Tests/VirgaDefenseTests/ScorerBehaviourTests.swift: Outside this domain, left for its owner: VirgaDefenseTests ScorerBehaviour.stopsReadingProfilesOnceWhoYouFollowHasFailed failed once in a full run under load (calls.count <= 1). It passed 3 of 3 solo runs. The test orders concurrent work with a 5 ms sleep against a 30 ms one, which is the pattern the brief warns about. A later full run passed.
