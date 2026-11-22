@@ -1,11 +1,18 @@
 // Ports src/shell/Shell.jsx
 // Ports src/shell/shell.css (.shell, its --figure-size)
 //
-// The signed-in app: from 900 points wide a NavigationSplitView with Virga's
-// own sidebar; narrower, a NavigationStack with the app bar in its
-// navigation bar and Virga's own tab bar along the bottom. Decided by the
-// window's width, not the device: an iPad held upright, or in a narrow
-// split, gets the phone's shell.
+// The signed-in app: from 900 points wide, Virga's own sidebar (272, or the
+// 72-point rail when folded) beside the page, the two held to --shell-max
+// and centred (the rail keeps to the window's left edge), with the sky
+// drawn once behind both and moved by the page's scroll: the sidebar has no
+// ground and no edge, so nothing about it is the system's sidebar (iOS
+// 26's split view floats its sidebar on a ground of its own). The page
+// there is no stack: nothing is pushed beside the sidebar, and a
+// NavigationStack would lay its own ground over the sky. Narrower, a
+// NavigationStack with the app bar and Virga's own tab bar along the
+// bottom, whose path is the way back up. Decided by the window's width,
+// not the device: an iPad held upright, or in a narrow split, gets the
+// phone's shell.
 //
 // The address (ShellNavigator) is the state; RoutedPage draws the page it
 // names. A dashboard address that names nothing goes to the last one looked
@@ -38,6 +45,8 @@ public struct ShellView: View {
   @State private var dashboards: ShellDashboards
   @State private var accountDialogs = AccountDialogs()
   @State private var palette = PaletteState()
+  /// The sky beside the sidebar, moved by the page's scroll.
+  @State private var deskSky = SkyScroll()
   @State private var toasts = ToastCenter()
 
   /// - Parameters:
@@ -62,7 +71,7 @@ public struct ShellView: View {
 
   public var body: some View {
     Group {
-      if desk { split } else { stack }
+      if desk { side } else { stack }
     }
     .overlay { ToastStack(center: toasts).padding(.bottom, desk ? 0 : theme.tabbarH) }
     .commandPalette(palette)
@@ -103,19 +112,23 @@ public struct ShellView: View {
 
   // MARK: Desk
 
-  private var split: some View {
-    NavigationSplitView(columnVisibility: .constant(.all)) {
+  /// `.shell`: the sidebar and the page side by side, in reading order
+  /// (VoiceOver and the keyboard go down the sidebar, then the page).
+  private var side: some View {
+    HStack(alignment: .top, spacing: 0) {
       Sidebar(firstRun: firstRun)
-        .navigationSplitViewColumnWidth(collapsed ? theme.railW : theme.sidebarW)
-        .toolbar(removing: .sidebarToggle)
-        .toolbar(.hidden, for: .navigationBar)
-    } detail: {
-      NavigationStack {
-        RoutedPage(path: navigator.path)
-          .id(navigator.path)
-      }
+        .frame(width: collapsed ? theme.railW : theme.sidebarW)
+        .frame(maxHeight: .infinity, alignment: .top)
+      RoutedPage(path: navigator.path)
+        .id(navigator.path)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    .navigationSplitViewStyle(.balanced)
+    // Open, the two are held together and centred; the rail keeps to the
+    // left edge, and the page's column centres itself in what is left.
+    .frame(maxWidth: collapsed ? .infinity : theme.shellMax)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background { PageSky(scroll: deskSky) }
+    .environment(deskSky)
     .environment(\.shellChrome, collapsed ? .rail : .sidebar)
   }
 

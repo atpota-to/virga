@@ -308,7 +308,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Shell/ShellNavigator.swift",
         "ios/VirgaKit/Sources/VirgaUI/Shell/ShellDashboards.swift"
       ],
-      "note": "The shell by the window's width (a split view with the sidebar from 900, a stack with the app bar and tab bar under), the address as its state, every route to a page (a page not ported yet shows its header and says so), NotFound, the dashboard redirect and the last dashboard looked at, the titles, the archive's opening line and the first build's page where a route needs it, and the sync's places (the sidebar's card, or the strip at the top of the page, neither while the first build's page is up). The command palette (from Search, and ⌘K on a hardware keyboard) and the toasts are mounted here. Not yet: New dashboard, the composer and its shortcut (New post goes to the composer's address), and the live sky.",
+      "note": "The shell by the window's width (from 900 Virga's own sidebar beside the page, held to --shell-max and centred, with one sky behind both that the page's scroll moves; under it a stack with the app bar and tab bar), the address as its state, every route to a page (a page not ported yet shows its header and says so), NotFound, the dashboard redirect and the last dashboard looked at, the titles, the archive's opening line and the first build's page where a route needs it, and the sync's places (the sidebar's card, or the strip at the top of the page, neither while the first build's page is up). The command palette (from Search, and ⌘K on a hardware keyboard) and the toasts are mounted here. Not yet: New dashboard, the composer and its shortcut (New post goes to the composer's address), and the live sky.",
       "synced": "2463a24deec2"
     },
     "src/shell/Sidebar.jsx": {
@@ -435,7 +435,7 @@
       "fixtures": [
         "ui.themeKit"
       ],
-      "note": "the page's type (body size, line height, numerals, headings, links, code), focus outline, selection and the sky's wash are measures in ThemeKit (VirgaCore/Theme); it sets no theme tokens. VirgaUI draws them: the type in Instrument Sans with tabular figures (Theme/Typography.swift), the sky as the scroll content's background (Theme/SkyWash.swift), the focus outline (Components/Focus.swift), Reduce Motion (Theme/Motion.swift). The element resets, ::selection and the helper classes (.visually-hidden, .skip-link) have no counterpart on iOS",
+      "note": "the page's type (body size, line height, numerals, headings, links, code), focus outline, selection and the sky's wash are measures in ThemeKit (VirgaCore/Theme); it sets no theme tokens. VirgaUI draws them: the type in Instrument Sans with tabular figures (Theme/Typography.swift), the sky from the window's top behind the page, moved by its scroll, and once behind the sidebar and the page together beside the sidebar (Theme/SkyWash.swift), the focus outline (Components/Focus.swift), Reduce Motion (Theme/Motion.swift). The element resets, ::selection and the helper classes (.visually-hidden, .skip-link) have no counterpart on iOS",
       "synced": "25a6fa774758"
     },
     "src/styles/controls.css": {
