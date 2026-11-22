@@ -40,8 +40,15 @@ final class PostingUITests: XCTestCase {
   private func go(_ app: XCUIApplication, _ path: String, typing: String, title: String) {
     let search = element(app, "palette-open")
     XCTAssertTrue(search.waitForExistence(timeout: 10), "no Search")
+    // Straight after a sheet closes (the template editor), Search is in the
+    // hierarchy before it can be pressed, and a tap in the closing animation
+    // is dropped: wait until it can be, and press once more if the palette
+    // still isn't there.
+    let pressable = expectation(for: NSPredicate(format: "isHittable == true"), evaluatedWith: search)
+    wait(for: [pressable], timeout: 10)
     search.tap()
     let field = element(app, "palette-field")
+    if !field.waitForExistence(timeout: 3), search.isHittable { search.tap() }
     XCTAssertTrue(field.waitForExistence(timeout: 5), "the palette didn't open")
     field.typeText(typing)
     let option = element(app, "palette-go:\(path)")
