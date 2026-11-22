@@ -1,0 +1,2490 @@
+{
+  "name": "composer.loaders",
+  "sources": [
+    "src/posting/composer/loaders.js"
+  ],
+  "cases": [
+    {
+      "id": "loadError#1",
+      "fn": "loadError",
+      "input": {
+        "code": "GONE",
+        "message": "It’s gone."
+      },
+      "output": {
+        "message": "It’s gone.",
+        "code": "GONE"
+      }
+    },
+    {
+      "id": "replyFromView#1",
+      "fn": "replyFromView",
+      "input": {
+        "view": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "cid": "bafycid",
+          "author": {
+            "did": "did:plc:wren",
+            "handle": "wren.example.com",
+            "displayName": "Wren",
+            "avatar": "https://x/a.jpg"
+          },
+          "record": {
+            "text": "hello"
+          }
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+        "cid": "bafycid",
+        "root": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "cid": "bafycid"
+        },
+        "author": {
+          "did": "did:plc:wren",
+          "handle": "wren.example.com",
+          "displayName": "Wren",
+          "avatar": "https://x/a.jpg"
+        },
+        "text": "hello",
+        "view": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "cid": "bafycid",
+          "author": {
+            "did": "did:plc:wren",
+            "handle": "wren.example.com",
+            "displayName": "Wren",
+            "avatar": "https://x/a.jpg"
+          },
+          "record": {
+            "text": "hello"
+          }
+        }
+      }
+    },
+    {
+      "id": "replyFromView#2",
+      "fn": "replyFromView",
+      "input": {
+        "view": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "cid": "bafycid",
+          "author": {
+            "did": "did:plc:wren",
+            "handle": "wren.example.com",
+            "displayName": "Wren",
+            "avatar": "https://x/a.jpg"
+          },
+          "record": {
+            "text": "hello",
+            "reply": {
+              "root": {
+                "uri": "at://did:plc:a/app.bsky.feed.post/0",
+                "cid": "rootcid"
+              }
+            }
+          }
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+        "cid": "bafycid",
+        "root": {
+          "uri": "at://did:plc:a/app.bsky.feed.post/0",
+          "cid": "rootcid"
+        },
+        "author": {
+          "did": "did:plc:wren",
+          "handle": "wren.example.com",
+          "displayName": "Wren",
+          "avatar": "https://x/a.jpg"
+        },
+        "text": "hello",
+        "view": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "cid": "bafycid",
+          "author": {
+            "did": "did:plc:wren",
+            "handle": "wren.example.com",
+            "displayName": "Wren",
+            "avatar": "https://x/a.jpg"
+          },
+          "record": {
+            "text": "hello",
+            "reply": {
+              "root": {
+                "uri": "at://did:plc:a/app.bsky.feed.post/0",
+                "cid": "rootcid"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "replyFromView#3",
+      "fn": "replyFromView",
+      "input": {
+        "view": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "cid": "bafycid",
+          "author": {
+            "did": "did:plc:wren",
+            "handle": "wren.example.com",
+            "displayName": "Wren",
+            "avatar": "https://x/a.jpg"
+          },
+          "record": {
+            "text": "hello",
+            "reply": {
+              "root": {
+                "uri": "at://did:plc:a/app.bsky.feed.post/0"
+              }
+            }
+          }
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+        "cid": "bafycid",
+        "root": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "cid": "bafycid"
+        },
+        "author": {
+          "did": "did:plc:wren",
+          "handle": "wren.example.com",
+          "displayName": "Wren",
+          "avatar": "https://x/a.jpg"
+        },
+        "text": "hello",
+        "view": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "cid": "bafycid",
+          "author": {
+            "did": "did:plc:wren",
+            "handle": "wren.example.com",
+            "displayName": "Wren",
+            "avatar": "https://x/a.jpg"
+          },
+          "record": {
+            "text": "hello",
+            "reply": {
+              "root": {
+                "uri": "at://did:plc:a/app.bsky.feed.post/0"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "replyFromView#4",
+      "fn": "replyFromView",
+      "input": {
+        "view": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "cid": "c",
+          "author": {
+            "did": "did:plc:wren"
+          }
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+        "cid": "c",
+        "root": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "cid": "c"
+        },
+        "author": {
+          "did": "did:plc:wren",
+          "displayName": "",
+          "avatar": null
+        },
+        "text": "",
+        "view": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "cid": "c",
+          "author": {
+            "did": "did:plc:wren"
+          }
+        }
+      }
+    },
+    {
+      "id": "replyFromView#5",
+      "fn": "replyFromView",
+      "input": {
+        "view": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "cid": "c",
+          "record": {
+            "text": 5
+          }
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+        "cid": "c",
+        "root": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "cid": "c"
+        },
+        "text": "",
+        "view": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "cid": "c",
+          "record": {
+            "text": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "replyFromView#6",
+      "fn": "replyFromView",
+      "input": {
+        "view": {
+          "uri": "x"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "replyFromView#7",
+      "fn": "replyFromView",
+      "input": {
+        "view": {
+          "cid": "c"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "replyFromView#8",
+      "fn": "replyFromView",
+      "input": {
+        "view": null
+      },
+      "output": null
+    },
+    {
+      "id": "with-uri",
+      "fn": "refUri",
+      "input": {
+        "ref": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "kind": "post"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "value": "at://did:plc:wren/app.bsky.feed.post/3a"
+        }
+      }
+    },
+    {
+      "id": "with-did",
+      "fn": "refUri",
+      "input": {
+        "ref": {
+          "kind": "feed",
+          "did": "did:plc:wren",
+          "rkey": "gen"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "value": "at://did:plc:wren/app.bsky.feed.generator/gen"
+        }
+      }
+    },
+    {
+      "id": "handle",
+      "fn": "refUri",
+      "input": {
+        "ref": {
+          "kind": "post",
+          "handle": "@Wren.Example.com",
+          "rkey": "3a"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=wren.example.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":\"did:plc:wren\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "at://did:plc:wren/app.bsky.feed.post/3a"
+        }
+      }
+    },
+    {
+      "id": "handle-unknown",
+      "fn": "refUri",
+      "input": {
+        "ref": {
+          "kind": "post",
+          "handle": "nobody.example",
+          "rkey": "3a"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=nobody.example",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"InvalidRequest\",\"message\":\"Unable to resolve handle\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": null
+        }
+      }
+    },
+    {
+      "id": "handle-offline",
+      "fn": "refUri",
+      "input": {
+        "ref": {
+          "kind": "list",
+          "handle": "wren.example.com",
+          "rkey": "l1"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=wren.example.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": null
+        }
+      }
+    },
+    {
+      "id": "bad-kind",
+      "fn": "refUri",
+      "input": {
+        "ref": {
+          "kind": "thing",
+          "did": "did:plc:wren",
+          "rkey": "x"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "$throws": "Not an embeddable kind: thing",
+          "code": null,
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "none",
+      "fn": "refUri",
+      "input": {
+        "ref": null
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "value": null
+        }
+      }
+    },
+    {
+      "id": "ok",
+      "fn": "loadReplyTarget",
+      "input": {
+        "ref": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "kind": "post"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.feed.post%2F3a",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[{\"uri\":\"at://did:plc:wren/app.bsky.feed.post/3a\",\"cid\":\"bafycid\",\"author\":{\"did\":\"did:plc:wren\",\"handle\":\"wren.example.com\",\"displayName\":\"Wren\",\"avatar\":\"https://x/a.jpg\"},\"record\":{\"text\":\"hello\"}}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+            "cid": "bafycid",
+            "root": {
+              "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+              "cid": "bafycid"
+            },
+            "author": {
+              "did": "did:plc:wren",
+              "handle": "wren.example.com",
+              "displayName": "Wren",
+              "avatar": "https://x/a.jpg"
+            },
+            "text": "hello",
+            "view": {
+              "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+              "cid": "bafycid",
+              "author": {
+                "did": "did:plc:wren",
+                "handle": "wren.example.com",
+                "displayName": "Wren",
+                "avatar": "https://x/a.jpg"
+              },
+              "record": {
+                "text": "hello"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "by-handle",
+      "fn": "loadReplyTarget",
+      "input": {
+        "ref": {
+          "kind": "post",
+          "handle": "wren.example.com",
+          "rkey": "3a"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=wren.example.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":\"did:plc:wren\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.feed.post%2F3a",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[{\"uri\":\"at://did:plc:wren/app.bsky.feed.post/other\",\"cid\":\"bafycid\",\"author\":{\"did\":\"did:plc:wren\",\"handle\":\"wren.example.com\",\"displayName\":\"Wren\",\"avatar\":\"https://x/a.jpg\"},\"record\":{\"text\":\"hello\"}},{\"uri\":\"at://did:plc:wren/app.bsky.feed.post/3a\",\"cid\":\"bafycid\",\"author\":{\"did\":\"did:plc:wren\",\"handle\":\"wren.example.com\",\"displayName\":\"Wren\",\"avatar\":\"https://x/a.jpg\"},\"record\":{\"text\":\"hello\"}}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+            "cid": "bafycid",
+            "root": {
+              "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+              "cid": "bafycid"
+            },
+            "author": {
+              "did": "did:plc:wren",
+              "handle": "wren.example.com",
+              "displayName": "Wren",
+              "avatar": "https://x/a.jpg"
+            },
+            "text": "hello",
+            "view": {
+              "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+              "cid": "bafycid",
+              "author": {
+                "did": "did:plc:wren",
+                "handle": "wren.example.com",
+                "displayName": "Wren",
+                "avatar": "https://x/a.jpg"
+              },
+              "record": {
+                "text": "hello"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "first-view",
+      "fn": "loadReplyTarget",
+      "input": {
+        "ref": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.feed.post%2F3a",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[{\"uri\":\"at://did:plc:wren/app.bsky.feed.post/other\",\"cid\":\"bafycid\",\"author\":{\"did\":\"did:plc:wren\",\"handle\":\"wren.example.com\",\"displayName\":\"Wren\",\"avatar\":\"https://x/a.jpg\"},\"record\":{\"text\":\"hello\"}}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "uri": "at://did:plc:wren/app.bsky.feed.post/other",
+            "cid": "bafycid",
+            "root": {
+              "uri": "at://did:plc:wren/app.bsky.feed.post/other",
+              "cid": "bafycid"
+            },
+            "author": {
+              "did": "did:plc:wren",
+              "handle": "wren.example.com",
+              "displayName": "Wren",
+              "avatar": "https://x/a.jpg"
+            },
+            "text": "hello",
+            "view": {
+              "uri": "at://did:plc:wren/app.bsky.feed.post/other",
+              "cid": "bafycid",
+              "author": {
+                "did": "did:plc:wren",
+                "handle": "wren.example.com",
+                "displayName": "Wren",
+                "avatar": "https://x/a.jpg"
+              },
+              "record": {
+                "text": "hello"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "gone",
+      "fn": "loadReplyTarget",
+      "input": {
+        "ref": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.feed.post%2F3a",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$throws": "The post you’re replying to is gone, or can’t be seen.",
+          "code": "GONE",
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "no-cid",
+      "fn": "loadReplyTarget",
+      "input": {
+        "ref": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.feed.post%2F3a",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[{\"uri\":\"at://did:plc:wren/app.bsky.feed.post/3a\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$throws": "The post you’re replying to is gone, or can’t be seen.",
+          "code": "GONE",
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "server-error",
+      "fn": "loadReplyTarget",
+      "input": {
+        "ref": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.feed.post%2F3a",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 502,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"InternalServerError\",\"message\":\"Upstream failure\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$throws": "Upstream failure",
+          "code": null,
+          "status": 502
+        }
+      }
+    },
+    {
+      "id": "server-error-bare",
+      "fn": "loadReplyTarget",
+      "input": {
+        "ref": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.feed.post%2F3a",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "nope"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$throws": "HTTP 500 from app.bsky.feed.getPosts",
+          "code": null,
+          "status": 500
+        }
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "loadReplyTarget",
+      "input": {
+        "ref": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.feed.post%2F3a",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$throws": "fetch failed",
+          "code": null,
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "unresolved",
+      "fn": "loadReplyTarget",
+      "input": {
+        "ref": {
+          "kind": "post",
+          "handle": "x.example",
+          "rkey": "1"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=x.example",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$throws": "Couldn’t find the post to reply to.",
+          "code": "NOT_FOUND",
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "post",
+      "fn": "loadRecordTarget",
+      "input": {
+        "ref": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "kind": "post"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.feed.post%2F3a",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[{\"uri\":\"at://did:plc:wren/app.bsky.feed.post/3a\",\"cid\":\"bafycid\",\"author\":{\"did\":\"did:plc:wren\",\"handle\":\"wren.example.com\",\"displayName\":\"Wren\",\"avatar\":\"https://x/a.jpg\"},\"record\":{\"text\":\"hello\"}}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "kind": "post",
+            "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+            "cid": "bafycid",
+            "view": {
+              "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+              "cid": "bafycid",
+              "author": {
+                "did": "did:plc:wren",
+                "handle": "wren.example.com",
+                "displayName": "Wren",
+                "avatar": "https://x/a.jpg"
+              },
+              "record": {
+                "text": "hello"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "post-gone",
+      "fn": "loadRecordTarget",
+      "input": {
+        "ref": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "kind": "post"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.feed.post%2F3a",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$throws": "That post is gone, so it can’t be attached.",
+          "code": "GONE",
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "post-offline",
+      "fn": "loadRecordTarget",
+      "input": {
+        "ref": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a",
+          "kind": "post"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.feed.post%2F3a",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$throws": "Couldn’t read that post. Check your connection and try again.",
+          "code": "READ_FAILED",
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "feed",
+      "fn": "loadRecordTarget",
+      "input": {
+        "ref": {
+          "kind": "feed",
+          "did": "did:plc:wren",
+          "rkey": "gen"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getFeedGenerator?feed=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.feed.generator%2Fgen",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"view\":{\"uri\":\"at://did:plc:wren/app.bsky.feed.generator/gen\",\"cid\":\"feedcid\",\"displayName\":\"Gen\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "kind": "feed",
+            "uri": "at://did:plc:wren/app.bsky.feed.generator/gen",
+            "cid": "feedcid",
+            "view": {
+              "uri": "at://did:plc:wren/app.bsky.feed.generator/gen",
+              "cid": "feedcid",
+              "displayName": "Gen"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "feed-404",
+      "fn": "loadRecordTarget",
+      "input": {
+        "ref": {
+          "kind": "feed",
+          "did": "did:plc:wren",
+          "rkey": "gen"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getFeedGenerator?feed=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.feed.generator%2Fgen",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"NotFound\",\"message\":\"Feed not found\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$throws": "That feed is gone, so it can’t be attached.",
+          "code": "GONE",
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "feed-500",
+      "fn": "loadRecordTarget",
+      "input": {
+        "ref": {
+          "kind": "feed",
+          "did": "did:plc:wren",
+          "rkey": "gen"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getFeedGenerator?feed=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.feed.generator%2Fgen",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"X\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$throws": "Couldn’t read that feed. Check your connection and try again.",
+          "code": "READ_FAILED",
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "list",
+      "fn": "loadRecordTarget",
+      "input": {
+        "ref": {
+          "kind": "list",
+          "handle": "wren.example.com",
+          "rkey": "l1"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=wren.example.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":\"did:plc:wren\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getList?list=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.graph.list%2Fl1&limit=1",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"list\":{\"uri\":\"at://did:plc:wren/app.bsky.graph.list/l1\",\"cid\":\"listcid\",\"name\":\"L\"},\"items\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "kind": "list",
+            "uri": "at://did:plc:wren/app.bsky.graph.list/l1",
+            "cid": "listcid",
+            "view": {
+              "uri": "at://did:plc:wren/app.bsky.graph.list/l1",
+              "cid": "listcid",
+              "name": "L"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "list-400",
+      "fn": "loadRecordTarget",
+      "input": {
+        "ref": {
+          "kind": "list",
+          "did": "did:plc:wren",
+          "rkey": "l1"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getList?list=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.graph.list%2Fl1&limit=1",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"InvalidRequest\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$throws": "That list is gone, so it can’t be attached.",
+          "code": "GONE",
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "list-no-cid",
+      "fn": "loadRecordTarget",
+      "input": {
+        "ref": {
+          "kind": "list",
+          "did": "did:plc:wren",
+          "rkey": "l1"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getList?list=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.graph.list%2Fl1&limit=1",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"list\":{\"uri\":\"x\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$throws": "That list is gone, so it can’t be attached.",
+          "code": "GONE",
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "starterpack",
+      "fn": "loadRecordTarget",
+      "input": {
+        "ref": {
+          "kind": "starterpack",
+          "did": "did:plc:wren",
+          "rkey": "sp"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getStarterPack?starterPack=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.graph.starterpack%2Fsp",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"starterPack\":{\"uri\":\"at://did:plc:wren/app.bsky.graph.starterpack/sp\",\"cid\":\"spcid\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "kind": "starterpack",
+            "uri": "at://did:plc:wren/app.bsky.graph.starterpack/sp",
+            "cid": "spcid",
+            "view": {
+              "uri": "at://did:plc:wren/app.bsky.graph.starterpack/sp",
+              "cid": "spcid"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "starterpack-offline",
+      "fn": "loadRecordTarget",
+      "input": {
+        "ref": {
+          "kind": "starterpack",
+          "did": "did:plc:wren",
+          "rkey": "sp"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getStarterPack?starterPack=at%3A%2F%2Fdid%3Aplc%3Awren%2Fapp.bsky.graph.starterpack%2Fsp",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$throws": "Couldn’t read that starter pack. Check your connection and try again.",
+          "code": "READ_FAILED",
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "not-found",
+      "fn": "loadRecordTarget",
+      "input": {
+        "ref": {
+          "kind": "feed",
+          "handle": "nobody.example",
+          "rkey": "gen"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=nobody.example",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$throws": "Couldn’t find that feed.",
+          "code": "NOT_FOUND",
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "no-kind",
+      "fn": "loadRecordTarget",
+      "input": {
+        "ref": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/3a"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "$throws": "That post is gone, so it can’t be attached.",
+          "code": "GONE",
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "found",
+      "fn": "loadDraftTarget",
+      "input": {
+        "script": {
+          "list": [
+            {
+              "id": "d0"
+            },
+            {
+              "id": "d1",
+              "draft": {
+                "posts": [
+                  {
+                    "text": "saved"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "output": {
+        "value": {
+          "state": {
+            "opened": "d1"
+          },
+          "missing": []
+        },
+        "calls": [
+          [
+            "agentFor",
+            "did:plc:mira"
+          ],
+          [
+            "listAllDrafts",
+            "agent"
+          ],
+          [
+            "openDraft",
+            {
+              "id": "d1",
+              "draft": {
+                "posts": [
+                  {
+                    "text": "saved"
+                  }
+                ]
+              }
+            },
+            {
+              "asDid": "did:plc:mira",
+              "defaults": {
+                "langs": [
+                  "en"
+                ]
+              }
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "gone",
+      "fn": "loadDraftTarget",
+      "input": {
+        "script": {
+          "list": [
+            {
+              "id": "d0"
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "That draft is gone. It may have been posted or deleted in another app.",
+        "code": "GONE",
+        "status": null,
+        "calls": [
+          [
+            "agentFor",
+            "did:plc:mira"
+          ],
+          [
+            "listAllDrafts",
+            "agent"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "null-list",
+      "fn": "loadDraftTarget",
+      "input": {
+        "script": {
+          "list": null
+        }
+      },
+      "output": {
+        "$throws": "That draft is gone. It may have been posted or deleted in another app.",
+        "code": "GONE",
+        "status": null,
+        "calls": [
+          [
+            "agentFor",
+            "did:plc:mira"
+          ],
+          [
+            "listAllDrafts",
+            "agent"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "signed-out",
+      "fn": "loadDraftTarget",
+      "input": {
+        "script": {
+          "agentThrows": true
+        }
+      },
+      "output": {
+        "$throws": "This draft’s account needs to sign in again before it can be opened.",
+        "code": "REAUTH_REQUIRED",
+        "status": null,
+        "calls": [
+          [
+            "agentFor",
+            "did:plc:mira"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "read-fails",
+      "fn": "loadDraftTarget",
+      "input": {
+        "script": {
+          "listThrows": true
+        }
+      },
+      "output": {
+        "$throws": "Couldn’t read your drafts from Bluesky. Try again.",
+        "code": "READ_FAILED",
+        "status": null,
+        "calls": [
+          [
+            "agentFor",
+            "did:plc:mira"
+          ],
+          [
+            "listAllDrafts",
+            "agent"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "open-throws",
+      "fn": "loadDraftTarget",
+      "input": {
+        "script": {
+          "list": [
+            {
+              "id": "d1",
+              "draft": {
+                "posts": [
+                  {
+                    "text": "saved"
+                  }
+                ]
+              }
+            }
+          ],
+          "openThrows": true
+        }
+      },
+      "output": {
+        "$throws": "cannot open",
+        "code": null,
+        "status": null,
+        "calls": [
+          [
+            "agentFor",
+            "did:plc:mira"
+          ],
+          [
+            "listAllDrafts",
+            "agent"
+          ],
+          [
+            "openDraft",
+            {
+              "id": "d1",
+              "draft": {
+                "posts": [
+                  {
+                    "text": "saved"
+                  }
+                ]
+              }
+            },
+            {
+              "asDid": "did:plc:mira",
+              "defaults": {
+                "langs": [
+                  "en"
+                ]
+              }
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "found",
+      "fn": "loadScheduledTarget",
+      "input": {
+        "script": {
+          "row": {
+            "id": "s1",
+            "status": "pending",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "later"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "output": {
+        "value": {
+          "state": {
+            "rebuilt": "s1",
+            "media": {}
+          },
+          "row": {
+            "id": "s1",
+            "status": "pending",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "later"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "calls": [
+          [
+            "getScheduled",
+            "req",
+            "s1"
+          ],
+          [
+            "reconstruct",
+            "s1",
+            {},
+            {
+              "asDid": "did:plc:mira"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "failed-row",
+      "fn": "loadScheduledTarget",
+      "input": {
+        "script": {
+          "row": {
+            "id": "s1",
+            "status": "failed",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "later"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "output": {
+        "value": {
+          "state": {
+            "rebuilt": "s1",
+            "media": {}
+          },
+          "row": {
+            "id": "s1",
+            "status": "failed",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "later"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "calls": [
+          [
+            "getScheduled",
+            "req",
+            "s1"
+          ],
+          [
+            "reconstruct",
+            "s1",
+            {},
+            {
+              "asDid": "did:plc:mira"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "with-media",
+      "fn": "loadScheduledTarget",
+      "input": {
+        "script": {
+          "row": {
+            "id": "s1",
+            "status": "pending",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "later"
+                  }
+                }
+              ],
+              "media": {
+                "m1": {
+                  "mime": "image/png"
+                }
+              }
+            }
+          },
+          "media": {
+            "m1": "bytes"
+          }
+        }
+      },
+      "output": {
+        "value": {
+          "state": {
+            "rebuilt": "s1",
+            "media": {
+              "m1": "bytes"
+            }
+          },
+          "row": {
+            "id": "s1",
+            "status": "pending",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "later"
+                  }
+                }
+              ],
+              "media": {
+                "m1": {
+                  "mime": "image/png"
+                }
+              }
+            }
+          }
+        },
+        "calls": [
+          [
+            "getScheduled",
+            "req",
+            "s1"
+          ],
+          [
+            "getScheduledMedia",
+            "req",
+            "s1"
+          ],
+          [
+            "reconstruct",
+            "s1",
+            {
+              "m1": "bytes"
+            },
+            {
+              "asDid": "did:plc:mira"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "empty-media",
+      "fn": "loadScheduledTarget",
+      "input": {
+        "script": {
+          "row": {
+            "id": "s1",
+            "status": "pending",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "later"
+                  }
+                }
+              ],
+              "media": {}
+            }
+          }
+        }
+      },
+      "output": {
+        "value": {
+          "state": {
+            "rebuilt": "s1",
+            "media": {}
+          },
+          "row": {
+            "id": "s1",
+            "status": "pending",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "later"
+                  }
+                }
+              ],
+              "media": {}
+            }
+          }
+        },
+        "calls": [
+          [
+            "getScheduled",
+            "req",
+            "s1"
+          ],
+          [
+            "reconstruct",
+            "s1",
+            {},
+            {
+              "asDid": "did:plc:mira"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "media-fails",
+      "fn": "loadScheduledTarget",
+      "input": {
+        "script": {
+          "row": {
+            "id": "s1",
+            "status": "pending",
+            "payload": {
+              "media": {
+                "m1": {}
+              }
+            }
+          },
+          "mediaThrows": true
+        }
+      },
+      "output": {
+        "$throws": "Couldn’t read this post’s images from Virga’s server. Try again.",
+        "code": "READ_FAILED",
+        "status": null,
+        "calls": [
+          [
+            "getScheduled",
+            "req",
+            "s1"
+          ],
+          [
+            "getScheduledMedia",
+            "req",
+            "s1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "partial",
+      "fn": "loadScheduledTarget",
+      "input": {
+        "script": {
+          "row": {
+            "id": "s1",
+            "status": "pending",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "later"
+                  }
+                }
+              ]
+            },
+            "partial": true
+          }
+        }
+      },
+      "output": {
+        "$throws": "Part of this thread has already gone out, so it can’t be changed. Retry or cancel it in Scheduled posts.",
+        "code": "PARTIAL",
+        "status": null,
+        "calls": [
+          [
+            "getScheduled",
+            "req",
+            "s1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "publishing",
+      "fn": "loadScheduledTarget",
+      "input": {
+        "script": {
+          "row": {
+            "id": "s1",
+            "status": "publishing",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "later"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "output": {
+        "$throws": "This post is going out right now, so it can’t be changed.",
+        "code": "NOT_EDITABLE",
+        "status": null,
+        "calls": [
+          [
+            "getScheduled",
+            "req",
+            "s1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "published",
+      "fn": "loadScheduledTarget",
+      "input": {
+        "script": {
+          "row": {
+            "id": "s1",
+            "status": "published",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "later"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "output": {
+        "$throws": "This post is going out right now, so it can’t be changed.",
+        "code": "NOT_EDITABLE",
+        "status": null,
+        "calls": [
+          [
+            "getScheduled",
+            "req",
+            "s1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "missing",
+      "fn": "loadScheduledTarget",
+      "input": {
+        "script": {
+          "row": null
+        }
+      },
+      "output": {
+        "$throws": "That scheduled post is gone. It may already have gone out.",
+        "code": "GONE",
+        "status": null,
+        "calls": [
+          [
+            "getScheduled",
+            "req",
+            "s1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "404",
+      "fn": "loadScheduledTarget",
+      "input": {
+        "script": {
+          "getThrows": 404
+        }
+      },
+      "output": {
+        "$throws": "That scheduled post is gone. It may already have gone out.",
+        "code": "GONE",
+        "status": null,
+        "calls": [
+          [
+            "getScheduled",
+            "req",
+            "s1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "500",
+      "fn": "loadScheduledTarget",
+      "input": {
+        "script": {
+          "getThrows": 500
+        }
+      },
+      "output": {
+        "$throws": "Couldn’t read that scheduled post. Try again.",
+        "code": "READ_FAILED",
+        "status": null,
+        "calls": [
+          [
+            "getScheduled",
+            "req",
+            "s1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "loadScheduledTarget",
+      "input": {
+        "script": {
+          "getThrows": "offline"
+        }
+      },
+      "output": {
+        "$throws": "Couldn’t read that scheduled post. Try again.",
+        "code": "READ_FAILED",
+        "status": null,
+        "calls": [
+          [
+            "getScheduled",
+            "req",
+            "s1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "no-session",
+      "fn": "loadScheduledTarget",
+      "input": {
+        "script": {
+          "noReq": true
+        }
+      },
+      "output": {
+        "$throws": "Scheduled posts need a long session through Virga’s server.",
+        "code": "NEEDS_BACKEND",
+        "status": null,
+        "calls": []
+      }
+    },
+    {
+      "id": "continueCandidates#1",
+      "fn": "continueCandidates",
+      "input": {
+        "rows": [
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+            "at": "2026-03-10T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+            "at": "2026-03-12T09:00:00.000Z",
+            "replyTo": "did:plc:mira"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/3",
+            "at": "2026-03-11T09:00:00.000Z",
+            "replyTo": "did:plc:wren"
+          },
+          {
+            "uri": "at://did:plc:wren/app.bsky.feed.post/4",
+            "at": "2026-03-13T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.repost/5",
+            "at": "2026-03-14T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/6",
+            "at": "junk"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/7",
+            "at": "2026-03-12T09:00:00"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/8"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/9",
+            "at": "2026-03-12T09:00:00.000Z"
+          },
+          null
+        ],
+        "did": "did:plc:mira",
+        "tz": "UTC"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "at": "2026-03-12T09:00:00.000Z",
+          "replyTo": "did:plc:mira"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/7",
+          "at": "2026-03-12T09:00:00"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/9",
+          "at": "2026-03-12T09:00:00.000Z"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "at": "2026-03-10T09:00:00.000Z"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/6",
+          "at": "junk"
+        }
+      ]
+    },
+    {
+      "id": "continueCandidates#2",
+      "fn": "continueCandidates",
+      "input": {
+        "rows": [
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+            "at": "2026-03-10T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+            "at": "2026-03-12T09:00:00.000Z",
+            "replyTo": "did:plc:mira"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/3",
+            "at": "2026-03-11T09:00:00.000Z",
+            "replyTo": "did:plc:wren"
+          },
+          {
+            "uri": "at://did:plc:wren/app.bsky.feed.post/4",
+            "at": "2026-03-13T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.repost/5",
+            "at": "2026-03-14T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/6",
+            "at": "junk"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/7",
+            "at": "2026-03-12T09:00:00"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/8"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/9",
+            "at": "2026-03-12T09:00:00.000Z"
+          },
+          null
+        ],
+        "did": "did:plc:mira",
+        "tz": "America/New_York"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/7",
+          "at": "2026-03-12T09:00:00"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "at": "2026-03-12T09:00:00.000Z",
+          "replyTo": "did:plc:mira"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/9",
+          "at": "2026-03-12T09:00:00.000Z"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "at": "2026-03-10T09:00:00.000Z"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/6",
+          "at": "junk"
+        }
+      ]
+    },
+    {
+      "id": "continueCandidates#3",
+      "fn": "continueCandidates",
+      "input": {
+        "rows": [
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+            "at": "2026-03-10T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+            "at": "2026-03-12T09:00:00.000Z",
+            "replyTo": "did:plc:mira"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/3",
+            "at": "2026-03-11T09:00:00.000Z",
+            "replyTo": "did:plc:wren"
+          },
+          {
+            "uri": "at://did:plc:wren/app.bsky.feed.post/4",
+            "at": "2026-03-13T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.repost/5",
+            "at": "2026-03-14T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/6",
+            "at": "junk"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/7",
+            "at": "2026-03-12T09:00:00"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/8"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/9",
+            "at": "2026-03-12T09:00:00.000Z"
+          },
+          null
+        ],
+        "did": "did:plc:mira",
+        "tz": "Pacific/Chatham",
+        "limit": 3
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "at": "2026-03-12T09:00:00.000Z",
+          "replyTo": "did:plc:mira"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/9",
+          "at": "2026-03-12T09:00:00.000Z"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/7",
+          "at": "2026-03-12T09:00:00"
+        }
+      ]
+    },
+    {
+      "id": "continueCandidates#4",
+      "fn": "continueCandidates",
+      "input": {
+        "rows": [
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+            "at": "2026-03-10T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+            "at": "2026-03-12T09:00:00.000Z",
+            "replyTo": "did:plc:mira"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/3",
+            "at": "2026-03-11T09:00:00.000Z",
+            "replyTo": "did:plc:wren"
+          },
+          {
+            "uri": "at://did:plc:wren/app.bsky.feed.post/4",
+            "at": "2026-03-13T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.repost/5",
+            "at": "2026-03-14T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/6",
+            "at": "junk"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/7",
+            "at": "2026-03-12T09:00:00"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/8"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/9",
+            "at": "2026-03-12T09:00:00.000Z"
+          },
+          null
+        ],
+        "did": "did:plc:mira",
+        "tz": "UTC",
+        "limit": 0
+      },
+      "output": []
+    },
+    {
+      "id": "continueCandidates#5",
+      "fn": "continueCandidates",
+      "input": {
+        "rows": [
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+            "at": "2026-03-10T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+            "at": "2026-03-12T09:00:00.000Z",
+            "replyTo": "did:plc:mira"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/3",
+            "at": "2026-03-11T09:00:00.000Z",
+            "replyTo": "did:plc:wren"
+          },
+          {
+            "uri": "at://did:plc:wren/app.bsky.feed.post/4",
+            "at": "2026-03-13T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.repost/5",
+            "at": "2026-03-14T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/6",
+            "at": "junk"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/7",
+            "at": "2026-03-12T09:00:00"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/8"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/9",
+            "at": "2026-03-12T09:00:00.000Z"
+          },
+          null
+        ],
+        "did": "did:plc:mira",
+        "tz": "UTC",
+        "limit": -1
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "at": "2026-03-12T09:00:00.000Z",
+          "replyTo": "did:plc:mira"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/7",
+          "at": "2026-03-12T09:00:00"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/9",
+          "at": "2026-03-12T09:00:00.000Z"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "at": "2026-03-10T09:00:00.000Z"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/6",
+          "at": "junk"
+        }
+      ]
+    },
+    {
+      "id": "continueCandidates#6",
+      "fn": "continueCandidates",
+      "input": {
+        "rows": [
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+            "at": "2026-03-10T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+            "at": "2026-03-12T09:00:00.000Z",
+            "replyTo": "did:plc:mira"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/3",
+            "at": "2026-03-11T09:00:00.000Z",
+            "replyTo": "did:plc:wren"
+          },
+          {
+            "uri": "at://did:plc:wren/app.bsky.feed.post/4",
+            "at": "2026-03-13T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.repost/5",
+            "at": "2026-03-14T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/6",
+            "at": "junk"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/7",
+            "at": "2026-03-12T09:00:00"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/8"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/9",
+            "at": "2026-03-12T09:00:00.000Z"
+          },
+          null
+        ],
+        "did": "did:plc:wren",
+        "tz": "UTC"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/4",
+          "at": "2026-03-13T09:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "continueCandidates#7",
+      "fn": "continueCandidates",
+      "input": {
+        "rows": null,
+        "did": "did:plc:mira",
+        "tz": "UTC"
+      },
+      "output": []
+    }
+  ]
+}
