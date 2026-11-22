@@ -8,11 +8,12 @@
 // sheet), so closing it closes only it. The timer's (LifespanDialog) is
 // LifespanDialog.swift.
 //
-// Alt text: describing the image for the writer needs the adviser's AI
-// service (aiService.js, altTextModel.js), which isn't ported; the web
-// offers no Generate button without a server requester either, which is
-// how the dialog is here. Continue a thread lists the account's own
-// recent posts.
+// Alt text: with a requester that can use AI the composer shows the
+// adviser's AltTextDialog (Adviser/AltTextDialog.swift), which describes and
+// revises; without one, the plain dialog here, the writer's part of
+// AltTextDialog.jsx, as the web offers no Generate button then either. Its
+// count is altTextModel.js's altTextCount. Continue a thread lists the
+// account's own recent posts.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -152,9 +153,10 @@ struct GatesEditor: View {
   var body: some View {
     let replyJSON: JSONValue = reply.map(JSONValue.array) ?? .null
     let mode = GatesModel.replyMode(replyJSON)
-    VStack(alignment: .leading, spacing: theme.space3) {
-      FieldLabel("Who can reply")
-      Segmented(
+    VStack(alignment: .leading, spacing: ComposerMeasure.gatesEditorGap) {
+      VStack(alignment: .leading, spacing: ComposerMeasure.gatesGroupGap) {
+        FieldLabel("Who can reply")
+        Segmented(
         label: "Who can reply",
         options: [
           SegmentedOption("everyone", "Anyone"), SegmentedOption("some", "Some people"),
@@ -175,7 +177,16 @@ struct GatesEditor: View {
               reply = [following, mention]
             }
           }))
-      if mode == "some" { rules(replyJSON) }
+        if mode == "some" {
+          // The groups Some people is made of, hung on a hairline under the
+          // key that opened them.
+          rules(replyJSON)
+            .padding(.vertical, ComposerMeasure.gatesRulesPad)
+            .padding(.leading, ComposerMeasure.gatesRulesInset)
+            .overlay(alignment: .leading) { Rectangle().fill(theme.line).frame(width: 1) }
+            .padding(.top, ComposerMeasure.gatesRulesTop)
+        }
+      }
       Toggle("Allow quote posts", isOn: $quotes).toggleStyle(.virgaCheck)
     }
     .task(id: mode == "some" ? did : "") {
@@ -188,31 +199,35 @@ struct GatesEditor: View {
     let count = reply?.count ?? 0
     let full = count >= Gates.maxReplyRules
     let unlisted = lists.status == "loading" ? [] : GatesModel.unlistedRules(replyJSON, lists.items.compactMap { $0["uri"]?.stringValue })
-    return VStack(alignment: .leading, spacing: theme.space2) {
+    return VStack(alignment: .leading, spacing: ComposerMeasure.gatesRulesGap) {
       ForEach(GatesModel.ruleOptions, id: \.type) { option in
-        check(option.label, rule: ["type": .string(option.type)], replyJSON: replyJSON, count: count, full: full)
+        check(Text(option.label), rule: ["type": .string(option.type)], replyJSON: replyJSON, count: count, full: full)
       }
       if lists.status == "loading" { FieldHint("Looking for your lists…") }
       if lists.status == "error" { FieldHint("Couldn’t read your lists, so only the groups above can be chosen.") }
       ForEach(Array(lists.items.enumerated()), id: \.offset) { _, list in
         let name = list["name"]?.stringValue.flatMap { $0.isEmpty ? nil : $0 } ?? "a list"
-        check("Members of \(name)", rule: ["type": "list", "list": list["uri"] ?? .null], replyJSON: replyJSON, count: count, full: full)
+        // "Members of <strong>name</strong>".
+        let words =
+          Text("Members of ").font(theme.font(.textBase))
+          + Text(name).font(theme.font(.textBase, weight: VirgaWeight.semibold))
+        check(words, rule: ["type": "list", "list": list["uri"] ?? .null], replyJSON: replyJSON, count: count, full: full)
       }
       ForEach(Array(unlisted.enumerated()), id: \.offset) { _, rule in
         let words =
           GatesModel.isForeignListRule(rule, did)
           ? "Members of a list from another account" : "Members of a list that couldn’t be found"
-        check(words, rule: rule, replyJSON: replyJSON, count: count, full: full)
+        check(Text(words), rule: rule, replyJSON: replyJSON, count: count, full: full)
       }
       let note = GatesModel.rulesNote(replyJSON)
       if !note.isEmpty { FieldHint(note) }
     }
   }
 
-  private func check(_ label: String, rule: JSONValue, replyJSON: JSONValue, count: Int, full: Bool) -> some View {
+  private func check(_ label: Text, rule: JSONValue, replyJSON: JSONValue, count: Int, full: Bool) -> some View {
     let on = GatesModel.hasRule(replyJSON, rule)
     let last = on && count == 1
-    return Toggle(label, isOn: Binding(get: { on }, set: { _ in reply = GatesModel.toggleRule(replyJSON, rule) }))
+    return Toggle(isOn: Binding(get: { on }, set: { _ in reply = GatesModel.toggleRule(replyJSON, rule) })) { label }
       .toggleStyle(.virgaCheck)
       .disabled(last || (!on && full))
   }
@@ -243,8 +258,8 @@ struct DescribeDialog: View {
   let max: Int
   /// The image described, when it is one (the alt text dialog's preview).
   let preview: String?
-  /// "N of max", as altTextCount or the video's count says it.
-  let countLabel: (Int) -> String
+  /// "N of max" for what's written, as altTextCount or the video's count says it.
+  let countLabel: (String) -> String
   let onSave: (String) -> Void
   let onClose: () -> Void
   @State private var text = ""
@@ -266,7 +281,7 @@ struct DescribeDialog: View {
             .virgaTextArea(invalid: over, editor: false)
             .accessibilityLabel(fieldLabel)
             .accessibilityIdentifier("describe-text")
-          FieldHint(countLabel(count), isOver: over)
+          FieldHint(countLabel(text), isOver: over)
         }
       }
     } actions: {
@@ -284,20 +299,18 @@ struct DescribeDialog: View {
 }
 
 extension DescribeDialog {
-  /// altTextModel.js's ALT_TEXT_MAX_GRAPHEMES (the adviser's, not ported yet).
-  static let altTextMax = 2000
-
-  /// AltTextDialog, the writer's part: the image, and its description.
+  /// AltTextDialog, the writer's part: the image, and its description,
+  /// counted by altTextModel.js's altTextCount (AltTextModel).
   static func altText(image: ComposerImage, onSave: @escaping (String) -> Void, onClose: @escaping () -> Void)
     -> DescribeDialog
   {
     DescribeDialog(
       title: "Alt text", fieldLabel: "Description",
-      placeholder: "What’s in the image, and what matters about it for this post", initial: image.alt, max: altTextMax,
-      preview: image.previewUrl,
-      countLabel: { n in
-        let over = n > altTextMax
-        return "\(AppLocale.fmtInt(Double(n))) of \(AppLocale.fmtInt(Double(altTextMax)))\(over ? " · too long" : "")"
+      placeholder: "What’s in the image, and what matters about it for this post", initial: image.alt,
+      max: AltTextModel.altTextMaxGraphemes, preview: image.previewUrl,
+      countLabel: { text in
+        let count = AltTextModel.altTextCount(text)
+        return count.label + (count.over ? " · too long" : "")
       }, onSave: onSave, onClose: onClose)
   }
 
@@ -305,7 +318,8 @@ extension DescribeDialog {
   static func videoAlt(alt: String, onSave: @escaping (String) -> Void, onClose: @escaping () -> Void) -> DescribeDialog {
     DescribeDialog(
       title: "Describe the video", fieldLabel: "What happens in it", placeholder: "", initial: alt,
-      max: Video.videoAltMaxGraphemes, preview: nil, countLabel: { n in "\(n) of \(Video.videoAltMaxGraphemes)" },
+      max: Video.videoAltMaxGraphemes, preview: nil,
+      countLabel: { text in "\(Graphemes.countGraphemes(text)) of \(Video.videoAltMaxGraphemes)" },
       onSave: onSave, onClose: onClose)
   }
 }
@@ -348,7 +362,7 @@ struct ContinueThreadDialog: View {
           Text("No posts of yours to continue yet. Post something first.").foregroundStyle(theme.muted)
         }
         if status == "ready" && !items.isEmpty {
-          VStack(alignment: .leading, spacing: 0) {
+          VStack(alignment: .leading, spacing: ComposerMeasure.continueGap) {
             ForEach(Array(items.enumerated()), id: \.offset) { _, item in
               row(item)
             }
@@ -369,18 +383,13 @@ struct ContinueThreadDialog: View {
     return Button {
       onPick(item)
     } label: {
-      VStack(alignment: .leading, spacing: theme.space1) {
-        ComposerPostPreview(view: item["view"].flatMap { $0.isNull ? nil : $0 }, text: text)
-        if !when.isEmpty, item["view"]?["author"] == nil {
-          Text(when).virgaText(.textSm).foregroundStyle(theme.muted)
-        }
-      }
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .padding(.vertical, theme.space3)
-      .contentShape(Rectangle())
+      let view = item["view"].flatMap { $0.isNull ? nil : $0 }
+      PostPreviewCard(
+        view: view, record: view == nil ? ["text": .string(text), "createdAt": item["at"] ?? .null] : nil,
+        uri: item["uri"]?.stringValue, compact: true)
+        .contentShape(RoundedRectangle(cornerRadius: theme.radiusLg))
     }
     .buttonStyle(.plain)
-    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
     .accessibilityElement(children: .ignore)
     .accessibilityLabel("Continue the post from \(when): \(text.isEmpty ? "no text" : text)")
     .accessibilityAddTraits(.isButton)

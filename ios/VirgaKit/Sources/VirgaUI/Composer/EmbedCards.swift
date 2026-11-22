@@ -1,13 +1,13 @@
 // Ports src/posting/composer/EmbedCards.jsx
 // Ports src/posting/composer/ReplyContext.jsx
-// Ports src/posting/ui/PostPreview.jsx (compact: who wrote it and its words)
 // Ports src/posting/composer/composer.css (.embed-card, .link-thumb, .reply-context)
 //
 // What a post quotes or attaches (a post, a feed, a list or a starter
 // pack), its link card (image, title, description, site, with edit and
 // remove) and the dialog that edits the card; and "Replying to @x" above
-// the editor. PostPreview's model (postPreview.js) isn't ported yet, so a
-// post here is its author and its words, one block, the compact form.
+// the editor. A post here is PostPreview.jsx's compact form
+// (Posting/PostPreviewCard.swift): who wrote it, when, its words and what
+// it holds.
 
 #if canImport(UIKit)
 import PhotosUI
@@ -23,8 +23,10 @@ import VirgaPosting
 struct TransportImage: View {
   let url: String
   let transport: any HTTPTransport
+  /// Told when the picture won't load, so its place can be left out (a
+  /// card's) or drawn as a missing picture (the card dialog's).
+  var onFailure: (() -> Void)?
   @State private var image: UIImage?
-  @State private var failed = false
 
   var body: some View {
     Group {
@@ -35,19 +37,109 @@ struct TransportImage: View {
       }
     }
     .task(id: url) {
+      image = nil
       if url.hasPrefix("file:"), let parsed = URL(string: url) {
         image = UIImage(contentsOfFile: parsed.path)
+        if image == nil { onFailure?() }
         return
       }
       guard let response = try? await transport.send(HTTPRequest(url: url, timeoutMs: 10_000)),
         (200..<300).contains(response.status), let made = UIImage(data: response.body)
-      else { return }
+      else {
+        if !Task.isCancelled { onFailure?() }
+        return
+      }
       image = made
     }
   }
 }
 
-/// A post, small: who wrote it and its words (PostPreview, compact).
+struct RecordCard: View {
+  @Environment(\.virgaTheme) private var theme
+  let record: ComposerRecord
+  let disabled: Bool
+  let onRemove: () -> Void
+
+  static let listPurpose = [
+    "app.bsky.graph.defs#modlist": "Moderation list", "app.bsky.graph.defs#curatelist": "List",
+    "app.bsky.graph.defs#referencelist": "List",
+  ]
+
+  var body: some View {
+    Group {
+      if record.kind == "post" {
+        // `.embed-card--post`: the preview is the card, its ✕ in its corner.
+        Group {
+          if let view = record.view {
+            PostPreviewCard(view: view, compact: true)
+          } else {
+            FieldHint("A post (\(record.uri))")
+          }
+        }
+        .padding(.trailing, ComposerMeasure.postEmbedRoom)
+      } else {
+        other
+          .padding(ComposerMeasure.embedPadding)
+          .overlay(RoundedRectangle(cornerRadius: theme.radiusLg).strokeBorder(theme.line))
+      }
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .overlay(alignment: .topTrailing) {
+      Button(action: onRemove) { Image(systemName: ComposerGlyph.close) }
+        .buttonStyle(.virga(.ghost, size: .small, icon: true))
+        .disabled(disabled)
+        .accessibilityLabel("Remove the attachment")
+        .padding(ComposerMeasure.embedRemoveInset)
+    }
+    .accessibilityElement(children: .contain)
+  }
+
+  private var other: some View {
+    let view = record.view
+    let icon = record.kind == "feed" ? ComposerGlyph.feed : record.kind == "starterpack" ? ComposerGlyph.people : ComposerGlyph.list
+    let name =
+      [view?["displayName"], view?["name"], view?["record"]?["name"]].compactMap { $0?.stringValue }.first { !$0.isEmpty }
+      ?? "Untitled"
+    let by = view?["creator"]?["handle"]?.stringValue.map { "@\($0)" }
+    let kindWord =
+      record.kind == "feed"
+      ? "Feed" : record.kind == "starterpack" ? "Starter pack" : (Self.listPurpose[view?["purpose"]?.stringValue ?? ""] ?? "List")
+    let about = [view?["description"], view?["record"]?["description"]].compactMap { $0?.stringValue }.first { !$0.isEmpty } ?? ""
+    let avatar = view?["avatar"]?.stringValue.flatMap { $0.isEmpty ? nil : $0 }
+    return HStack(alignment: .top, spacing: ComposerMeasure.embedGap) {
+      // `.embed-icon`: the feed's or list's own picture, else its glyph.
+      ZStack {
+        theme.surface3
+        if let avatar {
+          RemotePicture(url: avatar)
+        } else {
+          Image(systemName: icon).virgaGlyph(ComposerMeasure.embedGlyph).foregroundStyle(theme.ink2)
+        }
+      }
+      .frame(width: ComposerMeasure.embedIcon, height: ComposerMeasure.embedIcon)
+      .clipShape(RoundedRectangle(cornerRadius: theme.radius))
+      .accessibilityHidden(true)
+      VStack(alignment: .leading, spacing: ComposerMeasure.embedTextGap) {
+        Text(name).virgaText(.textBase, weight: VirgaWeight.semibold).foregroundStyle(theme.ink)
+          .lineLimit(1).truncationMode(.tail)
+        Text("\(kindWord)\(by.map { " by \($0)" } ?? "")").virgaText(.textSm).foregroundStyle(theme.muted)
+          .lineLimit(1).truncationMode(.tail)
+        if !about.isEmpty {
+          Text(Graphemes.truncateGraphemes(about, 140))
+            .virgaText(.textSm, lineHeight: ComposerMeasure.embedDescLineHeight).foregroundStyle(theme.ink2)
+            .fixedSize(horizontal: false, vertical: true)
+        }
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
+      // Clear of the ✕ in the corner.
+      .padding(.trailing, ComposerMeasure.embedTextRoom)
+    }
+  }
+}
+
+/// A post, small: who wrote it and its words. The composer draws its posts
+/// with PostPreviewCard now; the library's detail (Library/LibraryPanel.swift)
+/// still calls this, until it draws LibraryPanel.jsx's `<PostPreview view />`.
 struct ComposerPostPreview: View {
   @Environment(\.virgaTheme) private var theme
   let view: JSONValue?
@@ -78,60 +170,17 @@ struct ComposerPostPreview: View {
   }
 }
 
-struct RecordCard: View {
-  @Environment(\.virgaTheme) private var theme
-  let record: ComposerRecord
-  let disabled: Bool
-  let onRemove: () -> Void
-
-  static let listPurpose = [
-    "app.bsky.graph.defs#modlist": "Moderation list", "app.bsky.graph.defs#curatelist": "List",
-    "app.bsky.graph.defs#referencelist": "List",
-  ]
+/// A picture at an https address (a feed's or a list's avatar), filling
+/// its frame; nothing while it loads or when it won't.
+struct RemotePicture: View {
+  let url: String
 
   var body: some View {
-    HStack(alignment: .top, spacing: ComposerMeasure.embedGap) {
-      if record.kind == "post" {
-        if let view = record.view {
-          ComposerPostPreview(view: view, text: nil)
-        } else {
-          FieldHint("A post (\(record.uri))")
-        }
+    AsyncImage(url: URL(string: url)) { phase in
+      if let image = phase.image {
+        image.resizable().scaledToFill()
       } else {
-        other
-      }
-      Spacer(minLength: 0)
-      Button(action: onRemove) { Image(systemName: ComposerGlyph.close) }
-        .buttonStyle(.virga(.ghost, size: .small, icon: true))
-        .disabled(disabled)
-        .accessibilityLabel("Remove the attachment")
-    }
-    .padding(ComposerMeasure.embedPadding)
-    .overlay(RoundedRectangle(cornerRadius: theme.radiusLg).strokeBorder(theme.line))
-  }
-
-  private var other: some View {
-    let view = record.view
-    let icon = record.kind == "feed" ? ComposerGlyph.feed : record.kind == "starterpack" ? ComposerGlyph.people : ComposerGlyph.list
-    let name =
-      [view?["displayName"], view?["name"], view?["record"]?["name"]].compactMap { $0?.stringValue }.first { !$0.isEmpty }
-      ?? "Untitled"
-    let by = view?["creator"]?["handle"]?.stringValue.map { "@\($0)" }
-    let kindWord =
-      record.kind == "feed"
-      ? "Feed" : record.kind == "starterpack" ? "Starter pack" : (Self.listPurpose[view?["purpose"]?.stringValue ?? ""] ?? "List")
-    let about = [view?["description"], view?["record"]?["description"]].compactMap { $0?.stringValue }.first { !$0.isEmpty } ?? ""
-    return HStack(alignment: .top, spacing: ComposerMeasure.embedGap) {
-      Image(systemName: icon)
-        .frame(width: 36, height: 36)
-        .background(theme.surface3, in: RoundedRectangle(cornerRadius: theme.radius))
-        .accessibilityHidden(true)
-      VStack(alignment: .leading, spacing: 2) {
-        Text(name).virgaText(.textBase, weight: VirgaWeight.semibold).foregroundStyle(theme.ink)
-        Text("\(kindWord)\(by.map { " by \($0)" } ?? "")").virgaText(.textSm).foregroundStyle(theme.muted)
-        if !about.isEmpty {
-          Text(Graphemes.truncateGraphemes(about, 140)).virgaText(.textSm).foregroundStyle(theme.ink2)
-        }
+        Color.clear
       }
     }
   }
@@ -151,6 +200,8 @@ struct LinkCardView: View {
   let transport: any HTTPTransport
   let onEdit: () -> Void
   let onRemove: () -> Void
+  /// The address of a page image that wouldn't load: left out of the card.
+  @State private var thumbFailed: String?
 
   var body: some View {
     if loading {
@@ -172,25 +223,30 @@ struct LinkCardView: View {
   }
 
   private func cardBody(_ card: ComposerCard) -> some View {
-    HStack(alignment: .top, spacing: ComposerMeasure.embedGap) {
-      // A page with no image has no picture column.
-      if let thumb = card.thumb, !thumb.isEmpty {
-        TransportImage(url: thumb, transport: transport)
-          .frame(width: ComposerMeasure.thumb, height: ComposerMeasure.thumb)
+    // A page with no image has no picture column, nor one whose image won't load.
+    let thumbSide = theme.windowWidth <= ComposerMeasure.smallThumbWidth ? ComposerMeasure.smallThumb : ComposerMeasure.thumb
+    return HStack(alignment: .top, spacing: ComposerMeasure.embedGap) {
+      if let thumb = card.thumb, !thumb.isEmpty, !thumbFailed.jsEquals(thumb) {
+        TransportImage(url: thumb, transport: transport, onFailure: { thumbFailed = thumb })
+          .frame(width: thumbSide, height: thumbSide)
           .background(theme.surface3)
           .clipShape(RoundedRectangle(cornerRadius: theme.radius))
           .accessibilityHidden(true)
       }
-      VStack(alignment: .leading, spacing: 2) {
+      VStack(alignment: .leading, spacing: ComposerMeasure.embedTextGap) {
         Text(card.title.isEmpty ? composerHostOf(card.url) : card.title)
           .virgaText(.textBase, weight: VirgaWeight.semibold).foregroundStyle(theme.ink)
+          .lineLimit(1).truncationMode(.tail)
         if !card.description.isEmpty {
-          Text(Graphemes.truncateGraphemes(card.description, 160)).virgaText(.textSm).foregroundStyle(theme.ink2)
+          Text(Graphemes.truncateGraphemes(card.description, 160))
+            .virgaText(.textSm, lineHeight: ComposerMeasure.embedDescLineHeight).foregroundStyle(theme.ink2)
+            .fixedSize(horizontal: false, vertical: true)
         }
         Text(composerHostOf(card.url)).virgaText(.textSm).foregroundStyle(theme.muted)
+          .lineLimit(1).truncationMode(.tail)
       }
-      Spacer(minLength: 0)
-      HStack(spacing: 0) {
+      .frame(maxWidth: .infinity, alignment: .leading)
+      HStack(spacing: ComposerMeasure.embedToolsGap) {
         Button(action: onEdit) { Image(systemName: ComposerGlyph.edit) }
           .buttonStyle(.virga(.ghost, size: .small, icon: true))
           .disabled(disabled)
@@ -200,6 +256,8 @@ struct LinkCardView: View {
           .disabled(disabled)
           .accessibilityLabel("Remove the link card")
       }
+      .padding(.top, -ComposerMeasure.embedToolsLift)
+      .padding(.trailing, -ComposerMeasure.embedToolsLift)
     }
     .padding(ComposerMeasure.embedPadding)
     .overlay(RoundedRectangle(cornerRadius: theme.radiusLg).strokeBorder(theme.line))
@@ -223,6 +281,9 @@ struct LinkCardDialog: View {
   @State private var busy = false
   @State private var error = ""
   @State private var pick: PhotosPickerItem?
+  /// The address of a page image that wouldn't load: its frame is drawn
+  /// with a picture of a missing image.
+  @State private var thumbFailed: String?
 
   var body: some View {
     let titleCount = Graphemes.countGraphemes(title)
@@ -268,15 +329,21 @@ struct LinkCardDialog: View {
 
   private var imageField: some View {
     FieldStack("Image") {
-      HStack(alignment: .top, spacing: ComposerMeasure.embedGap) {
+      HStack(alignment: .center, spacing: ComposerMeasure.embedGap) {
         Group {
-          if let url = thumb.url, !thumb.removed {
-            TransportImage(url: url, transport: transport).accessibilityLabel("The card’s image")
+          if let url = thumb.url, !thumb.removed, thumbFailed.jsEquals(url) {
+            Image(systemName: ComposerGlyph.noImage)
+              .virgaGlyph(ComposerMeasure.embedGlyph)
+              .foregroundStyle(theme.muted)
+              .accessibilityHidden(true)
+          } else if let url = thumb.url, !thumb.removed {
+            TransportImage(url: url, transport: transport, onFailure: { thumbFailed = url })
+              .accessibilityLabel("The card’s image")
           } else {
             Text("No image").virgaText(.textSm).foregroundStyle(theme.muted)
           }
         }
-        .frame(width: ComposerMeasure.thumbLarge, height: ComposerMeasure.thumbLarge * 0.6)
+        .frame(width: ComposerMeasure.thumbLarge, height: ComposerMeasure.thumbLargeHeight)
         .background(theme.surface3)
         .clipShape(RoundedRectangle(cornerRadius: theme.radius))
         VStack(alignment: .leading, spacing: theme.space2) {
@@ -381,7 +448,8 @@ struct ReplyContext: View {
           .disabled(disabled)
           .accessibilityLabel("Don’t reply: make this a new post")
       }
-      ComposerPostPreview(view: reply.view, text: reply.text)
+      PostPreviewCard(
+        view: reply.view, record: reply.view == nil ? ["text": .string(reply.text ?? "")] : nil, uri: reply.uri, compact: true)
     }
     .accessibilityElement(children: .contain)
     .accessibilityLabel("Replying to \(who)")

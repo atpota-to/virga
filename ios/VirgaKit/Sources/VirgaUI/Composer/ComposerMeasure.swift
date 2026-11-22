@@ -110,12 +110,56 @@ enum ComposerMeasure {
   static let videoMetaRowGap: CGFloat = 6
   static let videoBarMin: CGFloat = 120
   /// `.embed-card { gap: 12px; padding: 12px }`, `.link-thumb { 72 × 72 }`
+  /// (56 at 420 and under), `.link-thumb--lg { 160 × 84 }`.
   static let embedGap: CGFloat = 12
   static let embedPadding: CGFloat = 12
   static let thumb: CGFloat = 72
+  static let smallThumb: CGFloat = 56
+  static let smallThumbWidth: CGFloat = 420
   static let thumbLarge: CGFloat = 160
-  /// `.post-as-button { gap: 8px; min-height: 32px }`
+  static let thumbLargeHeight: CGFloat = 84
+  /// `.embed-icon { 40 × 40 }`, its glyph 18 (ImageOff's too);
+  /// `.embed-text { gap: 2px; padding-right: 32px }`, `.embed-desc {
+  /// line-height: 1.4 }`; `.embed-remove { top: 6px; right: 6px }`, a
+  /// quoted post's preview `padding-right: 44px`; `.embed-tools { gap: 2px;
+  /// margin: -4px -4px 0 0 }`.
+  static let embedIcon: CGFloat = 40
+  static let embedGlyph: CGFloat = 18
+  static let embedTextGap: CGFloat = 2
+  static let embedTextRoom: CGFloat = 32
+  static let embedDescLineHeight: Double = 1.4
+  static let embedRemoveInset: CGFloat = 6
+  static let postEmbedRoom: CGFloat = 44
+  static let embedToolsGap: CGFloat = 2
+  static let embedToolsLift: CGFloat = 4
+  /// `.gates-editor--full { gap: 14px }`, `.gates-group { gap: 6px }`,
+  /// `.gates-rules { gap: 14px (a finger's); margin-top: 2px; padding: 4px
+  /// 0 4px 14px; border-left: 1px }`.
+  static let gatesEditorGap: CGFloat = 14
+  static let gatesGroupGap: CGFloat = 6
+  static let gatesRulesGap: CGFloat = 14
+  static let gatesRulesTop: CGFloat = 2
+  static let gatesRulesPad: CGFloat = 4
+  static let gatesRulesInset: CGFloat = 14
+  /// `.continue-list { gap: 8px }`
+  static let continueGap: CGFloat = 8
+  /// `.post-as-button { gap: 8px; min-height: 32px }`, its avatar 26,
+  /// `.post-as-text { gap: 0 6px }`, `.post-as-note { margin-top: 2px }`;
+  /// `.post-as-list { width: min(22rem, 100vw - 40px); padding: 6px }`,
+  /// `.post-as-hint { padding: 6px 10px 8px; line-height: 1.4 }`,
+  /// `.post-as-row { gap: 6px }`, `.post-as-option { min-height: 48px }`.
   static let postAsGap: CGFloat = 8
+  static let postAsHeight: CGFloat = 32
+  static let postAsAvatar: CGFloat = 26
+  static let postAsTextGap: CGFloat = 6
+  static let postAsNoteGap: CGFloat = 2
+  static let postAsListWidth: CGFloat = 352
+  static let postAsListMargin: CGFloat = 40
+  static let postAsListPadding: CGFloat = 6
+  static let postAsHintPadding = EdgeInsets(top: 6, leading: 10, bottom: 8, trailing: 10)
+  static let postAsHintLineHeight: Double = 1.4
+  static let postAsRowGap: CGFloat = 6
+  static let postAsRowHeight: CGFloat = 48
   /// `.reply-context { gap: 6px }`
   static let replyGap: CGFloat = 6
   /// `.composer-busy { gap: 6px 12px }`, `.composer-actions { gap: 8px 12px }`

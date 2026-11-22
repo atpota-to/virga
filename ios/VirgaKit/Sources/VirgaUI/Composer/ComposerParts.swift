@@ -158,9 +158,12 @@ struct TagsField: View {
 }
 
 /// "Posting as": which account the post goes out from, chosen from every
-/// account on this device without switching the app to it. A signed-out
-/// account can't be picked; it offers Sign back in. A scheduled post stays
-/// with the account that scheduled it (`locked`).
+/// account on this device without switching the app to it. One line: the
+/// picture, "Posting as", the name and the handle; with more than one
+/// account it is a button with a caret, and its list floats over the post
+/// (a popover, closed by a press outside it). A signed-out account can't be
+/// picked; it offers Sign back in. A scheduled post stays with the account
+/// that scheduled it (`locked`).
 struct PostAsPicker: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(SessionModel.self) private var session
@@ -175,7 +178,7 @@ struct PostAsPicker: View {
   var body: some View {
     let accounts = session.accounts
     let current = accounts.first { $0.did.jsEquals(asDid) }
-    VStack(alignment: .leading, spacing: theme.space2) {
+    VStack(alignment: .leading, spacing: ComposerMeasure.postAsNoteGap) {
       if accounts.count <= 1 || locked {
         byline(current)
         if locked && !lockedReason.isEmpty { FieldHint(lockedReason) }
@@ -185,16 +188,24 @@ struct PostAsPicker: View {
         } label: {
           HStack(spacing: ComposerMeasure.postAsGap) {
             byline(current)
-            Image(systemName: ComposerGlyph.chevronDown).font(.system(size: 13, weight: .semibold))
+            Image(systemName: ComposerGlyph.chevronDown)
+              .virgaGlyph(ComposerMeasure.optionChevron, beside: theme.textSm)
               .foregroundStyle(theme.muted)
           }
           .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .disabled(disabled)
+        // A 32-point line, pressed as 44.
+        .touchReach(horizontal: 0, vertical: (Measure.Touch.target - ComposerMeasure.postAsHeight) / 2)
         .accessibilityLabel(buttonLabel(current))
+        .accessibilityValue(open ? "Expanded" : "Collapsed")
         .accessibilityIdentifier("post-as")
-        if open { list(accounts) }
+        .popover(isPresented: $open, arrowEdge: .top) {
+          list(accounts)
+            .presentationCompactAdaptation(.popover)
+            .presentationBackground(theme.surface)
+        }
       }
     }
     .task(id: open) { if open { await check(accounts) } }
@@ -210,17 +221,19 @@ struct PostAsPicker: View {
     let name = current.map { Accounts.accountName($0) } ?? asDid
     let handle = current?.handle.map { "@\($0)" } ?? ""
     return HStack(spacing: ComposerMeasure.postAsGap) {
-      Avatar(src: current?.avatar, name: name, size: .small)
-      VStack(alignment: .leading, spacing: 0) {
-        Text("Posting as").virgaText(.textXs).foregroundStyle(theme.muted)
-        HStack(spacing: theme.space1) {
-          Text(name).virgaText(.textSm, weight: VirgaWeight.semibold).foregroundStyle(theme.ink)
-          if !handle.isEmpty && name != handle {
-            Text(handle).virgaText(.textSm).foregroundStyle(theme.muted).lineLimit(1)
-          }
+      Avatar(src: current?.avatar, name: name, size: .small, side: ComposerMeasure.postAsAvatar)
+      HStack(alignment: .firstTextBaseline, spacing: ComposerMeasure.postAsTextGap) {
+        Text("Posting as").virgaText(.textSm).foregroundStyle(theme.muted).fixedSize()
+        Text(name).virgaText(.textSm, weight: VirgaWeight.semibold).foregroundStyle(theme.ink)
+          .lineLimit(1).truncationMode(.tail)
+        if !handle.isEmpty && name != handle {
+          Text(handle).virgaText(.textSm).foregroundStyle(theme.muted)
+            .lineLimit(1).truncationMode(.tail)
+            .layoutPriority(-1)
         }
       }
     }
+    .frame(minHeight: ComposerMeasure.postAsHeight)
   }
 
   /// Opening checks the other accounts' sessions, so a dead one shows as
@@ -232,19 +245,22 @@ struct PostAsPicker: View {
     }
   }
 
+  /// `.post-as-list`: the hint, then a row per account, on the radius with
+  /// no rules between, 6 in from the edge.
   private func list(_ accounts: [SessionAccount]) -> some View {
     VStack(alignment: .leading, spacing: 0) {
       Text("The post, its draft or its schedule goes to the account you choose. The rest of Virga stays as it is.")
-        .virgaText(.textSm)
+        .virgaText(.textSm, lineHeight: ComposerMeasure.postAsHintLineHeight)
         .foregroundStyle(theme.muted)
-        .padding(theme.space3)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(ComposerMeasure.postAsHintPadding)
       ForEach(accounts, id: \.did) { account in
         row(account)
-        Rectangle().fill(theme.line).frame(height: 1)
       }
     }
-    .background(theme.surface, in: RoundedRectangle(cornerRadius: theme.radiusLg))
-    .overlay(RoundedRectangle(cornerRadius: theme.radiusLg).strokeBorder(theme.line))
+    .padding(ComposerMeasure.postAsListPadding)
+    .frame(width: min(ComposerMeasure.postAsListWidth, theme.windowWidth - ComposerMeasure.postAsListMargin))
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("post-as-list")
   }
 
@@ -259,21 +275,27 @@ struct PostAsPicker: View {
     } else if account.status == .unknown || checked[account.did] == .unknown {
       meta += " · couldn’t check"
     }
-    return HStack(spacing: theme.space2) {
+    return HStack(spacing: ComposerMeasure.postAsRowGap) {
       Button {
         open = false
         if !selected { onChange(account.did) }
       } label: {
-        HStack(spacing: theme.space2) {
-          Avatar(src: account.avatar, name: label, size: .small)
+        HStack(spacing: ComposerMeasure.suggestItemGap) {
+          Avatar(src: account.avatar, name: label, size: .small, side: ComposerMeasure.postAsAvatar)
           VStack(alignment: .leading, spacing: 0) {
-            Text(label).virgaText(.textBase, weight: VirgaWeight.medium).foregroundStyle(theme.ink)
-            Text(meta).virgaText(.textSm).foregroundStyle(theme.muted)
+            Text(label).virgaText(.textSm, weight: VirgaWeight.semibold, lineHeight: ComposerMeasure.suggestLineHeight)
+              .foregroundStyle(out ? theme.muted : theme.ink).lineLimit(1)
+            Text(meta).virgaText(.textSm, lineHeight: ComposerMeasure.suggestLineHeight)
+              .foregroundStyle(theme.muted).lineLimit(1)
           }
           Spacer(minLength: 0)
-          if selected { Image(systemName: ComposerGlyph.check).foregroundStyle(theme.ink) }
+          if selected {
+            Image(systemName: ComposerGlyph.check).virgaGlyph(ComposerMeasure.optionIcon).foregroundStyle(theme.ink)
+          }
         }
-        .contentShape(Rectangle())
+        .padding(ComposerMeasure.suggestItemPadding)
+        .frame(minHeight: ComposerMeasure.postAsRowHeight)
+        .contentShape(RoundedRectangle(cornerRadius: theme.radius))
       }
       .buttonStyle(.plain)
       .disabled(out)
@@ -285,11 +307,10 @@ struct PostAsPicker: View {
           Label("Sign back in", systemImage: ComposerGlyph.signIn)
         }
         .buttonStyle(.virga(size: .small))
+        .fixedSize()
         .accessibilityLabel("Sign back in as \(label)")
       }
     }
-    .padding(.horizontal, theme.space3)
-    .frame(minHeight: Measure.Touch.target)
   }
 }
 
