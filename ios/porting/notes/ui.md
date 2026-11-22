@@ -869,9 +869,13 @@ LIVE SKY (Sky/, and VirgaCore/Hillside/ for everything that isn't drawing)
   the tab bar's round button) opens the composer in place, over the page it was pressed on, as
   Shell.jsx's does; VirgaUITests' `testNewPostOpensTheComposer` checks it opens and that Close
   shuts it. The palette's New post opens it the same way, once the palette's sheet has gone.
-  The n shortcut isn't there: a SwiftUI shortcut without a modifier can't tell that a field has
-  the focus or that another sheet is up, as useNewPostShortcut does, and a key command for a bare
-  letter risks taking the letter from every field.
+  N on a hardware keyboard opens a new post too (Shell/NewPostShortcut.swift, useNewPostShortcut):
+  a hidden shortcut with no modifier, off while the composer or the palette is open, that reads
+  where the key is going as it comes in: nothing when a sheet or dialog is presented over the
+  window (the web's `dialog[open]`), and the letter typed into the field when a field has the caret
+  (UIKit should give a field the bare letter first; this is the guard if it doesn't).
+  ShortcutUITests checks both on the iPad: N on a page opens the composer, N in the Library's
+  search is typed there and opens nothing.
 - Customize is the web's phone path at every width (each card a line, opened by its name to its
   size, Settings and Remove); the wide screen's grid with the chosen card's floating tools and
   the library beside it isn't drawn. VirgaUITests opens the first line (`arrange-open-<type>`)

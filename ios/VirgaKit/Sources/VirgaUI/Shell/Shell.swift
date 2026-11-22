@@ -114,6 +114,8 @@ public struct ShellView: View {
         .opacity(0)
         .frame(width: 0, height: 0)
         .accessibilityHidden(true)
+      // N, a new post, outside a field and with nothing presented.
+      NewPostShortcut(paletteOpen: palette.isOpen)
     }
     .dashboardDialog(isPresented: Binding(get: { actions.creatingDashboard }, set: { actions.creatingDashboard = $0 })) {
       NewDashboardDialog { actions.creatingDashboard = false }
