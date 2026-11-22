@@ -62,6 +62,9 @@ final class ScheduledPageModel {
   /// The settings as the store held them when the model was made, until
   /// start() listens.
   @ObservationIgnored private let stored: PostingSettings
+  /// `settings` stopped as the page went: kept to draw from (the last it
+  /// heard) until start() makes a new one.
+  @ObservationIgnored private var settingsStopped = false
   let load: ScheduledListLoad
 
   var now: Double = ScheduleText.now()
@@ -111,8 +114,9 @@ final class ScheduledPageModel {
   /// (`useState(() => Date.now())`).
   func start() {
     now = ScheduleText.now()
-    if settings == nil {
+    if settings == nil || settingsStopped {
       settings = PostingSettingsModel(did: did, store: store, language: Locale.preferredLanguages.first)
+      settingsStopped = false
     }
     load.start()
     ticker?.cancel()
@@ -134,7 +138,7 @@ final class ScheduledPageModel {
     litTask = nil
     load.stop()
     settings?.stop()
-    settings = nil
+    settingsStopped = true
     message = nil
     lit = nil
     drag = nil

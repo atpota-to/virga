@@ -11,8 +11,9 @@
 // 1181 wide the week and what's beside it are two columns.
 //
 // The page is reached from Scheduled posts, so that is the way back up;
-// there is nothing to press in its header. The focus after a time is taken
-// off or a day cleared is the system's to place.
+// there is nothing to press in its header. Adding a time takes the focus to
+// the new time's field, and back to the + as the form closes; the focus
+// after a time is taken off or a day cleared is the system's to place.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -61,46 +62,143 @@ struct ScheduleSuggestions {
   static let year = ScheduleWeek.year
 }
 
+/// useSuggestions' `useMemo(…, [archive, did, schedule, enabled])`: the
+/// year's best-time report is worked out again only when what it reads
+/// changes, not on every redraw (each list answer, each sync step).
+final class ScheduleSuggestionsMemo {
+  struct Key: Equatable {
+    var archive: ObjectIdentifier?
+    var rev: Int
+    var loaded: Bool
+    var built: Bool
+    var nowMs: Double
+    var did: String?
+    var schedule: JSONValue
+    var enabled: Bool
+  }
+
+  var key: Key?
+  var value = ScheduleSuggestions(status: .loading)
+}
+
+/// The height of a weekly schedule section's heading, for the two side by
+/// side to share the taller one's.
+struct WeekHeadHeight: PreferenceKey {
+  static let defaultValue: CGFloat = 0
+  static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+    value = Swift.max(value, nextValue())
+  }
+}
+
+/// A flush section of the weekly schedule: VirgaSection's heading, the rule
+/// in ink under it, then what it holds. Side by side (`headHeight`), the
+/// two sections' headings take the taller one's height, so the rules under
+/// them line up however long the week's summary runs (the web's subgrid).
+struct WeekSection<Content: View>: View {
+  @Environment(\.virgaTheme) private var theme
+  let title: String
+  let sub: String
+  let headHeight: CGFloat?
+  let content: Content
+
+  init(title: String, sub: String, headHeight: CGFloat?, @ViewBuilder content: () -> Content) {
+    self.title = title
+    self.sub = sub
+    self.headHeight = headHeight
+    self.content = content()
+  }
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 0) {
+      SectionHead(title, sub: sub)
+        .background(
+          GeometryReader { geometry in
+            Color.clear.preference(key: WeekHeadHeight.self, value: geometry.size.height)
+          }
+        )
+        .frame(minHeight: headHeight, alignment: .top)
+        .padding(.bottom, theme.points(ThemeKit.flushHeadSpaceBelow))
+      Rectangle().fill(theme.color(ThemeKit.flushHeadRule)).frame(height: theme.points(ThemeKit.flushHeadRule))
+      content
+        .environment(\.virgaUnderRuledHead, true)
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+  }
+}
+
 struct WeeklySchedulePage: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(ToastCenter.self) private var toasts: ToastCenter?
   @Environment(ArchiveModel.self) private var archive: ArchiveModel?
   let did: String?
   private let store: (any KeyValueStore)?
-  @State private var settings: PostingSettingsModel
-  /// The settings stopped as the page went: a new one when it comes back.
+  /// The account's posting settings, heard while the page is up
+  /// (usePostingSettings). Made in `.task`, not in init: SwiftUI makes the
+  /// page again each time the shell redraws and keeps only the first, and a
+  /// PostingSettingsModel listens from the moment it is made.
+  @State private var settings: PostingSettingsModel?
+  /// The settings stopped as the page went: kept to draw from until a new
+  /// one is made as it comes back.
   @State private var settingsStopped = false
+  /// The settings as the store held them when the page was made, until the
+  /// page listens.
+  private let stored: PostingSettings
   @State private var load: ScheduledListLoad
   @State private var error = ""
   @State private var resetting = false
   @State private var repacking = false
+  @State private var suggestionsMemo = ScheduleSuggestionsMemo()
+  /// The taller of the two headings, side by side.
+  @State private var headHeight: CGFloat = 0
 
   init(app: AppModel, did: String?) {
     self.did = did
     store = app.stores.keyValue
-    _settings = State(
-      initialValue: PostingSettingsModel(did: did, store: app.stores.keyValue, language: Locale.preferredLanguages.first))
+    stored = PostingSettingsStore.readPostingSettings(
+      did, store: app.stores.keyValue, language: Locale.preferredLanguages.first.map(JSONValue.string))
     _load = State(
       initialValue: ScheduledListLoad(
         did: did, requester: app.session.backendFor(did), withLimits: false, events: [PostingEvents.scheduledChangedEvent]))
   }
 
-  private var schedule: JSONValue { settings.settings.queue.json }
+  private var current: PostingSettings { settings?.settings ?? stored }
+  private var schedule: JSONValue { current.queue.json }
+
+  /// The listening model, for a change: the page's own, made now if it
+  /// hasn't been yet.
+  private func live() -> PostingSettingsModel {
+    if let settings { return settings }
+    let made = PostingSettingsModel(did: did, store: store, language: Locale.preferredLanguages.first)
+    settings = made
+    return made
+  }
+
+  /// useSuggestions, worked out again only when what it reads changes.
+  private func suggestionsFor(_ schedule: JSONValue, enabled: Bool) -> ScheduleSuggestions {
+    let key = ScheduleSuggestionsMemo.Key(
+      archive: archive.map { ObjectIdentifier($0) }, rev: archive?.data.rev ?? 0, loaded: archive?.data.loaded ?? false,
+      built: archive?.isBuilt ?? false, nowMs: archive?.nowMs ?? 0, did: did, schedule: schedule, enabled: enabled)
+    if let known = suggestionsMemo.key, known == key { return suggestionsMemo.value }
+    let value = ScheduleSuggestions.read(archive: archive, did: did, schedule: schedule, enabled: enabled)
+    suggestionsMemo.key = key
+    suggestionsMemo.value = value
+    return value
+  }
 
   var body: some View {
     let now = ScheduleText.now()
     let schedule = self.schedule
+    let suggest = current.suggestBestTimes
     let tz = PostingQueue.resolveTimezone(schedule)
     let device = ScheduleText.deviceZone
     let rows = load.list?.rows ?? []
     let queued = rows.filter { r in (r["queued"]?.isTruthy ?? false) && (r["status"] == "pending" || r["status"] == "publishing") }
     let off = (try? ScheduleModel.offScheduleRows(schedule, rows, now: now)) ?? []
-    let suggestions = ScheduleSuggestions.read(
-      archive: archive, did: did, schedule: schedule, enabled: settings.settings.suggestBestTimes)
+    let suggestions = suggestionsFor(schedule, enabled: suggest)
     let empty = PostingQueue.isScheduleEmpty(schedule)
     let shippedOrEmpty = empty || ScheduleModel.isDefaultWeek(schedule)
-    let showSuggestions =
-      settings.settings.suggestBestTimes && suggestions.status == .ready && !suggestions.missing.isEmpty
+    let showSuggestions = suggest && suggestions.status == .ready && !suggestions.missing.isEmpty
+    let twoColumns = theme.windowWidth >= Measure.Schedule.weekTwoColumns
     VirgaPage(
       PostingHeader.model(
         "schedule",
@@ -110,7 +208,8 @@ struct WeeklySchedulePage: View {
         ])
     ) {
       if !error.isEmpty {
-        Callout(tone: .danger) { Text(error) }
+        // `role="alert"`: read out as it appears and as it changes.
+        Callout(tone: .danger, error)
           .accessibilityIdentifier("week-error")
       }
       if !tz.jsEquals(device) {
@@ -119,15 +218,18 @@ struct WeeklySchedulePage: View {
       if showSuggestions {
         suggestionsSection(suggestions, device: device, shippedOrEmpty: shippedOrEmpty)
       }
-      ScheduleSplit(
-        twoColumns: theme.windowWidth >= Measure.Schedule.weekTwoColumns, spacing: theme.gridGapX, rowGap: theme.gridGap
-      ) {
-        weekSection(tz: tz, device: device)
-        side(now: now, queued: queued, rows: rows, off: off, empty: empty)
+      ScheduleSplit(twoColumns: twoColumns, spacing: theme.gridGapX, rowGap: theme.gridGap) {
+        weekSection(tz: tz, device: device, headHeight: twoColumns ? headHeight : nil)
+        side(
+          now: now, queued: queued, rows: rows, off: off, empty: empty, suggest: suggest,
+          headHeight: twoColumns ? headHeight : nil)
+      }
+      .onPreferenceChange(WeekHeadHeight.self) { height in
+        if headHeight != height { headHeight = height }
       }
     }
     .task {
-      if settingsStopped {
+      if settings == nil || settingsStopped {
         settings = PostingSettingsModel(did: did, store: store, language: Locale.preferredLanguages.first)
         settingsStopped = false
       }
@@ -135,13 +237,14 @@ struct WeeklySchedulePage: View {
     }
     .onDisappear {
       load.stop()
-      settings.stop()
+      settings?.stop()
       settingsStopped = true
     }
     .scheduleActionDialog(
       isPresented: $resetting, title: "Start again from the default?", confirmLabel: "Use the default",
       onConfirm: {
-        var reset: [String: JSONValue] = ["timezone": .string(settings.settings.queue.timezone.isEmpty ? device : settings.settings.queue.timezone)]
+        let zone = current.queue.timezone
+        var reset: [String: JSONValue] = ["timezone": .string(zone.isEmpty ? device : zone)]
         reset["slots"] = PostingQueue.defaultPostingQueue["slots"] ?? [:]
         save(.object(reset))
       }
@@ -159,10 +262,11 @@ struct WeeklySchedulePage: View {
   private func save(_ queue: JSONValue?) {
     guard let queue else { return }
     do {
-      try settings.update(["queue": queue])
+      try live().update(["queue": queue])
       error = ""
     } catch {
-      self.error = ScheduleText.message(error) ?? "That change couldn’t be saved."
+      let said = PostingPages.message(error)
+      self.error = said.isEmpty ? "That change couldn’t be saved." : said
     }
   }
 
@@ -201,17 +305,13 @@ struct WeeklySchedulePage: View {
 
   // MARK: Over the week
 
+  /// `.callout.sched-message`: one row, the words (`flex: 1`) wrapping
+  /// beside the button, the two centred on each other, 10 apart.
   private func zoneNotice(tz: String, device: String) -> some View {
     Callout(tone: .warn) {
-      ViewThatFits(in: .horizontal) {
-        HStack(alignment: .center, spacing: theme.space3) {
-          zoneWords(tz: tz, device: device).frame(maxWidth: .infinity, alignment: .leading)
-          useDevice(device)
-        }
-        VStack(alignment: .leading, spacing: theme.space3) {
-          zoneWords(tz: tz, device: device)
-          useDevice(device)
-        }
+      HStack(alignment: .center, spacing: theme.points(ThemeKit.calloutGap)) {
+        zoneWords(tz: tz, device: device).frame(maxWidth: .infinity, alignment: .leading)
+        useDevice(device)
       }
     }
     .accessibilityElement(children: .contain)
@@ -263,7 +363,7 @@ struct WeeklySchedulePage: View {
         }
         .buttonStyle(.virga(size: .small))
         .accessibilityIdentifier("week-use-suggestions")
-        Button("Stop suggesting") { try? settings.update(["suggestBestTimes": false]) }
+        Button("Stop suggesting") { try? live().update(["suggestBestTimes": false]) }
           .buttonStyle(.virga(.ghost, size: .small))
       }
       .padding(.top, theme.space3)
@@ -275,11 +375,12 @@ struct WeeklySchedulePage: View {
 
   // MARK: Posting times
 
-  private func weekSection(tz: String, device: String) -> some View {
+  private func weekSection(tz: String, device: String, headHeight: CGFloat?) -> some View {
     let count = ScheduleModel.weeklyCount(schedule)
-    return VirgaSection(
+    return WeekSection(
       title: "Posting times",
-      sub: "\(count == 1 ? "1 time a week" : "\(count) times a week"). \(ScheduleModel.weekSummary(schedule))", flush: true
+      sub: "\(count == 1 ? "1 time a week" : "\(count) times a week"). \(ScheduleModel.weekSummary(schedule))",
+      headHeight: headHeight
     ) {
       VStack(alignment: .leading, spacing: theme.points(ThemeKit.fieldGap)) {
         FieldLabel("Time zone")
@@ -292,7 +393,7 @@ struct WeeklySchedulePage: View {
       VStack(alignment: .leading, spacing: 0) {
         ForEach(ScheduleWeek.orderedWeekdays(), id: \.key) { day in
           DayRow(
-            day: day, times: settings.settings.queue.slots[day.key] ?? [],
+            day: day, times: current.queue.slots[day.key] ?? [],
             onAdd: { save(ScheduleModel.addSlot(schedule, day.key, .string($0), deviceZone: device)) },
             onRemove: { save(ScheduleModel.removeSlot(schedule, day.key, .string($0))) },
             onCopy: { save(ScheduleModel.copyDay(schedule, day.key, $0)) },
@@ -302,43 +403,71 @@ struct WeeklySchedulePage: View {
       .overlay(alignment: .top) { Rectangle().fill(theme.line).frame(height: 1) }
       .accessibilityElement(children: .contain)
       .accessibilityIdentifier("week-days")
-      FlowLayout(spacing: theme.space3, lineSpacing: theme.space2) {
-        Text("Saved as you go, in this browser.")
-          .virgaText(.textSm)
-          .foregroundStyle(theme.muted)
-        if !ScheduleModel.isDefaultWeek(schedule) {
-          Button {
-            resetting = true
-          } label: {
-            Label("Start again from the default", systemImage: ScheduleGlyph.restart)
-          }
-          .buttonStyle(.linkAction)
-          .accessibilityIdentifier("week-reset")
-        }
-      }
-      .padding(.top, theme.points(ThemeKit.cardFootSpaceAbove))
+      weekFoot
+        .padding(.top, theme.points(ThemeKit.cardFootSpaceAbove))
     }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("week-times")
   }
 
+  /// `.card-foot.sched-week-foot`: the words, and Start again from the
+  /// default at the line's far end (`justify-content: space-between`), or
+  /// under the words, 12 down, when the two don't fit on one line.
+  @ViewBuilder
+  private var weekFoot: some View {
+    if ScheduleModel.isDefaultWeek(schedule) {
+      footWords
+    } else {
+      ViewThatFits(in: .horizontal) {
+        HStack(alignment: .center, spacing: theme.space3) {
+          footWords
+          Spacer(minLength: 0)
+          resetLink
+        }
+        VStack(alignment: .leading, spacing: theme.space3) {
+          footWords
+          resetLink
+        }
+      }
+    }
+  }
+
+  private var footWords: some View {
+    Text("Saved as you go, in this browser.")
+      .virgaText(.textSm)
+      .foregroundStyle(theme.muted)
+  }
+
+  private var resetLink: some View {
+    Button {
+      resetting = true
+    } label: {
+      Label("Start again from the default", systemImage: ScheduleGlyph.restart)
+    }
+    .buttonStyle(.linkAction)
+    .accessibilityIdentifier("week-reset")
+  }
+
   // MARK: Beside the week
 
-  private func side(now: Double, queued: [JSONValue], rows: [JSONValue], off: [JSONValue], empty: Bool) -> some View {
+  private func side(
+    now: Double, queued: [JSONValue], rows: [JSONValue], off: [JSONValue], empty: Bool, suggest: Bool, headHeight: CGFloat?
+  ) -> some View {
     VStack(alignment: .leading, spacing: theme.gridGap) {
-      VirgaSection(title: "The week ahead", sub: "Open times over the next seven days.", flush: true) {
+      WeekSection(title: "The week ahead", sub: "Open times over the next seven days.", headHeight: headHeight) {
         // With no times there is no week to draw, and nothing in it that could be taken.
         if empty {
+          // EmptyState keeps the 16 under the rule itself.
           EmptyState("No posting times yet.")
-            .padding(.top, theme.space4)
         } else {
           let ready = load.status == .ready && load.list != nil
           QueueCalendarView(
             schedule: schedule, rows: queued.filter { $0["status"] == "pending" }, now: now, occupancy: ready,
             lead: ready ? lead(rows) : nil)
           if load.status == .error {
+            // Straight under the caption (`p { margin: 0 }`).
             FieldHint("Couldn’t read what’s already queued, so these may be taken.")
-              .padding(.top, theme.space2)
+              .fixedSize(horizontal: false, vertical: true)
           }
         }
       }
@@ -358,11 +487,11 @@ struct WeeklySchedulePage: View {
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("week-off")
       }
-      if !settings.settings.suggestBestTimes {
+      if !suggest {
         ScheduleSwitch(
           label: "Suggest times from my best times", hint: "Uses the archive in this browser; nothing is sent anywhere.",
           isOn: false
-        ) { on in try? settings.update(["suggestBestTimes": .bool(on)]) }
+        ) { on in try? live().update(["suggestBestTimes": .bool(on)]) }
       }
     }
   }
@@ -425,7 +554,9 @@ struct ScheduleSplit: Layout {
   private func spacingBelow(_ count: Int) -> CGFloat { count > 1 ? rowGap * CGFloat(count - 1) : 0 }
 }
 
-/// `DayRow`: one weekday's times as a band.
+/// `DayRow`: one weekday's times as a band. Its + takes the focus to the
+/// new time's field, and the focus comes back to the + as the form closes
+/// (the web's `autoFocus` and `refocus`).
 struct DayRow: View {
   @Environment(\.virgaTheme) private var theme
   let day: QueueWeekday
@@ -437,40 +568,72 @@ struct DayRow: View {
   @State private var adding = false
   @State private var copying = false
   @State private var time = "09:00"
+  /// CopyDaysDialog's ticks, cleared each time it opens.
+  @State private var copyDays: [String] = []
+  /// The form has just closed: the + takes the focus back as it returns.
+  @State private var refocusAdd = false
+  @FocusState private var focus: DayFocus?
+  @AccessibilityFocusState private var spoken: DayFocus?
+
+  /// What in the band takes the focus: the + or the new time's field.
+  enum DayFocus: Hashable {
+    case add, time
+  }
 
   private var long: String { ScheduleWeek.longDay[day.key] ?? day.label }
 
   var body: some View {
-    let phone = theme.isPhone
     Group {
-      if phone {
+      if theme.isPhone {
+        // A day: its name with the ⋯ beside it, then its times.
         VStack(alignment: .leading, spacing: Measure.Schedule.dayLineGap) {
           HStack(alignment: .center) {
             name
             Spacer(minLength: 0)
-            menu
+            // A phone's `.sched-day-menu { margin-block: -12px; margin-right: -14px }`.
+            if !times.isEmpty {
+              menu
+                .padding(.vertical, -Measure.Schedule.phoneDayMenuReach)
+                .padding(.trailing, -Measure.Schedule.phoneDayMenuOutset)
+            }
           }
           timesBand
         }
       } else {
-        HStack(alignment: .firstTextBaseline, spacing: Measure.Schedule.dayColumnGap) {
-          name.frame(width: Measure.Schedule.dayNameWidth, alignment: .leading)
-          timesBand.frame(maxWidth: .infinity, alignment: .leading)
-          menu.alignmentGuide(.firstTextBaseline) { d in d[.top] + d.height / 2 }
+        // The name on the first token's baseline; the ⋯, which has none,
+        // held to the first line's top (`align-self: start`), its 44-point
+        // box let out 6 above and below the tokens' 32-point line.
+        HStack(alignment: .top, spacing: Measure.Schedule.dayColumnGap) {
+          HStack(alignment: .firstTextBaseline, spacing: Measure.Schedule.dayColumnGap) {
+            name.frame(width: Measure.Schedule.dayNameWidth, alignment: .leading)
+            timesBand.frame(maxWidth: .infinity, alignment: .leading)
+          }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          if !times.isEmpty {
+            menu.padding(.vertical, -Measure.Schedule.dayMenuReach)
+          }
         }
       }
     }
     .padding(.vertical, theme.rowPad)
     .frame(maxWidth: .infinity, alignment: .leading)
     .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
-    .sheet(isPresented: $copying) {
-      CopyDaysDialog(day: day, onClose: { copying = false }) { days in
+    .virgaDialog(isPresented: $copying, title: "Copy \(day.label)’s times") {
+      copyChecks
+    } actions: {
+      Button("Cancel") { copying = false }
+        .buttonStyle(.virga)
+      Button("Copy") {
+        let days = copyDays
         copying = false
         onCopy(days)
       }
-      .presentationDetents([.medium, .large])
-      .presentationBackground(theme.surface)
-      .presentationCornerRadius(Measure.Dialog.radius)
+      .buttonStyle(.virga(.primary))
+      .disabled(copyDays.isEmpty)
+      .accessibilityIdentifier("copy-days-confirm")
+    }
+    .onChange(of: copying) { _, open in
+      if open { copyDays = [] }
     }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("week-day-\(day.key)")
@@ -496,20 +659,45 @@ struct DayRow: View {
       if adding {
         addForm
       } else {
-        Button {
-          adding = true
-        } label: {
-          Image(systemName: ScheduleGlyph.plus)
-        }
-        .buttonStyle(.virga(.ghost, size: .small, icon: true))
-        .help("Add a time on \(long)")
-        .accessibilityLabel("Add a time on \(long)")
-        .accessibilityIdentifier("week-add-\(day.key)")
+        addButton
       }
     }
   }
 
-  /// `.sched-add`: the time, Add and Cancel.
+  /// The +: a ghost icon whose 44-point box reaches 6 past the tokens'
+  /// 32-point line above and below (`.sched-day-add { margin-block: -6px }`),
+  /// so the line stays the tokens' height.
+  private var addButton: some View {
+    Button {
+      adding = true
+    } label: {
+      Image(systemName: ScheduleGlyph.plus)
+    }
+    .buttonStyle(.virga(.ghost, size: .small, icon: true))
+    .focused($focus, equals: .add)
+    .accessibilityFocused($spoken, equals: .add)
+    .onAppear {
+      guard refocusAdd else { return }
+      refocusAdd = false
+      Task { @MainActor in
+        focus = .add
+        spoken = .add
+      }
+    }
+    .padding(.vertical, -Measure.Schedule.dayAddReach)
+    .help("Add a time on \(long)")
+    .accessibilityLabel("Add a time on \(long)")
+    .accessibilityIdentifier("week-add-\(day.key)")
+  }
+
+  /// The form is done with (Add, Cancel, Escape): the + comes back, and the focus with it.
+  private func close() {
+    refocusAdd = true
+    adding = false
+  }
+
+  /// `.sched-add`: the time, Add and Cancel. The time takes the focus as it
+  /// appears (`autoFocus`).
   private var addForm: some View {
     HStack(spacing: Measure.Schedule.addGap) {
       DatePicker(
@@ -520,76 +708,66 @@ struct DayRow: View {
       .labelsHidden()
       .environment(\.timeZone, ClockTime.utc)
       .frame(minWidth: Measure.Schedule.addInputWidth, alignment: .leading)
+      .focused($focus, equals: .time)
+      .accessibilityFocused($spoken, equals: .time)
+      .onAppear {
+        Task { @MainActor in
+          focus = .time
+          spoken = .time
+        }
+      }
       .accessibilityLabel("New time on \(long)")
       .accessibilityIdentifier("week-add-time")
       Button("Add") {
         guard !time.isEmpty else { return }
         onAdd(time)
-        adding = false
+        close()
       }
       .buttonStyle(.virga(.primary, size: .small))
       .keyboardShortcut(.defaultAction)
       .accessibilityIdentifier("week-add-confirm")
-      Button("Cancel") { adding = false }
+      Button("Cancel") { close() }
         .buttonStyle(.virga(.ghost, size: .small))
         .keyboardShortcut(.cancelAction)
     }
   }
 
-  @ViewBuilder
+  /// The ⋯, offered only when the day has times to copy or clear.
   private var menu: some View {
-    if !times.isEmpty {
-      // The three common spans each take one press; any other days are
-      // picked together in a small dialog. None carries an icon.
-      let copies: [MenuEntry] =
-        ScheduleModel.copyTargets.map { t -> MenuEntry in
-          MenuEntry.item(MenuItem("Copy to \(t.label.lowercased())", key: t.key) { onCopy(t.days) })
-        } + [MenuEntry.item(MenuItem("Copy to other days…", key: "other") { copying = true })]
-      MoreMenu(
-        label: "More for \(long)",
-        entries: copies + [
-          .separator, .item(MenuItem("Clear this day", key: "clear", systemImage: ScheduleGlyph.trash, destructive: true) { onClear() }),
-        ])
-    }
+    // The three common spans each take one press; any other days are
+    // picked together in a small dialog. None carries an icon.
+    let copies: [MenuEntry] =
+      ScheduleModel.copyTargets.map { t -> MenuEntry in
+        MenuEntry.item(MenuItem("Copy to \(t.label.lowercased())", key: t.key) { onCopy(t.days) })
+      } + [MenuEntry.item(MenuItem("Copy to other days…", key: "other") { copying = true })]
+    return MoreMenu(
+      label: "More for \(long)",
+      entries: copies + [
+        .separator, .item(MenuItem("Clear this day", key: "clear", systemImage: HubGlyph.trash, destructive: true) { onClear() }),
+      ])
   }
-}
 
-/// `CopyDaysDialog`: the days to copy one day's times to, any number at once.
-struct CopyDaysDialog: View {
-  @Environment(\.virgaTheme) private var theme
-  let day: QueueWeekday
-  let onClose: () -> Void
-  let onCopy: ([String]) -> Void
-  @State private var days: [String] = []
-
-  var body: some View {
+  /// `CopyDaysDialog`'s days: every other day of the week, one to a line,
+  /// any number at once.
+  private var copyChecks: some View {
     let others = ScheduleWeek.orderedWeekdays().filter { $0.key != day.key }
-    DialogFrame(title: "Copy \(day.label)’s times", onClose: onClose) {
-      VStack(alignment: .leading, spacing: 0) {
-        ForEach(others, id: \.key) { d in
-          Toggle(
-            d.label,
-            isOn: Binding(
-              get: { days.contains(d.key) },
-              set: { on in
-                if on { days.append(d.key) } else { days.removeAll { $0 == d.key } }
-              })
-          )
-          .toggleStyle(.virgaCheck)
-          .frame(minHeight: Measure.Schedule.copyDayHeight, alignment: .leading)
-          .accessibilityIdentifier("copy-day-\(d.key)")
-        }
+    return VStack(alignment: .leading, spacing: 0) {
+      ForEach(others, id: \.key) { d in
+        Toggle(
+          d.label,
+          isOn: Binding(
+            get: { copyDays.contains(d.key) },
+            set: { on in
+              if on { copyDays.append(d.key) } else { copyDays.removeAll { $0 == d.key } }
+            })
+        )
+        .toggleStyle(.virgaCheck)
+        .frame(minHeight: Measure.Schedule.copyDayHeight, alignment: .leading)
+        .accessibilityIdentifier("copy-day-\(d.key)")
       }
-      .accessibilityElement(children: .contain)
-      .accessibilityLabel("Days to copy them to")
-    } actions: {
-      Button("Cancel", action: onClose)
-        .buttonStyle(.virga)
-      Button("Copy") { onCopy(days) }
-        .buttonStyle(.virga(.primary))
-        .disabled(days.isEmpty)
-        .accessibilityIdentifier("copy-days-confirm")
     }
+    .accessibilityElement(children: .contain)
+    .accessibilityLabel("Days to copy them to")
   }
 }
 

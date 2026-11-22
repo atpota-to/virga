@@ -20,7 +20,12 @@
 // them (`schedule`, `requester`, nil without a long session). The date and
 // the time are the system's pickers, read on the queue's clock; they always
 // hold a time, so a date without a time can't be typed. The fields share
-// their row evenly (the web's 1.3 to 1, and 1 to 1.3 to 0.7 for a repeat's).
+// their row evenly (the web's 1.3 to 1, and 1 to 1.3 to 0.7 for a repeat's),
+// and go one under another when the picker itself is 440 or narrower (its
+// own width, `@container when`, not the window's). A problem is read out as
+// it appears and as it changes (`role="alert"`), as is the repeat's when it
+// is wrong; the date and time are described by the zone line and the
+// problem, a repeat's fields by its note (`aria-describedby`).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -52,6 +57,9 @@ struct WhenPicker: View {
   @State private var parts = ZonedParts(date: "", time: "")
   @State private var touched = false
   @State private var taken = Taken(status: .idle, rows: [])
+  /// The picker's own width (`container: when / inline-size`); the
+  /// window's stands in until it has been measured.
+  @State private var width: CGFloat?
 
   struct ZonedParts: Equatable {
     var date: String
@@ -72,11 +80,14 @@ struct WhenPicker: View {
   }
   private var valueMs: Double { TimeValue.ms(value.map(JSONValue.string)) }
 
+  /// `@container when (max-width: 440px)`: too narrow for the fields side by side.
+  private var narrow: Bool { (width ?? theme.windowWidth) <= Measure.Schedule.whenNarrow }
+
   var body: some View {
     let problem = touched || !(value ?? "").isEmpty
       ? ScheduleModel.whenProblem(value.map(JSONValue.string) ?? .null, now: now, min: lo, max: hi) : ""
     VStack(alignment: .leading, spacing: Measure.Schedule.whenPickerGap) {
-      fields(invalid: !problem.isEmpty)
+      fields(described: described(problem: problem))
       picks
       zoneLine(problem: problem)
       if !problem.isEmpty {
@@ -85,7 +96,7 @@ struct WhenPicker: View {
           .foregroundStyle(theme.danger)
           .fixedSize(horizontal: false, vertical: true)
           .accessibilityIdentifier("when-problem")
-          .onAppear { UIAccessibility.post(notification: .announcement, argument: problem) }
+          .modifier(CalloutAlert(words: problem))
       }
       if onRepeatChange != nil {
         repeatBlockView
@@ -95,6 +106,13 @@ struct WhenPicker: View {
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
+    .background(
+      GeometryReader { geometry in
+        Color.clear
+          .onAppear { width = geometry.size.width }
+          .onChange(of: geometry.size.width) { _, next in width = next }
+      }
+    )
     .onAppear { readParts(value) }
     .onChange(of: value) { _, next in readParts(next) }
     .onChange(of: tz) { _, _ in readParts(value) }
@@ -141,9 +159,18 @@ struct WhenPicker: View {
     PostingQueue.zonedWallTime(.number(date.timeIntervalSince1970 * 1000), .string(tz))
   }
 
+  /// `aria-describedby`: the zone line, then the problem when there is one.
+  private func described(problem: String) -> String {
+    var words = zoneLead
+    if valueMs.isFinite && problem.isEmpty {
+      words += " Goes out \(ScheduleModel.formatInZone(value.map(JSONValue.string), tz, now: now))."
+    }
+    if !problem.isEmpty { words += " \(problem)" }
+    return words
+  }
+
   @ViewBuilder
-  private func fields(invalid: Bool) -> some View {
-    let narrow = theme.windowWidth < Measure.Schedule.whenNarrow
+  private func fields(described: String) -> some View {
     let layout =
       narrow
       ? AnyLayout(VStackLayout(alignment: .leading, spacing: Measure.Schedule.whenFieldsGap))
@@ -164,6 +191,7 @@ struct WhenPicker: View {
         .labelsHidden()
         .environment(\.timeZone, zone)
         .accessibilityLabel("Date")
+        .accessibilityHint(described)
         .accessibilityIdentifier("when-date")
       }
       .frame(maxWidth: .infinity, alignment: .leading)
@@ -181,6 +209,7 @@ struct WhenPicker: View {
         .labelsHidden()
         .environment(\.timeZone, zone)
         .accessibilityLabel("Time")
+        .accessibilityHint(described)
         .accessibilityIdentifier("when-time")
       }
       .frame(maxWidth: .infinity, alignment: .leading)
@@ -193,9 +222,11 @@ struct WhenPicker: View {
   private var picks: some View {
     let list = ScheduleModel.quickPicks(now: now, tz, min: lo, max: hi)
     if !list.isEmpty {
-      // One line that scrolls sideways on a phone; wrapped where there is room.
+      // One line that scrolls sideways on a phone, the pressed pick brought
+      // clear of the fade (useOverflowEdge); wrapped where there is room.
       if theme.isTablet {
-        ScrollRow {
+        let pressed = list.first { valueMs == $0.at }?.key
+        ScrollRow(focus: pressed.map { AnyHashable($0) }) {
           HStack(spacing: Measure.Schedule.picksGap) { pickButtons(list) }
         }
         .accessibilityElement(children: .contain)
@@ -219,6 +250,7 @@ struct WhenPicker: View {
         onChange(JSDate.toISOString(pick.at))
       }
       .buttonStyle(ChipStyle(isOn: on))
+      .scrollRowFocus(on)
       .help(ScheduleModel.formatInZone(.number(pick.at), tz, now: now))
       .accessibilityAddTraits(on ? .isSelected : [])
       .accessibilityIdentifier("when-pick-\(pick.key)")
@@ -227,13 +259,16 @@ struct WhenPicker: View {
 
   // MARK: The zone, and when it goes out
 
-  private func zoneLine(problem: String) -> some View {
+  /// The zone line's first sentence (or two).
+  private var zoneLead: String {
     let device = ScheduleText.deviceZone
-    let lead =
-      tz.jsEquals(device)
+    return tz.jsEquals(device)
       ? "Times are in your time zone, \(ScheduleModel.zoneLabel(tz))."
       : "Times are in \(ScheduleModel.zoneLabel(tz)), your weekly schedule’s time zone. This device is in \(ScheduleModel.zoneLabel(device))."
-    var words = Text(lead)
+  }
+
+  private func zoneLine(problem: String) -> some View {
+    var words = Text(zoneLead)
     if valueMs.isFinite && problem.isEmpty {
       // A time it goes out is read as one thing: a narrow line breaks before it.
       let at = ScheduleModel.formatInZone(value.map(JSONValue.string), tz, now: now)
@@ -258,67 +293,83 @@ struct WhenPicker: View {
     let wrong =
       !every.isEmpty && valueMs.isFinite
       ? Repeat.repeatProblem(repeatRule, value.map(JSONValue.string), .string(tz), occurrence: occurrence) : ""
+    let note = repeatNote(every: every, wrong: wrong)
     VStack(alignment: .leading, spacing: Measure.Schedule.repeatGap) {
-      repeatFields(every: every, ends: ends, wrong: !wrong.isEmpty)
+      repeatFields(every: every, ends: ends, wrong: !wrong.isEmpty, note: note)
       // Said only once there is something to say: a repeat chosen, or why there can't be one.
-      if !repeatBlock.isEmpty || !wrong.isEmpty || !every.isEmpty {
-        let summary =
-          !repeatBlock.isEmpty
-          ? repeatBlock
-          : !wrong.isEmpty
-            ? wrong
-            : "\(Repeat.repeatSummary(Repeat.normalizeRepeat(repeatRule)?.json, value.map(JSONValue.string), .string(tz), now: now))\(occurrence > 1 ? " This is number \(JSNumber.format(occurrence)); the change applies to it and the ones after." : " Each one is a post of its own, with the same words and pictures.")"
-        Text(summary)
+      if !note.isEmpty {
+        Text(note)
           .virgaText(.textSm, weight: wrong.isEmpty ? VirgaWeight.regular : VirgaWeight.medium)
           .foregroundStyle(wrong.isEmpty ? theme.muted : theme.danger)
           .fixedSize(horizontal: false, vertical: true)
           .accessibilityIdentifier("when-repeat-note")
+          // `role={repeatWrong ? 'alert' : undefined}`.
+          .modifier(CalloutAlert(words: wrong.isEmpty ? nil : wrong))
       }
     }
     .padding(.top, Measure.Schedule.repeatTop)
     .overlay(alignment: .top) { Rectangle().fill(theme.line).frame(height: 1) }
   }
 
+  /// The repeat's note: why it can't repeat, what's wrong, or what it
+  /// will do; '' while there is nothing to say.
+  private func repeatNote(every: String, wrong: String) -> String {
+    if !repeatBlock.isEmpty { return repeatBlock }
+    if !wrong.isEmpty { return wrong }
+    if every.isEmpty { return "" }
+    let summary = Repeat.repeatSummary(
+      Repeat.normalizeRepeat(repeatRule)?.json, value.map(JSONValue.string), .string(tz), now: now)
+    let tail =
+      occurrence > 1
+      ? " This is number \(JSNumber.format(occurrence)); the change applies to it and the ones after."
+      : " Each one is a post of its own, with the same words and pictures."
+    return summary + tail
+  }
+
   private func setRepeat(_ next: JSONValue?) { onRepeatChange?(next) }
 
   @ViewBuilder
-  private func repeatFields(every: String, ends: String, wrong: Bool) -> some View {
-    let narrow = theme.windowWidth < Measure.Schedule.whenNarrow
+  private func repeatFields(every: String, ends: String, wrong: Bool, note: String) -> some View {
     let layout =
       narrow
       ? AnyLayout(VStackLayout(alignment: .leading, spacing: Measure.Schedule.repeatFieldsGap))
       : AnyLayout(HStackLayout(alignment: .bottom, spacing: Measure.Schedule.repeatFieldsGap))
     layout {
-      repeatPicker(every)
+      repeatPicker(every, note: note)
         .frame(maxWidth: .infinity, alignment: .leading)
-        if !every.isEmpty {
+      if !every.isEmpty {
         endsPicker(every, ends: ends)
           .frame(maxWidth: .infinity, alignment: .leading)
-          }
+      }
       if !every.isEmpty && ends == "on" {
-        lastDay(every, invalid: wrong)
+        lastDay(every, invalid: wrong, note: note)
           .frame(maxWidth: .infinity, alignment: .leading)
-          }
+      }
       if !every.isEmpty && ends == "after" {
-        timesInAll(every, invalid: wrong)
+        timesInAll(every, invalid: wrong, note: note)
           .frame(maxWidth: .infinity, alignment: .leading)
-          }
+      }
     }
   }
 
   private func repeatLabel() -> some View {
     HStack(spacing: Measure.Schedule.repeatLabelGap) {
-      Image(systemName: ScheduleGlyph.repeats)
-        .font(.system(size: Measure.Schedule.repeatIcon))
+      Image(systemName: HubGlyph.again)
+        .virgaGlyph(Measure.Schedule.repeatIcon, beside: theme.points(ThemeKit.fieldLabelFontSize))
         .accessibilityHidden(true)
       FieldLabel("Repeat")
     }
   }
 
-  private func repeatPicker(_ every: String) -> some View {
+  /// `REPEAT_OPTIONS` as the select's choices.
+  private var repeatChoices: [SelectChoice<String>] {
+    Repeat.repeatOptions.map { option in SelectChoice(option.value, option.label) }
+  }
+
+  private func repeatPicker(_ every: String, note: String) -> some View {
     VStack(alignment: .leading, spacing: theme.points(ThemeKit.fieldGap)) {
       repeatLabel()
-      Picker(
+      VirgaSelect(
         "Repeat",
         selection: Binding(
           get: { every },
@@ -330,17 +381,11 @@ struct WhenPicker: View {
               rule["every"] = .string(next)
               setRepeat(.object(rule))
             }
-          })
-      ) {
-        ForEach(Repeat.repeatOptions, id: \.value) { option in
-          Text(option.label).tag(option.value)
-        }
-      }
-      .pickerStyle(.menu)
-      .tint(theme.ink)
+          }),
+        options: repeatChoices
+      )
       .disabled(!repeatBlock.isEmpty)
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .virgaField()
+      .accessibilityHint(note)
       .accessibilityIdentifier("when-repeat")
     }
   }
@@ -366,22 +411,21 @@ struct WhenPicker: View {
     return PostingQueue.zonedWallTime(.number(from + days * 86_400_000), .string(tz))?.date ?? ""
   }
 
+  /// The ways a repeat ends, as the select's choices.
+  private static var endsChoices: [SelectChoice<String>] {
+    [SelectChoice("never", "Never"), SelectChoice("on", "On a date"), SelectChoice("after", "After a number of times")]
+  }
+
   private func endsPicker(_ every: String, ends: String) -> some View {
     FieldStack("Ends") {
-      Picker("Ends", selection: Binding(get: { ends }, set: { changeEnds($0, every: every) })) {
-        Text("Never").tag("never")
-        Text("On a date").tag("on")
-        Text("After a number of times").tag("after")
-      }
-      .pickerStyle(.menu)
-      .tint(theme.ink)
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .virgaField()
+      VirgaSelect(
+        "Ends", selection: Binding(get: { ends }, set: { changeEnds($0, every: every) }), options: Self.endsChoices
+      )
       .accessibilityIdentifier("when-ends")
     }
   }
 
-  private func lastDay(_ every: String, invalid: Bool) -> some View {
+  private func lastDay(_ every: String, invalid: Bool, note: String) -> some View {
     let until = repeatRule?["until"]?.stringValue ?? ""
     let first = valueMs.isFinite ? valueMs : lo
     let shown = PostingQueue.zonedWallTimeToUtc(until, "12:00", tz) ?? first
@@ -400,16 +444,18 @@ struct WhenPicker: View {
       .labelsHidden()
       .environment(\.timeZone, zone)
       .accessibilityLabel("Last day")
+      .accessibilityHint(note)
       .accessibilityIdentifier("when-until")
     }
   }
 
-  private func timesInAll(_ every: String, invalid: Bool) -> some View {
+  private func timesInAll(_ every: String, invalid: Bool, note: String) -> some View {
     let count = repeatRule?["count"]
     let text = count.flatMap { $0.isNull ? nil : $0 }.map { $0.stringValue ?? JSNumber.format($0.jsNumber) } ?? ""
     return FieldStack("Times in all") {
-      TextField(
-        "Times in all",
+      // No placeholder: the label over it says what it is.
+      VirgaTextField(
+        "",
         text: Binding(
           get: { text },
           set: { typed in
@@ -420,6 +466,8 @@ struct WhenPicker: View {
       )
       .keyboardType(.numberPad)
       .virgaField(invalid: invalid)
+      .accessibilityLabel("Times in all")
+      .accessibilityHint(note)
       .accessibilityIdentifier("when-count")
     }
   }
@@ -448,13 +496,12 @@ struct WhenPicker: View {
 
   private var queueRow: some View {
     let slot: Double? = taken.status != .loading ? (try? PostingQueue.nextOpenSlot(schedule, taken.rows, now: now)) ?? nil : nil
-    return HStack(alignment: .center, spacing: Measure.Schedule.queueGap) {
+    return QueueLine(gap: Measure.Schedule.queueGap, lineGap: Measure.Schedule.queueLineGap, basis: Measure.Schedule.queueTextBasis) {
       Image(systemName: ScheduleGlyph.listTree)
-        .font(.system(size: Measure.Schedule.queueIcon))
+        .virgaGlyph(Measure.Schedule.queueIcon, beside: theme.textSm)
         .foregroundStyle(theme.ink2)
         .accessibilityHidden(true)
       queueWords(slot)
-        .frame(maxWidth: .infinity, alignment: .leading)
       if let onQueue, slot != nil {
         Button("Use this time", action: onQueue)
           .buttonStyle(.virga(size: .small))
@@ -492,6 +539,68 @@ struct WhenPicker: View {
     } else {
       FieldHint("Your queue has no open times in the next 90 days.")
     }
+  }
+}
+/// `.sched-when-queue`: the glyph, the words (`flex: 1 1 200px`) and Use
+/// this time, centred on their line, `gap` apart; the button drops under
+/// them, `lineGap` down at the line's start, when the words would get less
+/// than `basis` beside it (`flex-wrap: wrap`). Its subviews: the glyph, the
+/// words, and the button if there is one.
+struct QueueLine: Layout {
+  var gap: CGFloat
+  var lineGap: CGFloat
+  var basis: CGFloat
+
+  struct Plan {
+    var wraps = false
+    var glyph = CGSize.zero
+    var words = CGSize.zero
+    var button = CGSize.zero
+    var line: CGFloat = 0
+    var height: CGFloat = 0
+  }
+
+  func plan(_ width: CGFloat?, _ subviews: Subviews) -> Plan {
+    var out = Plan()
+    guard subviews.count >= 2 else { return out }
+    let hasButton = subviews.count > 2
+    out.glyph = subviews[0].sizeThatFits(.unspecified)
+    out.button = hasButton ? subviews[2].sizeThatFits(.unspecified) : .zero
+    let lead = out.glyph.width + gap
+    let beside: CGFloat? = width.map { $0 - lead - (hasButton ? gap + out.button.width : 0) }
+    out.wraps = hasButton && (beside ?? .infinity) < basis
+    let room: CGFloat? = out.wraps ? width.map { $0 - lead } : beside
+    out.words = subviews[1].sizeThatFits(ProposedViewSize(width: room.map { Swift.max(0, $0) }, height: nil))
+    out.line = Swift.max(out.glyph.height, out.words.height)
+    if hasButton && !out.wraps { out.line = Swift.max(out.line, out.button.height) }
+    out.height = out.wraps ? out.line + lineGap + out.button.height : out.line
+    return out
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    let plan = plan(proposal.width, subviews)
+    let ideal = plan.glyph.width + gap + plan.words.width + (subviews.count > 2 ? gap + plan.button.width : 0)
+    return CGSize(width: proposal.width ?? ideal, height: plan.height)
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    guard subviews.count >= 2 else { return }
+    let plan = plan(bounds.width, subviews)
+    let x = bounds.minX
+    subviews[0].place(
+      at: CGPoint(x: x, y: bounds.minY + (plan.line - plan.glyph.height) / 2),
+      proposal: ProposedViewSize(width: plan.glyph.width, height: plan.glyph.height))
+    let wordsX = x + plan.glyph.width + gap
+    let wordsWidth = plan.wraps ? bounds.maxX - wordsX : bounds.maxX - wordsX - (subviews.count > 2 ? gap + plan.button.width : 0)
+    subviews[1].place(
+      at: CGPoint(x: wordsX, y: bounds.minY + (plan.line - plan.words.height) / 2),
+      proposal: ProposedViewSize(width: Swift.max(0, wordsWidth), height: plan.words.height))
+    guard subviews.count > 2 else { return }
+    let buttonAt =
+      plan.wraps
+      ? CGPoint(x: x, y: bounds.minY + plan.line + lineGap)
+      : CGPoint(x: bounds.maxX - plan.button.width, y: bounds.minY + (plan.line - plan.button.height) / 2)
+    subviews[2].place(at: buttonAt, proposal: ProposedViewSize(width: plan.button.width, height: plan.button.height))
   }
 }
 #endif
