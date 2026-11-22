@@ -96,11 +96,13 @@ struct FirstRunPage: View {
         .frame(width: Measure.FirstRun.icon, height: Measure.FirstRun.icon)
         .padding(.top, Measure.FirstRun.iconSpaceAbove)
         .accessibilityHidden(true)
+      // The words run to the column's edge, the one 12-point gap before
+      // them (`.first-run-list li { gap: 12px }`).
       words
         .virgaText(.textBase)
         .foregroundStyle(theme.ink2)
         .fixedSize(horizontal: false, vertical: true)
-      Spacer(minLength: 0)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
     .padding(.vertical, Measure.FirstRun.itemPadding)
     .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
