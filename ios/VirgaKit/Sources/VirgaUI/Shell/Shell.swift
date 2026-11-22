@@ -25,9 +25,11 @@
 // of the page (a phone's, and beside the folded rail) isn't drawn.
 //
 // The command palette opens from Search (the sidebar's, the app bar's) and
-// from ⌘K on a hardware keyboard. Toasts are the app's one ToastCenter, the
-// composer host's (above the account, as App.jsx's ToastProvider is), shown
-// at the foot of the window.
+// from ⌘K on a hardware keyboard, which also closes it; ⌘K stays out of
+// the way while anything else is presented (the composer, a confirmation),
+// as the web's does while another dialog is open. Toasts are the app's one
+// ToastCenter, the composer host's (above the account, as App.jsx's
+// ToastProvider is), shown at the foot of the window.
 // New dashboard's dialog is the shell's (from the sidebar and the palette):
 // a dashboard made empty opens with ?edit=1, for customizing. The palette's
 // Customize this dashboard puts ?edit=1 in the address and makes the
@@ -69,6 +71,7 @@ public struct ShellView: View {
   @Environment(ShellNavigator.self) private var navigator
   @Environment(PreferencesModel.self) private var preferences
   @Environment(ArchiveModel.self) private var archive: ArchiveModel?
+  @Environment(ComposerHost.self) private var composer: ComposerHost?
   @State private var dashboards: ShellDashboards
   @State private var accountDialogs = AccountDialogs()
   @State private var palette = PaletteState()
@@ -109,8 +112,9 @@ public struct ShellView: View {
     .commandPalette(palette)
     .background {
       // ⌘K, from anywhere (a hardware keyboard), as the web's shortcut.
-      Button("Search or jump to") { palette.isOpen.toggle() }
+      Button("Search or jump to") { togglePalette() }
         .keyboardShortcut("k", modifiers: .command)
+        .disabled(composer?.isOpen == true)
         .opacity(0)
         .frame(width: 0, height: 0)
         .accessibilityHidden(true)
@@ -135,6 +139,15 @@ public struct ShellView: View {
     .environment(dashboards)
     .onChange(of: navigator.path, initial: true) { _, _ in followDashboard() }
     .onChange(of: archive?.syncError) { _, error in announceSyncError(error) }
+  }
+
+  /// ⌘K: the palette, opened or closed, but not opened while another sheet
+  /// is up (the web's `dialog[open]:not(.palette-dialog)`): the palette's
+  /// can't show over it, so it would open once that one closed, or be left
+  /// open unseen, and Search would do nothing.
+  private func togglePalette() {
+    if !palette.isOpen && KeyTargets.isPresenting() { return }
+    palette.isOpen.toggle()
   }
 
   /// The web's role="alert" lines about a sync that failed, read out once
