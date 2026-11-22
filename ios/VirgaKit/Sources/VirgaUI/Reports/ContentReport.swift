@@ -55,8 +55,8 @@ enum ContentWords {
   }
 
   static let measures = [
-    SegmentedOption("typical", "Typical post", accessibilityLabel: "What the middle post of each group earns"),
-    SegmentedOption("posts", "Posts", accessibilityLabel: "How many posts are in each group"),
+    SegmentedOption("typical", "Typical post", hint: "What the middle post of each group earns"),
+    SegmentedOption("posts", "Posts", hint: "How many posts are in each group"),
   ]
 
   static func columns(_ head: String) -> [DataTableColumn] {

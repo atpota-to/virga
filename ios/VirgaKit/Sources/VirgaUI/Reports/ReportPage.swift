@@ -36,7 +36,7 @@ enum ReportParts {
   /// `unitOptions(units, noun)`: a bucket's keys for a chart's modes.
   static func unitOptions(_ units: [AnalyticsUnit], _ noun: String) -> [SegmentedOption<String>] {
     units.map { u in
-      SegmentedOption(u.rawValue, ChartFormat.unitLabel(u), accessibilityLabel: "\(noun) per \(ChartFormat.unitNoun(u))")
+      SegmentedOption(u.rawValue, ChartFormat.unitLabel(u), hint: "\(noun) per \(ChartFormat.unitNoun(u))")
     }
   }
 
@@ -647,8 +647,8 @@ struct FollowersReportView: View {
           Segmented(
             label: ReportParts.modeLabel,
             options: [
-              SegmentedOption("cumulative", "Total", accessibilityLabel: "Running total over the window"),
-              SegmentedOption("together", "With blocks", accessibilityLabel: "Followers and block reach on one chart"),
+              SegmentedOption("cumulative", "Total", hint: "Running total over the window"),
+              SegmentedOption("together", "With blocks", hint: "Followers and block reach on one chart"),
             ] + ReportParts.unitOptions(m.units, "New followers"),
             selection: $mode, size: .small))
       ) {

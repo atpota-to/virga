@@ -58,9 +58,9 @@ struct BlocksReportView: View {
           Segmented(
             label: ReportParts.modeLabel,
             options: [
-              SegmentedOption("cumulative", "Total", accessibilityLabel: "Running total over the window"),
-              SegmentedOption("stacked", "By path", accessibilityLabel: "Direct blocks and moderation lists, stacked"),
-              SegmentedOption("together", "With followers", accessibilityLabel: "Block reach and followers on one chart"),
+              SegmentedOption("cumulative", "Total", hint: "Running total over the window"),
+              SegmentedOption("stacked", "By path", hint: "Direct blocks and moderation lists, stacked"),
+              SegmentedOption("together", "With followers", hint: "Block reach and followers on one chart"),
             ] + ReportParts.unitOptions(m.units, "New blocks"), selection: $mode, size: .small))
       ) {
         SeriesChart(

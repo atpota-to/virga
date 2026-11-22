@@ -144,7 +144,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Components/Layouts.swift"
       ],
       "synced": "687b1614c445",
-      "note": "Segmented and useOverflowEdge (Layouts.swift's ScrollRow: the pressed key scrolled into view only when it is under the fade, and only by enough to clear it by 24). An option's `title` is SegmentedOption's `hint` (read by VoiceOver after the key's name); the reports' callers still pass it as the accessibilityLabel"
+      "note": "Segmented and useOverflowEdge (Layouts.swift's ScrollRow: the pressed key scrolled into view only when it is under the fade, and only by enough to clear it by 24). An option's `title` is SegmentedOption's `hint` (read by VoiceOver after the key's name), and a key's least width is its `minWidth` (the kind filters' glyph-only keys, 32 at 760 and under)"
     },
     "src/dashboards/dashboards.css": {
       "status": "partial",
