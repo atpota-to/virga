@@ -1,0 +1,8070 @@
+{
+  "name": "templates.editorDrafts",
+  "sources": [
+    "src/posting/templates/editorDrafts.js"
+  ],
+  "cases": [
+    {
+      "id": "BLANK_TEMPLATE",
+      "fn": "BLANK_TEMPLATE",
+      "input": {},
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "none",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": null
+      },
+      "output": null
+    },
+    {
+      "id": "undefined",
+      "fn": "templateEmbedKind",
+      "input": {},
+      "output": null
+    },
+    {
+      "id": "zero",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": 0
+      },
+      "output": null
+    },
+    {
+      "id": "string",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": "app.bsky.embed.record"
+      },
+      "output": null
+    },
+    {
+      "id": "post",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://did:plc:me/app.bsky.feed.post/3kq"
+          }
+        }
+      },
+      "output": "post"
+    },
+    {
+      "id": "feed",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://x/app.bsky.feed.generator/f"
+          }
+        }
+      },
+      "output": "feed"
+    },
+    {
+      "id": "list",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://x/app.bsky.graph.list/l"
+          }
+        }
+      },
+      "output": "list"
+    },
+    {
+      "id": "starterpack",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://x/app.bsky.graph.starterpack/s"
+          }
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "link",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "https://a.example"
+          }
+        }
+      },
+      "output": "link"
+    },
+    {
+      "id": "linkEmpty",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": ""
+          }
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "linkNumber",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": 5
+          }
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "linkNone",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.external"
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "images",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.images",
+          "images": []
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "withMedia",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.recordWithMedia",
+          "record": {
+            "record": {
+              "uri": "at://did:plc:me/app.bsky.feed.post/3kq"
+            }
+          }
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "noType",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "record": {
+            "uri": "at://did:plc:me/app.bsky.feed.post/3kq"
+          }
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "array",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": [
+          1,
+          2
+        ]
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "emptyObject",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {}
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "recordNoUri",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {}
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "recordNull",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": null
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "postQuery",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://did:plc:me/app.bsky.feed.post/3kq?x=1"
+          }
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "postHash",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://did:plc:me/app.bsky.feed.post/3kq#x"
+          }
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "postTrailingSlash",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://did:plc:me/app.bsky.feed.post/3kq/"
+          }
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "postExtraPath",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://x/app.bsky.feed.post/a/b"
+          }
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "postNewline",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://did:plc:me/app.bsky.feed.post/3kq\n"
+          }
+        }
+      },
+      "output": "post"
+    },
+    {
+      "id": "postNoAuthority",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at:///app.bsky.feed.post/a"
+          }
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "postHttp",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "https://x/app.bsky.feed.post/a"
+          }
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "postUpper",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://x/APP.BSKY.FEED.POST/a"
+          }
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "postNumber",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": 7
+          }
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "typeCase",
+      "fn": "templateEmbedKind",
+      "input": {
+        "embed": {
+          "$type": "App.bsky.embed.record",
+          "record": {
+            "uri": "at://did:plc:me/app.bsky.feed.post/3kq"
+          }
+        }
+      },
+      "output": "unsupported"
+    },
+    {
+      "id": "fromTest",
+      "fn": "syncDraftVariables",
+      "input": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Hi {{their.firstName}}, try {{a}} and {{b}}",
+          "variables": [
+            {
+              "key": "b",
+              "label": "B?"
+            }
+          ],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "Hi {{their.firstName}}, try {{a}} and {{b}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "a",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "B?",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "b",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "keepsDeleted",
+      "fn": "syncDraftVariables",
+      "input": {
+        "draft": {
+          "text": "{{a}}",
+          "variables": [
+            {
+              "key": "b",
+              "label": "Kept"
+            },
+            {
+              "key": "a",
+              "label": "A"
+            }
+          ]
+        }
+      },
+      "output": {
+        "text": "{{a}}",
+        "variables": [
+          {
+            "label": "A",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "a",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "Kept",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "b",
+            "choices": [],
+            "choicesText": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "contextEntry",
+      "fn": "syncDraftVariables",
+      "input": {
+        "draft": {
+          "text": "{{their.firstName}} {{my.handle}} {{today}}",
+          "variables": [
+            {
+              "key": "my.handle",
+              "label": "Mine"
+            }
+          ]
+        }
+      },
+      "output": {
+        "text": "{{their.firstName}} {{my.handle}} {{today}}",
+        "variables": [
+          {
+            "label": "Mine",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "my.handle",
+            "choices": [],
+            "choicesText": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "duplicates",
+      "fn": "syncDraftVariables",
+      "input": {
+        "draft": {
+          "text": "{{a}} {{b}}",
+          "variables": [
+            {
+              "key": "a",
+              "label": "first"
+            },
+            {
+              "key": "x",
+              "label": "x1"
+            },
+            {
+              "key": "a",
+              "label": "second"
+            },
+            {
+              "key": "x",
+              "label": "x2"
+            }
+          ]
+        }
+      },
+      "output": {
+        "text": "{{a}} {{b}}",
+        "variables": [
+          {
+            "label": "second",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "a",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "b",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "x2",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "x",
+            "choices": [],
+            "choicesText": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "otherKeys",
+      "fn": "syncDraftVariables",
+      "input": {
+        "draft": {
+          "text": "{{a}}",
+          "variables": [
+            {
+              "key": 5,
+              "label": "five"
+            },
+            {
+              "key": true
+            },
+            {
+              "key": 0,
+              "label": "falsy"
+            },
+            {
+              "key": "",
+              "label": "empty"
+            },
+            {
+              "key": {
+                "o": 1
+              }
+            },
+            {
+              "key": 5,
+              "label": "five again"
+            }
+          ]
+        }
+      },
+      "output": {
+        "text": "{{a}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "a",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "five again",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": 5,
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": true,
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": {
+              "o": 1
+            },
+            "choices": [],
+            "choicesText": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "choices",
+      "fn": "syncDraftVariables",
+      "input": {
+        "draft": {
+          "text": "{{a}} {{b}} {{c}}",
+          "variables": [
+            {
+              "key": "a",
+              "choices": [
+                "x",
+                5,
+                "y",
+                null
+              ]
+            },
+            {
+              "key": "b",
+              "choices": "xy",
+              "choicesText": "kept"
+            },
+            {
+              "key": "c",
+              "choicesText": 5,
+              "label": null,
+              "kind": "choice",
+              "optional": "no"
+            }
+          ]
+        }
+      },
+      "output": {
+        "text": "{{a}} {{b}} {{c}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "a",
+            "choices": [
+              "x",
+              "y"
+            ],
+            "choicesText": "x\ny"
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "b",
+            "choices": [],
+            "choicesText": "kept"
+          },
+          {
+            "label": null,
+            "hint": "",
+            "kind": "choice",
+            "default": "",
+            "optional": "no",
+            "key": "c",
+            "choicesText": "",
+            "choices": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "textMissing",
+      "fn": "syncDraftVariables",
+      "input": {
+        "draft": {
+          "variables": [
+            {
+              "key": "a"
+            }
+          ]
+        }
+      },
+      "output": {
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "a",
+            "choices": [],
+            "choicesText": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "arrayDraft",
+      "fn": "syncDraftVariables",
+      "input": {
+        "draft": [
+          "x",
+          {
+            "key": "a"
+          }
+        ]
+      },
+      "output": {
+        "0": "x",
+        "1": {
+          "key": "a"
+        },
+        "variables": []
+      }
+    },
+    {
+      "id": "stringDraft",
+      "fn": "syncDraftVariables",
+      "input": {
+        "draft": "a🌿"
+      },
+      "output": {
+        "0": "a",
+        "1": "�",
+        "2": "�",
+        "variables": []
+      }
+    },
+    {
+      "id": "numberText",
+      "fn": "syncDraftVariables",
+      "input": {
+        "draft": {
+          "text": 5,
+          "variables": []
+        }
+      },
+      "output": {
+        "text": 5,
+        "variables": []
+      }
+    },
+    {
+      "id": "null",
+      "fn": "syncDraftVariables",
+      "input": {
+        "draft": null
+      },
+      "output": {
+        "variables": []
+      }
+    },
+    {
+      "id": "nonObjectEntries",
+      "fn": "syncDraftVariables",
+      "input": {
+        "draft": {
+          "text": "{{a}}",
+          "variables": [
+            null,
+            "abc",
+            7,
+            [
+              "a"
+            ],
+            {
+              "key": "a",
+              "label": "ok"
+            }
+          ]
+        }
+      },
+      "output": {
+        "text": "{{a}}",
+        "variables": [
+          {
+            "label": "ok",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "a",
+            "choices": [],
+            "choicesText": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "unicodeKeys",
+      "fn": "syncDraftVariables",
+      "input": {
+        "draft": {
+          "text": "{{é}} {{K}}",
+          "variables": [
+            {
+              "key": "é",
+              "label": "decomposed"
+            },
+            {
+              "key": "K",
+              "label": "kelvin"
+            }
+          ]
+        }
+      },
+      "output": {
+        "text": "{{é}} {{K}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "K",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "decomposed",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "é",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "kelvin",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "K",
+            "choices": [],
+            "choicesText": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "null",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": null
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "empty",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {}
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "roundTrip",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3t",
+          "cid": "bafy",
+          "rkey": "3t",
+          "name": "Thanks for the idea",
+          "text": "Thank you, {{their.firstName}}. {{idea}} is on the list. {{when}}",
+          "variables": [
+            {
+              "key": "their.firstName",
+              "label": "Their name"
+            },
+            {
+              "key": "idea",
+              "label": "What did they suggest?",
+              "hint": "A few words",
+              "default": "That"
+            },
+            {
+              "key": "when",
+              "label": "When?",
+              "kind": "choice",
+              "choices": [
+                "Soon.",
+                "Someday."
+              ],
+              "optional": true
+            }
+          ],
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://did:plc:me/app.bsky.feed.post/3kq",
+              "cid": "cid-stamina"
+            }
+          },
+          "use": "reply",
+          "group": "Thanks",
+          "shortcut": "idea",
+          "keywords": [
+            "idea",
+            "suggest"
+          ],
+          "langs": [
+            "en"
+          ],
+          "createdAt": "2026-09-01T00:00:00.000Z",
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3t",
+        "cid": "bafy",
+        "rkey": "3t",
+        "name": "Thanks for the idea",
+        "text": "Thank you, {{their.firstName}}. {{idea}} is on the list. {{when}}",
+        "variables": [
+          {
+            "label": "Their name",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "their.firstName",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "What did they suggest?",
+            "hint": "A few words",
+            "kind": "text",
+            "default": "That",
+            "optional": false,
+            "key": "idea",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "When?",
+            "hint": "",
+            "kind": "choice",
+            "default": "",
+            "optional": true,
+            "key": "when",
+            "choices": [
+              "Soon.",
+              "Someday."
+            ],
+            "choicesText": "Soon.\nSomeday."
+          }
+        ],
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://did:plc:me/app.bsky.feed.post/3kq",
+            "cid": "cid-stamina"
+          }
+        },
+        "use": "reply",
+        "group": "Thanks",
+        "shortcut": "idea",
+        "keywords": [
+          "idea",
+          "suggest"
+        ],
+        "langs": [
+          "en"
+        ],
+        "createdAt": "2026-09-01T00:00:00.000Z",
+        "updatedAt": null,
+        "keywordsText": "idea, suggest",
+        "quoteMode": "post",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "images",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "name": "Pics",
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.images",
+            "images": []
+          }
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "Pics",
+        "text": "x",
+        "variables": [],
+        "embed": {
+          "$type": "app.bsky.embed.images",
+          "images": []
+        },
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "other",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "link",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "name": "Docs",
+          "text": "See the docs",
+          "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+              "uri": "https://docs.example.org/start",
+              "title": "Start",
+              "description": ""
+            }
+          }
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "Docs",
+        "text": "See the docs",
+        "variables": [],
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "https://docs.example.org/start",
+            "title": "Start",
+            "description": ""
+          }
+        },
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "link",
+        "quoteUrl": "https://docs.example.org/start",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "feed",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "name": "F",
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://x/app.bsky.feed.generator/f"
+            }
+          }
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "F",
+        "text": "x",
+        "variables": [],
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://x/app.bsky.feed.generator/f"
+          }
+        },
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "link",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "list",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "name": "L",
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://x/app.bsky.graph.list/l"
+            }
+          }
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "L",
+        "text": "x",
+        "variables": [],
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://x/app.bsky.graph.list/l"
+          }
+        },
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "link",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "keywordsOdd",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "x",
+          "keywords": [
+            "a",
+            null,
+            5,
+            [
+              "b",
+              "c"
+            ],
+            {
+              "o": 1
+            }
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "x",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [
+          "a",
+          null,
+          5,
+          [
+            "b",
+            "c"
+          ],
+          {
+            "o": 1
+          }
+        ],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "a, , 5, b,c, [object Object]",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "nulls",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": null,
+          "variables": null,
+          "keywords": null,
+          "langs": null,
+          "embed": null
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": null,
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "seedDraft",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Not yet, {{their.firstName}}!",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "Not yet, {{their.firstName}}!",
+        "variables": [],
+        "embed": null,
+        "use": "reply",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "stringLangs",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "name": "S",
+          "text": "x",
+          "langs": "en"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "S",
+        "text": "x",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": "en",
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "emptyStringLangs",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "name": "S",
+          "text": "x",
+          "langs": ""
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "S",
+        "text": "x",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "stringTemplate",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": "tpl"
+      },
+      "output": {
+        "0": "t",
+        "1": "p",
+        "2": "l",
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "arrayTemplate",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": [
+          "a",
+          {
+            "text": "b"
+          }
+        ]
+      },
+      "output": {
+        "0": "a",
+        "1": {
+          "text": "b"
+        },
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "extraFields",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "name": "X",
+          "text": "{{a}}",
+          "variables": [
+            {
+              "key": "a",
+              "choicesText": "one\ntwo",
+              "choices": [
+                "zero"
+              ]
+            }
+          ],
+          "extra": true
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "X",
+        "text": "{{a}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "a",
+            "choicesText": "one\ntwo",
+            "choices": [
+              "zero"
+            ]
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "extra": true,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-idea",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "name": "Thanks for the idea",
+          "text": "Thank you, {{their.firstName}}. I like the idea of {{idea}}, and it's on our list now. {{timing}}",
+          "variables": [
+            {
+              "key": "idea",
+              "label": "What did they suggest?",
+              "hint": "A few words"
+            },
+            {
+              "key": "timing",
+              "label": "When?",
+              "kind": "choice",
+              "optional": true,
+              "choices": [
+                "Soon.",
+                "Someday."
+              ]
+            }
+          ],
+          "use": "reply",
+          "keywords": [
+            "love",
+            "feature",
+            "reset"
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "Thanks for the idea",
+        "text": "Thank you, {{their.firstName}}. I like the idea of {{idea}}, and it's on our list now. {{timing}}",
+        "variables": [
+          {
+            "label": "What did they suggest?",
+            "hint": "A few words",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "idea",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "When?",
+            "hint": "",
+            "kind": "choice",
+            "default": "",
+            "optional": true,
+            "key": "timing",
+            "choices": [
+              "Soon.",
+              "Someday."
+            ],
+            "choicesText": "Soon.\nSomeday."
+          }
+        ],
+        "embed": null,
+        "use": "reply",
+        "group": "",
+        "shortcut": "",
+        "keywords": [
+          "love",
+          "feature",
+          "reset"
+        ],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "love, feature, reset",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-undeclared",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "Version {{version}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "Version {{version}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "version",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-prototype",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "Ask the {{constructor}} about {{valueOf}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "Ask the {{constructor}} about {{valueOf}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "constructor",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "valueOf",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-proto",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "{{toString}} {{hasOwnProperty}} {{__proto__}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{toString}} {{hasOwnProperty}} {{__proto__}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "toString",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "hasOwnProperty",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-allContext",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "{{their.firstName}} / {{their.name}} / {{their.handle}} / {{my.handle}} / {{today}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{their.firstName}} / {{their.name}} / {{their.handle}} / {{my.handle}} / {{today}}",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-contextLabelled",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "Hi {{their.firstName}}, I am {{my.handle}}",
+          "variables": [
+            {
+              "key": "their.firstName",
+              "label": "Their name, please",
+              "default": "friend"
+            },
+            {
+              "key": "my.handle",
+              "hint": "Yours"
+            }
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "Hi {{their.firstName}}, I am {{my.handle}}",
+        "variables": [
+          {
+            "label": "Their name, please",
+            "hint": "",
+            "kind": "text",
+            "default": "friend",
+            "optional": false,
+            "key": "their.firstName",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "Yours",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "my.handle",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-otherContext",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "{{their.pronoun}} and {{my.name}} and {{today2}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{their.pronoun}} and {{my.name}} and {{today2}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "today2",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-choices",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "Use {{device}} or {{os}} or {{empty}}",
+          "variables": [
+            {
+              "key": "device",
+              "kind": "choice",
+              "choices": [
+                "Phone",
+                "Tablet",
+                ""
+              ]
+            },
+            {
+              "key": "os",
+              "kind": "choice",
+              "choices": []
+            },
+            {
+              "key": "empty",
+              "kind": "choice"
+            },
+            {
+              "key": "device",
+              "label": "Later wins",
+              "kind": "choice",
+              "choices": [
+                "Laptop"
+              ]
+            }
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "Use {{device}} or {{os}} or {{empty}}",
+        "variables": [
+          {
+            "label": "Later wins",
+            "hint": "",
+            "kind": "choice",
+            "default": "",
+            "optional": false,
+            "key": "device",
+            "choices": [
+              "Laptop"
+            ],
+            "choicesText": "Laptop"
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "choice",
+            "default": "",
+            "optional": false,
+            "key": "os",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "choice",
+            "default": "",
+            "optional": false,
+            "key": "empty",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-defaults",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "{{a}} {{b}} {{c}}",
+          "variables": [
+            {
+              "key": "a",
+              "default": "alpha"
+            },
+            {
+              "key": "b",
+              "default": ""
+            },
+            {
+              "key": "c",
+              "default": 7
+            }
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{a}} {{b}} {{c}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "alpha",
+            "optional": false,
+            "key": "a",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "b",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": 7,
+            "optional": false,
+            "key": "c",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-optionalFlags",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "{{a}}{{b}}{{c}}{{d}}",
+          "variables": [
+            {
+              "key": "a",
+              "optional": 1
+            },
+            {
+              "key": "b",
+              "optional": "yes"
+            },
+            {
+              "key": "c",
+              "optional": 0
+            },
+            {
+              "key": "d",
+              "optional": false
+            }
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{a}}{{b}}{{c}}{{d}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": 1,
+            "key": "a",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": "yes",
+            "key": "b",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": 0,
+            "key": "c",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "d",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-spacing",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "{{ spaced }} {{\ttab\t}} {{ nbsp }} {{　ideo　}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{ spaced }} {{\ttab\t}} {{ nbsp }} {{　ideo　}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "spaced",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "tab",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "nbsp",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "ideo",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-badKeys",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "{{1bad}} {{}} {{_x}} {{a-b.c_d}} {{a b}} {{{x}}} {{y}}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{1bad}} {{}} {{_x}} {{a-b.c_d}} {{a b}} {{{x}}} {{y}}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "a-b.c_d",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "x",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "y",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-longKey",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "{{kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk}} {{kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk}} {{kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-repeated",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "{{a}} {{a}} {{ a }} {{A}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{a}} {{a}} {{ a }} {{A}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "a",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "A",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-unicode",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "Héllo {{name}} — 🌿 {{plant}}! ΣΑΣ {{their.firstName}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "Héllo {{name}} — 🌿 {{plant}}! ΣΑΣ {{their.firstName}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "name",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "plant",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-emptyText",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": ""
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-noText",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {}
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-numberText",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": 12345
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": 12345,
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-arrayText",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": [
+            "{{a}}",
+            "b"
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": [
+          "{{a}}",
+          "b"
+        ],
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "a",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-embedOnly",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "",
+          "embed": {
+            "$type": "app.bsky.embed.record"
+          }
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": {
+          "$type": "app.bsky.embed.record"
+        },
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "other",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-nullVariables",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "{{a}}",
+          "variables": null
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{a}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "a",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-keyless",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "{{a}}",
+          "variables": [
+            {
+              "label": "No key"
+            },
+            {
+              "key": 5
+            },
+            {}
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{a}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "a",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": 5,
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-labels",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "{{a}} {{b}}",
+          "variables": [
+            {
+              "key": "a",
+              "label": "",
+              "hint": ""
+            },
+            {
+              "key": "b",
+              "label": "Bee",
+              "hint": "Buzz"
+            }
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{a}} {{b}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "a",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "Bee",
+            "hint": "Buzz",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "b",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "t-lineBreaks",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "text": "first {{a}}\nsecond\r\n{{b}} third\n{{c}}",
+          "variables": [
+            {
+              "key": "a",
+              "optional": true
+            },
+            {
+              "key": "b",
+              "optional": true
+            },
+            {
+              "key": "c",
+              "optional": true
+            }
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "first {{a}}\nsecond\r\n{{b}} third\n{{c}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": true,
+            "key": "a",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": true,
+            "key": "b",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": true,
+            "key": "c",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "record-fromTest",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": "cid1",
+          "rkey": "3abc",
+          "name": "N",
+          "text": "T {{x}}",
+          "variables": [
+            {
+              "key": "x"
+            }
+          ],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "x",
+          "keywords": [
+            "a"
+          ],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": "cid1",
+        "rkey": "3abc",
+        "name": "N",
+        "text": "T {{x}}",
+        "variables": [
+          {
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "x",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "x",
+        "keywords": [
+          "a"
+        ],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "a",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "record-full",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": "bafy",
+          "rkey": "3abc",
+          "name": "Full",
+          "text": "Hi {{their.firstName}}, try {{app}}",
+          "variables": [
+            {
+              "key": "app",
+              "label": "Which app?",
+              "hint": "A hint",
+              "kind": "choice",
+              "choices": [
+                "One",
+                "Two",
+                "c0",
+                "c1",
+                "c2",
+                "c3",
+                "c4",
+                "c5",
+                "c6",
+                "c7",
+                "c8",
+                "c9"
+              ],
+              "default": "One",
+              "optional": true
+            },
+            {
+              "key": "their.firstName",
+              "label": "Name"
+            }
+          ],
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://x/app.bsky.feed.post/1",
+              "cid": "c"
+            }
+          },
+          "use": "post",
+          "group": " Support ",
+          "shortcut": "app",
+          "keywords": [
+            "ok",
+            "Two Words"
+          ],
+          "langs": [
+            "en",
+            "pt-BR"
+          ],
+          "createdAt": "2026-01-01T00:00:00.000Z",
+          "updatedAt": "2026-02-01T00:00:00.000Z"
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": "bafy",
+        "rkey": "3abc",
+        "name": "Full",
+        "text": "Hi {{their.firstName}}, try {{app}}",
+        "variables": [
+          {
+            "label": "Name",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "their.firstName",
+            "choices": [],
+            "choicesText": ""
+          },
+          {
+            "label": "Which app?",
+            "hint": "A hint",
+            "kind": "choice",
+            "default": "One",
+            "optional": true,
+            "key": "app",
+            "choices": [
+              "One",
+              "Two",
+              "c0",
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8",
+              "c9"
+            ],
+            "choicesText": "One\nTwo\nc0\nc1\nc2\nc3\nc4\nc5\nc6\nc7\nc8\nc9"
+          }
+        ],
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://x/app.bsky.feed.post/1",
+            "cid": "c"
+          }
+        },
+        "use": "post",
+        "group": " Support ",
+        "shortcut": "app",
+        "keywords": [
+          "ok",
+          "Two Words"
+        ],
+        "langs": [
+          "en",
+          "pt-BR"
+        ],
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-02-01T00:00:00.000Z",
+        "keywordsText": "ok, Two Words",
+        "quoteMode": "post",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "record-empty",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "record-noValue",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "record-nullValue",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "record-stringValue",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "record-trailingSlash",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/",
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/",
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "record-noSlash",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "uri": "plain",
+          "cid": null,
+          "rkey": "plain",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "plain",
+        "cid": null,
+        "rkey": "plain",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "record-wrongTypes",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "record-arrayEmbed",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": [
+            1,
+            2
+          ],
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": [
+          1,
+          2
+        ],
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "other",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "record-falsyEmbed",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "record-uses",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "reply",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "record-usesCase",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "record-unicodeShortcut",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "i̇stanbul",
+          "keywords": [
+            "ΣΑΣ"
+          ],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "i̇stanbul",
+        "keywords": [
+          "ΣΑΣ"
+        ],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "ΣΑΣ",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "null",
+      "fn": "roundTrip",
+      "input": {
+        "template": null
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "empty",
+      "fn": "roundTrip",
+      "input": {
+        "template": {}
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "roundTrip",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3t",
+          "cid": "bafy",
+          "rkey": "3t",
+          "name": "Thanks for the idea",
+          "text": "Thank you, {{their.firstName}}. {{idea}} is on the list. {{when}}",
+          "variables": [
+            {
+              "key": "their.firstName",
+              "label": "Their name"
+            },
+            {
+              "key": "idea",
+              "label": "What did they suggest?",
+              "hint": "A few words",
+              "default": "That"
+            },
+            {
+              "key": "when",
+              "label": "When?",
+              "kind": "choice",
+              "choices": [
+                "Soon.",
+                "Someday."
+              ],
+              "optional": true
+            }
+          ],
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://did:plc:me/app.bsky.feed.post/3kq",
+              "cid": "cid-stamina"
+            }
+          },
+          "use": "reply",
+          "group": "Thanks",
+          "shortcut": "idea",
+          "keywords": [
+            "idea",
+            "suggest"
+          ],
+          "langs": [
+            "en"
+          ],
+          "createdAt": "2026-09-01T00:00:00.000Z",
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3t",
+        "cid": "bafy",
+        "rkey": "3t",
+        "name": "Thanks for the idea",
+        "text": "Thank you, {{their.firstName}}. {{idea}} is on the list. {{when}}",
+        "variables": [
+          {
+            "key": "their.firstName",
+            "label": "Their name"
+          },
+          {
+            "key": "idea",
+            "label": "What did they suggest?",
+            "hint": "A few words",
+            "default": "That"
+          },
+          {
+            "key": "when",
+            "label": "When?",
+            "kind": "choice",
+            "choices": [
+              "Soon.",
+              "Someday."
+            ],
+            "optional": true
+          }
+        ],
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://did:plc:me/app.bsky.feed.post/3kq",
+            "cid": "cid-stamina"
+          }
+        },
+        "use": "reply",
+        "group": "Thanks",
+        "shortcut": "idea",
+        "keywords": [
+          "idea",
+          "suggest"
+        ],
+        "langs": [
+          "en"
+        ],
+        "createdAt": "2026-09-01T00:00:00.000Z",
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "images",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "name": "Pics",
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.images",
+            "images": []
+          }
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "Pics",
+        "text": "x",
+        "variables": [],
+        "embed": {
+          "$type": "app.bsky.embed.images",
+          "images": []
+        },
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "link",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "name": "Docs",
+          "text": "See the docs",
+          "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+              "uri": "https://docs.example.org/start",
+              "title": "Start",
+              "description": ""
+            }
+          }
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "Docs",
+        "text": "See the docs",
+        "variables": [],
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "https://docs.example.org/start",
+            "title": "Start",
+            "description": ""
+          }
+        },
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "feed",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "name": "F",
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://x/app.bsky.feed.generator/f"
+            }
+          }
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "F",
+        "text": "x",
+        "variables": [],
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://x/app.bsky.feed.generator/f"
+          }
+        },
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "list",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "name": "L",
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://x/app.bsky.graph.list/l"
+            }
+          }
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "L",
+        "text": "x",
+        "variables": [],
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://x/app.bsky.graph.list/l"
+          }
+        },
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "keywordsOdd",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "x",
+          "keywords": [
+            "a",
+            null,
+            5,
+            [
+              "b",
+              "c"
+            ],
+            {
+              "o": 1
+            }
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "x",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [
+          "a",
+          "5",
+          "b",
+          "c",
+          "[object Object]"
+        ],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "nulls",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": null,
+          "variables": null,
+          "keywords": null,
+          "langs": null,
+          "embed": null
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "seedDraft",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Not yet, {{their.firstName}}!",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "Not yet, {{their.firstName}}!",
+        "variables": [],
+        "embed": null,
+        "use": "reply",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "stringLangs",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "name": "S",
+          "text": "x",
+          "langs": "en"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "S",
+        "text": "x",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "emptyStringLangs",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "name": "S",
+          "text": "x",
+          "langs": ""
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "S",
+        "text": "x",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "stringTemplate",
+      "fn": "roundTrip",
+      "input": {
+        "template": "tpl"
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "arrayTemplate",
+      "fn": "roundTrip",
+      "input": {
+        "template": [
+          "a",
+          {
+            "text": "b"
+          }
+        ]
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "extraFields",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "name": "X",
+          "text": "{{a}}",
+          "variables": [
+            {
+              "key": "a",
+              "choicesText": "one\ntwo",
+              "choices": [
+                "zero"
+              ]
+            }
+          ],
+          "extra": true
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "X",
+        "text": "{{a}}",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-idea",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "name": "Thanks for the idea",
+          "text": "Thank you, {{their.firstName}}. I like the idea of {{idea}}, and it's on our list now. {{timing}}",
+          "variables": [
+            {
+              "key": "idea",
+              "label": "What did they suggest?",
+              "hint": "A few words"
+            },
+            {
+              "key": "timing",
+              "label": "When?",
+              "kind": "choice",
+              "optional": true,
+              "choices": [
+                "Soon.",
+                "Someday."
+              ]
+            }
+          ],
+          "use": "reply",
+          "keywords": [
+            "love",
+            "feature",
+            "reset"
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "Thanks for the idea",
+        "text": "Thank you, {{their.firstName}}. I like the idea of {{idea}}, and it's on our list now. {{timing}}",
+        "variables": [
+          {
+            "key": "idea",
+            "label": "What did they suggest?",
+            "hint": "A few words"
+          },
+          {
+            "key": "timing",
+            "label": "When?",
+            "kind": "choice",
+            "choices": [
+              "Soon.",
+              "Someday."
+            ],
+            "optional": true
+          }
+        ],
+        "embed": null,
+        "use": "reply",
+        "group": "",
+        "shortcut": "",
+        "keywords": [
+          "love",
+          "feature",
+          "reset"
+        ],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-undeclared",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "Version {{version}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "Version {{version}}",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-prototype",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "Ask the {{constructor}} about {{valueOf}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "Ask the {{constructor}} about {{valueOf}}",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-proto",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "{{toString}} {{hasOwnProperty}} {{__proto__}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{toString}} {{hasOwnProperty}} {{__proto__}}",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-allContext",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "{{their.firstName}} / {{their.name}} / {{their.handle}} / {{my.handle}} / {{today}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{their.firstName}} / {{their.name}} / {{their.handle}} / {{my.handle}} / {{today}}",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-contextLabelled",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "Hi {{their.firstName}}, I am {{my.handle}}",
+          "variables": [
+            {
+              "key": "their.firstName",
+              "label": "Their name, please",
+              "default": "friend"
+            },
+            {
+              "key": "my.handle",
+              "hint": "Yours"
+            }
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "Hi {{their.firstName}}, I am {{my.handle}}",
+        "variables": [
+          {
+            "key": "their.firstName",
+            "label": "Their name, please",
+            "default": "friend"
+          },
+          {
+            "key": "my.handle",
+            "hint": "Yours"
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-otherContext",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "{{their.pronoun}} and {{my.name}} and {{today2}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{their.pronoun}} and {{my.name}} and {{today2}}",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-choices",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "Use {{device}} or {{os}} or {{empty}}",
+          "variables": [
+            {
+              "key": "device",
+              "kind": "choice",
+              "choices": [
+                "Phone",
+                "Tablet",
+                ""
+              ]
+            },
+            {
+              "key": "os",
+              "kind": "choice",
+              "choices": []
+            },
+            {
+              "key": "empty",
+              "kind": "choice"
+            },
+            {
+              "key": "device",
+              "label": "Later wins",
+              "kind": "choice",
+              "choices": [
+                "Laptop"
+              ]
+            }
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "Use {{device}} or {{os}} or {{empty}}",
+        "variables": [
+          {
+            "key": "device",
+            "label": "Later wins",
+            "kind": "choice",
+            "choices": [
+              "Laptop"
+            ]
+          },
+          {
+            "key": "os",
+            "kind": "choice",
+            "choices": []
+          },
+          {
+            "key": "empty",
+            "kind": "choice",
+            "choices": []
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-defaults",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "{{a}} {{b}} {{c}}",
+          "variables": [
+            {
+              "key": "a",
+              "default": "alpha"
+            },
+            {
+              "key": "b",
+              "default": ""
+            },
+            {
+              "key": "c",
+              "default": 7
+            }
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{a}} {{b}} {{c}}",
+        "variables": [
+          {
+            "key": "a",
+            "default": "alpha"
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-optionalFlags",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "{{a}}{{b}}{{c}}{{d}}",
+          "variables": [
+            {
+              "key": "a",
+              "optional": 1
+            },
+            {
+              "key": "b",
+              "optional": "yes"
+            },
+            {
+              "key": "c",
+              "optional": 0
+            },
+            {
+              "key": "d",
+              "optional": false
+            }
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{a}}{{b}}{{c}}{{d}}",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-spacing",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "{{ spaced }} {{\ttab\t}} {{ nbsp }} {{　ideo　}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{ spaced }} {{\ttab\t}} {{ nbsp }} {{　ideo　}}",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-badKeys",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "{{1bad}} {{}} {{_x}} {{a-b.c_d}} {{a b}} {{{x}}} {{y}}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{1bad}} {{}} {{_x}} {{a-b.c_d}} {{a b}} {{{x}}} {{y}}}",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-longKey",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "{{kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk}} {{kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk}} {{kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk}}",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-repeated",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "{{a}} {{a}} {{ a }} {{A}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{a}} {{a}} {{ a }} {{A}}",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-unicode",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "Héllo {{name}} — 🌿 {{plant}}! ΣΑΣ {{their.firstName}}"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "Héllo {{name}} — 🌿 {{plant}}! ΣΑΣ {{their.firstName}}",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-emptyText",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": ""
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-noText",
+      "fn": "roundTrip",
+      "input": {
+        "template": {}
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-numberText",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": 12345
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-arrayText",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": [
+            "{{a}}",
+            "b"
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-embedOnly",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "",
+          "embed": {
+            "$type": "app.bsky.embed.record"
+          }
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": {
+          "$type": "app.bsky.embed.record"
+        },
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-nullVariables",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "{{a}}",
+          "variables": null
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{a}}",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-keyless",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "{{a}}",
+          "variables": [
+            {
+              "label": "No key"
+            },
+            {
+              "key": 5
+            },
+            {}
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{a}}",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-labels",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "{{a}} {{b}}",
+          "variables": [
+            {
+              "key": "a",
+              "label": "",
+              "hint": ""
+            },
+            {
+              "key": "b",
+              "label": "Bee",
+              "hint": "Buzz"
+            }
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{a}} {{b}}",
+        "variables": [
+          {
+            "key": "b",
+            "label": "Bee",
+            "hint": "Buzz"
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "t-lineBreaks",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "text": "first {{a}}\nsecond\r\n{{b}} third\n{{c}}",
+          "variables": [
+            {
+              "key": "a",
+              "optional": true
+            },
+            {
+              "key": "b",
+              "optional": true
+            },
+            {
+              "key": "c",
+              "optional": true
+            }
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "first {{a}}\nsecond\r\n{{b}} third\n{{c}}",
+        "variables": [
+          {
+            "key": "a",
+            "optional": true
+          },
+          {
+            "key": "b",
+            "optional": true
+          },
+          {
+            "key": "c",
+            "optional": true
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "record-fromTest",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": "cid1",
+          "rkey": "3abc",
+          "name": "N",
+          "text": "T {{x}}",
+          "variables": [
+            {
+              "key": "x"
+            }
+          ],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "x",
+          "keywords": [
+            "a"
+          ],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": "cid1",
+        "rkey": "3abc",
+        "name": "N",
+        "text": "T {{x}}",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "x",
+        "keywords": [
+          "a"
+        ],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "record-full",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": "bafy",
+          "rkey": "3abc",
+          "name": "Full",
+          "text": "Hi {{their.firstName}}, try {{app}}",
+          "variables": [
+            {
+              "key": "app",
+              "label": "Which app?",
+              "hint": "A hint",
+              "kind": "choice",
+              "choices": [
+                "One",
+                "Two",
+                "c0",
+                "c1",
+                "c2",
+                "c3",
+                "c4",
+                "c5",
+                "c6",
+                "c7",
+                "c8",
+                "c9"
+              ],
+              "default": "One",
+              "optional": true
+            },
+            {
+              "key": "their.firstName",
+              "label": "Name"
+            }
+          ],
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://x/app.bsky.feed.post/1",
+              "cid": "c"
+            }
+          },
+          "use": "post",
+          "group": " Support ",
+          "shortcut": "app",
+          "keywords": [
+            "ok",
+            "Two Words"
+          ],
+          "langs": [
+            "en",
+            "pt-BR"
+          ],
+          "createdAt": "2026-01-01T00:00:00.000Z",
+          "updatedAt": "2026-02-01T00:00:00.000Z"
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": "bafy",
+        "rkey": "3abc",
+        "name": "Full",
+        "text": "Hi {{their.firstName}}, try {{app}}",
+        "variables": [
+          {
+            "key": "their.firstName",
+            "label": "Name"
+          },
+          {
+            "key": "app",
+            "label": "Which app?",
+            "hint": "A hint",
+            "kind": "choice",
+            "choices": [
+              "One",
+              "Two",
+              "c0",
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6",
+              "c7",
+              "c8",
+              "c9"
+            ],
+            "default": "One",
+            "optional": true
+          }
+        ],
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://x/app.bsky.feed.post/1",
+            "cid": "c"
+          }
+        },
+        "use": "post",
+        "group": " Support ",
+        "shortcut": "app",
+        "keywords": [
+          "ok",
+          "Two Words"
+        ],
+        "langs": [
+          "en",
+          "pt-BR"
+        ],
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-02-01T00:00:00.000Z"
+      }
+    },
+    {
+      "id": "record-empty",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "record-noValue",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "record-nullValue",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "record-stringValue",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "record-trailingSlash",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/",
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/",
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "record-noSlash",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "uri": "plain",
+          "cid": null,
+          "rkey": "plain",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "plain",
+        "cid": null,
+        "rkey": "plain",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "record-wrongTypes",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "record-arrayEmbed",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": [
+            1,
+            2
+          ],
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": [
+          1,
+          2
+        ],
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "record-falsyEmbed",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "record-uses",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "reply",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "record-usesCase",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "record-unicodeShortcut",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+          "cid": null,
+          "rkey": "3abc",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "i̇stanbul",
+          "keywords": [
+            "ΣΑΣ"
+          ],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null
+        }
+      },
+      "output": {
+        "uri": "at://did:plc:me/net.anisota.feed.template/3abc",
+        "cid": null,
+        "rkey": "3abc",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "i̇stanbul",
+        "keywords": [
+          "ΣΑΣ"
+        ],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "composer-shapes",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Not yet, Wren!",
+        "reply": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/1",
+          "cid": "c1",
+          "root": {
+            "uri": "at://did:plc:wren/app.bsky.feed.post/1",
+            "cid": "c1"
+          },
+          "author": {
+            "did": "did:plc:wren",
+            "handle": "wren.example",
+            "displayName": "Wren Okafor"
+          },
+          "text": "Is there an app?"
+        },
+        "record": {
+          "kind": "post",
+          "uri": "at://did:plc:me/app.bsky.feed.post/3kq",
+          "cid": "cq"
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Not yet, {{their.firstName}}!",
+          "variables": [],
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://did:plc:me/app.bsky.feed.post/3kq",
+              "cid": "cq"
+            }
+          },
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "post",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“Wren” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "card",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Here",
+        "reply": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/1",
+          "cid": "c1",
+          "root": {
+            "uri": "at://did:plc:wren/app.bsky.feed.post/1",
+            "cid": "c1"
+          },
+          "author": {
+            "did": "did:plc:wren",
+            "handle": "wren.example",
+            "displayName": "Wren Okafor"
+          },
+          "text": "Is there an app?"
+        },
+        "card": {
+          "url": "https://docs.example/a",
+          "title": "Docs"
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Here",
+          "variables": [],
+          "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+              "uri": "https://docs.example/a",
+              "title": "",
+              "description": ""
+            }
+          },
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "link",
+          "quoteUrl": "https://docs.example/a",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "record-over-card",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "x",
+        "reply": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/1",
+          "cid": "c1",
+          "root": {
+            "uri": "at://did:plc:wren/app.bsky.feed.post/1",
+            "cid": "c1"
+          },
+          "author": {
+            "did": "did:plc:wren",
+            "handle": "wren.example",
+            "displayName": "Wren Okafor"
+          },
+          "text": "Is there an app?"
+        },
+        "record": {
+          "uri": "at://did:plc:me/app.bsky.feed.post/3kq",
+          "cid": "cq"
+        },
+        "card": {
+          "url": "https://a.example"
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "x",
+          "variables": [],
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://did:plc:me/app.bsky.feed.post/3kq",
+              "cid": "cq"
+            }
+          },
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "post",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "moss",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Thanks Moss! Moss, have a look. Mossy is someone else.  ",
+        "replyTo": {
+          "author": {
+            "handle": "moss.example",
+            "displayName": "Moss Green"
+          }
+        },
+        "recordEmbed": {
+          "uri": "at://did:plc:me/app.bsky.feed.post/3kq",
+          "cid": "cid-stamina"
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Thanks {{their.firstName}}! {{their.firstName}}, have a look. Mossy is someone else.",
+          "variables": [],
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://did:plc:me/app.bsky.feed.post/3kq",
+              "cid": "cid-stamina"
+            }
+          },
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "post",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“Moss” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "link-url",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Here you go",
+        "replyTo": {
+          "author": {
+            "handle": "moss.example",
+            "displayName": "Moss Green"
+          }
+        },
+        "linkUrl": "https://docs.example.org/a"
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Here you go",
+          "variables": [],
+          "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+              "uri": "https://docs.example.org/a",
+              "title": "",
+              "description": ""
+            }
+          },
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "link",
+          "quoteUrl": "https://docs.example.org/a",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "protected",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "see https://wren.blog and https://x.example/?u=wren, ping @wren.bsky.social or wren@x.com, #wren, wren.blog or wren_art. Thanks wren. wren, hi!",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "see https://wren.blog and https://x.example/?u=wren, ping @wren.bsky.social or wren@x.com, #wren, wren.blog or wren_art. Thanks {{their.firstName}}. {{their.firstName}}, hi!",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“wren” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "handle-only",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "ping @wren.bsky.social",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "ping @wren.bsky.social",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "http-upper",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "HTTPS://wren.example and HTTP://x.example/wren and Wren",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "HTTPS://wren.example and HTTP://x.example/wren and Wren",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "long-s",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "httpſ://x.example/wren wren",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "httpſ://x.example/wren {{their.firstName}}",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“wren” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "path",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "a/wren b-wren wren-b wren/c wren_ _wren",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "a/wren b-wren wren-b wren/c wren_ _wren",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "domain-dot",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "wren. wren.x x.wren wren.. 1.wren wren.1",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "{{their.firstName}}. wren.x x.wren {{their.firstName}}.. 1.wren wren.1",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“wren” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "possessive",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "wren's idea, wren’s too, wren'",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "{{their.firstName}}'s idea, {{their.firstName}}’s too, {{their.firstName}}'",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“wren” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "case",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Wren WREN wren wReN",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Wren WREN {{their.firstName}} wReN",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“wren” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "digits",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "wren2 2wren wren",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "wren2 2wren {{their.firstName}}",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“wren” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "marks",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "wreń wren",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "wreń {{their.firstName}}",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“wren” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "emoji",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "🌿wren🌿 wren!",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "🌿{{their.firstName}}🌿 {{their.firstName}}!",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“wren” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "email-unicode",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "zoë@exämple.com Zoë",
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": "Zoë Ng"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "zoë@exämple.com {{their.firstName}}",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“Zoë” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "apostrophe-name",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Thanks O'Brien, O'Brien-Smith!",
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": "O'Brien Smith"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Thanks {{their.firstName}}, O'Brien-Smith!",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“O'Brien” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "hyphen-name",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Hi Anne-Marie! Anne",
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": "Anne-Marie Fox"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Hi {{their.firstName}}! Anne",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“Anne-Marie” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "curly-name",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Hey D’Angelo, D’Angelo’s back",
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": "D’Angelo"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Hey {{their.firstName}}, {{their.firstName}}’s back",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“D’Angelo” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "emoji-name",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Hi Wren 🌿",
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": "🌿 Wren Okafor"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Hi {{their.firstName}} 🌿",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“Wren” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "combining-name",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Merci élise, élise",
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": "élise D"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Merci élise, élise",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "cjk-name",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "山田さん、ありがとう 山田",
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": "山田 太郎"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "山田さん、ありがとう {{their.firstName}}",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“山田” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "arabic-name",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "شكرا مريم",
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": "مريم أحمد"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "شكرا {{their.firstName}}",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“مريم” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "digit-name",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "42 is a name",
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": "42"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "42 is a name",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "empty-name",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Hello there",
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": ""
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Hello there",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "space-name",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Hello there",
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": "   "
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Hello there",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "number-name",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Hello 42",
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": 42
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Hello 42",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "no-author",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Hello",
+        "replyTo": {}
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Hello",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "no-reply",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Hello"
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Hello",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "null-reply-over-reply",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Not yet, Wren!",
+        "reply": {
+          "uri": "at://did:plc:wren/app.bsky.feed.post/1",
+          "cid": "c1",
+          "root": {
+            "uri": "at://did:plc:wren/app.bsky.feed.post/1",
+            "cid": "c1"
+          },
+          "author": {
+            "did": "did:plc:wren",
+            "handle": "wren.example",
+            "displayName": "Wren Okafor"
+          },
+          "text": "Is there an app?"
+        },
+        "replyTo": null
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Not yet, Wren!",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "null-record-over-record",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "x",
+        "record": {
+          "uri": "at://did:plc:me/app.bsky.feed.post/3kq",
+          "cid": "c"
+        },
+        "recordEmbed": null,
+        "linkUrl": "https://b.example"
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "x",
+          "variables": [],
+          "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+              "uri": "https://b.example",
+              "title": "",
+              "description": ""
+            }
+          },
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "link",
+          "quoteUrl": "https://b.example",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "record-no-cid",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "x",
+        "record": {
+          "uri": "at://did:plc:me/app.bsky.feed.post/3kq"
+        },
+        "card": {
+          "url": "https://c.example"
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "x",
+          "variables": [],
+          "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+              "uri": "https://c.example",
+              "title": "",
+              "description": ""
+            }
+          },
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "link",
+          "quoteUrl": "https://c.example",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "record-number-uri",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "x",
+        "record": {
+          "uri": 5,
+          "cid": 6
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "x",
+          "variables": [],
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": 5,
+              "cid": 6
+            }
+          },
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "other",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "card-no-url",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "x",
+        "card": {
+          "title": "Docs"
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "x",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "link-number",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "x",
+        "linkUrl": 5
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "x",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "link-over-card",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "x",
+        "card": {
+          "url": "https://card.example"
+        },
+        "linkUrl": "https://link.example"
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "x",
+          "variables": [],
+          "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+              "uri": "https://link.example",
+              "title": "",
+              "description": ""
+            }
+          },
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "link",
+          "quoteUrl": "https://link.example",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "null-link-over-card",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "x",
+        "card": {
+          "url": "https://card.example"
+        },
+        "linkUrl": null
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "x",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "trailing-space",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Hi Wren \n\t  ",
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": "Wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Hi {{their.firstName}}",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“Wren” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "only-space",
+      "fn": "draftFromReply",
+      "input": {
+        "text": " \n ",
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": "Wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "no-text",
+      "fn": "draftFromReply",
+      "input": {
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": "Wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "number-text",
+      "fn": "draftFromReply",
+      "input": {
+        "text": 42,
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": "Wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "blank-in-text",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Hi Wren, {{their.firstName}} {{idea}}",
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": "Wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Hi {{their.firstName}}, {{their.firstName}} {{idea}}",
+          "variables": [
+            {
+              "label": "",
+              "hint": "",
+              "kind": "text",
+              "default": "",
+              "optional": false,
+              "key": "idea",
+              "choices": [],
+              "choicesText": ""
+            }
+          ],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“Wren” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "hashtag-mid",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "#wrenfest wren#x x#wren",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "#wrenfest {{their.firstName}}#x x#wren",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“wren” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "mention-mid",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "x@wren wren@ @@wren",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "x@wren wren@ @@wren",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "url-trailing",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "http://x.example/wren) wren)",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "http://x.example/wren) {{their.firstName}})",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“wren” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "long-name",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "Hi Bartholomew-Alexander",
+        "replyTo": {
+          "author": {
+            "handle": "n.example",
+            "displayName": "Bartholomew-Alexander von X"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Hi {{their.firstName}}",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“Bartholomew-Alexander” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "ypogegrammeni-handle",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "@aͅ.wren hi",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "@aͅ.wren hi",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "ypogegrammeni-domain",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "x@y.aͅ.wren",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "x@y.aͅ.wren",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "ypogegrammeni-local",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "wren@aͅ.b ok wren",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "wren@aͅ.b ok {{their.firstName}}",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“wren” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "ypogegrammeni-hashtag",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "#aͅ wren",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "#aͅ {{their.firstName}}",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“wren” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "fromTest",
+      "fn": "templateFromDraft",
+      "input": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "Bug",
+          "text": "Which {{device}}?",
+          "variables": [
+            {
+              "key": "device",
+              "label": "Device?",
+              "kind": "choice",
+              "choicesText": "Phone\n\n Laptop \n"
+            },
+            {
+              "key": "gone",
+              "label": "No longer in the text"
+            }
+          ],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "/Bug",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "bug, crash,\nBug, ",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "Bug",
+        "text": "Which {{device}}?",
+        "variables": [
+          {
+            "key": "device",
+            "label": "Device?",
+            "kind": "choice",
+            "choices": [
+              "Phone",
+              "Laptop"
+            ]
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "bug",
+        "keywords": [
+          "bug",
+          "crash"
+        ],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "emptyChoices",
+      "fn": "templateFromDraft",
+      "input": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Which {{device}}?",
+          "variables": [
+            {
+              "key": "device",
+              "kind": "choice",
+              "choicesText": ""
+            }
+          ],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "Which {{device}}?",
+        "variables": [
+          {
+            "key": "device",
+            "kind": "choice",
+            "choices": []
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "choicesArray",
+      "fn": "templateFromDraft",
+      "input": {
+        "draft": {
+          "text": "{{a}} {{b}}",
+          "variables": [
+            {
+              "key": "a",
+              "kind": "choice",
+              "choices": [
+                " x ",
+                "",
+                "y",
+                5,
+                null
+              ]
+            },
+            {
+              "key": "b",
+              "kind": "choice"
+            }
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{a}} {{b}}",
+        "variables": [
+          {
+            "key": "a",
+            "kind": "choice",
+            "choices": [
+              "x",
+              "y"
+            ]
+          },
+          {
+            "key": "b",
+            "kind": "choice",
+            "choices": []
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "quoteNone",
+      "fn": "templateFromDraft",
+      "input": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "Q",
+          "text": "x",
+          "variables": [],
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://did:plc:me/app.bsky.feed.post/3kq",
+              "cid": "cid-stamina"
+            }
+          },
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "Q",
+        "text": "x",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "keywordsArray",
+      "fn": "templateFromDraft",
+      "input": {
+        "draft": {
+          "text": "x",
+          "keywords": [
+            "A",
+            "a",
+            "B",
+            "b ",
+            "ΣΑΣ",
+            "σας"
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "x",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [
+          "A",
+          "B",
+          "b ",
+          "ΣΑΣ"
+        ],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "keywordsString",
+      "fn": "templateFromDraft",
+      "input": {
+        "draft": {
+          "text": "x",
+          "keywords": "Ab😀a"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "x",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [
+          "A",
+          "b",
+          "😀"
+        ],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "keywordsTextBoth",
+      "fn": "templateFromDraft",
+      "input": {
+        "draft": {
+          "text": "x",
+          "keywordsText": "one,two",
+          "keywords": [
+            "three"
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "x",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [
+          "one",
+          "two"
+        ],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "keywordsTextNumber",
+      "fn": "templateFromDraft",
+      "input": {
+        "draft": {
+          "text": "x",
+          "keywordsText": 5,
+          "keywords": [
+            "three"
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "x",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [
+          "three"
+        ],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "keywordsUnicode",
+      "fn": "templateFromDraft",
+      "input": {
+        "draft": {
+          "text": "x",
+          "keywordsText": "ΣΑΣ, σας, İstanbul, i̇stanbul, é, é"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "x",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [
+          "ΣΑΣ",
+          "İstanbul",
+          "é",
+          "é"
+        ],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "variablesOdd",
+      "fn": "templateFromDraft",
+      "input": {
+        "draft": {
+          "text": "{{a}} {{b}} {{c}} {{their.firstName}}",
+          "variables": [
+            {
+              "key": "a",
+              "label": "  A  ",
+              "hint": " h ",
+              "default": "  d ",
+              "optional": true
+            },
+            {
+              "key": "a",
+              "label": "A again"
+            },
+            {
+              "key": "b",
+              "label": 5,
+              "hint": null,
+              "default": 7,
+              "optional": "yes"
+            },
+            {
+              "key": "c"
+            },
+            {
+              "key": "their.firstName",
+              "label": "Name"
+            },
+            {
+              "key": "gone",
+              "label": "x"
+            },
+            {
+              "key": 5,
+              "label": "number key"
+            },
+            {
+              "label": "no key"
+            },
+            null,
+            "string"
+          ]
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "{{a}} {{b}} {{c}} {{their.firstName}}",
+        "variables": [
+          {
+            "key": "a",
+            "label": "A",
+            "hint": "h",
+            "default": "d",
+            "optional": true
+          },
+          {
+            "key": "a",
+            "label": "A again"
+          },
+          {
+            "key": "their.firstName",
+            "label": "Name"
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "raw",
+      "fn": "templateFromDraft",
+      "input": {
+        "draft": {
+          "uri": 5,
+          "cid": "",
+          "rkey": 7,
+          "name": 9,
+          "text": [
+            "x"
+          ],
+          "use": "later",
+          "group": 3,
+          "shortcut": " /X ",
+          "langs": "en",
+          "createdAt": 0,
+          "updatedAt": "u",
+          "embed": 0
+        }
+      },
+      "output": {
+        "uri": 5,
+        "cid": null,
+        "rkey": 7,
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "later",
+        "group": "",
+        "shortcut": "x",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": "u"
+      }
+    },
+    {
+      "id": "empty",
+      "fn": "templateFromDraft",
+      "input": {
+        "draft": {}
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "null",
+      "fn": "templateFromDraft",
+      "input": {
+        "draft": null
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "string",
+      "fn": "templateFromDraft",
+      "input": {
+        "draft": "draft"
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "extra",
+      "fn": "templateFromDraft",
+      "input": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "E",
+          "text": "x",
+          "variables": [],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": {
+            "any": 1
+          },
+          "somethingElse": 1
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "E",
+        "text": "x",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    }
+  ]
+}
