@@ -3,8 +3,8 @@
 //
 // The post's settings, under a rule in ink: each a button with its name
 // and its value apart (a phone's rows, between hairlines), or one short
-// phrase (a wider window's row of words). More holds Continue a thread and
-// Start over; Save as a template waits for the template editor's port.
+// phrase (a wider window's row of words). More holds Continue a thread,
+// Save as a template and Start over.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -109,8 +109,8 @@ struct ComposerOptions: View {
     MoreMenu(label: "More for this post", entries: moreEntries(replying: replying))
   }
 
-  /// More: Continue a thread (not on a reply), then Start over. Save as a
-  /// template waits for the template editor's port.
+  /// More: Continue a thread (not on a reply), Save as a template, then
+  /// Start over.
   private func moreEntries(replying: Bool) -> [MenuEntry] {
     var out: [MenuEntry] = []
     if !replying {
@@ -121,6 +121,12 @@ struct ComposerOptions: View {
             accessibilityIdentifier: "more-continue"
           ) { controller.openContinue() }))
     }
+    out.append(
+      .item(
+        MenuItem(
+          "Save as a template", key: "template", hint: "Keep this text to use again",
+          accessibilityIdentifier: "more-template"
+        ) { controller.saveAsTemplate() }))
     out.append(.separator)
     out.append(.item(MenuItem("Start over", key: "over", destructive: true) { controller.startOver() }))
     return out
@@ -158,6 +164,7 @@ struct ComposerOptions: View {
       if !replying {
         subRow("Continue a thread", danger: false, id: "option-continue") { controller.openContinue() }
       }
+      subRow("Save as a template", danger: false, id: "option-template") { controller.saveAsTemplate() }
       subRow("Start over", danger: true, id: "option-start-over") { controller.startOver() }
     }
   }

@@ -7,7 +7,7 @@
 // into a thread, right under its text; once that offer is put away (Not
 // now, or the setting), the same thing is a quiet link beside the count.
 // PostTools are the ways to add to a post: pictures and a video
-// (PhotosPicker); the library's button waits for the library's port.
+// (PhotosPicker), and something from the library.
 
 #if canImport(UIKit)
 import CoreTransferable
@@ -60,7 +60,7 @@ enum PickedMedia {
   }
 }
 
-/// The ways to add to a post: pictures and a video.
+/// The ways to add to a post: pictures, a video, something from the library.
 struct PostTools: View {
   @Environment(\.virgaTheme) private var theme
   let controller: ComposerController
@@ -86,6 +86,15 @@ struct PostTools: View {
       .buttonStyle(.virga(.ghost, size: .small, icon: true))
       .disabled(disabled || hasMedia)
       .accessibilityLabel("Add a video")
+      Button {
+        controller.openLibrary(post.id, range: nil)
+      } label: {
+        Image(systemName: ComposerGlyph.library)
+      }
+      .buttonStyle(.virga(.ghost, size: .small, icon: true))
+      .disabled(disabled)
+      .accessibilityLabel("Quote or attach from your library")
+      .accessibilityIdentifier("open-library")
     }
     .onChange(of: pickedImages) { _, items in
       guard !items.isEmpty else { return }

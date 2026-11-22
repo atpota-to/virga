@@ -79,6 +79,8 @@ enum ComposerDialog: Identifiable, Equatable {
   case gates
   case timer
   case continueThread
+  case library(LibraryRequest)
+  case saveTemplate
   var id: String {
     switch self {
     case .alt(let p, let i): return "alt-\(p)-\(i)"
@@ -88,6 +90,16 @@ enum ComposerDialog: Identifiable, Equatable {
     case .gates: return "gates"
     case .timer: return "timer"
     case .continueThread: return "continue"
+    case .library: return "library"
+    case .saveTemplate: return "save-template"
+    }
+  }
+
+  /// The library and the template editor take the whole height.
+  var isTall: Bool {
+    switch self {
+    case .library, .saveTemplate: return true
+    default: return false
     }
   }
 }
@@ -133,6 +145,8 @@ public final class ComposerController {
   var focusPostId: String?
   /// Continue a thread's list: `{ status, items, error }`.
   var continueState: (status: String, items: [JSONValue], error: String) = (status: "idle", items: [], error: "")
+  /// What Save as a template starts the editor from.
+  var templateSeed: TemplateSeed?
   /// A caret the controller put into a post's text (a split, a mention).
   var pendingCaret: [String: Int] = [:]
 
@@ -409,9 +423,21 @@ public final class ComposerController {
       loads = [plan.scheduledId != nil ? "scheduled" : "draft": .failed(ComposerUnported.open, soft: false)]
       return
     }
-    // Templates and the library's attachments wait for library/model.js.
+    // A template by its rkey waits for the library's own reading of it; an
+    // attachment (the Library page's Use in a new post) is a plan, put in
+    // the intent's first post once it's on screen.
     loads["template"] = nil
     loads["attach"] = nil
+    if let attach = plan.attach, let libraryPlan = try? attach.decode(LibraryPlan.self),
+      let postId = state.posts.first?.id
+    {
+      Task {
+        await self.applyPlan(libraryPlan, postId, range: nil)
+        guard self.loadToken == token else { return }
+        // What the plan put in is still the intent's, not the writer's.
+        self.seed = .object(["texts": .array(self.state.posts.map { .string($0.text) })])
+      }
+    }
     if let reply = plan.reply {
       replyRefPending = reply.json
       loadReply(reply.json, token: token)
