@@ -263,6 +263,21 @@ COMPOSER (Composer/)
   target:requireAltText:onProgress:)` → `ComposerPublishResult`. The app's is
   `UnavailablePublisher` until VirgaPosting's port is wired: set `ComposerHost(publisher:)`.
   `ComposerLinkCards.fetchLinkCard` is a stand-in for linkCard.js's, over the session's transport.
+- The phone's composer (640 and under) sends from `ComposerBar` at the top; the foot keeps the
+  tools (760 and under), why the button is off, Save as draft and Schedule.
+
+LIBRARY (Library/)
+- `LibraryPanel(lib:mode:state:postIndex:insertion:initialShelf:focusTemplate:verb:transport:onNewTemplate:onUse:)`
+  over VirgaPosting's `LibraryModel`; `onUse(item, answers)` may throw, and its error shows under the
+  button. `LibraryDialog` is the composer's (a `ComposerDialog.library(LibraryRequest)`; the plan
+  goes back through `ComposerController.applyPlan`), `LibraryScreen` the /posting/library page (Use
+  in a new post opens the composer with `attach: plan.json`). VirgaPosting has a `LibraryPage` (a
+  shelf's read), hence the page's name.
+- `LibraryWiring.environment(app)` builds `LibraryEnvironment` (the session's transport, the
+  account's archive, the link-card stand-in, the usage store). Each dialog and page makes its own
+  `LibraryModel` and its own `TemplatesModel` (the model's `stop()` stops its templates model).
+- The template editor and questions read through `LibrarySources` and preview with
+  `Library.previewFor`; `TemplateAttachSummary` lives in Templates/TemplateQuestions.swift.
 
 ## Known gaps and deliberate differences
 

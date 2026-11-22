@@ -3,8 +3,10 @@
 // thread of three; two pictures (pasted, as the simulator's photo library
 // may be empty); the "/" templates; a link card read from the demo's card
 // service; the language picker; the post-as picker; pressing Post, which
-// says publishing isn't in the iOS app yet; and Continue a thread. On a
-// phone, the bar at the top with the keyboard up. Each is kept as a
+// says publishing isn't in the iOS app yet; the library from the composer;
+// a template with blanks answered through its questions into the post;
+// Continue a thread; and the Library page. On a phone, the bar at the top
+// with the keyboard up. Each is kept as a
 // screenshot (an XCTAttachment kept always), on the iPhone and the iPad,
 // all in one launch.
 
@@ -178,6 +180,42 @@ final class ComposerUITests: XCTestCase {
     XCTAssertTrue(text(app, containing: "Publishing isn’t in the iOS app yet.").waitForExistence(timeout: 10))
     snapshot("composer-publish")
 
+    // The library, from the post's tools.
+    let openLibrary = element(app, "open-library")
+    scrollTo(app, openLibrary)
+    openLibrary.tap()
+    XCTAssertTrue(element(app, "library-panel").waitForExistence(timeout: 10), "the library didn't open")
+    _ = element(app, "library-row").waitForExistence(timeout: 15)
+    snapshot("composer-library")
+    element(app, "library-close").tap()
+    XCTAssertTrue(element(app, "library-panel").waitForNonExistence(timeout: 5))
+
+    // A template with blanks: "/remind" opens the library on it, its
+    // questions are answered, and its words go into the post.
+    scrollTo(app, addPost)
+    addPost.tap()
+    let fourth = editor(app, 3)
+    XCTAssertTrue(fourth.waitForExistence(timeout: 5))
+    fourth.tap()
+    fourth.typeText("/remind")
+    let remind = element(app, "slash-template-remind")
+    if remind.waitForExistence(timeout: 15) {
+      remind.tap()
+      let what = element(app, "template-question-0")
+      XCTAssertTrue(what.waitForExistence(timeout: 15), "the library didn't ask the template's questions")
+      what.tap()
+      what.typeText("Seed swap")
+      let saturday = app.buttons["Saturday"].firstMatch
+      if saturday.waitForExistence(timeout: 3) { saturday.tap() }
+      snapshot("composer-template-questions")
+      element(app, "template-questions-use").tap()
+      XCTAssertTrue(element(app, "library-panel").waitForNonExistence(timeout: 10))
+      let filled = XCTNSPredicateExpectation(
+        predicate: NSPredicate(format: "value CONTAINS %@", "Reminder: Seed swap is on Saturday."), object: fourth)
+      XCTAssertEqual(XCTWaiter.wait(for: [filled], timeout: 10), .completed, "the template's words didn't go into the post")
+      snapshot("composer-template-answered")
+    }
+
     // Continue a thread: one of the account's own recent posts.
     if isDesk(app) || isPad {
       let more = app.buttons["More for this post"]
@@ -203,5 +241,21 @@ final class ComposerUITests: XCTestCase {
       XCTAssertTrue(text(app, containing: "Continuing your thread").waitForExistence(timeout: 15))
       snapshot("composer-continue-reply")
     }
+
+    // The Library page, through the command palette.
+    element(app, "composer-close").tap()
+    XCTAssertTrue(element(app, "composer-title").waitForNonExistence(timeout: 5))
+    let search = element(app, "palette-open")
+    XCTAssertTrue(search.waitForExistence(timeout: 5))
+    search.tap()
+    let field = element(app, "palette-field")
+    XCTAssertTrue(field.waitForExistence(timeout: 5), "the palette didn't open")
+    field.typeText("Library")
+    let option = element(app, "palette-go:/posting/library")
+    XCTAssertTrue(option.waitForExistence(timeout: 5), "no Library in the palette")
+    option.tap()
+    XCTAssertTrue(element(app, "library-panel").waitForExistence(timeout: 15), "the Library page didn't open")
+    _ = element(app, "library-row").waitForExistence(timeout: 15)
+    snapshot("library-page")
   }
 }
