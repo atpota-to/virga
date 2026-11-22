@@ -270,11 +270,15 @@ import VirgaNetwork
     var stored: AdviserUsage?
   }
 
+  /// The gate's 10 s deadline is on timers nothing runs, so a loaded machine
+  /// can't let it fire before the test answers.
   static func model(answers: AdviserScript<JSONValue>, usage: Usage = Usage()) -> AdviserGateModel {
+    let timers = ManualTimers()
     let controller = AdviserGateController(
       analyzePost: { _, _, _ in await answers.next() },
       gatherReplyContext: { _, _, _ in nil }, atLimit: { _ in false },
-      readUsage: { _, _ in usage.stored }, now: { 0 }, sleep: { _ in })
+      readUsage: { _, _ in usage.stored }, now: { 0 }, sleep: { _ in },
+      setTimer: timers.set, clearTimer: timers.clear)
     return AdviserGateModel(controller: controller)
   }
 

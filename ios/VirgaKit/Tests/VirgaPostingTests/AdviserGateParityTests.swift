@@ -100,6 +100,10 @@ struct IdleRequester: AIRequester {
       guard let month = u["month"]?.stringValue else { return nil }
       return AdviserUsage(month: month, used: u["used"]?.doubleValue ?? 0, limit: u["limit"]?.doubleValue ?? 0)
     }
+    // The generator's answers come at once, well inside the 10 s deadline;
+    // here the deadline is on timers nothing runs, so a loaded machine can't
+    // let it win.
+    let timers = ManualTimers()
     let ctl = AdviserGateController(
       analyzePost: { _, payload, _ in
         payloads.withLock { $0.append(payload) }
@@ -118,7 +122,7 @@ struct IdleRequester: AIRequester {
       onChange: { view in
         views.append(view)
         if let sheet = view.sheet { sheetSeen.open(sheet) }
-      })
+      }, setTimer: timers.set, clearTimer: timers.clear)
     let did = c.string("did")
     ctl.configure(
       did: did, settings: c.input["settings"], requester: c["requester"].boolValue == true ? IdleRequester(did: did) : nil,

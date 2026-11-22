@@ -119,7 +119,7 @@
       "fixtures": [
         "adviser.style"
       ],
-      "note": "createStyleSession is StyleSession (@MainActor @Observable), its work and its timer injected (main-actor timers). A running count that hops over from the network after the posts came back is dropped (on the web every count comes first). styleProfileLine takes the date's locale, the count's (the web's activeLocale()) and the zone explicitly.",
+      "note": "createStyleSession is StyleSession (@MainActor @Observable), its work and its timer injected (main-actor timers). The default work awaits each running count on the main actor, so every count arrives in order before the posts do, as on the web. styleProfileLine takes the date's locale, the count's (the web's activeLocale()) and the zone explicitly.",
       "synced": "9388cea7363d"
     },
     "src/posting/adviser/usage.js": {

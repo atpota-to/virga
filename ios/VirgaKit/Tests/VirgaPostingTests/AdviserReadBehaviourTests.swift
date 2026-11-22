@@ -83,12 +83,16 @@ import VirgaCore
   }
 
   @Test func theSignalStaysLiveOnAnAnswerOrAFailure() async {
-    let answered = AdviserGate.startAdviserRead({ _ in "ok" as JSONValue }, timeoutMs: 10000)
+    let timers = ManualTimers()
+    let answered = AdviserGate.startAdviserRead(
+      { _ in "ok" as JSONValue }, timeoutMs: 10000, setTimer: timers.set, clearTimer: timers.clear)
     _ = await answered.value
     #expect(!answered.signal.aborted)
     #expect(!answered.cancel(.edit))
     #expect(!answered.signal.aborted)
-    let failed = AdviserGate.startAdviserRead({ _ -> JSONValue in throw AIServiceError(message: "busy") }, timeoutMs: 10000)
+    let failed = AdviserGate.startAdviserRead(
+      { _ -> JSONValue in throw AIServiceError(message: "busy") }, timeoutMs: 10000, setTimer: timers.set,
+      clearTimer: timers.clear)
     _ = await failed.value
     #expect(!failed.signal.aborted)
   }
@@ -331,8 +335,10 @@ import VirgaCore
   @Test func startsWithNothingReadingAndMirrorsTheReader() async {
     let answers = AdviserScript<JSONValue>()
     var flags: [Bool] = []
+    let timers = ManualTimers()
     let model = AdviserReadModel(
-      analyze: { _, _, _ in await answers.next() }, setIsCheckingPost: { flags.append($0) })
+      analyze: { _, _, _ in await answers.next() }, setIsCheckingPost: { flags.append($0) }, setTimer: timers.set,
+      clearTimer: timers.clear)
     #expect(model.adviserChoices == nil)
     #expect(!model.adviserReadInterrupted)
     let task = model.readAdviser("x", gate: true)
@@ -348,7 +354,10 @@ import VirgaCore
 
   @Test func aNewDeadlineMakesANewReaderAndEndsTheReadInFlight() async {
     let answers = AdviserScript<JSONValue>()
-    let model = AdviserReadModel(analyze: { _, _, _ in await answers.next() }, setIsCheckingPost: { _ in })
+    let timers = ManualTimers()
+    let model = AdviserReadModel(
+      analyze: { _, _, _ in await answers.next() }, setIsCheckingPost: { _ in }, setTimer: timers.set,
+      clearTimer: timers.clear)
     let task = model.readAdviser("x", gate: true)
     model.setGateTimeout(5000)
     #expect(model.gateTimeoutMs == 5000)
