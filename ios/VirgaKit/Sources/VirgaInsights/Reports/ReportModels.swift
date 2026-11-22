@@ -477,7 +477,7 @@ public enum ReportModels {
     let nowMs = Periods.periodEnd(period, nowMs)
     return cached(archive, "atmosphere", period, [("unitPick", option(unitPick))], formats: formats) {
       () -> AtmosphereReport? in
-      let atmosphere = archive.data.atmosphere
+      let atmosphere = archive.atmosphere
       if atmosphere.isEmpty { return nil }
       let w = windowOf(period, nowMs, minOf(atmosphere, \.at), unitPick)
       let inWindow = atmosphere.filter { $0.at >= w.t0 && $0.at <= nowMs }

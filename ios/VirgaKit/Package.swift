@@ -12,7 +12,8 @@
 //
 //   VirgaCore ← VirgaNetwork ← VirgaSession ← VirgaArchive ← VirgaPosting
 //   VirgaCore ← VirgaRepo ─────────────────────↑
-//   VirgaInsights, VirgaDefense ← (Archive, Posting, Session)
+//   VirgaInsights ← (Archive, Posting, Session, Repo)
+//   VirgaDefense ← (Archive, Posting, Session)
 //   VirgaDemo ← everything above (a fake network for previews and UI tests)
 //   VirgaUI ← everything (Apple platforms only)
 
@@ -56,7 +57,7 @@ var targets: [Target] = [
   ),
   .target(
     name: "VirgaInsights",
-    dependencies: ["VirgaCore", "VirgaNetwork", "VirgaSession", "VirgaArchive", "VirgaPosting"],
+    dependencies: ["VirgaCore", "VirgaNetwork", "VirgaRepo", "VirgaSession", "VirgaArchive", "VirgaPosting"],
     swiftSettings: strict
   ),
   .target(

@@ -24,9 +24,8 @@ CONVENTIONS
 - Internal helpers:
   - `TemplateJS.spread(_:)`: `{ ...v }` as the web spreads, an array's or a string's indexes included. Used by the editor-draft and editor-model functions.
   - `JSObjectMap`: a JS object as a map; `__proto__` is never held.
-- localeCompare goes through the internal `LocaleCompare` (Support/LocaleCompare.swift: Foundation ICU plus a trailing tab).
-  - `LocaleCompare.compare(_:_:locale:sensitivity: .base | .variant)`.
-  - nil locale means `AppLocale.activeLocale()`.
+- localeCompare goes through VirgaCore's `JSCollation.localeCompare(_:_:locale:sensitivity: .base | .variant)` (since wave 6; VirgaPosting's LocaleCompare is gone).
+  - `locale` is passed through as the web's `undefined`; every locale the app offers sorts the same (CLDR root order).
 
 TYPES (Templates/PostTemplates+Types.swift)
 - `PostTemplate` (Codable to the web's object, nulls included):

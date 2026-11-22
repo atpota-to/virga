@@ -46,24 +46,26 @@
     },
     "src/posting/templates/templateService.js": {
       "status": "ported",
-      "note": "A @MainActor class (TemplateService, with `shared` the app gives its store at launch). The agent is TemplateRepoAgent, which VirgaNetwork's XRPCAgent conforms to, so the session's agentFor serves it; a load in flight is a shared Task. Held to templates.templateService by recorded exchanges through BackendFetchHandler (every one-call-after-another case of templateService.test.js); the races (writes and resets while a load is held open) are Swift behaviour tests. Differences: the cache is the web's JSON with each record's keys sorted; listeners are closures that can't throw, so 'one reader's failure' has no counterpart; the SDK's lexicon check of answers isn't ported (VirgaNetwork's gap), so a malformed listRecords answer the web refuses as InvalidResponse is read leniently here. list() sorts with Foundation's ICU collation in `locale` (nil: the active one).",
+      "note": "A @MainActor class (TemplateService, with `shared` the app gives its store at launch). The agent is TemplateRepoAgent, which VirgaNetwork's XRPCAgent conforms to, so the session's agentFor serves it; a load in flight is a shared Task. Held to templates.templateService by recorded exchanges through BackendFetchHandler (every one-call-after-another case of templateService.test.js); the races (writes and resets while a load is held open) are Swift behaviour tests. Differences: the cache is the web's JSON with each record's keys sorted; listeners are closures that can't throw, so 'one reader's failure' has no counterpart; the SDK's lexicon check of answers isn't ported (VirgaNetwork's gap), so a malformed listRecords answer the web refuses as InvalidResponse is read leniently here. list() sorts with VirgaCore's JSCollation.localeCompare, plain and at base strength (held to Node by core.collation); `locale` is the web's `undefined` and doesn't change the order in any locale the app offers.",
       "swift": [
         "ios/VirgaKit/Sources/VirgaPosting/Templates/TemplateService.swift"
       ],
       "fixtures": [
-        "templates.templateService"
+        "templates.templateService",
+        "core.collation"
       ],
       "synced": "275be3b0a702"
     },
     "src/posting/templates/templateUsage.js": {
       "status": "ported",
-      "note": "The store is passed in (`store:`), as the web's optional `{ store }`; nil is no localStorage. The stored JSON is the web's byte for byte, keys in JS object order; a `__proto__` rkey is counted and returned but never stored, and a stored `__proto__` member is read back, as setting that key on a JS object sets its prototype. localeCompare is Foundation's ICU collation in the given (or active) locale, where the web uses the runtime's (VirgaPosting/Support/LocaleCompare.swift).",
+      "note": "The store is passed in (`store:`), as the web's optional `{ store }`; nil is no localStorage. The stored JSON is the web's byte for byte, keys in JS object order; a `__proto__` rkey is counted and returned but never stored, and a stored `__proto__` member is read back, as setting that key on a JS object sets its prototype. localeCompare, plain and at base strength, is VirgaCore's JSCollation.localeCompare (held to Node by core.collation); the `locale` parameter is the web's `undefined` (every locale the app offers collates in CLDR's root order).",
       "swift": [
         "ios/VirgaKit/Sources/VirgaPosting/Templates/TemplateUsage.swift"
       ],
       "fixtures": [
         "templates.templateUsage",
-        "templates.random"
+        "templates.random",
+        "core.collation"
       ],
       "synced": "0004a0a028e3"
     },
