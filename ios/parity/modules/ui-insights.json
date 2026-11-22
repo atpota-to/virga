@@ -117,12 +117,20 @@
       "swift": []
     },
     "src/reports/ReportPage.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Reports/ReportPage.swift"
+      ],
+      "note": "ReportsIndex (each report under a rule with its leading figure where its model is ported: followers, posts, engagement) and the report page's header with the period picker. Followers: the figures and Growth (the total with the ghost to the profile's count, or new followers per bucket) with its table. Posts: the figures, posts per bucket with the moving average and its table, and what kind of posts. Engagement: the figures, engagement over time with its trend and table, and by kind. Not yet: the content, people, blocks and atmosphere reports (their header and the sentence that they aren't in the app), the followers' blocks-together mode, newest followers, biggest days and the unfollow figure, the top posts, the given direction and its kinds, Add to dashboard, ChartNotes and How it's counted.",
+      "synced": "18e37669d694"
     },
     "src/reports/parts.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Reports/ReportPage.swift"
+      ],
+      "note": "Card (ReportCard over VirgaSection, its modes at the right), unitOptions and fig. Not yet: SyncEmpty's sync button, HowCounted and ModeToggle's titles (the keys say them to VoiceOver).",
+      "synced": "96555b05c896"
     },
     "src/share/ShareDialog.jsx": {
       "status": "pending",

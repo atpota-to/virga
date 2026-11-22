@@ -129,14 +129,14 @@ public struct RoutedPage: View {
   private func reports(_ key: String?) -> some View {
     if let key {
       if let report = ReportsRegistry.reportByKey[key] {
-        UnportedPage(PageHeaderModel(title: report.label, sub: report.desc, crumbs: [Crumb("Reports", to: "/reports")]))
+        ReportPage(report: report)
       } else {
         VirgaPage(PageHeaderModel(title: "There’s no report called “\(key)”", crumbs: [Crumb("Reports", to: "/reports")])) {
           EmptyView()
         }
       }
     } else {
-      UnportedPage(PageHeaderModel(title: "Reports", sub: "Every number Virga works out, one page each."))
+      ReportsIndex()
     }
   }
 

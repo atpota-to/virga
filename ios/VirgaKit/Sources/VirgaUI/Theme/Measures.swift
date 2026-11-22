@@ -7,6 +7,7 @@
 // Ports src/shell/commandPalette.css (its measures)
 // Ports src/charts/charts.css (its measures)
 // Ports src/dashboards/dashboards.css (its measures)
+// Ports src/reports/reports.css (its measures)
 //
 // The measures of the stylesheets ThemeKit doesn't read yet (ThemeKit holds
 // theme.css, base.css, controls.css and app.css; ios/parity/cases/
@@ -189,6 +190,12 @@ public enum Measure {
     public static let narrowStepsAt: CGFloat = 479
     public static let stepGap: CGFloat = 6
     public static let tick: CGFloat = 13
+  }
+
+  /// reports.css.
+  public enum Reports {
+    /// `.report-index`: tiles at least 220 wide.
+    public static let tileMin: CGFloat = 220
   }
 
   /// dashboards.css.

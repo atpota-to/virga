@@ -266,8 +266,13 @@
       "swift": []
     },
     "src/reports/reports.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Reports/ReportPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift"
+      ],
+      "note": "The index's tiles (at least 220 wide, each under a 2-point rule) and a report's cards in one column. Not yet: the report's split columns, the post rows, the content report and the notes.",
+      "synced": "872665d7bd83"
     },
     "src/settings/SettingsPage.jsx": {
       "status": "partial",
