@@ -251,6 +251,7 @@ public struct SeriesChart: View {
       .allowsHitTesting(false)
     }
     .accessibilityLabel(summary(scale))
+    .accessibilityIdentifier("series-chart")
   }
 
   static func anchor(_ name: String?) -> UnitPoint {
