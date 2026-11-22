@@ -92,6 +92,12 @@ struct ComposerBody: View {
   @Environment(\.virgaTheme) private var theme
   let controller: ComposerController
 
+  /// A draft or a scheduled post that couldn't be opened.
+  private var loadError: String? {
+    if case .failed(let text, _)? = controller.loads["scheduled"] ?? controller.loads["draft"] { return text }
+    return nil
+  }
+
   var body: some View {
     let state = controller.state
     let disabled = controller.disabled
@@ -102,10 +108,10 @@ struct ComposerBody: View {
       ) { controller.changeAsDid($0) }
       ComposerAccountNotice(controller: controller)
       ComposerNotices(controller: controller)
-      if case .failed(let text, _)? = controller.loads["scheduled"] ?? controller.loads["draft"] {
+      if let loadError {
         Callout(tone: .danger) {
           VStack(alignment: .leading, spacing: theme.space2) {
-            Text(text)
+            Text(loadError)
             Button("Write a new post instead") { controller.startOver(confirm: false) }
               .buttonStyle(.virga(size: .small))
           }
