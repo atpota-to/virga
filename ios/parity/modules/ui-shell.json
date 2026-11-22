@@ -285,20 +285,35 @@
       "synced": "428ed1747963"
     },
     "src/posting/pages/schedule.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/LifespanRuleEditor.swift"
+      ],
+      "note": "The timer's rule editor (.lifespan-editor, .lse-*: the switch row, the blocks and their legends, the chips, Other…'s fields, the sub-questions, the condition rows, the checks, the spare row, the sentence), in Measure.Lifespan. The scheduling pages' own come with them.",
+      "synced": "6e4ceba4938b"
     },
     "src/posting/posting.css": {
       "status": "partial",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerMeasure.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerMeasure.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostPreviewCard.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/NeedsBackendNotice.swift"
       ],
-      "note": "Only `.composer-dialog`'s width so far; the gates editor follows GatesEditor.jsx's own layout.",
+      "note": "`.composer-dialog`'s width (ComposerMeasure), the long-session notice (.needs-backend) and a post shown small (.post-preview, its compact form, head, words, foot and counts), in Measure.Posting; the gates editor follows GatesEditor.jsx's own layout. The rest comes with the posting pages.",
       "synced": "37fd5c2d457d"
     },
     "src/posting/ui/adviser.css": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserBusyLine.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserReadSheet.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserStyleDialog.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserSettingsCard.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AltTextDialog.swift"
+      ],
+      "note": "Measure.Adviser names every measure: the busy line (the accent's rule, the goals' pills, the actions, equal shares on a phone), the sheet (the verdict in its tone, the draft under a rule in ink, the marks underlined in their tone, the fixes on --surface-3, the tally, the notes and their markers on the washes, Fine against, the context and usage lines, the notices, the skeleton), the style dialog (the stages and their dots), and the settings' stacks, checks, indent, style row and What’s sent. The dialogs are the system's sheets, full height on a phone. The alt-text dialog's kinds, revise row, chips and field tools too.",
+      "synced": "6623ef1f063c"
     },
     "src/reports/reports.css": {
       "status": "partial",

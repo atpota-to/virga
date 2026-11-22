@@ -1,0 +1,6745 @@
+{
+  "name": "adviser.gate",
+  "sources": [
+    "src/posting/adviser/gate.js",
+    "src/posting/adviser/gateController.js",
+    "src/posting/adviser/useAdviserRead.js"
+  ],
+  "cases": [
+    {
+      "id": "gateConstants",
+      "fn": "gateConstants",
+      "input": {},
+      "output": {
+        "ADVISER_GATE_TIMEOUT_MS": 10000,
+        "ADVISER_CONTEXT_TIMEOUT_MS": 4000,
+        "ADVISER_CHOICES": {
+          "PUBLISH": "publish",
+          "EDIT": "edit"
+        },
+        "ADVISER_CHOICE_LABELS": {
+          "publish": "Publish anyway",
+          "edit": "Keep editing"
+        },
+        "ADVISER_TIMEOUT_MESSAGE": "The adviser took too long to answer, so it has not read this draft. You can still publish it as it is.",
+        "gateChoices": [
+          "publish",
+          "edit"
+        ],
+        "buttonChoices": [
+          "edit"
+        ],
+        "ADVISER_DECISIONS": {
+          "PUBLISH": "publish",
+          "EDIT": "edit",
+          "DRAFT": "draft"
+        },
+        "SHEET_STATUSES": [
+          "ready",
+          "error",
+          "limit",
+          "empty",
+          "needsText"
+        ],
+        "INITIAL_ADVISER_VIEW": {
+          "busy": null,
+          "sheet": null,
+          "usageVersion": 0
+        }
+      }
+    },
+    {
+      "id": "withinMs#1",
+      "fn": "withinMs",
+      "input": {
+        "ms": 1
+      },
+      "output": {
+        "name": "Error",
+        "message": "timed out after 1ms"
+      }
+    },
+    {
+      "id": "withinMs#2",
+      "fn": "withinMs",
+      "input": {
+        "ms": 2.5
+      },
+      "output": {
+        "name": "Error",
+        "message": "timed out after 2.5ms"
+      }
+    },
+    {
+      "id": "withinMs#3",
+      "fn": "withinMs",
+      "input": {
+        "ms": 0
+      },
+      "output": {
+        "name": "Error",
+        "message": "timed out after 0ms"
+      }
+    },
+    {
+      "id": "adviserGateEnabled#1",
+      "fn": "adviserGateEnabled",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true
+      },
+      "output": true
+    },
+    {
+      "id": "adviserGateEnabled#2",
+      "fn": "adviserGateEnabled",
+      "input": {
+        "settings": {
+          "enabled": false,
+          "checkBeforePublish": false,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": false,
+          "goals": {
+            "presets": {
+              "reduceNegativity": false,
+              "lessConfrontational": false,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": false,
+            "grammar": false,
+            "clarity": false,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true
+      },
+      "output": false
+    },
+    {
+      "id": "adviserGateEnabled#3",
+      "fn": "adviserGateEnabled",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": false,
+        "canUseAi": true
+      },
+      "output": false
+    },
+    {
+      "id": "adviserGateEnabled#4",
+      "fn": "adviserGateEnabled",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": false
+      },
+      "output": false
+    },
+    {
+      "id": "adviserGateEnabled#5",
+      "fn": "adviserGateEnabled",
+      "input": {
+        "settings": {
+          "enabled": "yes"
+        },
+        "requester": true,
+        "canUseAi": true
+      },
+      "output": false
+    },
+    {
+      "id": "adviserGateEnabled#6",
+      "fn": "adviserGateEnabled",
+      "input": {
+        "settings": null,
+        "requester": true,
+        "canUseAi": true
+      },
+      "output": false
+    },
+    {
+      "id": "adviserGateEnabled#7",
+      "fn": "adviserGateEnabled",
+      "input": {},
+      "output": false
+    },
+    {
+      "id": "adviserUsageLineFor#1",
+      "fn": "adviserUsageLineFor",
+      "input": {
+        "did": "did:plc:me",
+        "usage": {
+          "month": "2026-11",
+          "used": 12,
+          "limit": 30
+        }
+      },
+      "output": "18 of 30 free checks left this month."
+    },
+    {
+      "id": "adviserUsageLineFor#2",
+      "fn": "adviserUsageLineFor",
+      "input": {
+        "did": "did:plc:me",
+        "usage": {
+          "month": "2026-11",
+          "used": 30,
+          "limit": 30
+        }
+      },
+      "output": "No free checks left this month. They start again on December 1."
+    },
+    {
+      "id": "adviserUsageLineFor#3",
+      "fn": "adviserUsageLineFor",
+      "input": {
+        "did": "did:plc:me",
+        "usage": null
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLineFor#4",
+      "fn": "adviserUsageLineFor",
+      "input": {
+        "did": null,
+        "usage": {
+          "month": "2026-11",
+          "used": 1,
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "adviserUsageLineFor#5",
+      "fn": "adviserUsageLineFor",
+      "input": {
+        "did": "",
+        "usage": {
+          "month": "2026-11",
+          "used": 1,
+          "limit": 30
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "gate/adviser-off",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": false,
+          "checkBeforePublish": false,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": false,
+          "goals": {
+            "presets": {
+              "reduceNegativity": false,
+              "lessConfrontational": false,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": false,
+            "grammar": false,
+            "clarity": false,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        }
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": null,
+        "busy": null,
+        "payloads": [],
+        "gathers": [],
+        "usageVersion": 0,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": false
+      }
+    },
+    {
+      "id": "gate/browser-account",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": false,
+        "canUseAi": false,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        }
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": null,
+        "busy": null,
+        "payloads": [],
+        "gathers": [],
+        "usageVersion": 0,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": false
+      }
+    },
+    {
+      "id": "gate/no-ai",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": false,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        }
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": null,
+        "busy": null,
+        "payloads": [],
+        "gathers": [],
+        "usageVersion": 0,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": false
+      }
+    },
+    {
+      "id": "gate/check-before-posting-off",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": false,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        }
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": null,
+        "busy": null,
+        "payloads": [],
+        "gathers": [],
+        "usageVersion": 1,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "gate/scope-leaves-it-out",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "replies",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        }
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": null,
+        "busy": null,
+        "payloads": [],
+        "gathers": [],
+        "usageVersion": 1,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "gate/used-up",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": true,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        }
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": null,
+        "busy": null,
+        "payloads": [],
+        "gathers": [],
+        "usageVersion": 1,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "gate/empty-post",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "  "
+            }
+          ]
+        }
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": null,
+        "busy": null,
+        "payloads": [],
+        "gathers": [],
+        "usageVersion": 1,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "gate/nothing-significant",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "hello there"
+            }
+          ]
+        }
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": null,
+        "busy": {
+          "mode": "gate",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "publish",
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "hello there",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "gate/a-caution-goes-through",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "x",
+                "label": "X",
+                "status": "caution"
+              }
+            ],
+            "overallStatus": "caution",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        }
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": null,
+        "busy": {
+          "mode": "gate",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "publish",
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "a draft",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "gate/conflict-publish-anyway",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "limitTopic",
+                "label": "Limit topics",
+                "status": "conflict",
+                "excerpt": null
+              }
+            ],
+            "overallStatus": "conflict",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "about politics"
+            }
+          ]
+        },
+        "decide": "publish"
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": {
+          "mode": "gate",
+          "status": "ready",
+          "did": "did:plc:me",
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "limitTopic",
+                "label": "Limit topics",
+                "status": "conflict",
+                "excerpt": null
+              }
+            ],
+            "overallStatus": "conflict",
+            "writing": {
+              "issues": []
+            }
+          },
+          "error": null,
+          "errorCode": null,
+          "scenario": "post",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "about politics"
+          ],
+          "texts": [
+            "about politics"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "about politics"
+              }
+            ]
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "gate",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "publish",
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "about politics",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "gate/typo-save-as-draft",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the",
+                  "note": "twice"
+                }
+              ]
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "see the the thing"
+            }
+          ]
+        },
+        "decide": "draft"
+      },
+      "output": {
+        "decision": "draft",
+        "sheet": {
+          "mode": "gate",
+          "status": "ready",
+          "did": "did:plc:me",
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the",
+                  "note": "twice"
+                }
+              ]
+            }
+          },
+          "error": null,
+          "errorCode": null,
+          "scenario": "post",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "see the the thing"
+          ],
+          "texts": [
+            "see the the thing"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "see the the thing"
+              }
+            ]
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "gate",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "publish",
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "see the the thing",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "gate/always-keep-editing",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "always",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        },
+        "decide": "edit"
+      },
+      "output": {
+        "decision": "edit",
+        "sheet": {
+          "mode": "gate",
+          "status": "ready",
+          "did": "did:plc:me",
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "error": null,
+          "errorCode": null,
+          "scenario": "post",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "a draft"
+          ],
+          "texts": [
+            "a draft"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "a draft"
+              }
+            ]
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "gate",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "publish",
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "a draft",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "gate/closing-is-keep-editing",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "limitTopic",
+                "label": "Limit topics",
+                "status": "conflict",
+                "excerpt": null
+              }
+            ],
+            "overallStatus": "conflict",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        },
+        "decide": "anything else"
+      },
+      "output": {
+        "decision": "edit",
+        "sheet": {
+          "mode": "gate",
+          "status": "ready",
+          "did": "did:plc:me",
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "limitTopic",
+                "label": "Limit topics",
+                "status": "conflict",
+                "excerpt": null
+              }
+            ],
+            "overallStatus": "conflict",
+            "writing": {
+              "issues": []
+            }
+          },
+          "error": null,
+          "errorCode": null,
+          "scenario": "post",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "a draft"
+          ],
+          "texts": [
+            "a draft"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "a draft"
+              }
+            ]
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "gate",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "publish",
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "a draft",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "gate/fails-open",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "error": {
+            "message": "down",
+            "status": 503
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        }
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": null,
+        "busy": {
+          "mode": "gate",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "publish",
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "a draft",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "gate/no-result",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": null
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        }
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": null,
+        "busy": {
+          "mode": "gate",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "publish",
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "a draft",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "gate/monthly-limit-fails-open",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "error": {
+            "message": "used up",
+            "code": "monthly_limit",
+            "status": 429
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        }
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": null,
+        "busy": {
+          "mode": "gate",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "publish",
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "a draft",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "gate/mode-anything-but-manual",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "limitTopic",
+                "label": "Limit topics",
+                "status": "conflict",
+                "excerpt": null
+              }
+            ],
+            "overallStatus": "conflict",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "mode": "other",
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        },
+        "decide": "publish"
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": {
+          "mode": "gate",
+          "status": "ready",
+          "did": "did:plc:me",
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "limitTopic",
+                "label": "Limit topics",
+                "status": "conflict",
+                "excerpt": null
+              }
+            ],
+            "overallStatus": "conflict",
+            "writing": {
+              "issues": []
+            }
+          },
+          "error": null,
+          "errorCode": null,
+          "scenario": "post",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "a draft"
+          ],
+          "texts": [
+            "a draft"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "a draft"
+              }
+            ]
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "gate",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "publish",
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "a draft",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "gate/a-scheduled-post-can-still-publish",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "limitTopic",
+                "label": "Limit topics",
+                "status": "conflict",
+                "excerpt": null
+              }
+            ],
+            "overallStatus": "conflict",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "x"
+            }
+          ],
+          "schedule": {
+            "mode": "queue"
+          }
+        },
+        "decide": "publish"
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": {
+          "mode": "gate",
+          "status": "ready",
+          "did": "did:plc:me",
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "limitTopic",
+                "label": "Limit topics",
+                "status": "conflict",
+                "excerpt": null
+              }
+            ],
+            "overallStatus": "conflict",
+            "writing": {
+              "issues": []
+            }
+          },
+          "error": null,
+          "errorCode": null,
+          "scenario": "post",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "x"
+          ],
+          "texts": [
+            "x"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "x"
+              }
+            ],
+            "schedule": {
+              "mode": "queue"
+            }
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "gate",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "publish",
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "x",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "manual/cannot-be-asked",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": false,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "mode": "manual",
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        }
+      },
+      "output": {
+        "decision": "edit",
+        "sheet": null,
+        "busy": null,
+        "payloads": [],
+        "gathers": [],
+        "usageVersion": 0,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": false
+      }
+    },
+    {
+      "id": "manual/needs-text",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "mode": "manual",
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": ""
+            }
+          ]
+        },
+        "decide": "edit"
+      },
+      "output": {
+        "decision": "edit",
+        "sheet": {
+          "mode": "manual",
+          "status": "needsText",
+          "did": "did:plc:me",
+          "result": null,
+          "error": null,
+          "errorCode": null,
+          "scenario": "post",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            ""
+          ],
+          "texts": [
+            ""
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": ""
+              }
+            ]
+          },
+          "usageLine": ""
+        },
+        "busy": null,
+        "payloads": [],
+        "gathers": [],
+        "usageVersion": 1,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "manual/needs-text-thread",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "mode": "manual",
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "  "
+            },
+            {
+              "id": "p1",
+              "text": "\n"
+            }
+          ]
+        },
+        "decide": "publish"
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": {
+          "mode": "manual",
+          "status": "needsText",
+          "did": "did:plc:me",
+          "result": null,
+          "error": null,
+          "errorCode": null,
+          "scenario": "thread",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": true
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "  ",
+            "\n"
+          ],
+          "texts": [
+            "  ",
+            "\n"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "  "
+              },
+              {
+                "id": "p1",
+                "text": "\n"
+              }
+            ]
+          },
+          "usageLine": ""
+        },
+        "busy": null,
+        "payloads": [],
+        "gathers": [],
+        "usageVersion": 1,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "manual/nothing-set-up",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": false,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": false,
+          "goals": {
+            "presets": {
+              "reduceNegativity": false,
+              "lessConfrontational": false,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": false,
+            "grammar": false,
+            "clarity": false,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "mode": "manual",
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        },
+        "decide": "edit"
+      },
+      "output": {
+        "decision": "edit",
+        "sheet": {
+          "mode": "manual",
+          "status": "empty",
+          "did": "did:plc:me",
+          "result": null,
+          "error": null,
+          "errorCode": null,
+          "scenario": "post",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": false,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [],
+          "posts": [
+            "a draft"
+          ],
+          "texts": [
+            "a draft"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "a draft"
+              }
+            ]
+          },
+          "usageLine": ""
+        },
+        "busy": null,
+        "payloads": [],
+        "gathers": [],
+        "usageVersion": 1,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "manual/asks-at-the-limit",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": true,
+        "usage": null,
+        "mode": "manual",
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "fine"
+            }
+          ]
+        },
+        "decide": "edit"
+      },
+      "output": {
+        "decision": "edit",
+        "sheet": {
+          "mode": "manual",
+          "status": "ready",
+          "did": "did:plc:me",
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "error": null,
+          "errorCode": null,
+          "scenario": "post",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "fine"
+          ],
+          "texts": [
+            "fine"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "fine"
+              }
+            ]
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "manual",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "fine",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "manual/the-limit-sheet",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "error": {
+            "message": "used up",
+            "code": "monthly_limit",
+            "status": 429
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": true,
+        "usage": null,
+        "mode": "manual",
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        },
+        "decide": "edit"
+      },
+      "output": {
+        "decision": "edit",
+        "sheet": {
+          "mode": "manual",
+          "status": "limit",
+          "did": "did:plc:me",
+          "result": null,
+          "error": null,
+          "errorCode": null,
+          "scenario": "post",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "a draft"
+          ],
+          "texts": [
+            "a draft"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "a draft"
+              }
+            ]
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "manual",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "a draft",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "manual/ignores-the-scope",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": false,
+          "reviewMode": "significant",
+          "checkScope": "replies",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "mode": "manual",
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "fine"
+            }
+          ]
+        },
+        "decide": "publish"
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": {
+          "mode": "manual",
+          "status": "ready",
+          "did": "did:plc:me",
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "error": null,
+          "errorCode": null,
+          "scenario": "post",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "fine"
+          ],
+          "texts": [
+            "fine"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "fine"
+              }
+            ]
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "manual",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "fine",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "manual/another-failure",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "error": {
+            "message": "AI help isn’t available right now.",
+            "status": 503
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "mode": "manual",
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        },
+        "decide": "edit"
+      },
+      "output": {
+        "decision": "edit",
+        "sheet": {
+          "mode": "manual",
+          "status": "error",
+          "did": "did:plc:me",
+          "result": null,
+          "error": "AI help isn’t available right now.",
+          "errorCode": null,
+          "scenario": "post",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "a draft"
+          ],
+          "texts": [
+            "a draft"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "a draft"
+              }
+            ]
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "manual",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "a draft",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "manual/a-failure-without-words",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "error": {
+            "message": "",
+            "code": "odd"
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "mode": "manual",
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        },
+        "decide": "draft"
+      },
+      "output": {
+        "decision": "draft",
+        "sheet": {
+          "mode": "manual",
+          "status": "error",
+          "did": "did:plc:me",
+          "result": null,
+          "error": "The adviser couldn’t read this post. Try again.",
+          "errorCode": "odd",
+          "scenario": "post",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "a draft"
+          ],
+          "texts": [
+            "a draft"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "a draft"
+              }
+            ]
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "manual",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "a draft",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "manual/scheduled",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "mode": "manual",
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "x"
+            }
+          ],
+          "schedule": {
+            "mode": "queue"
+          }
+        },
+        "decide": "edit"
+      },
+      "output": {
+        "decision": "edit",
+        "sheet": {
+          "mode": "manual",
+          "status": "ready",
+          "did": "did:plc:me",
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "error": null,
+          "errorCode": null,
+          "scenario": "post",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "x"
+          ],
+          "texts": [
+            "x"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": false,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "x"
+              }
+            ],
+            "schedule": {
+              "mode": "queue"
+            }
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "manual",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "x",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "manual/no-result",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": null
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "mode": "manual",
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        },
+        "decide": "edit"
+      },
+      "output": {
+        "decision": "edit",
+        "sheet": {
+          "mode": "manual",
+          "status": "ready",
+          "did": "did:plc:me",
+          "result": null,
+          "error": null,
+          "errorCode": null,
+          "scenario": "post",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "a draft"
+          ],
+          "texts": [
+            "a draft"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "a draft"
+              }
+            ]
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "manual",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "a draft",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "manual/usage-line",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": {
+          "month": "2026-11",
+          "used": 12,
+          "limit": 30
+        },
+        "mode": "manual",
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "a draft"
+            }
+          ]
+        },
+        "decide": "edit"
+      },
+      "output": {
+        "decision": "edit",
+        "sheet": {
+          "mode": "manual",
+          "status": "ready",
+          "did": "did:plc:me",
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "error": null,
+          "errorCode": null,
+          "scenario": "post",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "a draft"
+          ],
+          "texts": [
+            "a draft"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "a draft"
+              }
+            ]
+          },
+          "usageLine": "18 of 30 free checks left this month."
+        },
+        "busy": {
+          "mode": "manual",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "a draft",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "post",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "room/a-reply-to-someone-else",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "always",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "i disagree"
+            }
+          ],
+          "reply": {
+            "uri": "at://did:plc:other/app.bsky.feed.post/r1",
+            "cid": "c",
+            "root": {
+              "uri": "at://did:plc:other/app.bsky.feed.post/r1",
+              "cid": "c"
+            },
+            "author": {
+              "did": "did:plc:other",
+              "handle": "sam.test"
+            },
+            "text": "the post"
+          }
+        },
+        "decide": "edit"
+      },
+      "output": {
+        "decision": "edit",
+        "sheet": {
+          "mode": "gate",
+          "status": "ready",
+          "did": "did:plc:me",
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "error": null,
+          "errorCode": null,
+          "scenario": "reply",
+          "context": {
+            "kind": "reply",
+            "thread": [
+              {
+                "author": "Sam",
+                "text": "the post"
+              }
+            ],
+            "target": {
+              "author": "Sam",
+              "text": "the post"
+            }
+          },
+          "contextKind": "reply",
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": true,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "i disagree"
+          ],
+          "texts": [
+            "i disagree"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "i disagree"
+              }
+            ],
+            "reply": {
+              "uri": "at://did:plc:other/app.bsky.feed.post/r1",
+              "cid": "c",
+              "root": {
+                "uri": "at://did:plc:other/app.bsky.feed.post/r1",
+                "cid": "c"
+              },
+              "author": {
+                "did": "did:plc:other",
+                "handle": "sam.test"
+              },
+              "text": "the post"
+            }
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "gate",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "publish",
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "i disagree",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "reply",
+            "context": {
+              "kind": "reply",
+              "thread": [
+                {
+                  "author": "Sam",
+                  "text": "the post"
+                }
+              ],
+              "target": {
+                "author": "Sam",
+                "text": "the post"
+              }
+            },
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [
+          "reply"
+        ],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "room/off",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": false,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "ok"
+            }
+          ],
+          "reply": {
+            "uri": "at://did:plc:other/app.bsky.feed.post/r1",
+            "cid": "c",
+            "root": {
+              "uri": "at://did:plc:other/app.bsky.feed.post/r1",
+              "cid": "c"
+            }
+          }
+        }
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": null,
+        "busy": {
+          "mode": "gate",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "publish",
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "ok",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "reply",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "room/a-quote",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "mode": "manual",
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "quoting",
+              "record": {
+                "kind": "post",
+                "uri": "at://did:plc:other/app.bsky.feed.post/r1",
+                "cid": "c"
+              }
+            }
+          ]
+        },
+        "decide": "edit"
+      },
+      "output": {
+        "decision": "edit",
+        "sheet": {
+          "mode": "manual",
+          "status": "ready",
+          "did": "did:plc:me",
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "error": null,
+          "errorCode": null,
+          "scenario": "quote",
+          "context": {
+            "kind": "quote",
+            "thread": [
+              {
+                "author": "Sam",
+                "text": "the post"
+              }
+            ],
+            "target": {
+              "author": "Sam",
+              "text": "the post"
+            }
+          },
+          "contextKind": "quote",
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": true,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "quoting"
+          ],
+          "texts": [
+            "quoting"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "quoting",
+                "record": {
+                  "kind": "post",
+                  "uri": "at://did:plc:other/app.bsky.feed.post/r1",
+                  "cid": "c"
+                }
+              }
+            ]
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "manual",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "quoting",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "quote",
+            "context": {
+              "kind": "quote",
+              "thread": [
+                {
+                  "author": "Sam",
+                  "text": "the post"
+                }
+              ],
+              "target": {
+                "author": "Sam",
+                "text": "the post"
+              }
+            },
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [
+          "quote"
+        ],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "room/nothing-read",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": null,
+        "atLimit": false,
+        "usage": null,
+        "mode": "manual",
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "mine"
+            }
+          ],
+          "reply": {
+            "uri": "at://did:plc:me/app.bsky.feed.post/r1",
+            "cid": "c",
+            "root": {
+              "uri": "at://did:plc:me/app.bsky.feed.post/r1",
+              "cid": "c"
+            }
+          }
+        },
+        "decide": "edit"
+      },
+      "output": {
+        "decision": "edit",
+        "sheet": {
+          "mode": "manual",
+          "status": "ready",
+          "did": "did:plc:me",
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "error": null,
+          "errorCode": null,
+          "scenario": "selfReply",
+          "context": null,
+          "contextKind": "selfReply",
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": true,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "mine"
+          ],
+          "texts": [
+            "mine"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "mine"
+              }
+            ],
+            "reply": {
+              "uri": "at://did:plc:me/app.bsky.feed.post/r1",
+              "cid": "c",
+              "root": {
+                "uri": "at://did:plc:me/app.bsky.feed.post/r1",
+                "cid": "c"
+              }
+            }
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "manual",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "mine",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "selfReply",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [
+          "selfReply"
+        ],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "other-account/asDid-wins",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "always",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:other",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "x"
+            }
+          ],
+          "reply": {
+            "uri": "at://did:plc:other/app.bsky.feed.post/r1",
+            "cid": "c",
+            "root": {
+              "uri": "at://did:plc:other/app.bsky.feed.post/r1",
+              "cid": "c"
+            }
+          }
+        },
+        "decide": "edit"
+      },
+      "output": {
+        "decision": "edit",
+        "sheet": {
+          "mode": "gate",
+          "status": "ready",
+          "did": "did:plc:other",
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "error": null,
+          "errorCode": null,
+          "scenario": "reply",
+          "context": {
+            "kind": "reply",
+            "thread": [
+              {
+                "author": "Sam",
+                "text": "the post"
+              }
+            ],
+            "target": {
+              "author": "Sam",
+              "text": "the post"
+            }
+          },
+          "contextKind": "reply",
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": true,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "x"
+          ],
+          "texts": [
+            "x"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "x"
+              }
+            ],
+            "reply": {
+              "uri": "at://did:plc:other/app.bsky.feed.post/r1",
+              "cid": "c",
+              "root": {
+                "uri": "at://did:plc:other/app.bsky.feed.post/r1",
+                "cid": "c"
+              }
+            }
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "gate",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "publish",
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "x",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "reply",
+            "context": {
+              "kind": "reply",
+              "thread": [
+                {
+                  "author": "Sam",
+                  "text": "the post"
+                }
+              ],
+              "target": {
+                "author": "Sam",
+                "text": "the post"
+              }
+            },
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [
+          "reply"
+        ],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "other-account/no-asDid",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "always",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:other",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "posts": [
+            {
+              "id": "p0",
+              "text": "x"
+            }
+          ],
+          "reply": {
+            "uri": "at://did:plc:other/app.bsky.feed.post/r1",
+            "cid": "c"
+          }
+        },
+        "decide": "edit"
+      },
+      "output": {
+        "decision": "edit",
+        "sheet": {
+          "mode": "gate",
+          "status": "ready",
+          "did": "did:plc:other",
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": []
+            }
+          },
+          "error": null,
+          "errorCode": null,
+          "scenario": "selfReply",
+          "context": {
+            "kind": "selfReply",
+            "thread": [
+              {
+                "author": "Sam",
+                "text": "the post"
+              }
+            ],
+            "target": {
+              "author": "Sam",
+              "text": "the post"
+            }
+          },
+          "contextKind": "selfReply",
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": true,
+            "isThread": false
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "x"
+          ],
+          "texts": [
+            "x"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "posts": [
+              {
+                "id": "p0",
+                "text": "x"
+              }
+            ],
+            "reply": {
+              "uri": "at://did:plc:other/app.bsky.feed.post/r1",
+              "cid": "c"
+            }
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "gate",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "publish",
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "x",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "selfReply",
+            "context": {
+              "kind": "selfReply",
+              "thread": [
+                {
+                  "author": "Sam",
+                  "text": "the post"
+                }
+              ],
+              "target": {
+                "author": "Sam",
+                "text": "the post"
+              }
+            },
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [
+          "selfReply"
+        ],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "thread/fixes",
+      "fn": "check",
+      "input": {
+        "settings": {
+          "enabled": true,
+          "checkBeforePublish": true,
+          "reviewMode": "always",
+          "checkScope": "all",
+          "checkReplyContext": true,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": true,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": true,
+            "clarity": true,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        },
+        "requester": true,
+        "canUseAi": true,
+        "did": "did:plc:me",
+        "answer": {
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the",
+                  "note": ""
+                },
+                {
+                  "type": "grammar",
+                  "found": " i ",
+                  "replacement": " I ",
+                  "note": ""
+                }
+              ]
+            }
+          }
+        },
+        "context": {
+          "kind": "reply",
+          "thread": [
+            {
+              "author": "Sam",
+              "text": "the post"
+            }
+          ],
+          "target": {
+            "author": "Sam",
+            "text": "the post"
+          }
+        },
+        "atLimit": false,
+        "usage": null,
+        "check": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p0",
+              "text": "first post"
+            },
+            {
+              "id": "p1",
+              "text": "see the the thing"
+            },
+            {
+              "id": "p2",
+              "text": "and i think so"
+            }
+          ]
+        },
+        "decide": "publish"
+      },
+      "output": {
+        "decision": "publish",
+        "sheet": {
+          "mode": "gate",
+          "status": "ready",
+          "did": "did:plc:me",
+          "result": {
+            "sentiment": {
+              "label": "neutral",
+              "score": 0
+            },
+            "checks": [
+              {
+                "id": "reduceNegativity",
+                "label": "Reduce negativity",
+                "status": "ok"
+              }
+            ],
+            "overallStatus": "ok",
+            "writing": {
+              "issues": [
+                {
+                  "type": "typo",
+                  "found": "the the",
+                  "replacement": "the",
+                  "note": ""
+                },
+                {
+                  "type": "grammar",
+                  "found": " i ",
+                  "replacement": " I ",
+                  "note": ""
+                }
+              ]
+            }
+          },
+          "error": null,
+          "errorCode": null,
+          "scenario": "thread",
+          "context": null,
+          "contextKind": null,
+          "readTheRoom": true,
+          "facts": {
+            "repliesToOther": false,
+            "quotesOther": false,
+            "repliesToSelf": false,
+            "isThread": true
+          },
+          "goalItems": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "posts": [
+            "first post",
+            "see the the thing",
+            "and i think so"
+          ],
+          "texts": [
+            "first post",
+            "see the the thing",
+            "and i think so"
+          ],
+          "taken": [],
+          "fixesTaken": false,
+          "canPublish": true,
+          "canSaveDraft": true,
+          "state": {
+            "asDid": "did:plc:me",
+            "posts": [
+              {
+                "id": "p0",
+                "text": "first post"
+              },
+              {
+                "id": "p1",
+                "text": "see the the thing"
+              },
+              {
+                "id": "p2",
+                "text": "and i think so"
+              }
+            ]
+          },
+          "usageLine": ""
+        },
+        "busy": {
+          "mode": "gate",
+          "goals": [
+            {
+              "key": "reduceNegativity",
+              "label": "Reduce negativity",
+              "detail": null
+            },
+            {
+              "key": "lessConfrontational",
+              "label": "Less confrontational",
+              "detail": null
+            },
+            {
+              "key": "writing",
+              "label": "Writing check",
+              "detail": "typos, grammar, clarity"
+            }
+          ],
+          "startedAt": 0,
+          "choices": [
+            "publish",
+            "edit"
+          ]
+        },
+        "payloads": [
+          {
+            "text": "first post\n\nsee the the thing\n\nand i think so",
+            "goals": {
+              "presets": {
+                "reduceNegativity": true,
+                "lessConfrontational": true,
+                "limitTopic": {
+                  "enabled": false,
+                  "topic": ""
+                }
+              },
+              "customText": ""
+            },
+            "scenario": "thread",
+            "writingChecks": {
+              "typos": true,
+              "grammar": true,
+              "clarity": true
+            }
+          }
+        ],
+        "gathers": [],
+        "usageVersion": 2,
+        "after": {
+          "busy": null,
+          "sheet": null
+        },
+        "enabled": true
+      }
+    }
+  ]
+}

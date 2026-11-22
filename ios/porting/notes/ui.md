@@ -210,10 +210,50 @@ TEMPLATES AND POSTING (Templates/, Posting/, Settings/PostingSettingsSection.swi
 - Settings › Posting is `PostingSettingsSection` over `PostingSettingsModel`, with the composer's
   `LanguagePicker` and `GatesEditor`; `ScheduleWords` holds scheduleModel.js's week sentences and
   `TimezonePicker` scheduleParts' TimezoneSelect until the scheduling pages are ported. The
-  timer's rule editor (LifespanEditor), the adviser's settings and NeedsBackend keep marked places.
+  Post adviser's card is `AdviserSettingsCard` when the account can use the server (else
+  `NeedsBackendNotice`), and the Default timer's editor is `LifespanRuleEditor` (no exact time,
+  no toggle of its own; the switch above it, `default-timer-on`, keeps `enabled`).
 - `Measure.Templates` (Templates/TemplateMeasures.swift) names library.css's and hub.css's measures.
 - PostingUITests (`testTemplatesAndPostingSettings`, no archive build): `posting-templates`,
   `template-editor`, `template-editor-questions`, `settings-posting`, `settings-posting-timer`.
+
+ADVISER (Adviser/, Composer/ComposerController+Adviser.swift, Posting/)
+- The views are over VirgaPosting/Adviser's logic, unchanged: `AdviserGateModel` (the composer's
+  `controller.adviser`, made in its init over the session's store and transport and configured
+  by `configureAdviser(open:)` when the sheet appears, closes or the account changes),
+  `StyleSession` (one per opening of the style dialog), AltTextModel and AltTextFollowUp over
+  `AIService.generateAltTextForFile`, BackendAccess and PostPreview. `Measure.Adviser`
+  (Adviser/AdviserMeasures.swift) names adviser.css's measures; `Measure.Posting` the
+  needs-backend notice's and the post preview's; `Measure.Lifespan` the rule editor's.
+- `AdviserBusyLine(busy:onPublishAnyway:onKeepEditing:)` is AdviserBusy.jsx (`adviser-busy`; slow
+  after `AdviserContext.slowReadAfterMs`); `AdviserGlyph` the adviser's symbols.
+- `.adviserSheet(adviser)` presents AdviserSheet.jsx while `adviser.sheetOpen` (`adviser-sheet`,
+  `adviser-verdict`, `adviser-fix-all`, `adviser-sheet-keep-editing`, `adviser-sheet-publish`).
+  The marked draft is one `Text` of runs: a fix is a link (`adviser-fix:<key>`) the sheet's
+  `openURL` action takes, a span is underlined in its tone, and a numbered note lights its passage.
+- `.adviserStyleDialog(isPresented:did:model:)` is StyleDialog.jsx (`style-dialog`, `style-read`,
+  `style-summary`, `style-keep`); `AdviserSettingsCard(did:model:)` AdviserSettings.jsx
+  (`posting-adviser`, `adviser-enabled`, `adviser-learn-style`), saving `["adviser": json]`
+  through PostingSettingsModel.
+- `AltTextDialog(image:requester:did:context:store:onSave:onClose:)` is AltTextDialog.jsx with its
+  describing and revising (`alt-dialog`, `alt-describe`, `alt-revise`; the writer's field is the
+  composer's `describe-text` and `describe-save`). The composer shows it for an image when the
+  account can use the server, and the plain DescribeDialog otherwise.
+- In the composer (marked `ADVISER` in ComposerController, +Actions, ComposerSheet and
+  ComposerOptions): `submitPost(skipAdviser:)` runs `adviserGate` first (`check(s, mode: gate)`,
+  the busy line in the status, then "Getting it ready"; Save as draft from the sheet saves the
+  draft, Publish anyway goes on); Check this post in the tools (`option-adviser`, with its usage
+  line) is `askAdviser()`; while a read runs the post is held still (`adviserReading` disables
+  the editors and the actions) and the busy line sits over it.
+- `NeedsBackendNotice(did:)` is NeedsBackend.jsx (`needs-backend`: Reconnect lengthens the
+  session, Sign back in asks for reauth); `PostPreviewCard(view:record:uri:compact:)` is
+  PostPreview.jsx; `LifespanRuleEditor(value:onChange:…)` is LifespanEditor.jsx (`lifespan-editor`,
+  `lifespan-sentence`, `lifespan-add-condition`). `PostingHeader.header(...)` is PostingHeader.jsx,
+  and RoutedPage's posting pages that need the server show NeedsBackend as PostingPage.jsx does.
+- AdviserUITests (`testTheAdviserOnTheDemo`, no archive build, over the demo server's AI routes):
+  `settings-posting-adviser`, `settings-posting-timer-editor`, `adviser-style`, `adviser-busy`,
+  `adviser-check`, `adviser-gate-busy`, `adviser-gate` (or `adviser-gate-passed`) and
+  `alt-text-described`.
 
 SHELL, ROUND 6
 - `ShellActions` (in the shell's environment): `creatingDashboard` opens the shell's

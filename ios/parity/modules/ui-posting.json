@@ -5,15 +5,19 @@
   "summary": "The composer and the posting pages as SwiftUI screens.",
   "files": {
     "src/posting/PostingPage.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/RoutedPage.swift"
+      ],
+      "note": "RoutedPage's posting case: a page that needs Virga's server (needsBackend) shows NeedsBackend under its header without its access line for an account that can't schedule; Templates is TemplatesPage, keyed by the open account, with the part of the address after it. Not yet: the hub, Drafts, Scheduled, Weekly schedule, Timers, Posted and Library pages, which show their header and that they aren't in the app yet (they wait for the scheduling port).",
+      "synced": "bef217b0e836"
     },
     "src/posting/PostingSettingsSection.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
       ],
-      "note": "Whose settings (every signed-in account, and the open one even when it needs a sign-in, by accountName with its @handle) when there is more than one, then the cards over that account's PostingSettingsModel (usePostingSettings), made again for another account: New posts, and with a long session the Weekly queue, the Default timer and the Post adviser. Not yet: the Post adviser's settings (AdviserSettings.jsx: its heading and that it isn't in the app yet) and, for an account without a long session, NeedsBackend.jsx (that it isn't in the app yet).",
+      "note": "Whose settings (every signed-in account, and the open one even when it needs a sign-in, by accountName with its @handle) when there is more than one, then the cards over that account's PostingSettingsModel (usePostingSettings), made again for another account: New posts, and with a long session the Weekly queue, the Default timer and the Post adviser (AdviserSettingsCard); without one, NeedsBackend in their place.",
       "synced": "981c47d09ca4"
     },
     "src/posting/composer/Composer.jsx": {
@@ -24,9 +28,10 @@
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController+Library.swift",
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerSheet.swift",
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerOptions.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerServices.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerServices.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController+Adviser.swift"
       ],
-      "note": "Ported: opening from an intent (normalizeIntent, seedFromIntent, setting aside what was being written, the notices), restoring what was kept (keptPostFor, takeSetAside, openAside, elsewhereNotices), loading a reply or a quote, posting as another account (changeAsDid, gatesForAccount), the default reply settings, adding pictures (picked, pasted, an intent's described ones) and a video (uploaded as soon as it's added), quotes and link cards found in the text, splitting, renumbering and its undo, removing and adding posts, the settings row (tags, language, replies, timer, More › Continue a thread, Save as a template and Start over), a \"/\" template applied over its shortcut (applyTemplate, applyPlan: its text and what it attaches), one with blanks through the library's dialog on it, the library's dialog from a post's tools and the slash list (its plan back through applyPlan), Save as a template (the template editor, a reply's through draftFromReply), an intent's attach (the Library page's Use in a new post), Continue a thread (the archive's posts, else the author feed), the phone's bar at the top (Close, the title and the send button, 640 and under), the busy line, the slow and hard publish watch, publishErrorView, the posted toast and resetting after a send, the autosave (flushed on Close and when the app goes to the background). Publishing goes through ComposerPublisher (VirgaUI/Composer/ComposerServices.swift): the app's is PostingPublisher, VirgaPosting's Publish.publish over TemporaryComposerFiles (VirgaUI/Platform), ImageIO and the session's transport, mentions resolved through Mentions.useNetwork. Save as draft (Drafts.createDraft or updateDraft, DraftMedia over the app's file store), opening an intent's draft (loadDraftTarget, openDraft, its media and the post it answers read again), a restored post's media read back (fillMedia), and a posted draft deleted (finishSource's draft half) are here. Link cards are LinkCard.fetchLinkCard. Schedule and Add to queue show the web's busy line and then say scheduling isn't in the iOS app yet. Not yet, because what they call isn't ported: scheduling and the weekly queue (WhenPicker, the queue's next slot, submitSchedule), loading a scheduled post and finishSource's scheduled half, the timer (LifespanEditor, getLimits, the default timer, armAfterPublish), the adviser (Check this post, the gate before posting), the duplicate guard (publish.js's), drag and drop, and the posted toast's View it on Bluesky link (the shell's toasts are words only).",
+      "note": "Ported: opening from an intent (normalizeIntent, seedFromIntent, setting aside what was being written, the notices), restoring what was kept (keptPostFor, takeSetAside, openAside, elsewhereNotices), loading a reply or a quote, posting as another account (changeAsDid, gatesForAccount), the default reply settings, adding pictures (picked, pasted, an intent's described ones) and a video (uploaded as soon as it's added), quotes and link cards found in the text, splitting, renumbering and its undo, removing and adding posts, the settings row (tags, language, replies, timer, More › Continue a thread, Save as a template and Start over), a \"/\" template applied over its shortcut (applyTemplate, applyPlan: its text and what it attaches), one with blanks through the library's dialog on it, the library's dialog from a post's tools and the slash list (its plan back through applyPlan), Save as a template (the template editor, a reply's through draftFromReply), an intent's attach (the Library page's Use in a new post), Continue a thread (the archive's posts, else the author feed), the phone's bar at the top (Close, the title and the send button, 640 and under), the busy line, the slow and hard publish watch, publishErrorView, the posted toast and resetting after a send, the autosave (flushed on Close and when the app goes to the background). Publishing goes through ComposerPublisher (VirgaUI/Composer/ComposerServices.swift): the app's is PostingPublisher, VirgaPosting's Publish.publish over TemporaryComposerFiles (VirgaUI/Platform), ImageIO and the session's transport, mentions resolved through Mentions.useNetwork. Save as draft (Drafts.createDraft or updateDraft, DraftMedia over the app's file store), opening an intent's draft (loadDraftTarget, openDraft, its media and the post it answers read again), a restored post's media read back (fillMedia), and a posted draft deleted (finishSource's draft half) are here. Link cards are LinkCard.fetchLinkCard. Schedule and Add to queue show the web's busy line and then say scheduling isn't in the iOS app yet. Not yet, because what they call isn't ported: scheduling and the weekly queue (WhenPicker, the queue's next slot, submitSchedule), loading a scheduled post and finishSource's scheduled half, the timer (LifespanEditor, getLimits, the default timer, armAfterPublish), the duplicate guard (publish.js's), drag and drop, and the posted toast's View it on Bluesky link (the shell's toasts are words only). The post adviser (ComposerController+Adviser.swift): useAdviserGate configured for the posting account while the composer is open, the check before sending (its busy line in the composer's, then Getting it ready; Keep editing, Save as draft, a fix taken checked again), Check this post among the post's tools with the month's checks, AdviserBusyLine over the post, the post held still and the send button busy while a read runs, and the adviser's sheet.",
       "synced": "9be49b62b520"
     },
     "src/posting/composer/ComposerContext.jsx": {
@@ -198,23 +203,36 @@
       "synced": "ac722e1dce2e"
     },
     "src/posting/ui/AdviserBusy.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserBusyLine.swift"
+      ],
+      "note": "Reading your draft with readExpectation's line (slower than usual after SLOW_READ_AFTER_MS), the bar, the goals it is checking, and Keep editing and Publish anyway (the gate's) as small buttons, equal shares on a phone; read out as it appears. Brought into view by the composer rather than scrolled to.",
+      "synced": "ce0c10db929e"
     },
     "src/posting/ui/AdviserSettings.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserSettingsCard.swift"
+      ],
+      "note": "Post adviser in Settings › Posting, over the account's PostingSettingsModel: NeedsBackend for an account that can't use AI; Use the post adviser (nextPostingAdviserState, the recommended setup the first time), Check before posting, Stop me, Which posts, Read replies with their conversation, Your goals (the two presets, Post less about some topics with its topics, Goals in your own words with its count), Proofread (the three checks, Notes for the proofread, Your writing style with Learn my style or See or change it, which opens StyleDialog), the month's three usage lines, What’s sent, and to whom, and a refused change's message. Which posts is a column of check boxes acting as radios.",
+      "synced": "b625e1f7a742"
     },
     "src/posting/ui/AdviserSheet.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserReadSheet.swift"
+      ],
+      "note": "The sheet over AdviserGateModel's read (sheetActions, sheetTitle, sheetContextLine, adviserSheetModel, adviserWritingTally, adviserDraftLabel): the notices (error, limit, empty, needsText), the verdict, the marked post (each post's index, a fix struck through with its replacement, a link in the words that takes it, the replacement underlined in the ok colour once taken, a flagged passage underlined in its tone with its numbers raised), the tally with Fix all, the notes (a numbered note lights its passage for a moment; others with their tone's glyph), Fine against, the context line, the usage line, the skeleton while busy, and its foot (Keep editing, Save as draft, Publish or Publish anyway, or Close). A numbered note lights its passage instead of scrolling to it.",
+      "synced": "35d71f3a93a7"
     },
     "src/posting/ui/AltTextDialog.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AltTextDialog.swift",
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerDialogs.swift"
       ],
-      "note": "The writer's part: the image, its description and the count. Describing and revising it for the writer needs the adviser's AI service (aiService.js, altTextModel.js, altTextFollowUp.js), not ported; the web shows no Generate button without a server requester either. ALT_TEXT_MAX_GRAPHEMES is written here until altTextModel.js's port.",
+      "note": "With a requester that can use AI (the posting account's backendFor, canUseAi), AltTextDialog: the image, What kind of image is it? (optional) and Describe it for me before a first description, the description with its count (altTextCount, · too long), Undo of the last answer, the busy line (Describing the image…, revisingLine…), the monthly limit and the failures, Revise it (rankQuickNotes' notes, It’s a…, the note, Revise), the usage line and what describing sends, and Cancel and Save (⌘↩). Over AIService.generateAltTextForFile with the composer's prepared file, AltTextModel and AltTextFollowUp. Without a requester, the composer's own DescribeDialog (the writer's part).",
       "synced": "238c2db53cce"
     },
     "src/posting/ui/ComposerDefaults.jsx": {
@@ -237,32 +255,41 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
       ],
-      "note": "Default timer: Start new posts with a timer (its hint when off), the rule in a sentence (describeTimer), under the row when on and behind The rule it will use: … when off, saved never pinned to a time, the refusal, and the caption with See posts on a timer. Not yet: the rule's editor (LifespanEditor.jsx), whose place says it isn't in the app yet, and the timers in use (scheduleService.js's getLimits and timerLimitsLine), so the caption starts at its second sentence as the web's does when the limits can't be read.",
+      "note": "Default timer: Start new posts with a timer (its hint when off), the rule's editor (LifespanRuleEditor, a length and never a set time, its changes keeping the timer on or off as it is) under the row when on and behind The rule it will use: … when off, saved never pinned to a time, the refusal, and the caption with See posts on a timer. Not yet: the timers in use (scheduleService.js's getLimits and timerLimitsLine), so the caption starts at its second sentence as the web's does when the limits can't be read.",
       "synced": "ae76e34b01e2"
     },
     "src/posting/ui/LifespanEditor.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/LifespanRuleEditor.swift"
+      ],
+      "note": "LifespanRuleEditor over LifespanModel and SelfDestruct: the switch with its line (showToggle), Delete it after or Act on it after (the five shown lengths, Other… with Length and Unit and its hint, and Or a set time on the system's date and time picker within pinBounds, with Clear), What happens then (the effects, Limit replies closed to a reply), Who can still reply (Nobody, the three groups, the writer's curation lists read through PublicAppView, and the most Bluesky takes), Conditions (optional) with Unless or Only if it reaches, a row per condition (what it counts, how it compares, how many, Remove) and Add a condition, Count quotes from, When there’s more than one, If it does or doesn’t (keep, or another window with At most), the rule in a sentence (editorNotes' summary, This post gets no timer. or No timer.) and its notes. The time is read again every thirty seconds. A row added or removed leaves the focus where the system puts it.",
+      "synced": "4088289d3846"
     },
     "src/posting/ui/NeedsBackend.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/NeedsBackendNotice.swift"
+      ],
+      "note": "BackendAccess's four cases: nothing when ready or for no account; The long session has ended with Sign back in; Needs a long session with Reconnect for a longer session (AccountActions.lengthen), or with the line that this copy offers none. Its server glyph goes on a phone, as the web's does.",
+      "synced": "731af4254f94"
     },
     "src/posting/ui/PostPreview.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostPreviewCard.swift",
         "ios/VirgaKit/Sources/VirgaUI/Composer/EmbedCards.swift"
       ],
-      "note": "Only the compact form the composer uses (who wrote it and its words), read straight from the view: postPreview.js isn't ported, so there's no time, embed line or counts.",
+      "note": "PostPreviewCard over VirgaPosting's postPreviewModel: who wrote it (the picture, the name, the handle), when (relative, the date on the pointer's tip), its words or No text, what's attached, the counts (replies, reposts, quotes, likes) and the way to it on Bluesky, and the compact form; a hairline round it. The composer's own ComposerPostPreview (EmbedCards.swift) is the compact form it draws for what a post replies to or quotes.",
       "synced": "961de3ed1b7a"
     },
     "src/posting/ui/PostingHeader.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Posting/PostingParts.swift",
         "ios/VirgaKit/Sources/VirgaUI/Shell/RoutedPage.swift"
       ],
-      "note": "The header's model (Posting in the crumbs except on the overview, the page's title and line, what it touches, or not), used by Templates and every posting page not here yet. Not yet: a caller's own crumbs, title, line, actions and children.",
+      "note": "PostingHeader.model and .header: Posting in the crumbs (except on the overview) or the caller's own, the page's title and line or the caller's, what it touches or not (showAccess, false where NeedsBackend stands in for the page), and the caller's actions and what goes under the header (children), drawn only when given.",
       "synced": "37014d77c200"
     },
     "src/posting/ui/QueueSettings.jsx": {
@@ -282,8 +309,12 @@
       "synced": "e35a7f8135dc"
     },
     "src/posting/ui/StyleDialog.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserStyleDialog.swift"
+      ],
+      "note": "A full-height sheet with one StyleSession per opening over the account's requester: NeedsBackend without AI, the intro, how many posts to read and Read my posts, the three stages with the posts gathered, the failure (a warning for the monthly limit), How you write (editable) with its line and · not kept yet, What should change?, Refine with my note, Read my posts again with the count, the usage line, and Forget my style, Close or Cancel, Keep this (styleProfileFrom, forgetStyleProfile), a refused save's message.",
+      "synced": "fe2c9d7e0bd4"
     },
     "src/posting/ui/TimerDialog.jsx": {
       "status": "pending",

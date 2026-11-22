@@ -46,6 +46,8 @@ struct ComposerBusy: Equatable {
   var line: String?
   var slow = false
   var cancellable = false
+  /// ADVISER: the adviser is reading, so its line stands in for this one.
+  var adviser = false
 }
 
 /// A yes-or-no question (ConfirmDialog): its choices are its buttons.
@@ -121,6 +123,8 @@ public final class ComposerController {
   @ObservationIgnored let openArchive: OpenArchiveStore
   /// The account's templates, for the "/" shortcuts (useTemplates).
   let templates: TemplatesModel
+  /// ADVISER: the post adviser (useAdviserGate; ComposerController+Adviser.swift).
+  let adviser: AdviserGateModel
   /// The account the autosaver may still write for (its `currentDid`).
   @ObservationIgnored let currentDid: Locked<String?>
 
@@ -184,6 +188,7 @@ public final class ComposerController {
     let defaults = PostingSettingsStore.readPostingSettings(did, store: store, language: Self.language).json
     model = ComposerStateModel(asDid: did, defaults: defaults, autosaver: autosaver)
     templates = TemplatesModel(session: session, did: did.isEmpty ? nil : did)
+    adviser = AdviserGateModel(store: store, transport: transport)  // ADVISER
     seenAccounts = Set(session.accounts.map { JSKey($0.did) })
     templates.start()
   }
