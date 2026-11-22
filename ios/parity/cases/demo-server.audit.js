@@ -489,6 +489,41 @@ const LIST_ORDER = {
   ],
 };
 
+// Two posts written as each other's replies: walking the chain never ends,
+// and the timer fails with the stack's own words.
+const cycle = (rkey, parent) => ({
+  write: {
+    did: MIRA,
+    collection: 'app.bsky.feed.post',
+    rkey,
+    record: {
+      $type: 'app.bsky.feed.post',
+      text: `a reply to ${parent}`,
+      createdAt: iso(NOW - HOUR),
+      reply: {
+        root: { uri: postUri(MIRA, parent), cid: 'bafyx' },
+        parent: { uri: postUri(MIRA, parent), cid: 'bafyx' },
+      },
+    },
+  },
+});
+const REPLY_CYCLE = {
+  name: 'reply-cycle',
+  options: { seed: false },
+  steps: [
+    { mint: MIRA },
+    cycle('3cycleaaaaaa2', '3cycleaaaaaa3'),
+    cycle('3cycleaaaaaa3', '3cycleaaaaaa2'),
+    () =>
+      post(
+        '/api/self-destruct/create',
+        arm(postUri(MIRA, '3cycleaaaaaa2'), { lifespanSeconds: 300 }),
+      ),
+    ...ticks(1, 6 * MINUTE),
+    get('/api/self-destruct/list'),
+  ],
+};
+
 export default async function cases() {
-  return scenarioCases([...SCENARIOS, LIST_ORDER]);
+  return scenarioCases([...SCENARIOS, LIST_ORDER, REPLY_CYCLE]);
 }

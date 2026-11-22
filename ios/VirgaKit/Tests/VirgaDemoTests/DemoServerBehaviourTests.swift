@@ -709,6 +709,10 @@ func refusal(_ body: () async throws -> Void) async -> BackendError? {
     #expect(await s.server.runCron().published.map(\.id).contains(next?.stringValue ?? ""))
     #expect(try await s.list(req).filter { $0["seriesId"] == row["seriesId"] }.isEmpty)
     // Removing the waiting occurrence ends a series; skipping the last one ends it too.
+    let other = try await s.create(
+      req, s.body(["Monthly"], at: s.now + 8 * WorkerSetup.day, payload: ["repeat": ["every": "month", "tz": "UTC"]]))
+    _ = try await req.request("/api/schedule/cancel", method: "POST", body: ["id": other["id"] ?? .null])
+    #expect(try await !s.list(req).contains { $0["seriesId"] == other["seriesId"] })
     let twice = try await s.create(
       req, s.body(["Twice"], at: s.now + WorkerSetup.hour, payload: ["repeat": ["every": "day", "tz": "UTC", "count": 2]]))
     let last = try await s.update(req, twice["id"], ["skip": true])["data"]?["id"]
@@ -1011,5 +1015,69 @@ final class GatedClock: Sendable {
     #expect(options.flags.ai == "slow")
     #expect(options.flags.moderator == "linked")
     #expect(options.flags.cronSeconds == 5)
+  }
+}
+
+@Suite struct SelfReplyChains {
+  /// A reply of the account's own, written into `world`.
+  static func reply(_ world: inout AccountWorld, _ rkey: String, to parent: String, at ms: Double) throws {
+    let uri = "at://\(world.me.did)/app.bsky.feed.post/\(parent)"
+    let ref: JSONValue = ["uri": .string(uri), "cid": "bafyx"]
+    _ = try HarnessRepo.writeRecord(
+      &world, collection: "app.bsky.feed.post", rkey: rkey,
+      record: [
+        "$type": "app.bsky.feed.post", "text": .string(rkey), "createdAt": .string(World.iso(ms)),
+        "reply": ["root": ref, "parent": ref],
+      ], now: ms)
+  }
+
+  /// selfReplyChain as the web writes it: a recursive walk, depth first.
+  static func recursive(_ world: AccountWorld, _ uri: String) -> [String] {
+    var out: [String] = []
+    func walk(_ parent: String) {
+      for p in world.posts where p.record?["reply"]?["parent"]?["uri"]?.stringValue == parent {
+        let child = "at://\(world.me.did)/app.bsky.feed.post/\(p.rkey)"
+        out.append(child)
+        walk(child)
+      }
+    }
+    walk(uri)
+    return out
+  }
+
+  @Test func walksBranchesDepthFirstInTheWorldsOrder() throws {
+    var world = World.buildWorld(now: WorkerSetup.now)
+    let root = world.posts.first { $0.replyTo == nil }!.rkey
+    let t = WorkerSetup.now
+    try Self.reply(&world, "3branchaaaaa2", to: root, at: t + 1000)
+    try Self.reply(&world, "3branchaaaaa3", to: root, at: t + 2000)
+    try Self.reply(&world, "3branchaaaaa4", to: "3branchaaaaa2", at: t + 3000)
+    try Self.reply(&world, "3branchaaaaa5", to: "3branchaaaaa4", at: t + 4000)
+    try Self.reply(&world, "3branchaaaaa6", to: "3branchaaaaa3", at: t + 500)
+    let uri = "at://\(world.me.did)/app.bsky.feed.post/\(root)"
+    let chain = try DemoServer.selfReplyChain(world, uri)
+    #expect(chain.count == 5)
+    #expect(chain == Self.recursive(world, uri))
+  }
+
+  /// A chain thousands deep is walked without recursion (a task's stack on
+  /// iOS is small); a cycle throws the stack's RangeError.
+  @Test func walksADeepChainAndRefusesACycle() throws {
+    var world = World.buildWorld(now: WorkerSetup.now)
+    let root = world.posts.first { $0.replyTo == nil }!.rkey
+    var parent = root
+    for i in 0..<3000 {
+      let rkey = "3deep\(String.zeroPadded(i, 8))"
+      try Self.reply(&world, rkey, to: parent, at: WorkerSetup.now + Double(i))
+      parent = rkey
+    }
+    let chain = try DemoServer.selfReplyChain(world, "at://\(world.me.did)/app.bsky.feed.post/\(root)")
+    #expect(chain.count == 3000)
+    #expect(chain.last == "at://\(world.me.did)/app.bsky.feed.post/\(parent)")
+    try Self.reply(&world, "3cycleaaaaaa2", to: "3cycleaaaaaa3", at: WorkerSetup.now)
+    try Self.reply(&world, "3cycleaaaaaa3", to: "3cycleaaaaaa2", at: WorkerSetup.now)
+    #expect(throws: HarnessJSError.self) {
+      try DemoServer.selfReplyChain(world, "at://\(world.me.did)/app.bsky.feed.post/3cycleaaaaaa2")
+    }
   }
 }

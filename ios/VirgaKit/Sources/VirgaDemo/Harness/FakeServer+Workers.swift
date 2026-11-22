@@ -269,21 +269,28 @@ extension DemoServer {
   // MARK: Timers
 
   /// `selfReplyChain(world, uri)`: the account's own replies under a post,
-  /// depth first. A chain too deep to walk throws as V8's stack does.
+  /// depth first. A chain too deep to walk (a cycle of replies) throws as
+  /// V8's stack does. Walked with a stack of its own, not by recursion, so a
+  /// deep chain can't overflow a task's small stack on iOS.
   static func selfReplyChain(_ world: AccountWorld, _ uri: String) throws -> [String] {
+    let parents = world.posts.map { $0.record?["reply"]?["parent"]?["uri"]?.stringValue }
     var out: [String] = []
-    func walk(_ parent: String, _ depth: Int) throws {
-      if depth > 9000 { throw HarnessJSError(name: "RangeError", message: "Maximum call stack size exceeded") }
-      for p in world.posts {
-        guard let record = p.record, record["reply"]?["parent"]?["uri"]?.stringValue?.jsEquals(parent) == true else {
-          continue
-        }
-        let child = "at://\(world.me.did)/app.bsky.feed.post/\(p.rkey)"
+    // Each frame is a `walk(parent)` call: the parent, and the next post to look at.
+    var stack: [(parent: String, next: Int)] = [(uri, 0)]
+    while var frame = stack.popLast() {
+      while frame.next < parents.count {
+        let i = frame.next
+        frame.next += 1
+        guard let parent = parents[i], parent.jsEquals(frame.parent) else { continue }
+        let child = "at://\(world.me.did)/app.bsky.feed.post/\(world.posts[i].rkey)"
         out.append(child)
-        try walk(child, depth + 1)
+        stack.append(frame)
+        // The child's call is this deep.
+        if stack.count > 9000 { throw HarnessJSError(name: "RangeError", message: "Maximum call stack size exceeded") }
+        stack.append((child, 0))
+        break
       }
     }
-    try walk(uri, 0)
     return out
   }
 
