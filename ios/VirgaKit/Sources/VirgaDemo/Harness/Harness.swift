@@ -4,9 +4,9 @@
 // account's session was granted, from the address flags (`?scope=read`,
 // `?defense=on`, `?defense=lists`), and the helpers behind it. DemoWorld
 // puts the scope and the PDS on each world as createHarness does, and
-// holds grantOf and regrant. The rest of harness.js (the other flags, the
-// fake server, the agents, the network and `window.__harness`) comes with
-// the fake network, on VirgaNetwork.
+// holds grantOf and regrant. The other flags (readFlags) and the rest of
+// createHarness (DemoHarness: the server, the agents, the network) are in
+// Harness+Flags.swift.
 
 import Foundation
 import VirgaCore

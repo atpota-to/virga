@@ -293,14 +293,15 @@ public struct WorldOwnList: Codable, Hashable, Sendable {
 }
 
 /// A Bluesky draft as getDrafts gives it back (`draft` is the
-/// app.bsky.draft.defs#draft object).
+/// app.bsky.draft.defs#draft object). `draft` is nil (left out, as the web's
+/// `undefined`) after an updateDraft that sent none.
 public struct WorldDraft: Codable, Hashable, Sendable {
   public var id: String
-  public var draft: JSONValue
+  public var draft: JSONValue?
   public var createdAt: String
   public var updatedAt: String
 
-  public init(id: String, draft: JSONValue, createdAt: String, updatedAt: String) {
+  public init(id: String, draft: JSONValue?, createdAt: String, updatedAt: String) {
     self.id = id
     self.draft = draft
     self.createdAt = createdAt
