@@ -20,7 +20,7 @@ struct FollowBackTool: View {
   let tool: ToolEntry
 
   var body: some View {
-    VirgaPage(header: ToolHeader.header(tool, actions: AnyView(PeriodPicker()))) {
+    VirgaPage(header: ToolHeader.header(tool, period: AnyView(PeriodPicker()))) {
       if let archive {
         FollowBackQueue(archive: archive, store: app.stores.keyValue)
           .id(archive.did)

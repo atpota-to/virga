@@ -21,8 +21,9 @@ struct ToolHeader {
     PageHeaderModel(title: tool.name, sub: sub ?? tool.desc, access: [tool.access], crumbs: [Crumb("Tools", to: "/tools")])
   }
 
-  static func header(_ tool: ToolEntry, sub: String? = nil, actions: AnyView? = nil) -> PageHeader {
-    PageHeader(model(tool, sub: sub), actions: actions)
+  /// `period`: the period picker, which PageHeader puts first on a phone.
+  static func header(_ tool: ToolEntry, sub: String? = nil, period: AnyView? = nil, actions: AnyView? = nil) -> PageHeader {
+    PageHeader(model(tool, sub: sub), period: period, actions: actions)
   }
 }
 
