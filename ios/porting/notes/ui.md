@@ -534,9 +534,9 @@ LIVE SKY (Sky/, and VirgaCore/Hillside/ for everything that isn't drawing)
 ## Known gaps and deliberate differences
 
 - Left for later steps: dragging cards, a card's settings dialog, the dashboard cards and reports not listed
-  above, ChartNotes and the charts' notes and milestones; posting (the composer, its pages,
-  Settings › Posting and the pending-work warnings before a sign-out, which wait for
-  VirgaPosting's services); "Keep it when space runs low" (iOS has nothing to ask).
+  above, ChartNotes and the charts' notes and milestones; of posting, what the composer's entries
+  (Composer.jsx, ComposerDialogs.jsx) list, its own timer among it, every posting page being in;
+  "Keep it when space runs low" (iOS has nothing to ask).
 - Copy is the web's word for word, including words that only fit a browser ("This
   browser's region", "Forget X on this browser", "Saving the repo to this browser"). Worth
   raising on the web side rather than changing on one side.
