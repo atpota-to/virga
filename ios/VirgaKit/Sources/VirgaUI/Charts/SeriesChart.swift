@@ -476,8 +476,12 @@ public struct SeriesChart: View {
         if hovered.map({ $0 < n - 3 }) ?? true {
           // `text-anchor: end` at the dot, riding above it (below, when the
           // dot brushes the top), on the ground so a rule behind can't
-          // strike through it.
-          let baseline = end.y - 8 < 12 ? end.y + 16 : end.y - 8
+          // strike through it. The web tests the dot's height in its SVG,
+          // whose plot starts `PAD.t` down (and MARKS_ROOM more with marked
+          // days); this plot starts at the overlay's top, so its room is
+          // counted in.
+          let padT = Measure.Chart.plotTop + (shownMarks.isEmpty ? 0 : Measure.Chart.marksRoom)
+          let baseline = y1 + padT - 8 < 12 ? end.y + 16 : end.y - 8
           Text(ghost.label ?? "\(ChartFormat.fmtCount(ghost.v)) on profile")
             .virgaText(size: Measure.Chart.labelSize)
             .foregroundStyle(theme.muted)

@@ -150,6 +150,12 @@ extension Measure.Dashboard {
 }
 
 extension Measure.Chart {
+  /// SeriesChart.jsx's `PAD.t` (18) over the plot, and `MARKS_ROOM` (10)
+  /// more with marked days, which its `ghostY - 8 < 12` counts in: the
+  /// ghost's words go under its dot only when the dot is within 2 of the
+  /// plot's top (and never with marks).
+  static let plotTop: CGFloat = 18
+  static let marksRoom: CGFloat = 10
   /// SeriesChart.jsx: the middle date steps aside when it would come within
   /// 12 of an end date, each date's width estimated at 6.6 a character.
   static let dateCharWidth: CGFloat = 6.6
