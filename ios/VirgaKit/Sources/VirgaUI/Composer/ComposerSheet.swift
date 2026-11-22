@@ -159,9 +159,13 @@ struct ComposerSheet: View {
       // `.composer-drop`: over the post area, the head or bar and the foot left clear.
       .overlay { if dropOver { ComposerDropHint() } }
       // The toasts are the host's one stack, at the window's corner beside a
-      // wider window's dialog, as the web's `.toasts` are. A phone's sheet
-      // covers that stack, so it draws its own over the post area, above
-      // the foot, where they don't hide Save as draft and Schedule.
+      // wider window's dialog, as the web's `.toasts` are, and under the
+      // sheet where the two meet: the web's composer is a modal <dialog>
+      // (showModal, the top layer), drawn over the page's toasts and its
+      // scrim over them too (Menu.jsx's sheetHost portals into the dialog
+      // for that reason). A stack above the sheet would cover its foot. A
+      // phone's sheet covers that stack, so it draws its own over the post
+      // area, above the foot, where they don't hide Save as draft and Schedule.
       .overlay { if theme.composerNarrow { ToastStack(center: toasts) } }
       .sheet(item: $controller.dialog) { dialog in
         // On a phone at its detents; wider, the web's centred modal, its
