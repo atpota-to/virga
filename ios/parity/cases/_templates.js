@@ -169,7 +169,9 @@ export const TEMPLATES = {
       { key: 'd', optional: false },
     ],
   },
-  spacing: { text: '{{ spaced }} {{\ttab\t}} {{\u00A0nbsp\u00A0}} {{\u3000ideo\u3000}}' },
+  spacing: {
+    text: '{{ spaced }} {{\ttab\t}} {{\u00A0nbsp\u00A0}} {{\u3000ideo\u3000}}',
+  },
   badKeys: { text: '{{1bad}} {{}} {{_x}} {{a-b.c_d}} {{a b}} {{{x}}} {{y}}}' },
   longKey: {
     text: `{{${'k'.repeat(32)}}} {{${'k'.repeat(33)}}}`,
@@ -459,7 +461,11 @@ export const TO_RECORD = {
     ],
   },
   rawCreated: { name: 'R', text: 'x', createdAt: 12345 },
-  unicodeName: { name: `  ${FAMILY} Names \u00A0`, text: 'x', group: '\u3000Gruppe\u3000' },
+  unicodeName: {
+    name: `  ${FAMILY} Names \u00A0`,
+    text: 'x',
+    group: '\u3000Gruppe\u3000',
+  },
 };
 
 export const VALIDATE = {
