@@ -24,6 +24,10 @@
 // New post is the round ink button at its end. Settings is behind the
 // account, in its menu.
 //
+// Five taps on the mark turn the live sky on or off (Sky/SkyTapsButton.swift);
+// while it shows, the strip over the status bar is clear at rest, so its
+// clouds run up under the clock, and comes in as the page scrolls under it.
+//
 // Search opens the command palette (CommandPalette.swift), which has no
 // shortcut to be found by here. The account's menu holds Sync now, once
 // there is an archive (there is no sync card beside it).
@@ -154,7 +158,7 @@ struct AppBarRow: View {
 
   var body: some View {
     HStack(spacing: Measure.AppBar.gap) {
-      Brand()
+      SkyTapsButton { Brand() }
         .frame(minHeight: Measure.AppBar.iconButton)
       Spacer(minLength: 0)
       HStack(spacing: 0) {
@@ -175,9 +179,21 @@ struct AppBarRow: View {
 /// scrolls under it rather than under the clock. Laid out with no height at
 /// the top of the safe area, it reaches up over the status bar alone.
 struct StatusBarSky: View {
+  @Environment(PreferencesModel.self) private var preferences: PreferencesModel?
+  @Environment(\.virgaTheme) private var theme
+  /// The page's scroll, for the live sky's strip to come in with.
+  var scroll: SkyScroll?
+
+  /// Clear at rest over the live sky; fully in once the page has scrolled
+  /// a status bar's height (the strip's own) under it.
+  private var opacity: Double {
+    guard let scroll, preferences?.prefs.liveSky == true, !theme.isHighContrast else { return 1 }
+    return Double(min(1, max(0, -scroll.offset / LiveSky.stripFade)))
+  }
+
   var body: some View {
     Color.clear
-      .overlay(alignment: .top) { SkyWash() }
+      .overlay(alignment: .top) { SkyWash().opacity(opacity) }
       .clipped()
       .ignoresSafeArea(edges: .top)
       .frame(height: 0)

@@ -25,7 +25,9 @@
 // latency=<ms>, now=<time>, appview=…), and the two kept from before,
 // `-VirgaDemoTerms YES` (terms=ask: the agreement screen first) and
 // `-VirgaDemoSignedOut YES` (signedout: the front page, both accounts
-// remembered).
+// remembered). `-VirgaDemoSky <night|day|dawn|dusk|clock>` and
+// `-VirgaDemoLiveSky YES` start it with those preferences stored, as a
+// browser's localStorage would hold them.
 
 #if canImport(UIKit)
 import Foundation
@@ -232,7 +234,8 @@ public final class AppModel {
         flags: flags,
         search: demoSearch(
           flags: defaults.string(forKey: "VirgaDemoFlags"), askTerms: defaults.bool(forKey: "VirgaDemoTerms"),
-          signedOut: defaults.bool(forKey: "VirgaDemoSignedOut")))
+          signedOut: defaults.bool(forKey: "VirgaDemoSignedOut")),
+        prefs: demoPreferences(sky: defaults.string(forKey: "VirgaDemoSky"), liveSky: defaults.bool(forKey: "VirgaDemoLiveSky")))
     }
     return device(flags: flags)
   }()
@@ -259,6 +262,16 @@ public final class AppModel {
       archiveEnvironment: ArchiveEnvironment(files: stores.files, transport: environment.transport, clock: environment.clock))
   }
 
+  /// The preferences the demo's launch arguments ask it to start with, as
+  /// stored, or nil when they ask for none.
+  static func demoPreferences(sky: String?, liveSky: Bool) -> String? {
+    guard sky != nil || liveSky else { return nil }
+    var prefs = Preferences()
+    if let sky, let choice = SkyChoice(rawValue: sky) { prefs.sky = choice }
+    prefs.liveSky = liveSky
+    return prefs.jsonString()
+  }
+
   /// The harness's address for the demo's launch arguments: `?` and the
   /// flags given, with `terms=ask` and `signedout` for the two kept switches.
   static func demoSearch(flags: String?, askTerms: Bool, signedOut: Bool) -> String {
@@ -275,8 +288,9 @@ public final class AppModel {
   /// The made-up world (VirgaDemo's DemoSession), signed in, nothing
   /// persisted. The app's own session model runs over the demo session's
   /// environment, with the archive's two hooks wired as on a device.
-  static func demo(flags: AppConfig.Flags, search: String) -> AppModel {
+  static func demo(flags: AppConfig.Flags, search: String, prefs: String? = nil) -> AppModel {
     let stores = AppStores.inMemory()
+    if let prefs { try? stores.keyValue.setItem(Preferences.preferencesKey, prefs) }
     let demo = DemoSession(
       options: DemoOptions.read(search), timeZone: .current, storage: stores.keyValue, tabStorage: stores.tab,
       secrets: stores.secrets)

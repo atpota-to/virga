@@ -32,7 +32,10 @@
 // dashboard's page again, which opens it customizing (ShellActions).
 //
 // New post opens the composer in place (ComposerHost), over the page.
-// Not here yet: the live sky.
+//
+// The live sky (Shell.jsx's `prefs.liveSky && <LiveSky />`) is drawn with
+// the page's sky, by PageSky (Theme/SkyWash.swift), so it is behind every
+// page here, and behind the sidebar and the page together on the desk.
 
 #if canImport(UIKit)
 import Observation

@@ -9,8 +9,8 @@
 // theme's `hasSidebar` (the width, not the device); the period picker and
 // its range dialog are PeriodPicker.swift.
 //
-// Not here yet: the five taps on the mark that turn the live sky on (the
-// hillside comes later).
+// The five taps on the mark that turn the live sky on are
+// Sky/SkyTapsButton.swift (VirgaCore's SkyTaps counts them).
 
 #if canImport(UIKit)
 import Observation
