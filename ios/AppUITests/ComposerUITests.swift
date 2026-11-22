@@ -241,8 +241,12 @@ final class ComposerUITests: XCTestCase {
       let more = app.buttons["More for this post"]
       scrollTo(app, more)
       more.tap()
-      let item = app.buttons["Continue a thread"]
-      XCTAssertTrue(item.waitForExistence(timeout: 5))
+      // The menu's item, by its identifier or its title (a native menu item
+      // may read its hint after the title).
+      let item = app.buttons.matching(
+        NSPredicate(format: "identifier == 'more-continue' OR label BEGINSWITH %@", "Continue a thread")
+      ).firstMatch
+      XCTAssertTrue(item.waitForExistence(timeout: 5), "no Continue a thread in More")
       item.tap()
     } else {
       let more = element(app, "option-more")
