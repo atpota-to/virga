@@ -330,7 +330,9 @@ function randomName(t) {
     let w = '';
     const m = t.int(1, 6);
     for (let j = 0; j < m; j++)
-      w += t.chance(0.85) ? t.pick(LETTERS) : t.pick(["'", '’', '-', '\u0301', '🌿']);
+      w += t.chance(0.85)
+        ? t.pick(LETTERS)
+        : t.pick(["'", '’', '-', '\u0301', '🌿']);
     parts.push(w);
   }
   return (

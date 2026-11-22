@@ -33317,6 +33317,49 @@
       "output": []
     },
     {
+      "id": "keywordMatches#37",
+      "fn": "keywordMatches",
+      "input": {
+        "template": {
+          "keywords": [
+            "élise"
+          ]
+        },
+        "text": "e lise"
+      },
+      "output": [
+        "élise"
+      ]
+    },
+    {
+      "id": "keywordMatches#38",
+      "fn": "keywordMatches",
+      "input": {
+        "template": {
+          "keywords": [
+            "élise"
+          ]
+        },
+        "text": "élise"
+      },
+      "output": []
+    },
+    {
+      "id": "keywordMatches#39",
+      "fn": "keywordMatches",
+      "input": {
+        "template": {
+          "keywords": [
+            "नमस्ते"
+          ]
+        },
+        "text": "नमस त"
+      },
+      "output": [
+        "नमस्ते"
+      ]
+    },
+    {
       "id": "normalizeShortcut#1",
       "fn": "normalizeShortcut",
       "input": {

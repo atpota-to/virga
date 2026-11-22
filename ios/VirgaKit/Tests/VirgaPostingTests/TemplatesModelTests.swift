@@ -144,6 +144,29 @@ final class FakeTemplatesSession: TemplatesSession {
     #expect(!model.loading)
   }
 
+  /// Between an account change and the effect, the hook shows PENDING:
+  /// nothing yet, loading, not ready, even where the new account has a
+  /// cache. The effect then primes from it.
+  @Test func aNewAccountBeforeTheEffectRunsIsPending() async throws {
+    try cache(bob, [entry("3la", "Bob’s cached")])
+    try cache(carol, [entry("3lc", "Carol’s cached", did: carol)])
+    let model = TemplatesModel(session: session, did: bob, service: service)
+    #expect(names(model) == ["Bob’s cached"])
+    model.setAccount(carol)
+    #expect(model.templates.isEmpty)
+    #expect(model.loading)
+    #expect(!model.ready)
+    #expect(model.error == nil)
+    model.start()
+    #expect(names(model) == ["Carol’s cached"])
+    #expect(model.loading)
+    // No agent for Carol here, so the load fails over her cache.
+    _ = await model.effectLoad?.value
+    #expect(names(model) == ["Carol’s cached"])
+    #expect(model.error.map(jsMessage) == "Not signed in")
+    model.stop()
+  }
+
   @Test func writesGoToTheOpenAccountAndRethrow() async throws {
     let repo = FakeRepo(did: bob)
     session.repos[bob] = repo

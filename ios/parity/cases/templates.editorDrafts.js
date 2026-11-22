@@ -235,7 +235,11 @@ const REPLIES = [
     card: { url: 'https://card.example' },
     linkUrl: null,
   },
-  { $id: 'trailing-space', text: 'Hi Wren \n\t\u00A0\u2028', replyTo: named('Wren') },
+  {
+    $id: 'trailing-space',
+    text: 'Hi Wren \n\t\u00A0\u2028',
+    replyTo: named('Wren'),
+  },
   { $id: 'only-space', text: ' \n ', replyTo: named('Wren') },
   { $id: 'no-text', replyTo: named('Wren') },
   { $id: 'number-text', text: 42, replyTo: named('Wren') },

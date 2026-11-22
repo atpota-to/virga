@@ -384,6 +384,15 @@ export default async function cases() {
     [{ keywords: ['mode'] }, 'MODE modular'],
     [{ keywords: ['İ'] }, 'i\u0307'],
     [{ keywords: ['ﬁle'] }, 'file'],
+    // WORDS has no \p{M}, so a word splits at a combining mark: a keyword
+    // with a decomposed accent, or in a script whose vowels are marks,
+    // matches its pieces as separate words.
+    [{ keywords: ['e\u0301lise'] }, 'e lise'],
+    [{ keywords: ['e\u0301lise'] }, '\u00E9lise'],
+    [
+      { keywords: ['\u0928\u092E\u0938\u094D\u0924\u0947'] },
+      '\u0928\u092E\u0938 \u0924',
+    ],
   ];
   out.push(
     ...(await each(
