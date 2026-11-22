@@ -358,9 +358,11 @@ LIVE SKY (Sky/, and VirgaCore/Hillside/ for everything that isn't drawing)
   soft:crest:blur:)` is Hillside.jsx, the whole hill with its intro and soft focus; no page draws it,
   as no web page does now. `SkyTapsButton { Brand() }` is the mark in the app bar, the sidebar (open
   and folded) and the front page (`brand`); Settings › Appearance ends with "Live sky" (`live-sky`).
-- Memory while it is on: the dome (about 15 KB), the noise (64 KB and its mipmaps), two buffers of
-  puffs per canvas (183 KB each), and the band's scene texture and two drawables at 1.5 pixels a
-  point; the land's mesh (about 2.2 MB) only once a hill is drawn.
+- Memory while it is on: the dome (about 15 KB), the noise (64 KB and its mipmaps), a buffer of
+  puffs per canvas (183 KB; one picture in flight at most), and the band's scene texture and two
+  drawables at 1.5 pixels a point; the land's mesh (about 2.2 MB) only once a hill is drawn. A
+  picture that comes while the last is still on the GPU is skipped, so the pace check, which times
+  the display link as the web's times requestAnimationFrame, doesn't see a GPU that falls behind.
 - Demo mode: `-VirgaDemoSky <sky>` and `-VirgaDemoLiveSky YES` start it with those preferences
   stored (the front page has no Settings to pick night from).
 - Deliberate differences: the pointer's lean comes from a hovering pointer (an iPad's trackpad or

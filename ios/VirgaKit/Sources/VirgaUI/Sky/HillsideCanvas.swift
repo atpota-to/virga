@@ -85,6 +85,7 @@ final class HillsideCanvasView: MTKView, UIGestureRecognizerDelegate {
 
   /// The drawable: the view's size at the scene's ratio.
   private func fitDrawable() {
+    guard window != nil else { return }
     let scale = CGFloat(ratio ?? Double(traitCollection.displayScale))
     let size = CGSize(width: max(1, (bounds.width * scale).rounded()), height: max(1, (bounds.height * scale).rounded()))
     if drawableSize != size { drawableSize = size }
@@ -100,6 +101,14 @@ final class HillsideCanvasView: MTKView, UIGestureRecognizerDelegate {
 
   override func didMoveToWindow() {
     super.didMoveToWindow()
+    if window == nil {
+      // Out of a window (a page under another in a stack): its pictures'
+      // memory goes until it is back.
+      renderer?.letGo()
+      drawableSize = CGSize(width: 1, height: 1)
+    } else {
+      fitDrawable()
+    }
     if let hover, hover.view !== window {
       hover.view?.removeGestureRecognizer(hover)
       self.hover = nil

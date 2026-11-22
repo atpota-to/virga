@@ -106,10 +106,11 @@ final class HillsideMetalTests: XCTestCase {
     state.resize(width: Double(width), height: Double(height), crest: 0.5)
     let renderer = HillsideCanvasRenderer(gpu: gpu, mode: .hill)
     let bytes = try picture(gpu, renderer, state, width: width, height: height, depth: true)
-    let sky = pixel(bytes, width: width, x: 150, y: 20)
-    XCTAssertGreaterThan(sky.b, sky.r, "the sky at the top is \(sky)")
-    let grass = pixel(bytes, width: width, x: 150, y: 380)
-    XCTAssertGreaterThan(grass.g, grass.b, "the grass at the foot is \(grass)")
+    // most of the top is blue (a cloud's sunlit rim may not be), most of the foot green
+    let top = [30, 90, 150, 210, 270].map { pixel(bytes, width: width, x: $0, y: 12) }
+    XCTAssertGreaterThanOrEqual(top.filter { $0.b > $0.r }.count, 3, "the sky at the top is \(top)")
+    let foot = [30, 90, 150, 210, 270].map { pixel(bytes, width: width, x: $0, y: 388) }
+    XCTAssertGreaterThanOrEqual(foot.filter { $0.g > $0.b }.count, 3, "the grass at the foot is \(foot)")
     // and at night, with its stars, and at dawn, with the sun's disc
     for phase in ["night", "dawn"] {
       state.setPhase(phase, instant: true)

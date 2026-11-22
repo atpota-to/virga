@@ -18,9 +18,11 @@
 // premultiplied, tested against the land but not writing depth. A hill's
 // view draws straight into its drawable; the live sky's band draws the
 // scene into a texture of its own and then lays it on the page's wash
-// (the band pass in the shaders). Each view keeps two buffers of puffs, so
-// the CPU fills one while the GPU reads the other; a picture the GPU is
-// too far behind for is skipped, never waited for.
+// (the band pass in the shaders). Each view has one picture in flight at
+// most, so one buffer of puffs and two drawables are enough (the screen
+// shows one while the next is drawn, and nothing waits for a drawable);
+// a picture that comes while the last is still on the GPU is skipped,
+// never waited for.
 
 #if canImport(UIKit)
 import Foundation
@@ -322,9 +324,8 @@ final class HillsideCanvasRenderer: NSObject, MTKViewDelegate {
   /// Whether a picture has been sent to the screen.
   private(set) var hasDrawn = false
 
-  private var puffBuffers: [MTLBuffer] = []
-  private var nextBuffer = 0
-  private let inFlight = DispatchSemaphore(value: 2)
+  private var puffs: MTLBuffer?
+  private let inFlight = DispatchSemaphore(value: 1)
   private var sceneTexture: MTLTexture?
 
   init(gpu: HillsideGPU, mode: Mode) {
@@ -334,6 +335,13 @@ final class HillsideCanvasRenderer: NSObject, MTKViewDelegate {
   }
 
   func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
+
+  /// Out of a window: the band's scene goes, and the next picture is drawn
+  /// afresh when it is back.
+  func letGo() {
+    sceneTexture = nil
+    hasDrawn = false
+  }
 
   func draw(in view: MTKView) {
     guard let state, state.drawCount > 0 else { return }
@@ -383,17 +391,13 @@ final class HillsideCanvasRenderer: NSObject, MTKViewDelegate {
     return true
   }
 
-  /// The next of the view's two buffers of puffs, filled with the batch.
+  /// The view's buffer of puffs, filled with the batch.
   private func puffBuffer(for state: HillsideSceneState) -> MTLBuffer? {
     let length = max(1, state.clouds.capacity) * HillsideCloudBatch.stride * MemoryLayout<Float>.stride
-    if puffBuffers.isEmpty {
-      for _ in 0..<2 {
-        guard let made = gpu.device.makeBuffer(length: length, options: .storageModeShared) else { return nil }
-        puffBuffers.append(made)
-      }
+    if puffs == nil || (puffs?.length ?? 0) < length {
+      puffs = gpu.device.makeBuffer(length: length, options: .storageModeShared)
     }
-    let buffer = puffBuffers[nextBuffer]
-    nextBuffer = (nextBuffer + 1) % puffBuffers.count
+    guard let buffer = puffs else { return nil }
     let floats = min(state.clouds.count * HillsideCloudBatch.stride, state.clouds.instances.count)
     state.clouds.instances.withUnsafeBytes { raw in
       if let base = raw.baseAddress, floats > 0 {

@@ -195,8 +195,9 @@ final class HillsideDriver {
       for view in views.compactMap(\.view) where view.window != nil { view.render(state) }
     }
     // Told on the next turn of the run loop, not in the middle of SwiftUI's
-    // update (a canvas is attached and draws from updateUIView).
-    let drawn = !state.isLost && views.contains { $0.view?.hasDrawn == true }
+    // update (a canvas is attached and draws from updateUIView). Once up it
+    // stays up, while views come and go, unless the drawing is lost.
+    let drawn = !state.isLost && (showsPicture || views.contains { $0.view?.hasDrawn == true })
     if drawn != showsPicture {
       DispatchQueue.main.async { [weak self] in
         MainActor.assumeIsolated {
