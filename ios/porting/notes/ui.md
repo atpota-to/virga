@@ -187,7 +187,33 @@ DEFENSE (Defense/)
   route (VirgaDemo's DemoDefense), and `AppModel.demo` starts its workers
   (`DemoSession.startCron()`, every `cron=` seconds, 20 by default), so a plan's adds and
   removes are written as on the real server and a link code lands ten seconds after it is
-  made. DefenseUITests runs with `defense=lists&cron=2`.
+  made. DefenseUITests runs with `defense=lists&cron=2` and `-VirgaDefenseModerator on`, and adds
+  `defense-add-confirm`, `defense-add-done`, `defense-moderator-code`, `defense-moderator-linked`,
+  `defense-history-undo` and `defense-history-undone` to its screenshots.
+
+TEMPLATES AND POSTING (Templates/, Posting/, Settings/PostingSettingsSection.swift)
+- `TemplatesPage(session:did:id:)` from RoutedPage's posting case (`/posting/templates`, and the
+  iOS-only `/posting/templates/new` and `/posting/templates/<rkey>`, which open the editor). Each
+  view that the web gives `useTemplates(did)` makes its own `TemplatesModel(session:did:)`, with
+  `start()` in `.task` and `stop()` on disappear; the app sets `TemplateService.shared` with its
+  key-value store at launch (AppModel).
+- `.templateEditor(isPresented:did:template:seed:onSaved:onDeleting:)` is TemplateEditor.jsx, a
+  full-height sheet over `DialogFrame` whose foot holds the prompts. Its reads (recent posts, a
+  quote's view, a pasted link) are `TemplateEditorSources`, written over PublicAppView until
+  library/sources.js is ported; a web page's link card waits for linkCard.js (`linkCard`).
+- `TemplateQuestions(template:context:…onDone:)`, `ChoiceGroup` and `TemplatePreviewView` are
+  for the composer's library: it passes `preview:` from previewFor once library/model.js is
+  ported; until then `LibraryPreview.forTemplate` works out a template on its own.
+- Posting/PostingParts.swift: `PostingHeader.model(key)`, `RowSkeleton`, `LoadError`,
+  `.postingConfirm(isPresented:title:onConfirm:message:)` (hubParts' ConfirmDialog) and
+  `PostingWords.countPhrase`. Use opens the composer through `ComposerHost`.
+- Settings › Posting is `PostingSettingsSection` over `PostingSettingsModel`, with the composer's
+  `LanguagePicker` and `GatesEditor`; `ScheduleWords` holds scheduleModel.js's week sentences and
+  `TimezonePicker` scheduleParts' TimezoneSelect until the scheduling pages are ported. The
+  timer's rule editor (LifespanEditor), the adviser's settings and NeedsBackend keep marked places.
+- `Measure.Templates` (Templates/TemplateMeasures.swift) names library.css's and hub.css's measures.
+- PostingUITests (`testTemplatesAndPostingSettings`, no archive build): `posting-templates`,
+  `template-editor`, `template-editor-questions`, `settings-posting`, `settings-posting-timer`.
 
 SHELL, ROUND 6
 - `ShellActions` (in the shell's environment): `creatingDashboard` opens the shell's
