@@ -74,7 +74,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift",
         "ios/VirgaKit/Sources/VirgaUI/Components/Table.swift"
       ],
-      "note": "The chart tokens (--chart-1/2, --chart-area, --chart-grid, --chart-ghost, --heat-0 to 6, --second-tip), the series chart's strokes, dashes, dots and marks, the tooltip's own grounds, the table view (TableScroll: at least the column or 28rem, whichever is less, at the column's start), the bar list, the heatmap and the sparkline. Not as the web: the plot's margins and the rules' numbers are Swift Charts' own layout, and the widget's hidden marks list (.widget .an-chart-marks) waits for the dashboards.",
+      "note": "The chart tokens (--chart-1/2, --chart-area, --chart-grid, --chart-ghost, --heat-0 to 6, --second-tip), the series chart's strokes, dashes, dots and marks, the tooltip's own grounds, the table view (TableScroll: at least the column or 28rem, whichever is less, at the column's start, its head held over the rows as they scroll, as `thead th { position: sticky }` has it, and straight under the chart foot's 44-point line on touch; a row's head in --ink-2), the bar list, the heatmap and the sparkline. Not as the web: the plot's margins and the rules' numbers are Swift Charts' own layout, and the widget's hidden marks list (.widget .an-chart-marks) waits for the dashboards.",
       "synced": "4ee043069325"
     },
     "src/components/AccessBadge.jsx": {

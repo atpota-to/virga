@@ -361,15 +361,13 @@ public enum Measure {
     public static let marksLineGap: CGFloat = 4
     public static let marksListed = 5
     public static let marksDiamondGap: CGFloat = 6
-    /// `.an-tableview-scroll { max-height: 20rem }`, 8 under the foot.
+    /// `.an-tableview-scroll { max-height: 20rem }`, straight under the
+    /// foot on touch (its 44-point link actions leave the room; the chart
+    /// foot's gaps are ThemeKit.chartFootGap).
     public static let tableMaxHeight: CGFloat = 320
-    public static let tableSpaceAbove: CGFloat = 8
     /// `.an-tableview .table { min-width: min(100%, 28rem) }`: 28rem, held
     /// to the column by TableScroll.
     public static let tableMinWidth: CGFloat = 448
-    /// `.chart-foot { gap: 8px 24px; margin-top: var(--space-3) }`
-    public static let footGap: CGFloat = 24
-    public static let footLineGap: CGFloat = 8
     /// `.barlist`: the label column 136 (200 for NSIDs), the track at
     /// least 96 (60), 6 tall; 12 between rows, 16 between columns; at
     /// most 640 wide; a label's glyph 15.

@@ -5,10 +5,11 @@
 // What posts carry and what they typically earn: the figures (posts and
 // threads, a typical post, with pictures or video, media described, with a
 // tag), then by format and by length (each with its insight sentence,
-// typical post or posts, and its table), tags and sites (ranked, the first
-// twelve, Show all), threads, and the languages where there is more than
-// one. The words are the web's; "None of this says one thing causes
-// another" included.
+// typical post or posts, and its table; By format's line carries the
+// report's actions), tags and sites (ranked, the first twelve, Show all on
+// the line under the bars), threads, and the languages where there is more
+// than one, two by two where there is room. The words are the web's; "None
+// of this says one thing causes another" included.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -70,20 +71,33 @@ enum ContentWords {
   }
 }
 
-/// `GroupTable`: a bar list's table, behind Show as table.
-struct GroupTable: View {
-  let columns: [DataTableColumn]
-  let rows: [[String]]
+/// `GroupTable`: a bar list's table, behind Show as table, with `actions`
+/// after it on that line (and `trailing`, a phone's ⋯, at its end).
+struct GroupTable<Actions: View>: View {
+  private let columns: [DataTableColumn]
+  private let rows: [[String]]
+  private let trailing: AnyView?
+  private let actions: Actions
+
+  init(columns: [DataTableColumn], rows: [[String]], trailing: AnyView? = nil, @ViewBuilder actions: () -> Actions) {
+    self.columns = columns
+    self.rows = rows
+    self.trailing = trailing
+    self.actions = actions()
+  }
 
   var body: some View {
     if !rows.isEmpty {
-      ShowAsTable {
-        ScrollView([.vertical, .horizontal]) {
-          DataTable(columns: columns, rows: rows)
-        }
-        .frame(maxHeight: Measure.Chart.tableMaxHeight)
+      ShowAsTable(actions: { actions }, trailing: trailing) {
+        ChartTableView(columns: columns, rows: rows)
       }
     }
+  }
+}
+
+extension GroupTable where Actions == EmptyView {
+  init(columns: [DataTableColumn], rows: [[String]], trailing: AnyView? = nil) {
+    self.init(columns: columns, rows: rows, trailing: trailing, actions: { EmptyView() })
   }
 }
 
@@ -96,6 +110,9 @@ struct ContentGrouped: View {
   let label: String
   let groups: [ContentGroup]
   var insight: String? = nil
+  /// The report's actions, on the lead chart's line (By format's).
+  var actions: AnyView? = nil
+  var more: AnyView? = nil
   @State private var measure = "typical"
 
   var body: some View {
@@ -105,7 +122,12 @@ struct ContentGrouped: View {
       tools: AnyView(Segmented(label: "\(title): measure", options: ContentWords.measures, selection: $measure, size: .small))
     ) {
       if let insight {
-        Text(insight).virgaText(.textBase).foregroundStyle(theme.ink2).fixedSize(horizontal: false, vertical: true)
+        // `.report-insight`: 16 over the bars.
+        Text(insight)
+          .virgaText(.textBase)
+          .foregroundStyle(theme.ink2)
+          .fixedSize(horizontal: false, vertical: true)
+          .padding(.bottom, Measure.Reports.insightSpaceBelow)
       }
       if shown.isEmpty {
         EmptyState("No posts in this window.")
@@ -115,7 +137,11 @@ struct ContentGrouped: View {
           accessibilityLabel: label)
         GroupTable(
           columns: ContentWords.columns(head),
-          rows: shown.map { ContentWords.cells($0.label, posts: $0.posts, share: $0.share, typical: $0.typical, total: $0.total) })
+          rows: shown.map { ContentWords.cells($0.label, posts: $0.posts, share: $0.share, typical: $0.typical, total: $0.total) },
+          trailing: more
+        ) {
+          if let actions { actions }
+        }
       }
     }
   }
@@ -151,13 +177,23 @@ struct ContentRanked: View {
           rows: shown.map {
             ContentWords.barRow(key: $0.name, label: render($0.name), posts: $0.posts, share: $0.share, typical: $0.typical, measure: measure)
           }, accessibilityLabel: title)
-        if ordered.count > Self.limit {
-          Button(all ? "Show fewer" : "Show all \(AppLocale.formatNumber(ordered.count))") { all.toggle() }
-            .buttonStyle(.linkAction(isOpen: all))
-        }
+        // Showing every bar is one more thing to do with the chart, so it
+        // joins Show as table on the line under it.
         GroupTable(
           columns: ContentWords.columns(head),
-          rows: ordered.map { ContentWords.cells(render($0.name), posts: $0.posts, share: $0.share, typical: $0.typical, total: $0.total) })
+          rows: ordered.map { ContentWords.cells(render($0.name), posts: $0.posts, share: $0.share, typical: $0.typical, total: $0.total) }
+        ) {
+          if ordered.count > Self.limit {
+            Button {
+              all.toggle()
+            } label: {
+              Label(
+                all ? "Show fewer" : "Show all \(AppLocale.formatNumber(ordered.count))",
+                systemImage: all ? ReportParts.chevronUp : ReportParts.chevronDown)
+            }
+            .buttonStyle(.linkAction)
+          }
+        }
       }
     }
   }
@@ -167,6 +203,8 @@ struct ContentReportView: View {
   @Environment(\.virgaTheme) private var theme
   let archive: ReportArchive
   let period: AnalyticsPeriod
+  var actions: AnyView? = nil
+  var more: AnyView? = nil
 
   var body: some View {
     let m = ReportModels.contentModel(archive, period, archive.nowMs ?? SyncStatus.now())
@@ -185,37 +223,42 @@ struct ContentReportView: View {
       FiguresView(
         [
           ReportParts.fig("Posts and threads, \(window)", Double(m.posts)),
-          FigureItem(
-            label: "A typical post earns", value: .text(m.typical == nil ? "—" : ChartFormat.fmtRate(m.typical)),
-            note: AnyView(Text("likes, reposts, replies and quotes"))),
+          ReportParts.fig(
+            "A typical post earns", text: m.typical == nil ? "—" : ChartFormat.fmtRate(m.typical), sub: "likes, reposts, replies and quotes"),
           ReportParts.fig("With pictures or video", share(media), unit: "%", sub: ContentWords.postsWord(media)),
           ReportParts.fig(
-            "Media described", m.alt.pct.map { $0.jsRounded }, unit: m.alt.pct == nil ? "" : "%",
+            "Media described", m.alt.pct.map { $0.jsRounded }, unit: m.alt.pct == nil ? nil : "%",
             sub: m.alt.items != 0
               ? "\(AppLocale.formatNumber(m.alt.itemsDescribed)) of \(AppLocale.formatNumber(m.alt.items)) pictures and videos have alt text"
               : "no pictures or video in this window"),
           ReportParts.fig("With a tag", share(m.withTags), unit: "%", sub: ContentWords.postsWord(m.withTags)),
         ], label: "Content in figures")
-      ContentGrouped(
-        title: "By format", sub: "What each post carries besides its words", head: "Format", label: "Posts by format", groups: m.formats,
-        insight: ContentWords.standout(m.formats, m.typical, "text", noun: ContentWords.formatNoun))
-      ContentGrouped(
-        title: "By length", sub: "In characters, of the 300 a post holds", head: "Length", label: "Posts by length", groups: m.lengths,
-        insight: ContentWords.standout(m.lengths, m.typical, nil) { "Posts of \($0.label.jsLowercased()) characters" })
-      ContentRanked(
-        title: "Tags", sub: "Counted whatever their capitals", head: "Tag", rows: m.tags, render: { "#\($0)" },
-        empty: "No tags on your posts in this window.")
-      ContentRanked(
-        title: "Sites you link to", sub: "From links in the text and link cards", head: "Site", rows: m.links, render: { $0 },
-        empty: "No links in your posts in this window.")
-      ContentGrouped(
-        title: "Threads", sub: "Where a post sits in a thread of your own", head: "Place", label: "Posts by place in a thread",
-        groups: m.places)
-      if m.langs.count > 1 {
-        ReportCard(title: "Languages", sub: "As each post is marked. A post can carry more than one.", tools: nil) {
-          BarList(
-            rows: m.langs.map { BarListRow(key: $0.lang, label: Locale(identifier: "en").localizedString(forLanguageCode: $0.lang) ?? $0.lang, value: Double($0.posts)) },
-            accessibilityLabel: "Posts by language")
+      ReportSplit {
+        ContentGrouped(
+          title: "By format", sub: "What each post carries besides its words", head: "Format", label: "Posts by format", groups: m.formats,
+          insight: ContentWords.standout(m.formats, m.typical, "text", noun: ContentWords.formatNoun), actions: actions, more: more)
+        ContentGrouped(
+          title: "By length", sub: "In characters, of the 300 a post holds", head: "Length", label: "Posts by length", groups: m.lengths,
+          insight: ContentWords.standout(m.lengths, m.typical, nil) { "Posts of \($0.label.jsLowercased()) characters" })
+      }
+      ReportSplit {
+        ContentRanked(
+          title: "Tags", sub: "Counted whatever their capitals", head: "Tag", rows: m.tags, render: { "#\($0)" },
+          empty: "No tags on your posts in this window.")
+        ContentRanked(
+          title: "Sites you link to", sub: "From links in the text and link cards", head: "Site", rows: m.links, render: { $0 },
+          empty: "No links in your posts in this window.")
+      }
+      ReportSplit {
+        ContentGrouped(
+          title: "Threads", sub: "Where a post sits in a thread of your own", head: "Place", label: "Posts by place in a thread",
+          groups: m.places)
+        if m.langs.count > 1 {
+          ReportCard(title: "Languages", sub: "As each post is marked. A post can carry more than one.", tools: nil) {
+            BarList(
+              rows: m.langs.map { BarListRow(key: $0.lang, label: Locale(identifier: "en").localizedString(forLanguageCode: $0.lang) ?? $0.lang, value: Double($0.posts)) },
+              accessibilityLabel: "Posts by language")
+          }
         }
       }
       if m.unread > 0 {

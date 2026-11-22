@@ -262,8 +262,11 @@ final class VirgaUITests: XCTestCase {
     snapshot("customize")
     element(app, "customize-done").tap()
 
-    // A card's own settings, from its line in Customize.
+    // A card's own settings, from its line in Customize: pressing a line's
+    // name opens it to its size, Settings and Remove.
     customize.tap()
+    let line = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'arrange-open-'")).firstMatch
+    if line.waitForExistence(timeout: 5) { line.tap() }
     let settings = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'card-settings-'")).firstMatch
     if settings.waitForExistence(timeout: 5) {
       scrollTo(app, settings)
@@ -286,12 +289,10 @@ final class VirgaUITests: XCTestCase {
     scrollWhollyInto(app, note)
     if note.exists {
       note.tap()
-      // Return puts the keyboard away; then the chart is scrolled back
-      // into view, with the note marked on it.
+      // Return adds the note (the fields are a form, as on the web) and
+      // puts the keyboard away; then the chart is scrolled back into view,
+      // with the note marked on it.
       note.typeText("A post went round\n")
-      let add = element(app, "chart-note-add")
-      scrollTo(app, add)
-      add.tap()
       let chart = element(app, "series-chart")
       var tries = 0
       while !chart.isHittable && tries < 8 {

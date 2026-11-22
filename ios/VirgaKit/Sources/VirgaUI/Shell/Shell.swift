@@ -109,9 +109,7 @@ public struct ShellView: View {
         .frame(width: 0, height: 0)
         .accessibilityHidden(true)
     }
-    .virgaDialog(
-      isPresented: Binding(get: { actions.creatingDashboard }, set: { actions.creatingDashboard = $0 }), title: "New dashboard"
-    ) {
+    .dashboardDialog(isPresented: Binding(get: { actions.creatingDashboard }, set: { actions.creatingDashboard = $0 })) {
       NewDashboardDialog { actions.creatingDashboard = false }
     }
     .environment(palette)

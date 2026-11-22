@@ -3,8 +3,9 @@
 // Ports src/styles/controls.css (.figures, .delta)
 //
 // A row of figures, each under a 2-point rule in --line: its label (--ink-2,
-// 500, small), the number (--figure-size, 500, tracking −0.04em, line 1),
-// and a note (muted, small). Four or five to a row on a wide screen (each
+// 500, small), the number (--figure-size, 500, tracking −0.04em, line 1)
+// with its unit after it if it has one (reports.css `.fig-unit`), and a
+// note (muted, small; FigureNote for a change and its words). Four or five to a row on a wide screen (each
 // at least 168 wide, 128 when there are exactly five), two on a phone, an
 // odd last one taking the whole row. Numbers get the active locale's
 // separators (AppLocale.formatNumber, the web's toLocaleString(activeLocale())),
@@ -32,14 +33,17 @@ public struct FigureItem: Identifiable {
   public var label: String
   public var value: Value?
   public var note: AnyView?
+  /// A unit after the number ("%"), small and muted (reports.css `.fig-unit`).
+  public var unit: String?
 
   public var id: String { key }
 
-  public init(key: String? = nil, label: String, value: Value?, note: AnyView? = nil) {
+  public init(key: String? = nil, label: String, value: Value?, note: AnyView? = nil, unit: String? = nil) {
     self.key = key ?? label
     self.label = label
     self.value = value
     self.note = note
+    self.unit = unit
   }
 
   var shown: String? {
@@ -175,7 +179,10 @@ struct FigureLabelPart: View {
 }
 
 /// The number: --figure-size at line height 1, wrapping anywhere rather
-/// than shrinking (`overflow-wrap: anywhere`).
+/// than shrinking (`overflow-wrap: anywhere`), then its unit if it has one
+/// (reports.css `.fig-unit`): 0.4 of the number's size, muted, 500, no
+/// tracking, 3 after the number on its baseline, in the same line of text
+/// so it follows the number's last line.
 struct FigureValuePart: View {
   @Environment(\.virgaTheme) private var theme
   let item: FigureItem
@@ -183,7 +190,8 @@ struct FigureValuePart: View {
   var body: some View {
     let size = theme.points(ThemeKit.figureValueFontSize)
     let weight = ThemeKit.figureValueWeight
-    Text(item.shown ?? "")
+    let spoken: String = (item.shown ?? "") + (item.unit ?? "")
+    words(size: size)
       .virgaText(size: size, weight: weight, lineHeight: ThemeKit.figureValueLineHeight, tracking: ThemeKit.figureValueTracking)
       // Line height 1: the box is the figure's size, its glyphs reaching
       // past it as a browser's do.
@@ -193,7 +201,22 @@ struct FigureValuePart: View {
       .frame(maxWidth: .infinity, alignment: .leading)
       .accessibilityElement(children: .ignore)
       .accessibilityLabel(item.label)
-      .accessibilityValue(item.shown ?? "")
+      .accessibilityValue(spoken)
+  }
+
+  private func words(size: CGFloat) -> Text {
+    let number = Text(item.shown ?? "")
+    guard let unit = item.unit, !unit.isEmpty else { return number }
+    let unitSize: CGFloat = size * Measure.Reports.figUnitScale
+    // `margin-left: 3px`: a no-break space tracked to 3, so the unit never
+    // starts a line of its own.
+    let gapTracking: CGFloat = Measure.Reports.figUnitGap - theme.spaceWidth(size: unitSize)
+    let gap = Text("\u{00A0}").font(theme.font(size: unitSize)).tracking(gapTracking)
+    let shown = Text(unit)
+      .font(theme.font(size: unitSize, weight: Measure.Reports.figUnitWeight))
+      .tracking(0)
+      .foregroundStyle(theme.muted)
+    return number + gap + shown
   }
 }
 
@@ -261,13 +284,15 @@ public struct FigureNote: View {
     return out
   }
 
-  /// A space whose advance is `points`: the face's own space, kerned. It is
-  /// a no-break space, as the web's margins are no break at all: the change,
-  /// its dot and the first word stay on one line, and the words after wrap.
+  /// A space whose advance is `points`: the face's own space, tracked (not
+  /// kerned: the tracking virgaText puts on the whole line would win over a
+  /// kerning). It is a no-break space, as the web's margins are no break at
+  /// all: the change, its dot and the first word stay on one line, and the
+  /// words after wrap.
   private func space(_ points: CGFloat, size: CGFloat) -> Text {
     Text("\u{00A0}")
       .font(theme.font(size: size))
-      .kerning(points - theme.spaceWidth(size: size))
+      .tracking(points - theme.spaceWidth(size: size))
   }
 }
 

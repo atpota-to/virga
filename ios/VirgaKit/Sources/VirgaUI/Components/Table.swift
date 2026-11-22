@@ -12,7 +12,13 @@
 // TableScroll is `.an-tableview-scroll` round a chart's table: it scrolls
 // both ways inside its own height, the table at least as wide as the
 // column or 28rem, whichever is less (`min-width: min(100%, 28rem)`), at
-// the column's start.
+// the column's start. Given the table's head apart, it holds the head over
+// the rows as they scroll (`thead th { position: sticky }`), the head and
+// the rows each a DataTable `part:` that keeps the other's cells at no
+// height, so the two grids' columns come out the same. A chart's table
+// (`.an-tableview .table`, `chart:`) has its head 8 from the top and each
+// row's first cell is the row's head (`<th scope="row">`: --ink-2, 400,
+// one line).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -30,16 +36,31 @@ public struct DataTableColumn: Identifiable {
   }
 }
 
+/// Which of a table's parts a DataTable draws: all of it, or its head or
+/// its rows alone (TableScroll's held head), the other's cells kept at no
+/// height so the columns are as wide as the whole table's.
+public enum DataTablePart: Sendable {
+  case whole, head, rows
+}
+
 public struct DataTable: View {
   @Environment(\.virgaTheme) private var theme
   private let columns: [DataTableColumn]
   private let rows: [[String]]
   private let selected: Int?
+  private let part: DataTablePart
+  private let chart: Bool
 
-  public init(columns: [DataTableColumn], rows: [[String]], selected: Int? = nil) {
+  /// - Parameters:
+  ///   - part: the whole table, or its head or rows for TableScroll's held head.
+  ///   - chart: a chart's table (`.an-tableview .table`): the head 8 from
+  ///     the top, each row's first cell its head in --ink-2 on one line.
+  public init(columns: [DataTableColumn], rows: [[String]], selected: Int? = nil, part: DataTablePart = .whole, chart: Bool = false) {
     self.columns = columns
     self.rows = rows
     self.selected = selected
+    self.part = part
+    self.chart = chart
   }
 
   public var body: some View {
@@ -59,14 +80,18 @@ public struct DataTable: View {
             cell(column.title, index: index, head: true, chosen: false)
           }
         }
-        rule(ThemeKit.tableHeadRule)
+        if part != .rows {
+          rule(ThemeKit.tableHeadRule)
+        }
         ForEach(Array(rows.enumerated()), id: \.offset) { r, row in
           GridRow {
             ForEach(Array(columns.indices), id: \.self) { c in
               cell(c < row.count ? row[c] : "", index: c, head: false, chosen: selected == r, row: row)
             }
           }
-          rule(ThemeKit.tableRowRule)
+          if part != .head {
+            rule(ThemeKit.tableRowRule)
+          }
         }
       }
   }
@@ -88,11 +113,14 @@ public struct DataTable: View {
     let bleed = Measure.Section.selectedRowBleed
     let first = index == 0
     let last = index == columns.count - 1
+    // A chart's table: the row's head (`tbody th`), in --ink-2 on one line.
+    let rowHead = chart && first && !head
+    let shown = part == .whole || (part == .head) == head
     return Text(text)
       .virgaText(head ? .textSm : .textBase, weight: head ? ThemeKit.tableHeadWeight : VirgaWeight.regular, lineBox: true)
-      .foregroundStyle(head ? theme.muted : theme.ink)
-      .lineLimit(head ? 1 : nil)
-      .padding(.top, head ? 0 : padding.top)
+      .foregroundStyle(head ? theme.muted : rowHead ? theme.ink2 : theme.ink)
+      .lineLimit(head || rowHead ? 1 : nil)
+      .padding(.top, head ? (chart ? Measure.Chart.tableHeadSpaceAbove : 0) : padding.top)
       .padding(.bottom, head ? theme.points(ThemeKit.tableHeadSpaceBelow) : padding.bottom)
       .padding(.leading, first ? 0 : padding.leading)
       .padding(.trailing, last ? 0 : padding.trailing)
@@ -107,8 +135,27 @@ public struct DataTable: View {
             .padding(.trailing, last ? -bleed : 0)
         }
       }
-      .gridColumnAlignment(numeric ? .trailing : .leading)
       .modifier(TableCellReading(label: first ? row.map { rowLabel($0) } : nil, hidden: head || !first, chosen: chosen))
+      .modifier(TablePartCell(shown: shown))
+      .gridColumnAlignment(numeric ? .trailing : .leading)
+  }
+}
+
+/// A cell of the part a DataTable isn't drawing: as wide as it would be,
+/// at no height, unseen and unread.
+struct TablePartCell: ViewModifier {
+  let shown: Bool
+
+  func body(content: Content) -> some View {
+    if shown {
+      content
+    } else {
+      content
+        .frame(height: 0)
+        .clipped()
+        .hidden()
+        .accessibilityHidden(true)
+    }
   }
 }
 
@@ -133,30 +180,83 @@ struct TableCellReading: ViewModifier {
 
 /// `.an-tableview-scroll`: a table that scrolls both ways inside at most
 /// `maxHeight`, at least as wide as the column or 28rem, whichever is less,
-/// and at the column's start when it is narrower than the column.
-public struct TableScroll<Content: View>: View {
+/// and at the column's start when it is narrower than the column. Given a
+/// `head`, the head stays put over the rows as they scroll up and down, and
+/// goes sideways with them.
+public struct TableScroll<Head: View, Content: View>: View {
   @State private var viewport: CGFloat = 0
   private let maxHeight: CGFloat?
+  private let head: Head?
   private let content: Content
 
-  public init(maxHeight: CGFloat? = nil, @ViewBuilder content: () -> Content) {
+  /// A table with its head held: `head` is the table's head part
+  /// (`DataTable(part: .head)`), `content` its rows (`part: .rows`).
+  public init(maxHeight: CGFloat? = nil, @ViewBuilder head: () -> Head, @ViewBuilder content: () -> Content) {
     self.maxHeight = maxHeight
+    self.head = head()
     self.content = content()
   }
 
   public var body: some View {
-    ScrollView([.vertical, .horizontal]) {
-      TableWidthLayout(minWidth: min(viewport, Measure.Chart.tableMinWidth), fill: viewport) {
-        content
+    let least = min(viewport, Measure.Chart.tableMinWidth)
+    Group {
+      if let head {
+        ScrollView(.horizontal, showsIndicators: false) {
+          TableWidthLayout(minWidth: least, fill: viewport) {
+            VStack(alignment: .leading, spacing: 0) {
+              head
+              TableRowsHeight(limit: maxHeight) {
+                ScrollView(.vertical) {
+                  content
+                }
+                .scrollBounceBehavior(.basedOnSize)
+              }
+            }
+          }
+        }
+      } else {
+        ScrollView([.vertical, .horizontal]) {
+          TableWidthLayout(minWidth: least, fill: viewport) {
+            content
+          }
+        }
+        .frame(maxHeight: maxHeight)
       }
     }
-    .frame(maxHeight: maxHeight)
     .background {
       GeometryReader { geometry in
         Color.clear
           .onAppear { viewport = geometry.size.width }
           .onChange(of: geometry.size.width) { _, width in viewport = width }
       }
+    }
+  }
+}
+
+extension TableScroll where Head == EmptyView {
+  /// A table that scrolls as one, its head with its rows.
+  public init(maxHeight: CGFloat? = nil, @ViewBuilder content: () -> Content) {
+    self.maxHeight = maxHeight
+    self.head = nil
+    self.content = content()
+  }
+}
+
+/// `max-height: 20rem` under a held head: the rows at their own height, up
+/// to `limit`, scrolling inside past it.
+struct TableRowsHeight: Layout {
+  var limit: CGFloat?
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    guard let rows = subviews.first else { return .zero }
+    let ideal = rows.sizeThatFits(ProposedViewSize(width: proposal.width, height: nil))
+    let height = limit.map { min(ideal.height, $0) } ?? ideal.height
+    return CGSize(width: proposal.width ?? ideal.width, height: height)
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    for rows in subviews {
+      rows.place(at: bounds.origin, anchor: .topLeading, proposal: ProposedViewSize(width: bounds.width, height: bounds.height))
     }
   }
 }
