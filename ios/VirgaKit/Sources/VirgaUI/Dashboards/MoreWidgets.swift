@@ -1,6 +1,6 @@
 // Ports src/dashboards/widgets/index.jsx (the other figures, charts and lists)
 // Ports src/dashboards/widgets/content.jsx
-// Ports src/dashboards/widgets/posting.jsx (an account without a long session)
+// Ports src/dashboards/widgets/posting.jsx
 //
 // The cards WidgetBody hands on: the unfollows, per-post, given and blocked
 // figures; engagement by type and given, blocks over time and repo
@@ -9,15 +9,19 @@
 // remembers, the lists you're on, records by collection); and the content
 // cards (a typical post, media described, formats, length, tags, sites).
 // In a list card what isn't rows (bars, a sentence) stands 16 off the rule
-// under its heading. The posting cards say what an account without a long
-// session can't have; with one, that they need the posting pages, which
-// aren't ported (the scheduled posts' and timers' reads, hubModel.js).
+// under its heading. The posting cards (what is going out next, the drafts
+// waiting, the timers counting down) read what the Posting overview reads,
+// for the dashboard's account, and follow the same events; scheduling and
+// timers need a long session and say so on an account without one.
 
 #if canImport(UIKit)
 import SwiftUI
 import VirgaArchive
 import VirgaCore
 import VirgaInsights
+import VirgaNetwork
+import VirgaPosting
+import VirgaSession
 
 struct MoreWidget: View {
   @Environment(\.virgaTheme) private var theme
@@ -34,11 +38,6 @@ struct MoreWidget: View {
   /// `rowsFor(size, rows)`.
   private var rows: Int { WidgetParts.rowsFor(card.size, card.options?.rows) }
   static let needsSync = "Read from your repo at the next sync."
-  /// posting.jsx's `NEEDS`.
-  static let needsLongSession = "Needs a long session"
-
-  /// Whether the account can use Virga's server (posting.jsx's useBackend).
-  private var hasBackend: Bool { app.session.capabilitiesFor(archive.did).canSchedule }
 
   /// What isn't rows under a list's rule stands 16 off it.
   private func offRule<V: View>(_ view: V) -> some View {
@@ -88,10 +87,12 @@ struct MoreWidget: View {
     case "repo-collections": repoCollections
     case "content-formats", "content-length": contentGroups
     case "top-tags", "top-links": contentUsed
-    case "stat-scheduled", "stat-timers": postingStat
-    case "posting-next": postingNext
+    case "stat-scheduled": PostingStatScheduled(did: archive.did, def: def, title: title)
+    case "stat-timers": PostingStatTimers(did: archive.did, def: def, title: title)
+    case "posting-next": PostingNextCard(did: archive.did, def: def, rows: rows)
+    case "posting-drafts": PostingDraftsCard(did: archive.did, rows: rows)
     default:
-      placeholder(def.category == "posting" ? Unported.postingCard : Unported.card)
+      placeholder(Unported.card)
         .padding(.top, def.options.contains("rows") ? Measure.Dashboard.listBodySpaceAbove : 0)
     }
   }
@@ -101,34 +102,6 @@ struct MoreWidget: View {
       .virgaText(.textSm)
       .foregroundStyle(theme.muted)
       .fixedSize(horizontal: false, vertical: true)
-  }
-
-  // MARK: Posting
-
-  /// StatScheduled and StatTimers: "Needs a long session" without Virga's
-  /// server; with it, what they read isn't in the app yet.
-  private var postingStat: some View {
-    let label = title ?? (card.type == "stat-scheduled" ? "Scheduled" : "Timers")
-    return Stat(
-      icon: def.sfSymbol, label: label, to: def.href, window: nil, value: "—", delta: nil,
-      sub: hasBackend ? Unported.postingCard : Self.needsLongSession, spark: nil)
-  }
-
-  /// PostingNext without a long session; with one, the placeholder.
-  @ViewBuilder private var postingNext: some View {
-    if hasBackend {
-      offRule(placeholder(Unported.postingCard))
-    } else {
-      offRule(
-        FlowLayout(spacing: 0, lineSpacing: 0) {
-          Text("Scheduling needs a long session, because Virga’s server posts while this browser is closed. ")
-            .virgaText(.textBase)
-            .foregroundStyle(theme.muted)
-            .fixedSize(horizontal: false, vertical: true)
-          NoteLink(text: "See how", to: def.href)
-            .virgaText(.textBase)
-        })
-    }
   }
 
   // MARK: Figures
@@ -398,6 +371,259 @@ struct MoreWidget: View {
       .foregroundStyle(theme.muted)
       .fixedSize(horizontal: false, vertical: true)
     }
+  }
+}
+
+// MARK: - The posting cards (posting.jsx)
+
+/// What the posting cards read: posting.jsx's `useBackend(did)`, the
+/// account's requester for Virga's server or nil without a long session.
+@MainActor
+enum PostingWidgets {
+  /// posting.jsx's `NEEDS`.
+  static let needs = "Needs a long session"
+
+  static func backend(_ app: AppModel, _ did: String) -> VirgaBackend? {
+    app.session.capabilitiesFor(did).canSchedule ? app.session.backendFor(did) : nil
+  }
+}
+
+/// `useScheduled(did, limit)`'s answer: scheduledOverview and whether the
+/// server can schedule just now.
+struct PostingWidgetScheduled {
+  var overview: ScheduledOverview
+  var unavailable: Bool
+}
+
+/// StatTimers' answer: timersOverview and whether the server holds timers.
+struct PostingWidgetTimers {
+  var overview: TimersOverview
+  var unavailable: Bool
+}
+
+extension PostingLoad where Value == PostingWidgetScheduled {
+  /// `useScheduled(did, limit)`: the account's scheduled posts, read again on
+  /// the scheduling event, nothing read without a long session.
+  func followScheduled(did: String, req: VirgaBackend?, limit: Int) {
+    follow(
+      key: "\(did):\(req != nil):\(limit)", did: did, events: [PostingEvents.scheduledChangedEvent], enabled: req != nil
+    ) {
+      let list = try await ScheduleService.listScheduled(req)
+      return PostingWidgetScheduled(
+        overview: HubModel.scheduledOverview(.array(list.rows), limit: Double(limit)), unavailable: list.unavailable)
+    }
+  }
+}
+
+/// `StatScheduled`: how many posts wait to go out, and when the next does
+/// (or how many didn't go out).
+struct PostingStatScheduled: View {
+  @Environment(AppModel.self) private var app
+  let did: String
+  let def: WidgetDef
+  let title: String?
+  @State private var load = PostingLoad<PostingWidgetScheduled>()
+
+  var body: some View {
+    let req = PostingWidgets.backend(app, did)
+    stat(req: req)
+      .task(id: "\(did)|\(req != nil)") { load.followScheduled(did: did, req: req, limit: 1) }
+      .onDisappear { load.stop() }
+  }
+
+  @ViewBuilder
+  private func stat(req: VirgaBackend?) -> some View {
+    let label = title ?? "Scheduled"
+    if req == nil {
+      tile(label, window: nil, value: "—", sub: PostingWidgets.needs)
+    } else if load.phase == .loading || load.phase == .idle {
+      tile(label, window: nil, value: "…", sub: "Reading")
+    } else if let read = load.data, !read.unavailable {
+      tile(label, window: "Waiting", value: AppLocale.fmtInt(Double(read.overview.waiting)), sub: sub(read.overview))
+    } else {
+      tile(label, window: nil, value: "—", sub: "Couldn’t be read just now")
+    }
+  }
+
+  private func sub(_ overview: ScheduledOverview) -> String {
+    if overview.failed > 0 { return "\(HubModel.countPhrase(Double(overview.failed), "post")) didn’t go out" }
+    if let next = overview.next.first { return "Next: \(HubModel.whenLabel(next["scheduledFor"], now: SyncStatus.now()))" }
+    return "Nothing is scheduled"
+  }
+
+  private func tile(_ label: String, window: String?, value: String, sub: String) -> Stat {
+    Stat(icon: def.sfSymbol, label: label, to: def.href, window: window, value: value, delta: nil, sub: sub, spark: nil)
+  }
+}
+
+/// `StatTimers`: how many timers count down, and when the next is checked.
+struct PostingStatTimers: View {
+  @Environment(AppModel.self) private var app
+  let did: String
+  let def: WidgetDef
+  let title: String?
+  @State private var load = PostingLoad<PostingWidgetTimers>()
+
+  var body: some View {
+    let req = PostingWidgets.backend(app, did)
+    stat(req: req)
+      .task(id: "\(did)|\(req != nil)") { follow(req) }
+      .onDisappear { load.stop() }
+  }
+
+  private func follow(_ req: VirgaBackend?) {
+    load.follow(key: "\(did):\(req != nil)", did: did, events: [PostingEvents.timersChangedEvent], enabled: req != nil) {
+      let list = try await TimerService.listTimers(req)
+      return PostingWidgetTimers(overview: HubModel.timersOverview(.array(list.rows)), unavailable: list.unavailable)
+    }
+  }
+
+  @ViewBuilder
+  private func stat(req: VirgaBackend?) -> some View {
+    let label = title ?? "Timers"
+    if req == nil {
+      tile(label, window: nil, value: "—", sub: PostingWidgets.needs)
+    } else if load.phase == .loading || load.phase == .idle {
+      tile(label, window: nil, value: "…", sub: "Reading")
+    } else if let read = load.data, !read.unavailable {
+      tile(label, window: "Counting down", value: AppLocale.fmtInt(Double(read.overview.live)), sub: sub(read.overview))
+    } else {
+      tile(label, window: nil, value: "—", sub: "Couldn’t be read just now")
+    }
+  }
+
+  private func sub(_ overview: TimersOverview) -> String {
+    guard let check = overview.nextCheck else { return "None counting down" }
+    return "Next check \(PostingQueue.relativeWhen(check, now: SyncStatus.now()))"
+  }
+
+  private func tile(_ label: String, window: String?, value: String, sub: String) -> Stat {
+    Stat(icon: def.sfSymbol, label: label, to: def.href, window: window, value: value, delta: nil, sub: sub, spark: nil)
+  }
+}
+
+/// `PostingNext`: the posts going out soonest, each led by its day and hour
+/// in the overview's time column, a queued one saying so after its hour;
+/// how many didn't go out under them. What isn't rows stands 16 off the rule.
+struct PostingNextCard: View {
+  @Environment(\.virgaTheme) private var theme
+  @Environment(AppModel.self) private var app
+  let did: String
+  let def: WidgetDef
+  let rows: Int
+  @State private var load = PostingLoad<PostingWidgetScheduled>()
+
+  var body: some View {
+    let req = PostingWidgets.backend(app, did)
+    content(req: req)
+      .task(id: "\(did)|\(req != nil)|\(rows)") { load.followScheduled(did: did, req: req, limit: rows) }
+      .onDisappear { load.stop() }
+  }
+
+  @ViewBuilder
+  private func content(req: VirgaBackend?) -> some View {
+    if req == nil {
+      needsSession.padding(.top, Measure.Dashboard.listBodySpaceAbove)
+    } else if load.phase == .loading || load.phase == .idle {
+      RowSkeleton(rows: min(rows, 3))
+    } else if let read = load.data {
+      if read.unavailable {
+        EmptyState("Scheduling isn’t available on Virga’s server just now.")
+          .padding(.top, Measure.Dashboard.listBodySpaceAbove)
+      } else if read.overview.next.isEmpty {
+        EmptyState("Nothing is scheduled. Write a post and choose Schedule, or add it to your queue.")
+          .padding(.top, Measure.Dashboard.listBodySpaceAbove)
+      } else {
+        list(read.overview)
+      }
+    } else {
+      LoadError(message: "Your scheduled posts couldn’t be read from Virga’s server.") { load.reload() }
+        .padding(.top, Measure.Dashboard.listBodySpaceAbove)
+    }
+  }
+
+  private func list(_ overview: ScheduledOverview) -> some View {
+    let now = SyncStatus.now()
+    return VStack(alignment: .leading, spacing: 0) {
+      ForEach(overview.next, id: \.self) { row in
+        HubNextRow(row: row, now: now)
+      }
+      if overview.failed > 0 {
+        // `.widget-foot { padding-top: 12px }`, muted and small.
+        Text("\(HubModel.countPhrase(Double(overview.failed), "post")) didn’t go out.")
+          .virgaText(.textSm)
+          .foregroundStyle(theme.muted)
+          .fixedSize(horizontal: false, vertical: true)
+          .padding(.top, theme.space3)
+      }
+    }
+  }
+
+  /// Without a long session: why, and the way to see how.
+  private var needsSession: some View {
+    FlowLayout(spacing: 0, lineSpacing: 0) {
+      Text("Scheduling needs a long session, because Virga’s server posts while this browser is closed. ")
+        .virgaText(.textBase)
+        .foregroundStyle(theme.muted)
+        .fixedSize(horizontal: false, vertical: true)
+      NoteLink(text: "See how", to: def.href)
+        .virgaText(.textBase)
+    }
+  }
+}
+
+/// `PostingDrafts`: the newest drafts, each with Open, as the overview
+/// lists them.
+struct PostingDraftsCard: View {
+  @Environment(\.navigate) private var navigate
+  @Environment(ComposerHost.self) private var composer: ComposerHost?
+  @Environment(AppModel.self) private var app
+  let did: String
+  let rows: Int
+  @State private var load = PostingLoad<HubDraftsRead>()
+
+  var body: some View {
+    content
+      .task(id: did) { follow() }
+      .onDisappear { load.stop() }
+  }
+
+  private func follow() {
+    let session = app.session
+    let did = self.did
+    let device = PostingPages.deviceId(app)
+    load.follow(key: did, did: did, events: [PostingEvents.draftsChangedEvent]) {
+      let agent = try await session.agentFor(did)
+      let page = try await Drafts.listDrafts(agent, limit: .number(Double(Measure.Hub.hubDraftsRead)))
+      return HubDraftsRead(rows: HubModel.draftRows(.array(page.drafts), deviceId: device), more: page.cursor.isTruthy)
+    }
+  }
+
+  @ViewBuilder
+  private var content: some View {
+    if load.phase == .loading || load.phase == .idle {
+      RowSkeleton(rows: min(rows, 3))
+    } else if let read = load.data {
+      if read.rows.isEmpty {
+        EmptyState("No drafts. In the composer, Save draft keeps a post here until you’re ready.")
+          .padding(.top, Measure.Dashboard.listBodySpaceAbove)
+      } else {
+        let now = SyncStatus.now()
+        VStack(alignment: .leading, spacing: 0) {
+          ForEach(Array(read.rows.prefix(rows)), id: \.self) { row in
+            HubDraftRow(row: row, now: now) { open(row) }
+          }
+        }
+      }
+    } else {
+      LoadError(message: "Your drafts couldn’t be read from Bluesky.") { load.reload() }
+        .padding(.top, Measure.Dashboard.listBodySpaceAbove)
+    }
+  }
+
+  private func open(_ row: JSONValue) {
+    let intent = PostingPages.draftIntent(row["id"], did)
+    if let composer { composer.open(intent) } else { navigate("/posting/compose") }
   }
 }
 #endif
