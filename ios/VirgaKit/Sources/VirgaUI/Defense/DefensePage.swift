@@ -178,6 +178,7 @@ struct TurnOnCard: View {
       .accessibilityIdentifier("defense-turn-on")
       if let error = DefenseWords.error(asking) {
         Callout(tone: .danger) { Text(error) }
+          .toolAnnounces(error, onAppear: true)
           .padding(.top, theme.space4)
       }
     }
@@ -206,6 +207,7 @@ struct DefenseOnCard: View {
     ) {
       if let error = DefenseWords.error(asking) {
         Callout(tone: .danger) { Text(error) }
+          .toolAnnounces(error, onAppear: true)
           .padding(.top, theme.space4)
       }
     }
@@ -344,6 +346,7 @@ struct ScanProgressCard: View {
         .padding(.top, theme.points(ThemeKit.cardSubSpaceAbove))
         .accessibilityLabel(PageModel.stageLabel(scan))
         .accessibilityAddTraits(.updatesFrequently)
+        .toolAnnounces(PageModel.stageLabel(scan), onAppear: true)
         .accessibilityIdentifier("defense-stage")
       ProgressLine(value: max(4, (fraction * 100).jsRounded) / 100)
         .frame(maxWidth: Measure.Defense.columnMax)
@@ -368,6 +371,7 @@ struct ScanFailureView: View {
     let message = error?.message ?? scan.error.map { jsMessageOf($0) } ?? ""
     VStack(alignment: .leading, spacing: theme.space3) {
       Callout(tone: .danger) { Text(message.isEmpty ? "The scan stopped." : message) }
+        .toolAnnounces(message.isEmpty ? "The scan stopped." : message, onAppear: true)
         .accessibilityIdentifier("defense-failure")
       if !linkProblem {
         Button(action: onRetry) {

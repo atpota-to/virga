@@ -125,6 +125,10 @@ extension Measure {
     public static let bestDaysSpaceAbove: CGFloat = 14
     /// `.best-table { max-height: 24rem }`
     public static let bestTableMaxHeight: CGFloat = 384
+    /// charts.css `.an-tableview .table thead th { position: sticky; padding-top: 8px }`
+    public static let stickyHeadSpaceAbove: CGFloat = 8
+    /// controls.css `@media (max-width: 560px) { .card-head:has(> :nth-child(2)) > .segmented { margin-top: 8px } }`
+    public static let phoneHeadControlSpaceAbove: CGFloat = 8
     /// `.report-split`: two columns from this wide (reports.css), one under it.
     public static let splitMin: CGFloat = 400
 
@@ -234,6 +238,10 @@ extension Measure {
     public static let personRowGap: CGFloat = 14
     public static let phonePersonRowGap: CGFloat = 10
     public static let personLineHeight: Double = 1.35
+    /// `@container rows (max-width: 599px)` drops "follows you" from a row with
+    /// a fact of its own, `(max-width: 479px)` its handle too.
+    public static let personMetaRelMin: CGFloat = 600
+    public static let personMetaHandleMin: CGFloat = 480
     /// `.follow-button { min-width: 92px }` (none on a phone)
     public static let followMinWidth: CGFloat = 92
     /// `.post-row { gap: 14px }`, `.post-rank { width: 16px }`, `.post-main { gap: 4px }`

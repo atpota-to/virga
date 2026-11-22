@@ -154,7 +154,8 @@ struct UnfollowLog: View {
         .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
         .accessibilityAddTraits(.isHeader)
       ForEach(Array(group.entries.enumerated()), id: \.offset) { _, entry in
-        ToolPersonRow(archive: archive, sets: sets, did: entry.did, card: ToolPersonCard(entry), meta: meta(entry), follow: follow)
+        ToolPersonRow(
+          archive: archive, sets: sets, did: entry.did, card: ToolPersonCard(entry), meta: meta(entry), follow: follow, wrapsMeta: true)
       }
     }
   }

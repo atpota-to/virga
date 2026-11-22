@@ -109,17 +109,20 @@ struct ArchiveSearchBody: View {
     let shown = Array(results.prefix(limit))
     let count = AppLocale.formatNumber(results.count)
     let now = SyncStatus.now()
+    let found = "\(count) \(results.count == 1 ? "post" : "posts") in \(Periods.periodPhrase(period))\(q.isEmpty ? "" : " matching “\(query.jsTrimmed())”")"
     VStack(alignment: .leading, spacing: 0) {
       toolbar
         .padding(.bottom, theme.space4)
       SectionHead(
-        "\(count) \(results.count == 1 ? "post" : "posts") in \(Periods.periodPhrase(period))\(q.isEmpty ? "" : " matching “\(query.jsTrimmed())”")",
+        found,
         sub: ReportModels.contentReady(ReportArchive(archive))
           ? nil : "Until your next sync, older posts are searched by their first 200 characters only, and not by tag or site.",
         trailing: AnyView(exportMenu(results))
       )
       .accessibilityElement(children: .contain)
       .accessibilityIdentifier("archive-results")
+      // The heading is `role="status"`: how many a search finds is read out.
+      .toolAnnounces(found)
       .padding(.bottom, theme.points(ThemeKit.flushHeadSpaceBelow))
       Rectangle().fill(theme.color(ThemeKit.flushHeadRule)).frame(height: theme.points(ThemeKit.flushHeadRule))
       if shown.isEmpty {

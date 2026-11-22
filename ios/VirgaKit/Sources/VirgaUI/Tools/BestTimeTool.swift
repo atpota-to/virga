@@ -45,17 +45,26 @@ struct BestTimeBody: View {
     let m = ReportModels.bestTimeModel(archive, window, archive.nowMs ?? SyncStatus.now(), block: block)
     let sentence = WidgetParts.bestTimeSentence(m)
     let zone = AppLocale.activeTimeZone().identifier.replacingOccurrences(of: "_", with: " ")
+    let phone = theme.isPhone
+    let hours = Segmented(
+      label: "Hours per column",
+      options: [SegmentedOption(1, "Hourly"), SegmentedOption(2, "2 hours"), SegmentedOption(4, "4 hours")],
+      selection: $block, size: .small)
     ToolStatement(text: sentence)
       .accessibilityIdentifier("best-time-statement")
-    VirgaSection(
-      title: "What a typical post earns, by when it was posted",
-      sub: "\(AppLocale.formatNumber(m.posts)) posts and threads over \(Periods.periodPhrase(window)), in \(zone) time",
-      trailing: AnyView(
-        Segmented(
-          label: "Hours per column",
-          options: [SegmentedOption(1, "Hourly"), SegmentedOption(2, "2 hours"), SegmentedOption(4, "4 hours")],
-          selection: $block, size: .small))
-    ) {
+    VirgaSection {
+      // The heading, with the hours per column at its right; on a phone
+      // under its words, 8 below them (`.card-head > .segmented` at 560).
+      VStack(alignment: .leading, spacing: 0) {
+        SectionHead(
+          "What a typical post earns, by when it was posted",
+          sub: "\(AppLocale.formatNumber(m.posts)) posts and threads over \(Periods.periodPhrase(window)), in \(zone) time",
+          trailing: phone ? nil : AnyView(hours))
+        if phone {
+          hours.padding(.top, Measure.Tools.phoneHeadControlSpaceAbove)
+        }
+      }
+      .padding(.bottom, theme.points(ThemeKit.cardHeadSpaceBelow))
       Heatmap(
         rows: WidgetParts.bestTimeRows(m), columns: ReportModels.hourColumns(block).map { HeatmapColumn(label: $0.label, span: $0.span) },
         summary: sentence, cellHeight: block == 1 ? 22 : 30)
@@ -63,12 +72,7 @@ struct BestTimeBody: View {
         "Each slot shows its typical post (the median), so one post that went round doesn’t make its hour look like the best time forever. The ringed slot is the best. A slot with fewer than \(ReportModels.bestTimeMinPosts) posts is left as an outline: too few to say anything. Posts from the last two days are still collecting engagement and are left out."
       )
       ShowAsTable {
-        ScrollView([.vertical, .horizontal]) {
-          DataTable(
-            columns: [DataTableColumn("When"), DataTableColumn("Posts", numeric: true), DataTableColumn("Typical post", numeric: true)],
-            rows: Self.tableRows(m, block: block))
-        }
-        .frame(maxHeight: Measure.Tools.bestTableMaxHeight)
+        BestTimeTable(rows: Self.tableRows(m, block: block))
       }
     }
     ToolSplit(columnGap: theme.gridGapX, rowGap: theme.gridGap) {
@@ -99,6 +103,96 @@ struct BestTimeBody: View {
         ]
       }
     }
+  }
+}
+
+/// `.best-table`: every slot with posts, the whole section wide, scrolling
+/// inside 24rem under a head that stays put on the page's ground
+/// (charts.css `.an-tableview .table thead th { position: sticky }`). Each
+/// number column keeps the width of its widest value or its head, so the
+/// head and the rows line up.
+struct BestTimeTable: View {
+  @Environment(\.virgaTheme) private var theme
+  let rows: [[String]]
+
+  static let heads = ["When", "Posts", "Typical post"]
+
+  var body: some View {
+    let widest = [1, 2].map { column in rows.map { $0.indices.contains(column) ? $0[column] : "" }.max { $0.count < $1.count } ?? "" }
+    ScrollView(.vertical) {
+      LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
+        Section {
+          ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+            line(row, widest: widest)
+            Rectangle().fill(theme.color(ThemeKit.tableRowRule)).frame(height: 1)
+          }
+        } header: {
+          head(widest: widest)
+        }
+      }
+    }
+    .frame(maxHeight: Measure.Tools.bestTableMaxHeight)
+    .accessibilityElement(children: .contain)
+  }
+
+  private func head(widest: [String]) -> some View {
+    HStack(alignment: .bottom, spacing: 0) {
+      headText(Self.heads[0])
+        .frame(maxWidth: .infinity, alignment: .leading)
+      numberCell(Self.heads[1], column: 1, widest: widest[0], isHead: true)
+      numberCell(Self.heads[2], column: 2, widest: widest[1], isHead: true)
+    }
+    .padding(.top, Measure.Tools.stickyHeadSpaceAbove)
+    .padding(.bottom, theme.points(ThemeKit.tableHeadSpaceBelow))
+    .background(theme.bg)
+    .overlay(alignment: .bottom) {
+      Rectangle().fill(theme.color(ThemeKit.tableHeadRule)).frame(height: 1)
+    }
+    .accessibilityElement(children: .combine)
+    .accessibilityAddTraits(.isHeader)
+  }
+
+  private func line(_ row: [String], widest: [String]) -> some View {
+    let pad = theme.insets(ThemeKit.tableCellPadding)
+    return HStack(alignment: .firstTextBaseline, spacing: 0) {
+      Text(row.first ?? "")
+        .virgaText(.textBase)
+        .foregroundStyle(theme.ink)
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: .infinity, alignment: .leading)
+      numberCell(row.count > 1 ? row[1] : "", column: 1, widest: widest[0], isHead: false)
+      numberCell(row.count > 2 ? row[2] : "", column: 2, widest: widest[1], isHead: false)
+    }
+    .padding(.top, pad.top)
+    .padding(.bottom, pad.bottom)
+    .accessibilityElement(children: .combine)
+  }
+
+  private func headText(_ text: String) -> some View {
+    Text(text)
+      .virgaText(.textSm, weight: ThemeKit.tableHeadWeight)
+      .foregroundStyle(theme.muted)
+      .lineLimit(1)
+  }
+
+  /// A number column's cell, as wide as its head and its widest value.
+  private func numberCell(_ text: String, column: Int, widest: String, isHead: Bool) -> some View {
+    let pad = theme.insets(ThemeKit.tableCellPadding)
+    let last = column == Self.heads.count - 1
+    return ZStack(alignment: .trailing) {
+      headText(Self.heads[column]).hidden()
+      Text(widest).virgaText(.textBase).hidden()
+      if isHead {
+        headText(text)
+      } else {
+        Text(text).virgaText(.textBase).foregroundStyle(theme.ink)
+      }
+    }
+    .lineLimit(1)
+    .fixedSize()
+    .padding(.leading, pad.leading)
+    .padding(.trailing, last ? 0 : pad.trailing)
+    .accessibilityHidden(isHead ? false : text.isEmpty)
   }
 }
 

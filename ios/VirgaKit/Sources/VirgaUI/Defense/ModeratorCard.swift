@@ -48,6 +48,7 @@ struct ModeratorCard: View {
       if !link.isPresent {
         if let error {
           Callout(tone: .danger) { Text(error) }
+            .toolAnnounces(error, onAppear: true)
         } else {
           EmptyState("Reading…")
         }
@@ -73,6 +74,7 @@ struct ModeratorCard: View {
       }
       if link.isPresent, let error {
         Callout(tone: .danger) { Text(error) }
+          .toolAnnounces(error, onAppear: true)
           .padding(.top, theme.space4)
       }
     }
@@ -147,6 +149,8 @@ struct ModeratorCard: View {
     }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("defense-moderator-code")
+    // `role="status"`: the code to send is read out when it arrives.
+    .toolAnnounces("Send this to @\(handle) in a DM, from this account, within fifteen minutes: link \(code)", onAppear: true)
   }
 
   /// `load()`: the link as the server has it.

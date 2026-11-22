@@ -223,10 +223,15 @@ struct ToolFollowButton: View {
 }
 
 /// `PersonRow`: one person in a list. `meta` is the row's own fact, the
-/// reason it is in the list, last on the line under the name after the
-/// handle and "follows you" (left out when `rel` is false). `value` sits at
-/// the right before the button. The way to your history with them follows,
-/// unless `history` is false (a phone leaves it out); `extra` comes last.
+/// reason it is in the list (its parts joined with " · ", as the web passes
+/// them), last on the line under the name after the handle and "follows
+/// you" (left out when `rel` is false). That line is one line, ending in an
+/// ellipsis, and in a list too narrow for it a row with a fact keeps the
+/// fact: "follows you" goes under 600 wide and the handle under 480
+/// (`.person-meta` and its container queries); `wrapsMeta` lets it wrap
+/// instead (`.change-group .person-meta`). `value` sits at the right before
+/// the button. The way to your history with them follows, unless `history`
+/// is false (a phone leaves it out); `extra` comes last.
 struct ToolPersonRow: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(\.navigate) private var navigate
@@ -247,6 +252,9 @@ struct ToolPersonRow: View {
   var lead: AnyView? = nil
   /// The row picked out (a scan's account found from the radar).
   var picked = false
+  var wrapsMeta = false
+  /// The list's width (every row spans it), which the meta line goes by.
+  @State private var listWidth: CGFloat = 0
 
   var body: some View {
     // A card passed in (someone who has since left the follower list, as
@@ -257,10 +265,12 @@ struct ToolPersonRow: View {
     let shownName = name.utf16.first == 0x40 ? name.jsSlice(1) : name
     let handle = card?.handle.flatMap { shownName.jsEquals($0) ? nil : $0 }
     let followsYou = rel && sets.isFollower(did)
-    var items: [MetaItem] = []
-    if let handle { items.append(MetaItem("@\(handle)", id: "handle")) }
-    if followsYou { items.append(MetaItem("follows you", id: "rel")) }
-    for (i, fact) in meta.enumerated() { items.append(MetaItem(fact, id: "fact-\(i)")) }
+    let fact = meta.isEmpty ? nil : meta.joined(separator: " · ")
+    let width = listWidth > 0 ? listWidth : theme.windowWidth - 2 * theme.pagePad
+    var parts: [String] = []
+    if let handle, !(fact != nil && width < Measure.Tools.personMetaHandleMin) { parts.append("@\(handle)") }
+    if followsYou, !(fact != nil && width < Measure.Tools.personMetaRelMin) { parts.append("follows you") }
+    if let fact { parts.append(fact) }
     return HStack(alignment: .center, spacing: theme.isPhone ? Measure.Tools.phonePersonRowGap : Measure.Tools.personRowGap) {
       if let lead { lead }
       Avatar(src: card?.avatar, name: card?.avatarName ?? "?")
@@ -275,12 +285,13 @@ struct ToolPersonRow: View {
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(.isLink)
-        if !items.isEmpty { MetaLine(items) }
+        if !parts.isEmpty { ToolPersonMeta(parts: parts, wraps: wrapsMeta) }
         if let error = follow?.error(did) {
           Text(error)
             .virgaText(.textSm)
             .foregroundStyle(theme.danger)
             .fixedSize(horizontal: false, vertical: true)
+            .toolAnnounces(error, onAppear: true)
         }
       }
       .frame(maxWidth: .infinity, alignment: .leading)
@@ -307,7 +318,37 @@ struct ToolPersonRow: View {
         LinearGradient(stops: [.init(color: theme.accentTint, location: 0), .init(color: .clear, location: 0.7)], startPoint: .leading, endPoint: .trailing)
       }
     }
+    .background {
+      GeometryReader { geometry in
+        Color.clear
+          .onAppear { listWidth = geometry.size.width }
+          .onChange(of: geometry.size.width) { _, next in listWidth = next }
+      }
+    }
     .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+  }
+}
+
+/// `.person-meta`: the handle, "follows you" and the row's fact, muted and
+/// small, a dot 6 from the words on each side that keeps to the word before
+/// it, on one line that ends in an ellipsis (or wrapping, `wraps`).
+struct ToolPersonMeta: View {
+  @Environment(\.virgaTheme) private var theme
+  let parts: [String]
+  var wraps = false
+
+  /// The dot with an en space each side (half the 13's em, the web's 6px),
+  /// joined to the word before it so a wrapped line never starts with one.
+  static let separator = "\u{2060}\u{2002}\u{2060}·\u{2002}"
+
+  var body: some View {
+    Text(parts.joined(separator: Self.separator))
+      .virgaText(size: theme.points(ThemeKit.metaFontSize), lineHeight: Measure.Tools.personLineHeight)
+      .foregroundStyle(theme.color(ThemeKit.metaInk))
+      .lineLimit(wraps ? nil : 1)
+      .truncationMode(.tail)
+      .fixedSize(horizontal: false, vertical: wraps)
+      .accessibilityLabel(parts.joined(separator: ", "))
   }
 }
 
@@ -988,6 +1029,34 @@ struct ToolExportMenu: View {
       .lineLimit(1)
       .touchReach(horizontal: Measure.LinkAction.reachSides, vertical: Measure.LinkAction.reachAbove)
     }
+  }
+}
+
+/// `role="status"` and `role="alert"`: words that change in place, which
+/// VoiceOver reads out when they change, and an alert (or a status that
+/// arrives with its words) also when it appears.
+struct ToolAnnouncement: ViewModifier {
+  let text: String?
+  var onAppear = false
+
+  func body(content: Content) -> some View {
+    content
+      .onAppear { if onAppear { Self.post(text) } }
+      .onChange(of: text ?? "") { _, next in Self.post(next) }
+  }
+
+  @MainActor
+  static func post(_ text: String?) {
+    guard let text, !text.isEmpty else { return }
+    AccessibilityNotification.Announcement(text).post()
+  }
+}
+
+extension View {
+  /// Read `text` out when it changes (`role="status"`), and when this
+  /// appears too with `onAppear` (`role="alert"`).
+  func toolAnnounces(_ text: String?, onAppear: Bool = false) -> some View {
+    modifier(ToolAnnouncement(text: text, onAppear: onAppear))
   }
 }
 

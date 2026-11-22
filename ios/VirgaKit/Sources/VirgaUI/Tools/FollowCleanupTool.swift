@@ -367,6 +367,7 @@ struct FollowCleanupPage: View {
         Text("Unfollowing \(fmt(working.done)) of \(fmt(working.total))…")
           .virgaText(.textSm)
           .foregroundStyle(theme.muted)
+          .toolAnnounces("Unfollowing \(fmt(working.done)) of \(fmt(working.total))…", onAppear: true)
       } else if !selectedLive.isEmpty {
         Text("\(fmt(selectedLive.count)) selected")
           .virgaText(.textBase, weight: VirgaWeight.semibold)
@@ -534,6 +535,7 @@ struct CleanupRowView: View {
         facts
         if let error = follow.error(row.did) {
           Text(error).virgaText(.textSm).foregroundStyle(theme.danger).fixedSize(horizontal: false, vertical: true)
+            .toolAnnounces(error, onAppear: true)
         }
       }
     }
@@ -775,6 +777,7 @@ struct CleanupTable: View {
           onUnfollowed: { onUnfollowed(row.did) })
         if let error = follow.error(row.did) {
           Text(error).virgaText(.textSm).foregroundStyle(theme.danger).fixedSize(horizontal: false, vertical: true)
+            .toolAnnounces(error, onAppear: true)
         }
       }
       .padding(.leading, pad)

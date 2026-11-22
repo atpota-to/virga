@@ -521,15 +521,18 @@ struct LookupEvents: View {
       kind == "mention" && direction == "out" && model.totals.out.mention == nil
       ? "Mentions you made aren’t on record." : "Nothing on record matches these filters."
     let count = InteractionLookup.nounOf(total, "event", "events")
+    let counted = "\(narrowed ? "\(AppLocale.fmtInt(Double(filtered.count))) of \(count)" : count), newest first"
     VStack(alignment: .leading, spacing: 0) {
       filters
         .padding(.bottom, theme.space4)
       SectionHead(
         "Every interaction",
-        sub: "\(narrowed ? "\(AppLocale.fmtInt(Double(filtered.count))) of \(count)" : count), newest first",
+        sub: counted,
         trailing: AnyView(exportTool(narrowed: narrowed, total: total))
       )
       .padding(.bottom, theme.points(ThemeKit.flushHeadSpaceBelow))
+      // The count is `role="status"`: a filter's result is read out.
+      .toolAnnounces(counted)
       Rectangle().fill(theme.color(ThemeKit.flushHeadRule)).frame(height: theme.points(ThemeKit.flushHeadRule))
       if rows.isEmpty {
         EmptyState(none).padding(.top, theme.rowPad)

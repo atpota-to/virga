@@ -66,6 +66,7 @@ struct DefenseWhyNotView: View {
           .disabled(busy)
         if let error = DefenseWords.error(asking) {
           Callout(tone: .danger) { Text(error) }
+            .toolAnnounces(error, onAppear: true)
         }
       }
     }
@@ -235,6 +236,7 @@ struct AddToListCard: View {
       }
       if let error {
         Callout(tone: .danger) { Text(error) }
+          .toolAnnounces(error, onAppear: true)
       }
     }
     .frame(maxWidth: Measure.Defense.columnMax, alignment: .leading)
@@ -320,6 +322,8 @@ struct AddToListCard: View {
     .frame(maxWidth: theme.measure, alignment: .leading)
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("defense-done")
+    // `.defense-done` is `role="status"`: what the approval came to is read out.
+    .toolAnnounces(head + kept + already, onAppear: true)
   }
 
   // MARK: Confirming

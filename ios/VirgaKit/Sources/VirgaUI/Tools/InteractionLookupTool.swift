@@ -134,14 +134,15 @@ struct LookupPage: View {
           if state == "looking", let named {
             EmptyState("Looking up \(named)…")
               .accessibilityAddTraits(.updatesFrequently)
+              .toolAnnounces("Looking up \(named)…", onAppear: true)
           }
           if state == "missing" || state == "failed", let named {
-            Callout(tone: .warn) {
-              Text(
-                state == "missing"
-                  ? "The address names “\(named)”, which Bluesky doesn’t know as an account."
-                  : "Couldn’t reach Bluesky to look up “\(named)”. Reload to try again.")
-            }
+            let words =
+              state == "missing"
+              ? "The address names “\(named)”, which Bluesky doesn’t know as an account."
+              : "Couldn’t reach Bluesky to look up “\(named)”. Reload to try again."
+            Callout(tone: .warn) { Text(words) }
+              .toolAnnounces(words, onAppear: true)
           }
           if state != "looking" {
             StartingPoint(archive: archive, sets: sets, onChoose: { choose($0) })
@@ -320,6 +321,8 @@ struct PersonSearch: View {
     .frame(maxWidth: Measure.Tools.lookupMax, alignment: .leading)
     .accessibilityElement(children: .contain)
     .accessibilityLabel("Choose an account")
+    // `.lookup-status` is `role="status"`: what a look-up came to is read out.
+    .toolAnnounces(status?.text)
   }
 
   private func field(options: [LookupOption], shown: [LookupOption]) -> some View {
