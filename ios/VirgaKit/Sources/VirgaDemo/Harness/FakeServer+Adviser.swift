@@ -144,7 +144,7 @@ extension FakeServer {
   /// doesn't count. `goals` nil is the web's undefined (`{}`).
   public static func analyzePost(text: String, goals: JSONValue? = nil, writingChecks: JSONValue? = nil) -> JSONValue? {
     let goals = goals ?? [:]
-    let presets = goals["presets"].flatMap { $0.isTruthy ? $0 : nil } ?? [:]
+    let presets = goals["presets"].jsTruthy ?? [:]
     var checks: [JSONValue] = []
     func excerptOf(_ list: WordList) -> JSONValue {
       guard let m = list.exec(text) else { return .null }

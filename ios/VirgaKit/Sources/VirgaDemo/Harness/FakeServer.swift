@@ -25,11 +25,12 @@
 // to the account's host (DemoAuthenticator), which mints a token as a
 // sign-in does and sends the sheet back to the return page.
 //
-// The rest of the web fake's routes (scheduling, timers, the limits, the
-// adviser and alt text, Defense) come with a later port: here they check
-// the token as the web's do, then answer 503 UNAVAILABLE in plain words.
-// Paths it doesn't know answer as the web's: 405 for a known path asked
-// with another method, 404 for any other.
+// The rest of the web fake's routes, scheduling, timers, the limits, the
+// adviser and alt text, are in FakeServer+Schedule.swift and
+// FakeServer+Timers.swift, the workers and the seeded rows in
+// FakeServer+Workers.swift, and Defense's in FakeDefense.swift. Paths it
+// doesn't know answer as the web's: 405 for a known path asked with another
+// method, 404 for any other.
 //
 // It answers at `FakeServer.serverOrigin`, the web's SERVER_ORIGIN.
 
@@ -46,40 +47,34 @@ public enum FakeServer {
   /// them (`DEFAULT_AI_LIMITS`).
   public static let defaultAiLimits = HarnessFlags.AILimits(adviser: 30, altText: 15, style: 3)
 
-  /// The routes of the web fake that come with a later port: method, path
-  /// and what they are.
-  public static let laterRoutes: [(method: String, path: String, area: String)] = [
-    ("POST", "/api/schedule/create", "scheduling"),
-    ("GET", "/api/schedule/list", "scheduling"),
-    ("GET", "/api/schedule/get", "scheduling"),
-    ("GET", "/api/schedule/media", "scheduling"),
-    ("POST", "/api/schedule/update", "scheduling"),
-    ("POST", "/api/schedule/reorder", "scheduling"),
-    ("POST", "/api/schedule/cancel", "scheduling"),
-    ("POST", "/api/self-destruct/create", "timers"),
-    ("GET", "/api/self-destruct/list", "timers"),
-    ("POST", "/api/self-destruct/cancel", "timers"),
-    ("GET", "/api/limits/status", "scheduling"),
-    ("POST", "/api/ai/analyze-post", "the adviser"),
-    ("POST", "/api/ai/synthesize-style", "the adviser"),
-    ("POST", "/api/ai/alt-text", "alt text"),
-    ("GET", "/api/defense/lists", "Defense"),
-    ("POST", "/api/defense/list-create", "Defense"),
-    ("POST", "/api/defense/keep", "Defense"),
-    ("POST", "/api/defense/unkeep", "Defense"),
-    ("POST", "/api/defense/plan", "Defense"),
-    ("POST", "/api/defense/approve", "Defense"),
-    ("GET", "/api/defense/history", "Defense"),
-    ("POST", "/api/defense/undo", "Defense"),
-    ("GET", "/api/defense/link", "Defense"),
-    ("POST", "/api/defense/link-code", "Defense"),
-    ("POST", "/api/defense/unlink", "Defense"),
-    ("POST", "/api/defense/link-list", "Defense"),
-  ]
+  /// The routes of the server's `api` table (every route but the session's,
+  /// the terms' and the proxy's), as the web's `api` keys hold them.
+  public static let apiRoutes: [(method: String, path: String)] =
+    [
+      ("POST", "/api/schedule/create"), ("GET", "/api/schedule/list"), ("GET", "/api/schedule/get"),
+      ("GET", "/api/schedule/media"), ("POST", "/api/schedule/update"), ("POST", "/api/schedule/reorder"),
+      ("POST", "/api/schedule/cancel"), ("POST", "/api/self-destruct/create"), ("GET", "/api/self-destruct/list"),
+      ("POST", "/api/self-destruct/cancel"), ("GET", "/api/limits/status"), ("POST", "/api/ai/analyze-post"),
+      ("POST", "/api/ai/synthesize-style"), ("POST", "/api/ai/alt-text"),
+    ] + DemoDefense.routes
 
-  /// The words a later route answers with.
-  public static func laterWords(_ area: String) -> String {
-    "\(area) isn't in the demo's server yet."
+  /// The flags' per-feature limits as createServer's `limits` option (an
+  /// unlimited one left out).
+  public static func limitsOption(_ limits: HarnessFlags.Limits) -> JSONValue {
+    var out: [String: JSONValue] = [:]
+    if let n = limits.scheduledPosts { out["scheduledPosts"] = .number(n) }
+    if let n = limits.postTimers { out["postTimers"] = .number(n) }
+    if let n = limits.conditionalTimers { out["conditionalTimers"] = .number(n) }
+    return .object(out)
+  }
+
+  /// The flags' AI allowances as createServer's `aiLimits` option (an
+  /// unlimited one null).
+  public static func aiLimitsOption(_ limits: HarnessFlags.AILimits) -> JSONValue {
+    [
+      "adviser": limits.adviser.map(JSONValue.number) ?? .null, "altText": limits.altText.map(JSONValue.number) ?? .null,
+      "style": limits.style.map(JSONValue.number) ?? .null,
+    ]
   }
 
   // MARK: The proxy, as server/oauth/handlers/proxy.js reads a call
@@ -248,15 +243,31 @@ public struct ServerAnswer: Sendable, Hashable {
   }
 }
 
-/// Virga's server, in memory (`createServer`, as far as the session goes).
+/// Virga's server, in memory (`createServer`): the sessions, the terms
+/// ledger, the proxy, scheduling, timers, the limits, the adviser and alt
+/// text, Defense's routes, and the workers that act on them (`runCron`).
 public final class DemoServer: Sendable {
   public let world: DemoWorld
   /// How the terms ledger starts: 'agreed' (every account has agreed, so
   /// the app opens), 'ask' (nobody has) or 'down' (nobody has, and an
   /// agreement can't be recorded).
   public let terms: String
+  /// The per-feature limits (`featureLimits`): a feature absent is unlimited.
+  public let featureLimits: [String: Int]
+  /// The monthly AI allowances (`aiAllowance`): a kind absent is unlimited.
+  public let aiAllowance: [String: Int]
+  /// How long an AI answer takes, in ms.
+  public let aiDelayMs: Double
+  /// 'ok', 'slow' (longer than the adviser waits) or 'down' (503).
+  public let ai: String
+  /// Defense's routes and list writer, on the same tick.
+  public let defense: DemoDefense
+  /// Where a time written without an offset is read (the browser's zone on the web).
+  public let timeZone: TimeZone
   let now: @Sendable () -> Double
+  let sleep: @Sendable (Double) async -> Void
   let randomBytes: @Sendable (Int) -> [UInt8]
+  let uuid: @Sendable () -> String
   let agents: @Sendable (String) throws -> FakeAgent
 
   struct State {
@@ -271,6 +282,14 @@ public final class DemoServer: Sendable {
     var knownRefused = Set<JSKey>()
     var agreements: [TermsAgreement] = []
     var log: [(at: String, line: String)] = []
+    /// Scheduled posts, as the table holds them (never removed).
+    var scheduled: [ScheduledRow] = []
+    /// Timers, as the table holds them (never removed).
+    var timers: [TimerRow] = []
+    /// `${rowId}/${mediaId}` → the stashed bytes.
+    var media: [JSKey: StashedMedia] = [:]
+    /// `${did}:${kind}:${month}` → how many answers the month has had.
+    var aiUsage: [JSKey: Int] = [:]
   }
 
   let state: Locked<State>
@@ -278,22 +297,65 @@ public final class DemoServer: Sendable {
   /// - Parameters:
   ///   - world: the accounts' worlds.
   ///   - terms: how the ledger starts ('agreed', 'ask' or 'down').
-  ///   - now: `Date.now()`.
+  ///   - limits: the per-feature limits, as the server reads its env
+  ///     (`{ scheduledPosts, postTimers, conditionalTimers }`, each a
+  ///     positive whole number or left out for unlimited).
+  ///   - aiLimits: the monthly AI allowances (`{ adviser, altText, style }`:
+  ///     null is unlimited, absent is 30 / 15 / 3).
+  ///   - seed: whether Mira starts with a few rows.
+  ///   - aiDelayMs: how long an AI answer takes.
+  ///   - ai: 'ok', 'slow' or 'down'.
+  ///   - defenseWrites: whether "DEFENSE_WRITES" is on.
+  ///   - moderator: 'on', 'off' or 'linked'.
+  ///   - now: `Date.now()` (cut to whole milliseconds, as the web's is).
+  ///   - sleep: the AI's wait.
+  ///   - timeZone: where a time without an offset is read; the world's by default.
   ///   - randomBytes: the tokens' randomness (`crypto.getRandomValues`).
+  ///   - uuid: `crypto.randomUUID()`, for the rows' ids.
+  ///   - random: `Math.random()`, for Defense's link codes.
+  ///   - tidClockId: the clock id of Defense's record keys (random on the web).
   ///   - agents: the account's fake agent, which the proxy forwards to (the
   ///     harness's `agentFor`). By default one with no latency, reading
   ///     its world's grant at each call, as agentFor's do.
   public init(
     world: DemoWorld,
     terms: String = "agreed",
-    now: @escaping @Sendable () -> Double,
+    limits: JSONValue = [:],
+    aiLimits: JSONValue = [:],
+    seed: Bool = true,
+    aiDelayMs: Double = 900,
+    ai: String = "ok",
+    defenseWrites: Bool = true,
+    moderator: String = "on",
+    now given: @escaping @Sendable () -> Double,
+    sleep: @escaping @Sendable (Double) async -> Void = NetworkClock.live.sleep,
+    timeZone: TimeZone? = nil,
     randomBytes: @escaping @Sendable (Int) -> [UInt8] = { count in (0..<count).map { _ in UInt8.random(in: 0...255) } },
+    uuid: @escaping @Sendable () -> String = { UUID().uuidString.lowercased() },
+    random: @escaping @Sendable () -> Double = { Double.random(in: 0..<1) },
+    tidClockId: UInt64 = UInt64.random(in: 0..<1024),
     agents: (@Sendable (String) throws -> FakeAgent)? = nil
   ) {
+    let now: @Sendable () -> Double = { given().rounded(.down) }
     self.world = world
     self.terms = terms
     self.now = now
+    self.sleep = sleep
+    self.timeZone = timeZone ?? world.timeZone
     self.randomBytes = randomBytes
+    self.uuid = uuid
+    self.aiDelayMs = aiDelayMs
+    self.ai = ai
+    var features: [String: Int] = [:]
+    for feature in FakeServer.features {
+      if let limit = FakeServer.limitValue(limits[feature]) { features[feature] = limit }
+    }
+    featureLimits = features
+    var allowance: [String: Int] = [:]
+    for (kind, fallback) in [("adviser", 30), ("style", 3), ("altText", 15)] {
+      if let limit = FakeServer.aiLimitValue(aiLimits[kind], fallback) { allowance[kind] = limit }
+    }
+    aiAllowance = allowance
     if let agents {
       self.agents = agents
     } else {
@@ -318,18 +380,31 @@ public final class DemoServer: Sendable {
           identity: "session", accepted_at: at, ip: nil, user_agent: nil)
       }
     }
-    state = Locked(start)
+    let state = Locked(start)
+    self.state = state
+    defense = DemoDefense(
+      world: world, writes: defenseWrites, moderator: moderator, now: now,
+      note: { line in DemoServer.note(state, now, line) }, random: random, clockId: tidClockId)
+    if seed { try? state.withLock { try seedRows(&$0) } }
   }
 
   // MARK: Sessions
 
-  func note(_ line: String) {
+  func note(_ line: String) { Self.note(state, now, line) }
+
+  /// `note(line)` from outside the lock (Defense's).
+  static func note(_ state: Locked<State>, _ now: () -> Double, _ line: String) {
     let at = World.iso(now())
-    state.withLock { s in
-      s.log.append((at, line))
-      if s.log.count > 200 { s.log.removeFirst() }
-    }
+    state.withLock { s in Self.note(&s, at: at, line) }
   }
+
+  /// `note(line)` under the lock: the log keeps the last 200 lines.
+  static func note(_ s: inout State, at: String, _ line: String) {
+    s.log.append((at, line))
+    if s.log.count > 200 { s.log.removeFirst() }
+  }
+
+  func note(_ s: inout State, _ line: String) { Self.note(&s, at: World.iso(now()), line) }
 
   static func dropGrant(_ s: inout State, _ did: String) {
     s.grants.remove(JSKey(did))
@@ -415,6 +490,16 @@ public final class DemoServer: Sendable {
   public var tokens: [(token: String, did: String)] { state.withLock { $0.tokens.entries.map { ($0.key, $0.value) } } }
   public var agreements: [TermsAgreement] { state.withLock { $0.agreements } }
   public var log: [String] { state.withLock { $0.log.map(\.line) } }
+  /// The scheduled posts, as the table holds them.
+  public var scheduled: [ScheduledRow] { state.withLock { $0.scheduled } }
+  /// The timers, as the table holds them.
+  public var timers: [TimerRow] { state.withLock { $0.timers } }
+
+  /// Changes the rows under the server's lock, as a test reaches into
+  /// `inspect()` (fakeServer.test.js fills the timers to the cap that way).
+  public func withRows<R>(_ body: (inout [ScheduledRow], inout [TimerRow]) throws -> R) rethrows -> R {
+    try state.withLock { try body(&$0.scheduled, &$0.timers) }
+  }
 
   // MARK: Routing
 
@@ -442,17 +527,44 @@ public final class DemoServer: Sendable {
         return await uploadRoute(headers, query, body, raw)
       }
       if path == "/api/oauth/login" && method == "GET" { return loginRoute(query) }
-      guard let route = FakeServer.laterRoutes.first(where: { $0.method == method && $0.path == path }) else {
-        let known = FakeServer.laterRoutes.contains { $0.path == path }
+      guard FakeServer.apiRoutes.contains(where: { $0.method == method && $0.path == path }) else {
+        let known = FakeServer.apiRoutes.contains { $0.path == path }
         return known
           ? ServerAnswer(405, FakeServer.failure("Method not allowed")) : ServerAnswer(404, FakeServer.failure("Not found"))
       }
-      _ = try authOf(headers)
-      return ServerAnswer(503, FakeServer.failure(FakeServer.laterWords(route.area), code: "UNAVAILABLE"))
+      let did = try authOf(headers).did
+      return try await api(method, path, did: did, query: query, body: body)
     } catch let coded as Coded {
       return ServerAnswer(coded.status, coded.body)
     } catch {
       return ServerAnswer(500, FakeServer.failure("something went wrong. please try again.", code: "INTERNAL"))
+    }
+  }
+
+  /// `api[\`${method} ${path}\`](auth, { query, body })`.
+  func api(_ method: String, _ path: String, did: String, query: [(String, String)], body: JSONValue?) async throws
+    -> ServerAnswer
+  {
+    switch (method, path) {
+    case ("POST", "/api/schedule/create"): return try scheduleCreate(did, body)
+    case ("GET", "/api/schedule/list"): return scheduleList(did)
+    case ("GET", "/api/schedule/get"): return try scheduleGet(did, query)
+    case ("GET", "/api/schedule/media"): return try scheduleMedia(did, query)
+    case ("POST", "/api/schedule/update"): return try scheduleUpdate(did, body)
+    case ("POST", "/api/schedule/reorder"): return try scheduleReorder(did, body)
+    case ("POST", "/api/schedule/cancel"): return try scheduleCancel(did, body, query)
+    case ("POST", "/api/self-destruct/create"): return try timerCreate(did, body)
+    case ("GET", "/api/self-destruct/list"): return timerList(did, query)
+    case ("POST", "/api/self-destruct/cancel"): return try timerCancel(did, body, query)
+    case ("GET", "/api/limits/status"): return limitsStatus(did)
+    case ("POST", "/api/ai/analyze-post"): return try await analyzePostRoute(did, body)
+    case ("POST", "/api/ai/synthesize-style"): return try await synthesizeStyleRoute(did, body)
+    case ("POST", "/api/ai/alt-text"): return try await altTextRoute(did, body)
+    default:
+      guard let answer = try defense.handle(method, path, did: did, query: query, body: body) else {
+        return ServerAnswer(404, FakeServer.failure("Not found"))
+      }
+      return answer
     }
   }
 

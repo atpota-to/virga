@@ -305,7 +305,7 @@ extension FakeServer {
   /// `timerBucket({ conditions, effects })`: which limit a timer counts
   /// against. Anything but a plain delete is conditional.
   public static func timerBucket(conditions: JSONValue?, effects: JSONValue?) -> String {
-    let clauses = conditions?["clauses"].flatMap { $0.isTruthy ? $0 : nil }
+    let clauses = conditions?["clauses"].jsTruthy
     let gentle = (effects.flatMap { $0.isTruthy ? $0.arrayValue : nil } ?? []).contains {
       $0["action"] != .string("delete")
     }
