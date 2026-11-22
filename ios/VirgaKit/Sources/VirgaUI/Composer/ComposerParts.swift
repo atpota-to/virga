@@ -16,13 +16,16 @@ import VirgaPosting
 import VirgaSession
 
 /// Up to three languages: the chosen ones as tokens, and a search field
-/// that suggests more (by name or code).
+/// that suggests more (by name or code). `bare` is for a place that already
+/// says what this is (a row in Settings): the label is VoiceOver's alone,
+/// not drawn, and there is no hint.
 struct LanguagePicker: View {
   @Environment(\.virgaTheme) private var theme
   @Binding var value: [String]
   var label = "Languages"
   var hint: String?
   var disabled = false
+  var bare = false
   @State private var query = ""
   @FocusState private var focused: Bool
 
@@ -36,8 +39,10 @@ struct LanguagePicker: View {
       ? ComposerLanguages.searchLanguages(
         .string(query), chosen: chosen, preferred: Locale.preferredLanguages, limit: 6) : []
     VStack(alignment: .leading, spacing: theme.space2) {
-      FieldLabel(label)
-      if let hint { FieldHint(hint) }
+      if !bare {
+        FieldLabel(label)
+        if let hint { FieldHint(hint) }
+      }
       TokenRow {
         if chosen.isEmpty { FieldHint("None chosen") }
         ForEach(chosen, id: \.self) { code in
