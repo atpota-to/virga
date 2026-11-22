@@ -62,7 +62,7 @@ public struct DialogFrame<Content: View, Actions: View>: View {
     VStack(alignment: .leading, spacing: 0) {
       HStack(alignment: .center, spacing: theme.space3) {
         Text(title)
-          .virgaText(.textLg, weight: VirgaWeight.semibold, tracking: Measure.Dialog.titleTracking)
+          .virgaText(.textLg, weight: VirgaWeight.semibold, lineHeight: ThemeKit.headingLineHeight, tracking: Measure.Dialog.titleTracking)
           .foregroundStyle(theme.ink)
           .accessibilityAddTraits(.isHeader)
           .accessibilityIdentifier("dialog-title")

@@ -37,7 +37,8 @@ public struct SectionHead: View {
       HStack(alignment: .firstTextBaseline, spacing: theme.gap(ThemeKit.cardHeadGap).column) {
         Text(title)
           .virgaText(
-            size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, tracking: ThemeKit.cardTitleTracking)
+            size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, lineHeight: ThemeKit.headingLineHeight,
+            tracking: ThemeKit.cardTitleTracking)
           .foregroundStyle(theme.ink)
           .fixedSize(horizontal: false, vertical: true)
           .accessibilityAddTraits(.isHeader)

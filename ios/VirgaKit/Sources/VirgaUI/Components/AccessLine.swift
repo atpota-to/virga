@@ -48,17 +48,20 @@ struct AccessItemView: View {
     let louder = kind == "post" || kind == "follow"
     let ink: Color = entry.tone == "warn" ? theme.warn : (louder ? theme.ink2 : theme.muted)
     let words = prefix.map { "\($0) \(entry.label)" } ?? entry.label
+    // As a meta line's item: inline-flex, 5 apart, the dot one of its flex
+    // items with 1 more before it (6 from the words) and 6 after.
     HStack(spacing: theme.points(ThemeKit.metaItemGap)) {
       Image(systemName: entry.sfSymbol)
-        .font(.system(size: theme.points(ThemeKit.metaIconSize)))
+        .virgaGlyph(theme.points(ThemeKit.metaIconSize), beside: size)
         .accessibilityHidden(true)
       Text(words)
-        .virgaText(size: size, weight: louder ? VirgaWeight.medium : VirgaWeight.regular, lineHeight: ThemeKit.metaLineHeight)
+        .virgaText(
+          size: size, weight: louder ? VirgaWeight.medium : VirgaWeight.regular, lineHeight: ThemeKit.metaLineHeight, lineBox: true)
       if !isLast {
         Text("·")
-          .virgaText(size: size)
+          .virgaText(size: size, lineHeight: ThemeKit.metaLineHeight, lineBox: true)
           .foregroundStyle(theme.color(ThemeKit.metaInk))
-          .padding(.leading, theme.points(ThemeKit.metaDotMargin.left) - theme.points(ThemeKit.metaItemGap))
+          .padding(.leading, theme.points(ThemeKit.metaDotMargin.left))
           .padding(.trailing, theme.points(ThemeKit.metaDotMargin.right))
           .accessibilityHidden(true)
       }

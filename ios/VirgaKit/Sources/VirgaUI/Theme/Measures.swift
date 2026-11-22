@@ -52,6 +52,48 @@ public enum Measure {
     /// `.link-action::after, .more-link::after { inset: -13px -6px }`
     public static let reachAbove: CGFloat = 13
     public static let reachSides: CGFloat = 6
+    /// `.link-action, .more-link { line-height: 1.45 }`
+    public static let lineHeight: Double = 1.45
+    /// `.link-action { text-decoration-thickness: 1px }`; 2px while what it
+    /// opens is open (`[aria-expanded='true']`) and under the pointer.
+    public static let underline: CGFloat = 1
+    public static let heavyUnderline: CGFloat = 2
+  }
+
+  /// controls.css's controls whose words are one line in a box of their own.
+  public enum Lines {
+    /// `.btn { line-height: 1 }`
+    public static let button: Double = 1
+    /// `.segmented-key { line-height: 1 }`
+    public static let segmentedKey: Double = 1
+    /// `.token { line-height: 1.2 }`
+    public static let token: Double = 1.2
+  }
+
+  public enum Token {
+    /// `.token { border: 1px solid var(--line-2); font-size: var(--text-sm); font-weight: 500 }`
+    public static let border: CGFloat = 1
+    public static let fontSize: ThemeToken = .textSm
+    public static let weight: Double = 500
+  }
+
+  public enum Badge {
+    /// `.badge { border: 1px solid transparent }`: an edge that only forced
+    /// colours draw, there in the pill's size all the same.
+    public static let border: CGFloat = 1
+  }
+
+  public enum Segmented {
+    /// `.segmented-key { gap: 6px }`: a key's glyph to its word.
+    public static let keyGap: CGFloat = 6
+    /// Segmented.jsx's SPARE: how far clear of the fade a key is scrolled
+    /// when it is pressed under it.
+    public static let spare: CGFloat = 24
+    /// `.card-head > .segmented { margin-top: 8px }` at 560 and under, and
+    /// `margin-block: -13px` on touch from 561 up, so the 44 keys don't
+    /// make the title's line taller.
+    public static let headSpaceAbove: CGFloat = 8
+    public static let headLift: CGFloat = 13
   }
 
   public enum Touch {
