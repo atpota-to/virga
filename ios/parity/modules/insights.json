@@ -47,12 +47,34 @@
       "synced": "19dcb674517d"
     },
     "src/reports/annotations.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Reports/Annotations.swift"
+      ],
+      "fixtures": [
+        "insights.annotations"
+      ],
+      "note": "All of it, over VirgaCore's KeyValueStore with the web's key and byte-exact JSON. Ids are injected (`id:`; Annotations.newId gives the web's form, n + the time in base 36 + four random base-36 digits). Deliberate differences, in input the app never writes: a day must be a string (the web would keep ['2026-10-03'], which String() reads as that day); and a label cut at 80 UTF-16 units through an emoji keeps U+FFFD here where the web keeps the lone half surrogate and writes it as \\ud83d (both read back as U+FFFD).",
+      "synced": "b0b01c4fe658"
     },
     "src/reports/models.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Reports/ReportModels.swift",
+        "ios/VirgaKit/Sources/VirgaInsights/Reports/ReportModels+Time.swift",
+        "ios/VirgaKit/Sources/VirgaInsights/Reports/ReportModels+Content.swift",
+        "ios/VirgaKit/Sources/VirgaInsights/Reports/ReportModels+Types.swift",
+        "ios/VirgaKit/Sources/VirgaInsights/Reports/ReportArchive.swift"
+      ],
+      "fixtures": [
+        "insights.archives",
+        "insights.models",
+        "insights.modelsZones",
+        "insights.modelsEdges",
+        "insights.collation"
+      ],
+      "note": "All of it. The archive the models read is ReportArchive (did, handle, the context's nowMs and VirgaArchive's ArchiveData); local time, the locale, the first day of the week and the clock are ReportFormats, the active ones by default. localeCompare (the ties in the Content report and Lists you're on) is Support/JSCollation.swift, ICU's root order over a table read from Node's own collator (ios/scripts/generate-collation-table.mjs, held to Node by insights.collation); scripts the table doesn't cover sort after it by code point. The cache keeps the web's key and limit, plus the zone and the clock (the web never keys on the zone). localeCompare also weighs the decompositions ICU treats as letters of their own (contractions: й, the Arabic hamza letters, two-part Indic vowel signs) and the case of compatibility forms (ﬁ, ĳ, ǅ) as ICU does. Three deliberate differences, in input the app never has: a list whose purpose is a name Object.prototype carries ('constructor') ranks as an unknown purpose (3) where the web's plain-object lookup gives NaN; rows are typed (VirgaArchive's rows), so a field of the wrong type reads as absent (a post's or follower's time written as a number is undated here); and bestTimeModel's and hourColumns' block is a whole number of at least 1 (BestTime offers 1 to 4), where the web takes a fraction, throws for 0 in bestTimeModel (hourColumns then gives one label spanning Infinity) and gives cols below zero for a negative block.",
+      "synced": "b6dbc591206f"
     },
     "src/reports/registry.js": {
       "status": "ported",
@@ -65,8 +87,15 @@
       "synced": "e4c9cfb2e819"
     },
     "src/reports/useAnnotations.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Reports/AnnotationsModel.swift"
+      ],
+      "fixtures": [
+        "insights.annotations"
+      ],
+      "note": "useAnnotations is AnnotationsModel (@MainActor @Observable): list, add(day, label), remove(id), each reading and writing the store as the hook does; the window's 'virga:annotations-changed' event is AnnotationsChanges, which every model for the DID hears. useChartMarks is AnnotationsModel.chartMarks(archive, series, unit, milestones:) (and Annotations.chartMarks), the milestones cached per archive revision under the web's key.",
+      "synced": "caf75b37f2fa"
     },
     "src/settings/radioKeys.js": {
       "status": "ported",
@@ -89,12 +118,28 @@
       "synced": "943739766b94"
     },
     "src/share/chartImage.js": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Share/ChartImage.swift",
+        "ios/VirgaKit/Sources/VirgaInsights/Share/ChartImage+Canvas.swift"
+      ],
+      "fixtures": [
+        "insights.chartImage"
+      ],
+      "note": "Everything but renderShareImage is ported: the sizes and plot, readShareTheme (over VirgaCore's ResolvedTheme, with the web's fallbacks), seriesLayout, axisLabels, fitText and drawShareImage, which makes the web's canvas calls one for one on a ShareCanvas (the 2D canvas API's calls and state; the fixture holds 90 drawings, 22,884 calls, to the web's). renderShareImage (waiting for the typeface, a <canvas>, toBlob, a File) is VirgaUI's: a ShareCanvas over SwiftUI's GraphicsContext inside a Canvas view of ChartImage.shareWidth × shareHeight, measuring text in Instrument Sans (ChartImage.fontFamily) with CoreText, rendered to PNG with ImageRenderer as 'virga-chart.png'. The canvas's arc angles are the canvas API's (radians, clockwise in a y-down space). drawShareImage returns false where the web's drawing throws part way (a line with no buckets, whose last point it reads; shareSpec never gives one), after the same calls and none after, so VirgaUI makes no picture, as renderShareImage rejects (insights.chartImage drawShareImagePartly).",
+      "synced": "7493c2843a90"
     },
     "src/share/shareSpec.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Share/ShareSpec.swift"
+      ],
+      "fixtures": [
+        "insights.share",
+        "insights.archives"
+      ],
+      "note": "All of it. A spec is ShareSpecification (the web's spec, `format` as ShareNumberFormat .count/.rate, the web's fmtCount/fmtRate); a card's options are ShareOptions (kind, rows, title, notes). One deliberate difference, in types the app never asks for: card types are looked up as own keys, so 'constructor', 'toString' and '__proto__' can't be shared (the web's plain-object lookup finds Object.prototype's members: canShare says yes and shareSpec calls Object with the archive).",
+      "synced": "15280dd5dda1"
     },
     "src/shell/commands.js": {
       "status": "ported",
@@ -129,8 +174,17 @@
       "synced": "4c893aae30dd"
     },
     "src/tools/interactionModel.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Tools/InteractionModel.swift",
+        "ios/VirgaKit/Sources/VirgaInsights/Tools/InteractionModel+Types.swift"
+      ],
+      "fixtures": [
+        "insights.interaction",
+        "insights.archives"
+      ],
+      "note": "All of it; nothing in it reads the network (InteractionLookup.jsx resolves a typed handle itself, VirgaUI). The web's `self` is `isSelf`. The timeline runs to the archive's nowMs, or the `nowMs:` given, or the device clock (the web's Date.now()). kindsLine takes the byKind entries in the object's order (`entries:`; integer-like keys first, as Object.keys orders them) or a dictionary (unknown kinds then go by name). Deliberate differences, in input the app never has: kinds and directions are looked up as own keys, so 'toString' gives no phrase (the web's plain-object lookup returns the inherited function) and an unknown kind is never counted in totals (the web's totals['constructor'] is a function); an event at a time outside Date's range gets at \"\" where the web's toISOString throws.",
+      "synced": "26ae471ebdf3"
     },
     "src/tools/keep.js": {
       "status": "ported",
