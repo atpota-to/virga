@@ -225,7 +225,7 @@ struct LegalPageCover: View {
   private let onClose: () -> Void
 
   init(docKey: String, onClose: @escaping () -> Void) {
-    _shown = State(initialValue: (docKey, ""))
+    _shown = State(initialValue: (key: docKey, hash: ""))
     self.onClose = onClose
   }
 
@@ -238,7 +238,7 @@ struct LegalPageCover: View {
         let cut = href.jsIndexOf("#")
         let path = cut == -1 ? href : href.jsSlice(0, cut)
         if let key = LegalDocuments.documentFor(path) {
-          shown = (key, cut == -1 ? "" : href.jsSlice(cut))
+          shown = (key: key, hash: cut == -1 ? "" : href.jsSlice(cut))
         } else {
           close()
           outside(href)

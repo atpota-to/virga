@@ -170,9 +170,10 @@ struct AccountSettingsRow: View {
             MoreMenu(label: "More for \(name)", entries: entries)
           }
           // Centred on the name's line, reaching past it above by the
-          // difference and 3 below it.
+          // difference and 3 below it; 4 more than the gap from the words.
           .padding(.top, -Measure.Section.rowActionsLift)
           .padding(.bottom, -Measure.Accounts.actionsReachBelow)
+          .padding(.leading, Measure.Accounts.actionsSpaceBefore)
         }
         meta(state: state, needsSignIn: needsSignIn, working: working, handle: handle)
       }
@@ -384,6 +385,8 @@ public struct PostingPermissionNotice: View {
 extension Measure.Accounts {
   /// `.accounts-row > .row-actions { margin-block: -6px -3px }` under a finger.
   static let actionsReachBelow: CGFloat = 3
+  /// `.accounts-row > .row-actions { margin-left: 4px }`: with the grid's 12, 16 from the words.
+  static let actionsSpaceBefore: CGFloat = 4
   /// `.accounts-row-handle::after { inset: -12px -6px }` under a finger.
   static let handleReachAbove: CGFloat = 12
   static let handleReachSides: CGFloat = 6

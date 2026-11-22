@@ -478,7 +478,7 @@
         "ios/VirgaKit/Sources/VirgaUI/SignIn/WebAuthenticationSession.swift"
       ],
       "synced": "6271897a4e36",
-      "note": "All of it. VoiceOver hears the live regions' words as announcements (\"Looking you up…\", \"Found {name}, {meta}.\", a notice as it comes up, \"Still here?\"), and focus goes where the web sends it (the field, the way on while the account is looked up and found, else the card's title). The compose link's callout shows while one waits for the sign-in (AppRoot's \\.signInComposing). On iOS the trip is ASWebAuthenticationSession: going again calls the one under way off and waits for it first, and closing Add an account calls the trip off with its sheet."
+      "note": "All of it. VoiceOver hears the live regions' words as announcements (\"Looking you up…\", \"Found {name}, {meta}.\", a notice as it comes up, \"Still here?\"), and focus goes where the web sends it (the field, the way on while the account is looked up and found, else the card's title). The compose link's callout shows while one waits for the sign-in (AppRoot's \\.signInComposing). On iOS the trip is ASWebAuthenticationSession: going again calls the one under way off and waits for it first, and closing Add an account calls the trip off with its sheet (not once the sign-in has come back and is being finished, which takes the page down itself)."
     },
     "src/signin/parts.jsx": {
       "status": "ported",

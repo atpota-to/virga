@@ -113,11 +113,16 @@ public struct SignInFlowView: View {
     }
     .onDisappear {
       // Closing it calls everything off: the lookup, the trip (and the
-      // system's sheet with it) and the stall's timer.
+      // system's sheet with it) and the stall's timer. Not a sign-in that
+      // has come back and is being finished: the page goes for "Signing
+      // you in…" then, and calling the trip off would stop the account
+      // opening (its reads are cancelled with it).
       lookup?.cancel()
-      go = nil
-      tripTask?.cancel()
       stallTask?.cancel()
+      if !session.returning {
+        go = nil
+        tripTask?.cancel()
+      }
     }
   }
 
@@ -811,10 +816,12 @@ struct RememberedMeta: View {
     }
   }
 
+  /// One of `.meta`'s pieces on a line of its own: its size, line height
+  /// and colour (ThemeKit's, as MetaLine draws them).
   private func line(_ text: String) -> some View {
     Text(text)
-      .virgaText(.textSm, lineHeight: Measure.Accounts.rememberedMetaLineHeight)
-      .foregroundStyle(theme.muted)
+      .virgaText(size: theme.points(ThemeKit.metaFontSize), lineHeight: ThemeKit.metaLineHeight)
+      .foregroundStyle(theme.color(ThemeKit.metaInk))
   }
 }
 
@@ -839,10 +846,5 @@ extension Measure.SignIn {
   static let stepIn = ThemeAnimation(name: "signin-step-in", duration: 0.28, easing: .variable(.ease))
   /// `.signin-identity--arriving, .signin-arriving { animation: signin-identity-in 0.32s var(--ease) }`
   static let identityIn = ThemeAnimation(name: "signin-identity-in", duration: 0.32, easing: .variable(.ease))
-}
-
-extension Measure.Accounts {
-  /// `.meta { line-height: 1.45 }`, each of `.remembered-meta`'s lines on a phone.
-  static let rememberedMetaLineHeight: Double = 1.45
 }
 #endif

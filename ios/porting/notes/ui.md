@@ -321,7 +321,9 @@ APP (App/, Pages/, Legal/, SignIn/, Accounts/, Settings/, Platform/)
   they come up (`SignInScrolling`, a ScrollViewReader round LandingView, put on by AppRoot).
   "Continue anyway" and "Still here? Open <host>" are links in their sentences
   (`SignInInlineLink`, `virga-signin:`). Going again cancels and awaits the trip under way;
-  closing Add an account calls the trip off. A card, the account arriving and the
+  closing Add an account calls the trip off, but not once the sign-in has come back
+  (`session.returning`): "Signing you in…" takes the page down then, and cancelling would
+  cancel the account's opening reads with it. A card, the account arriving and the
   leaving title rise or fade in with `SignInArriving` (0.28 s and 0.32 s on --ease,
   `Measure.SignIn.stepIn`/`identityIn`), the card they replace going at once.
 - LegalDialog's "Open as a page" is `LegalPageCover`, a full-screen cover over the dialog
