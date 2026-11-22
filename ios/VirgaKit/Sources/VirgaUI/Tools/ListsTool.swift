@@ -100,19 +100,22 @@ struct ListsYoureOnBody: View {
           Label("Export", systemImage: Glyph.download)
         }
         .buttonStyle(.linkAction)),
-      flush: true,
       caption:
         "Found through Constellation, which indexes who links to whom across the network, then each list read from Bluesky’s public API. Subscribers are counted for moderation lists only, where they decide who blocks you. A list removed since the last sync is gone from here at the next one."
     ) {
+      // `.card`, not flush: the table's own head carries the one rule in
+      // ink; set as rows on a phone, that head is just its rule
+      // (`.table--stack.lists-table thead tr`).
       if theme.windowWidth > Measure.Tools.stackedTableMax {
         ListsTable(lists: shown, owner: { ToolPeople.cardFor(archive, $0.owner, sets: sets) })
       } else {
+        Rectangle().fill(theme.color(ThemeKit.tableHeadRule)).frame(height: 1)
         ForEach(shown, id: \.uri) { list in
           ListsToolRow(list: list, owner: ToolPeople.cardFor(archive, list.owner, sets: sets))
         }
       }
       if shown.isEmpty {
-        EmptyState("No lists here.").padding(.top, theme.rowPad)
+        ToolEmptyLine("No lists here.")
       }
     }
   }
@@ -144,7 +147,7 @@ struct ListsToolRow: View {
     if counted, let n = list.subscribers { facts.append("\(AppLocale.formatNumber(n)) \(n == 1 ? "subscriber" : "subscribers")") }
     if let at = list.memberAt, !at.isEmpty { facts.append("added \(Time.formatDateShort(at))") }
     let moderation = list.purpose == "moderation"
-    return VStack(alignment: .leading, spacing: 4) {
+    return VStack(alignment: .leading, spacing: Measure.Tools.stackedRowGap) {
       HStack(alignment: .firstTextBaseline, spacing: theme.space3) {
         Button {
           if let url = ListsYoureOnBody.listUrl(list, owner?.handle) { openURL(url) }

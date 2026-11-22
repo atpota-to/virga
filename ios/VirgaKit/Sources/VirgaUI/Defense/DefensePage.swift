@@ -178,6 +178,7 @@ struct TurnOnCard: View {
       .accessibilityIdentifier("defense-turn-on")
       if let error = DefenseWords.error(asking) {
         Callout(tone: .danger) { Text(error) }
+          .toolAnnounces(error, onAppear: true)
           .padding(.top, theme.space4)
       }
     }
@@ -206,6 +207,7 @@ struct DefenseOnCard: View {
     ) {
       if let error = DefenseWords.error(asking) {
         Callout(tone: .danger) { Text(error) }
+          .toolAnnounces(error, onAppear: true)
           .padding(.top, theme.space4)
       }
     }
@@ -252,8 +254,12 @@ struct ScanFormCard: View {
     if !typed.isEmpty && !running { onScan(typed) }
   }
 
+  /// The field's example, as plain words: a string literal would be read as
+  /// Markdown and its address drawn as a link.
+  static let linkPlaceholder = "https://bsky.app/profile/…/post/…"
+
   private var field: some View {
-    let input = TextField("https://bsky.app/profile/…/post/…", text: $text)
+    let input = TextField(Self.linkPlaceholder, text: $text)
       .keyboardType(.URL)
       .textInputAutocapitalization(.never)
       .autocorrectionDisabled()
@@ -262,8 +268,12 @@ struct ScanFormCard: View {
       .virgaField(size: .large)
       .accessibilityLabel("Link to a post")
       .accessibilityIdentifier("defense-link")
+    // On a phone the button spans the column, under the field
+    // (`.defense-field { flex-direction: column; align-items: stretch }`),
+    // as the sign-in form's does.
     let go = Button("Scan") { submit() }
       .buttonStyle(.virga)
+      .environment(\.virgaFillsWidth, theme.isPhone)
       .disabled(text.jsTrimmed().isEmpty || running)
       .accessibilityIdentifier("defense-scan-link")
     return Group {
@@ -334,6 +344,7 @@ struct ScanProgressCard: View {
         .padding(.top, theme.points(ThemeKit.cardSubSpaceAbove))
         .accessibilityLabel(PageModel.stageLabel(scan))
         .accessibilityAddTraits(.updatesFrequently)
+        .toolAnnounces(PageModel.stageLabel(scan), onAppear: true)
         .accessibilityIdentifier("defense-stage")
       ProgressLine(value: max(4, (fraction * 100).jsRounded) / 100)
         .frame(maxWidth: Measure.Defense.columnMax)
@@ -358,6 +369,7 @@ struct ScanFailureView: View {
     let message = error?.message ?? scan.error.map { jsMessageOf($0) } ?? ""
     VStack(alignment: .leading, spacing: theme.space3) {
       Callout(tone: .danger) { Text(message.isEmpty ? "The scan stopped." : message) }
+        .toolAnnounces(message.isEmpty ? "The scan stopped." : message, onAppear: true)
         .accessibilityIdentifier("defense-failure")
       if !linkProblem {
         Button(action: onRetry) {
@@ -407,7 +419,7 @@ struct BandsCard: View {
       .fixedSize(horizontal: false, vertical: true)
     return Group {
       if theme.isPhone {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: Measure.Defense.phoneBandGap) {
           word
           means
         }

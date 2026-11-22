@@ -132,16 +132,17 @@ struct LookupPage: View {
           )
           .zIndex(1)
           if state == "looking", let named {
-            EmptyState("Looking up \(named)…")
+            ToolEmptyLine("Looking up \(named)…")
               .accessibilityAddTraits(.updatesFrequently)
+              .toolAnnounces("Looking up \(named)…", onAppear: true)
           }
           if state == "missing" || state == "failed", let named {
-            Callout(tone: .warn) {
-              Text(
-                state == "missing"
-                  ? "The address names “\(named)”, which Bluesky doesn’t know as an account."
-                  : "Couldn’t reach Bluesky to look up “\(named)”. Reload to try again.")
-            }
+            let words: String =
+              state == "missing"
+              ? "The address names “\(named)”, which Bluesky doesn’t know as an account."
+              : "Couldn’t reach Bluesky to look up “\(named)”. Reload to try again."
+            Callout(tone: .warn) { Text(words) }
+              .toolAnnounces(words, onAppear: true)
           }
           if state != "looking" {
             StartingPoint(archive: archive, sets: sets, onChoose: { choose($0) })
@@ -224,7 +225,9 @@ struct LookupLegend: View {
     HStack(spacing: Measure.Tools.legendGap) {
       ForEach(["in", "out"], id: \.self) { dir in
         HStack(spacing: Measure.Tools.pairInnerGap) {
-          Image(systemName: ToolGlyph.direction(dir)).font(.system(size: Measure.Tools.pairArrow))
+          Image(systemName: ToolGlyph.direction(dir))
+            .font(.system(size: Measure.Tools.pairArrow))
+            .frame(width: Measure.Tools.pairArrow)
           Text(InteractionLookup.directionLabel[dir] ?? "")
         }
         .foregroundStyle(dir == "in" ? theme.accentInk : theme.secondInk)
@@ -265,6 +268,9 @@ struct PersonSearch: View {
   @State private var active = 0
   @State private var status: (error: Bool, text: String)?
   @State private var busy = false
+  /// The field has the keyboard: the suggestions open with it and close a
+  /// moment after it goes (`onFocus`, `onBlur`), so a press on one lands.
+  @FocusState private var focused: Bool
 
   static func options(_ directory: [DirectoryPerson], _ query: String) -> [LookupOption] {
     let typed = InteractionModel.parseActorInput(query)
@@ -315,6 +321,8 @@ struct PersonSearch: View {
     .frame(maxWidth: Measure.Tools.lookupMax, alignment: .leading)
     .accessibilityElement(children: .contain)
     .accessibilityLabel("Choose an account")
+    // `.lookup-status` is `role="status"`: what a look-up came to is read out.
+    .toolAnnounces(status?.text)
   }
 
   private func field(options: [LookupOption], shown: [LookupOption]) -> some View {
@@ -325,9 +333,20 @@ struct PersonSearch: View {
         .submitLabel(.search)
         .disabled(busy)
         .virgaField(size: .large, leading: Measure.Tools.largeSearchLeading)
+        .focused($focused)
         .accessibilityLabel("Find an account")
         .accessibilityIdentifier("lookup-field")
         .onSubmit { submit(options: options, shown: shown) }
+        .onChange(of: focused) { _, now in
+          if now {
+            open = true
+          } else {
+            Task { @MainActor in
+              try? await Task.sleep(nanoseconds: UInt64(Measure.Tools.optionsCloseDelay * 1_000_000_000))
+              if !focused { open = false }
+            }
+          }
+        }
         .onChange(of: query) { _, _ in
           open = true
           active = 0
@@ -466,6 +485,7 @@ struct PersonSearch: View {
   private func done(_ did: String) {
     query = ""
     open = false
+    focused = false
     status = nil
     // The keyboard goes with the search it was typing in.
     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
@@ -544,17 +564,30 @@ struct StartingPoint: View {
     let ranked = InteractionModel.interactionIndex(ReportArchive(archive)).ranked
     let shown = Array(ranked.prefix(limit))
     let names = ranked.prefix(max(limit, InteractionLookup.namesUpFront)).map(\.did)
+    let phone = theme.isPhone
     VirgaSection(
-      title: "People you interact with most",
-      sub: "Everything on record, each way. Choose someone to see your history with them.",
-      trailing: AnyView(LookupLegend()),
-      flush: true,
       caption:
         "Them to you comes from your notifications, which reach back about a year at most. You to them comes from your repo and your posts, and goes all the way back."
     ) {
+      // The heading, a flush one. On a phone the legend would leave the
+      // title a word a line, so it takes a line of its own under the
+      // heading's words, still at the right, over the two columns it names.
+      VStack(alignment: .leading, spacing: 0) {
+        SectionHead(
+          "People you interact with most",
+          sub: "Everything on record, each way. Choose someone to see your history with them.",
+          trailing: phone ? nil : AnyView(LookupLegend())
+        )
+        if phone {
+          LookupLegend()
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .padding(.top, Measure.Tools.phoneLegendSpaceAbove)
+        }
+      }
+      .padding(.bottom, theme.points(ThemeKit.flushHeadSpaceBelow))
+      Rectangle().fill(theme.color(ThemeKit.flushHeadRule)).frame(height: theme.points(ThemeKit.flushHeadRule))
       if shown.isEmpty {
-        EmptyState("No interactions on record yet. Search for someone above to see whether they follow you.")
-          .padding(.top, theme.rowPad)
+        ToolEmptyLine("No interactions on record yet. Search for someone above to see whether they follow you.")
       } else {
         ForEach(shown, id: \.did) { row in
           pick(row)

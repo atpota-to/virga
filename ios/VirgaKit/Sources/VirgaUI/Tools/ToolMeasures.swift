@@ -49,6 +49,8 @@ extension Measure {
     public static let filterCountMin: CGFloat = 28
     public static let filterCountMax: CGFloat = 44
     public static let filterCountShare: CGFloat = 0.2
+    /// `@media (max-width: 560px) { .filter-card-count { font-size: clamp(1.75rem, (100cqi - 20px) / 10, 2.75rem) } }`
+    public static let phoneFilterCountShare: CGFloat = 0.1
     public static let filterCountTracking: ThemeLength = .em(-0.04)
     /// `.filter-card-hint { line-height: 1.35 }`
     public static let filterHintLineHeight: Double = 1.35
@@ -67,8 +69,19 @@ extension Measure {
     public static let inlineFieldPadding: CGFloat = 10
     /// `@media (max-width: 640px)`: a table with many columns is set as a list (`.table--stack`).
     public static let stackedTableMax: CGFloat = 640
+    /// `@media (max-width: 640px) { .table--stack tbody tr { gap: 4px 0 } }`: a stacked row's lines.
+    public static let stackedRowGap: CGFloat = 4
+    /// A table row's error under its button (`.person-error`; the web runs it on
+    /// beside the button, which the table's last column has no room for).
+    public static let actionErrorGap: CGFloat = 2
+    /// controls.css `input[type='checkbox'] { width: 16px; height: 16px }`, and
+    /// `@media (max-width: 640px) { .cleanup-table .col-check input { width: 20px; height: 20px } }`
+    public static let checkBox: CGFloat = 16
+    public static let stackedCheckBox: CGFloat = 20
     /// `.col-check { width: 36px }`: the tick box's column, its padding in it.
     public static let checkColumn: CGFloat = 36
+    /// `@media (min-width: 641px) { .cleanup-table td.col-main { width: 36%; max-width: 0 } }`
+    public static let cleanupAccountShare: CGFloat = 0.36
     /// `.table-person { gap: 12px }`
     public static let personGap: CGFloat = 12
     /// `.activity { gap: 7px }`
@@ -83,8 +96,10 @@ extension Measure {
     public static let checkColumnGap: CGFloat = 32
     public static let checkRowGap: CGFloat = 14
     public static let checkTextMeasure: CGFloat = 68
-    /// `.check-actions, .check-progress { gap: 10px 16px }`, `.check-progress .progress { width: 160px }`
+    public static let checkTextBasis: CGFloat = 360
+    /// `.check-actions, .check-progress { flex-wrap: wrap; gap: 10px 16px }`, `.check-progress .progress { width: 160px }`
     public static let checkActionsGap: CGFloat = 16
+    public static let checkActionsRowGap: CGFloat = 10
     public static let checkProgressWidth: CGFloat = 160
 
     /// controls.css `.list-toolbar { gap: 12px 32px; margin-bottom: var(--space-4) }` (16 apart on a phone),
@@ -107,10 +122,19 @@ extension Measure {
     public static let bestGap: CGFloat = 16
     public static let bestRank: CGFloat = 14
     public static let bestPosts: CGFloat = 56
+    /// `@media (max-width: 560px) { .best-list li { gap: 2px 16px } }`: the slot over its posts.
+    public static let phoneBestLineGap: CGFloat = 2
     /// `.best-days { padding-top: 14px }`
     public static let bestDaysSpaceAbove: CGFloat = 14
     /// `.best-table { max-height: 24rem }`
     public static let bestTableMaxHeight: CGFloat = 384
+    /// charts.css `.an-tableview .table { width: auto; min-width: min(100%, 28rem) }`: the
+    /// table as wide as the column up to this, which its three columns fit within.
+    public static let bestTableWidth: CGFloat = 448
+    /// charts.css `.an-tableview .table thead th { position: sticky; padding-top: 8px }`
+    public static let stickyHeadSpaceAbove: CGFloat = 8
+    /// controls.css `@media (max-width: 560px) { .card-head:has(> :nth-child(2)) > .segmented { margin-top: 8px } }`
+    public static let phoneHeadControlSpaceAbove: CGFloat = 8
     /// `.report-split`: two columns from this wide (reports.css), one under it.
     public static let splitMin: CGFloat = 400
 
@@ -131,6 +155,10 @@ extension Measure {
     public static let phoneKvPadding: CGFloat = 10
     /// `.kv-row dd { gap: 6px }`
     public static let kvValueGap: CGFloat = 6
+    /// `CopyButton`: its glyph (`Copy size={16}`), and how long it says Copied
+    /// (`setTimeout(() => setDone(false), 1500)`), in seconds.
+    public static let copyGlyph: CGFloat = 16
+    public static let copiedFor: Double = 1.5
 
     /// `.timeline { margin: 14px 0 0 3px }`, `.timeline-item { grid-template-columns: 104px …; gap: 12px; padding: 9px 0 9px 20px }`
     public static let timelineSpaceAbove: CGFloat = 14
@@ -150,6 +178,9 @@ extension Measure {
     public static let optionsSpaceAbove: CGFloat = 6
     public static let optionsMaxHeight: CGFloat = 384
     public static let optionsPadding: CGFloat = 6
+    /// `onBlur={() => setTimeout(() => setOpen(false), 120)}`: the suggestions
+    /// close this long after the field lets go of the keyboard.
+    public static let optionsCloseDelay: Double = 0.12
     /// `.lookup-option { gap: 10px; min-height: 44px; padding: 6px 10px }`
     public static let optionGap: CGFloat = 10
     public static let optionMinHeight: CGFloat = 44
@@ -167,10 +198,14 @@ extension Measure {
     public static let pairArrow: CGFloat = 13
     /// `.lookup-legend { gap: 4px 14px }`
     public static let legendGap: CGFloat = 14
+    /// `@media (max-width: 560px) { .card.lookup-start > .card-head > .lookup-legend { margin-top: 8px } }`
+    public static let phoneLegendSpaceAbove: CGFloat = 8
     /// `.lookup-person { gap: 16px }`
     public static let personCardGap: CGFloat = 16
-    /// `.report-split.lookup-top`: the totals beside the timeline from 1000 wide.
+    /// `.report-split.lookup-top`: the totals beside the timeline from 1000 wide,
+    /// `grid-template-columns: minmax(300px, 1fr) minmax(0, 2fr)`.
     public static let lookupTopSplit: CGFloat = 1000
+    public static let lookupTopMin: CGFloat = 300
     /// `.lookup-total { gap: 8px }`, `.lookup-total-track { min-width: 12px; max-width: 120px; height: 4px }`
     public static let totalGap: CGFloat = 8
     public static let totalTrackMin: CGFloat = 12
@@ -185,6 +220,14 @@ extension Measure {
     /// `.lookup-kind, .lookup-dir { gap: 6px }` and their glyphs at 14.
     public static let kindGap: CGFloat = 6
     public static let kindGlyph: CGFloat = 14
+    /// reports.css `@media (max-width: 760px) { .kind-filter .segmented-key.has-icon { min-width: 32px } }`
+    public static let kindFilterIconKey: CGFloat = 32
+    /// `.lookup-cannot { max-width: 78ch }`, `.lookup-cannot-card .card-sub { margin-top: 6px }`
+    public static let cannotMeasure: CGFloat = 78
+    public static let cannotSpaceAbove: CGFloat = 6
+    /// reports.css `.how-counted-body { gap: 8px; max-width: 72ch }`
+    public static let howCountedGap: CGFloat = 8
+    public static let howCountedMeasure: CGFloat = 72
     /// A person row's history link (`History size={15}`).
     public static let historyGlyph: CGFloat = 15
     /// `.queue-dismiss` (`X size={16}`).
@@ -201,6 +244,10 @@ extension Measure {
     public static let personRowGap: CGFloat = 14
     public static let phonePersonRowGap: CGFloat = 10
     public static let personLineHeight: Double = 1.35
+    /// `@container rows (max-width: 599px)` drops "follows you" from a row with
+    /// a fact of its own, `(max-width: 479px)` its handle too.
+    public static let personMetaRelMin: CGFloat = 600
+    public static let personMetaHandleMin: CGFloat = 480
     /// `.follow-button { min-width: 92px }` (none on a phone)
     public static let followMinWidth: CGFloat = 92
     /// `.post-row { gap: 14px }`, `.post-rank { width: 16px }`, `.post-main { gap: 4px }`

@@ -96,8 +96,7 @@ struct UnfollowLog: View {
         .padding(.bottom, theme.points(ThemeKit.flushHeadSpaceBelow))
       Rectangle().fill(theme.color(ThemeKit.flushHeadRule)).frame(height: theme.points(ThemeKit.flushHeadRule))
       if entries.isEmpty {
-        EmptyState(side == "lost" ? "Nobody has unfollowed you since \(since)." : "Nobody new since \(since).")
-          .padding(.top, theme.rowPad)
+        ToolEmptyLine(side == "lost" ? "Nobody has unfollowed you since \(since)." : "Nobody new since \(since).")
       }
       ForEach(Self.groups(shown)) { group in
         groupView(group, sets: sets)
@@ -122,7 +121,8 @@ struct UnfollowLog: View {
         limit = Self.page
       }
       Spacer(minLength: 0)
-      HStack(spacing: theme.space4) {
+      // `.head-actions`: link actions side by side, 24 apart.
+      HStack(spacing: theme.gap(ThemeKit.headActionsGap).column) {
         Button {
           syncNow()
         } label: {
@@ -153,7 +153,8 @@ struct UnfollowLog: View {
         .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
         .accessibilityAddTraits(.isHeader)
       ForEach(Array(group.entries.enumerated()), id: \.offset) { _, entry in
-        ToolPersonRow(archive: archive, sets: sets, did: entry.did, card: ToolPersonCard(entry), meta: meta(entry), follow: follow)
+        ToolPersonRow(
+          archive: archive, sets: sets, did: entry.did, card: ToolPersonCard(entry), meta: meta(entry), follow: follow, wrapsMeta: true)
       }
     }
   }

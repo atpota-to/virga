@@ -48,8 +48,9 @@ struct ModeratorCard: View {
       if !link.isPresent {
         if let error {
           Callout(tone: .danger) { Text(error) }
+            .toolAnnounces(error, onAppear: true)
         } else {
-          EmptyState("Reading…")
+          ToolEmptyLine("Reading…")
         }
       } else if let handle {
         if linked {
@@ -73,6 +74,7 @@ struct ModeratorCard: View {
       }
       if link.isPresent, let error {
         Callout(tone: .danger) { Text(error) }
+          .toolAnnounces(error, onAppear: true)
           .padding(.top, theme.space4)
       }
     }
@@ -134,9 +136,12 @@ struct ModeratorCard: View {
     send += AttributedString(" in a DM, from this account, within fifteen minutes:")
     return VStack(alignment: .leading, spacing: theme.space3) {
       Text(send).virgaText(.textBase).foregroundStyle(theme.ink2).tint(theme.ink).fixedSize(horizontal: false, vertical: true)
+      // 1.125rem, which grows with Dynamic Type as a rem does with the
+      // browser's text size; its tracking an em of that.
+      let codeSize = theme.scaled(Measure.Defense.codeSize)
       Text("link \(code)")
-        .font(.system(size: Measure.Defense.codeSize, design: .monospaced))
-        .tracking(Measure.Defense.codeSize * Measure.Defense.codeTracking)
+        .font(.system(size: codeSize, design: .monospaced))
+        .tracking(codeSize * Measure.Defense.codeTracking)
         .foregroundStyle(theme.ink)
         .textSelection(.enabled)
         .padding(.vertical, Measure.Defense.codePaddingV)
@@ -147,6 +152,11 @@ struct ModeratorCard: View {
     }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("defense-moderator-code")
+    // `role="status"`: the code to send is read out when it arrives, with
+    // the rest of what the region says.
+    .toolAnnounces(
+      "Send this to @\(handle) in a DM, from this account, within fifteen minutes:\nlink \(code)\nIt works only from this account, and only once. This page notices when it lands.",
+      onAppear: true)
   }
 
   /// `load()`: the link as the server has it.

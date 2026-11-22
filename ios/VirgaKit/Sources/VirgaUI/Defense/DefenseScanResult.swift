@@ -81,7 +81,7 @@ struct ScanResultView: View {
     return SectionHead(
       "Who engaged", sub: own.map { ToolPosts.postText($0) } ?? result.post.uri,
       trailing: AnyView(
-        HStack(spacing: theme.space4) {
+        HStack(spacing: theme.gap(ThemeKit.headActionsGap).column) {
           if let link, let url = URL(string: link) {
             Button {
               openURL(url)
@@ -97,7 +97,10 @@ struct ScanResultView: View {
           .accessibilityIdentifier("defense-rescan")
         })
     )
-    .lineLimit(nil)
+    // The post's words are held to two lines (`.defense-post-quote {
+    // -webkit-line-clamp: 2 }`); the title and the actions are one line each.
+    .lineLimit(2)
+    .truncationMode(.tail)
     .padding(.bottom, theme.points(ThemeKit.cardHeadSpaceBelow))
   }
 
@@ -153,7 +156,7 @@ struct ScanResultView: View {
         .padding(.bottom, theme.space3)
       }
       if rows.isEmpty {
-        EmptyState("Nobody near you engaged with this post: everyone here has no connection to you.")
+        ToolEmptyLine("Nobody near you engaged with this post: everyone here has no connection to you.")
       } else {
         LazyVStack(alignment: .leading, spacing: 0) {
           ForEach(Array(rows.prefix(shown)), id: \.did) { row in

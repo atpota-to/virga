@@ -110,7 +110,7 @@ struct YourListsCard: View {
     ) {
       if making { form }
       if all.isEmpty {
-        if !making { EmptyState("No lists yet. Make one here, or from a scan’s Add to a list.") }
+        if !making { ToolEmptyLine("No lists yet. Make one here, or from a scan’s Add to a list.") }
       } else {
         VStack(alignment: .leading, spacing: 0) {
           Rectangle().fill(theme.rule).frame(height: 1)
@@ -126,7 +126,9 @@ struct YourListsCard: View {
 
   private var form: some View {
     VStack(alignment: .leading, spacing: theme.space4) {
-      DefenseNewListFields(name: $name, purpose: $purpose, nameLabel: "Name")
+      DefenseNewListFields(name: $name, purpose: $purpose, nameLabel: "Name") {
+        if !busy && !name.jsTrimmed().isEmpty { Task { await make() } }
+      }
       HStack(spacing: theme.space3) {
         Button(busy ? "Making it…" : "Make the list") { Task { await make() } }
           .buttonStyle(.virga)
@@ -137,6 +139,7 @@ struct YourListsCard: View {
       }
       if let error {
         Callout(tone: .danger) { Text(error) }
+          .toolAnnounces(error, onAppear: true)
       }
     }
     .frame(maxWidth: Measure.Defense.columnMax, alignment: .leading)
@@ -218,6 +221,7 @@ struct KeptByHandCard: View {
       form
       if let error {
         Callout(tone: .danger) { Text(error) }
+          .toolAnnounces(error, onAppear: true)
           .padding(.bottom, theme.space4)
       }
       if let archive, !kept.isEmpty {
@@ -237,22 +241,30 @@ struct KeptByHandCard: View {
   }
 
   private var form: some View {
+    let canKeep = busy != "add" && !handle.jsTrimmed().isEmpty
+    // Return in either field keeps, as the form's submit does.
     let keepField = FieldStack("Keep") {
       TextField("@handle", text: $handle)
         .textInputAutocapitalization(.never)
         .autocorrectionDisabled()
         .virgaField()
+        .submitLabel(.go)
+        .onSubmit { if canKeep { Task { await keep() } } }
         .accessibilityLabel("Keep")
     }
     let whyField = FieldStack("Why (optional)") {
       TextField("My sister’s other account", text: $reason)
         .virgaField()
+        .submitLabel(.go)
+        .onSubmit { if canKeep { Task { await keep() } } }
         .onChange(of: reason) { _, next in if next.utf16.count > 200 { reason = next.jsSlice(0, 200) } }
         .accessibilityLabel("Why (optional)")
     }
+    // On a phone Keep spans the column (`.defense-keep-form { grid-template-columns: 1fr }`).
     let go = Button("Keep") { Task { await keep() } }
       .buttonStyle(.virga)
-      .disabled(busy == "add" || handle.jsTrimmed().isEmpty)
+      .environment(\.virgaFillsWidth, theme.isPhone)
+      .disabled(!canKeep)
     return Group {
       if theme.isPhone {
         VStack(alignment: .leading, spacing: theme.space3) {
