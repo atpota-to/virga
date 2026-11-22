@@ -114,16 +114,13 @@ struct ScheduleLinkedText: View {
   @Environment(\.navigate) private var navigate
   let pieces: [Piece]
 
-  static let scheme = "virga-route:"
-
   var body: some View {
     Text(attributed)
       .environment(
         \.openURL,
         OpenURLAction { url in
-          let address = url.absoluteString
-          guard address.hasPrefix(Self.scheme) else { return .systemAction }
-          navigate(String(address.dropFirst(Self.scheme.count)))
+          guard let href = InternalLink.href(url) else { return .systemAction }
+          navigate(href)
           return .handled
         })
   }
@@ -136,7 +133,7 @@ struct ScheduleLinkedText: View {
         out += AttributedString(text)
       case .link(let text, let path):
         var link = AttributedString(text)
-        link.link = URL(string: "\(Self.scheme)\(path)")
+        link.link = InternalLink.url(path)
         link.underlineStyle = .single
         out += link
       }

@@ -158,9 +158,6 @@ extension Measure {
     public static let repeatFieldsGap: CGFloat = 10
     public static let repeatLabelGap: CGFloat = 4
     public static let repeatIcon: CGFloat = 13
-    public static let repeatShares: [CGFloat] = [1, 1.3, 0.7]
-    /// The date's and the time's shares (`1.3fr 1fr`).
-    public static let whenShares: [CGFloat] = [1.3, 1]
     /// `.sched-when-queue { gap: 8px 10px; padding-top: 12px }`, its glyph `<ListTree size={16} />`.
     public static let queueGap: CGFloat = 10
     public static let queueLineGap: CGFloat = 8
