@@ -30,8 +30,7 @@
     "src/posting/lib/linkCard.js": {
       "status": "ported",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaPosting/Lib/LinkCard.swift",
-        "ios/VirgaKit/Sources/VirgaPosting/Lib/ComposerFiles.swift"
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/LinkCard.swift"
       ],
       "fixtures": [
         "publish.linkCard"
