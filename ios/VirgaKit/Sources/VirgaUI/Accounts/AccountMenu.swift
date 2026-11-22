@@ -60,6 +60,8 @@ enum AccountActions {
       do {
         try await session.signIn(Accounts.accountSignInId(account), SignInOptions(mode: "backend", intent: "reauth", did: account.did))
       } catch {
+        // Cancel on the system's sign-in sheet has nothing to say.
+        if SignInTrip.calledOff(error) { return }
         AccountCopy.showSessionNotice(OAuthClient.signInErrorMessage(error))
       }
     }

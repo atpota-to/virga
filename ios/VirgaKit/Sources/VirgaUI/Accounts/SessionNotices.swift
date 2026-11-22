@@ -42,7 +42,7 @@ public final class SessionNoticesModel {
     self.tabStorage = tabStorage
     self.pending = PendingReauthModel(onRelogin: { _ in })
     pending.onRelogin = { [weak self] account in try await self?.reauth(account) }
-    pending.onError = { [weak self] error in self?.show(OAuthClient.signInErrorMessage(error), danger: true) }
+    pending.onError = { [weak self] error in self?.showSignInError(error) }
     listeners.append(events.addListener(AccountCopy.reauthRequestEvent) { [weak self] event in self?.onReauthRequest(event) })
     listeners.append(events.addListener(Accounts.sessionExpiredEvent) { [weak self] event in self?.onExpired(event) })
     listeners.append(events.addListener(AccountCopy.sessionNoticeEvent) { [weak self] event in self?.onNotice(event) })
@@ -72,7 +72,7 @@ public final class SessionNoticesModel {
         do {
           try await reauth(target)
         } catch {
-          show(OAuthClient.signInErrorMessage(error), danger: true)
+          showSignInError(error)
         }
       }
     } else {
@@ -103,6 +103,13 @@ public final class SessionNoticesModel {
     notice = Notice(text: text, danger: danger)
   }
 
+  /// A sign-in that couldn't start says so; one called off (Cancel on the
+  /// system's sign-in sheet) has nothing to say.
+  func showSignInError(_ error: any Error) {
+    if SignInTrip.calledOff(error) { return }
+    show(OAuthClient.signInErrorMessage(error), danger: true)
+  }
+
   public func dismissNotice() { notice = nil }
   public func dismissStuck() { stuck = nil }
 
@@ -114,9 +121,20 @@ public final class SessionNoticesModel {
       do {
         try await reauth(stuck)
       } catch {
-        show(OAuthClient.signInErrorMessage(error), danger: true)
+        showSignInError(error)
       }
     }
+  }
+}
+
+/// A sign-in trip's end, as the flow reads it.
+enum SignInTrip {
+  /// Called off: the system's sign-in sheet was cancelled, or the reader
+  /// came back from the host (an AbortError, code CANCELLED, "navigated
+  /// back"). The web never sees these here, since its page leaves; the
+  /// flow's own rule (tripFailureNotice) has nothing to say about them.
+  static func calledOff(_ error: any Error) -> Bool {
+    SignInFlow.tripFailureNotice(error, nil) == nil
   }
 }
 
@@ -157,7 +175,24 @@ struct SessionNoticesView: View {
     .frame(maxWidth: Measure.Accounts.noticesWidth)
     .padding(.horizontal, Measure.Toast.inset)
     .padding(.top, Measure.Accounts.noticesTop)
+    // Every notice comes in the same way (session-notice-in, 0.2 s --ease).
     .animation(theme.motion.sheet, value: model.notice)
+    .animation(theme.motion.sheet, value: model.pending.pendingReauthAccount?.did)
+    .animation(theme.motion.sheet, value: model.stuck?.did)
+    // The web's live regions: the hand-off and the stuck account are
+    // role=status, a notice role=alert. Read out as they come up, so the
+    // hand-off's Cancel can be reached in time.
+    .onChange(of: model.pending.pendingReauthAccount?.did) { _, did in
+      guard did != nil, let account = model.pending.pendingReauthAccount else { return }
+      AccessibilityNotification.Announcement("Signing you in again as \(Accounts.reauthNoticeLabel(account))…").post()
+    }
+    .onChange(of: model.stuck?.did) { _, did in
+      guard did != nil, let stuck = model.stuck, model.pending.pendingReauthAccount == nil else { return }
+      AccessibilityNotification.Announcement("\(Accounts.reauthNoticeLabel(stuck)) needs to sign in again.").post()
+    }
+    .onChange(of: model.notice) { _, notice in
+      if let notice { AccessibilityNotification.Announcement(notice.text).post() }
+    }
   }
 }
 
@@ -178,12 +213,21 @@ struct NoticeCard<Words: View, Actions: View>: View {
 
   var body: some View {
     let shape = RoundedRectangle(cornerRadius: theme.radiusLg)
-    HStack(spacing: Measure.Accounts.noticeGap) {
-      words
-        .virgaText(.textBase)
-        .fixedSize(horizontal: false, vertical: true)
-        .frame(maxWidth: .infinity, alignment: .leading)
-      actions
+    // `flex-wrap: wrap`, the words `flex: 1 1 160px`: the actions stay
+    // beside the words while the words keep their 160, and drop under them
+    // when they can't (large Dynamic Type).
+    ViewThatFits(in: .horizontal) {
+      HStack(spacing: Measure.Accounts.noticeGap) {
+        // Ideally 160, so the row fits whenever the words can keep that.
+        wordsLine.frame(
+          minWidth: Measure.Accounts.noticeWordsBasis, idealWidth: Measure.Accounts.noticeWordsBasis, maxWidth: .infinity,
+          alignment: .leading)
+        actionsRow
+      }
+      VStack(alignment: .leading, spacing: Measure.Accounts.noticeLineGap) {
+        wordsLine
+        actionsRow
+      }
     }
     .foregroundStyle(danger ? theme.danger : theme.ink)
     .padding(Measure.Accounts.noticePadding)
@@ -199,6 +243,26 @@ struct NoticeCard<Words: View, Actions: View>: View {
     .transition(.opacity.combined(with: .offset(y: -Measure.SignIn.stepRise)))
     .accessibilityElement(children: .contain)
   }
+
+  private var wordsLine: some View {
+    words
+      .virgaText(.textBase)
+      .fixedSize(horizontal: false, vertical: true)
+      .frame(maxWidth: .infinity, alignment: .leading)
+  }
+
+  private var actionsRow: some View {
+    HStack(spacing: Measure.Accounts.noticeGap) {
+      actions
+    }
+    .fixedSize()
+  }
+}
+
+extension Measure.Accounts {
+  /// `.session-notice > span { flex: 1 1 160px }`, and its `gap: 8px 12px`'s 8 between lines.
+  static let noticeWordsBasis: CGFloat = 160
+  static let noticeLineGap: CGFloat = 8
 }
 
 /// A notice's ✕: "Dismiss".

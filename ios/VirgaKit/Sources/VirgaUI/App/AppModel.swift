@@ -81,6 +81,10 @@ public struct AccountProfile: Hashable, Sendable {
 @Observable
 public final class ProfileModel {
   public private(set) var profile: AccountProfile?
+  /// The account `profile` is of: the DID of the last load. A view drawn
+  /// for a new account before its load has started still sees the last
+  /// account's profile, so what it reads is checked against this.
+  public private(set) var did: String?
   @ObservationIgnored private let fetch: @Sendable (String) async throws -> JSONValue?
 
   public init(fetch: @escaping @Sendable (String) async throws -> JSONValue?) {
@@ -91,6 +95,7 @@ public final class ProfileModel {
   /// stand-in at that moment. Call it from `.task(id: did)`, which calls an
   /// earlier read off.
   public func load(did: String?, remembered: SessionAccount?) async {
+    self.did = did
     profile = remembered.map {
       AccountProfile(handle: $0.handle, displayName: $0.displayName, avatar: $0.avatar)
     }
@@ -196,11 +201,25 @@ public final class AppModel {
   }
 
   func makeArchive(did: String) -> ArchiveModel {
-    let remembered = session.accounts.first { $0.did.jsEquals(did) }
-    let handle = profile.profile?.handle ?? remembered?.handle
     var environment = archiveEnvironment
     environment.postsChanged = PostingEvents.postsChangedListener()
-    return ArchiveModel(agent: session.did.jsEquals(did) ? session.agent : nil, did: did, handle: handle, environment: environment)
+    return ArchiveModel(
+      agent: session.did.jsEquals(did) ? session.agent : nil, did: did, handle: archiveHandle(for: did), environment: environment)
+  }
+
+  /// The handle an account's archive is given (ArchiveProvider's
+  /// `profile?.handle || null`, read on every render): the profile's once
+  /// it is this account's, and until then what the account list remembers.
+  /// Right after a switch the view is drawn for the new account while the
+  /// profile is still the last one's, which mustn't lend it its handle.
+  public func archiveHandle(for did: String) -> String? {
+    if profile.did.jsEquals(did) {
+      guard let handle = profile.profile?.handle, !handle.isEmpty else { return nil }
+      return handle
+    }
+    let remembered = session.accounts.first { $0.did.jsEquals(did) }
+    guard let handle = remembered?.handle, !handle.isEmpty else { return nil }
+    return handle
   }
 
   /// The session's `resetAnalyticsStore`: every store handle starts afresh

@@ -15,7 +15,15 @@
 //
 // `variant` is .page (the front page, on the sky under the lede) or .dialog
 // (Add an account, which brings its own title and frame). `remembered`
-// lists the accounts this device knows above the field.
+// lists the accounts this device knows above the field. A compose link kept
+// for after the sign-in (`\.signInComposing`, AppRoot's) puts a callout over
+// the front page's first card.
+//
+// VoiceOver hears what the web's live regions say: "Looking you up…" and
+// "Found …" as the account is looked up, a notice as it comes up, and
+// "Still here?" when the trip is slow. Focus goes with the card: to the
+// field on the first card (and in Add an account as it opens), to the way
+// on while the account is looked up and found, else to the card's title.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -46,6 +54,8 @@ public struct SignInFlowView: View {
   @State private var lastStep: SignInStep = .entry
   @FocusState private var fieldFocused: Bool
   @AccessibilityFocusState private var headingFocused: Bool
+  @AccessibilityFocusState private var actionFocused: Bool
+  @Environment(\.signInComposing) private var composingLink
 
   /// - Parameter onSignedIn: told when a trip came back signed in (Add an
   ///   account closes then).
@@ -57,14 +67,24 @@ public struct SignInFlowView: View {
 
   private var inDialog: Bool { variant == .dialog }
   private var showRemembered: Bool { remembered && !session.accounts.isEmpty }
+  /// The front page's, when a compose link waits for the sign-in.
+  private var composing: Bool { composingLink && !inDialog }
+  /// FINDING and FOUND are one card: the account takes the bones' place
+  /// rather than the whole card changing.
+  private var cardKey: SignInStep { flow.step == .finding ? .found : flow.step }
+
+  /// The label's id on the first card, which a phone brings to the page's
+  /// top when suggestions come up under the field.
+  static let fieldAnchor = "signin-field-label"
 
   public var body: some View {
+    // The card that goes leaves at once, and the next rises in
+    // (`signin-step-in`), as the web's keyed card is mounted afresh.
     VStack(alignment: .leading, spacing: Measure.SignIn.flowGap) {
       card
-        .id(flow.step == .finding ? SignInStep.found : flow.step)
-        .transition(.opacity.combined(with: .offset(y: Measure.SignIn.stepRise)))
+        .modifier(SignInArriving(animation: theme.motion.animation(Measure.SignIn.stepIn), rise: Measure.SignIn.stepRise))
+        .id(cardKey)
     }
-    .animation(theme.motion.sheet, value: flow.step == .finding ? SignInStep.found : flow.step)
     .virgaDialog(isPresented: $howOpen, title: "How signing in works", size: .tall) {
       HowSigningInWorks(longSession: session.authMode == "backend")
     }
@@ -75,10 +95,34 @@ public struct SignInFlowView: View {
       if Task.isCancelled { return }
       depart(trip)
     }
-    .onChange(of: flow.step) { _, step in moveFocus(step) }
+    .onChange(of: flow.step) { _, step in
+      moveFocus(step)
+      announce(step)
+    }
+    .onChange(of: flow.notice) { _, notice in
+      // A notice raised is read out (role=alert), but for a handle that
+      // wasn't found: focus goes back to the field, whose hint it is.
+      if let notice, notice.about != "field" { AccessibilityNotification.Announcement(notice.text).post() }
+    }
+    .onChange(of: flow.leaving?.phase) { _, phase in
+      if phase == "stalled" { AccessibilityNotification.Announcement("Still here? \(SignInFlow.stallLabel(flow.leaving))").post() }
+    }
+    .task {
+      // Add an account puts the cursor in the field as it opens.
+      if inDialog && flow.step == .entry { fieldFocused = true }
+    }
     .onDisappear {
+      // Closing it calls everything off: the lookup, the trip (and the
+      // system's sheet with it) and the stall's timer. Not a sign-in that
+      // has come back and is being finished: the page goes for "Signing
+      // you in…" then, and calling the trip off would stop the account
+      // opening (its reads are cancelled with it).
       lookup?.cancel()
       stallTask?.cancel()
+      if !session.returning {
+        go = nil
+        tripTask?.cancel()
+      }
     }
   }
 
@@ -96,6 +140,11 @@ public struct SignInFlowView: View {
 
   private func depart(_ trip: Int) {
     guard let go else { return }
+    // Going again ("Still here? Open <host>") calls the trip under way off
+    // first, and waits for it to end, so it can't clear this one's pending
+    // sign-in or leave a second sheet behind.
+    let previous = tripTask
+    previous?.cancel()
     dispatch(.sent(trip: trip))
     stallTask?.cancel()
     stallTask = Task { @MainActor in
@@ -103,6 +152,8 @@ public struct SignInFlowView: View {
       if !Task.isCancelled { dispatch(.stalled(trip: trip)) }
     }
     tripTask = Task { @MainActor in
+      if let previous { await previous.value }
+      if Task.isCancelled { return }
       do {
         try await go()
         stallTask?.cancel()
@@ -236,15 +287,31 @@ public struct SignInFlowView: View {
 
   /// Focus goes with the card, so a keyboard and VoiceOver follow it; not
   /// on the first card, and not when the account arrives on the card that
-  /// was waiting for it.
+  /// was waiting for it. While the account is looked up and found it is on
+  /// the way on, so it works the moment the account is found.
   private func moveFocus(_ step: SignInStep) {
     let from = lastStep
     lastStep = step
     if from == .finding && step == .found { return }
-    if step == .entry {
-      fieldFocused = true
-    } else {
-      headingFocused = true
+    switch step {
+    case .entry: fieldFocused = true
+    case .finding, .found: actionFocused = true
+    case .leaving, .hosts: headingFocused = true
+    }
+  }
+
+  /// The visually hidden status of "Is this you?": "Looking you up…", then
+  /// "Found {name}, {meta}."
+  private func announce(_ step: SignInStep) {
+    switch step {
+    case .finding:
+      AccessibilityNotification.Announcement("Looking you up…").post()
+    case .found:
+      guard let identity = flow.identity else { return }
+      let words = [SignInFlow.identityName(identity), SignInFlow.identityMeta(identity)].filter { !$0.isEmpty }
+      AccessibilityNotification.Announcement("Found \(words.joined(separator: ", ")).").post()
+    default:
+      break
     }
   }
 
@@ -257,19 +324,22 @@ public struct SignInFlowView: View {
     return notice
   }
 
+  /// A lookup or a trip that failed: a callout of its own. "Continue anyway"
+  /// ends its sentence, as a link in it.
   @ViewBuilder private var noticeLine: some View {
     if let notice = flow.notice, fieldNotice == nil {
       Callout(tone: .danger) {
-        HStack(alignment: .firstTextBaseline, spacing: 0) {
+        if notice.anyway != nil {
+          Text(AttributedString("\(notice.text) ") + SignInInlineLink.words("Continue anyway", action: "anyway", theme: theme, strong: true))
+        } else {
           Text(notice.text)
-          if let anyway = notice.anyway {
-            Text(" ")
-            SignInLink("Continue anyway", strong: true) {
-              leave(host: nil, purpose: "signin", go: signIn(anyway))
-            }
-          }
         }
       }
+      .environment(\.openURL, OpenURLAction { url in
+        guard SignInInlineLink.action(url) == "anyway" else { return .systemAction }
+        if let anyway = flow.notice?.anyway { leave(host: nil, purpose: "signin", go: signIn(anyway)) }
+        return .handled
+      })
       .accessibilityIdentifier("signin-notice")
     }
   }
@@ -285,6 +355,12 @@ public struct SignInFlowView: View {
 
   private var entry: some View {
     VStack(alignment: .leading, spacing: Measure.SignIn.stepGap) {
+      if composing {
+        Callout {
+          Text("Sign in to finish your post. What you were sharing opens in the composer once you’re in.")
+        }
+        .accessibilityIdentifier("signin-composing")
+      }
       if showRemembered {
         RememberedAccounts(
           accounts: session.accounts, opening: opening, onOpen: openRemembered,
@@ -292,9 +368,13 @@ public struct SignInFlowView: View {
         )
         .padding(.bottom, Measure.SignIn.flowGap)
       }
-      FieldLabel(showRemembered ? "Or sign in with another handle" : inDialog ? "Handle" : "Your handle")
+      FieldLabel(fieldLabel)
         .padding(.bottom, -Measure.SignIn.labelPull)
-      entryRow
+        .id(Self.fieldAnchor)
+        .accessibilityHidden(true)
+      // Over what follows it, so the suggestions floating under the field
+      // are drawn (and pressed) above the links.
+      entryRow.zIndex(1)
       noticeLine
       HStack(alignment: .firstTextBaseline) {
         SignInLink("Make an account") { dispatch(.hosts) }
@@ -305,10 +385,15 @@ public struct SignInFlowView: View {
     }
   }
 
+  private var fieldLabel: String {
+    showRemembered ? "Or sign in with another handle" : inDialog ? "Handle" : "Your handle"
+  }
+
   private var entryRow: some View {
     let field = VStack(alignment: .leading, spacing: 0) {
       HandleField(
-        value: $handle, size: inDialog ? .medium : .large, floats: !inDialog, invalid: fieldNotice != nil, disabled: opening != nil,
+        value: $handle, label: fieldLabel, hint: fieldNotice?.text, reveal: Self.fieldAnchor, size: inDialog ? .medium : .large,
+        floats: !inDialog, invalid: fieldNotice != nil, disabled: opening != nil,
         focus: $fieldFocused, onEdit: { dispatch(.typed) },
         onPick: { picked in
           handle = picked
@@ -324,6 +409,7 @@ public struct SignInFlowView: View {
           .accessibilityIdentifier("signin-field-error")
       }
     }
+    .zIndex(1)
     let button = Button("Sign in") { find() }
       .buttonStyle(.virga(.primary, size: inDialog ? .medium : .large))
       .disabled(opening != nil)
@@ -349,7 +435,9 @@ public struct SignInFlowView: View {
       heading("Is this you?")
       Group {
         if let found {
+          // It fades in in the bones' place (`signin-identity--arriving`).
           IdentityRow(identity: found)
+            .modifier(SignInArriving(animation: theme.motion.animation(Measure.SignIn.identityIn)))
         } else {
           IdentityBones()
         }
@@ -373,7 +461,8 @@ public struct SignInFlowView: View {
         HStack(spacing: theme.points(ThemeKit.buttonGap)) {
           Text(found.map { SignInFlow.continueLabel($0) } ?? "Looking you up…")
             .lineLimit(nil)
-            .multilineTextAlignment(.leading)
+            // The whole width on a phone, its words centred in it.
+            .multilineTextAlignment(theme.isPhone ? .center : .leading)
             .fixedSize(horizontal: false, vertical: true)
           if found != nil {
             Image(systemName: Glyph.externalLink)
@@ -384,6 +473,7 @@ public struct SignInFlowView: View {
       .buttonStyle(.virga(.primary, size: .large))
       .environment(\.virgaFillsWidth, theme.isPhone)
       .opacity(found == nil ? Measure.SignIn.waitingOpacity : 1)
+      .accessibilityFocused($actionFocused)
       .accessibilityIdentifier("signin-continue")
       HStack(alignment: .firstTextBaseline) {
         SignInLink("Not you?") { notMe() }
@@ -397,18 +487,27 @@ public struct SignInFlowView: View {
   private var leaving: some View {
     let leaving = flow.leaving
     return VStack(alignment: .leading, spacing: Measure.SignIn.stepGap) {
+      // Keyed by the host, so a host learned a moment later fades in rather
+      // than replacing the words under the reader (`signin-arriving`).
       heading("\(SignInFlow.leavingTitle(leaving))…")
+        .modifier(SignInArriving(animation: theme.motion.animation(Measure.SignIn.identityIn)))
+        .id(leaving?.host ?? "")
       Text(SignInFlow.leavingDetail(leaving))
         .modifier(SignInDetail())
       if !theme.reduceMotion {
         Wick(waiting: leaving?.phase == "waiting", trip: leaving?.trip ?? 0)
       }
       if leaving?.phase == "stalled", let trip = leaving?.trip {
-        HStack(alignment: .firstTextBaseline, spacing: 0) {
-          Text("Still here? ")
-          SignInLink(SignInFlow.stallLabel(leaving)) { depart(trip) }
-        }
-        .modifier(SignInDetail())
+        // The link sits in the sentence, at the sentence's height.
+        Text(AttributedString("Still here? ") + SignInInlineLink.words(SignInFlow.stallLabel(leaving), action: "again", theme: theme))
+          .modifier(SignInDetail())
+          .tint(theme.ink)
+          .environment(\.openURL, OpenURLAction { url in
+            guard SignInInlineLink.action(url) == "again" else { return .systemAction }
+            depart(trip)
+            return .handled
+          })
+          .accessibilityIdentifier("signin-stalled")
       }
       HStack(alignment: .firstTextBaseline) {
         SignInLink("Cancel") { cancelLeaving() }
@@ -475,8 +574,33 @@ struct SignInDetail: ViewModifier {
   }
 }
 
+/// `.signin-link` in the middle of a sentence ("Continue anyway", "Still
+/// here? Open <host>"): a run of the sentence's Text that is a link, at the
+/// sentence's height, handled by the sentence's OpenURLAction. In a callout
+/// it takes the callout's colour (its tint), at 600.
+enum SignInInlineLink {
+  static let scheme = "virga-signin"
+
+  @MainActor
+  static func words(_ title: String, action: String, theme: VirgaTheme, strong: Bool = false) -> AttributedString {
+    var link = AttributedString(title)
+    link.link = URL(string: "\(scheme):\(action)")
+    link.underlineStyle = Text.LineStyle.single
+    link.font = theme.font(.textSm, weight: strong ? VirgaWeight.semibold : VirgaWeight.medium)
+    return link
+  }
+
+  /// The action a `virga-signin:` address names, or nil for any other.
+  static func action(_ url: URL) -> String? {
+    guard url.scheme == scheme else { return nil }
+    return String(url.absoluteString.dropFirst(scheme.count + 1))
+  }
+}
+
 /// `.signin-link`: a button that reads as a link (it does something here
-/// rather than going somewhere): ink, underlined, small, 500.
+/// rather than going somewhere): ink, underlined, small, 500. Under a
+/// finger one that stands alone is 36 tall and reaches 4 past it above and
+/// below (6 at the sides), to be 44 to press.
 struct SignInLink: View {
   @Environment(\.virgaTheme) private var theme
   let title: String
@@ -494,6 +618,7 @@ struct SignInLink: View {
       label
         .frame(minHeight: Measure.SignIn.linkHeight)
         .contentShape(Rectangle())
+        .touchReach(horizontal: Measure.SignIn.linkReachSides, vertical: Measure.SignIn.linkReachAbove)
     }
     .buttonStyle(.plain)
     .virgaFocusOutline(RoundedRectangle(cornerRadius: theme.radiusSm))
@@ -600,16 +725,12 @@ struct RememberedAccounts: View {
       }
       .overlay(alignment: .top) { Rectangle().fill(theme.rule).frame(height: 1) }
     }
-    .padding(.bottom, theme.space4)
   }
 
   private func row(_ account: SessionAccount) -> some View {
     let name = Accounts.accountName(account)
     let handle = Accounts.accountHandle(account)
     let opened = Accounts.lastOpenedLabel(account.lastUsed, now: Date().timeIntervalSince1970 * 1000)
-    var meta: [MetaItem] = []
-    if let handle { meta.append(MetaItem(handle)) }
-    if let opened { meta.append(MetaItem(opened)) }
     let busy = opening != nil
     return HStack(spacing: Measure.Accounts.rememberedRowGap) {
       Button {
@@ -621,9 +742,7 @@ struct RememberedAccounts: View {
             Text(opening.jsEquals(account.did) ? "Opening…" : name)
               .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Accounts.rememberedLineHeight)
               .foregroundStyle(theme.ink)
-            if !meta.isEmpty {
-              MetaLine(meta)
-            }
+            RememberedMeta(handle: handle, opened: opened)
           }
           Spacer(minLength: 0)
           Image(systemName: Glyph.chevronRight)
@@ -647,8 +766,85 @@ struct RememberedAccounts: View {
       .buttonStyle(.virga(.ghost, size: .small, icon: true))
       .disabled(busy)
       .accessibilityLabel("Forget \(name) on this browser")
+      .accessibilityHint("Forget on this browser (its archive stays)")
+      .help("Forget on this browser (its archive stays)")
     }
     .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
   }
+}
+
+/// What the web animates as it is mounted (a keyed card, the account as it
+/// arrives): drawn faded, `rise` points lower, then brought in by
+/// `animation`; at once under Reduce Motion (nil). Keyed by `.id` outside
+/// it, so each new one arrives afresh; the one it replaces goes at once.
+struct SignInArriving: ViewModifier {
+  let animation: Animation?
+  var rise: CGFloat = 0
+  @State private var arrived = false
+
+  func body(content: Content) -> some View {
+    content
+      .opacity(arrived ? 1 : 0)
+      .offset(y: arrived ? 0 : rise)
+      .onAppear {
+        if let animation {
+          withAnimation(animation) { arrived = true }
+        } else {
+          arrived = true
+        }
+      }
+  }
+}
+
+/// `.remembered-meta`: the handle and when it was last opened, on one meta
+/// line with a dot between; a phone never has room for both on one line,
+/// so each has its own there, with no dot.
+struct RememberedMeta: View {
+  @Environment(\.virgaTheme) private var theme
+  let handle: String?
+  let opened: String?
+
+  var body: some View {
+    if theme.isPhone {
+      VStack(alignment: .leading, spacing: 0) {
+        if let handle { line(handle) }
+        if let opened { line(opened) }
+      }
+    } else {
+      let meta = [handle, opened].compactMap { $0 }.map { MetaItem($0) }
+      if !meta.isEmpty { MetaLine(meta) }
+    }
+  }
+
+  /// One of `.meta`'s pieces on a line of its own: its size, line height
+  /// and colour (ThemeKit's, as MetaLine draws them).
+  private func line(_ text: String) -> some View {
+    Text(text)
+      .virgaText(size: theme.points(ThemeKit.metaFontSize), lineHeight: ThemeKit.metaLineHeight)
+      .foregroundStyle(theme.color(ThemeKit.metaInk))
+  }
+}
+
+private struct SignInComposingKey: EnvironmentKey {
+  static let defaultValue = false
+}
+
+extension EnvironmentValues {
+  /// A compose link waits for the sign-in (AppRoot's): the front page's
+  /// sign-in says what happens to it.
+  var signInComposing: Bool {
+    get { self[SignInComposingKey.self] }
+    set { self[SignInComposingKey.self] = newValue }
+  }
+}
+
+extension Measure.SignIn {
+  /// `.signin-links .signin-link::after { inset: -4px -6px }` under a finger.
+  static let linkReachAbove: CGFloat = 4
+  static let linkReachSides: CGFloat = 6
+  /// `.signin-card { animation: signin-step-in 0.28s var(--ease) }`
+  static let stepIn = ThemeAnimation(name: "signin-step-in", duration: 0.28, easing: .variable(.ease))
+  /// `.signin-identity--arriving, .signin-arriving { animation: signin-identity-in 0.32s var(--ease) }`
+  static let identityIn = ThemeAnimation(name: "signin-identity-in", duration: 0.32, easing: .variable(.ease))
 }
 #endif

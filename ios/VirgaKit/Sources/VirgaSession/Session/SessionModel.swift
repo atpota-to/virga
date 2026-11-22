@@ -8,6 +8,7 @@
 //
 //   session, agent, did   the open account, always published together
 //   loading               only while the app starts or a sign-in is finished
+//   returning             while a sign-in that came back is finished
 //   switching             the DID being switched to, while the old one stays up
 //   error                 a sign-in that came back without a session
 //   signIn, signOut, mode, accounts, switchAccount, signOutAccount,
@@ -91,6 +92,9 @@ public final class SessionModel {
   public var mode: String? { active.mode }
   /// Only while the app starts or a sign-in is finished.
   public var loading: Bool { starting || finishing }
+  /// While a sign-in that came back is finished (the web's `returning`:
+  /// the page loaded on the return path), which says "Signing you in…".
+  public var returning: Bool { finishing }
 
   /// `accounts`: every remembered account with the status it is shown with
   /// (recomputed when the list or a status changes).
