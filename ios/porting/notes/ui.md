@@ -378,36 +378,52 @@ Posting/WhenPicker.swift, Composer/ComposerController+Schedule.swift, Composer/C
   calls ScheduleService's over the account's `VirgaBackend` (`app.session.backendFor(did)`).
 - `Measure.Schedule` (Posting/ScheduleMeasures.swift) names schedule.css's measures (and the few of
   hub.css's the rows use, and the toasts' and clocks' durations from the JSX).
-- Posting/ScheduleParts.swift, what more than one page draws: `TimezoneSelect(value:identifier:onChange:)`,
-  `ScheduleSwitch` (the web's Switch), `QueueCalendarView(schedule:rows:now:onPick:occupancy:highlight:
+- Posting/ScheduleParts.swift, what more than one page draws: `TimezoneSelect(value:identifier:onChange:)` (the kit's
+  VirgaSelect), `ScheduleSwitch` (the web's Switch), `QueueCalendarView(schedule:rows:now:onPick:occupancy:highlight:
   caption:lead:after:)` (a SwiftUI Grid; VoiceOver reads it day by day through sort priorities),
   `.scheduleActionDialog(isPresented:title:confirmLabel:busyLabel:cancelLabel:danger:onConfirm:message:)`
-  (ActionDialog, which the Timers page asks too, its quoted post a `HubQuote`), `ScheduleLinkedText`
+  (ActionDialog, which the Timers page asks too, its quoted post a `HubQuote`: it opens on Keep it, can't be closed or
+  swiped away while its action runs, and reads a refusal out as a danger Callout of words), `ScheduleLinkedText`
   (words with links the navigator follows, through
   `InternalLink`), `ScheduledListLoad` (hubParts' useLoad over listScheduled, with the limits when asked,
   read again on `virga:scheduled-changed` / `virga:timers-changed` for the account), and the small
-  helpers `ScheduleIds` (ids compared as `===`), `ScheduleText`, `ScheduleSaid` (a sentence as an error,
-  a `ScheduleErrorObject`), `ScheduleGlyph`.
+  helpers `ScheduleIds` (lists of ids; two ids are `===` as THE POSTING PAGES' `PostingPages.sameValue`),
+  `ScheduleText` (the clock; a thrown error's `err.message` is `PostingPages.message`), `ScheduleSaid` (a sentence
+  as an error, a `ScheduleErrorObject`), `ScheduleGlyph` (the glyphs the posting pages draw too are `HubGlyph`'s).
+  `Measure.Schedule.confirmGap` stays beside `Measure.Hub.confirmGap`: they are two rules (`.sched-confirm`,
+  `.hub-confirm`) in two stylesheets.
 - `ScheduledPage(app:did:)` (RoutedPage's `/posting/scheduled`) over `ScheduledPageModel`
   (ScheduledPage+Model.swift: the clock, busy rows, the message, the optimistic redraw while an order
-  saves, the drag, the lit row, the announcements, the question up). Rows are `ScheduledRowView`
+  saves, the drag, the lit row, the announcements, the question up; its posting settings are made in `start()`, since
+  SwiftUI makes the page's model again on each redraw and a PostingSettingsModel listens from the moment it is made).
+  The page's message is a `role="alert"` Callout (the same words again go through `announce`). Rows are `ScheduledRowView`
   (ScheduledPage+Rows.swift) in one flat `ForEach` of `ScheduleListEntry` (day names and rows) so a row
   keeps its view, and its drag, as it changes day. Reordering: wider than a phone the `QueueHandle`
   (inline below 900, in the page's margin from 900) takes a drag over the rows' frames
-  (`QueueRowFrames`), the keys (Space or Return, the arrows, Escape) and VoiceOver's adjust; a phone has
-  Move earlier and Move later. Identifiers: `scheduled-page`, `sched-notes`, `sched-failed`, `sched-queue`,
+  (`QueueRowFrames`; a drag the system cancels, which calls no onEnded, is seen through a `@GestureState` and puts
+  the row back), the keys (Space or Return, the arrows, Escape) and VoiceOver's adjust (its value the row's place,
+  each step said); a phone has Move earlier and Move later. A taken time pressed in the week gives its row's first
+  button (the handle, else Retry or Edit) the focus, a keyboard's and VoiceOver's (`ScheduleRowFocus`). On a phone
+  the ⋯ (and a timer note's ✕) is out of the row's flow, centred 9.5 into it (`Measure.Schedule.cornerMenuCentre`),
+  and the time line's dot is `WhenDot`. A question keeps the row it asked about while its sheet slides away
+  (`ScheduledDialogs.asked`). Identifiers: `scheduled-page`, `sched-notes`, `sched-failed`, `sched-queue`,
   `sched-queue-list`, `sched-timed`, `sched-row-<id>`, `sched-note-<id>`, `sched-edit`, `sched-retry`,
   `sched-handle`, `sched-move-earlier`/`-later`, `sched-note-set-timer`, `sched-note-dismiss`,
   `sched-add-to-queue`, `sched-schedule-a-post`,
   `queue-calendar`, `calendar-pick`, `schedule-dialog` (`-keep`, `-confirm`, `-error`), `sched-limits`.
 - `WeeklySchedulePage(app:did:)` (`/posting/schedule`): `DayRow` per weekday in the reader's week
-  (`ScheduleWeek.orderedWeekdays()`), `CopyDaysDialog`, `ScheduleSuggestions.read(archive:…)` over the
-  archive's best times, `ScheduleSplit` (two columns from 1181). Identifiers: `weekly-schedule-page`,
+  (`ScheduleWeek.orderedWeekdays()`; its + takes the focus to the new time and gets it back as the form closes; Copy
+  to other days… is the kit's `.virgaDialog`), `ScheduleSuggestions.read(archive:…)` over the archive's best times
+  through `ScheduleSuggestionsMemo` (the web's useMemo: worked out again only when the archive's data, the week or the
+  switch change), `ScheduleSplit` (two columns from 1181) of `WeekSection`s, whose headings share the taller one's
+  height side by side (`WeekHeadHeight`) so their rules line up. Its settings are made in `.task`. Identifiers: `weekly-schedule-page`,
   `week-times`, `week-day-<key>`, `week-add-<key>`, `week-add-time`, `week-add-confirm`, `copy-day-<key>`,
   `copy-days-confirm`, `week-reset`, `week-ahead`, `week-off`, `week-repack`, `week-suggestions`.
 - `WhenPicker(schedule:value:onChange:queue:requester:onQueue:min:max:repeatRule:onRepeatChange:
   repeatBlock:occurrence:)`: the caller passes the account's weekly schedule (its settings' `queue`) and
-  its `VirgaBackend` (nil without a long session), where the web reads them from the did. Drafts'
+  its `VirgaBackend` (nil without a long session), where the web reads them from the did. Its fields stack by its own
+  width (measured, `@container when`), its selects are VirgaSelect, a problem is read out through `CalloutAlert` as it
+  changes, and the queue's row is `QueueLine` (flex-wrap: Use this time under words that would get less than 200). Drafts'
   "Schedule this draft" dialog (`ScheduleDraftDialog`) takes it as DraftsPage.jsx does: no queue, no
   repeat, the account's `settings.queue` and `backendFor(did)` when it can schedule. Identifiers: `when-picker`, `when-date`, `when-time`,
   `when-pick-<key>`, `when-zone`, `when-problem`, `when-repeat`, `when-ends`, `when-until`, `when-count`,
@@ -440,8 +456,9 @@ Posting/WhenPicker.swift, Composer/ComposerController+Schedule.swift, Composer/C
   and the timer and when dialogs' rules of schedule.css are THE POSTING PAGES' (Measure.Hub).
   Deliberate differences:
   useFocusAfterRemoval is the system's; the date, the time and a new weekly time are the system's
-  pickers (no 5-minute step, always a whole time); the picker's and a repeat's fields share their row
-  evenly; forced colours have no counterpart.
+  pickers (no 5-minute step, always a whole time, no danger edge for aria-invalid: the hint says the problem); the
+  picker's and a repeat's fields share their row evenly; forced colours have no counterpart. On a phone a pick from
+  the week focuses Retry or Edit (the web's querySelector finds the hidden handle there and focuses nothing).
 
 THE POSTING PAGES (Posting/: HubPage, DraftsPage, PostedPage, TimersPage, TimerDialog, LifespanDefaults)
 - RoutedPage's posting case is PostingPage.jsx: a `needsBackend` page (Scheduled, the weekly schedule,

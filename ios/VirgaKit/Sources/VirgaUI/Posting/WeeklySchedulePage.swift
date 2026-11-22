@@ -175,9 +175,15 @@ struct WeeklySchedulePage: View {
 
   /// useSuggestions, worked out again only when what it reads changes.
   private func suggestionsFor(_ schedule: JSONValue, enabled: Bool) -> ScheduleSuggestions {
-    let key = ScheduleSuggestionsMemo.Key(
-      archive: archive.map { ObjectIdentifier($0) }, rev: archive?.data.rev ?? 0, loaded: archive?.data.loaded ?? false,
-      built: archive?.isBuilt ?? false, nowMs: archive?.nowMs ?? 0, did: did, schedule: schedule, enabled: enabled)
+    var key = ScheduleSuggestionsMemo.Key(
+      archive: nil, rev: 0, loaded: false, built: false, nowMs: 0, did: did, schedule: schedule, enabled: enabled)
+    if let archive {
+      key.archive = ObjectIdentifier(archive)
+      key.rev = archive.data.rev
+      key.loaded = archive.data.loaded
+      key.built = archive.isBuilt
+      key.nowMs = archive.nowMs
+    }
     if let known = suggestionsMemo.key, known == key { return suggestionsMemo.value }
     let value = ScheduleSuggestions.read(archive: archive, did: did, schedule: schedule, enabled: enabled)
     suggestionsMemo.key = key
