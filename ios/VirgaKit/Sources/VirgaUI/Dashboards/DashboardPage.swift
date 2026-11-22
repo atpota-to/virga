@@ -751,7 +751,7 @@ struct RenameDashboard: View {
     DialogFrame(title: "Rename dashboard", onClose: done, autofocus: true) {
       DialogForm {
         FieldStack("Name") {
-          TextField("", text: $value)
+          VirgaTextField("", text: $value)
             .virgaField()
             .dialogAutofocus()
             .submitLabel(.done)
@@ -788,7 +788,7 @@ struct NewDashboardDialog: View {
     DialogFrame(title: "New dashboard", onClose: done, autofocus: true) {
       DialogForm {
         FieldStack("Name") {
-          TextField("Weekly check-in", text: $name)
+          VirgaTextField("Weekly check-in", text: $name)
             .virgaField()
             .dialogAutofocus()
             .submitLabel(.done)

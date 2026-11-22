@@ -259,7 +259,7 @@ struct ScanFormCard: View {
   static let linkPlaceholder = "https://bsky.app/profile/…/post/…"
 
   private var field: some View {
-    let input = TextField(Self.linkPlaceholder, text: $text)
+    let input = VirgaTextField(Self.linkPlaceholder, text: $text)
       .keyboardType(.URL)
       .textInputAutocapitalization(.never)
       .autocorrectionDisabled()

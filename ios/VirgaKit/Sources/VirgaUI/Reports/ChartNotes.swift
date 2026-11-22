@@ -94,7 +94,7 @@ struct ChartNotes: View {
     DayField(label: "Day", day: $day, earliest: nil, latest: today)
     VStack(alignment: .leading, spacing: theme.space2) {
       FieldLabel("What happened")
-      TextField("Changed my handle, a post went round, a week away…", text: $label)
+      VirgaTextField("Changed my handle, a post went round, a week away…", text: $label)
         .virgaField()
         // The fields are a form: Return adds the note, as Add note does.
         .submitLabel(.done)

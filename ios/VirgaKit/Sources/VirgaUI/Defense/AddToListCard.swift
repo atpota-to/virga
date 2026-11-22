@@ -198,22 +198,15 @@ struct AddToListCard: View {
       }
       VStack(alignment: .leading, spacing: theme.space4) {
         FieldStack("To") {
-          Picker("To", selection: Binding(get: { p.making ? "new" : DefenseListRows.id(p.chosen) }, set: { listId = $0 })) {
-            ForEach(Array(p.available.enumerated()), id: \.offset) { _, l in
-              Text("\(DefenseListRows.name(l)) (\(DefenseListRows.purpose(l) == "mute" ? "mute" : "block"))").tag(DefenseListRows.id(l))
-            }
-            Text("A new list…").tag("new")
-          }
-          .pickerStyle(.menu)
-          .tint(theme.ink)
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .virgaField()
+          VirgaSelect(
+            "To", selection: Binding(get: { p.making ? "new" : DefenseListRows.id(p.chosen) }, set: { listId = $0 }),
+            options: Self.listChoices(p.available))
         }
         if p.making {
           DefenseNewListFields(name: $newName, purpose: $newPurpose, nameLabel: "Its name") { submit(p) }
         }
         FieldStack("Why, in your words (optional)") {
-          TextField("The quote pile-on, 18 November", text: $note)
+          VirgaTextField("The quote pile-on, 18 November", text: $note)
             .virgaField()
             .submitLabel(.go)
             .onSubmit { submit(p) }
@@ -240,6 +233,15 @@ struct AddToListCard: View {
       }
     }
     .frame(maxWidth: Measure.Defense.columnMax, alignment: .leading)
+  }
+
+  /// To's choices: each list with what it does, then A new list….
+  private static func listChoices(_ available: [JSONValue]) -> [SelectChoice<String>] {
+    let lists = available.map { l -> SelectChoice<String> in
+      let does = DefenseListRows.purpose(l) == "mute" ? "mute" : "block"
+      return SelectChoice(DefenseListRows.id(l), "\(DefenseListRows.name(l)) (\(does))")
+    }
+    return lists + [SelectChoice("new", "A new list…")]
   }
 
   /// Whether Add can be pressed.
@@ -415,7 +417,7 @@ struct DefenseNewListFields: View {
 
   var body: some View {
     let nameField = FieldStack(nameLabel) {
-      TextField("Pile-ons", text: $name)
+      VirgaTextField("Pile-ons", text: $name)
         .virgaField()
         .submitLabel(.go)
         .onSubmit(onSubmit)
@@ -424,14 +426,7 @@ struct DefenseNewListFields: View {
         .accessibilityIdentifier("defense-list-name")
     }
     let forField = FieldStack("For") {
-      Picker("For", selection: $purpose) {
-        Text("Blocking").tag("block")
-        Text("Muting").tag("mute")
-      }
-      .pickerStyle(.menu)
-      .tint(theme.ink)
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .virgaField()
+      VirgaSelect("For", selection: $purpose, options: [SelectChoice("block", "Blocking"), SelectChoice("mute", "Muting")])
     }
     Group {
       if theme.isPhone {

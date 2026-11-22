@@ -327,7 +327,7 @@ struct PersonSearch: View {
 
   private func field(options: [LookupOption], shown: [LookupOption]) -> some View {
     ZStack(alignment: .leading) {
-      TextField("Search by name, handle or DID", text: $query)
+      VirgaTextField("Search by name, handle or DID", text: $query)
         .textInputAutocapitalization(.never)
         .autocorrectionDisabled()
         .submitLabel(.search)

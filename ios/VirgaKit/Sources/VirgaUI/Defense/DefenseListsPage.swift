@@ -244,7 +244,7 @@ struct KeptByHandCard: View {
     let canKeep = busy != "add" && !handle.jsTrimmed().isEmpty
     // Return in either field keeps, as the form's submit does.
     let keepField = FieldStack("Keep") {
-      TextField("@handle", text: $handle)
+      VirgaTextField("@handle", text: $handle)
         .textInputAutocapitalization(.never)
         .autocorrectionDisabled()
         .virgaField()
@@ -253,7 +253,7 @@ struct KeptByHandCard: View {
         .accessibilityLabel("Keep")
     }
     let whyField = FieldStack("Why (optional)") {
-      TextField("My sister’s other account", text: $reason)
+      VirgaTextField("My sister’s other account", text: $reason)
         .virgaField()
         .submitLabel(.go)
         .onSubmit { if canKeep { Task { await keep() } } }

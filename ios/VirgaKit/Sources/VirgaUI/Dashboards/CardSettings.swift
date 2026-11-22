@@ -32,7 +32,7 @@ struct CardSettings: View {
       DialogForm {
         if takes.contains("title") {
           FieldStack("Title") {
-            TextField(def.name, text: $title)
+            VirgaTextField(def.name, text: $title)
               .virgaField()
               .dialogAutofocus()
               .submitLabel(.done)

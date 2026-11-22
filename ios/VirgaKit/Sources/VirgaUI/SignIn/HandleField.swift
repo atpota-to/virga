@@ -78,7 +78,7 @@ struct HandleField: View {
               value = SignInIdentity.cleanTyped(next)
               onEdit()
             }),
-          prompt: Text("you.bsky.social")
+          prompt: Text("you.bsky.social").foregroundStyle(theme.muted)
         )
         .focused(focus)
         .textInputAutocapitalization(.never)

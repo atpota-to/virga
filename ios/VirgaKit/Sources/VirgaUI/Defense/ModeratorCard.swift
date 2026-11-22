@@ -97,11 +97,13 @@ struct ModeratorCard: View {
     words += AttributedString(" from this account; “help” lists what it does.")
     let chosen = link?["listId"].map(\.jsString) ?? ""
     let value = all.contains { DefenseListRows.id($0).jsEquals(chosen) } ? chosen : ""
+    let choices: [SelectChoice<String>] =
+      [SelectChoice("", "Ask me which")] + all.map { SelectChoice(DefenseListRows.id($0), DefenseListRows.name($0)) }
     return VStack(alignment: .leading, spacing: theme.space3) {
       Text(words).virgaText(.textBase).foregroundStyle(theme.ink2).tint(theme.ink).fixedSize(horizontal: false, vertical: true)
       if all.count > 1 {
         FieldStack("“block @someone” adds to") {
-          Picker(
+          VirgaSelect(
             "“block @someone” adds to",
             selection: Binding(
               get: { value },
@@ -110,17 +112,9 @@ struct ModeratorCard: View {
                   _ = try await DefenseService.chooseLinkList(lists.requester, next.isEmpty ? nil : .string(next))
                   await load()
                 }
-              })
-          ) {
-            Text("Ask me which").tag("")
-            ForEach(Array(all.enumerated()), id: \.offset) { _, l in
-              Text(DefenseListRows.name(l)).tag(DefenseListRows.id(l))
-            }
-          }
-          .pickerStyle(.menu)
-          .tint(theme.ink)
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .virgaField()
+              }),
+            options: choices
+          )
           .disabled(busy)
         }
         .frame(maxWidth: Measure.Defense.moderatorField, alignment: .leading)

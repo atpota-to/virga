@@ -140,7 +140,7 @@ struct CommandPalette: View {
           .foregroundStyle(theme.ink2)
           .frame(width: Measure.Palette.fieldIcon)
           .accessibilityHidden(true)
-        TextField("A page, a report, a tool, a setting…", text: $query)
+        VirgaTextField("A page, a report, a tool, a setting…", text: $query)
           .virgaText(size: size)
           .foregroundStyle(theme.ink)
           .lineLimit(1)
