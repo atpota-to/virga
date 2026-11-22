@@ -440,6 +440,25 @@ import VirgaNetwork
       AdviserUsageStore.readAdviserUsage(Self.did, now: AdviserFixtureServer.now, store: store)?.used == 3)
   }
 
+  @MainActor final class Heard {
+    var counts: [AIUsageCount] = []
+  }
+
+  /// The web calls onUsage before it answers, so a dialog on the main actor
+  /// has the month's count by the time the description comes back.
+  @MainActor @Test func theCountIsHeardBeforeTheDescriptionComesBack() async throws {
+    let transport = MockTransport()
+    transport.on("POST", .urlPrefix("https://server.example/api/ai/alt-text"), times: 1,
+      respond: .json(["altText": " A heron. ", "usage": ["used": 4, "limit": 15]]))
+    let req = AdviserFixtureServer.requester(transport, did: Self.did)
+    let heard = Heard()
+    let text = try await AIService.generateAltText(
+      req, ["imageBase64": "AAAA", "mimeType": "image/png"],
+      onUsage: { count in await MainActor.run { heard.counts.append(count) } }, store: nil)
+    #expect(heard.counts == [AIUsageCount(used: 4, limit: 15)])
+    #expect(text == "A heron.")
+  }
+
   @Test func aCancelledCallerGoesThroughAsItIs() async {
     let transport = MockTransport()
     transport.on("POST", .urlPrefix("https://server.example/api/ai/alt-text"), respond: .hang)

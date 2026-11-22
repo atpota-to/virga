@@ -321,10 +321,11 @@ public enum AIService {
   /// A description of an image. `payload` is `{ imageBase64 (no data:
   /// prefix), mimeType, context?, followUp?, previousAltText?, presets?,
   /// kind? }`; with `followUp` and `previousAltText` it revises the last
-  /// one. `onUsage` hears the month's count when the server sends one.
-  /// Answers the description, trimmed.
+  /// one. `onUsage` hears the month's count when the server sends one, and
+  /// is awaited, so it has heard before the description comes back (as the
+  /// web calls it). Answers the description, trimmed.
   public static func generateAltText(
-    _ req: (any AIRequester)?, _ payload: JSONValue?, onUsage: (@Sendable (AIUsageCount) -> Void)? = nil,
+    _ req: (any AIRequester)?, _ payload: JSONValue?, onUsage: (@Sendable (AIUsageCount) async -> Void)? = nil,
     signal: AdviserAbortSignal? = nil, store: (any KeyValueStore)?,
     now: @escaping @Sendable () -> Double = AIService.systemNow
   ) async throws -> String {
@@ -349,7 +350,7 @@ public enum AIService {
     if let onUsage, case .number(let used)? = data["usage"]?["used"], used.isFinite,
       case .number(let limit)? = data["usage"]?["limit"], limit.isFinite
     {
-      onUsage(AIUsageCount(used: used, limit: limit))
+      await onUsage(AIUsageCount(used: used, limit: limit))
     }
     return data["altText"]?.stringValue?.jsTrimmed() ?? ""
   }
@@ -360,7 +361,7 @@ public enum AIService {
   /// image, which comes from the file (its type, else image/jpeg).
   public static func generateAltTextForFile(
     _ req: (any AIRequester)?, _ file: ComposerFile?, read: @Sendable (ComposerFile) async throws -> Data,
-    payload: JSONValue? = nil, onUsage: (@Sendable (AIUsageCount) -> Void)? = nil,
+    payload: JSONValue? = nil, onUsage: (@Sendable (AIUsageCount) async -> Void)? = nil,
     signal: AdviserAbortSignal? = nil, store: (any KeyValueStore)?,
     now: @escaping @Sendable () -> Double = AIService.systemNow
   ) async throws -> String {
