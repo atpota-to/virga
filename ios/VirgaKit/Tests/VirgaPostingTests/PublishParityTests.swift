@@ -200,6 +200,36 @@ func sortedByJSON(_ list: JSONValue?) -> JSONValue {
     #expect(ComposerSubmit.publishErrorView(error).silent)
   }
 
+  /// publish.js: the signal cancels the uploads only; once the write starts
+  /// it runs to the end. A Cancel that lands while the write is in flight
+  /// (the composer takes the button away only when the 'writing' event
+  /// reaches it) doesn't cut the request or its landed-check, so the post
+  /// that went out is reported as posted.
+  @Test func cancelledDuringTheWriteStillPosts() async throws {
+    let transport = MockTransport()
+    let writing = AsyncGate()
+    let release = AsyncGate()
+    transport.on("POST", .url("https://server.example/api/oauth/proxy")) { _ in
+      writing.open()
+      await release.wait()
+      // As URLSessionTransport cancels a request whose task is cancelled.
+      try Task.checkCancellation()
+      return .json(["success": true, "data": ["uri": "at://did:plc:writer/app.bsky.feed.post/3k", "cid": "bafyc"]])
+    }
+    let target = PublishTarget(did: PublishFixture.me, agent: PublishFixture.agent(transport))
+    let media = Self.media(transport)
+    let state = Self.state()
+    let task = Task {
+      try await Publish.publish(state, target, media: media, duplicateGuard: nil)
+    }
+    await writing.wait()
+    task.cancel()
+    release.open()
+    let result = try await task.value
+    #expect(result.root?.uri == "at://did:plc:writer/app.bsky.feed.post/3k")
+    #expect(transport.requests.count == 1)
+  }
+
   /// The progress a single image reports, in order, then the write.
   @Test func progressInOrder() async throws {
     let transport = MockTransport()

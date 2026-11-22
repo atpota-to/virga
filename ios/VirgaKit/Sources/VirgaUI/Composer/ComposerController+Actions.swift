@@ -525,8 +525,14 @@ extension ComposerController {
       }
       late = watch.stop()
       // Awaited: the composer stays busy (and its buttons off) until the
-      // post's source, a scheduled copy or a draft, is settled.
-      await afterPublished(s, result, late: late)
+      // post's source, a scheduled copy or a draft, is settled. The post is
+      // out, so a Cancel tapped while it was written (it still shows while
+      // the mentions resolve) doesn't reach these steps: they run in a task
+      // of their own, as the web's afterPublished takes no signal, so the
+      // draft is deleted and the scheduled copy cancelled all the same.
+      let sent = s
+      let wasLate = late
+      await Task { await self.afterPublished(sent, result, late: wasLate) }.value
     } catch {
       if late { return }
       let view = ComposerSubmit.publishErrorView(error)
@@ -535,7 +541,11 @@ extension ComposerController {
     }
   }
 
+  /// The busy line's Cancel: only while it's offered (the web takes it away
+  /// with the 'writing' event; a tap the sheet hasn't redrawn for since is
+  /// too late).
   func cancelPublish() {
+    guard busy?.cancellable == true else { return }
     publishTask?.cancel()
   }
 
