@@ -136,9 +136,12 @@ struct ModeratorCard: View {
     send += AttributedString(" in a DM, from this account, within fifteen minutes:")
     return VStack(alignment: .leading, spacing: theme.space3) {
       Text(send).virgaText(.textBase).foregroundStyle(theme.ink2).tint(theme.ink).fixedSize(horizontal: false, vertical: true)
+      // 1.125rem, which grows with Dynamic Type as a rem does with the
+      // browser's text size; its tracking an em of that.
+      let codeSize = theme.scaled(Measure.Defense.codeSize)
       Text("link \(code)")
-        .font(.system(size: Measure.Defense.codeSize, design: .monospaced))
-        .tracking(Measure.Defense.codeSize * Measure.Defense.codeTracking)
+        .font(.system(size: codeSize, design: .monospaced))
+        .tracking(codeSize * Measure.Defense.codeTracking)
         .foregroundStyle(theme.ink)
         .textSelection(.enabled)
         .padding(.vertical, Measure.Defense.codePaddingV)

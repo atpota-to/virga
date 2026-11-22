@@ -97,7 +97,10 @@ struct ScanResultView: View {
           .accessibilityIdentifier("defense-rescan")
         })
     )
-    .lineLimit(nil)
+    // The post's words are held to two lines (`.defense-post-quote {
+    // -webkit-line-clamp: 2 }`); the title and the actions are one line each.
+    .lineLimit(2)
+    .truncationMode(.tail)
     .padding(.bottom, theme.points(ThemeKit.cardHeadSpaceBelow))
   }
 

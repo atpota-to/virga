@@ -620,9 +620,11 @@ struct FilterCardButton: View {
 }
 
 /// `.kv`: facts, what each is at the left and its value at the right, a
-/// hairline under each.
+/// hairline under each. The list is a container (`container-type:
+/// inline-size`): its rows go by its own width, which it hands them.
 struct KVList<Content: View>: View {
   let content: Content
+  @State private var width: CGFloat = 0
 
   init(@ViewBuilder content: () -> Content) {
     self.content = content()
@@ -631,14 +633,36 @@ struct KVList<Content: View>: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 0) { content }
       .frame(maxWidth: .infinity, alignment: .leading)
+      .background {
+        GeometryReader { geometry in
+          Color.clear
+            .onAppear { width = geometry.size.width }
+            .onChange(of: geometry.size.width) { _, next in width = next }
+        }
+      }
+      .environment(\.toolKVWidth, width)
+  }
+}
+
+private struct ToolKVWidthKey: EnvironmentKey {
+  static let defaultValue: CGFloat = 0
+}
+
+extension EnvironmentValues {
+  /// The width of the `.kv` list a row is in (0 until it is measured).
+  var toolKVWidth: CGFloat {
+    get { self[ToolKVWidthKey.self] }
+    set { self[ToolKVWidthKey.self] = newValue }
   }
 }
 
 /// `.kv-row`: a fact's label and its value (a row of its own words and
 /// controls). `inline` keeps a short value on its label's line, at the
-/// line's far end, while the list is narrow.
+/// line's far end, while the list is under 600 wide (`@container
+/// (min-width: 600px)` gives it the 160 label column).
 struct KVRow<Value: View>: View {
   @Environment(\.virgaTheme) private var theme
+  @Environment(\.toolKVWidth) private var listWidth
   let label: String
   var inline = false
   let value: Value
@@ -651,6 +675,7 @@ struct KVRow<Value: View>: View {
 
   var body: some View {
     let phone = theme.isPhone
+    let narrowList = listWidth > 0 ? listWidth < Measure.Tools.kvWide : theme.isTablet
     Group {
       if phone && !inline {
         VStack(alignment: .leading, spacing: 0) {
@@ -658,7 +683,7 @@ struct KVRow<Value: View>: View {
           HStack(spacing: Measure.Tools.kvValueGap) { value }
         }
         .padding(.vertical, Measure.Tools.phoneKvPadding)
-      } else if inline && theme.isTablet {
+      } else if inline && narrowList {
         HStack(alignment: .center, spacing: Measure.Tools.kvInlineGap) {
           Text(label).foregroundStyle(theme.muted)
           Spacer(minLength: 0)

@@ -314,7 +314,18 @@ struct AddToListCard: View {
         .foregroundStyle(theme.ink)
         .fixedSize(horizontal: false, vertical: true)
       FlowLayout(spacing: theme.space5, lineSpacing: theme.space2, alignment: .firstTextBaseline) {
-        MoreLink("Follow it on Lists", to: "/defense/lists")
+        // A plain link: ink, underlined, in the line's own size.
+        Button {
+          navigate("/defense/lists")
+        } label: {
+          Text("Follow it on Lists")
+            .virgaText(.textBase)
+            .underline(true)
+            .foregroundStyle(theme.ink)
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(.isLink)
+        .touchReach(horizontal: Measure.LinkAction.reachSides, vertical: Measure.LinkAction.reachAbove)
         Button("Add more from this post") { self.done = nil }
           .buttonStyle(.linkAction)
       }
