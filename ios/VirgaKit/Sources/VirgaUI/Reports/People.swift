@@ -57,7 +57,8 @@ struct PersonRow: View {
   @State private var error: String?
 
   var body: some View {
-    let card = model.map { People.card($0, archive, did) } ?? (nil, nil, nil)
+    let card: (handle: String?, displayName: String?, avatar: String?) =
+      model.map { People.card($0, archive, did) } ?? (nil, nil, nil)
     let name = People.displayName(card.handle, card.displayName, did)
     let handle = card.handle.flatMap { h in name.hasPrefix("@") && String(name.dropFirst()).jsEquals(h) ? nil : h }
     let sets = ReportModels.relationSets(archive)
