@@ -167,6 +167,152 @@ const WORDS = [
   'a­b',
 ];
 
+/**
+ * Letters the collator weighs as letters of their own though they take
+ * apart canonically (contractions: й is the letter after і and ї, not и
+ * with a breve; أ is not ا with a hamza; ো is one vowel sign, not two),
+ * written whole and taken apart, with a shadda in between (canonical
+ * order puts it before the hamza of ؤ); and compatibility forms, whose
+ * case falls between a letter's small forms and its capitals (ﬁ after
+ * fI, before Fi). Every pair within a group is compared.
+ */
+const OWN_LETTERS = [
+  [
+    'и',
+    'й',
+    'Й',
+    '\u0438\u0306',
+    '\u0418\u0306',
+    'і',
+    'І',
+    'ї',
+    'к',
+    'мой',
+    'моим',
+    'Мой',
+    'мои',
+    'йод',
+    'иод',
+    'Йошкар',
+    'Иван',
+    'Київ',
+    'Кий',
+    'їжак',
+    'іній',
+    'Ӣ',
+  ],
+  [
+    'ا',
+    'أ',
+    '\u0627\u0654',
+    'إ',
+    'آ',
+    'ء',
+    'ب',
+    'و',
+    'ؤ',
+    '\u0648\u0654',
+    'ؤّ',
+    '\u0648\u0651\u0654',
+    'وّ',
+    'ي',
+    'ئ',
+    'أب',
+    'اج',
+    'أحمد',
+    'احمد',
+    'إسلام',
+    'اسم',
+    'مسؤول',
+    'مسوق',
+    'شيئ',
+    'شيخ',
+  ],
+  [
+    'কে',
+    'কৈ',
+    'কো',
+    '\u0995\u09c7\u09be',
+    'কৌ',
+    'কেক',
+    'கெ',
+    'கே',
+    'கை',
+    'கொ',
+    '\u0b95\u0bc6\u0bbe',
+    'கோ',
+    'கௌ',
+    'கெட',
+    'ဥ',
+    'ဦ',
+    '\u1025\u102e',
+  ],
+  [
+    'fi',
+    'fI',
+    'Fi',
+    'FI',
+    'ﬁ',
+    'ｆi',
+    'ⓕi',
+    'ff',
+    'fF',
+    'Ff',
+    'FF',
+    'ﬀ',
+    'ffi',
+    'ﬀi',
+    'ﬀI',
+    'ﬃ',
+    'FFI',
+    'ij',
+    'Ij',
+    'IJ',
+    'ĳ',
+    'Ĳ',
+    'dž',
+    'Dž',
+    'DŽ',
+    'ǆ',
+    'ǅ',
+    'Ǆ',
+    'dz',
+    'Dz',
+    'DZ',
+    'ǳ',
+    'ǲ',
+    'Ǳ',
+    '½',
+    '1⁄2',
+    '¹⁄₂',
+    'st',
+    'ﬆ',
+    'ﬅ',
+  ],
+];
+
+/** Text of the scripts that have them, for seeded pairs. */
+const OWN_LETTER_TEXT = [
+  ...'абвгдеийклмнопрсуЙИІЇіїкм',
+  ...'ابتجحدرسشعمنهويةىءآأإؤئ',
+  'و' + 'ّ',
+  'ّ',
+  'ٔ',
+  ...'কখগচেৈোৌািী',
+  ...'கசடதெேைொோௌாி',
+  ...'fiFIlLsStT',
+  'ﬁ',
+  'ﬀ',
+  'ﬂ',
+  'ﬃ',
+  'ﬆ',
+  'ĳ',
+  'Ĳ',
+  'ǆ',
+  'ǅ',
+  'Ǆ',
+];
+
 export default async function cases() {
   const out = [];
   const pairs = [];
@@ -183,6 +329,19 @@ export default async function cases() {
       rand.next() < 0.3
         ? a + rand.string(HARD_TEXT, 1)
         : rand.string(HARD_TEXT, 3);
+    pairs.push({ a, b });
+  }
+  for (const group of OWN_LETTERS)
+    for (let i = 0; i < group.length; i += 1)
+      for (let j = i + 1; j < group.length; j += 1)
+        pairs.push({ a: group[i], b: group[j] });
+  const own = seeded(20261122);
+  for (let i = 0; i < 400; i += 1) {
+    const a = own.string(OWN_LETTER_TEXT, 4);
+    const b =
+      own.next() < 0.5
+        ? a.slice(0, -1) + own.pick(OWN_LETTER_TEXT)
+        : own.string(OWN_LETTER_TEXT, 4);
     pairs.push({ a, b });
   }
   out.push(
