@@ -366,18 +366,11 @@ public enum AIService {
     now: @escaping @Sendable () -> Double = AIService.systemNow
   ) async throws -> String {
     guard let file else { throw aiError("There’s no image to describe.", code: "NO_IMAGE") }
-    let imageBase64 = blobToBase64(try await read(file))
+    let imageBase64 = ScheduleSerialize.blobToBase64(try await read(file))
     var full = payload?.objectValue ?? [:]
     full["imageBase64"] = .string(imageBase64)
     full["mimeType"] = .string(file.type.isEmpty ? "image/jpeg" : file.type)
     return try await generateAltText(
       req, .object(full), onUsage: onUsage, signal: signal, store: store, now: now)
   }
-}
-
-/// A blob's bytes as base64, without a `data:` prefix: scheduleSerialize.js's
-/// blobToBase64 (btoa over the bytes as a binary string), kept here until
-/// the scheduling port lands. The merge switches this to that port's.
-fileprivate func blobToBase64(_ bytes: Data) -> String {
-  bytes.base64EncodedString()
 }

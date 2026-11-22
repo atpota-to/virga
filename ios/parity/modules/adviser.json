@@ -12,7 +12,7 @@
       "fixtures": [
         "adviser.aiService"
       ],
-      "note": "Calls go through AIRequester (VirgaBackend conforms; SessionModel.backendFor(did) gives one). The read's AbortSignal is AdviserAbortSignal (Gate.swift): checked before sending, never handed to a request already sent. generateAltTextForFile takes the file and a reader for its bytes (the web's blob.arrayBuffer()); its blobToBase64 is a fileprivate stand-in with scheduleSerialize.js's behaviour until the scheduling port is merged, which should switch it. Errors are AIServiceError (name, message, status, code, detail, payload, canceled) and JSErrorConvertible. aiErrorMessage's NEEDS_BACKEND without a message is nil (the web's undefined).",
+      "note": "Calls go through AIRequester (VirgaBackend conforms; SessionModel.backendFor(did) gives one). The read's AbortSignal is AdviserAbortSignal (Gate.swift): checked before sending, never handed to a request already sent. generateAltTextForFile takes the file and a reader for its bytes (the web's blob.arrayBuffer()); its base64 is the scheduling port's ScheduleSerialize.blobToBase64. Errors are AIServiceError (name, message, status, code, detail, payload, canceled) and JSErrorConvertible. aiErrorMessage's NEEDS_BACKEND without a message is nil (the web's undefined).",
       "synced": "6c6b753bcb5e"
     },
     "src/posting/adviser/altTextFollowUp.js": {
