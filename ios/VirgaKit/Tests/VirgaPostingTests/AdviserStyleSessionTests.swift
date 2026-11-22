@@ -218,15 +218,14 @@ import VirgaNetwork
     transport.on(.path("/xrpc/app.bsky.feed.getAuthorFeed"), times: 1, respond: .json(page(3, cursor: .null)))
     transport.on("POST", .urlPrefix("https://server.example/api/ai/synthesize-style"), times: 1,
       respond: .json(["summary": "Short.", "analyzedCount": 6]))
-    let timers = ManualMainTimers()
-    var views: [StyleView] = []
+    let h = Harness()
     let session = StyleSession(
       did: "did:plc:me", requester: AdviserFixtureServer.requester(transport, did: "did:plc:me"),
-      onChange: { views.append($0) }, store: InMemoryKeyValueStore(), transport: transport,
-      now: { AdviserFixtureServer.now }, setTimer: timers.set, clearTimer: timers.clear)
+      onChange: { [unowned h] in h.views.append($0) }, store: InMemoryKeyValueStore(), transport: transport,
+      now: { AdviserFixtureServer.now }, setTimer: h.timers.set, clearTimer: h.timers.clear)
     await session.start()
-    #expect(views.map(\.postCount) == [0, 3, 6, 6, 6])
-    #expect(views.map(\.stage) == ["gather", "gather", "gather", "read", "write"])
+    #expect(h.views.map(\.postCount) == [0, 3, 6, 6, 6])
+    #expect(h.views.map(\.stage) == ["gather", "gather", "gather", "read", "write"])
     #expect(session.view.phase == "result")
     #expect(transport.requests.count == 3)
   }
