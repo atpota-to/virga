@@ -387,9 +387,10 @@
     "src/shell/MobileNav.jsx": {
       "status": "partial",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaUI/Shell/MobileNav.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Shell/MobileNav.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/AppBarBack.swift"
       ],
-      "note": "The tab bar and the app bar: on a part's front page the mark, Search and the account in the page's content, scrolling away with the sky; inside a part the system's back button with the page above's name, Search and the account, in the navigation bar; Search opens the command palette, and the account's menu holds Sync now once there is an archive. Not yet: the mark's five taps (the live sky) and the composer (New post goes to its address).",
+      "note": "The tab bar and the app bar: on a part's front page the mark, Search and the account in the page's content, scrolling away with the sky; inside a part ‹ and the name of the page above (AppBarBack, drawn in place of the system's back button, whose swipe back from the edge is kept), Search and the account, in the navigation bar; Search opens the command palette, and the account's menu holds Sync now once there is an archive. New post opens the composer in place, over the page. Not yet: the mark's five taps (the live sky).",
       "synced": "25b2e5064862"
     },
     "src/shell/Shell.jsx": {
@@ -450,7 +451,8 @@
         "ios/VirgaKit/Sources/VirgaUI/Shell/Bits.swift",
         "ios/VirgaKit/Sources/VirgaUI/Shell/SyncStatus.swift",
         "ios/VirgaKit/Sources/VirgaUI/Shell/FirstRun.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Shell/PeriodPicker.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Shell/PeriodPicker.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/AppBarBack.swift"
       ],
       "note": "The shell, its figure size, the sidebar and rail (the list's overflow fades, 24 at the edge with more behind it; a short screen's closer parts and the card without its counts), the page header and body, the app bar and tab bar, dialogs, choices and toasts, the sync's places, the first run, the period picker and the range dialog's fields. The sidebar's search row and the app bar's Search button too.",
       "synced": "e21d87c5ffe7"

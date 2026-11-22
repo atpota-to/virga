@@ -13,10 +13,11 @@
 // (AppBarRow; VirgaPage draws it, and the navigation bar is hidden). The top
 // of the sky is held still under the status bar, so the page scrolls under
 // it and not under the clock. On a page inside a part the mark gives way to
-// the way back up, and that is the system's back button ("‹ Reports", with
-// its swipe back), in the navigation bar, clear over the sky, with the
-// account at its right. Where an item in the bar is Virga's own drawing (the
-// account's avatar) it goes without iOS 26's glass capsule.
+// the way back up, ‹ and the name of the page above (AppBarBack.swift, in
+// place of the system's back button, with the swipe back kept), in the
+// navigation bar, clear over the sky, with the account at its right. Where
+// an item in the bar is Virga's own drawing (the way back, the account's
+// avatar) it goes without iOS 26's glass capsule.
 //
 // The bottom bar is icons; the part you are in also says its name on an
 // --accent-tint pill (a tinted disc on a phone under 430, its name read out
@@ -186,10 +187,10 @@ struct StatusBarSky: View {
   }
 }
 
-/// The navigation bar's parts on a page inside a part: the system's back
-/// button is the way back up; the bar draws no title (the page's header has
-/// it, and the bar keeps it for the back button and VoiceOver), and Search
-/// and the account are at the right.
+/// The navigation bar's parts on a page inside a part: the bar draws no
+/// title (the page's header has it, and the bar keeps it for VoiceOver), and
+/// Search and the account are at the right. The way back up is AppBarBack,
+/// at the left (PageChrome).
 struct AppBarToolbar: ToolbarContent {
   @ToolbarContentBuilder var body: some ToolbarContent {
     ToolbarItem(placement: .principal) {

@@ -20,10 +20,10 @@
 //   case .reports where route.page == "followers":
 //     FollowersReport()
 //
-// The navigation bar (a phone's, on a page inside a part), the app bar in
-// the page (a phone's, on a part's front page), and the page's title for
-// VoiceOver and the back button are put on here, so a page draws only
-// itself.
+// The navigation bar (a phone's, on a page inside a part, with ‹ and the
+// name of the page above), the app bar in the page (a phone's, on a part's
+// front page), and the page's title for VoiceOver are put on here, so a
+// page draws only itself.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -77,7 +77,7 @@ public struct RoutedPage: View {
     content(route, dashboard: dashboard)
       .navigationTitle(title)
       .navigationBarTitleDisplayMode(.inline)
-      .modifier(PageChrome(showsBrand: ShellRoutes.parentOf(route) == nil, phone: chrome == .phone))
+      .modifier(PageChrome(back: ShellRoutes.parentOf(route), phone: chrome == .phone))
   }
 
   /// The archive's say first: opening, or the first build; then the page.
@@ -191,21 +191,35 @@ public struct RoutedPage: View {
 
 /// The navigation bar a page has. On a phone's front page of a part, none:
 /// the app bar is the top of the page's content (VirgaPage draws it). On a
-/// page inside a part, the system's back button and the account, clear over
-/// the sky. Beside the sidebar, none.
+/// page inside a part, ‹ and the name of the page above (AppBarBack, in
+/// place of the system's back button, with the swipe back kept), Search and
+/// the account, clear over the sky. Beside the sidebar, none.
 struct PageChrome: ViewModifier {
-  let showsBrand: Bool
+  /// The way up (routes.js parentOf); nil on a part's front page.
+  let back: ParentLink?
   let phone: Bool
 
   func body(content: Content) -> some View {
-    if phone && showsBrand {
+    if phone, let back {
+      content
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+          ToolbarItem(placement: .topBarLeading) {
+            AppBarBack(link: back)
+          }
+          .withoutSharedGlass()
+        }
+        .toolbar { AppBarToolbar() }
+        .skyNavigationBar()
+        .background {
+          SwipeBackKeeper()
+            .frame(width: 0, height: 0)
+            .accessibilityHidden(true)
+        }
+    } else if phone {
       content
         .environment(\.showsAppBar, true)
         .toolbar(.hidden, for: .navigationBar)
-    } else if phone {
-      content
-        .toolbar { AppBarToolbar() }
-        .skyNavigationBar()
     } else {
       content
         .toolbar(.hidden, for: .navigationBar)
