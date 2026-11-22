@@ -92,13 +92,14 @@ struct AdviserStyleDialog: View {
           }
           if working { StyleProgress(stage: v.stage, count: v.postCount) }
           if let error = v.error {
-            Callout(tone: error.code?.stringValue == "monthly_limit" ? .warn : .danger) { Text(error.message) }
+            // role="alert", the monthly limit's warning too.
+            Callout(tone: error.code?.stringValue == "monthly_limit" ? .warn : .danger, alert: error.message) { Text(error.message) }
           }
           if v.phase == "result" || (working && !v.summary.isEmpty) {
             result(v, working: working)
           }
           if !saveError.isEmpty {
-            Callout(tone: .danger) { Text(saveError) }
+            Callout(tone: .danger, saveError)
           }
           if !usageLine.isEmpty {
             Text(usageLine).virgaText(.textSm).foregroundStyle(theme.muted)
@@ -108,28 +109,57 @@ struct AdviserStyleDialog: View {
       .accessibilityElement(children: .contain)
       .accessibilityIdentifier("style-dialog")
     } actions: {
-      if hasSaved && !working {
-        Button {
-          forget(saved)
-        } label: {
-          Label("Forget my style", systemImage: Glyph.trash)
+      // `.style-forget { margin-right: auto; color: var(--danger) }`, and
+      // from 640 down `flex-basis: 100%`: a line of its own over the rest.
+      Group {
+        if hasSaved && !working && theme.composerNarrow {
+          VStack(spacing: Measure.Dialog.actionsGap) {
+            forgetButton(saved)
+              .environment(\.virgaFillsWidth, true)
+            HStack(spacing: Measure.Dialog.actionsGap) {
+              if !theme.isPhone { Spacer(minLength: 0) }
+              closeAndKeep(v, hasDescription: hasDescription, working: working, saved: saved)
+            }
+          }
+        } else {
+          HStack(spacing: Measure.Dialog.actionsGap) {
+            if hasSaved && !working {
+              forgetButton(saved)
+              Spacer(minLength: 0)
+            } else if !theme.isPhone {
+              Spacer(minLength: 0)
+            }
+            closeAndKeep(v, hasDescription: hasDescription, working: working, saved: saved)
+          }
         }
-        .buttonStyle(.virga(.ghost))
-        .foregroundStyle(theme.danger)
-        if !theme.isPhone { Spacer(minLength: 0) }
       }
-      Button(hasDescription && v.fresh ? "Cancel" : "Close", action: onClose).buttonStyle(.virga)
-      if hasDescription {
-        Button("Keep this") { keep(v) }
-          .buttonStyle(.virga(.primary))
-          .disabled(working || (!v.fresh && note.jsTrimmed() == saved.guidance.jsTrimmed()))
-          .accessibilityIdentifier("style-keep")
-      }
+      .frame(maxWidth: .infinity)
+      .layoutPriority(1)
     }
     .onAppear { open() }
     .onDisappear {
       session?.dispose()
       session = nil
+    }
+  }
+
+  private func forgetButton(_ saved: AdviserStyleProfile) -> some View {
+    Button {
+      forget(saved)
+    } label: {
+      Label("Forget my style", systemImage: Glyph.trash)
+    }
+    .buttonStyle(.virga(.ghost, destructive: true))
+  }
+
+  @ViewBuilder
+  private func closeAndKeep(_ v: StyleView, hasDescription: Bool, working: Bool, saved: AdviserStyleProfile) -> some View {
+    Button(hasDescription && v.fresh ? "Cancel" : "Close", action: onClose).buttonStyle(.virga)
+    if hasDescription {
+      Button("Keep this") { keep(v) }
+        .buttonStyle(.virga(.primary))
+        .disabled(working || (!v.fresh && note.jsTrimmed() == saved.guidance.jsTrimmed()))
+        .accessibilityIdentifier("style-keep")
     }
   }
 
@@ -152,7 +182,7 @@ struct AdviserStyleDialog: View {
         FieldHint("\(line.isEmpty ? "Written by hand" : line)\(v.fresh ? " · not kept yet" : "")")
       }
       FieldStack("What should change?") {
-        TextField("For example: I do capitalise names on purpose", text: $note)
+        VirgaTextField("For example: I do capitalise names on purpose", text: $note)
           .virgaField()
           .disabled(working)
           .onChange(of: note) { _, next in if next.utf16.count > guidanceLimit { note = next.jsSlice(0, guidanceLimit) } }
@@ -165,21 +195,22 @@ struct AdviserStyleDialog: View {
         } label: {
           Label("Refine with my note", systemImage: AdviserGlyph.sparkles)
         }
-        .buttonStyle(.virga(size: .small))
+        .buttonStyle(.virga)
         .disabled(working || note.jsTrimmed().isEmpty)
         Button {
           start(again: true)
         } label: {
           Label("Read my posts again", systemImage: AdviserGlyph.again)
         }
-        .buttonStyle(.virga(.ghost, size: .small))
+        .buttonStyle(.virga(.ghost))
         .disabled(working)
-        Picker("How many posts to read again", selection: $sampleSize) {
-          ForEach(AdviserSetup.styleSampleSizes, id: \.self) { n in Text("\(n) posts").tag(n) }
-        }
-        .pickerStyle(.menu)
-        .tint(theme.ink)
-        .virgaField()
+        // `.style-sample .input { width: auto; min-width: 112px }`
+        VirgaSelect(
+          "How many posts to read again", selection: $sampleSize,
+          options: AdviserSetup.styleSampleSizes.map { SelectChoice($0, "\($0) posts") }
+        )
+        .frame(minWidth: Measure.Adviser.styleSampleMin)
+        .fixedSize(horizontal: true, vertical: false)
         .disabled(working)
       }
     }
@@ -239,6 +270,12 @@ struct StyleProgress: View {
   let count: Int
   @State private var dim = false
 
+  private func nowLine(_ stages: [StyleStage], at: Int) -> String? {
+    guard stages.indices.contains(at) else { return nil }
+    let s = stages[at]
+    return "\(s.label)\(s.id == "gather" && count > 0 ? " · \(AppLocale.formatNumber(count)) posts" : "") (in progress)"
+  }
+
   var body: some View {
     let stages = StyleSessionWords.styleStages
     let at = stages.firstIndex { $0.id == stage } ?? 0
@@ -262,7 +299,8 @@ struct StyleProgress: View {
     .padding(.leading, Measure.Adviser.progressInset)
     .overlay(alignment: .leading) { Rectangle().fill(theme.line).frame(width: 1) }
     .accessibilityElement(children: .contain)
-    .accessibilityAddTraits(.updatesFrequently)
+    // `role="status"`: the stage under way, read out as it moves on.
+    .toolAnnounces(nowLine(stages, at: at))
     .onAppear {
       guard !theme.reduceMotion else { return }
       withAnimation(.easeInOut(duration: Measure.Adviser.nowPulseSeconds / 2).repeatForever(autoreverses: true)) { dim = true }

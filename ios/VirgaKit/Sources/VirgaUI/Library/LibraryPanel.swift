@@ -21,7 +21,6 @@
 // keyboard), and ⌘↩ using the chosen item.
 
 #if canImport(UIKit)
-import Observation
 import SwiftUI
 import UIKit
 import VirgaCore

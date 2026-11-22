@@ -22,11 +22,18 @@ struct AdviserBusyLine: View {
   let onKeepEditing: () -> Void
   @State private var slow = false
 
+  /// adviser.css's phone rules are `(max-width: 640px)`.
+  private var narrow: Bool { theme.composerNarrow }
+
+  private var expectation: String {
+    AdviserContext.readExpectation(slow ? AdviserContext.slowReadAfterMs : 0)
+  }
+
   var body: some View {
     VStack(alignment: .leading, spacing: Measure.Adviser.busyGap) {
       HStack(alignment: .top, spacing: Measure.Adviser.busyHeadGap) {
         Image(systemName: AdviserGlyph.sparkles)
-          .font(.system(size: Measure.Adviser.busyIcon))
+          .virgaGlyph(Measure.Adviser.busyIcon, beside: theme.textBase)
           .foregroundStyle(theme.ink2)
           .frame(height: Measure.Adviser.busyIconHeight)
           .accessibilityHidden(true)
@@ -34,13 +41,14 @@ struct AdviserBusyLine: View {
           Text("Reading your draft")
             .virgaText(.textBase, weight: VirgaWeight.semibold)
             .foregroundStyle(theme.ink)
-          Text(AdviserContext.readExpectation(slow ? AdviserContext.slowReadAfterMs : 0))
+          Text(expectation)
             .virgaText(.textSm)
             .foregroundStyle(theme.muted)
             .fixedSize(horizontal: false, vertical: true)
         }
         .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(.updatesFrequently)
+        // `role="status"`: the slower line is read out as it comes.
+        .toolAnnounces(expectation)
       }
       ProgressLine(value: nil)
       if !busy.goals.isEmpty {
@@ -59,19 +67,20 @@ struct AdviserBusyLine: View {
         .accessibilityElement(children: .contain)
         .accessibilityLabel("What it’s checking")
       }
+      // From 640 down each way out takes an equal share, 44 tall
+      // (`.adviser-busy-actions > .btn { flex: 1 1 0; min-height: 44px }`).
       HStack(spacing: Measure.Adviser.busyActionsGap) {
-        if !theme.isPhone { Spacer(minLength: 0) }
+        if !narrow { Spacer(minLength: 0) }
         Button(AdviserGate.adviserChoiceLabels[.edit] ?? "Keep editing", action: onKeepEditing)
           .buttonStyle(.virga(.ghost, size: .small))
-          .frame(maxWidth: theme.isPhone ? .infinity : nil, minHeight: theme.isPhone ? Measure.Adviser.phoneBusyAction : nil)
           .accessibilityIdentifier("adviser-keep-editing")
         if let onPublishAnyway {
           Button(AdviserGate.adviserChoiceLabels[.publish] ?? "Publish anyway", action: onPublishAnyway)
             .buttonStyle(.virga(size: .small))
-            .frame(maxWidth: theme.isPhone ? .infinity : nil, minHeight: theme.isPhone ? Measure.Adviser.phoneBusyAction : nil)
             .accessibilityIdentifier("adviser-publish-anyway")
         }
       }
+      .environment(\.virgaFillsWidth, narrow)
     }
     .padding(.vertical, Measure.Adviser.busyPadding)
     .padding(.leading, Measure.Adviser.busyInset)
