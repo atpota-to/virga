@@ -292,7 +292,8 @@ struct FollowCleanupPage: View {
       VStack(alignment: .leading, spacing: theme.points(ThemeKit.cardSubSpaceAbove)) {
         Text(checkedCount != 0 ? "Activity checked for \(fmt(checkedCount)) of \(fmt(rows.count)) accounts" : "When did they last post?")
           .virgaText(
-            size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, tracking: ThemeKit.cardTitleTracking)
+            size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, lineHeight: ThemeKit.headingLineHeight,
+            tracking: ThemeKit.cardTitleTracking)
           .foregroundStyle(theme.ink)
           .fixedSize(horizontal: false, vertical: true)
           .accessibilityAddTraits(.isHeader)

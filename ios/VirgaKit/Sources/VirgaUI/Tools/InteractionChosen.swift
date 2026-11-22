@@ -719,7 +719,8 @@ struct LookupCannotRank: View {
     VStack(alignment: .leading, spacing: Measure.Tools.cannotSpaceAbove) {
       Text("Your posts they engaged with most")
         .virgaText(
-          size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, tracking: ThemeKit.cardTitleTracking)
+          size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, lineHeight: ThemeKit.headingLineHeight,
+          tracking: ThemeKit.cardTitleTracking)
         .foregroundStyle(theme.ink)
         .fixedSize(horizontal: false, vertical: true)
         .accessibilityAddTraits(.isHeader)

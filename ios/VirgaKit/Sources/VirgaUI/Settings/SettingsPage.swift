@@ -152,7 +152,8 @@ struct SettingsSectionView<Content: View>: View {
           HStack(alignment: .firstTextBaseline, spacing: theme.space4) {
             Text(title)
               .virgaText(
-                size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, tracking: ThemeKit.cardTitleTracking)
+                size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, lineHeight: ThemeKit.headingLineHeight,
+                tracking: ThemeKit.cardTitleTracking)
               .foregroundStyle(theme.ink)
               .accessibilityAddTraits(.isHeader)
             Spacer(minLength: 0)

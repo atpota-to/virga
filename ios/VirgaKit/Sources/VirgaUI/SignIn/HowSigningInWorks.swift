@@ -109,7 +109,8 @@ struct HowSigningInWorks: View {
   private func list(_ title: String, _ lines: [String], _ glyph: String) -> some View {
     VStack(alignment: .leading, spacing: 0) {
       Text(title)
-        .virgaText(.textBase, weight: VirgaWeight.semibold)
+        // `.signin-how-asks h3`: the heading's 1.25.
+        .virgaText(.textBase, weight: VirgaWeight.semibold, lineHeight: ThemeKit.headingLineHeight)
         .foregroundStyle(theme.ink)
         .padding(.bottom, Measure.SignIn.asksHeadSpace)
         .frame(maxWidth: .infinity, alignment: .leading)

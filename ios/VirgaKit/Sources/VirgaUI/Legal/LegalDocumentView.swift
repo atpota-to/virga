@@ -214,7 +214,9 @@ struct LegalBlockView: View {
     switch level {
     case 1:
       Text(words)
-        .virgaText(size: theme.points(Measure.Legal.h1Size), weight: VirgaWeight.semibold, tracking: Measure.Legal.h1Tracking)
+        .virgaText(
+          size: theme.points(Measure.Legal.h1Size), weight: VirgaWeight.semibold, lineHeight: Measure.Legal.h1LineHeight,
+          tracking: Measure.Legal.h1Tracking)
         .foregroundStyle(theme.ink)
         .fixedSize(horizontal: false, vertical: true)
         .padding(.bottom, Measure.Legal.h1SpaceBelow)
@@ -238,7 +240,8 @@ struct LegalBlockView: View {
       .id(id)
     default:
       Text(words)
-        .virgaText(.textMd, weight: VirgaWeight.semibold)
+        // An h3: the heading's 1.25 between its lines (base.css).
+        .virgaText(.textMd, weight: VirgaWeight.semibold, lineHeight: ThemeKit.headingLineHeight)
         .foregroundStyle(theme.ink)
         .fixedSize(horizontal: false, vertical: true)
         .padding(.top, Measure.Legal.h3SpaceAbove)

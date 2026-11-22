@@ -145,7 +145,8 @@ struct UnfollowLog: View {
     let after = group.since.map { ", since the sync on \(Time.formatDateShort($0))" } ?? ""
     return VStack(alignment: .leading, spacing: 0) {
       Text("Noticed \(noticed)\(after) · \(AppLocale.formatNumber(group.entries.count))")
-        .virgaText(.textSm, weight: VirgaWeight.medium)
+        // `h3.change-group-head`: the heading's 1.25.
+        .virgaText(.textSm, weight: VirgaWeight.medium, lineHeight: ThemeKit.headingLineHeight)
         .foregroundStyle(theme.muted)
         .padding(.top, Measure.Tools.changeHeadSpaceAbove)
         .padding(.bottom, Measure.Tools.changeHeadSpaceBelow)

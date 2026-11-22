@@ -322,7 +322,8 @@ struct LandingPoint: View {
         .padding(.bottom, Measure.Landing.pointIconSpaceBelow)
         .accessibilityHidden(true)
       Text(title)
-        .virgaText(.textMd, weight: VirgaWeight.semibold)
+        // `.landing-points h2`: the heading's 1.25 between its lines.
+        .virgaText(.textMd, weight: VirgaWeight.semibold, lineHeight: ThemeKit.headingLineHeight)
         .foregroundStyle(theme.ink)
         .accessibilityAddTraits(.isHeader)
       Text(text)

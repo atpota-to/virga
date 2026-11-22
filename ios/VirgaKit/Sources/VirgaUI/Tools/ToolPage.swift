@@ -109,7 +109,8 @@ struct ToolsSectionView: View {
       VStack(alignment: .leading, spacing: Measure.Tools.sectionHeadGap) {
         Text(section.title)
           .virgaText(
-            size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, tracking: ThemeKit.cardTitleTracking)
+            size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, lineHeight: ThemeKit.headingLineHeight,
+            tracking: ThemeKit.cardTitleTracking)
           .foregroundStyle(theme.ink)
           .accessibilityAddTraits(.isHeader)
         Text(section.desc)

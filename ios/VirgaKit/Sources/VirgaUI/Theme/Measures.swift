@@ -685,6 +685,7 @@ public enum Measure {
     /// `.legal-h1 { font-size: clamp(2rem, 1.3rem + 2.6vw, 3rem); letter-spacing: -0.035em; line-height: 1.05 }`
     public static let h1Size: ThemeLength = .function(.clamp, [.rem(2), .operation(.add, .rem(1.3), .value(2.6, .vw)), .rem(3)])
     public static let h1Tracking: ThemeLength = .em(-0.035)
+    public static let h1LineHeight: Double = 1.05
     public static let h1SpaceBelow: CGFloat = 4
     /// `.legal-h2 { margin-top: 22px; padding-top: 22px; letter-spacing: -0.02em }`;
     /// in the dialog 12 and 16.
