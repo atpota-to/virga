@@ -207,7 +207,11 @@ public final class ComposerController {
     let did = session.did ?? ""
     let box = Locked<String?>(did)
     currentDid = box
-    let autosaver = Autosaver(store: store, currentDid: { box.withLock { $0 } })
+    // The debounced write runs on the main actor, with the controller's own
+    // writes to the same keys (clearKept after a send, a post set aside).
+    let timers = Autosaver.mainActorTimers()
+    let autosaver = Autosaver(
+      store: store, currentDid: { box.withLock { $0 } }, setTimer: timers.0, clearTimer: timers.1)
     self.autosaver = autosaver
     let defaults = PostingSettingsStore.readPostingSettings(did, store: store, language: Self.language).json
     model = ComposerStateModel(asDid: did, defaults: defaults, autosaver: autosaver)

@@ -142,6 +142,54 @@ final class ManualTimers: Sendable {
     #expect(saver.pending() == nil)
   }
 
+  /// The composer's timers: the debounced write runs on the main actor, so
+  /// one that comes due while the main actor is busy (a send's last steps)
+  /// can't land after the cancel() and the clearing that follow there
+  /// (resetAfterSend: cancel, then clearKept). The hold only sets the scene;
+  /// what's asserted doesn't depend on how long it took.
+  @Test @MainActor func aMainActorTimerCantWriteAfterCancel() async {
+    let (written, signal) = AsyncStream<WriteReportingStore.Write>.makeStream()
+    let store = WriteReportingStore(signal)
+    let timers = Autosaver.mainActorTimers()
+    let saver = Autosaver(store: store, debounceMs: 1, setTimer: timers.0, clearTimer: timers.1)
+    let key = Autosave.autosaveKey("did:plc:mira")
+    saver.save("did:plc:mira", ["posts": [["id": "p1", "text": "just posted"]]])
+    holdTheThread(milliseconds: 30)
+    saver.cancel()
+    store.removeItem(key)
+    saver.save("did:plc:mira", ["posts": [["id": "p2", "text": "the next one"]]])
+    for await write in written {
+      #expect(write.key == key)
+      #expect(write.value.contains("the next one"), "the first write is the post after the send: \(write.value)")
+      break
+    }
+    #expect(saver.pending() == nil)
+  }
+}
+
+/// Keeps the calling thread busy without yielding it (a synchronous wait,
+/// so it may be used from async code).
+func holdTheThread(milliseconds: Double) {
+  Thread.sleep(forTimeInterval: milliseconds / 1000)
+}
+
+/// A store that reports each write: its key and value.
+final class WriteReportingStore: KeyValueStore, Sendable {
+  struct Write: Sendable {
+    var key: String
+    var value: String
+  }
+
+  let inner = InMemoryKeyValueStore()
+  let signal: AsyncStream<Write>.Continuation
+  init(_ signal: AsyncStream<Write>.Continuation) { self.signal = signal }
+  func getItem(_ key: String) -> String? { inner.getItem(key) }
+  func setItem(_ key: String, _ value: String) throws {
+    try inner.setItem(key, value)
+    signal.yield(Write(key: key, value: value))
+  }
+  func removeItem(_ key: String) { inner.removeItem(key) }
+  func allKeys() -> [String] { inner.allKeys() }
 }
 
 /// A store that says each key it writes.
