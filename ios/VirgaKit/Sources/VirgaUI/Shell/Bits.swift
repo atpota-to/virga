@@ -3,17 +3,19 @@
 //
 // Small pieces every page uses: the mark (a cloud's arc with rain falling
 // from it that never lands, drawn in the colour of the words beside it), the
-// brand (the mark and the name), the line a loading page shows, and toasts.
-// The page header is Components/PageHeader.swift; useIsNarrow is the
-// theme's `hasSidebar` (the width, not the device).
+// brand (the mark and the name), the line a loading page shows, and toasts
+// (read out by VoiceOver as they come, as the web's polite live region
+// is). The page header is Components/PageHeader.swift; useIsNarrow is the
+// theme's `hasSidebar` (the width, not the device); the period picker and
+// its range dialog are PeriodPicker.swift.
 //
-// Not here yet: the period picker and its range dialog (they need
-// src/lib/periods.js and analytics.js, VirgaArchive's), and the five taps on
-// the mark that turn the live sky on (the hillside comes later).
+// Not here yet: the five taps on the mark that turn the live sky on (the
+// hillside comes later).
 
 #if canImport(UIKit)
 import Observation
 import SwiftUI
+import UIKit
 import VirgaCore
 
 /// The mark, on a 24 grid: `M5 11a7 7 0 0 1 14 0M8.5 14.5l-1 4M12.3 14.5l-1.3 6M16 14.5l-.9 3.2`.
@@ -116,6 +118,8 @@ public final class ToastCenter {
     next += 1
     let toast = Toast(id: next, text: text, danger: danger)
     toasts = Array(toasts.suffix(2)) + [toast]
+    // role="status" aria-live="polite": VoiceOver reads it out.
+    UIAccessibility.post(notification: .announcement, argument: text)
     let id = toast.id
     Task { @MainActor [weak self] in
       try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))

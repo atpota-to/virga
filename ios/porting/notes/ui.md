@@ -7,8 +7,9 @@ API a new screen uses, and what was left out.
 
 Status: the foundation is built and passes CI (compile, the app's unit tests, the UI tests
 on an iPhone and an iPad). Not yet audited against the web's components as a whole. Round 5
-added the charts, the dashboards and the first reports (below); tools, sharing, posting and
-Defense are still to come.
+added the charts, the dashboards and the first reports (below); round 6 the tools, Post this
+chart (the share dialog) and Defense, then New dashboard, Customize from the palette,
+Settings › Dashboards and the handle field's arrows; posting is still to come.
 
 ## How the layer is checked
 
@@ -23,10 +24,28 @@ builds the demo archive takes two to three minutes per device, so keep their num
 down: add screenshots to an existing built-archive test rather than a new one. Every VirgaUI file is wrapped in
 `#if canImport(UIKit)`. VirgaUI builds in Swift 5 language mode.
 
+The UI test classes, each one built-archive test per device: VirgaUITests (the shell, the
+dashboards, the reports, the palette, Settings, the sign-in); ToolsUITests
+(`testTheToolsOnTheBuiltArchive`: `tools-built`, `tool-identity`, `tool-best-time`,
+`tool-follow-cleanup` and `-checked` after the activity check, `tool-interaction-lookup`,
+`-search`, `-chosen` and `-totals` with a handle looked up, and `share-dialog` from a
+dashboard card); DefenseUITests (`testDefenseOnTheBuiltArchive`, launched with
+`-VirgaDefense on` and `-VirgaDemoFlags "latency=0&defense=on"`: `defense-before-scan`,
+`defense-scanning`, `defense-scan` or `defense-scan-failed`, `defense-radar`,
+`defense-scan-table`, `defense-near`, `defense-add-to-list`, `defense-lists`,
+`defense-history`; a screen the demo can't reach is skipped, not failed). The tools' and
+Defense's views carry `accessibilityIdentifier`s (`cleanup-table`, `lists-table`,
+`lookup-field`, `lookup-option-<n>`, `defense-progress`, …) for these tests to find.
+
 Things CI's compiler has refused so far, worth avoiding: comparing an optional
 `String?` with `String.jsEquals` (use the `Optional<String>.jsEquals` overload or unwrap);
 reading a `@MainActor` model's properties from a static helper on a nonisolated enum
-(mark the helper `@MainActor`, or put it on a View).
+(mark the helper `@MainActor`, or put it on a View); calling a helper another module keeps
+`internal` (VirgaNetwork's and VirgaDefense's `jsStartsWith`: use `utf16.starts(with:)`).
+Others `swiftc -parse` doesn't see, met while writing: `JSONValue` is
+`ExpressibleByNilLiteral`, so `value == nil` on a `JSONValue?` compares with `.null`
+(use `.isPresent`); a modifier on a `GridRow` makes it one cell (put it on the cells); a
+`let` that shadows a name used above it in the same scope.
 
 ## API for the screens that build on it
 
@@ -120,6 +139,66 @@ DASHBOARDS AND REPORTS (Dashboards/, Reports/)
   and the follower milestones on the charts; every dashboard card (`MoreWidget`), and the card
   settings dialog (`CardSettings`) from Customize.
 
+TOOLS (Tools/)
+- `RoutedPage` sends `/tools` to `ToolsIndex` and `/tools/<key>` to `ToolPage(toolKey:)`, which
+  draws the tool's own view (it takes its `ToolEntry`) or the page of one that isn't built.
+  Every tool page starts `VirgaPage(header: ToolHeader.header(tool, sub:, actions:))`.
+- The tools: Best time, Follow back, Unfollow tracker, Lists you're on, Archive search,
+  Identity, Follow cleanup and the Interaction lookup, each over VirgaInsights' model of the
+  same name. Anything fetched (the activity check, a handle looked up, a PDS read) goes
+  through the session's network, `app.archiveEnvironment.transport` (the made-up world's in
+  the demo). The lookup's chosen account is `?who=<did>` on the navigator.
+- What more than one tool draws (ToolParts.swift), named `Tool…` so it can't meet the
+  reports' `PersonRow`/`PostRowView`: `ToolPeople` (cardFor, displayName, profileUrl),
+  `.wantActors(archive, dids)` (useWantActors), `FollowWriter` and `ToolFollowButton` (a
+  follow per row, busy and its error), `ToolPersonRow`, `ToolPostRow`/`ToolPostMeta`,
+  `ToolStatement`, `FilterCards`/`FilterChoice` (figures that are the filter), `KVList`,
+  `TimelineList`, `ToolMoreFoot` ("Show 30 more"), `ToolSelect`, `ToolSplit`, `ToolCaption`,
+  and `.toolExporter($file)` with `archive.exportRows(name, rows)` for Export.
+- From 641 wide Follow cleanup and Lists are tables (`CleanupTable`, `ListsTable`, a Grid
+  whose first column takes what the rest leave); narrower, rows as the web's phone sets
+  them. `Measure.Tools` (ToolMeasures.swift) names tools.css's measures.
+
+SHARING (Share/)
+- The hook, for a card or a report: `PostChartButton(type:name:options:period:)` (a card's
+  ghost icon), `PostChartLink(type:name:kind:period:)` (a report's link action), or
+  `@State var share: ShareRequest?` with `.shareDialog($share, period:)`. Each draws nothing
+  for a type ShareSpec can't picture.
+- The picture is `ShareImage.render(spec, theme:)`: VirgaInsights' ShareSpec drawn by
+  ChartImage onto `GraphicsShareCanvas` (its `ShareCanvas` over a SwiftUI GraphicsContext)
+  in an ImageRenderer at scale 1, 1200 × 675, under the sky on screen.
+- Write a post with it calls `@Environment(\.shareComposer)` (a `ShareComposer` taking a
+  `ShareDraft`: whose post, its first line, the PNG and its description) once the composer
+  sets it; until then the picture and the first line go out through ShareLink as
+  virga-chart.png. Save the picture asks Photos for add-only access
+  (NSPhotoLibraryAddUsageDescription in project.yml) and says how it went in a toast.
+
+DEFENSE (Defense/)
+- `RoutedPage` sends `/defense/<page>` to `DefensePage(pageKey:)` (scan, lists, history)
+  while `app.flags.defenseEnabled`, else NotFound. The scan (DefenseScanPage, ScanResultView,
+  RadarView as a SwiftUI Canvas, AddToListCard), the lists (DefenseListsPage, read again
+  while anything is being written; ModeratorCard while `defenseModeratorEnabled`) and the
+  history (DefenseHistoryPage, every 15 seconds while anything waits) run over VirgaDefense's
+  models with the session's transport and agent. `Measure.Defense` names defense.css's
+  measures.
+- In the demo: `-VirgaDefense on` (and `-VirgaDefenseModerator on`) turn the build's flags on
+  (`AppModel.demoFlags`), and `-VirgaDemoFlags "defense=on"` has the demo grant the
+  permission; Virga's server's `/api/defense/*` answered 503 in the demo when this was
+  written, so the lists and history show their failure there.
+
+SHELL, ROUND 6
+- `ShellActions` (in the shell's environment): `creatingDashboard` opens the shell's
+  NewDashboardDialog (the sidebar's New dashboard, the palette's), and
+  `customize(id, navigator:)` is the palette's Customize this dashboard (?edit=1 in the
+  address, and `customizing` bumped: RoutedPage keys the dashboard's page by it, so it is
+  made again and opens customizing). `PaletteState.afterClose` runs once the palette's sheet
+  has gone, for a command that opens another sheet.
+- Settings › Dashboards is `DashboardsSection` (Settings/DashboardsSection.swift), over
+  ShellDashboards and the dashboards' own `RenameDashboard` and `NewDashboardDialog`.
+- `HandleField` is a combobox on a hardware keyboard (`.onKeyPress`, SignInSuggest's
+  moveActive), as the palette and the lookup's search are; toasts are posted to VoiceOver
+  as announcements.
+
 APP (App/, Pages/, Legal/, SignIn/, Accounts/, Settings/, Platform/)
 - `AppModel` builds the stores and models once per process; `AppModel.archive(for:)` makes
   one ArchiveModel per signed-in account, and `ArchiveHost` (ArchiveProvider's role)
@@ -130,7 +209,7 @@ APP (App/, Pages/, Legal/, SignIn/, Accounts/, Settings/, Platform/)
   with the `.https(host:path:)` callback.
 - Landing, SignInReturn, TermsGate, LegalPage/LegalDialog/LegalDocument, SignInFlowView,
   AccountMenu, AccountsSettings, SessionNotices, SettingsPage (Account, Appearance,
-  Permissions, Data and sync with exports through `.fileExporter`, About).
+  Permissions, Data and sync with exports through `.fileExporter`, Dashboards, About).
 - `Platform/AppStores.swift`: UserDefaults in `<bundle>.localStorage`, DiskFileStore in
   `Application Support/Virga`, KeychainSecretStore under `<bundle>.session`; tests in
   ios/VirgaKit/Tests/VirgaUITests (run by package-test on the simulator).
@@ -138,7 +217,8 @@ APP (App/, Pages/, Legal/, SignIn/, Accounts/, Settings/, Platform/)
   of the fake server), so the first build reads Mira's whole archive. Harness flags come as
   `-VirgaDemoFlags "<query>"` in the web's address form (accounts=1, signedout,
   expired=<handle>, scope=read, defense=on, terms=ask, latency=<ms>, now=…, appview=…);
-  `-VirgaDemoTerms YES` and `-VirgaDemoSignedOut YES` are terms=ask and signedout. The
+  `-VirgaDemoTerms YES` and `-VirgaDemoSignedOut YES` are terms=ask and signedout;
+  `-VirgaDefense on` and `-VirgaDefenseModerator on` turn Defense's build flags on. The
   app's own SessionModel runs over the demo session's environment, with the archive's
   reset and delete hooks wired as on a device.
 
@@ -146,14 +226,24 @@ APP (App/, Pages/, Legal/, SignIn/, Accounts/, Settings/, Platform/)
 
 - Left for later steps: the live sky (src/hillside, three.js) and the five taps on the
   mark; dragging cards, a card's settings dialog, the dashboard cards and reports not listed
-  above, ChartNotes and the charts' notes and milestones; the tools, sharing, posting and
-  Defense pages; "Keep it when space runs low" (iOS has nothing to ask).
+  above, ChartNotes and the charts' notes and milestones; posting (the composer, its pages,
+  Settings › Posting and the pending-work warnings before a sign-out, which wait for
+  VirgaPosting's services); "Keep it when space runs low" (iOS has nothing to ask).
 - Copy is the web's word for word, including words that only fit a browser ("This
   browser's region", "Forget X on this browser", "Saving the repo to this browser"). Worth
   raising on the web side rather than changing on one side.
 - New copy the web has no counterpart for: "This page isn't in the iOS app yet.", "This
   section isn't in the iOS app yet.", "This card isn't in the iOS app yet." and "This card
-  needs the composer, which isn't in the iOS app yet."
+  needs the composer, which isn't in the iOS app yet."; the share dialog's toasts after
+  Save the picture ("Saved to Photos." and "The picture couldn’t be saved.") and Photos'
+  permission line ("Virga saves a chart's picture to your photos when you ask it to."),
+  since the web downloads the file instead.
+- Hover is the pointer's on an iPad: a lookup suggestion or a handle suggestion under it is
+  shaded or marked; underlines on hover are left to the system's pointer effect. The
+  Interaction lookup's and the handle field's suggestions don't scroll (at most eight and
+  five rows).
 - Every window shares one session, so the web's "another tab switched accounts" notice
   has no case; TermsGate's Reload can't fetch newer documents (they are bundled).
-- HandleField has no hardware-keyboard arrow navigation through the suggestions.
+- Until the composer is in the app, Post this chart's Write a post with it is the system's
+  share sheet, and New post (the sidebar's, the tab bar's, the palette's) goes to the
+  composer's address, whose page says it isn't here yet.

@@ -284,18 +284,20 @@
       "status": "partial",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Settings/SettingsPage.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Settings/DataSection.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Settings/DataSection.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Settings/DashboardsSection.swift"
       ],
-      "note": "The index (a phone's), Account, Data and sync (the archive's line, the sync's steps and Cancel, what failed, Sync now or the rest of a build, Rebuild posts and its dialog, the JSON and CSV exports through the system's exporter, where it is kept with the app folder's size for the web's storage estimate, and Delete this archive with its dialog, the toast and the way home), Appearance (the sky, the accent with its swatches, contrast, density, the sidebar, numbers and dates), Permissions and About (with the Terms and the Privacy Policy, the agreement's date, and when the repo was last read). Not yet: Dashboards (their editing) and Posting (the posting settings), each of which shows its header and says it isn't in the app yet; Appearance's live sky (the hillside). Data's \"Keep it when space runs low\" is shown only where the browser can be asked (navigator.storage.persist), which iOS has no counterpart for, so it isn't drawn.",
+      "note": "The index (a phone's), Account, Data and sync (the archive's line, the sync's steps and Cancel, what failed, Sync now or the rest of a build, Rebuild posts and its dialog, the JSON and CSV exports through the system's exporter, where it is kept with the app folder's size for the web's storage estimate, and Delete this archive with its dialog, the toast and the way home), Dashboards (Your dashboards with New dashboard at its head, each dashboard's name as the way to it with its count of reports, its ⋯ with Rename…, Move up, Move down and Delete while there is more than one, its dialogs, Reset to the three starting dashboards with its dialog and toast, and Where they’re kept; the focus after a move or a delete is the system's to place), Appearance (the sky, the accent with its swatches, contrast, density, the sidebar, numbers and dates), Permissions and About (with the Terms and the Privacy Policy, the agreement's date, and when the repo was last read). Not yet: Posting (the posting settings), which shows its header and says it isn't in the app yet; Appearance's live sky (the hillside). Data's \"Keep it when space runs low\" is shown only where the browser can be asked (navigator.storage.persist), which iOS has no counterpart for, so it isn't drawn.",
       "synced": "f20273b17b6a"
     },
     "src/settings/settings.css": {
       "status": "partial",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Settings/SettingsPage.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Settings/SettingsPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Settings/DashboardsSection.swift"
       ],
-      "note": "The index, the section, the row, the permissions and sources lists, the sky's tiles and the accent's choices. The dashboards' list, the sync and the default timer's editor come with their sections.",
+      "note": "The index, the section, the row, the permissions and sources lists, the sky's tiles, the accent's choices, the sync's lines and the dashboards' list (each name ending in an ellipsis with its count on its baseline, the ⋯ let out to the column's edge on a phone). The default timer's editor comes with Posting.",
       "synced": "849c73e6565e"
     },
     "src/share/share.css": {
@@ -312,7 +314,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Shell/CommandPalette.swift"
       ],
-      "note": "The palette as a full-height sheet, over VirgaInsights' Commands (buildCommands with CommandContext.app, paletteGroups, rememberRecent and parseRecent under virga:palette-recent, moveActive): the field on its line with Close, the groups, each option's icon (the account's picture for another account), title, hint (under the title on a phone, once there is a search) and tick, the empty line, the foot beside the sidebar, the result count read out, and the arrows, Home, End, Return and Escape on a hardware keyboard. Search in the app bar, the sidebar and the rail opens it, and ⌘K. Running: an address through the navigator, Sync, the period (with the web's toast), the sky, another account; New post goes to the composer's address. Not yet: Customize this dashboard and New dashboard, left out of the list until the dashboards' editing is ported, and the composer itself.",
+      "note": "The palette as a full-height sheet, over VirgaInsights' Commands (buildCommands with CommandContext.app, paletteGroups, rememberRecent and parseRecent under virga:palette-recent, moveActive): the field on its line with Close, the groups, each option's icon (the account's picture for another account), title, hint (under the title on a phone, once there is a search) and tick, the empty line, the foot beside the sidebar, the result count read out, and the arrows, Home, End, Return and Escape on a hardware keyboard. Search in the app bar, the sidebar and the rail opens it, and ⌘K. Running: an address through the navigator, Sync, the period (with the web's toast), the sky, another account, Customize this dashboard (?edit=1 and the dashboard's page made again, so it opens customizing: the shell's ShellActions) and New dashboard (the shell's dialog, once the palette's sheet has gone). Not yet: the composer itself (New post goes to the composer's address).",
       "synced": "5138c6649f81"
     },
     "src/shell/FirstRun.jsx": {
@@ -328,7 +330,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Shell/MobileNav.swift"
       ],
-      "note": "The tab bar and the app bar: on a part's front page the mark, Search and the account in the page's content, scrolling away with the sky; inside a part the system's back button with the page above's name, Search and the account, in the navigation bar; Search opens the command palette, and the account's menu holds Sync now once there is an archive.",
+      "note": "The tab bar and the app bar: on a part's front page the mark, Search and the account in the page's content, scrolling away with the sky; inside a part the system's back button with the page above's name, Search and the account, in the navigation bar; Search opens the command palette, and the account's menu holds Sync now once there is an archive. Not yet: the mark's five taps (the live sky) and the composer (New post goes to its address).",
       "synced": "25b2e5064862"
     },
     "src/shell/Shell.jsx": {
@@ -339,7 +341,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Shell/ShellNavigator.swift",
         "ios/VirgaKit/Sources/VirgaUI/Shell/ShellDashboards.swift"
       ],
-      "note": "The shell by the window's width (from 900 Virga's own sidebar beside the page, held to --shell-max and centred, with one sky behind both that the page's scroll moves; under it a stack with the app bar and tab bar), the address as its state, every route to a page (a page not ported yet shows its header and says so), NotFound, the dashboard redirect and the last dashboard looked at, the titles, the archive's opening line and the first build's page where a route needs it, and the sync's places (the sidebar's card, or the strip at the top of the page, neither while the first build's page is up). The command palette (from Search, and ⌘K on a hardware keyboard) and the toasts are mounted here. Not yet: New dashboard, the composer and its shortcut (New post goes to the composer's address), and the live sky.",
+      "note": "The shell by the window's width (from 900 Virga's own sidebar beside the page, held to --shell-max and centred, with one sky behind both that the page's scroll moves; under it a stack with the app bar and tab bar), the address as its state, every route to a page (a page not ported yet shows its header and says so), NotFound, the dashboard redirect and the last dashboard looked at, the titles, the archive's opening line and the first build's page where a route needs it, and the sync's places (the sidebar's card, or the strip at the top of the page, neither while the first build's page is up). The command palette (from Search, and ⌘K on a hardware keyboard), the toasts and NewDashboardDialog (from the sidebar and the palette; one made empty opens with ?edit=1) are mounted here, and the palette's onCustomize (ShellActions: ?edit=1, and the `customizing` key the dashboard's page is made again by). Not yet: the composer and its shortcut (New post goes to the composer's address), and the live sky.",
       "synced": "2463a24deec2"
     },
     "src/shell/Sidebar.jsx": {
@@ -347,7 +349,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Shell/Sidebar.swift"
       ],
-      "note": "The parts as words with the open one's pages, the account, New post, folding to the rail, and the archive's lines at the foot (SyncCard, brief beside the first build's page; on the rail Sync now is in the account's menu). Search or jump to… with its shortcut (a search glyph on the rail) opens the command palette. Not yet: New dashboard, and the mark's five taps (the live sky).",
+      "note": "The parts as words with the open one's pages (the dashboards' ending with New dashboard, which opens the shell's dialog), the account, New post, folding to the rail, the list scrolling on a short screen with the edge that has more behind it faded (useOverflowEdge), and the archive's lines at the foot (SyncCard, brief beside the first build's page; on the rail Sync now is in the account's menu). Search or jump to… with its shortcut (a search glyph on the rail) opens the command palette. Not yet: the mark's five taps (the live sky).",
       "synced": "908f8b702854"
     },
     "src/shell/SyncStatus.jsx": {
@@ -365,7 +367,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Components/PageHeader.swift",
         "ios/VirgaKit/Sources/VirgaUI/Shell/PeriodPicker.swift"
       ],
-      "note": "The mark, the page header, toasts (ToastCenter and ToastStack; nothing pushes one yet), useIsNarrow (the theme's hasSidebar), usePeriod (PreferencesModel.period(), setPeriod, setCustomPeriod over VirgaArchive's Periods), PeriodPicker (the presets and Custom; on a phone Custom is its calendar alone) and RangeDialog (two days on the system's date picker in the active time zone, checked as they are picked, with the web's three problems and its line on what the range covers). Not yet: useSkyTaps (the live sky).",
+      "note": "The mark, the page header, toasts (ToastCenter and ToastStack, at most three, each gone after 4.2 seconds, read out by VoiceOver as the web's polite live region is; pushed by the share dialog, Customize and the dashboard's menu, Settings › Dashboards and Data, the palette's period and the tools), useIsNarrow (the theme's hasSidebar), usePeriod (PreferencesModel.period(), setPeriod, setCustomPeriod over VirgaArchive's Periods), PeriodPicker (the presets and Custom; on a phone Custom is its calendar alone) and RangeDialog (two days on the system's date picker in the active time zone, checked as they are picked, with the web's three problems and its line on what the range covers). Not yet: useSkyTaps (the live sky).",
       "synced": "a49f9d2a00e7"
     },
     "src/shell/commandPalette.css": {
@@ -378,7 +380,7 @@
       "synced": "68cfeed12a57"
     },
     "src/shell/shell.css": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift",
         "ios/VirgaKit/Sources/VirgaUI/Shell/Shell.swift",
@@ -391,15 +393,15 @@
         "ios/VirgaKit/Sources/VirgaUI/Shell/FirstRun.swift",
         "ios/VirgaKit/Sources/VirgaUI/Shell/PeriodPicker.swift"
       ],
-      "note": "The shell, its figure size, the sidebar and rail, the page header and body, the app bar and tab bar, dialogs, choices and toasts, the sync's places, the first run, the period picker and the range dialog's fields. The sidebar's search row and the app bar's Search button too. Not yet: the sidebar list's overflow fades.",
+      "note": "The shell, its figure size, the sidebar and rail (the list's overflow fades, 24 at the edge with more behind it; a short screen's closer parts and the card without its counts), the page header and body, the app bar and tab bar, dialogs, choices and toasts, the sync's places, the first run, the period picker and the range dialog's fields. The sidebar's search row and the app bar's Search button too.",
       "synced": "e21d87c5ffe7"
     },
     "src/signin/HandleField.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/SignIn/HandleField.swift"
       ],
-      "note": "All of it but moving through the suggestions with a hardware keyboard's arrows (moveActive): a press picks one.",
+      "note": "All of it, a combobox on a hardware keyboard as on the web: ↑ and ↓ open the suggestions on the first or the last, then move through them round through the field itself (SignInSuggest.moveActive); the marked one on --hover with 2 points of ink at its edge, the pointer's only shaded; Return takes the marked one (or, with none marked, submits as the field always does); Escape puts the list away (the dialog it may be in stays) and Tab leaves it closed. The marked one is read as the field's value. A press picks one.",
       "synced": "1a818727b82b"
     },
     "src/signin/HowSigningInWorks.jsx": {
@@ -520,13 +522,15 @@
       "synced": "6fa7f1283fe1"
     },
     "src/tools/tools.css": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Tools/ToolMeasures.swift",
         "ios/VirgaKit/Sources/VirgaUI/Tools/ToolParts.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Tools/ToolPage.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Tools/ToolPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Tools/FollowCleanupTool.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Tools/ListsTool.swift"
       ],
-      "note": "Measure.Tools names every measure the tool pages use (the list of tools, the statement, the filter figures, the line over a table, the inline select, the activity check, the large search, the unfollow log's groups, the queue's ✕, the best slots, identity, the facts and the timeline, the lookup's field, suggestions, pair counts, legend, totals and events), and dashboards.css's person and post rows as the tools list them; each view draws its rules from them. Not yet: the cleanup and lists tables' columns from 641 wide (both are set as the web's phone sets them at every width), the lookup's suggestions floating over the page (they open under the field), and the hover rules (no pointer).",
+      "note": "Measure.Tools names every measure the tool pages use (the list of tools, the statement, the filter figures, the line over a table, the inline select, the activity check, the large search, the unfollow log's groups, the queue's ✕, the best slots, identity, the facts and the timeline, the lookup's field, its suggestions floating over the page, pair counts, legend, totals and events), and dashboards.css's person and post rows as the tools list them; each view draws its rules from them. The cleanup and lists tables are tables from 641 wide (the tick box's 36, the account's column taking what the rest leave, its words ending in an ellipsis, a ticked row's tint 10 past the sides, a row's own Unfollow stepping back while rows are ticked) and set as the web's phone sets them narrower. The hover rules are the pointer's on an iPad: a suggestion under the pointer becomes the active one; a name's underline on hover is left to the system's pointer effect.",
       "synced": "6eb307ebfd93"
     }
   }

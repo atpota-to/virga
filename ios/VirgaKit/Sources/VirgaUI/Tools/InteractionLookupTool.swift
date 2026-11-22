@@ -11,8 +11,9 @@
 // the archive hasn't met (through the session's network: the made-up
 // world's in the demo).
 //
-// The search's suggestions open under the field, in the page, rather than
-// floating over it; on a hardware keyboard Return takes the first.
+// The search's suggestions float over the page under the field; on a
+// hardware keyboard ↑ and ↓ move through them, Return takes one and
+// Escape closes them.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -118,7 +119,7 @@ struct LookupPage: View {
       if let who, named == nil {
         ChosenHistory(
           tool: tool, archive: archive, who: who, sets: sets,
-          search: AnyView(PersonSearch(directory: directory, network: network, onChoose: { choose($0) })),
+          search: AnyView(PersonSearch(directory: directory, network: network, onChoose: { choose($0) }).zIndex(1)),
           onClear: { choose(nil) }
         )
         .id(who)
@@ -127,7 +128,9 @@ struct LookupPage: View {
         VirgaPage(header: ToolHeader.header(tool)) {
           PersonSearch(
             directory: directory, network: network, onChoose: { choose($0) },
-            hint: "Suggestions are the people your archive knows. To look up anyone else, type their whole handle or their DID.")
+            hint: "Suggestions are the people your archive knows. To look up anyone else, type their whole handle or their DID."
+          )
+          .zIndex(1)
           if state == "looking", let named {
             EmptyState("Looking up \(named)…")
               .accessibilityAddTraits(.updatesFrequently)
@@ -258,6 +261,8 @@ struct PersonSearch: View {
   var hint: String? = nil
   @State private var query = ""
   @State private var open = false
+  /// The suggestion ↑ and ↓ have reached, and Return takes.
+  @State private var active = 0
   @State private var status: (error: Bool, text: String)?
   @State private var busy = false
 
@@ -287,10 +292,17 @@ struct PersonSearch: View {
     let options = Self.options(directory, query)
     let shown = open && !query.jsTrimmed().isEmpty ? options : []
     VStack(alignment: .leading, spacing: Measure.Tools.lookupSearchGap) {
+      // The suggestions float over the page under the field, 6 below it,
+      // over whatever follows (`.lookup-options`).
       field(options: options, shown: shown)
-      if !shown.isEmpty {
-        suggestions(shown)
-      }
+        .overlay(alignment: .bottom) {
+          if !shown.isEmpty {
+            suggestions(shown)
+              .fixedSize(horizontal: false, vertical: true)
+              .alignmentGuide(.bottom) { d in d[.top] - Measure.Tools.optionsSpaceAbove }
+          }
+        }
+        .zIndex(1)
       if let line = status?.text ?? hint {
         Text(line)
           .virgaText(.textSm)
@@ -318,8 +330,28 @@ struct PersonSearch: View {
         .onSubmit { submit(options: options, shown: shown) }
         .onChange(of: query) { _, _ in
           open = true
+          active = 0
           status = nil
         }
+        .simultaneousGesture(TapGesture().onEnded { open = true })
+        // ↑ and ↓ open the suggestions, then move through them, round at
+        // the ends; Escape closes them.
+        .onKeyPress(keys: [.upArrow, .downArrow]) { press in
+          if options.isEmpty { return .ignored }
+          if !open {
+            open = true
+            return .handled
+          }
+          let step = press.key == .downArrow ? 1 : -1
+          active = (active + step + options.count) % options.count
+          return .handled
+        }
+        .onKeyPress(.escape) {
+          if shown.isEmpty { return .ignored }
+          open = false
+          return .handled
+        }
+        .accessibilityValue(shown.isEmpty ? "" : Self.activeName(shown[min(active, shown.count - 1)]))
       Image(systemName: Glyph.search)
         .font(.system(size: Measure.Tools.largeSearchIcon))
         .foregroundStyle(theme.muted)
@@ -333,8 +365,8 @@ struct PersonSearch: View {
   private func submit(options: [LookupOption], shown: [LookupOption]) {
     let typed = query.jsTrimmed()
     if typed.isEmpty { return }
-    if let first = shown.first {
-      take(first)
+    if !shown.isEmpty {
+      take(shown[min(active, shown.count - 1)])
     } else if !options.isEmpty {
       open = true
     } else {
@@ -348,12 +380,17 @@ struct PersonSearch: View {
   private func suggestions(_ shown: [LookupOption]) -> some View {
     VStack(alignment: .leading, spacing: 0) {
       ForEach(Array(shown.enumerated()), id: \.element.id) { index, option in
+        let selected = index == min(active, shown.count - 1)
         Button {
           take(option)
         } label: {
           optionRow(option)
         }
-        .buttonStyle(LookupOptionStyle())
+        .buttonStyle(LookupOptionStyle(selected: selected))
+        .onHover { inside in
+          if inside && active != index { active = index }
+        }
+        .accessibilityAddTraits(selected ? .isSelected : [])
         .accessibilityIdentifier("lookup-option-\(index)")
       }
     }
@@ -389,6 +426,17 @@ struct PersonSearch: View {
         optionText(!p.displayName.isEmpty ? p.displayName : (!p.handle.isEmpty ? "@\(p.handle)" : p.did), meta)
         if p.total > 0 { PairCount(incoming: p.in, outgoing: p.out) }
       }
+    }
+  }
+
+  /// What a screen reader hears the field holding while ↑ and ↓ move:
+  /// the suggestion they have reached (`aria-activedescendant`).
+  static func activeName(_ option: LookupOption) -> String {
+    switch option {
+    case .lookup(let actor):
+      return actor.kind == .did ? "Open this DID" : "Look up @\(actor.value) on Bluesky"
+    case .person(let p):
+      return !p.displayName.isEmpty ? p.displayName : (!p.handle.isEmpty ? "@\(p.handle)" : p.did)
     }
   }
 
@@ -457,10 +505,13 @@ struct PersonSearch: View {
   }
 }
 
-/// `.lookup-option`: 44 tall, the pressed one on --hover.
+/// `.lookup-option`: 44 tall, the one ↑ and ↓ have reached (or the
+/// pointer is over, or a finger is on) on --hover.
 struct LookupOptionStyle: ButtonStyle {
+  var selected = false
+
   func makeBody(configuration: Configuration) -> some View {
-    LookupOptionBody(label: configuration.label, isPressed: configuration.isPressed)
+    LookupOptionBody(label: configuration.label, isPressed: configuration.isPressed || selected)
   }
 }
 

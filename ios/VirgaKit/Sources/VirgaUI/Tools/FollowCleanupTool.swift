@@ -7,10 +7,10 @@
 // and an account marked Keep is never suggested again. The activity check
 // reads each account's newest post or repost from the public AppView (the
 // archive's checkActivity, through the session's network: the made-up
-// world's in the demo). The table is set as the web's phone sets it, at
-// every width: the tick box at the left, the face and name with the button
-// at the right, and the rest as a meta line under the name, the activity
-// first.
+// world's in the demo). From 641 wide the table is a table (CleanupTable);
+// narrower it is set as the web's phone sets it: the tick box at the left,
+// the face and name with the button at the right, and the rest as a meta
+// line under the name, the activity first.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -196,15 +196,26 @@ struct FollowCleanupPage: View {
         if !shown.isEmpty || progress.working != nil || keep.size > 0 {
           tableBar(selectedLive: selectedLive, filtered: filtered, sets: sets)
         }
-        if !shown.isEmpty {
-          selectAll(live: live)
-        }
-        ForEach(shown, id: \.did) { row in
-          CleanupRowView(
-            row: row, archive: archive, sets: sets, follow: follow, quietCut: quietCut, kept: keep.has(row.did),
-            undone: has(undo, row.did) && !follow.isFollowing(archive, row.did, sets: sets),
-            selected: Binding(get: { has(selected, row.did) }, set: { on in toggleRow(row.did, on) }),
-            onUnfollowed: { undo.append(row.did) })
+        if theme.windowWidth > Measure.Tools.stackedTableMax {
+          if !shown.isEmpty {
+            CleanupTable(
+              rows: shown, archive: archive, sets: sets, follow: follow, quietCut: quietCut, isKept: { keep.has($0) },
+              isUndone: { did in has(undo, did) && !follow.isFollowing(archive, did, sets: sets) },
+              isSelected: { has(selected, $0) }, onSelect: { did, on in toggleRow(did, on) }, allSelected: allBinding(live),
+              anyLive: !live.isEmpty, onUnfollowed: { did in if !has(undo, did) { undo.append(did) } })
+          }
+        } else {
+          if !shown.isEmpty {
+            selectAll(live: live)
+          }
+          ForEach(shown, id: \.did) { row in
+            CleanupRowView(
+              row: row, archive: archive, sets: sets, follow: follow, quietCut: quietCut, kept: keep.has(row.did),
+              undone: has(undo, row.did) && !follow.isFollowing(archive, row.did, sets: sets),
+              anySelected: shown.contains { has(selected, $0.did) },
+              selected: Binding(get: { has(selected, row.did) }, set: { on in toggleRow(row.did, on) }),
+              onUnfollowed: { if !has(undo, row.did) { undo.append(row.did) } })
+          }
         }
         if shown.isEmpty {
           EmptyState(
@@ -390,13 +401,16 @@ struct FollowCleanupPage: View {
     .padding(.bottom, Measure.Tools.tableBarSpaceBelow)
   }
 
+  /// Every live row ticked, or none: "Select every account shown".
+  private func allBinding(_ live: [CleanupRow]) -> Binding<Bool> {
+    let all = !live.isEmpty && live.allSatisfy { has(selected, $0.did) }
+    return Binding(get: { all }, set: { on in selected = on ? live.map(\.did) : [] })
+  }
+
   /// "Select all shown", over the rows, on the rule in ink.
   private func selectAll(live: [CleanupRow]) -> some View {
-    let all = !live.isEmpty && live.allSatisfy { has(selected, $0.did) }
-    return HStack(spacing: Measure.Tools.rowGap) {
-      ToolCheck(
-        isOn: Binding(get: { all }, set: { on in selected = on ? live.map(\.did) : [] }), label: "Select every account shown",
-        disabled: live.isEmpty)
+    HStack(spacing: Measure.Tools.rowGap) {
+      ToolCheck(isOn: allBinding(live), label: "Select every account shown", disabled: live.isEmpty)
       Text("Select all shown")
         .virgaText(.textSm, weight: VirgaWeight.medium)
         .foregroundStyle(theme.muted)
@@ -480,7 +494,6 @@ struct ToolCheck: View {
 /// One account in the table, as the web's phone sets the row.
 struct CleanupRowView: View {
   @Environment(\.virgaTheme) private var theme
-  @Environment(\.openURL) private var openURL
   let row: CleanupRow
   let archive: ArchiveModel
   let sets: RelationSets
@@ -488,6 +501,8 @@ struct CleanupRowView: View {
   let quietCut: Double
   let kept: Bool
   let undone: Bool
+  /// Some row is ticked: the bar over the table acts, the rows' own buttons step back.
+  let anySelected: Bool
   @Binding var selected: Bool
   let onUnfollowed: () -> Void
 
@@ -500,10 +515,9 @@ struct CleanupRowView: View {
       ToolCheck(isOn: $selected, label: "Select \(name)", disabled: !following)
       VStack(alignment: .leading, spacing: theme.space1) {
         HStack(alignment: .center, spacing: Measure.Tools.personGap) {
-          Avatar(src: card?.avatar, name: card?.displayName ?? card?.handle)
-          person(card, name)
+          CleanupPerson(row: row, card: card, name: name, kept: kept, undone: undone)
             .frame(maxWidth: .infinity, alignment: .leading)
-          action(name, following: following)
+          CleanupAction(row: row, archive: archive, follow: follow, name: name, following: following, hidden: anySelected, onUnfollowed: onUnfollowed)
         }
         facts
         if let error = follow.error(row.did) {
@@ -519,61 +533,10 @@ struct CleanupRowView: View {
     .accessibilityElement(children: .contain)
   }
 
-  private func person(_ card: ToolPersonCard?, _ name: String) -> some View {
-    VStack(alignment: .leading, spacing: 0) {
-      Button {
-        if let url = ToolPeople.profileUrl(card, row.did) { openURL(url) }
-      } label: {
-        Text(name)
-          .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Tools.personLineHeight)
-          .strikethrough(undone)
-          .foregroundStyle(undone ? theme.muted : theme.ink)
-          .lineLimit(1)
-      }
-      .buttonStyle(.plain)
-      .accessibilityAddTraits(.isLink)
-      let handle = card?.displayName != nil ? card?.handle : nil
-      if handle != nil || kept {
-        MetaLine([handle.map { MetaItem("@\($0)", id: "handle") }, kept ? MetaItem("Kept", id: "kept") : nil].compactMap { $0 })
-          .lineLimit(1)
-      }
-    }
-  }
-
-  @ViewBuilder
-  private func action(_ name: String, following: Bool) -> some View {
-    if following {
-      Button("Unfollow") {
-        Task { if await follow.toggle(archive, row.did, false) { onUnfollowed() } }
-      }
-      .buttonStyle(.virga(size: .small))
-      .disabled(follow.busy(archive, row.did))
-      .accessibilityLabel("Unfollow \(name)")
-    } else {
-      Button("Undo") {
-        Task { await follow.toggle(archive, row.did, true) }
-      }
-      .buttonStyle(.virga(size: .small))
-      .disabled(follow.busy(archive, row.did))
-      .accessibilityLabel("Undo unfollowing \(name)")
-    }
-  }
-
   /// When they were last active first, then when you followed them,
   /// whether they follow you, and how much you have had to do with each
   /// other; a "No" and a nought say nothing here, so they go.
   private var facts: some View {
-    let dot: DotState = row.gone ? .danger : !row.checked ? .idle : ((row.lastActiveMs ?? 0) != 0 && (row.lastActiveMs ?? 0) >= quietCut ? .ok : .warn)
-    let activity: String
-    if row.gone {
-      activity = "Gone"
-    } else if !row.checked {
-      activity = "Not checked"
-    } else if let last = row.lastActiveMs, last != 0 {
-      activity = Time.relativeTime(last, now: SyncStatus.now())
-    } else {
-      activity = "Never posted"
-    }
     var rest: [String] = []
     if let at = row.followedAt, !at.isEmpty { rest.append("followed \(Time.formatDateShort(at))") }
     if row.followsYou { rest.append("follows you") }
@@ -582,16 +545,237 @@ struct CleanupRowView: View {
     }
     return FlowLayout(spacing: 0, lineSpacing: 0, alignment: .center) {
       MetaPiece(isLast: rest.isEmpty) {
-        HStack(spacing: Measure.Tools.activityGap) {
-          StateDot(dot)
-          Text(activity)
-        }
+        CleanupActivity(row: row, quietCut: quietCut, plain: true)
       }
       ForEach(Array(rest.enumerated()), id: \.offset) { index, fact in
         MetaPiece(isLast: index == rest.count - 1) { Text(fact) }
       }
     }
     .padding(.leading, theme.points(ThemeKit.avatarSize) + Measure.Tools.personGap)
+  }
+}
+
+/// `.table-person`: the face, the name (struck through once unfollowed
+/// here), and the handle where the name isn't it, with Kept beside it.
+struct CleanupPerson: View {
+  @Environment(\.virgaTheme) private var theme
+  @Environment(\.openURL) private var openURL
+  let row: CleanupRow
+  let card: ToolPersonCard?
+  let name: String
+  let kept: Bool
+  let undone: Bool
+
+  var body: some View {
+    let handle = card?.displayName != nil ? card?.handle : nil
+    HStack(alignment: .center, spacing: Measure.Tools.personGap) {
+      Avatar(src: card?.avatar, name: card?.displayName ?? card?.handle)
+      VStack(alignment: .leading, spacing: 0) {
+        Button {
+          if let url = ToolPeople.profileUrl(card, row.did) { openURL(url) }
+        } label: {
+          Text(name)
+            .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Tools.personLineHeight)
+            .strikethrough(undone)
+            .foregroundStyle(undone ? theme.muted : theme.ink)
+            .lineLimit(1)
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(.isLink)
+        if handle != nil || kept {
+          MetaLine([handle.map { MetaItem("@\($0)", id: "handle") }, kept ? MetaItem("Kept", id: "kept") : nil].compactMap { $0 })
+            .lineLimit(1)
+        }
+      }
+    }
+  }
+}
+
+/// Unfollow, or Undo once it is done; the row's error is under it on a
+/// wide screen.
+struct CleanupAction: View {
+  let row: CleanupRow
+  let archive: ArchiveModel
+  let follow: FollowWriter
+  let name: String
+  let following: Bool
+  let hidden: Bool
+  let onUnfollowed: () -> Void
+
+  var body: some View {
+    Group {
+      if following {
+        Button("Unfollow") {
+          Task { if await follow.toggle(archive, row.did, false) { onUnfollowed() } }
+        }
+        .accessibilityLabel("Unfollow \(name)")
+      } else {
+        Button("Undo") {
+          Task { await follow.toggle(archive, row.did, true) }
+        }
+        .accessibilityLabel("Undo unfollowing \(name)")
+      }
+    }
+    .buttonStyle(.virga(size: .small))
+    .disabled(follow.busy(archive, row.did) || hidden)
+    .opacity(hidden ? 0 : 1)
+    .accessibilityHidden(hidden)
+  }
+}
+
+/// `.activity`: the dot (gone, not checked, quiet or not) and when they
+/// were last active.
+struct CleanupActivity: View {
+  @Environment(\.virgaTheme) private var theme
+  let row: CleanupRow
+  let quietCut: Double
+  /// In a meta line: its words in the line's own colour.
+  var plain = false
+
+  var body: some View {
+    let last = row.lastActiveMs ?? 0
+    let dot: DotState = row.gone ? .danger : !row.checked ? .idle : (last != 0 && last >= quietCut ? .ok : .warn)
+    HStack(spacing: Measure.Tools.activityGap) {
+      StateDot(dot)
+      if row.gone {
+        Text("Gone")
+      } else if !row.checked {
+        if plain { Text("Not checked") } else { Text("Not checked").foregroundStyle(theme.muted) }
+      } else if last != 0 {
+        Text(Time.relativeTime(last, now: SyncStatus.now()))
+      } else {
+        Text("Never posted")
+      }
+    }
+    .lineLimit(1)
+  }
+}
+
+/// The table as a table, from 641 wide: a tick box, the account (taking
+/// what the other columns leave, its words ending in an ellipsis), whether
+/// they follow you, when they were last active, the interactions, when you
+/// followed them, and the row's button.
+struct CleanupTable: View {
+  @Environment(\.virgaTheme) private var theme
+  let rows: [CleanupRow]
+  let archive: ArchiveModel
+  let sets: RelationSets
+  let follow: FollowWriter
+  let quietCut: Double
+  let isKept: (String) -> Bool
+  let isUndone: (String) -> Bool
+  let isSelected: (String) -> Bool
+  let onSelect: (String, Bool) -> Void
+  let allSelected: Binding<Bool>
+  let anyLive: Bool
+  let onUnfollowed: (String) -> Void
+
+  var body: some View {
+    let anySelected = rows.contains { isSelected($0.did) }
+    let bleed = Measure.Tools.selectedBleed
+    Grid(alignment: .leading, horizontalSpacing: 0, verticalSpacing: 0) {
+      GridRow {
+        ToolCheck(isOn: allSelected, label: "Select every account shown", disabled: !anyLive)
+          .frame(width: Measure.Tools.checkColumn, alignment: .leading)
+          .padding(.bottom, theme.points(ThemeKit.tableHeadSpaceBelow))
+        head("Account", flexible: true)
+        head("Follows you")
+        head("Last active")
+        head("Interactions", numeric: true)
+        head("Followed")
+        Color.clear.frame(width: 0, height: 0)
+          .gridColumnAlignment(.trailing)
+          .accessibilityHidden(true)
+      }
+      Rectangle().fill(theme.color(ThemeKit.tableHeadRule)).frame(height: 1).gridCellUnsizedAxes(.horizontal)
+      ForEach(rows, id: \.did) { row in
+        line(row, anySelected: anySelected)
+        Rectangle().fill(theme.color(ThemeKit.tableRowRule)).frame(height: 1).gridCellUnsizedAxes(.horizontal)
+      }
+    }
+    // A ticked row is tinted from side to side, let out past the table's
+    // edges (`.cleanup-table tr.is-selected`), under its cells.
+    .backgroundPreferenceValue(CleanupChosenRows.self) { chosen in
+      GeometryReader { proxy in
+        ForEach(Array(chosen.enumerated()), id: \.offset) { _, anchor in
+          let rect = proxy[anchor]
+          theme.tint
+            .frame(width: proxy.size.width + bleed * 2, height: rect.height)
+            .position(x: proxy.size.width / 2, y: rect.midY)
+        }
+      }
+    }
+    .accessibilityElement(children: .contain)
+    .accessibilityIdentifier("cleanup-table")
+  }
+
+  private func head(_ text: String, numeric: Bool = false, flexible: Bool = false) -> some View {
+    Text(text)
+      .virgaText(.textSm, weight: ThemeKit.tableHeadWeight)
+      .foregroundStyle(theme.muted)
+      .lineLimit(1)
+      .padding(.horizontal, theme.points(ThemeKit.tableCellPadding.left))
+      .padding(.bottom, theme.points(ThemeKit.tableHeadSpaceBelow))
+      .frame(maxWidth: flexible ? .infinity : nil, alignment: numeric ? .trailing : .leading)
+      .gridColumnAlignment(numeric ? .trailing : .leading)
+  }
+
+  @ViewBuilder
+  private func line(_ row: CleanupRow, anySelected: Bool) -> some View {
+    let card = ToolPeople.cardFor(archive, row.did, sets: sets)
+    let name = ToolPeople.displayName(card, row.did)
+    let following = follow.isFollowing(archive, row.did, sets: sets)
+    let undone = isUndone(row.did)
+    let chosen = isSelected(row.did)
+    let ink = undone ? theme.muted : theme.ink
+    let pad = theme.points(ThemeKit.tableCellPadding.left)
+    GridRow {
+      ToolCheck(isOn: Binding(get: { chosen }, set: { onSelect(row.did, $0) }), label: "Select \(name)", disabled: !following)
+        .frame(width: Measure.Tools.checkColumn, alignment: .leading)
+        .padding(.vertical, theme.rowPad)
+        .frame(maxHeight: .infinity)
+        .anchorPreference(key: CleanupChosenRows.self, value: .bounds) { chosen ? [$0] : [] }
+      CleanupPerson(row: row, card: card, name: name, kept: isKept(row.did), undone: undone)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, pad)
+        .padding(.vertical, theme.rowPad)
+      Group {
+        if row.followsYou { Text("Yes").foregroundStyle(ink) } else { Text("No").foregroundStyle(theme.muted) }
+      }
+      .virgaText(.textBase)
+      .padding(.horizontal, pad)
+      CleanupActivity(row: row, quietCut: quietCut)
+        .virgaText(.textBase)
+        .foregroundStyle(ink)
+        .padding(.horizontal, pad)
+      Text(AppLocale.formatNumber(row.interactions))
+        .virgaText(.textBase)
+        .foregroundStyle(ink)
+        .padding(.horizontal, pad)
+      Text(row.followedAt.flatMap { $0.isEmpty ? nil : Time.formatDateShort($0) } ?? "—")
+        .virgaText(.textBase)
+        .foregroundStyle(ink)
+        .lineLimit(1)
+        .padding(.horizontal, pad)
+      VStack(alignment: .trailing, spacing: 2) {
+        CleanupAction(
+          row: row, archive: archive, follow: follow, name: name, following: following, hidden: anySelected,
+          onUnfollowed: { onUnfollowed(row.did) })
+        if let error = follow.error(row.did) {
+          Text(error).virgaText(.textSm).foregroundStyle(theme.danger).fixedSize(horizontal: false, vertical: true)
+        }
+      }
+      .padding(.leading, pad)
+      .padding(.vertical, theme.rowPad)
+    }
+  }
+}
+
+/// Where the ticked rows are, for the table's tint under them.
+struct CleanupChosenRows: PreferenceKey {
+  static var defaultValue: [Anchor<CGRect>] { [] }
+  static func reduce(value: inout [Anchor<CGRect>], nextValue: () -> [Anchor<CGRect>]) {
+    value.append(contentsOf: nextValue())
   }
 }
 #endif

@@ -26,15 +26,37 @@
 //
 // The command palette opens from Search (the sidebar's, the app bar's) and
 // from ⌘K on a hardware keyboard; toasts show at the foot of the window.
+// New dashboard's dialog is the shell's (from the sidebar and the palette):
+// a dashboard made empty opens with ?edit=1, for customizing. The palette's
+// Customize this dashboard puts ?edit=1 in the address and makes the
+// dashboard's page again, which opens it customizing (ShellActions).
 //
-// Not here yet: New dashboard, the composer (New post goes to its address,
-// whose page says it isn't here yet), and the live sky.
+// Not here yet: the composer (New post goes to its address, whose page
+// says it isn't here yet), and the live sky.
 
 #if canImport(UIKit)
+import Observation
 import SwiftUI
 import VirgaArchive
 import VirgaCore
 import VirgaInsights
+
+/// What the shell does for the sidebar and the palette: New dashboard's
+/// dialog, and Customize's count (`customizing`, the key the dashboard's
+/// page is made again by).
+@MainActor
+@Observable
+final class ShellActions {
+  var creatingDashboard = false
+  var customizing = 0
+
+  /// `onCustomize`: ?edit=1 in the address, and the dashboard's page made
+  /// again, so it opens customizing.
+  func customize(_ dashboardId: String, navigator: ShellNavigator) {
+    navigator.navigate("/dashboard/\(dashboardId)?edit=1", keepQuery: false)
+    customizing += 1
+  }
+}
 
 public struct ShellView: View {
   @Environment(\.virgaTheme) private var theme
@@ -48,6 +70,7 @@ public struct ShellView: View {
   /// The sky beside the sidebar, moved by the page's scroll.
   @State private var deskSky = SkyScroll()
   @State private var toasts = ToastCenter()
+  @State private var actions = ShellActions()
 
   /// - Parameters:
   ///   - store: where the account's dashboards are kept.
@@ -83,8 +106,14 @@ public struct ShellView: View {
         .frame(width: 0, height: 0)
         .accessibilityHidden(true)
     }
+    .virgaDialog(
+      isPresented: Binding(get: { actions.creatingDashboard }, set: { actions.creatingDashboard = $0 }), title: "New dashboard"
+    ) {
+      NewDashboardDialog { actions.creatingDashboard = false }
+    }
     .environment(palette)
     .environment(toasts)
+    .environment(actions)
     .environment(\.showsSyncBanner, (!desk || collapsed) && !firstRun)
     .environment(\.virgaTheme, ShellFigureSize.declared(in: theme, sidebar: desk ? (collapsed ? .rail : .sidebar) : .phone))
     .accountDialogs(accountDialogs)
