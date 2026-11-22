@@ -421,14 +421,15 @@ struct DraftsPage: View {
 
   private func remove(_ row: JSONValue) async throws {
     guard let did else { return }
+    // The account first, as the web's does: a failure there is said as it is.
+    let agent = try await app.session.agentFor(did)
     do {
-      let agent = try await app.session.agentFor(did)
       try await Drafts.deleteDraft(agent, row["id"]?.stringValue, media: PostingPages.draftMedia(app, did))
     } catch {
       if Scopes.isMissingScopeError(error) {
         throw PostingPagesError("Virga needs permission to delete drafts. Sign in again to grant it.")
       }
-      let message = (error as? LocalizedError)?.errorDescription ?? ""
+      let message = PostingPages.message(error)
       throw PostingPagesError("The draft couldn’t be deleted. \(message.isEmpty ? "Try again." : message)")
     }
     toasts?.push("Draft deleted.")
@@ -481,7 +482,10 @@ struct HubCornerRow<Words: View, Action: View>: View {
           }
           .frame(maxWidth: .infinity, alignment: .leading)
           if let menu {
-            menu.padding(.trailing, -Measure.Settings.dashMenuOutset)
+            // Centred on the words' first line, its dots on the column's edge.
+            menu
+              .padding(.trailing, -Measure.Settings.dashMenuOutset)
+              .padding(.top, Measure.Hub.cornerMenuCentre - theme.points(ThemeKit.touchGhostIconButtonSize) / 2)
           }
         }
       } else {
@@ -555,6 +559,9 @@ struct ScheduleDraftDialog: View {
     }
     .interactiveDismissDisabled(busy)
     .task { await read() }
+    // The web reads the clock on every render: whether the time is too soon
+    // is judged against now, not when the dialog opened.
+    .onChange(of: when) { _, _ in now = SyncStatus.now() }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("schedule-draft-dialog")
   }
@@ -564,11 +571,14 @@ struct ScheduleDraftDialog: View {
   @ViewBuilder
   private func actions(tooSoon: Bool) -> some View {
     let cancel = Button("Cancel", action: onClose).buttonStyle(.virga).disabled(busy)
+    // The web's `title` on the button while the schedule has no open time.
+    let queueHelp: String = slot == nil ? "Your weekly schedule has no open time" : ""
     let queue = Button(slot.map { "Add to queue · \(HubModel.whenLabel(JSDate.toISOString($0).map(JSONValue.string), now: now))" } ?? "Add to queue") {
       go(queued: true)
     }
     .buttonStyle(.virga)
     .disabled(busy || slot == nil || !room.isEmpty)
+    .help(queueHelp)
     .accessibilityIdentifier("schedule-draft-queue")
     let confirm = Button(busy ? "Scheduling…" : "Schedule") { go(queued: false) }
       .buttonStyle(.virga(.primary))

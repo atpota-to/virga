@@ -60,6 +60,12 @@ final class PostingPagesUITests: XCTestCase {
     waitForTitle(app, title)
   }
 
+  /// A native menu's item, by its identifier or its title (a menu item may
+  /// read its hint after the title).
+  private func menuItem(_ app: XCUIApplication, _ identifier: String, _ title: String) -> XCUIElement {
+    app.buttons.matching(NSPredicate(format: "identifier == %@ OR label BEGINSWITH %@", identifier, title)).firstMatch
+  }
+
   /// Opens the first row's ⋯ in `list`; false when the list has none.
   private func openFirstMenu(_ app: XCUIApplication, in list: String) -> Bool {
     let container = element(app, list)
@@ -93,7 +99,7 @@ final class PostingPagesUITests: XCTestCase {
     snapshot(listed ? "posting-drafts" : "posting-drafts-empty")
     if listed && openFirstMenu(app, in: "drafts-list") {
       snapshot("posting-drafts-menu")
-      let schedule = app.buttons["Schedule…"]
+      let schedule = menuItem(app, "draft-schedule", "Schedule…")
       if schedule.waitForExistence(timeout: 5) {
         schedule.tap()
         if element(app, "schedule-draft-dialog").waitForExistence(timeout: 10) {
@@ -115,7 +121,7 @@ final class PostingPagesUITests: XCTestCase {
     snapshot("posting-posted")
     if posts && openFirstMenu(app, in: "posted-list") {
       snapshot("posting-posted-menu")
-      let timer = app.buttons["Put on a timer"]
+      let timer = menuItem(app, "posted-timer", "Put on a timer")
       if timer.waitForExistence(timeout: 5) {
         timer.tap()
         if element(app, "timer-dialog").waitForExistence(timeout: 10) {

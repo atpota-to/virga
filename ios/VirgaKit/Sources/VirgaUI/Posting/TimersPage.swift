@@ -124,8 +124,13 @@ struct TimersPage: View {
       settled.stop()
       scheduled.stop()
     }
-    .onChange(of: timers.data?.rows ?? []) { _, rows in reportDropped(rows) }
-    .onChange(of: settled.data?.rows ?? []) { _, rows in if let did { TimersReported.report(did, rows) } }
+    // On every answer, as the web's effects on `timers.data` and
+    // `settled.data` run: a first read with nothing counting down still
+    // reads the settled list once.
+    .onChange(of: timers.stamp) { _, _ in reportDropped(timers.data?.rows ?? []) }
+    .onChange(of: settled.stamp) { _, _ in
+      if let did, let rows = settled.data?.rows { TimersReported.report(did, rows) }
+    }
     .modifier(TimersCancelDialog(asking: $asking, onConfirm: callOff))
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("timers-page")
@@ -150,14 +155,14 @@ struct TimersPage: View {
       let limits = try? await ScheduleService.getLimits(req)
       return TimersScheduledRead(rows: list.rows, limits: limits)
     }
-    followSettled()
+    followSettled(open: history)
   }
 
   /// Every settled timer, read while the disclosure is open: a read of its
   /// own, so the lists above stay on screen while it runs.
-  private func followSettled() {
+  private func followSettled(open: Bool) {
     let req = self.req
-    settled.follow(key: "\(did ?? ""):settled", did: did, events: [PostingEvents.timersChangedEvent], enabled: req != nil && history) {
+    settled.follow(key: "\(did ?? ""):settled", did: did, events: [PostingEvents.timersChangedEvent], enabled: req != nil && open) {
       try await TimerService.listTimers(req, history: true)
     }
   }
@@ -272,15 +277,20 @@ struct TimersPage: View {
       }
       if !loading && !unreadable && !unavailable {
         Disclosure("Show settled timers") {
-          settledList
-            .onAppear {
-              history = true
-              followSettled()
-            }
-            .onDisappear {
-              history = false
-              followSettled()
-            }
+          // One container, there while the disclosure is open: the list
+          // inside it changes from bones to rows without reading this as
+          // closing and opening again.
+          VStack(alignment: .leading, spacing: 0) {
+            settledList
+          }
+          .onAppear {
+            history = true
+            followSettled(open: true)
+          }
+          .onDisappear {
+            history = false
+            followSettled(open: false)
+          }
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("timers-settled")

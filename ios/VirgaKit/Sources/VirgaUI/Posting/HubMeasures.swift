@@ -27,6 +27,9 @@ extension Measure {
     static let rowColumnGap: CGFloat = 16
     /// `.hub-row-main { gap: 4px }`
     static let rowLineGap: CGFloat = 4
+    /// On a phone, controls.css `.has-corner-menu .row-menu { top: calc(var(--row-pad) + 11px);
+    /// transform: translateY(-50%) }`: the ⋯'s middle 11 under the row's top padding.
+    static let cornerMenuCentre: CGFloat = 11
     /// `.hub-row-text { font-size: var(--text-md); line-height: 1.4; -webkit-line-clamp: 2 }`, a draft's 3.
     static let rowTextLineHeight: Double = 1.4
     static let rowTextLines = 2

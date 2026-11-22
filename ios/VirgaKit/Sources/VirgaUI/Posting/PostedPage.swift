@@ -104,7 +104,9 @@ struct PostedPage: View {
     }
     .task(id: did ?? "") { start() }
     .onDisappear { fresh.stop() }
-    .onChange(of: fresh.data?.rows ?? []) { _, _ in
+    // Each read of the first page starts the older pages over, as the web's
+    // effect on `fresh.data` does.
+    .onChange(of: fresh.stamp) { _, _ in
       moreRows = []
       moreCursor = nil
     }
@@ -175,15 +177,16 @@ struct PostedPage: View {
   private var toolbar: some View {
     let segmented = Segmented(
       label: "Show", options: PostedModel.postedFilters.map { SegmentedOption($0.value, $0.label) }, selection: $filter, size: .small)
+    // controls.css `.list-toolbar`: on a phone the search has its own line.
     if theme.isPhone {
-      VStack(alignment: .leading, spacing: theme.space3) {
+      VStack(alignment: .leading, spacing: Measure.Tools.toolbarRowGap) {
         SearchField("Search your posts", text: $query).accessibilityIdentifier("posted-search")
         segmented
       }
     } else {
-      HStack(alignment: .center, spacing: theme.space4) {
+      HStack(alignment: .center, spacing: Measure.Tools.toolbarColumnGap) {
         SearchField("Search your posts", text: $query)
-          .frame(maxWidth: Measure.Settings.selectMaxWidth)
+          .frame(minWidth: Measure.Tools.toolbarSearchMin, maxWidth: Measure.Tools.toolbarSearchMax)
           .accessibilityIdentifier("posted-search")
         segmented
         Spacer(minLength: 0)
@@ -347,8 +350,9 @@ struct PostedPage: View {
     if let composer { composer.open(intent) } else { navigate("/posting/compose") }
   }
 
-  /// `actionError(err, what)`.
-  private func actionError(_ error: any Error, _ what: String) -> String {
+  /// `actionError(err, what)`, for the page and its gates dialog.
+  @MainActor
+  static func actionError(_ error: any Error, _ what: String) -> String {
     if PostingPages.code(error) == "GONE" { return PostingPages.message(error) }
     if Scopes.isMissingScopeError(error) { return "Virga needs permission to do that. Sign in again to grant it." }
     let message = PostingPages.message(error)
@@ -371,7 +375,7 @@ struct PostedPage: View {
         try await fn(post, agent)
       } catch {
         if PostingPages.code(error) == "GONE" { removed.append(.string(uri)) }
-        self.error = actionError(error, what)
+        self.error = Self.actionError(error, what)
       }
     }
   }
@@ -406,12 +410,12 @@ struct PostedPage: View {
     do {
       _ = try await PostedModel.readPostNow(uri, agent: agent, transport: app.archiveEnvironment.transport)
     } catch {
-      if PostingPages.code(error) != "GONE" { throw PostingPagesError(actionError(error, "The post couldn’t be read.")) }
+      if PostingPages.code(error) != "GONE" { throw PostingPagesError(Self.actionError(error, "The post couldn’t be read.")) }
     }
     do {
       try await PostedModel.deletePost(uri, agent: agent)
     } catch {
-      throw PostingPagesError(actionError(error, "The post couldn’t be deleted."))
+      throw PostingPagesError(Self.actionError(error, "The post couldn’t be deleted."))
     }
     removed.append(.string(uri))
     _ = try? PostingEvents.emitPostsChanged(did, removed: [.string(uri)])
@@ -496,17 +500,18 @@ struct PostedGatesDialog: View {
     defer { busy = false }
     do {
       let agent = try await app.session.agentFor(did)
-      let kept: JSONValue? = state.quotesOnly ? state.value.json["reply"] : reply.map(JSONValue.array) ?? .null
-      try await Gates.updatePostGates(agent.gatesAgent, uri: state.post.uri, reply: kept, quotes: quotes)
+      // `state.quotesOnly ? state.value.reply : value.reply`
+      var kept: JSONValue = .null
+      if state.quotesOnly {
+        kept = state.value.json["reply"] ?? .null
+      } else if let reply {
+        kept = .array(reply)
+      }
+      _ = try await Gates.updatePostGates(agent.gatesAgent, uri: state.post.uri, reply: kept, quotes: quotes)
       onSaved()
       onClose()
     } catch {
-      if Scopes.isMissingScopeError(error) {
-        self.error = "Virga needs permission to do that. Sign in again to grant it."
-      } else {
-        let message = PostingPages.message(error)
-        self.error = "The settings couldn’t be saved. \(message.isEmpty ? "Try again." : message)"
-      }
+      self.error = PostedPage.actionError(error, "The settings couldn’t be saved.")
     }
   }
 }

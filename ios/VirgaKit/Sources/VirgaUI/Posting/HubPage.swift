@@ -69,7 +69,10 @@ struct HubPage: View {
       PostingPermissionNotice(did: did ?? "")
       columns
     }
-    .task(id: "\(did ?? "")|\(hasServer)|\(narrow)") { start(narrow: narrow) }
+    .task(id: "\(did ?? "")|\(hasServer)") { start() }
+    // Only the timers' read follows the width: the row of pages that shows
+    // their count is there only without the sidebar.
+    .task(id: "\(did ?? "")|\(hasServer)|\(narrow)") { followTimers(narrow: narrow) }
     .task { templates.start() }
     .onDisappear {
       templates.stop()
@@ -84,10 +87,15 @@ struct HubPage: View {
 
   // MARK: Reads
 
-  private func start(narrow: Bool) {
+  /// The long session's requester, or none.
+  private var req: VirgaBackend? {
+    app.session.capabilitiesFor(did).canSchedule ? app.session.backendFor(did) : nil
+  }
+
+  private func start() {
     let session = app.session
     let did = self.did
-    let req: VirgaBackend? = session.capabilitiesFor(did).canSchedule ? session.backendFor(did) : nil
+    let req = self.req
     let device = PostingPages.deviceId(app)
     let transport = app.archiveEnvironment.transport
     let key = did ?? ""
@@ -102,17 +110,21 @@ struct HubPage: View {
         overview: HubModel.scheduledOverview(.array(list.rows)),
         failedRows: list.rows.filter { $0["status"] == "failed" }, unavailable: list.unavailable)
     }
-    // Only the row of pages shows how many timers count down, and it is
-    // only there without the sidebar.
-    timers.follow(
-      key: "\(key):\(req != nil)", did: did, events: [PostingEvents.timersChangedEvent], enabled: req != nil && narrow
-    ) {
-      let list = try await TimerService.listTimers(req)
-      return HubModel.timersOverview(.array(list.rows))
-    }
     fresh.follow(key: key, did: did, events: [PostingEvents.postsChangedEvent]) {
       guard let did else { return [] }
       return try await PostingPages.authorFeed(did, limit: Measure.Hub.hubFeedPage, transport: transport).rows
+    }
+  }
+
+  /// Only the row of pages shows how many timers count down, and it is
+  /// only there without the sidebar.
+  private func followTimers(narrow: Bool) {
+    let req = self.req
+    timers.follow(
+      key: "\(did ?? ""):\(req != nil)", did: did, events: [PostingEvents.timersChangedEvent], enabled: req != nil && narrow
+    ) {
+      let list = try await TimerService.listTimers(req)
+      return HubModel.timersOverview(.array(list.rows))
     }
   }
 
@@ -210,7 +222,7 @@ struct HubPage: View {
 
   private func retry(_ row: JSONValue) {
     guard retrying == nil, let id = row["id"] else { return }
-    let req = app.session.backendFor(did)
+    let req = self.req
     retrying = id.jsString
     Task {
       defer { retrying = nil }
@@ -443,23 +455,27 @@ struct HubFailedRow: View {
     let when = HubWhen.parts(HubModel.whenLabel(row["scheduledFor"], now: now, weekday: false))
     let lead = HubWhen.failedLead(row, now: now)
     let busy = retrying != nil && retrying == row["id"]?.jsString
-    HubTimedRow(
-      day: ScheduleModel.rowStatus(row, now: now).label, time: [when.hour.isEmpty ? when.day : "\(when.day), \(when.hour)"],
-      dayTone: .failed, joinTime: true
-    ) {
+    // When it was due, "Nov 14," and "6:00 PM" each kept whole, so a
+    // narrow column breaks between them.
+    let due = when.hour.isEmpty ? [when.day] : ["\(when.day),", when.hour]
+    HubTimedRow(day: ScheduleModel.rowStatus(row, now: now).label, time: due, dayTone: .failed, joinTime: true) {
       VStack(alignment: .leading, spacing: Measure.Hub.rowLineGap) {
         HubRowText(text: HubModel.scheduledSnippet(row), placeholder: "")
-        // One run of words, so the two actions wrap with them.
+        // One run of words, so the two actions wrap with them. Laid out a
+        // word at a time, read as one sentence: the first word carries the
+        // lead's words for VoiceOver, then the two actions.
         FlowLayout(spacing: theme.space1, lineSpacing: 0, alignment: .firstTextBaseline) {
-          ForEach(Array(lead.text.split(separator: " ").enumerated()), id: \.offset) { _, word in
+          ForEach(Array(lead.text.split(separator: " ").enumerated()), id: \.offset) { index, word in
             Text(String(word))
+              .accessibilityLabel(lead.text)
+              .accessibilityHidden(index > 0)
           }
           HubInlineAction(title: lead.retry, disabled: retrying != nil, action: onRetry)
             .accessibilityIdentifier("hub-retry")
-          Text("or")
+          Text("or").accessibilityHidden(true)
           HStack(spacing: 0) {
-            HubInlineAction(title: "see what happened", disabled: false, action: onSee)
-            Text(".")
+            HubInlineAction(title: "see what happened", disabled: false, isLink: true, action: onSee)
+            Text(".").accessibilityHidden(true)
           }
         }
         .virgaText(.textSm, lineHeight: Measure.Hub.whyLineHeight)
@@ -477,6 +493,8 @@ struct HubInlineAction: View {
   @Environment(\.virgaTheme) private var theme
   let title: String
   let disabled: Bool
+  /// "see what happened" goes to a page, as the web's Link does.
+  var isLink = false
   let action: () -> Void
 
   var body: some View {
@@ -485,11 +503,13 @@ struct HubInlineAction: View {
         .virgaText(.textSm, weight: VirgaWeight.medium, lineHeight: Measure.Hub.whyLineHeight)
         .foregroundStyle(theme.ink)
         .underline()
+        .lineLimit(1)
+        .touchReach(horizontal: Measure.Hub.inlineReachHorizontal, vertical: Measure.Hub.inlineReachVertical)
     }
     .buttonStyle(.plain)
     .disabled(disabled)
     .opacity(disabled ? ThemeKit.disabledOpacity : 1)
-    .touchReach(horizontal: Measure.Hub.inlineReachHorizontal, vertical: Measure.Hub.inlineReachVertical)
+    .accessibilityAddTraits(isLink ? .isLink : [])
   }
 }
 
@@ -505,7 +525,8 @@ struct HubTimedRow<Words: View>: View {
   let day: String
   let time: [String]
   let dayTone: DayTone
-  /// A failed row's date and hour are one piece.
+  /// A failed row's date and hour ("Nov 14," "6:00 PM"): parts of one
+  /// time, a space between them, not a meta line's dot.
   var joinTime = false
   @ViewBuilder let words: () -> Words
 
@@ -538,10 +559,13 @@ struct HubTimedRow<Words: View>: View {
         .virgaText(.textMd, weight: dayTone == .failed ? VirgaWeight.semibold : VirgaWeight.medium, lineHeight: Measure.Hub.whenLineHeight)
         .foregroundStyle(dayInk)
       if !time.isEmpty {
-        FlowLayout(spacing: 0, lineSpacing: 0, alignment: .center) {
+        FlowLayout(spacing: joinTime ? theme.space1 : 0, lineSpacing: 0, alignment: .center) {
           ForEach(Array(time.enumerated()), id: \.offset) { index, part in
             if joinTime {
-              Text(part).virgaText(.textSm, lineHeight: Measure.Hub.whenLineHeight).foregroundStyle(theme.muted)
+              Text(part)
+                .virgaText(.textSm, lineHeight: Measure.Hub.whenLineHeight)
+                .foregroundStyle(theme.muted)
+                .lineLimit(1)
             } else {
               MetaPiece(isLast: index == time.count - 1) { Text(part).lineLimit(1) }
             }
@@ -566,7 +590,15 @@ struct HubTimedRow<Words: View>: View {
         }
       }
       ForEach(Array(time.enumerated()), id: \.offset) { index, part in
-        MetaPiece(isLast: index == time.count - 1) { Text(part).lineLimit(1) }
+        if joinTime {
+          Text(part)
+            .virgaText(.textSm, lineHeight: Measure.Hub.whyLineHeight)
+            .foregroundStyle(theme.muted)
+            .lineLimit(1)
+            .padding(.trailing, index == time.count - 1 ? 0 : theme.space1)
+        } else {
+          MetaPiece(isLast: index == time.count - 1) { Text(part).lineLimit(1) }
+        }
       }
     }
   }

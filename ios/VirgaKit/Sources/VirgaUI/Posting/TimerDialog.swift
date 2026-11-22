@@ -38,7 +38,8 @@ struct PostTimerTarget: Identifiable, Equatable {
     self.cid = cid
     self.extraUris = extraUris
     self.text = text
-    self.postedAt = postedAt
+    // `post.postedAt || null`: an empty time is no time.
+    self.postedAt = postedAt.flatMap { $0.isEmpty ? nil : $0 }
     self.reply = reply
   }
 
@@ -73,7 +74,8 @@ struct PostTimerSheet: ViewModifier {
           onArmed(row)
         }
       )
-      .presentationDetents(theme.isTablet ? [.large] : [.medium, .large])
+      // schedule.css: the timer dialog is a full-height sheet on a phone.
+      .presentationDetents([.large])
       .presentationBackground(theme.surface)
       .presentationCornerRadius(Measure.Dialog.radius)
     }
@@ -149,6 +151,10 @@ struct PostTimerDialog: View {
     }
     .interactiveDismissDisabled(!busy.isEmpty)
     .task(id: post.uri) { await read() }
+    // The web reads the clock on every render: "From when it went up (…)"
+    // and when the rule first acts move on as the rule or its start changes.
+    .onChange(of: rule) { _, _ in now = SyncStatus.now() }
+    .onChange(of: start) { _, _ in now = SyncStatus.now() }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("timer-dialog")
   }

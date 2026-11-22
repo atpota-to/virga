@@ -30,6 +30,9 @@ final class PostingLoad<Value> {
   private(set) var phase: Phase = .loading
   private(set) var data: Value?
   private(set) var error: (any Error)?
+  /// Moves on with every answer, the same or not: what the web's effects
+  /// on `data` (a new object each read) follow.
+  private(set) var stamp = 0
 
   @ObservationIgnored private var key: String?
   @ObservationIgnored private var enabled = true
@@ -79,6 +82,7 @@ final class PostingLoad<Value> {
         self.data = value
         self.error = nil
         self.phase = .ready
+        self.stamp += 1
       } catch {
         guard let self, mine == self.token, !(error is CancellationError) else { return }
         self.error = error
@@ -371,9 +375,11 @@ enum PostingPages {
   static func authorFeed(
     _ did: String, limit: Int, cursor: String? = nil, transport: any HTTPTransport
   ) async throws -> (rows: [JSONValue], cursor: String?) {
-    var params: QueryParams = ["actor": .string(did), "limit": .number(Double(limit)), "filter": "posts_with_replies"]
-    if let cursor { params = QueryParams(params.items.map { ($0.name, $0.value) } + [("cursor", .string(cursor))]) }
-    let body = try await PublicAppView.publicXrpc("app.bsky.feed.getAuthorFeed", params, transport: transport)
+    var items: [(String, JSONValue?)] = [
+      ("actor", .string(did)), ("limit", .number(Double(limit))), ("filter", .string("posts_with_replies")),
+    ]
+    if let cursor { items.append(("cursor", .string(cursor))) }
+    let body = try await PublicAppView.publicXrpc("app.bsky.feed.getAuthorFeed", QueryParams(items), transport: transport)
     let rows = (body["feed"]?.arrayValue ?? [])
       .filter { !($0["reason"]?.isTruthy ?? false) }
       .compactMap { HubModel.rowFromPostView($0["post"], did) }
