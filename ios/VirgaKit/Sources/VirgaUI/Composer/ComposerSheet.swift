@@ -191,6 +191,8 @@ struct ComposerBody: View {
     // TIMER: a post whose timer the writer hasn't chosen takes the default,
     // whenever the default or the state loaded changes (ComposerController+Timer.swift).
     .onChange(of: controller.defaultTimerKey, initial: true) { _, _ in controller.applyDefaultTimer() }
+    // An idle video with a file starts uploading, whichever way it arrived.
+    .onChange(of: controller.videoUploadKey, initial: true) { _, _ in controller.startVideoUploads() }
   }
 }
 
@@ -260,6 +262,12 @@ struct ComposerPosts: View {
     return nil
   }
 
+  /// An intent's template that's gone, or templates that couldn't be read.
+  private var templateError: String? {
+    if case .failed(let text, _)? = controller.loads["template"] { return text }
+    return nil
+  }
+
   var body: some View {
     let state = controller.state
     let replyLoad = controller.loads["reply"]
@@ -270,6 +278,10 @@ struct ComposerPosts: View {
         onRetry: { controller.retryReply() }, onRemove: { controller.dropReply() })
       if let quoteError {
         Callout(tone: .warn) { Text(quoteError) }
+      }
+      if let templateError {
+        Callout(tone: .warn) { Text(templateError) }
+          .accessibilityIdentifier("composer-template-error")
       }
       if controller.undoable, let undo = controller.threadUndo {
         Callout {

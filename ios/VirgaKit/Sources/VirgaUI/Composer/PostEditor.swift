@@ -119,6 +119,9 @@ struct PostEditor: View {
         caretRequest: caretRequest,
         focusRequest: focus,
         onCaret: { caret = $0 },
+        onSelection: { range in
+          controller.selections[postId] = TextSelection(start: range.location, end: range.location + range.length)
+        },
         onFocus: { controller.activeIndex = controller.indexOfPost(postId) },
         onRequestsDone: {
           controller.pendingCaret[postId] = nil
@@ -459,6 +462,8 @@ struct HighlightedTextView: UIViewRepresentable {
   var caretRequest: Int?
   var focusRequest: Bool
   var onCaret: (Int) -> Void
+  /// The whole selection, as it changes (the controller's `selectionOf`).
+  var onSelection: (NSRange) -> Void
   var onFocus: () -> Void
   var onRequestsDone: () -> Void
   var onPaste: (NSRange) -> Bool
@@ -532,12 +537,18 @@ struct HighlightedTextView: UIViewRepresentable {
     func textViewDidChange(_ textView: UITextView) {
       parent.text = textView.text
       parent.onCaret(textView.selectedRange.location + textView.selectedRange.length)
+      parent.onSelection(textView.selectedRange)
     }
 
     func textViewDidChangeSelection(_ textView: UITextView) {
-      let end = textView.selectedRange.location + textView.selectedRange.length
+      let range = textView.selectedRange
+      let end = range.location + range.length
       let report = parent.onCaret
-      DispatchQueue.main.async { report(end) }
+      let select = parent.onSelection
+      DispatchQueue.main.async {
+        report(end)
+        select(range)
+      }
     }
 
     func textViewDidBeginEditing(_ textView: UITextView) {

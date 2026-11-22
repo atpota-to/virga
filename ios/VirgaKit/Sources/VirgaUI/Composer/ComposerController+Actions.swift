@@ -138,6 +138,20 @@ extension ComposerController {
     dispatch(.setVideo(index: index, video: ComposerVideo(json: .object(json))))
   }
 
+  /// What the web's upload effect hangs on ([open, state.posts,
+  /// state.asDid]): each post's video, its status and its file, and the
+  /// account. ComposerBody runs startVideoUploads whenever it changes while
+  /// the sheet is up, so a video that arrives with a loaded post (a draft, a
+  /// kept post's media, a scheduled post) starts uploading too.
+  var videoUploadKey: String {
+    let posts = state.posts.map { (post: PostDraft) -> String in
+      guard let video = post.video else { return "\(post.id):-" }
+      let file = video.file?.ref ?? video.file?.name ?? ""
+      return "\(post.id):\(video.status):\(file)"
+    }
+    return state.asDid + "|" + posts.joined(separator: ",")
+  }
+
   /// A video uploads as soon as it's added, as the account the post goes
   /// out as; changing that account starts it again.
   func startVideoUploads() {
@@ -339,7 +353,8 @@ extension ComposerController {
     var set = model.actions(
       defaultAction: settings.defaultAction, queue: settings.queue.json,
       caps: ComposerCaps(canPost: caps.canPost, canSchedule: caps.canSchedule), signedOut: signedOut,
-      missingMedia: false, postNow: postNow && state.schedule == nil, authMode: session.authMode)
+      missingMedia: !DraftMedia.missingDraftMedia(state.json).isEmpty, postNow: postNow && state.schedule == nil,
+      authMode: session.authMode)
     let replyBlocks: Bool
     switch loads["reply"] {
     case .loading?: replyBlocks = true
@@ -436,6 +451,11 @@ extension ComposerController {
     defer { endBusy(attempt) }
     var late = false
     do {
+      // The same post twice within a couple of minutes is refused before
+      // anything is asked (publish.js's guard, which publish remembers).
+      if Publish.defaultDuplicateGuard.isDuplicate(Publish.publishSignature(s, did)) {
+        throw PublishError("DUPLICATE", "This was just posted. Change something to post it again.")
+      }
       // TIMER: no free timer of its kind is asked about before anything goes
       // (ComposerController+Timer.swift).
       guard let roomed = await askNoFreeTimer(s, fit: fit) else { return }
@@ -478,7 +498,9 @@ extension ComposerController {
         throw error
       }
       late = watch.stop()
-      afterPublished(s, result, late: late)
+      // Awaited: the composer stays busy (and its buttons off) until the
+      // post's source, a scheduled copy or a draft, is settled.
+      await afterPublished(s, result, late: late)
     } catch {
       if late { return }
       let view = ComposerSubmit.publishErrorView(error)
@@ -537,7 +559,7 @@ extension ComposerController {
     }
   }
 
-  func afterPublished(_ s: ComposerState, _ result: ComposerPublishResult, late: Bool) {
+  func afterPublished(_ s: ComposerState, _ result: ComposerPublishResult, late: Bool) async {
     let did = s.asDid
     _ = try? PostingEvents.emitPostsChanged(did, added: result.written)
     let posted = ComposerSubmit.postedToast(account: accountJSON(did), did: did, root: result.root)
@@ -550,15 +572,11 @@ extension ComposerController {
     // SCHEDULE: a post that came from a scheduled row takes the row off
     // (finishSource's scheduled half); if it can't, the post stays to try again.
     if s.source?.kind == "scheduled" {
-      Task {
-        guard await self.finishScheduledSource(s) else { return }
-        if late && self.changedSince(s) { return }
-        self.resetAfterSend(did)
-      }
-      return
+      guard await finishScheduledSource(s) else { return }
+    } else {
+      // A post that came from a draft: the draft goes (ComposerSubmit's finishSource).
+      await finishDraftSource(s)
     }
-    // A post that came from a draft: the draft goes (ComposerSubmit's finishSource).
-    Task { await finishDraftSource(s) }
     // A post that landed after the composer gave up waiting: only clear
     // what the writer hasn't changed since.
     if late && changedSince(s) { return }
