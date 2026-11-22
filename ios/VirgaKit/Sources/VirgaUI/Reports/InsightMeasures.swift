@@ -50,10 +50,6 @@ extension Measure.Reports {
   static let tileGap: CGFloat = 8
   static let phoneTilePaddingTop: CGFloat = 12
   static let tileDescSpaceAbove: CGFloat = 4
-  /// controls.css's touch `.info-tip-button { margin: -8px -6px }`: the (i)
-  /// beside a note's words takes no more of the line than its 20 points.
-  static let infoTipMarginV: CGFloat = 8
-  static let infoTipMarginH: CGFloat = 6
   /// `.chart-notes-list { margin-top: 18px }`, its rows at least 46 tall in
   /// a 108 | 1fr | auto grid (84 at 760 and under), 12 apart.
   static let notesListSpaceAbove: CGFloat = 18
