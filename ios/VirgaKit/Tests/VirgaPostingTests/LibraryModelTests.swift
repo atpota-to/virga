@@ -7,6 +7,7 @@
 
 import Foundation
 import Testing
+import VirgaArchive
 import VirgaCore
 import VirgaNetwork
 import VirgaTestSupport
@@ -207,7 +208,7 @@ let wrenReply: JSONValue = [
     #expect(store.entry(selfDid, "feeds").status == "loading")
     #expect(store.entry(selfDid, "lists").status == "loading")
     #expect(lib.suggested.status == "loading")
-    await lib.templates.effectLoad?.value
+    _ = await lib.templates.effectLoad?.value
     await lib.settled()
     let first = lib.suggested
     #expect(first.status == "ready")
@@ -369,7 +370,7 @@ let wrenReply: JSONValue = [
     templateSession.repos[selfDid] = repo
     let lib = model(sources: src, store: store)
     lib.start()
-    await lib.templates.effectLoad?.value
+    _ = await lib.templates.effectLoad?.value
     await lib.settled()
     #expect(asked.wrappedValue == [[.string(quoted)]])
     #expect(lib.items("templates").first?.label == "Template · quotes a post")
@@ -413,5 +414,14 @@ let wrenReply: JSONValue = [
     lib.setOpen(true)
     #expect(lib.openId != nil)
     #expect(lib.openId != first)
+  }
+}
+
+@Suite struct LibraryTypedRows {
+  @Test func aTypedArchiveRowIsOnTheShelfItsJSONIsOn() throws {
+    for c in try LibraryModelParity.cases("isOwnThreadRow") {
+      guard let json = c.input["row"], let row = PostRow(json: json) else { continue }
+      check(.bool(Library.isOwnThreadRow(row, c.string("selfDid"))), c)
+    }
   }
 }

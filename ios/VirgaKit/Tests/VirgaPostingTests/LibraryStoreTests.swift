@@ -274,8 +274,8 @@ let otherDid = "did:plc:other"
   }
 
   @Test func readsAStaleShelfAgainInTheBackgroundOnTheNextOpenKeepingWhatIsShown() async {
-    var t: Double = 0
-    let store = LibraryStore(now: { t })
+    let t = Locked<Double>(0)
+    let store = LibraryStore(now: { t.wrappedValue })
     let gate = Gate()
     let calls = Locked(0)
     let sources = FakeShelfSources()
@@ -289,7 +289,7 @@ let otherDid = "did:plc:other"
     #expect(store.ensure(did: selfDid, shelfId: "links", sources: sources, openId: 2) == nil)
     #expect(sources.count("links") == 1)
 
-    t = LibraryStore.staleMs
+    t.set(LibraryStore.staleMs)
     let refresh = store.ensure(did: selfDid, shelfId: "links", sources: sources, openId: 3)
     #expect(store.entry(selfDid, "links").status == "ready")
     #expect(store.entry(selfDid, "links").refreshing)
@@ -316,8 +316,8 @@ let otherDid = "did:plc:other"
   }
 
   @Test func keepsTheCopyOnScreenWhenABackgroundRefreshFails() async {
-    var t: Double = 0
-    let store = LibraryStore(now: { t })
+    let t = Locked<Double>(0)
+    let store = LibraryStore(now: { t.wrappedValue })
     let fail = Locked(false)
     let sources = FakeShelfSources()
     sources.onLinks = { _, _ in
@@ -326,7 +326,7 @@ let otherDid = "did:plc:other"
     }
     await store.ensure(did: selfDid, shelfId: "links", sources: sources, openId: 1)?.value
     fail.set(true)
-    t = LibraryStore.staleMs
+    t.set(LibraryStore.staleMs)
     await store.ensure(did: selfDid, shelfId: "links", sources: sources, openId: 2)?.value
     #expect(store.entry(selfDid, "links").status == "ready")
     #expect(!store.entry(selfDid, "links").refreshing)
@@ -431,8 +431,8 @@ let otherDid = "did:plc:other"
   }
 
   @Test func readsWhatTemplatesQuoteOncePerFiveMinutesKeepingWhatAFailedReadHad() async {
-    var t: Double = 0
-    let store = LibraryStore(now: { t })
+    let t = Locked<Double>(0)
+    let store = LibraryStore(now: { t.wrappedValue })
     let quoted = "at://did:plc:self/app.bsky.feed.post/q"
     let templates: [JSONValue] = [
       ["embed": ["$type": "app.bsky.embed.record", "record": ["uri": .string(quoted), "cid": "c"]]],
@@ -453,7 +453,7 @@ let otherDid = "did:plc:other"
     #expect(store.embeds(selfDid)?[quoted] == ["uri": .string(quoted)])
     await store.hydrateTemplateEmbeds(did: selfDid, sources: sources, templates: templates)
     #expect(asked.wrappedValue.count == 1)
-    t = LibraryStore.staleMs
+    t.set(LibraryStore.staleMs)
     empty.set(true)
     await store.hydrateTemplateEmbeds(did: selfDid, sources: sources, templates: templates)
     #expect(asked.wrappedValue.count == 2)

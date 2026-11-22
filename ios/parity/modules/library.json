@@ -5,24 +5,62 @@
   "summary": "The library: posts, saved posts, links, feeds and lists to quote or attach.",
   "files": {
     "src/posting/library/libraryUi.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "note": "LibraryUI. initialShelf takes the shelf the dialog was asked to open on (the web's `context?.shelf`) rather than the whole context; templateContextFrom takes the context as LibraryContextInput (a template context, or the dialog's { state, reply }) and the clock its `today` is read on.",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Library/LibraryUI.swift"
+      ],
+      "fixtures": [
+        "library.ui"
+      ],
+      "synced": "2005cfcf5f04"
     },
     "src/posting/library/model.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "note": "Library (an enum: LibraryModel is useLibrary's port). LibraryItem, LibraryPlan, LibraryAttachment and LibraryPreview encode to the web's objects; LibraryItem keeps members it doesn't model in `extra`. A post's date and a context's `today` are read on a LibraryClock (the web's new Date(), activeLocale() and the runtime's zone). The composer's state is the web's ComposerState object as JSONValue: the composer is another chain's port, and the merge can add an overload over its Swift type. Deliberate differences, in input lexicon-valid views never hold: a non-string uri, cid, url or at is kept as its String form (the web keeps the value, and where it would throw a TypeError on such a shape, reads it the same way); previewFor's context nil means the web's undefined (a null context beside a state isn't told apart). The editorDrafts re-exports are EditorDrafts' own functions.",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Library/Library.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Library/Library+Types.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Library/Library+Suggest.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Library/Library+Preview.swift"
+      ],
+      "fixtures": [
+        "library.model"
+      ],
+      "synced": "284ee7663ee8"
     },
     "src/posting/library/sources.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "note": "publicXrpc, getPosts, resolveHandle, chunk and GET_POSTS_MAX are VirgaNetwork's PublicAppView (fixture network.publicAppView); the rest is LibrarySources, its bound sources AccountLibrarySources (a LibraryShelfSources). publish/linkCard.js's fetchLinkCard is another chain's port and comes in as a FetchLinkCard closure with the web's signature (LibrarySources.noLinkCard finds none); the merge wires the composer's. The archive is read through an injected OpenArchiveStore (LibraryEnvironment.archive(files:) opens VirgaArchive's store). Cancelling the task is the web's abort. Deliberate differences: a cursor the AppView sends as a number comes back as its String form (fetchOwnPosts still tells a repeat by the value sent), and hydrateEmbedViews' map lists posts, then feeds, then lists, where the web's order follows the answers.",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Library/LibrarySources.swift",
+        "ios/VirgaKit/Sources/VirgaNetwork/Posting/Library/PublicAppView.swift"
+      ],
+      "fixtures": [
+        "library.sources",
+        "network.publicAppView"
+      ],
+      "synced": "f503898c9178"
     },
     "src/posting/library/store.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "note": "LibraryStore (@MainActor @Observable, LibraryStore.shared for the app; `version` is what views watch). The web keeps the store in memory, not in IndexedDB or localStorage, and so does the port: nothing is persisted. ensure hands back the load it started (a Task) and retry, loadMore and hydrateTemplateEmbeds are async, where the web returns promises; listeners can't throw. When both first-page reads of the feeds shelf fail, the feeds read's error is kept. The pure helpers (postsSource, buildShelfItems, templateShelf, remoteQueryFor) are in LibraryStore+Shelves.swift, with fixtures; the store itself is held to store.test.js by LibraryStoreBehaviour.",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Library/LibraryStore.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Library/LibraryStore+Shelves.swift"
+      ],
+      "fixtures": [
+        "library.store"
+      ],
+      "synced": "522810794d41"
     },
     "src/posting/library/useLibrary.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "note": "LibraryModel (@MainActor @Observable) over a LibrarySession (SessionModel conforms: agentFor and the accounts' handles), a TemplatesModel and LibraryStore. The hook's lifetime maps to init (first render), start() (mount), setOpen(_:) and update(did:reply:selfHandle:quoteSlotLocked:) (new props) and stop() (unmount). The web's effects run after each of those and after every store emit or template service change, each only when what it depends on moved; the reply's suggestions, which the web computes while rendering once their sources settle, are frozen at the first read or change after that. The debounce timer, clock, card service, archive and use-count store are injected (LibraryEnvironment). The archive is read from the account's analytics store, as the web reads it, not through ArchiveModel. planFor's signal is the task's cancellation. Behaviour tests (LibraryModelBehaviour) port useLibrary.test.js and cover the effects and the debounced search.",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Library/LibraryModel.swift"
+      ],
+      "synced": "39a6b982ea1f"
     }
   }
 }

@@ -442,6 +442,12 @@ public enum Library {
     return same(replyTo, selfDid)
   }
 
+  /// isOwnThreadRow for the archive's typed row.
+  public static func isOwnThreadRow(_ row: PostRow?, _ selfDid: String?) -> Bool {
+    guard let replyTo = row?.replyTo, !replyTo.isEmpty else { return true }
+    return selfDid.map { replyTo.jsEquals($0) } ?? false
+  }
+
   /// A link `{ url, title, description, image, postUri, createdAt }` as an item.
   public static func itemFromLink(_ link: JSONValue?) -> LibraryItem {
     let host = hostOf(link?["url"])
