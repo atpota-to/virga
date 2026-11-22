@@ -391,6 +391,9 @@ extension ComposerController {
 
   func runAction(_ action: String) {
     guard busy == nil, !adviserReading else { return }  // ADVISER
+    // A tag still being typed is part of what goes out (the web commits it
+    // as the field loses focus to the button).
+    commitTagDraft()
     switch action {
     case PublishActions.post:
       publishTask = Task { await submitPost() }
@@ -405,6 +408,7 @@ extension ComposerController {
 
   /// Sending the primary way from the keyboard (⌘↩).
   func sendFromKeyboard() {
+    commitTagDraft()
     let set = actionSet
     guard !disabled else { return }
     let a = set.actions[set.primary]
@@ -602,6 +606,7 @@ extension ComposerController {
     scheduling.forget()  // SCHEDULE
     notices = []
     showTags = false
+    tagDraft = ""
     error = nil
     closeSheet()
   }

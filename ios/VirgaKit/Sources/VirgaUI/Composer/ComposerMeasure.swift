@@ -34,9 +34,32 @@ enum ComposerMeasure {
   static let optionsRowGap: CGFloat = 2
   static let optionsGap: CGFloat = 18
   static let optionsTop: CGFloat = 10
-  /// `.composer-option { gap: 6px; min-height: 32px }`
+  /// `.composer-option { gap: 6px; min-height: 32px }`, its picture 16
+  /// (lucide's `size={16}`), a phone's chevron 15.
   static let optionGap: CGFloat = 6
   static let optionHeight: CGFloat = 32
+  static let optionIcon: CGFloat = 16
+  static let optionChevron: CGFloat = 15
+  /// `.composer-options { padding-right: 40px }`: the room the ⋯ keeps.
+  static let optionsMoreRoom: CGFloat = 40
+  /// `.composer-more { position: absolute; top: 11px; right: -7px }`
+  static let moreTop: CGFloat = 11
+  static let moreRight: CGFloat = 7
+  /// `.composer-options > .tags-field { padding: 6px 0 2px }`; a phone's
+  /// `14px 0 16px`, on a hairline.
+  static let tagsFieldTop: CGFloat = 6
+  static let tagsFieldBottom: CGFloat = 2
+  static let phoneTagsFieldTop: CGFloat = 14
+  static let phoneTagsFieldBottom: CGFloat = 16
+  /// A phone's `.composer-option { gap: 12px; min-height: 52px }`, and
+  /// More's rows `.composer-option--sub { padding-left: 28px }`.
+  static let phoneOptionGap: CGFloat = 12
+  static let phoneOptionHeight: CGFloat = 52
+  static let subRowInset: CGFloat = 28
+  /// `.composer-timer-note { margin-top: -4px }`, under the composer's gap.
+  static let noteLift: CGFloat = 4
+  /// A phone's `.composer-options + .when-panel { padding-top: 4px; border-top: 0 }`
+  static let whenPanelUnderRows: CGFloat = 4
   /// `.image-grid { gap: 6px }`, `.image-tile { min-height: 96px; aspect-ratio: 4/3 }`
   static let gridGap: CGFloat = 6
   static let tileMinHeight: CGFloat = 96

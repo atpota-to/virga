@@ -39,13 +39,22 @@ struct ComposerWhenPanel: View {
   }
 
   private func panel(mode: String) -> some View {
-    VStack(alignment: .leading, spacing: Measure.Schedule.panelGap) {
-      FlowLayout(spacing: Measure.Schedule.panelHeadGap, lineSpacing: Measure.Schedule.panelHeadLineGap, alignment: .firstTextBaseline) {
-        FieldLabel(mode == "queue" ? "Into your weekly queue" : "Schedule for later")
-        Button("Post now instead") { controller.postNowInstead() }
-          .buttonStyle(.linkAction)
-          .disabled(disabled)
-          .accessibilityIdentifier("when-post-now")
+    // On a phone the settings' rows above already end on a hairline, so
+    // the panel right under them draws no rule of its own (4 of padding).
+    let underRows = theme.composerNarrow && !controller.optionsNoteShown
+    return VStack(alignment: .leading, spacing: Measure.Schedule.panelGap) {
+      // What it is on the left, the way back to posting now on the right,
+      // on one baseline; wrapped when they don't fit.
+      ViewThatFits(in: .horizontal) {
+        HStack(alignment: .firstTextBaseline, spacing: Measure.Schedule.panelHeadGap) {
+          head(mode: mode)
+          Spacer(minLength: 0)
+          postNow
+        }
+        FlowLayout(spacing: Measure.Schedule.panelHeadGap, lineSpacing: Measure.Schedule.panelHeadLineGap, alignment: .firstTextBaseline) {
+          head(mode: mode)
+          postNow
+        }
       }
       if mode == "at" {
         picker
@@ -53,12 +62,25 @@ struct ComposerWhenPanel: View {
         queuePreview
       }
     }
-    .padding(.top, Measure.Schedule.panelTop)
-    .overlay(alignment: .top) { Rectangle().fill(theme.line).frame(height: 1) }
+    .padding(.top, underRows ? ComposerMeasure.whenPanelUnderRows : Measure.Schedule.panelTop)
+    .overlay(alignment: .top) {
+      if !underRows { Rectangle().fill(theme.line).frame(height: 1) }
+    }
     .disabled(disabled)
     .accessibilityElement(children: .contain)
     .accessibilityLabel("When it goes out")
     .accessibilityIdentifier("when-panel")
+  }
+
+  private func head(mode: String) -> some View {
+    FieldLabel(mode == "queue" ? "Into your weekly queue" : "Schedule for later")
+  }
+
+  private var postNow: some View {
+    Button("Post now instead") { controller.postNowInstead() }
+      .buttonStyle(.linkAction)
+      .disabled(disabled)
+      .accessibilityIdentifier("when-post-now")
   }
 
   private var picker: some View {

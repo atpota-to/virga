@@ -91,18 +91,25 @@ struct LanguagePicker: View {
 
 /// The post's tags: words Bluesky files the post under without showing
 /// them in the text. A comma or Return between them; a leading "#" is
-/// dropped, repeats are merged, at most eight.
+/// dropped, repeats are merged, at most eight. The word being typed is the
+/// composer's (`draft`), so it is committed when the field loses focus and
+/// before the post goes out (`onCommit`), as the web's blur and ⌘↩ do.
 struct TagsField: View {
   @Environment(\.virgaTheme) private var theme
   let tags: [String]
+  @Binding var draft: String
   let disabled: Bool
+  /// A phone's: the row right over it already says Tags, so the name is
+  /// kept for VoiceOver only.
+  var bareLabel = false
+  let onCommit: () -> Void
   let onChange: ([String]) -> Void
-  @State private var draft = ""
+  @FocusState private var focused: Bool
 
   var body: some View {
     let full = tags.count >= Tags.maxTags
-    VStack(alignment: .leading, spacing: theme.space2) {
-      FieldLabel("Tags")
+    VStack(alignment: .leading, spacing: theme.points(ThemeKit.fieldGap)) {
+      if !bareLabel { FieldLabel("Tags").accessibilityHidden(true) }
       FieldHint("Not shown in the post, but Bluesky files it under them. Separate them with commas; up to \(Tags.maxTags).")
       TokenRow {
         ForEach(tags, id: \.self) { tag in
@@ -111,27 +118,23 @@ struct TagsField: View {
           }
         }
       }
-      TextField(
-        full ? "That’s the most a post can have" : tags.isEmpty ? "gardening, repair" : "Another tag", text: $draft
-      )
-      .virgaField()
-      .disabled(disabled || full)
-      .autocorrectionDisabled()
-      .textInputAutocapitalization(.never)
-      .submitLabel(.done)
-      .onSubmit { if !draft.jsTrimmed().isEmpty { commit(draft) } }
-      .onChange(of: draft) { _, next in
-        if next.contains(",") { commit(next) }
-      }
-      .accessibilityLabel("Tags")
-      .accessibilityIdentifier("tags-input")
+      VirgaTextField(full ? "That’s the most a post can have" : tags.isEmpty ? "gardening, repair" : "Another tag", text: $draft)
+        .virgaField()
+        .focused($focused)
+        .disabled(disabled || full)
+        .autocorrectionDisabled()
+        .textInputAutocapitalization(.never)
+        .submitLabel(.done)
+        .onSubmit { if !draft.jsTrimmed().isEmpty { onCommit() } }
+        .onChange(of: draft) { _, next in
+          if next.contains(",") { onCommit() }
+        }
+        .onChange(of: focused) { _, now in
+          if !now && !draft.jsTrimmed().isEmpty { onCommit() }
+        }
+        .accessibilityLabel("Tags")
+        .accessibilityIdentifier("tags-input")
     }
-  }
-
-  private func commit(_ text: String) {
-    let next = Tags.normalizeTags(tags + text.components(separatedBy: ","))
-    if next.count != tags.count || zip(next, tags).contains(where: { !$0.jsEquals($1) }) { onChange(next) }
-    draft = ""
   }
 }
 

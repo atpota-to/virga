@@ -146,6 +146,9 @@ public final class ComposerController {
   var recordLoading: Set<String> = []
   var mediaNote = ""
   var showTags = false
+  /// The tag being typed in the tags field, not yet ended with Return or a
+  /// comma: committed when the field loses focus and before the post is sent.
+  var tagDraft = ""
   var dialog: ComposerDialog?
   var ask: ComposerAsk?
   var threadUndo: JSONValue?
