@@ -364,7 +364,9 @@ public final class FakeAgent: Sendable {
   ///   - did: the account (one of `world`'s)
   ///   - latency: simulated delay per call, in ms (writes take four times as long)
   ///   - scope: reads the scope the session was granted now (a sign-in can
-  ///     change it, as turning Defense on does); the world's own by default
+  ///     change it, as turning Defense on does); `AppConfig.oauthScope` by
+  ///     default, as the web's. The harness's agents read their world's
+  ///     grant (`{ world.grantOf(did) }`)
   ///   - appview: 'ok', 'failopen' or 'flaky': whether getProfiles counts
   ///     known followers
   ///   - sweepCounter: counts follower sweeps (Mira's churn); one in memory
@@ -388,7 +390,7 @@ public final class FakeAgent: Sendable {
     let churn: FollowerChurn? =
       did.jsEquals(World.me.did) ? world.world(did).map { FollowerChurn($0, counter: sweepCounter ?? FakeXrpc.memoryCounter()) } : nil
     core = Core(
-      latency: latency, scope: scope ?? { [world] in world.world(did)?.scope ?? AppConfig.oauthScope }, appview: appview,
+      latency: latency, scope: scope ?? { AppConfig.oauthScope }, appview: appview,
       churn: churn, clock: clock, tids: tids)
   }
 

@@ -7577,6 +7577,94 @@
       ]
     },
     {
+      "id": "default-scope",
+      "fn": "agent",
+      "input": {
+        "name": "default-scope",
+        "search": "?scope=read",
+        "defaultScope": true,
+        "steps": [
+          {
+            "nsid": "com.atproto.repo.createRecord",
+            "input": {
+              "repo": "did:plc:virgaharnessmira2zq4x",
+              "collection": "app.bsky.feed.post",
+              "rkey": "abc",
+              "record": {
+                "$type": "app.bsky.feed.post",
+                "text": "allowed",
+                "createdAt": "2026-11-14T23:46:40.000Z"
+              }
+            }
+          },
+          {
+            "nsid": "app.bsky.draft.getDrafts",
+            "input": {
+              "limit": 1
+            },
+            "proxy": true
+          },
+          {
+            "nsid": "app.bsky.actor.getProfiles",
+            "input": {
+              "actors": [
+                "did:plc:virgaharnesslab7k2pq"
+              ]
+            }
+          }
+        ]
+      },
+      "output": [
+        {
+          "result": {
+            "success": true,
+            "headers": {},
+            "data": {
+              "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/abc",
+              "cid": "bafyreige726karwfnwy6pwsabxc5ijrcqssayiz5cuglawzpkhcbuihlze",
+              "commit": {
+                "cid": "bafyharnesscommit",
+                "rev": "3n2conzoy2222"
+              },
+              "validationStatus": "valid"
+            }
+          }
+        },
+        {
+          "result": {
+            "success": true,
+            "headers": {},
+            "data": {
+              "drafts": [
+                {
+                  "id": "3n25nq6ri223c",
+                  "draft": {
+                    "posts": [
+                      {
+                        "text": "Half-finished thought about bus shelters and who they are really for."
+                      }
+                    ],
+                    "langs": [
+                      "en"
+                    ]
+                  },
+                  "createdAt": "2026-11-12T23:46:40.000Z",
+                  "updatedAt": "2026-11-12T23:46:40.000Z"
+                }
+              ],
+              "cursor": "1"
+            }
+          }
+        },
+        {
+          "$throws": "Missing required scope \"rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview\"",
+          "name": "XRPCError",
+          "status": 403,
+          "error": "ScopeMissingError"
+        }
+      ]
+    },
+    {
       "id": "flaky",
       "fn": "agent",
       "input": {

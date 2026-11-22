@@ -69,8 +69,12 @@ import VirgaTestSupport
   static func run(_ c: ParityCase) async throws -> JSONValue {
     let world = DemoNetwork.world(c["search"].stringValue ?? "")
     let did = c["did"].stringValue ?? World.me.did
+    // `scope: () => world.scope`, as the generator gives it, or none.
+    let grant: @Sendable () -> String? = { world.world(did)?.scope }
+    let scope = c["defaultScope"].isTruthy ? nil : grant
     let agent = FakeAgent(
-      world: world, did: did, appview: c["appview"].stringValue ?? "ok", sweepCounter: FakeXrpc.memoryCounter(),
+      world: world, did: did, scope: scope, appview: c["appview"].stringValue ?? "ok",
+      sweepCounter: FakeXrpc.memoryCounter(),
       clock: .instant(now: DemoNetwork.now), tids: TIDClock(clockId: 0))
     var minted: [String] = []
     var out: [JSONValue] = []

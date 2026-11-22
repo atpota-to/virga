@@ -739,6 +739,30 @@ const SCENARIOS = [
     ],
   },
   {
+    // An agent made without a scope has OAUTH_SCOPE, whatever its world
+    // was granted.
+    name: 'default-scope',
+    search: '?scope=read',
+    defaultScope: true,
+    steps: [
+      {
+        nsid: `${repo}.createRecord`,
+        input: {
+          repo: ME.did,
+          collection: 'app.bsky.feed.post',
+          rkey: 'abc',
+          record: post('allowed'),
+        },
+      },
+      {
+        nsid: 'app.bsky.draft.getDrafts',
+        input: { limit: 1 },
+        proxy: true,
+      },
+      { nsid: 'app.bsky.actor.getProfiles', input: { actors: [LAB.did] } },
+    ],
+  },
+  {
     name: 'flaky',
     appview: 'flaky',
     steps: [
@@ -987,14 +1011,14 @@ export default async function cases() {
     ...(await each(
       'agent',
       SCENARIOS.map((s) => ({ $id: s.name, ...s })),
-      ({ search = '', did = ME.did, appview, steps }) =>
+      ({ search = '', did = ME.did, appview, defaultScope, steps }) =>
         atTime(NOW, async () => {
           const worlds = worldsFor(search, NOW);
           const world = worlds.find((w) => w.me.did === did);
           let sweeps = 0;
           const agent = createFakeAgent(world, {
             worlds,
-            scope: () => world.scope,
+            ...(defaultScope ? {} : { scope: () => world.scope }),
             appview,
             sweepCounter: { next: () => ++sweeps },
           });

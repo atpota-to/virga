@@ -16,7 +16,8 @@
 // call to the account's fake agent (FakeAgent) as the account named by the
 // token, and answers as server/oauth/handlers/proxy.js and uploadBlob.js
 // answer: `{ success: true, data }`, or `{ success: false, error, code }`
-// with the upstream status. The refusals before that (no token, a token
+// with the upstream status, a read through another AppView that fails there
+// asked once more of Bluesky's. The refusals before that (no token, a token
 // the server doesn't know, a refused grant) are the web fake's own.
 //
 // Another addition, for the demo's sign-in sheet: /api/oauth/login, as
@@ -111,8 +112,8 @@ public enum FakeServer {
     var params: [(String, JSONValue)] = []
     func index(_ key: String) -> Int? { params.firstIndex { $0.0.jsEquals(key) } }
     // `params = {}` is a plain object, and `key in params` sees its
-    // prototype's keys too (server/oauth/handlers/proxy.js; a web bug kept,
-    // see WEB-BUGS.md): a param named after one is first
+    // prototype's keys too (server/oauth/handlers/proxy.js; a bug of the
+    // real server's, kept): a param named after one is first
     // `[].concat(<function>, value)`, which JSON holds as `[null, value]`.
     // `__proto__=x` sets the object's prototype to `[<prototype>, 'x']`, so
     // it is never a param of its own, and from then on the array's keys
@@ -281,7 +282,7 @@ public final class DemoServer: Sendable {
   ///   - randomBytes: the tokens' randomness (`crypto.getRandomValues`).
   ///   - agents: the account's fake agent, which the proxy forwards to (the
   ///     harness's `agentFor`). By default one with no latency, reading
-  ///     the world's grant at each call.
+  ///     its world's grant at each call, as agentFor's do.
   public init(
     world: DemoWorld,
     terms: String = "agreed",
@@ -301,7 +302,8 @@ public final class DemoServer: Sendable {
         guard world.world(did) != nil else { throw DemoWorldError.noAccount(did) }
         return made.withLock { held in
           if let agent = held[JSKey(did)] { return agent }
-          let agent = FakeAgent(world: world, did: did, clock: NetworkClock(now: now, sleep: { _ in }))
+          let agent = FakeAgent(
+            world: world, did: did, scope: { world.world(did)?.scope }, clock: NetworkClock(now: now, sleep: { _ in }))
           held[JSKey(did)] = agent
           return agent
         }
