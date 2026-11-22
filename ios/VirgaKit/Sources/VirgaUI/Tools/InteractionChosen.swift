@@ -120,22 +120,20 @@ struct LookupPersonCard: View {
     let name = ToolPeople.displayName(card, who)
     let rel = model.relationship
     VStack(alignment: .leading, spacing: Measure.Tools.personCardGap) {
-      // `.lookup-person-top`: the actions at the line's end while it holds
-      // them beside the name block's 220, else on a line of their own.
-      ViewThatFits(in: .horizontal) {
+      // `.lookup-person-top`: the actions at the line's end, on the middle
+      // of the face and the name block, while the line holds them beside
+      // the face and the name block's 220; else on a line of their own.
+      // One layout holding each view once (a ViewThatFits with the
+      // actions in two candidates is what hung the composer's when panel).
+      BesideOrUnder(
+        minLead: theme.points(ThemeKit.largeAvatarSize) + Measure.Tools.personTopGap + Measure.Tools.personMainBasis,
+        columnGap: Measure.Tools.personTopGap, rowGap: Measure.Tools.personTopLineGap, baseline: false, centred: true
+      ) {
         HStack(alignment: .center, spacing: Measure.Tools.personTopGap) {
           Avatar(src: card?.avatar, name: card?.avatarName ?? "?", size: .large)
-          main(name: name)
-            .frame(minWidth: 0, idealWidth: Measure.Tools.personMainBasis, maxWidth: .infinity, alignment: .leading)
-          actions.fixedSize()
+          main(name: name).frame(maxWidth: .infinity, alignment: .leading)
         }
-        VStack(alignment: .leading, spacing: Measure.Tools.personTopLineGap) {
-          HStack(alignment: .center, spacing: Measure.Tools.personTopGap) {
-            Avatar(src: card?.avatar, name: card?.avatarName ?? "?", size: .large)
-            main(name: name).frame(maxWidth: .infinity, alignment: .leading)
-          }
-          actions
-        }
+        actions.fixedSize()
       }
       if !model.isSelf {
         VStack(alignment: .leading, spacing: 0) {
