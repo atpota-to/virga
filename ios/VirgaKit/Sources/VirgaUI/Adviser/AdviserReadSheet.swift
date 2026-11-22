@@ -275,7 +275,6 @@ struct AdviserReadView: View {
       .foregroundStyle(theme.ink)
       .tint(theme.ink)
       .fixedSize(horizontal: false, vertical: true)
-      .accessibilityLabel(label.isEmpty ? "" : "Post \(label)")
   }
 
   /// One piece of a marked post, as text: plain words, a fix (struck
