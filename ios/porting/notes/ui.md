@@ -367,5 +367,6 @@ LIBRARY (Library/)
 - Every window shares one session, so the web's "another tab switched accounts" notice
   has no case; TermsGate's Reload can't fetch newer documents (they are bundled).
 - Until the composer is in the app, Post this chart's Write a post with it is the system's
-  share sheet, and New post (the sidebar's, the tab bar's, the palette's) goes to the
-  composer's address, whose page says it isn't here yet.
+  share sheet. New post (the sidebar's, the tab bar's round button) opens the composer in
+  place, over the page it was pressed on, as Shell.jsx's does; VirgaUITests'
+  `testNewPostOpensTheComposer` checks it opens and that Close shuts it.
