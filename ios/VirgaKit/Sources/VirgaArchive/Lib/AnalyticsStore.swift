@@ -134,8 +134,11 @@ public enum AnalyticsStore {
   }
 
   /// Forget every memoized handle, so the next open of any account reads
-  /// its database afresh. What the session calls after deleting an
-  /// account's data (its `resetAnalyticsStore` closure).
+  /// its database afresh (the web's test seam). Only for when nothing holds
+  /// a handle: one still held keeps its own picture of its files, and a
+  /// second opened over the same database would write over its segments.
+  /// So the app's `resetAnalyticsStore` doesn't call it; `deleteDatabase`
+  /// forgets and closes the deleted account's handle itself.
   public static func resetAnalyticsStore(registry: AnalyticsStoreRegistry = .shared) {
     registry.reset()
   }
@@ -336,11 +339,20 @@ public actor FileAnalyticsStore: AnalyticsStoreHandle {
     if waiting.isEmpty { busy = false } else { waiting.removeFirst().resume() }
   }
 
-  /// Step aside (the database was deleted): every later call falls back as
-  /// if the database had gone.
-  func close() {
+  /// How many calls are waiting their turn (for tests).
+  var queued: Int { waiting.count }
+
+  /// Step aside (the database is being deleted): every later call falls
+  /// back as if the database had gone. It waits its turn, as IndexedDB's
+  /// delete waits for the connection to close once its transactions have
+  /// finished: a write under way lands first, so the delete that follows
+  /// removes it rather than having it make the folder again, and every call
+  /// queued behind finds the store closed.
+  func close() async {
+    await enter()
     closed = true
     loaded = [:]
+    leave()
   }
 
   static func segmentName(_ seq: Int) -> String {

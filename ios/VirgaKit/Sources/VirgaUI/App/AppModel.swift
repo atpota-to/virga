@@ -10,9 +10,10 @@
 // useAnalyticsArchive) is made here too, one per signed-in account, and
 // held by the view around the shell (App/ArchiveHost.swift).
 //
-// The session's two hooks into the archive are wired here: deleting an
-// account's data deletes its archive's store, and then every store handle
-// is started afresh (analyticsStore.js's resetAnalyticsStore).
+// The session's two hooks into the stores are wired here: deleting an
+// account's data deletes its archive's store and its drafts' kept media,
+// and the handles of every other account are left as they are (see
+// resetArchiveStores).
 //
 // Demo mode (`-VirgaDemo YES`, read from UserDefaults' argument domain)
 // runs the app on VirgaDemo's DemoSession: the made-up world's two
@@ -224,11 +225,15 @@ public final class AppModel {
     return handle
   }
 
-  /// The session's `resetAnalyticsStore`: every store handle starts afresh
-  /// (the web drops them all, whichever account's data went).
-  static let resetArchiveStores: @Sendable (String?) async -> Void = { _ in
-    AnalyticsStore.resetAnalyticsStore()
-  }
+  /// The session's `resetAnalyticsStore`: nothing more to do. The web drops
+  /// every memoized connection, and a page still holding one goes on
+  /// reading and writing the one database through it. Here a handle holds
+  /// its store's rows and next segment number, so a second handle over the
+  /// same folder (made after a reset, while the open archive keeps the
+  /// first) would write over the first's segments. The deleted account's
+  /// handle has already been forgotten and closed (`deleteDatabase`), and
+  /// every other account keeps the one it has.
+  static let resetArchiveStores: @Sendable (String?) async -> Void = { _ in }
 
   /// The session's `deleteDatabase`, over the app's file store:
   /// `virga-posting:<did>` is the posting store (the drafts' kept pictures
