@@ -161,8 +161,10 @@ public struct RoutedPage: View {
   /// PostingPage: a page that runs on Virga's server shows NeedsBackend
   /// instead for an account without a long session; Templates
   /// (Posting/TemplatesPage.swift), keyed by the open account, with the
-  /// part of the address after it; every other posting page its header
-  /// (PostingHeader) and that it isn't here yet.
+  /// part of the address after it; Scheduled posts and the weekly schedule
+  /// (Posting/ScheduledPage.swift, WeeklySchedulePage.swift), keyed by the
+  /// open account; every other posting page its header (PostingHeader) and
+  /// that it isn't here yet.
   @ViewBuilder
   private func posting(_ key: String?, id: String?) -> some View {
     let pageKey = key == "compose" ? "hub" : (key ?? "hub")
@@ -179,8 +181,10 @@ public struct RoutedPage: View {
     } else if pageKey == "library" {
       LibraryScreen(did: app.session.did).id(app.session.did ?? "")
     } else if pageKey == "scheduled" {
-      // SCHEDULE: Scheduled posts (Posting/ScheduledPage.swift).
+      // SCHEDULE: Scheduled posts and the weekly schedule (Posting/).
       ScheduledPage(app: app, did: did).id(did ?? "")
+    } else if pageKey == "schedule" {
+      WeeklySchedulePage(app: app, did: did).id(did ?? "")
     } else {
       UnportedPage(PostingHeader.model(pageKey))
     }
