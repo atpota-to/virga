@@ -227,8 +227,7 @@ public final class StyleSession {
     self.fetchTexts =
       fetchTexts ?? { did, sampleSize, signal, onPage in
         try await AdviserStyle.fetchStylePostTexts(
-          did, sampleSize: sampleSize, onPage: { n in Task { @MainActor in onPage(n) } }, signal: signal,
-          transport: transport)
+          did, sampleSize: sampleSize, onPage: { n in await onPage(n) }, signal: signal, transport: transport)
       }
     self.synthesize =
       synthesize ?? { requester, texts, guidance, previousSummary, signal in
@@ -275,10 +274,7 @@ public final class StyleSession {
     do {
       if !have {
         let got = try await fetchTexts(did, sampleSize, signal) { [weak self] posts in
-          // Every count comes before the answer on the web; one that lands
-          // after it (hopping over from the network) is stale.
-          guard let self, alive(), self.view.stage == "gather" else { return }
-          self.set { $0.postCount = posts }
+          if alive() { self?.set { $0.postCount = posts } }
         }
         if !alive() { return }
         texts = got

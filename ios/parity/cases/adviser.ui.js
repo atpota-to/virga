@@ -67,6 +67,27 @@ const EMBEDS = [
   },
   { $type: 'app.bsky.embed.external', external: { uri: 'not a url' } },
   { $type: 'app.bsky.embed.external', external: { uri: 'file:///etc/hosts' } },
+  // The host as URL reads it: the default port dropped, an IPv6 address in
+  // brackets, lower case; a bare `www.` and schemes with no host leave none.
+  {
+    $type: 'app.bsky.embed.external',
+    external: { uri: 'https://user:pw@www.example.com:443/path' },
+  },
+  {
+    $type: 'app.bsky.embed.external',
+    external: { uri: 'http://[::1]:8080/x' },
+  },
+  {
+    $type: 'app.bsky.embed.external',
+    external: { uri: 'HTTPS://WWW.EXAMPLE.COM/' },
+  },
+  { $type: 'app.bsky.embed.external', external: { uri: 'https://www./' } },
+  {
+    $type: 'app.bsky.embed.external',
+    external: { uri: 'data:text/plain,hi' },
+  },
+  { $type: 'app.bsky.embed.external', external: { uri: 'mailto:a@b.example' } },
+  { $type: 'app.bsky.embed.external', external: { uri: 42 } },
   {
     $type: 'app.bsky.embed.external',
     external: { uri: 'https://BÜCHER.example/' },

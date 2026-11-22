@@ -90,13 +90,15 @@ public enum AdviserStyle {
   }
 
   /// Up to `sampleSize` of the account's recent post texts, newest first.
-  /// `onPage` hears the running total after each page. Throws
+  /// `onPage` hears the running total after each page, and is awaited, so
+  /// every count reaches it in order before the texts come back (the web
+  /// calls it in the loop). Throws
   /// STYLE_FETCH_FAILED when the AppView can't be read and
   /// `not_enough_posts` (the server's own code) when there are fewer than
   /// minStylePosts, before anything is sent to the server. A cancelled task
   /// or an aborted signal goes through as it is.
   public static func fetchStylePostTexts(
-    _ did: String?, sampleSize: JSONValue? = nil, onPage: (@Sendable (Int) -> Void)? = nil,
+    _ did: String?, sampleSize: JSONValue? = nil, onPage: (@Sendable (Int) async -> Void)? = nil,
     signal: AdviserAbortSignal? = nil, appview: String = AppConfig.appview,
     transport: any HTTPTransport = HTTP.transport
   ) async throws -> [String] {
@@ -115,7 +117,7 @@ public enum AdviserStyle {
           try await PublicAppView.publicXrpc("app.bsky.feed.getAuthorFeed", params, appview: appview, transport: transport)
         }
         texts.append(contentsOf: extractStyleTexts(body["feed"], .string(did)))
-        onPage?(Swift.min(texts.count, target))
+        await onPage?(Swift.min(texts.count, target))
         cursor = body["cursor"]
         if !ComposerJS.truthy(cursor) { break }
         page += 1
@@ -160,7 +162,7 @@ public enum AdviserStyle {
   /// fetchStylePostTexts then synthesizeStyleFromTexts, as the posting
   /// account (`req.did`).
   public static func learnWritingStyle(
-    _ req: (any AIRequester)?, sampleSize: JSONValue? = nil, onPage: (@Sendable (Int) -> Void)? = nil,
+    _ req: (any AIRequester)?, sampleSize: JSONValue? = nil, onPage: (@Sendable (Int) async -> Void)? = nil,
     guidance: String? = nil, previousSummary: String? = nil,
     now: @escaping @Sendable () -> Double = AIService.systemNow, signal: AdviserAbortSignal? = nil,
     store: (any KeyValueStore)?, appview: String = AppConfig.appview, transport: any HTTPTransport = HTTP.transport

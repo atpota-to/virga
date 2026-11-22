@@ -80,6 +80,8 @@ const TEXTS = [
   'One\n\n\nTwo\nThree\nFour',
   'One. Two! Three? Four.',
   'One.Two.Three.Four.',
+  'One.\r\nTwo.\r\nThree.\r\nFour.',
+  'Name: Sam\nPlan: Team\nStatus: Active',
   'Wait... what? Really!? Yes.',
   'Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.',
   'a:\u00a0b c:\u2028d e:\u3000f',

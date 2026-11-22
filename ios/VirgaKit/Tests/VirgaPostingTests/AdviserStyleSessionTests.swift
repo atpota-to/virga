@@ -201,6 +201,35 @@ import VirgaNetwork
     #expect(h.views.count == 1)
   }
 
+  /// The web calls onPage inside the page loop, so the dialog hears every
+  /// running count, in order, before the posts come back; the default work
+  /// awaits each one on the main actor, so none is late or dropped.
+  @Test func theDefaultWorkCountsEveryPageBeforeTheReading() async throws {
+    let transport = MockTransport()
+    func page(_ from: Int, cursor: JSONValue) -> JSONValue {
+      [
+        "feed": .array((from..<from + 3).map { i in
+          ["post": ["author": ["did": "did:plc:me"], "record": ["text": .string("p\(i)")]]]
+        }),
+        "cursor": cursor,
+      ]
+    }
+    transport.on(.path("/xrpc/app.bsky.feed.getAuthorFeed"), times: 1, respond: .json(page(0, cursor: "c1")))
+    transport.on(.path("/xrpc/app.bsky.feed.getAuthorFeed"), times: 1, respond: .json(page(3, cursor: .null)))
+    transport.on("POST", .urlPrefix("https://server.example/api/ai/synthesize-style"), times: 1,
+      respond: .json(["summary": "Short.", "analyzedCount": 6]))
+    let h = Harness()
+    let session = StyleSession(
+      did: "did:plc:me", requester: AdviserFixtureServer.requester(transport, did: "did:plc:me"),
+      onChange: { [unowned h] in h.views.append($0) }, store: InMemoryKeyValueStore(), transport: transport,
+      now: { AdviserFixtureServer.now }, setTimer: h.timers.set, clearTimer: h.timers.clear)
+    await session.start()
+    #expect(h.views.map(\.postCount) == [0, 3, 6, 6, 6])
+    #expect(h.views.map(\.stage) == ["gather", "gather", "gather", "read", "write"])
+    #expect(session.view.phase == "result")
+    #expect(transport.requests.count == 3)
+  }
+
   @Test func theDefaultWorkReadsTheAppViewAndTheServer() async throws {
     let transport = MockTransport()
     let feed: JSONValue = [

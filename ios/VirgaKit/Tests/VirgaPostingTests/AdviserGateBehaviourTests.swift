@@ -270,11 +270,15 @@ import VirgaNetwork
     var stored: AdviserUsage?
   }
 
+  /// The gate's 10 s deadline is on timers nothing runs, so a loaded machine
+  /// can't let it fire before the test answers.
   static func model(answers: AdviserScript<JSONValue>, usage: Usage = Usage()) -> AdviserGateModel {
+    let timers = ManualTimers()
     let controller = AdviserGateController(
       analyzePost: { _, _, _ in await answers.next() },
       gatherReplyContext: { _, _, _ in nil }, atLimit: { _ in false },
-      readUsage: { _, _ in usage.stored }, now: { 0 }, sleep: { _ in })
+      readUsage: { _, _ in usage.stored }, now: { 0 }, sleep: { _ in },
+      setTimer: timers.set, clearTimer: timers.clear)
     return AdviserGateModel(controller: controller)
   }
 
@@ -434,6 +438,25 @@ import VirgaNetwork
     // The server counted it, so the count is kept.
     #expect(
       AdviserUsageStore.readAdviserUsage(Self.did, now: AdviserFixtureServer.now, store: store)?.used == 3)
+  }
+
+  @MainActor final class Heard {
+    var counts: [AIUsageCount] = []
+  }
+
+  /// The web calls onUsage before it answers, so a dialog on the main actor
+  /// has the month's count by the time the description comes back.
+  @MainActor @Test func theCountIsHeardBeforeTheDescriptionComesBack() async throws {
+    let transport = MockTransport()
+    transport.on("POST", .urlPrefix("https://server.example/api/ai/alt-text"), times: 1,
+      respond: .json(["altText": " A heron. ", "usage": ["used": 4, "limit": 15]]))
+    let req = AdviserFixtureServer.requester(transport, did: Self.did)
+    let heard = Heard()
+    let text = try await AIService.generateAltText(
+      req, ["imageBase64": "AAAA", "mimeType": "image/png"],
+      onUsage: { count in await MainActor.run { heard.counts.append(count) } }, store: nil)
+    #expect(heard.counts == [AIUsageCount(used: 4, limit: 15)])
+    #expect(text == "A heron.")
   }
 
   @Test func aCancelledCallerGoesThroughAsItIs() async {

@@ -364,7 +364,10 @@ public final class AdviserGateController {
     }
     let choice = await held.result
     timer.cancel()
-    hold = nil
+    // The web's `hold = null` runs before any later check can hold again
+    // (microtasks); here it lets go only of its own hold, whatever order the
+    // main actor runs things in.
+    if hold === held { hold = nil }
     return choice
   }
 

@@ -5688,7 +5688,7 @@
       "id": "looksTranscribed#24",
       "fn": "looksTranscribed",
       "input": {
-        "text": "Wait... what? Really!? Yes."
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour."
       },
       "output": true
     },
@@ -5696,12 +5696,28 @@
       "id": "looksTranscribed#25",
       "fn": "looksTranscribed",
       "input": {
+        "text": "Name: Sam\nPlan: Team\nStatus: Active"
+      },
+      "output": false
+    },
+    {
+      "id": "looksTranscribed#26",
+      "fn": "looksTranscribed",
+      "input": {
+        "text": "Wait... what? Really!? Yes."
+      },
+      "output": true
+    },
+    {
+      "id": "looksTranscribed#27",
+      "fn": "looksTranscribed",
+      "input": {
         "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so."
       },
       "output": true
     },
     {
-      "id": "looksTranscribed#26",
+      "id": "looksTranscribed#28",
       "fn": "looksTranscribed",
       "input": {
         "text": "a: b c: d e:　f"
@@ -5709,7 +5725,7 @@
       "output": false
     },
     {
-      "id": "looksTranscribed#27",
+      "id": "looksTranscribed#29",
       "fn": "looksTranscribed",
       "input": {
         "text": "é: x é: y é: z é: w"
@@ -5717,7 +5733,7 @@
       "output": false
     },
     {
-      "id": "looksTranscribed#28",
+      "id": "looksTranscribed#30",
       "fn": "looksTranscribed",
       "input": {
         "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words."
@@ -5725,7 +5741,7 @@
       "output": false
     },
     {
-      "id": "looksTranscribed#29",
+      "id": "looksTranscribed#31",
       "fn": "looksTranscribed",
       "input": {
         "text": " Leading.  Trailing.   Spaced.    Out.  "
@@ -5733,7 +5749,7 @@
       "output": true
     },
     {
-      "id": "looksTranscribed#30",
+      "id": "looksTranscribed#32",
       "fn": "looksTranscribed",
       "input": {
         "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok."
@@ -18330,7 +18346,7 @@
       "id": "rankQuickNotes#393",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": null,
         "lastAsked": []
       },
@@ -18360,7 +18376,7 @@
       "id": "rankQuickNotes#394",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": null,
         "lastAsked": [
           "describe"
@@ -18391,7 +18407,7 @@
       "id": "rankQuickNotes#395",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": null,
         "lastAsked": [
           "transcribe"
@@ -18423,7 +18439,7 @@
       "id": "rankQuickNotes#396",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": null,
         "lastAsked": [
           "shorter",
@@ -18456,7 +18472,7 @@
       "id": "rankQuickNotes#397",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "photo",
         "lastAsked": []
       },
@@ -18486,7 +18502,7 @@
       "id": "rankQuickNotes#398",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "photo",
         "lastAsked": [
           "describe"
@@ -18513,7 +18529,7 @@
       "id": "rankQuickNotes#399",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "photo",
         "lastAsked": [
           "transcribe"
@@ -18545,7 +18561,7 @@
       "id": "rankQuickNotes#400",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "photo",
         "lastAsked": [
           "shorter",
@@ -18578,7 +18594,7 @@
       "id": "rankQuickNotes#401",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "chart",
         "lastAsked": []
       },
@@ -18608,7 +18624,7 @@
       "id": "rankQuickNotes#402",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "chart",
         "lastAsked": [
           "describe"
@@ -18635,7 +18651,7 @@
       "id": "rankQuickNotes#403",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "chart",
         "lastAsked": [
           "transcribe"
@@ -18667,7 +18683,7 @@
       "id": "rankQuickNotes#404",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "chart",
         "lastAsked": [
           "shorter",
@@ -18700,7 +18716,7 @@
       "id": "rankQuickNotes#405",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "text",
         "lastAsked": []
       },
@@ -18730,7 +18746,7 @@
       "id": "rankQuickNotes#406",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "text",
         "lastAsked": [
           "describe"
@@ -18762,7 +18778,7 @@
       "id": "rankQuickNotes#407",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "text",
         "lastAsked": [
           "transcribe"
@@ -18794,7 +18810,7 @@
       "id": "rankQuickNotes#408",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "text",
         "lastAsked": [
           "shorter",
@@ -18827,7 +18843,7 @@
       "id": "rankQuickNotes#409",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "interface",
         "lastAsked": []
       },
@@ -18857,7 +18873,7 @@
       "id": "rankQuickNotes#410",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "interface",
         "lastAsked": [
           "describe"
@@ -18889,7 +18905,7 @@
       "id": "rankQuickNotes#411",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "interface",
         "lastAsked": [
           "transcribe"
@@ -18921,7 +18937,7 @@
       "id": "rankQuickNotes#412",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "interface",
         "lastAsked": [
           "shorter",
@@ -18954,7 +18970,7 @@
       "id": "rankQuickNotes#413",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "odd",
         "lastAsked": []
       },
@@ -18984,7 +19000,7 @@
       "id": "rankQuickNotes#414",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "odd",
         "lastAsked": [
           "describe"
@@ -19015,7 +19031,7 @@
       "id": "rankQuickNotes#415",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "odd",
         "lastAsked": [
           "transcribe"
@@ -19047,7 +19063,7 @@
       "id": "rankQuickNotes#416",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Wait... what? Really!? Yes.",
+        "text": "One.\r\nTwo.\r\nThree.\r\nFour.",
         "kind": "odd",
         "lastAsked": [
           "shorter",
@@ -19080,16 +19096,12 @@
       "id": "rankQuickNotes#417",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": null,
         "lastAsked": []
       },
       "output": {
         "ranked": [
-          {
-            "id": "describe",
-            "score": 3
-          },
           {
             "id": "detail",
             "score": 2.5
@@ -19097,10 +19109,13 @@
           {
             "id": "plain",
             "score": 1
+          },
+          {
+            "id": "transcribe",
+            "score": 0.5
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -19110,7 +19125,7 @@
       "id": "rankQuickNotes#418",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": null,
         "lastAsked": [
           "describe"
@@ -19141,7 +19156,7 @@
       "id": "rankQuickNotes#419",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": null,
         "lastAsked": [
           "transcribe"
@@ -19173,7 +19188,7 @@
       "id": "rankQuickNotes#420",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": null,
         "lastAsked": [
           "shorter",
@@ -19183,20 +19198,19 @@
       "output": {
         "ranked": [
           {
-            "id": "describe",
-            "score": 3
-          },
-          {
             "id": "detail",
             "score": 2.5
           },
           {
             "id": "plain",
             "score": 1
+          },
+          {
+            "id": "transcribe",
+            "score": 0.5
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -19206,16 +19220,12 @@
       "id": "rankQuickNotes#421",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "photo",
         "lastAsked": []
       },
       "output": {
         "ranked": [
-          {
-            "id": "describe",
-            "score": 3
-          },
           {
             "id": "detail",
             "score": 2.5
@@ -19226,7 +19236,6 @@
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -19236,7 +19245,7 @@
       "id": "rankQuickNotes#422",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "photo",
         "lastAsked": [
           "describe"
@@ -19263,7 +19272,7 @@
       "id": "rankQuickNotes#423",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "photo",
         "lastAsked": [
           "transcribe"
@@ -19295,7 +19304,7 @@
       "id": "rankQuickNotes#424",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "photo",
         "lastAsked": [
           "shorter",
@@ -19305,10 +19314,6 @@
       "output": {
         "ranked": [
           {
-            "id": "describe",
-            "score": 3
-          },
-          {
             "id": "detail",
             "score": 2.5
           },
@@ -19318,7 +19323,6 @@
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -19328,16 +19332,12 @@
       "id": "rankQuickNotes#425",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "chart",
         "lastAsked": []
       },
       "output": {
         "ranked": [
-          {
-            "id": "describe",
-            "score": 3
-          },
           {
             "id": "detail",
             "score": 2.5
@@ -19348,7 +19348,6 @@
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -19358,7 +19357,7 @@
       "id": "rankQuickNotes#426",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "chart",
         "lastAsked": [
           "describe"
@@ -19385,7 +19384,7 @@
       "id": "rankQuickNotes#427",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "chart",
         "lastAsked": [
           "transcribe"
@@ -19417,7 +19416,7 @@
       "id": "rankQuickNotes#428",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "chart",
         "lastAsked": [
           "shorter",
@@ -19426,10 +19425,6 @@
       },
       "output": {
         "ranked": [
-          {
-            "id": "describe",
-            "score": 3
-          },
           {
             "id": "detail",
             "score": 2.5
@@ -19440,7 +19435,6 @@
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -19450,7 +19444,7 @@
       "id": "rankQuickNotes#429",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "text",
         "lastAsked": []
       },
@@ -19480,7 +19474,7 @@
       "id": "rankQuickNotes#430",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "text",
         "lastAsked": [
           "describe"
@@ -19512,7 +19506,7 @@
       "id": "rankQuickNotes#431",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "text",
         "lastAsked": [
           "transcribe"
@@ -19544,7 +19538,7 @@
       "id": "rankQuickNotes#432",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "text",
         "lastAsked": [
           "shorter",
@@ -19577,19 +19571,19 @@
       "id": "rankQuickNotes#433",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "interface",
         "lastAsked": []
       },
       "output": {
         "ranked": [
           {
-            "id": "describe",
-            "score": 3
-          },
-          {
             "id": "detail",
             "score": 2.5
+          },
+          {
+            "id": "transcribe",
+            "score": 1.1
           },
           {
             "id": "plain",
@@ -19597,8 +19591,8 @@
           }
         ],
         "card": [
-          "describe",
           "detail",
+          "transcribe",
           "plain"
         ]
       }
@@ -19607,7 +19601,7 @@
       "id": "rankQuickNotes#434",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "interface",
         "lastAsked": [
           "describe"
@@ -19639,7 +19633,7 @@
       "id": "rankQuickNotes#435",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "interface",
         "lastAsked": [
           "transcribe"
@@ -19671,7 +19665,7 @@
       "id": "rankQuickNotes#436",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "interface",
         "lastAsked": [
           "shorter",
@@ -19681,12 +19675,12 @@
       "output": {
         "ranked": [
           {
-            "id": "describe",
-            "score": 3
-          },
-          {
             "id": "detail",
             "score": 2.5
+          },
+          {
+            "id": "transcribe",
+            "score": 1.1
           },
           {
             "id": "plain",
@@ -19694,8 +19688,8 @@
           }
         ],
         "card": [
-          "describe",
           "detail",
+          "transcribe",
           "plain"
         ]
       }
@@ -19704,16 +19698,12 @@
       "id": "rankQuickNotes#437",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "odd",
         "lastAsked": []
       },
       "output": {
         "ranked": [
-          {
-            "id": "describe",
-            "score": 3
-          },
           {
             "id": "detail",
             "score": 2.5
@@ -19721,10 +19711,13 @@
           {
             "id": "plain",
             "score": 1
+          },
+          {
+            "id": "transcribe",
+            "score": 0.5
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -19734,7 +19727,7 @@
       "id": "rankQuickNotes#438",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "odd",
         "lastAsked": [
           "describe"
@@ -19765,7 +19758,7 @@
       "id": "rankQuickNotes#439",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "odd",
         "lastAsked": [
           "transcribe"
@@ -19797,12 +19790,41 @@
       "id": "rankQuickNotes#440",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
+        "text": "Name: Sam\nPlan: Team\nStatus: Active",
         "kind": "odd",
         "lastAsked": [
           "shorter",
           "plain"
         ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          },
+          {
+            "id": "transcribe",
+            "score": 0.5
+          }
+        ],
+        "card": [
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#441",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "Wait... what? Really!? Yes.",
+        "kind": null,
+        "lastAsked": []
       },
       "output": {
         "ranked": [
@@ -19827,39 +19849,10 @@
       }
     },
     {
-      "id": "rankQuickNotes#441",
-      "fn": "rankQuickNotes",
-      "input": {
-        "text": "a: b c: d e:　f",
-        "kind": null,
-        "lastAsked": []
-      },
-      "output": {
-        "ranked": [
-          {
-            "id": "detail",
-            "score": 2.5
-          },
-          {
-            "id": "plain",
-            "score": 1
-          },
-          {
-            "id": "transcribe",
-            "score": 0.5
-          }
-        ],
-        "card": [
-          "detail",
-          "plain"
-        ]
-      }
-    },
-    {
       "id": "rankQuickNotes#442",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": null,
         "lastAsked": [
           "describe"
@@ -19890,7 +19883,7 @@
       "id": "rankQuickNotes#443",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": null,
         "lastAsked": [
           "transcribe"
@@ -19922,7 +19915,7 @@
       "id": "rankQuickNotes#444",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": null,
         "lastAsked": [
           "shorter",
@@ -19932,19 +19925,20 @@
       "output": {
         "ranked": [
           {
+            "id": "describe",
+            "score": 3
+          },
+          {
             "id": "detail",
             "score": 2.5
           },
           {
             "id": "plain",
             "score": 1
-          },
-          {
-            "id": "transcribe",
-            "score": 0.5
           }
         ],
         "card": [
+          "describe",
           "detail",
           "plain"
         ]
@@ -19954,12 +19948,16 @@
       "id": "rankQuickNotes#445",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "photo",
         "lastAsked": []
       },
       "output": {
         "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
           {
             "id": "detail",
             "score": 2.5
@@ -19970,6 +19968,7 @@
           }
         ],
         "card": [
+          "describe",
           "detail",
           "plain"
         ]
@@ -19979,7 +19978,7 @@
       "id": "rankQuickNotes#446",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "photo",
         "lastAsked": [
           "describe"
@@ -20006,7 +20005,7 @@
       "id": "rankQuickNotes#447",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "photo",
         "lastAsked": [
           "transcribe"
@@ -20038,7 +20037,7 @@
       "id": "rankQuickNotes#448",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "photo",
         "lastAsked": [
           "shorter",
@@ -20048,6 +20047,10 @@
       "output": {
         "ranked": [
           {
+            "id": "describe",
+            "score": 3
+          },
+          {
             "id": "detail",
             "score": 2.5
           },
@@ -20057,6 +20060,7 @@
           }
         ],
         "card": [
+          "describe",
           "detail",
           "plain"
         ]
@@ -20066,12 +20070,16 @@
       "id": "rankQuickNotes#449",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "chart",
         "lastAsked": []
       },
       "output": {
         "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
           {
             "id": "detail",
             "score": 2.5
@@ -20082,6 +20090,7 @@
           }
         ],
         "card": [
+          "describe",
           "detail",
           "plain"
         ]
@@ -20091,7 +20100,7 @@
       "id": "rankQuickNotes#450",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "chart",
         "lastAsked": [
           "describe"
@@ -20118,7 +20127,7 @@
       "id": "rankQuickNotes#451",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "chart",
         "lastAsked": [
           "transcribe"
@@ -20150,7 +20159,7 @@
       "id": "rankQuickNotes#452",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "chart",
         "lastAsked": [
           "shorter",
@@ -20159,6 +20168,10 @@
       },
       "output": {
         "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
           {
             "id": "detail",
             "score": 2.5
@@ -20169,6 +20182,7 @@
           }
         ],
         "card": [
+          "describe",
           "detail",
           "plain"
         ]
@@ -20178,7 +20192,7 @@
       "id": "rankQuickNotes#453",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "text",
         "lastAsked": []
       },
@@ -20208,7 +20222,7 @@
       "id": "rankQuickNotes#454",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "text",
         "lastAsked": [
           "describe"
@@ -20240,7 +20254,7 @@
       "id": "rankQuickNotes#455",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "text",
         "lastAsked": [
           "transcribe"
@@ -20272,7 +20286,7 @@
       "id": "rankQuickNotes#456",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "text",
         "lastAsked": [
           "shorter",
@@ -20305,19 +20319,19 @@
       "id": "rankQuickNotes#457",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "interface",
         "lastAsked": []
       },
       "output": {
         "ranked": [
           {
-            "id": "detail",
-            "score": 2.5
+            "id": "describe",
+            "score": 3
           },
           {
-            "id": "transcribe",
-            "score": 1.1
+            "id": "detail",
+            "score": 2.5
           },
           {
             "id": "plain",
@@ -20325,8 +20339,8 @@
           }
         ],
         "card": [
+          "describe",
           "detail",
-          "transcribe",
           "plain"
         ]
       }
@@ -20335,7 +20349,7 @@
       "id": "rankQuickNotes#458",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "interface",
         "lastAsked": [
           "describe"
@@ -20367,7 +20381,7 @@
       "id": "rankQuickNotes#459",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "interface",
         "lastAsked": [
           "transcribe"
@@ -20399,7 +20413,7 @@
       "id": "rankQuickNotes#460",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "interface",
         "lastAsked": [
           "shorter",
@@ -20409,12 +20423,12 @@
       "output": {
         "ranked": [
           {
-            "id": "detail",
-            "score": 2.5
+            "id": "describe",
+            "score": 3
           },
           {
-            "id": "transcribe",
-            "score": 1.1
+            "id": "detail",
+            "score": 2.5
           },
           {
             "id": "plain",
@@ -20422,8 +20436,8 @@
           }
         ],
         "card": [
+          "describe",
           "detail",
-          "transcribe",
           "plain"
         ]
       }
@@ -20432,12 +20446,16 @@
       "id": "rankQuickNotes#461",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "odd",
         "lastAsked": []
       },
       "output": {
         "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
           {
             "id": "detail",
             "score": 2.5
@@ -20445,13 +20463,10 @@
           {
             "id": "plain",
             "score": 1
-          },
-          {
-            "id": "transcribe",
-            "score": 0.5
           }
         ],
         "card": [
+          "describe",
           "detail",
           "plain"
         ]
@@ -20461,7 +20476,7 @@
       "id": "rankQuickNotes#462",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "odd",
         "lastAsked": [
           "describe"
@@ -20492,7 +20507,7 @@
       "id": "rankQuickNotes#463",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "odd",
         "lastAsked": [
           "transcribe"
@@ -20524,7 +20539,7 @@
       "id": "rankQuickNotes#464",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "a: b c: d e:　f",
+        "text": "Wait... what? Really!? Yes.",
         "kind": "odd",
         "lastAsked": [
           "shorter",
@@ -20534,19 +20549,20 @@
       "output": {
         "ranked": [
           {
+            "id": "describe",
+            "score": 3
+          },
+          {
             "id": "detail",
             "score": 2.5
           },
           {
             "id": "plain",
             "score": 1
-          },
-          {
-            "id": "transcribe",
-            "score": 0.5
           }
         ],
         "card": [
+          "describe",
           "detail",
           "plain"
         ]
@@ -20556,12 +20572,16 @@
       "id": "rankQuickNotes#465",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": null,
         "lastAsked": []
       },
       "output": {
         "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
           {
             "id": "detail",
             "score": 2.5
@@ -20569,13 +20589,10 @@
           {
             "id": "plain",
             "score": 1
-          },
-          {
-            "id": "transcribe",
-            "score": 0.5
           }
         ],
         "card": [
+          "describe",
           "detail",
           "plain"
         ]
@@ -20585,7 +20602,7 @@
       "id": "rankQuickNotes#466",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": null,
         "lastAsked": [
           "describe"
@@ -20616,7 +20633,7 @@
       "id": "rankQuickNotes#467",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": null,
         "lastAsked": [
           "transcribe"
@@ -20648,7 +20665,7 @@
       "id": "rankQuickNotes#468",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": null,
         "lastAsked": [
           "shorter",
@@ -20658,19 +20675,20 @@
       "output": {
         "ranked": [
           {
+            "id": "describe",
+            "score": 3
+          },
+          {
             "id": "detail",
             "score": 2.5
           },
           {
             "id": "plain",
             "score": 1
-          },
-          {
-            "id": "transcribe",
-            "score": 0.5
           }
         ],
         "card": [
+          "describe",
           "detail",
           "plain"
         ]
@@ -20680,12 +20698,16 @@
       "id": "rankQuickNotes#469",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "photo",
         "lastAsked": []
       },
       "output": {
         "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
           {
             "id": "detail",
             "score": 2.5
@@ -20696,6 +20718,7 @@
           }
         ],
         "card": [
+          "describe",
           "detail",
           "plain"
         ]
@@ -20705,7 +20728,7 @@
       "id": "rankQuickNotes#470",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "photo",
         "lastAsked": [
           "describe"
@@ -20732,7 +20755,7 @@
       "id": "rankQuickNotes#471",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "photo",
         "lastAsked": [
           "transcribe"
@@ -20764,7 +20787,7 @@
       "id": "rankQuickNotes#472",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "photo",
         "lastAsked": [
           "shorter",
@@ -20774,6 +20797,10 @@
       "output": {
         "ranked": [
           {
+            "id": "describe",
+            "score": 3
+          },
+          {
             "id": "detail",
             "score": 2.5
           },
@@ -20783,6 +20810,7 @@
           }
         ],
         "card": [
+          "describe",
           "detail",
           "plain"
         ]
@@ -20792,12 +20820,16 @@
       "id": "rankQuickNotes#473",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "chart",
         "lastAsked": []
       },
       "output": {
         "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
           {
             "id": "detail",
             "score": 2.5
@@ -20808,6 +20840,7 @@
           }
         ],
         "card": [
+          "describe",
           "detail",
           "plain"
         ]
@@ -20817,7 +20850,7 @@
       "id": "rankQuickNotes#474",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "chart",
         "lastAsked": [
           "describe"
@@ -20844,7 +20877,7 @@
       "id": "rankQuickNotes#475",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "chart",
         "lastAsked": [
           "transcribe"
@@ -20876,7 +20909,7 @@
       "id": "rankQuickNotes#476",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "chart",
         "lastAsked": [
           "shorter",
@@ -20885,6 +20918,10 @@
       },
       "output": {
         "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
           {
             "id": "detail",
             "score": 2.5
@@ -20895,6 +20932,7 @@
           }
         ],
         "card": [
+          "describe",
           "detail",
           "plain"
         ]
@@ -20904,7 +20942,7 @@
       "id": "rankQuickNotes#477",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "text",
         "lastAsked": []
       },
@@ -20934,7 +20972,7 @@
       "id": "rankQuickNotes#478",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "text",
         "lastAsked": [
           "describe"
@@ -20966,7 +21004,7 @@
       "id": "rankQuickNotes#479",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "text",
         "lastAsked": [
           "transcribe"
@@ -20998,7 +21036,7 @@
       "id": "rankQuickNotes#480",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "text",
         "lastAsked": [
           "shorter",
@@ -21031,19 +21069,19 @@
       "id": "rankQuickNotes#481",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "interface",
         "lastAsked": []
       },
       "output": {
         "ranked": [
           {
-            "id": "detail",
-            "score": 2.5
+            "id": "describe",
+            "score": 3
           },
           {
-            "id": "transcribe",
-            "score": 1.1
+            "id": "detail",
+            "score": 2.5
           },
           {
             "id": "plain",
@@ -21051,8 +21089,8 @@
           }
         ],
         "card": [
+          "describe",
           "detail",
-          "transcribe",
           "plain"
         ]
       }
@@ -21061,7 +21099,7 @@
       "id": "rankQuickNotes#482",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "interface",
         "lastAsked": [
           "describe"
@@ -21093,7 +21131,7 @@
       "id": "rankQuickNotes#483",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "interface",
         "lastAsked": [
           "transcribe"
@@ -21125,7 +21163,7 @@
       "id": "rankQuickNotes#484",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "interface",
         "lastAsked": [
           "shorter",
@@ -21135,12 +21173,12 @@
       "output": {
         "ranked": [
           {
-            "id": "detail",
-            "score": 2.5
+            "id": "describe",
+            "score": 3
           },
           {
-            "id": "transcribe",
-            "score": 1.1
+            "id": "detail",
+            "score": 2.5
           },
           {
             "id": "plain",
@@ -21148,8 +21186,8 @@
           }
         ],
         "card": [
+          "describe",
           "detail",
-          "transcribe",
           "plain"
         ]
       }
@@ -21158,12 +21196,16 @@
       "id": "rankQuickNotes#485",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "odd",
         "lastAsked": []
       },
       "output": {
         "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
           {
             "id": "detail",
             "score": 2.5
@@ -21171,13 +21213,10 @@
           {
             "id": "plain",
             "score": 1
-          },
-          {
-            "id": "transcribe",
-            "score": 0.5
           }
         ],
         "card": [
+          "describe",
           "detail",
           "plain"
         ]
@@ -21187,7 +21226,7 @@
       "id": "rankQuickNotes#486",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "odd",
         "lastAsked": [
           "describe"
@@ -21218,7 +21257,7 @@
       "id": "rankQuickNotes#487",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "odd",
         "lastAsked": [
           "transcribe"
@@ -21250,7 +21289,7 @@
       "id": "rankQuickNotes#488",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "é: x é: y é: z é: w",
+        "text": "Ünïcödé fräg. Ëmoji 👩‍👩‍👧 here. Ånd mørë. Ünd so.",
         "kind": "odd",
         "lastAsked": [
           "shorter",
@@ -21260,19 +21299,20 @@
       "output": {
         "ranked": [
           {
+            "id": "describe",
+            "score": 3
+          },
+          {
             "id": "detail",
             "score": 2.5
           },
           {
             "id": "plain",
             "score": 1
-          },
-          {
-            "id": "transcribe",
-            "score": 0.5
           }
         ],
         "card": [
+          "describe",
           "detail",
           "plain"
         ]
@@ -21282,7 +21322,7 @@
       "id": "rankQuickNotes#489",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": null,
         "lastAsked": []
       },
@@ -21311,7 +21351,7 @@
       "id": "rankQuickNotes#490",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": null,
         "lastAsked": [
           "describe"
@@ -21342,7 +21382,7 @@
       "id": "rankQuickNotes#491",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": null,
         "lastAsked": [
           "transcribe"
@@ -21374,7 +21414,7 @@
       "id": "rankQuickNotes#492",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": null,
         "lastAsked": [
           "shorter",
@@ -21406,7 +21446,7 @@
       "id": "rankQuickNotes#493",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "photo",
         "lastAsked": []
       },
@@ -21431,7 +21471,7 @@
       "id": "rankQuickNotes#494",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "photo",
         "lastAsked": [
           "describe"
@@ -21458,7 +21498,7 @@
       "id": "rankQuickNotes#495",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "photo",
         "lastAsked": [
           "transcribe"
@@ -21490,7 +21530,7 @@
       "id": "rankQuickNotes#496",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "photo",
         "lastAsked": [
           "shorter",
@@ -21518,7 +21558,7 @@
       "id": "rankQuickNotes#497",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "chart",
         "lastAsked": []
       },
@@ -21543,7 +21583,7 @@
       "id": "rankQuickNotes#498",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "chart",
         "lastAsked": [
           "describe"
@@ -21570,7 +21610,7 @@
       "id": "rankQuickNotes#499",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "chart",
         "lastAsked": [
           "transcribe"
@@ -21602,7 +21642,7 @@
       "id": "rankQuickNotes#500",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "chart",
         "lastAsked": [
           "shorter",
@@ -21630,7 +21670,7 @@
       "id": "rankQuickNotes#501",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "text",
         "lastAsked": []
       },
@@ -21660,7 +21700,7 @@
       "id": "rankQuickNotes#502",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "text",
         "lastAsked": [
           "describe"
@@ -21692,7 +21732,7 @@
       "id": "rankQuickNotes#503",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "text",
         "lastAsked": [
           "transcribe"
@@ -21724,7 +21764,7 @@
       "id": "rankQuickNotes#504",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "text",
         "lastAsked": [
           "shorter",
@@ -21757,7 +21797,7 @@
       "id": "rankQuickNotes#505",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "interface",
         "lastAsked": []
       },
@@ -21787,7 +21827,7 @@
       "id": "rankQuickNotes#506",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "interface",
         "lastAsked": [
           "describe"
@@ -21819,7 +21859,7 @@
       "id": "rankQuickNotes#507",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "interface",
         "lastAsked": [
           "transcribe"
@@ -21851,7 +21891,7 @@
       "id": "rankQuickNotes#508",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "interface",
         "lastAsked": [
           "shorter",
@@ -21884,7 +21924,7 @@
       "id": "rankQuickNotes#509",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "odd",
         "lastAsked": []
       },
@@ -21913,7 +21953,7 @@
       "id": "rankQuickNotes#510",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "odd",
         "lastAsked": [
           "describe"
@@ -21944,7 +21984,7 @@
       "id": "rankQuickNotes#511",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "odd",
         "lastAsked": [
           "transcribe"
@@ -21976,7 +22016,7 @@
       "id": "rankQuickNotes#512",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "text": "a: b c: d e:　f",
         "kind": "odd",
         "lastAsked": [
           "shorter",
@@ -22008,16 +22048,12 @@
       "id": "rankQuickNotes#513",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": null,
         "lastAsked": []
       },
       "output": {
         "ranked": [
-          {
-            "id": "describe",
-            "score": 3
-          },
           {
             "id": "detail",
             "score": 2.5
@@ -22025,10 +22061,13 @@
           {
             "id": "plain",
             "score": 1
+          },
+          {
+            "id": "transcribe",
+            "score": 0.5
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -22038,7 +22077,7 @@
       "id": "rankQuickNotes#514",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": null,
         "lastAsked": [
           "describe"
@@ -22069,7 +22108,7 @@
       "id": "rankQuickNotes#515",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": null,
         "lastAsked": [
           "transcribe"
@@ -22101,7 +22140,7 @@
       "id": "rankQuickNotes#516",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": null,
         "lastAsked": [
           "shorter",
@@ -22111,20 +22150,19 @@
       "output": {
         "ranked": [
           {
-            "id": "describe",
-            "score": 3
-          },
-          {
             "id": "detail",
             "score": 2.5
           },
           {
             "id": "plain",
             "score": 1
+          },
+          {
+            "id": "transcribe",
+            "score": 0.5
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -22134,16 +22172,12 @@
       "id": "rankQuickNotes#517",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "photo",
         "lastAsked": []
       },
       "output": {
         "ranked": [
-          {
-            "id": "describe",
-            "score": 3
-          },
           {
             "id": "detail",
             "score": 2.5
@@ -22154,7 +22188,6 @@
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -22164,7 +22197,7 @@
       "id": "rankQuickNotes#518",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "photo",
         "lastAsked": [
           "describe"
@@ -22191,7 +22224,7 @@
       "id": "rankQuickNotes#519",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "photo",
         "lastAsked": [
           "transcribe"
@@ -22223,7 +22256,7 @@
       "id": "rankQuickNotes#520",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "photo",
         "lastAsked": [
           "shorter",
@@ -22233,10 +22266,6 @@
       "output": {
         "ranked": [
           {
-            "id": "describe",
-            "score": 3
-          },
-          {
             "id": "detail",
             "score": 2.5
           },
@@ -22246,7 +22275,6 @@
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -22256,16 +22284,12 @@
       "id": "rankQuickNotes#521",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "chart",
         "lastAsked": []
       },
       "output": {
         "ranked": [
-          {
-            "id": "describe",
-            "score": 3
-          },
           {
             "id": "detail",
             "score": 2.5
@@ -22276,7 +22300,6 @@
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -22286,7 +22309,7 @@
       "id": "rankQuickNotes#522",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "chart",
         "lastAsked": [
           "describe"
@@ -22313,7 +22336,7 @@
       "id": "rankQuickNotes#523",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "chart",
         "lastAsked": [
           "transcribe"
@@ -22345,7 +22368,7 @@
       "id": "rankQuickNotes#524",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "chart",
         "lastAsked": [
           "shorter",
@@ -22354,10 +22377,6 @@
       },
       "output": {
         "ranked": [
-          {
-            "id": "describe",
-            "score": 3
-          },
           {
             "id": "detail",
             "score": 2.5
@@ -22368,7 +22387,6 @@
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -22378,7 +22396,7 @@
       "id": "rankQuickNotes#525",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "text",
         "lastAsked": []
       },
@@ -22408,7 +22426,7 @@
       "id": "rankQuickNotes#526",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "text",
         "lastAsked": [
           "describe"
@@ -22440,7 +22458,7 @@
       "id": "rankQuickNotes#527",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "text",
         "lastAsked": [
           "transcribe"
@@ -22472,7 +22490,7 @@
       "id": "rankQuickNotes#528",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "text",
         "lastAsked": [
           "shorter",
@@ -22505,19 +22523,19 @@
       "id": "rankQuickNotes#529",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "interface",
         "lastAsked": []
       },
       "output": {
         "ranked": [
           {
-            "id": "describe",
-            "score": 3
-          },
-          {
             "id": "detail",
             "score": 2.5
+          },
+          {
+            "id": "transcribe",
+            "score": 1.1
           },
           {
             "id": "plain",
@@ -22525,8 +22543,8 @@
           }
         ],
         "card": [
-          "describe",
           "detail",
+          "transcribe",
           "plain"
         ]
       }
@@ -22535,7 +22553,7 @@
       "id": "rankQuickNotes#530",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "interface",
         "lastAsked": [
           "describe"
@@ -22567,7 +22585,7 @@
       "id": "rankQuickNotes#531",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "interface",
         "lastAsked": [
           "transcribe"
@@ -22599,7 +22617,7 @@
       "id": "rankQuickNotes#532",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "interface",
         "lastAsked": [
           "shorter",
@@ -22609,12 +22627,12 @@
       "output": {
         "ranked": [
           {
-            "id": "describe",
-            "score": 3
-          },
-          {
             "id": "detail",
             "score": 2.5
+          },
+          {
+            "id": "transcribe",
+            "score": 1.1
           },
           {
             "id": "plain",
@@ -22622,8 +22640,8 @@
           }
         ],
         "card": [
-          "describe",
           "detail",
+          "transcribe",
           "plain"
         ]
       }
@@ -22632,16 +22650,12 @@
       "id": "rankQuickNotes#533",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "odd",
         "lastAsked": []
       },
       "output": {
         "ranked": [
-          {
-            "id": "describe",
-            "score": 3
-          },
           {
             "id": "detail",
             "score": 2.5
@@ -22649,10 +22663,13 @@
           {
             "id": "plain",
             "score": 1
+          },
+          {
+            "id": "transcribe",
+            "score": 0.5
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -22662,7 +22679,7 @@
       "id": "rankQuickNotes#534",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "odd",
         "lastAsked": [
           "describe"
@@ -22693,7 +22710,7 @@
       "id": "rankQuickNotes#535",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "odd",
         "lastAsked": [
           "transcribe"
@@ -22725,7 +22742,7 @@
       "id": "rankQuickNotes#536",
       "fn": "rankQuickNotes",
       "input": {
-        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "text": "é: x é: y é: z é: w",
         "kind": "odd",
         "lastAsked": [
           "shorter",
@@ -22735,20 +22752,19 @@
       "output": {
         "ranked": [
           {
-            "id": "describe",
-            "score": 3
-          },
-          {
             "id": "detail",
             "score": 2.5
           },
           {
             "id": "plain",
             "score": 1
+          },
+          {
+            "id": "transcribe",
+            "score": 0.5
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -22758,16 +22774,12 @@
       "id": "rankQuickNotes#537",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": null,
         "lastAsked": []
       },
       "output": {
         "ranked": [
-          {
-            "id": "describe",
-            "score": 3
-          },
           {
             "id": "detail",
             "score": 2.5
@@ -22775,10 +22787,13 @@
           {
             "id": "plain",
             "score": 1
+          },
+          {
+            "id": "transcribe",
+            "score": 0.5
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -22788,7 +22803,7 @@
       "id": "rankQuickNotes#538",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": null,
         "lastAsked": [
           "describe"
@@ -22819,7 +22834,7 @@
       "id": "rankQuickNotes#539",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": null,
         "lastAsked": [
           "transcribe"
@@ -22851,7 +22866,7 @@
       "id": "rankQuickNotes#540",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": null,
         "lastAsked": [
           "shorter",
@@ -22861,20 +22876,19 @@
       "output": {
         "ranked": [
           {
-            "id": "describe",
-            "score": 3
-          },
-          {
             "id": "detail",
             "score": 2.5
           },
           {
             "id": "plain",
             "score": 1
+          },
+          {
+            "id": "transcribe",
+            "score": 0.5
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -22884,16 +22898,12 @@
       "id": "rankQuickNotes#541",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": "photo",
         "lastAsked": []
       },
       "output": {
         "ranked": [
-          {
-            "id": "describe",
-            "score": 3
-          },
           {
             "id": "detail",
             "score": 2.5
@@ -22904,7 +22914,6 @@
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -22914,7 +22923,7 @@
       "id": "rankQuickNotes#542",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": "photo",
         "lastAsked": [
           "describe"
@@ -22941,7 +22950,7 @@
       "id": "rankQuickNotes#543",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": "photo",
         "lastAsked": [
           "transcribe"
@@ -22973,7 +22982,7 @@
       "id": "rankQuickNotes#544",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": "photo",
         "lastAsked": [
           "shorter",
@@ -22983,10 +22992,6 @@
       "output": {
         "ranked": [
           {
-            "id": "describe",
-            "score": 3
-          },
-          {
             "id": "detail",
             "score": 2.5
           },
@@ -22996,7 +23001,6 @@
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -23006,16 +23010,12 @@
       "id": "rankQuickNotes#545",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": "chart",
         "lastAsked": []
       },
       "output": {
         "ranked": [
-          {
-            "id": "describe",
-            "score": 3
-          },
           {
             "id": "detail",
             "score": 2.5
@@ -23026,7 +23026,6 @@
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -23036,7 +23035,7 @@
       "id": "rankQuickNotes#546",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": "chart",
         "lastAsked": [
           "describe"
@@ -23063,7 +23062,7 @@
       "id": "rankQuickNotes#547",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": "chart",
         "lastAsked": [
           "transcribe"
@@ -23095,7 +23094,7 @@
       "id": "rankQuickNotes#548",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": "chart",
         "lastAsked": [
           "shorter",
@@ -23104,10 +23103,6 @@
       },
       "output": {
         "ranked": [
-          {
-            "id": "describe",
-            "score": 3
-          },
           {
             "id": "detail",
             "score": 2.5
@@ -23118,7 +23113,6 @@
           }
         ],
         "card": [
-          "describe",
           "detail",
           "plain"
         ]
@@ -23128,7 +23122,7 @@
       "id": "rankQuickNotes#549",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": "text",
         "lastAsked": []
       },
@@ -23158,7 +23152,7 @@
       "id": "rankQuickNotes#550",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": "text",
         "lastAsked": [
           "describe"
@@ -23190,7 +23184,7 @@
       "id": "rankQuickNotes#551",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": "text",
         "lastAsked": [
           "transcribe"
@@ -23222,7 +23216,7 @@
       "id": "rankQuickNotes#552",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": "text",
         "lastAsked": [
           "shorter",
@@ -23255,19 +23249,19 @@
       "id": "rankQuickNotes#553",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": "interface",
         "lastAsked": []
       },
       "output": {
         "ranked": [
           {
-            "id": "describe",
-            "score": 3
-          },
-          {
             "id": "detail",
             "score": 2.5
+          },
+          {
+            "id": "transcribe",
+            "score": 1.1
           },
           {
             "id": "plain",
@@ -23275,8 +23269,8 @@
           }
         ],
         "card": [
-          "describe",
           "detail",
+          "transcribe",
           "plain"
         ]
       }
@@ -23285,7 +23279,7 @@
       "id": "rankQuickNotes#554",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": "interface",
         "lastAsked": [
           "describe"
@@ -23317,7 +23311,7 @@
       "id": "rankQuickNotes#555",
       "fn": "rankQuickNotes",
       "input": {
-        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
         "kind": "interface",
         "lastAsked": [
           "transcribe"
@@ -23347,6 +23341,1504 @@
     },
     {
       "id": "rankQuickNotes#556",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "kind": "interface",
+        "lastAsked": [
+          "shorter",
+          "plain"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "transcribe",
+            "score": 1.1
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "detail",
+          "transcribe",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#557",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "kind": "odd",
+        "lastAsked": []
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          },
+          {
+            "id": "transcribe",
+            "score": 0.5
+          }
+        ],
+        "card": [
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#558",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "kind": "odd",
+        "lastAsked": [
+          "describe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          },
+          {
+            "id": "transcribe",
+            "score": 0.5
+          }
+        ],
+        "card": [
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#559",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "kind": "odd",
+        "lastAsked": [
+          "transcribe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#560",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "x:\ty.z:\tq. Long sentence with many words in it here. Another long sentence with many words.",
+        "kind": "odd",
+        "lastAsked": [
+          "shorter",
+          "plain"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          },
+          {
+            "id": "transcribe",
+            "score": 0.5
+          }
+        ],
+        "card": [
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#561",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": null,
+        "lastAsked": []
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#562",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": null,
+        "lastAsked": [
+          "describe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          },
+          {
+            "id": "transcribe",
+            "score": 0.5
+          }
+        ],
+        "card": [
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#563",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": null,
+        "lastAsked": [
+          "transcribe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#564",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": null,
+        "lastAsked": [
+          "shorter",
+          "plain"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#565",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "photo",
+        "lastAsked": []
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#566",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "photo",
+        "lastAsked": [
+          "describe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#567",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "photo",
+        "lastAsked": [
+          "transcribe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#568",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "photo",
+        "lastAsked": [
+          "shorter",
+          "plain"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#569",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "chart",
+        "lastAsked": []
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#570",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "chart",
+        "lastAsked": [
+          "describe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#571",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "chart",
+        "lastAsked": [
+          "transcribe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#572",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "chart",
+        "lastAsked": [
+          "shorter",
+          "plain"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#573",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "text",
+        "lastAsked": []
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#574",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "text",
+        "lastAsked": [
+          "describe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "transcribe",
+            "score": 2
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "detail",
+          "transcribe",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#575",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "text",
+        "lastAsked": [
+          "transcribe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#576",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "text",
+        "lastAsked": [
+          "shorter",
+          "plain"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#577",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "interface",
+        "lastAsked": []
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#578",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "interface",
+        "lastAsked": [
+          "describe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "transcribe",
+            "score": 1.1
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "detail",
+          "transcribe",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#579",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "interface",
+        "lastAsked": [
+          "transcribe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#580",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "interface",
+        "lastAsked": [
+          "shorter",
+          "plain"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#581",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "odd",
+        "lastAsked": []
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#582",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "odd",
+        "lastAsked": [
+          "describe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          },
+          {
+            "id": "transcribe",
+            "score": 0.5
+          }
+        ],
+        "card": [
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#583",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "odd",
+        "lastAsked": [
+          "transcribe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#584",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": " Leading.  Trailing.   Spaced.    Out.  ",
+        "kind": "odd",
+        "lastAsked": [
+          "shorter",
+          "plain"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#585",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": null,
+        "lastAsked": []
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#586",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": null,
+        "lastAsked": [
+          "describe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          },
+          {
+            "id": "transcribe",
+            "score": 0.5
+          }
+        ],
+        "card": [
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#587",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": null,
+        "lastAsked": [
+          "transcribe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#588",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": null,
+        "lastAsked": [
+          "shorter",
+          "plain"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#589",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": "photo",
+        "lastAsked": []
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#590",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": "photo",
+        "lastAsked": [
+          "describe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#591",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": "photo",
+        "lastAsked": [
+          "transcribe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#592",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": "photo",
+        "lastAsked": [
+          "shorter",
+          "plain"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#593",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": "chart",
+        "lastAsked": []
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#594",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": "chart",
+        "lastAsked": [
+          "describe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#595",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": "chart",
+        "lastAsked": [
+          "transcribe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#596",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": "chart",
+        "lastAsked": [
+          "shorter",
+          "plain"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#597",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": "text",
+        "lastAsked": []
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#598",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": "text",
+        "lastAsked": [
+          "describe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "transcribe",
+            "score": 2
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "detail",
+          "transcribe",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#599",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": "text",
+        "lastAsked": [
+          "transcribe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#600",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": "text",
+        "lastAsked": [
+          "shorter",
+          "plain"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#601",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": "interface",
+        "lastAsked": []
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#602",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": "interface",
+        "lastAsked": [
+          "describe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "transcribe",
+            "score": 1.1
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "detail",
+          "transcribe",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#603",
+      "fn": "rankQuickNotes",
+      "input": {
+        "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
+        "kind": "interface",
+        "lastAsked": [
+          "transcribe"
+        ]
+      },
+      "output": {
+        "ranked": [
+          {
+            "id": "describe",
+            "score": 3
+          },
+          {
+            "id": "detail",
+            "score": 2.5
+          },
+          {
+            "id": "plain",
+            "score": 1
+          }
+        ],
+        "card": [
+          "describe",
+          "detail",
+          "plain"
+        ]
+      }
+    },
+    {
+      "id": "rankQuickNotes#604",
       "fn": "rankQuickNotes",
       "input": {
         "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
@@ -23379,7 +24871,7 @@
       }
     },
     {
-      "id": "rankQuickNotes#557",
+      "id": "rankQuickNotes#605",
       "fn": "rankQuickNotes",
       "input": {
         "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
@@ -23409,7 +24901,7 @@
       }
     },
     {
-      "id": "rankQuickNotes#558",
+      "id": "rankQuickNotes#606",
       "fn": "rankQuickNotes",
       "input": {
         "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
@@ -23440,7 +24932,7 @@
       }
     },
     {
-      "id": "rankQuickNotes#559",
+      "id": "rankQuickNotes#607",
       "fn": "rankQuickNotes",
       "input": {
         "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",
@@ -23472,7 +24964,7 @@
       }
     },
     {
-      "id": "rankQuickNotes#560",
+      "id": "rankQuickNotes#608",
       "fn": "rankQuickNotes",
       "input": {
         "text": "A short one. Another short one here, and then a much longer fragment follows it. Brief. Ok.",

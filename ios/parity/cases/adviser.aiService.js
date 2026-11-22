@@ -539,6 +539,12 @@ const FILES = [
     $id: 'an-empty-file',
     file: { bytes: [], name: 'empty.png', type: 'image/png' },
   },
+  {
+    $id: 'the-files-image-wins',
+    file: { bytes: [1, 2, 3], name: 'p.png', type: 'image/png' },
+    payload: { imageBase64: 'ZZZZ', mimeType: 'image/heic', context: 'c' },
+    answers: [ok({ altText: 'Mine.' })],
+  },
   { $id: 'needs-a-file', file: null },
 ];
 
