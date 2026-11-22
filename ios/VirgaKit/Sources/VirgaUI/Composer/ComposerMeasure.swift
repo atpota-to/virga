@@ -193,6 +193,7 @@ enum ComposerMeasure {
   static let publishMainTrailing: CGFloat = 14
   static let publishCaretWidth: CGFloat = 40
   static let publishCaretInset: CGFloat = 4
+  static let publishSeam: CGFloat = 1
   static let publishSeamInk: Double = 0.28
   static let publishOffInk: Double = 0.55
   static let publishGlyph: CGFloat = 16

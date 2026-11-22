@@ -91,13 +91,18 @@ struct ComposerSheet: View {
   @Environment(ToastCenter.self) private var toasts
   @Bindable var controller: ComposerController
 
-  /// The caret in the first post, 40 ms after it's drawn, on a wide screen.
+  /// The caret in the first post, 40 ms after it's drawn, on a wide screen,
+  /// while nothing else has it (the web's check that focus is idle): a
+  /// window resized while a later post is being written leaves it there.
   private func focusFirstPost() {
     guard !theme.composerNarrow else { return }
     let controller = self.controller
     Task { @MainActor in
       try? await Task.sleep(nanoseconds: UInt64(ComposerMeasure.focusDelay * 1_000_000_000))
-      if controller.focusPostId == nil, let first = controller.state.posts.first?.id { controller.focusPostId = first }
+      let posts = controller.state.posts
+      let editing = controller.editingPostId.map { id in posts.contains { $0.id.jsEquals(id) } } ?? false
+      guard controller.focusPostId == nil, !editing else { return }
+      if let first = posts.first?.id { controller.focusPostId = first }
     }
   }
 

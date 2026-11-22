@@ -119,17 +119,21 @@ struct ComposerOptions: View {
         .padding(.top, ComposerMeasure.optionsTop)
         .padding(.trailing, ComposerMeasure.optionsMoreRoom)
         .frame(maxWidth: .infinity, alignment: .leading)
+        // The overlay's top is the rule's foot, the top of `.composer-options`'
+        // padding box, which `top: 11px` is measured from.
         .overlay(alignment: .topTrailing) {
           MoreMenu(label: "More for this post", entries: moreEntries(replying: replying))
             .disabled(disabled)
-            .offset(x: ComposerMeasure.moreRight, y: ComposerMeasure.moreTop - ComposerMeasure.optionsTop)
+            .offset(x: ComposerMeasure.moreRight, y: ComposerMeasure.moreTop)
             .accessibilityIdentifier("option-more")
         }
-        // The tags field opens after the whole row on a wide screen.
+        // The tags field opens after the whole row on a wide screen, inside
+        // the row's padding (the ⋯'s room at the right).
         if controller.tagsOpen {
           tagsField(bareLabel: false)
             .padding(.top, ComposerMeasure.optionsRowGap + ComposerMeasure.tagsFieldTop)
             .padding(.bottom, ComposerMeasure.tagsFieldBottom)
+            .padding(.trailing, ComposerMeasure.optionsMoreRoom)
         }
       }
       // TIMER: why the post has no timer, while it has none (timerNote).

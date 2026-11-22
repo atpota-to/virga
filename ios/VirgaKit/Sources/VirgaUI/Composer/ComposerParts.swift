@@ -379,10 +379,6 @@ struct PublishButton: View {
       .accessibilityIdentifier("publish")
       .keyboardShortcut(.return, modifiers: .command)
       if !listed.isEmpty {
-        Rectangle()
-          .fill(theme.onBtn.opacity(ComposerMeasure.publishSeamInk))
-          .frame(width: 1, height: height)
-          .accessibilityHidden(true)
         Menu {
           ForEach(listed, id: \.self) { action in
             item(action, primaryReason: p.disabled ? p.reason : nil)
@@ -469,7 +465,9 @@ struct PublishHalfBody<Label: View>: View {
 }
 
 /// The send button's caret: 40 wide, its chevron a little left of centre
-/// (`.publish-caret { width: 40px; padding: 0 4px 0 0 }`).
+/// (`.publish-caret { width: 40px; padding: 0 4px 0 0 }`), the seam its own
+/// left edge (`border-left: 1px solid color-mix(on-btn 28%)`), inside the 40,
+/// and not faded with the chevron.
 struct PublishCaret: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(\.isEnabled) private var isEnabled
@@ -483,8 +481,14 @@ struct PublishCaret: View {
       .virgaGlyph(ComposerMeasure.publishGlyph, weight: .semibold, beside: theme.points(ThemeKit.buttonFontSize))
       .foregroundStyle(!isEnabled && fadesWhenOff ? ink.opacity(ComposerMeasure.publishOffInk) : ink)
       .padding(.trailing, ComposerMeasure.publishCaretInset)
+      .padding(.leading, ComposerMeasure.publishSeam)
       .frame(width: ComposerMeasure.publishCaretWidth, height: height)
       .background(shape.fill(theme.color(ThemeKit.primaryButtonFill)))
+      .overlay(alignment: .leading) {
+        Rectangle()
+          .fill(ink.opacity(ComposerMeasure.publishSeamInk))
+          .frame(width: ComposerMeasure.publishSeam)
+      }
       .contentShape(Rectangle())
   }
 }
