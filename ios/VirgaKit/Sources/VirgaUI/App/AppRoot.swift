@@ -104,7 +104,10 @@ public struct AppRoot: View {
 
   @ViewBuilder private var content: some View {
     if let document = LegalDocuments.documentFor(navigator.path) {
-      LegalPageView(docKey: document)
+      // A page per document, as the web's navigate starts a new one at its
+      // top and LegalPage goes to the address's section for each docKey:
+      // Terms to Privacy doesn't keep the Terms' place.
+      LegalPageView(docKey: document).id(document)
     } else if session.loading {
       AppStatus(session.returning ? "Signing you in…" : "Opening Virga…")
     } else if let error = session.error {
