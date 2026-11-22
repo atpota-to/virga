@@ -189,7 +189,10 @@ struct PostedPage: View {
   }
 
   private func list(rows: [JSONValue], visible: [JSONValue], loading: Bool) -> some View {
-    VirgaSection(title: loading ? "Your posts" : HubModel.countPhrase(Double(rows.count), "post"), sub: "Newest first.", flush: true) {
+    VirgaSection(
+      title: loading ? "Your posts" : HubModel.countPhrase(Double(rows.count), "post"), sub: "Newest first.", flush: true,
+      caption: caps.canSchedule ? nil : "Putting a post on a timer needs a long session. Settings › Account offers one."
+    ) {
       if loading {
         RowSkeleton(rows: 6)
       } else if !visible.isEmpty {
@@ -209,14 +212,6 @@ struct PostedPage: View {
       }
       if !loading && (rows.count > shown || (!built && feedCursor != nil)) {
         foot(rows: rows, visible: visible)
-      }
-      if !caps.canSchedule {
-        Text("Putting a post on a timer needs a long session. Settings › Account offers one.")
-          .virgaText(.textSm)
-          .foregroundStyle(theme.muted)
-          .fixedSize(horizontal: false, vertical: true)
-          .frame(maxWidth: theme.measure, alignment: .leading)
-          .padding(.top, theme.points(ThemeKit.cardCaptionSpaceAbove))
       }
     }
   }

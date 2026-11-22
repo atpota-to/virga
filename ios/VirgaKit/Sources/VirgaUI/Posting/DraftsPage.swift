@@ -226,7 +226,17 @@ struct DraftsPage: View {
     let title =
       list.phase == .ready && !rows.isEmpty
       ? "\(AppLocale.formatNumber(rows.count))\(more ? "+" : "") \(rows.count == 1 && !more ? "draft" : "drafts")" : "Drafts"
-    return VirgaSection(title: title, sub: "The latest edit first. Pictures stay on the device that saved them.", flush: true) {
+    // The section's `.card-caption`s, under the list and its foot.
+    var captions: [String] = []
+    if list.phase == .ready && rows.count >= Measure.Hub.manyDrafts {
+      captions.append("Bluesky may stop keeping new drafts past a limit. If one won’t save: \(Drafts.draftLimitMessage)")
+    }
+    if !caps.canSchedule && !rows.isEmpty {
+      captions.append("Scheduling a draft needs a long session. Settings › Account offers one.")
+    }
+    return VirgaSection(
+      title: title, sub: "The latest edit first. Pictures stay on the device that saved them.", flush: true, captions: captions
+    ) {
       if list.phase == .loading {
         RowSkeleton(rows: 4, actions: 1)
       } else {
@@ -246,22 +256,7 @@ struct DraftsPage: View {
             .disabled(list.loadingMore)
         }
       }
-      if list.phase == .ready && rows.count >= Measure.Hub.manyDrafts {
-        caption("Bluesky may stop keeping new drafts past a limit. If one won’t save: \(Drafts.draftLimitMessage)")
-      }
-      if !caps.canSchedule && !rows.isEmpty {
-        caption("Scheduling a draft needs a long session. Settings › Account offers one.")
-      }
     }
-  }
-
-  private func caption(_ text: String) -> some View {
-    Text(text)
-      .virgaText(.textSm)
-      .foregroundStyle(theme.muted)
-      .fixedSize(horizontal: false, vertical: true)
-      .frame(maxWidth: theme.measure, alignment: .leading)
-      .padding(.top, theme.points(ThemeKit.cardCaptionSpaceAbove))
   }
 
   // MARK: A row
