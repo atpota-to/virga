@@ -108,10 +108,13 @@ APP (App/, Pages/, Legal/, SignIn/, Accounts/, Settings/, Platform/)
 - `Platform/AppStores.swift`: UserDefaults in `<bundle>.localStorage`, DiskFileStore in
   `Application Support/Virga`, KeychainSecretStore under `<bundle>.session`; tests in
   ios/VirgaKit/Tests/VirgaUITests (run by package-test on the simulator).
-- Demo mode: `-VirgaDemo YES` (with `-VirgaDemoTerms YES`, `-VirgaDemoSignedOut YES`).
-  Until it is switched to VirgaDemo's DemoSession (notes/demo-world.md, the last section,
-  has the wiring), its network is a stub that answers 503, so the first build fails in the
-  demo.
+- Demo mode: `-VirgaDemo YES` runs on VirgaDemo's DemoSession (the demo network in front
+  of the fake server), so the first build reads Mira's whole archive. Harness flags come as
+  `-VirgaDemoFlags "<query>"` in the web's address form (accounts=1, signedout,
+  expired=<handle>, scope=read, defense=on, terms=ask, latency=<ms>, now=…, appview=…);
+  `-VirgaDemoTerms YES` and `-VirgaDemoSignedOut YES` are terms=ask and signedout. The
+  app's own SessionModel runs over the demo session's environment, with the archive's
+  reset and delete hooks wired as on a device.
 
 ## Known gaps and deliberate differences
 

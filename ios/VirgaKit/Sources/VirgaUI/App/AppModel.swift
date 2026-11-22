@@ -15,16 +15,17 @@
 // is started afresh (analyticsStore.js's resetAnalyticsStore).
 //
 // Demo mode (`-VirgaDemo YES`, read from UserDefaults' argument domain)
-// starts signed in as the demo world's first account (World.me, with
-// World.lab beside it), over in-memory stores, so the shell and every page
-// can be driven without a network. Until the fake XRPC and the fake Virga
-// server are ported (VirgaDemo's fakeXrpc.js, fakeNetwork.js and
-// fakeServer.js, a later step), the demo's network is a stub that answers
-// the agreement's two calls and the sign-out, and turns everything else
-// away; that port will replace it. `-VirgaDemoTerms YES` leaves the
-// agreement unrecorded, so the agreement screen shows first;
-// `-VirgaDemoSignedOut YES` starts with both accounts remembered but signed
-// out, on the front page.
+// runs the app on VirgaDemo's DemoSession: the made-up world's two
+// accounts (Mira, with the full archive, and Field Lab) signed in on this
+// device as long sessions, over in-memory stores, with the demo network
+// (DemoTransport) in front of the fake Virga server. The first build reads
+// Mira's whole archive from it. The harness's flags come in the web's
+// address form: `-VirgaDemoFlags "<query>"` for any of them (accounts=1,
+// signedout, expired=<handle>, scope=read, defense=on, terms=ask,
+// latency=<ms>, now=<time>, appview=…), and the two kept from before,
+// `-VirgaDemoTerms YES` (terms=ask: the agreement screen first) and
+// `-VirgaDemoSignedOut YES` (signedout: the front page, both accounts
+// remembered).
 
 #if canImport(UIKit)
 import Foundation
@@ -124,24 +125,27 @@ public final class AppModel {
   /// are wired to Virga's server: a long session's sign-out then says it
   /// couldn't check, as the web does when the read fails.
   @ObservationIgnored public let pendingWork: PendingWorkServices?
-  /// What the archive reads the public network through, and its clock.
-  @ObservationIgnored let archiveTransport: any HTTPTransport
-  @ObservationIgnored let archiveClock: NetworkClock
+  /// What every account's archive is read through (its file store, the
+  /// public network, the clock), less the account itself.
+  @ObservationIgnored let archiveEnvironment: ArchiveEnvironment
+  /// The demo's session, held for as long as the app runs on its network.
+  @ObservationIgnored let demoSession: DemoSession?
   /// The open account's archive, while its shell is up.
   @ObservationIgnored private var openArchive: ArchiveModel?
   @ObservationIgnored private var started = false
 
   init(
     flags: AppConfig.Flags, isDemo: Bool, stores: AppStores, environment: SessionEnvironment, lookups: SignInLookups,
-    fetchProfile: @escaping @Sendable (String) async throws -> JSONValue?, reporterTransport: any HTTPTransport
+    fetchProfile: @escaping @Sendable (String) async throws -> JSONValue?, reporterTransport: any HTTPTransport,
+    archiveEnvironment: ArchiveEnvironment, demoSession: DemoSession? = nil
   ) {
     self.flags = flags
     self.isDemo = isDemo
     self.stores = stores
     self.lookups = lookups
     self.pendingWork = nil
-    archiveTransport = environment.transport
-    archiveClock = environment.clock
+    self.archiveEnvironment = archiveEnvironment
+    self.demoSession = demoSession
     preferences = PreferencesModel(
       store: stores.keyValue, languages: Locale.preferredLanguages, timeZone: .current, systemDark: SystemAppearance.isDark())
     let session = SessionModel(env: environment)
@@ -188,8 +192,8 @@ public final class AppModel {
   func makeArchive(did: String) -> ArchiveModel {
     let remembered = session.accounts.first { $0.did.jsEquals(did) }
     let handle = profile.profile?.handle ?? remembered?.handle
-    let environment = ArchiveEnvironment(
-      files: stores.files, transport: archiveTransport, clock: archiveClock, postsChanged: nil)
+    var environment = archiveEnvironment
+    environment.postsChanged = nil
     return ArchiveModel(agent: session.did.jsEquals(did) ? session.agent : nil, did: did, handle: handle, environment: environment)
   }
 
@@ -215,7 +219,11 @@ public final class AppModel {
     let defaults = UserDefaults.standard
     let flags = AppConfig.Flags(infoDictionary: Bundle.main.infoDictionary ?? [:])
     if defaults.bool(forKey: "VirgaDemo") {
-      return demo(flags: flags, askTerms: defaults.bool(forKey: "VirgaDemoTerms"), signedOut: defaults.bool(forKey: "VirgaDemoSignedOut"))
+      return demo(
+        flags: flags,
+        search: demoSearch(
+          flags: defaults.string(forKey: "VirgaDemoFlags"), askTerms: defaults.bool(forKey: "VirgaDemoTerms"),
+          signedOut: defaults.bool(forKey: "VirgaDemoSignedOut")))
     }
     return device(flags: flags)
   }()
@@ -229,70 +237,45 @@ public final class AppModel {
       authenticator: SystemWebAuthenticator())
     return AppModel(
       flags: flags, isDemo: false, stores: stores, environment: environment, lookups: .network,
-      fetchProfile: { did in try await Atproto.getProfile(did) }, reporterTransport: HTTP.transport)
+      fetchProfile: { did in try await Atproto.getProfile(did) }, reporterTransport: HTTP.transport,
+      archiveEnvironment: ArchiveEnvironment(files: stores.files, transport: environment.transport, clock: environment.clock))
   }
 
-  /// The made-up world (VirgaDemo), signed in, nothing persisted.
-  static func demo(flags: AppConfig.Flags, askTerms: Bool, signedOut: Bool = false) -> AppModel {
-    let world = DemoWorld(now: Date())
-    let now = world.now
+  /// The harness's address for the demo's launch arguments: `?` and the
+  /// flags given, with `terms=ask` and `signedout` for the two kept switches.
+  static func demoSearch(flags: String?, askTerms: Bool, signedOut: Bool) -> String {
+    var parts: [String] = []
+    if let flags {
+      let given = flags.hasPrefix("?") ? String(flags.dropFirst()) : flags
+      if !given.isEmpty { parts.append(given) }
+    }
+    if askTerms { parts.append("terms=ask") }
+    if signedOut { parts.append("signedout") }
+    return "?" + parts.joined(separator: "&")
+  }
+
+  /// The made-up world (VirgaDemo's DemoSession), signed in, nothing
+  /// persisted. The app's own session model runs over the demo session's
+  /// environment, with the archive's two hooks wired as on a device.
+  static func demo(flags: AppConfig.Flags, search: String) -> AppModel {
     let stores = AppStores.inMemory()
-    let accounts = [World.lab, World.me]
-    for account in accounts {
-      Accounts.recordSignIn(
-        stores.keyValue, did: account.did, mode: "backend", handle: account.handle, displayName: account.displayName,
-        avatar: account.avatar, scope: .granted(AppConfig.oauthScope), now: now)
-      if signedOut {
-        Accounts.markSignedOut(stores.keyValue, account.did)
-      } else {
-        _ = Accounts.writeBackendToken(stores.secrets, account.did, DemoNetwork.token(for: account.did))
-      }
-      if !askTerms || account.did != World.me.did {
-        Acceptance.writeAcceptance(
-          stores.keyValue, account.did, at: .string(JSDate.toISOString(now) ?? ""), recorded: true, identity: "session")
-      }
-    }
-    if !signedOut {
-      Accounts.writeActiveDid(stores.keyValue, World.me.did)
-      SessionHint.writeSessionHint(stores.keyValue)
-    }
-    let transport = DemoNetwork.transport(now: now)
-    let environment = SessionEnvironment(
-      storage: stores.keyValue, tabStorage: stores.tab, secrets: stores.secrets, backendUrl: DemoNetwork.server,
-      transport: transport, authMode: "backend",
-      getProfile: { did in world.views.person(did) },
-      resolvePdsUrl: { _ in World.pds },
-      rememberPdsUrl: { _, _ in },
-      resetAnalyticsStore: resetArchiveStores, deleteDatabase: deleteDatabase(files: stores.files))
+    let demo = DemoSession(
+      options: DemoOptions.read(search), timeZone: .current, storage: stores.keyValue, tabStorage: stores.tab,
+      secrets: stores.secrets)
+    var environment = demo.environment
+    environment.resetAnalyticsStore = resetArchiveStores
+    environment.deleteDatabase = deleteDatabase(files: stores.files)
+    let world = demo.world
     return AppModel(
       flags: flags, isDemo: true, stores: stores, environment: environment, lookups: DemoNetwork.lookups(world),
-      fetchProfile: { did in world.views.person(did) }, reporterTransport: transport)
+      fetchProfile: { did in world.views.person(did) }, reporterTransport: demo.transport,
+      archiveEnvironment: demo.archiveEnvironment(files: stores.files, registry: .shared), demoSession: demo)
   }
 }
 
-/// The demo's network until the fake one is ported: Virga's server answers
-/// the agreement (asked, and recorded) and a sign-out; nothing else answers.
+/// The sign-in's lookups in the demo: the made-up world's accounts, by
+/// handle, without leaving the device.
 enum DemoNetwork {
-  static let server = "https://demo.virga.invalid"
-
-  /// A token in the server's shape (`vg_` and 64 hex digits), one per account.
-  static func token(for did: String) -> String {
-    let digits = SHA256.hash(Array(did.utf8)).map { String(format: "%02x", $0) }.joined()
-    return "vg_" + digits
-  }
-
-  static func transport(now: Double) -> MockTransport {
-    let transport = MockTransport()
-    let at = JSONValue.string(JSDate.toISOString(now) ?? "")
-    transport.on("GET", .path("/api/terms/status"), respond: .json(["accepted": false, "acceptedAt": .null, "version": .null]))
-    transport.on(
-      "POST", .path("/api/terms/accept"),
-      respond: .json(["success": true, "identity": "session", "acceptedAt": at, "version": .number(Double(LegalVersion.termsVersion))]))
-    transport.on(.path("/api/oauth/logout"), respond: .json(["success": true]))
-    transport.on(.any, respond: .status(503))
-    return transport
-  }
-
   /// The two accounts of the world, by handle; any other handle isn't found.
   static func lookups(_ world: DemoWorld) -> SignInLookups {
     let people = [World.me, World.lab]

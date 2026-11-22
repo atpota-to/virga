@@ -59,9 +59,8 @@ final class VirgaUITests: XCTestCase {
     XCTAssertTrue(heading.waitForExistence(timeout: 15), "no page titled \(title)", file: file, line: line)
   }
 
-  /// The first dashboard, which in the demo is the first build's page: the
-  /// demo's network turns the archive's reads away until the made-up
-  /// world's network is ported, so there is nothing to chart yet.
+  /// The first dashboard, which in the demo is the first build's page
+  /// until a test presses Build: the demo starts with no archive.
   private func waitForHome(_ app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
     XCTAssertTrue(element(app, "first-run-title").waitForExistence(timeout: 15), "no first build's page", file: file, line: line)
   }
@@ -206,21 +205,20 @@ final class VirgaUITests: XCTestCase {
     snapshot("dashboard-day")
   }
 
-  /// The first build, pressed: its steps while it runs, then whatever the
-  /// demo's network lets it reach (the stub turns the archive's reads
-  /// away, so the steps fail and the page says what went wrong).
+  /// The first build, pressed: its steps while it runs, then the first
+  /// dashboard once Mira's whole archive is built from the demo's network
+  /// (no added latency, so it takes seconds; the wait is bounded).
   func testTheFirstBuildRuns() {
-    let app = launch()
+    let app = launch(["-VirgaDemoFlags", "latency=0"])
     waitForHome(app)
     snapshot("first-run")
     element(app, "first-run-build").tap()
     let steps = element(app, "sync-steps")
-    let failed = element(app, "first-run-error")
-    let started = steps.waitForExistence(timeout: 5) || failed.exists
-    snapshot("first-run-building")
-    XCTAssertTrue(started, "the build didn't start")
-    _ = failed.waitForExistence(timeout: 60)
-    snapshot("first-run-after")
+    if steps.waitForExistence(timeout: 5) { snapshot("first-run-building") }
+    let built = element(app, "first-run-title").waitForNonExistence(timeout: 180)
+    XCTAssertFalse(element(app, "first-run-error").exists, "the first build failed")
+    XCTAssertTrue(built, "the first build didn't finish in three minutes")
+    snapshot("dashboard-built")
   }
 
   /// The command palette, from Search, with a few letters typed; then one
