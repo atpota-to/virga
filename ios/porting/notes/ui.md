@@ -99,7 +99,11 @@ COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
 - `Segmented(label:options:selection:size:)` (scrolls with faded edges, keys held at their
   bold width), `ChipStyle`, `TokenView`/`TokenRow`, `Badge`, `MetaLine`/`MetaPiece`,
   `StateDot`, `Avatar`, `AccessLine`.
-- `.toggleStyle(.virgaSwitch)`, `.virgaCheck`; `.virgaField(invalid:size:)`,
+- `.toggleStyle(.virgaSwitch)` draws the capsule and its knob and no words, as the web's
+  `.switch` (its label is VoiceOver's name for it, the web's aria-label; the row beside it
+  says what it is, as `SettingsSwitch`'s and the timer editor's rows do: a ToggleStyle
+  can't see `.labelsHidden()`, so it once drew its label beside it, "Require alt text"
+  twice); `.virgaCheck` draws its words beside the box. `.virgaField(invalid:size:)`,
   `.virgaTextArea()`, `FieldStack`, `FieldHint(_, isOver:)`, `SearchField`.
 - Menus: `MoreMenu`/`VirgaMenu` over `[MenuEntry]` (`.item(MenuItem(...))`, `.separator`),
   a native Menu.
