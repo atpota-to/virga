@@ -9,8 +9,12 @@
       "swift": []
     },
     "src/posting/PostingSettingsSection.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
+      ],
+      "note": "Whose settings (every signed-in account, and the open one even when it needs a sign-in, by accountName with its @handle) when there is more than one, then the cards over that account's PostingSettingsModel (usePostingSettings), made again for another account: New posts, and with a long session the Weekly queue, the Default timer and the Post adviser. Not yet: the Post adviser's settings (AdviserSettings.jsx: its heading and that it isn't in the app yet) and, for an account without a long session, NeedsBackend.jsx (that it isn't in the app yet).",
+      "synced": "981c47d09ca4"
     },
     "src/posting/composer/Composer.jsx": {
       "status": "partial",
@@ -176,8 +180,12 @@
       "synced": "7e2519aca49f"
     },
     "src/posting/pages/scheduleParts.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
+      ],
+      "note": "TimezoneSelect (TimezonePicker: this device's zone first, then the rest, an unknown stored zone kept) and SwitchButton (SettingsSwitch), as Settings › Posting uses them. The rest comes with the scheduling pages.",
+      "synced": "ac722e1dce2e"
     },
     "src/posting/ui/AdviserBusy.jsx": {
       "status": "pending",
@@ -200,8 +208,12 @@
       "synced": "238c2db53cce"
     },
     "src/posting/ui/ComposerDefaults.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
+      ],
+      "note": "New posts: Languages (the composer's LanguagePicker, which names itself above its tokens), Who can reply and quote (My Bluesky setting or Choose here, with the composer's GatesEditor over the stored gates), Main button (PublishActions' four, normalized), Require alt text, Offer to split long posts and Number the posts of a split thread as switches, each saved as it changes, with a refused change's message under them.",
+      "synced": "648efd59b070"
     },
     "src/posting/ui/GatesEditor.jsx": {
       "status": "ported",
@@ -211,8 +223,12 @@
       "synced": "e2152ec2eb90"
     },
     "src/posting/ui/LifespanDefaults.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
+      ],
+      "note": "Default timer: Start new posts with a timer (its hint when off), the rule in a sentence (describeTimer), under the row when on and behind The rule it will use: … when off, saved never pinned to a time, the refusal, and the caption with See posts on a timer. Not yet: the rule's editor (LifespanEditor.jsx), whose place says it isn't in the app yet, and the timers in use (scheduleService.js's getLimits and timerLimitsLine), so the caption starts at its second sentence as the web's does when the limits can't be read.",
+      "synced": "ae76e34b01e2"
     },
     "src/posting/ui/LifespanEditor.jsx": {
       "status": "pending",
@@ -240,12 +256,20 @@
       "synced": "37014d77c200"
     },
     "src/posting/ui/QueueSettings.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
+      ],
+      "note": "Weekly queue: the posting times a week with the week in a line and Edit the week (to Posting › Weekly schedule), the time zone (this device's first, then every zone the device knows) with the device's zone named when it differs, and Suggest posting times. scheduleModel.js's weeklyCount, weekSummary, slotLabel, zoneLabel and moveToZone are written beside it (ScheduleWords) until the scheduling pages' model is ported; TimeZone.knownTimeZoneIdentifiers stands in for Intl.supportedValuesOf('timeZone').",
+      "synced": "a81e7aff21f3"
     },
     "src/posting/ui/SettingsParts.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Settings/SettingsPage.swift"
+      ],
+      "note": "SettingsCard and SettingsRow are Settings' own SettingsSectionView and SettingsRow (a block row's control on a line of its own; a short control kept on the label's line on a phone).",
+      "synced": "e35a7f8135dc"
     },
     "src/posting/ui/StyleDialog.jsx": {
       "status": "pending",
