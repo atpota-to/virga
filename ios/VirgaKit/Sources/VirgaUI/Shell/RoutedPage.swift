@@ -179,6 +179,8 @@ public struct RoutedPage: View {
       DraftsPage(session: app.session, did: did, id: id).id(did ?? "")
     } else if pageKey == "posted" {
       PostedPage(did: did).id(did ?? "")
+    } else if pageKey == "timers" {
+      TimersPage(did: did).id(did ?? "")
     } else if pageKey == "templates" {
       TemplatesPage(session: app.session, did: app.session.did, id: id)
         .id(app.session.did ?? "")
