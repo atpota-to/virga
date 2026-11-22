@@ -87,6 +87,16 @@ visible to people: they are marked **visible**.
 - **visible** src/signin/identity.js normalizeSignInInput decodes a pasted bsky.app profile link before it checks whether the result is an address, so `https://bsky.app/profile/https%3A%2F%2Fevil.example` becomes `https://evil.example` and is read as a host address: a link that looks like a Bluesky profile starts a sign-in at another host. The card shown before leaving does name that host. Reproduced in Node (fixture session.signin).
 - src/session/sessionHealth.js createSessionChecker always waits CONFIRM_GAP_MS (2.5 s) after a definitive first answer, even with `rounds: 1`, so a browser session the library can't restore is reported as expired 2.5 s late, with no further probe in between.
 
+## Composer and posting (src/posting/lib, src/posting/composer, src/posting/schedule, src/posting/settings.js)
+
+- **visible** src/posting/lib/video.js pollVideoJobStatus resets `consecutiveFailures` as soon as an answer parses as JSON, before checking `response.ok` or the job-status shape, so a video service that answers 500 with JSON (or JSON without a job status) is polled every pollInterval×2 until the 30-minute maxPollTimeMs instead of giving up.
+- **visible** src/posting/composer/submit.js whenWords: 'tomorrow' is now + 24 hours, not the next calendar day, so it misses across a clock change (at 23:30 on the eve of New York's spring-forward day, a post at 10:00 the next day reads 'Sun, Mar 8 at 10:00 AM').
+- src/posting/schedule/repeat.js repeatProgress/repeatSummary (shortDate) and postingQueue.js resolveTimezone/dayDiff read the device's clock or zone directly (`new Date().getFullYear()`) even where the caller passes a `now`.
+- src/posting/schedule/postingQueue.js tzOffsetMs reads the wall clock back through formatToParts and Date.UTC, so instants before the year 100 come out centuries off (zonedWallTimeToUtc('0050-06-01','12:00','UTC') is 1950-06-01T12:00Z), and zonedWallTime near the end of time gives 'NaN-NaN-NaN'.
+- src/posting/lib/video.js videoLimitMessage, src/posting/settings.js writePostingSettings (CHECKERS[key]) and the language and noun tables are plain-object lookups, so a key named after an Object.prototype member returns a function or writes a 'constructor' member into the stored settings.
+- src/posting/adviser/analysis.js applyWritingFixesToThread throws a TypeError for a thread with a null post once any fix applies.
+- src/posting/composer/actions.js postFacts and src/posting/autosave.js serializePost throw a TypeError on a post whose `images` is a non-array truthy value; hasAutosaveContent counts a string `images` or `tags` as content.
+
 ## Templates (src/posting/templates, src/posting/library/templateEditorModel.js)
 
 - **visible** src/posting/templates/postTemplates.js wordsOf/keywordMatches: the WORDS regex `/[\p{L}\p{N}](?:[\p{L}\p{N}']*[\p{L}\p{N}])?/gu` has no `\p{M}`, so a word splits at every combining mark: a keyword typed with a decomposed accent ('élise') matches the text 'e lise' and not 'élise', and Devanagari keywords split at their vowel signs.

@@ -35,6 +35,7 @@ when the port is complete.
 | timers | VirgaPosting | ported, audited | the timer rule model and every sentence in five locales and seven zones, the lifespan editor's model; the server calls wait behind `TimerRequester` |
 | templates | VirgaPosting | ported, audited | postTemplates, templateUsage, editorDrafts, templateService, TemplatesModel (useTemplates), the template editor's model |
 | insights | VirgaInsights | ported, audited | routes, the dashboard catalog and layouts, registries, settings sections, the command palette's commands, lucide → SF Symbol mapping; the reports' models, chart notes and follower milestones, the share card's spec and drawing, the Interaction lookup's model |
+| composer | VirgaPosting | ported, audited | composerModel, the composer's modules, autosave, posting settings, the posting queue and repeats, images and video (the pixel work behind ImageEncoder), loaders, pendingCompose, the adviser's setup and analysis; the seams to VirgaBackend's timers, Mentions' fetch and the archive's postsChanged |
 | defense | VirgaDefense | ported, audited | bands, scoring, canary candidates, the radar's layout, the moderator's commands, plans, history, limits; harvest, scan, veto, the service calls, the page model, DefenseAccountModel and DefenseListsModel |
 | demo world | VirgaDemo | ported, audited | the web harness's made-up accounts, crowd, repo, views, CAR builder and card images; the fake agent, the network router, the fake server's session, terms and proxy routes, and DemoSession, so demo mode runs the app's real session and archive |
 | the SwiftUI foundation | VirgaUI | built, checked by CI (not yet audited) | the theme in SwiftUI with Instrument Sans, the controls, the phone's shell (app bar, tab bar) and the iPad's (Virga's own sidebar on the sky), the app's states, sign-in through ASWebAuthenticationSession, the agreement and legal pages, accounts and settings, the archive in the app (first build, sync status, Settings > Data with exports), the period picker, the command palette, the app's stores (UserDefaults, Application Support, the Keychain), demo mode, UI tests with screenshots |
@@ -51,9 +52,7 @@ The order follows the dependencies between the web modules.
    - Two ports of JavaScript's `localeCompare` grew apart in parallel: VirgaInsights' `Support/JSCollation.swift` (a table-driven ICU root, audited hard) and VirgaPosting's `Support/LocaleCompare.swift` (Foundation's ICU with a trailing tab). Move one into VirgaCore, with the `sensitivity: 'base'` mode templates need, and have both domains' fixtures pass on it.
    - Add VirgaRepo to VirgaInsights' dependencies so ReportArchive can offer `atmosphere` (notes/insights.md).
    - Wire DemoSession into VirgaUI's demo mode in place of its stub transport (notes/demo-world.md, the last section, says how), so the UI tests and screenshots show a built archive.
-2. **Composer** (VirgaPosting):
-   - Port `composerModel.js`, `src/posting/composer/*.js`, `autosave.js`, `settings.js`, `adviser/setup.js`, `pendingCompose.js`, `postingQueue.js`, `publishActions.js`, `repeat.js`, `images.js` and `video.js`.
-   - Also wire the seams earlier waves left: `VirgaBackend` → timers' `TimerRequester`, Mentions' default fetch → VirgaNetwork, and ArchiveEnvironment.postsChanged → the posting events bus.
+2. ~~**Composer**~~ Done on 2026-11-22 (notes/composer.md).
 3. **Publishing and drafts** (needs the composer): `publish.js`, `publishRecord.js`, `linkCard.js`, `drafts/*.js`.
 4. **Scheduling, adviser, library** (need 2 and 3): `src/posting/schedule/*` (the rest), `pages/scheduleModel.js`, `hubModel.js`, `postedModel.js`, `draftActions.js`; `src/posting/adviser/*`, `ui/postPreview.js`, `ui/backendAccess.js`; `src/posting/library/*` (it builds on the templates).
 5. **The rest of VirgaDemo**: the rest of `fakeServer.js` (scheduling, timers, limits, the AI routes, the workers, the seeded rows) and `fakeDefense.js`, so every part of the app runs in demo mode.
@@ -86,8 +85,8 @@ The order follows the dependencies between the web modules.
   up.
 - **Fixtures** live in the repository (about 22 MB). Keep new ones under
   about 1 MB each.
-- **Bugs.** `ios/porting/WEB-BUGS.md` lists 72 bugs in the web app the
-  porters found and reproduced rather than fixed. Eleven are visible to people.
+- **Bugs.** `ios/porting/WEB-BUGS.md` lists 79 bugs in the web app the
+  porters found and reproduced rather than fixed. Thirteen are visible to people.
 - **Harness limits.** The fixture writer's `toJSON` in
   `ios/parity/cases/_helpers.js` keeps a `__proto__` key since 2026-11-21
   (no fixture changed). It is still recursive, so a value nested about
