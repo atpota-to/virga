@@ -471,8 +471,9 @@ struct HubFailedRow: View {
         HubRowText(text: HubModel.scheduledSnippet(row), placeholder: "")
         // One run of words, so the two actions wrap with them. Laid out a
         // word at a time, read as one sentence: the first word carries the
-        // lead's words for VoiceOver, then the two actions.
-        FlowLayout(spacing: theme.space1, lineSpacing: 0, alignment: .firstTextBaseline) {
+        // lead's words for VoiceOver, then the two actions. A word space of
+        // the face at --text-sm between them, as one run of text has.
+        FlowLayout(spacing: theme.spaceWidth(size: theme.textSm), lineSpacing: 0, alignment: .firstTextBaseline) {
           ForEach(Array(lead.text.split(separator: " ").enumerated()), id: \.offset) { index, word in
             Text(String(word))
               .accessibilityLabel(lead.text)
