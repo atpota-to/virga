@@ -235,7 +235,8 @@ func xrpcError(_ body: () async throws -> Void) async -> XRPCError? {
     #expect(out.data["results"]?.arrayValue?.count == 4)
     #expect(out.data["results"]?[0]?["cid"]?.stringValue == rootCid)
     let gates = try HarnessRepo.listCollection(s.mira, "app.bsky.feed.threadgate")
-    #expect(gates[0].value["allow"] == [["$type": "app.bsky.feed.threadgate#followingRule"]])
+    let allow: JSONValue = [["$type": "app.bsky.feed.threadgate#followingRule"]]
+    #expect(gates[0].value["allow"] == allow)
 
     let feed = try await s.get("https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=\(did)&limit=3")
     let uris = feed["feed"]?.arrayValue?.compactMap { $0["post"]?["uri"]?.stringValue } ?? []
@@ -257,7 +258,8 @@ func xrpcError(_ body: () async throws -> Void) async -> XRPCError? {
       HTTPRequest(url: "\(World.pds)/xrpc/com.atproto.sync.getRepo?did=\(World.me.did)"))
     #expect(car.headers.get("content-type") == "application/vnd.ipld.car")
     let contents = try await CarRepo.readRepoCar(car.body)
-    #expect(contents.entries.contains { $0.collection == "app.bsky.feed.post" && $0.rkey == rkey })
+    let inCar = contents.entries.contains { $0.collection == "app.bsky.feed.post" && $0.rkey == rkey }
+    #expect(inCar)
   }
 
   @Test func uploadsBlobsWithARealCIDAndRefusesOneWithoutAMediaType() async throws {
@@ -299,9 +301,11 @@ func xrpcError(_ body: () async throws -> Void) async -> XRPCError? {
   @Test func answersTheAccountsDefaultReplyAndQuoteSettings() async throws {
     let s = AgentSetup()
     let mira = await Gates.readDefaultGates(XRPCGatesAgent(agent: s.xrpc))
-    #expect(mira?.json == ["reply": [["type": "following"], ["type": "mention"]], "quotes": true])
+    let miras: JSONValue = ["reply": [["type": "following"], ["type": "mention"]], "quotes": true]
+    #expect(mira?.json == miras)
     let lab = await Gates.readDefaultGates(XRPCGatesAgent(agent: s.agentFor(World.lab.did)))
-    #expect(lab?.json == ["reply": nil, "quotes": true])
+    let labs: JSONValue = ["reply": nil, "quotes": true]
+    #expect(lab?.json == labs)
   }
 
   @Test func answersBookmarksAndPostSearchWithPostsThePublicViewsCanHydrate() async throws {

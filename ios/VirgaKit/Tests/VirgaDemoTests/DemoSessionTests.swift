@@ -50,11 +50,14 @@ enum DemoSessions {
     for did in [World.me.did, World.lab.did] {
       let token = Accounts.readBackendToken(session.secrets, did)
       #expect(token.map(BackendClient.isToken) == true)
-      #expect(session.server.tokens.contains { $0.token == token && $0.did == did })
+      let minted = session.server.tokens.contains { $0.token == token && $0.did == did }
+      #expect(minted)
       #expect(Acceptance.readAcceptance(session.storage, did)?.identity == "session")
     }
     let capabilities = model.capabilitiesFor(World.me.did)
-    #expect(capabilities.canPost && capabilities.canSchedule && capabilities.canUseAi)
+    #expect(capabilities.canPost)
+    #expect(capabilities.canSchedule)
+    #expect(capabilities.canUseAi)
     #expect(capabilities.defense == "missing")
     // The open account's agent reads through Virga's server, as the account.
     let followers = try await #require(model.agent).query("app.bsky.graph.getFollowers", ["limit": 2])
@@ -134,7 +137,8 @@ enum DemoSessions {
     #expect(model.did == World.lab.did)
     #expect(model.accounts.first { $0.did == World.lab.did }?.status == .ready)
     let token = Accounts.readBackendToken(session.secrets, World.lab.did)
-    #expect(session.server.tokens.contains { $0.token == token && $0.did == World.lab.did })
+    let minted = session.server.tokens.contains { $0.token == token && $0.did == World.lab.did }
+    #expect(minted)
   }
 
   @Test func turnsDefenseOnWithASignInThatAsksForIt() async throws {

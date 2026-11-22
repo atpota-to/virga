@@ -37,7 +37,9 @@ import VirgaTestSupport
       // Long sessions only, and the server's other flags at their defaults.
       let back = options.flags
       #expect(back.mode == "backend", "\(search)")
-      #expect(back.limits == Harness.readFlags("").limits && back.ai == "ok" && back.moderator == "on", "\(search)")
+      #expect(back.limits == Harness.readFlags("").limits, "\(search)")
+      #expect(back.ai == "ok", "\(search)")
+      #expect(back.moderator == "on", "\(search)")
     }
   }
 }

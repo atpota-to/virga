@@ -82,9 +82,15 @@ func backendError(_ body: () async throws -> Void) async -> BackendError? {
     let s = ServerSetup()
     let one = s.server.mintToken(World.lab.did)
     let two = s.server.mintToken(World.lab.did)
-    #expect(s.server.signOutToken(one) == (true, false))
-    #expect(s.server.signOutToken(two) == (true, true))
-    #expect(s.server.signOutToken(two) == (false, false))
+    let first = s.server.signOutToken(one)
+    #expect(first.found)
+    #expect(first.grantRevoked == false)
+    let last = s.server.signOutToken(two)
+    #expect(last.found)
+    #expect(last.grantRevoked)
+    let again = s.server.signOutToken(two)
+    #expect(again.found == false)
+    #expect(again.grantRevoked == false)
   }
 
   @Test func answersAnUnknownTokenWithFrontendSessionInvalidEverywhere() async throws {
@@ -108,9 +114,11 @@ func backendError(_ body: () async throws -> Void) async -> BackendError? {
       BackendClient.BackendPaths.logout, method: "POST",
       headers: ["Authorization": "Bearer vg_\(String(repeating: "1", count: 64))"], text: "{}")
     #expect(unknown.status == 200)
-    #expect(try unknown.json() == ["success": true, "message": "Logged out successfully", "grantRevoked": false])
+    let loggedOut: JSONValue = ["success": true, "message": "Logged out successfully", "grantRevoked": false]
+    #expect(try unknown.json() == loggedOut)
     let none = try await s.fetch(BackendClient.BackendPaths.logout, method: "POST", text: "{}")
-    #expect(try none.json() == ["success": true, "message": "No session to logout"])
+    let nothing: JSONValue = ["success": true, "message": "No session to logout"]
+    #expect(try none.json() == nothing)
     #expect(
       await BackendClient.backendSignOut(
         backendUrl: s.origin, token: "vg_\(String(repeating: "2", count: 64))", transport: s.transport))
@@ -178,7 +186,8 @@ func backendError(_ body: () async throws -> Void) async -> BackendError? {
   @Test func answersTheRealServicesAskedThenRecordedOnceForTheSessionsAccount() async throws {
     let s = ServerSetup(terms: "ask")
     let req = s.requester(World.me.did)
-    #expect(try await TermsService.fetchTermsStatus(req) == TermsStatusAnswer(accepted: false, acceptedAt: .null, version: 1))
+    let asked = TermsStatusAnswer(accepted: false, acceptedAt: .null, version: 1)
+    #expect(try await TermsService.fetchTermsStatus(req) == asked)
     let first = try await TermsService.recordAcceptance(req)
     #expect(s.server.agreements.map(\.identity) == ["session"])
     let after = try await TermsService.fetchTermsStatus(req)
@@ -247,7 +256,8 @@ func backendError(_ body: () async throws -> Void) async -> BackendError? {
     let res = try await s.fetch("/api/limits/status", headers: ["Authorization": "Bearer \(token)"])
     // The limits come with the scheduling port: until then, a plain 503.
     #expect(res.status == 503)
-    #expect(try res.json() == ["success": false, "error": "scheduling isn't in the demo's server yet.", "code": "UNAVAILABLE"])
+    let later: JSONValue = ["success": false, "error": "scheduling isn't in the demo's server yet.", "code": "UNAVAILABLE"]
+    #expect(try res.json() == later)
     #expect(try await s.fetch("/api/nothing-here").status == 404)
     // The router answers its own origin only.
     #expect(await s.server.route(HTTPRequest(url: "http://127.0.0.1:5701/api/limits/status")) == nil)
@@ -256,7 +266,8 @@ func backendError(_ body: () async throws -> Void) async -> BackendError? {
   @Test func namesThePageAnAccountSignsInOnAsAPDSDoes() async throws {
     let s = ServerSetup()
     let res = try await s.transport.send(HTTPRequest(url: "https://pds.harness.example/.well-known/oauth-protected-resource"))
-    #expect(try res.json() == ["resource": "https://pds.harness.example", "authorization_servers": ["https://pds.harness.example"]])
+    let resource: JSONValue = ["resource": "https://pds.harness.example", "authorization_servers": ["https://pds.harness.example"]]
+    #expect(try res.json() == resource)
   }
 
   @Test func refusesEveryOtherHostLoudly() async throws {
@@ -362,7 +373,8 @@ func backendError(_ body: () async throws -> Void) async -> BackendError? {
       return
     }
     #expect(did == World.lab.did)
-    #expect(s.server.tokens.contains { $0.token == token && $0.did == World.lab.did })
+    let minted = s.server.tokens.contains { $0.token == token && $0.did == World.lab.did }
+    #expect(minted)
     #expect(SessionController.grantedDefenseLevel(s.world.grantOf(World.lab.did)) == .lists)
   }
 
