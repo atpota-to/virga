@@ -33,6 +33,9 @@ public final class ComposerHost {
   public internal(set) var controller: ComposerController?
   /// The publisher the composer sends through (publish.js's seam).
   @ObservationIgnored public var publisher: any ComposerPublisher
+  /// The composer's toasts (Posted, and what went wrong), over the page
+  /// once it closes.
+  public let toasts = ToastCenter()
 
   public init(publisher: any ComposerPublisher = UnavailablePublisher()) {
     self.publisher = publisher
@@ -79,18 +82,17 @@ struct ComposerHostModifier: ViewModifier {
   @Environment(AppModel.self) private var app
   @Environment(SessionModel.self) private var session
   @Bindable var host: ComposerHost
-  @State private var toasts = ToastCenter()
 
   func body(content: Content) -> some View {
     content
       .environment(host)
       .overlay {
-        ToastStack(center: toasts).padding(.bottom, theme.hasSidebar ? 0 : theme.tabbarH)
+        ToastStack(center: host.toasts).padding(.bottom, theme.hasSidebar ? 0 : theme.tabbarH)
       }
       .sheet(isPresented: sheetBinding) {
         if let controller = host.controller {
           ComposerSheet(controller: controller)
-            .environment(toasts)
+            .environment(host.toasts)
             .modifier(ComposerSheetSizing(phone: theme.isPhone))
         }
       }
@@ -115,7 +117,7 @@ struct ComposerHostModifier: ViewModifier {
     if host.controller == nil {
       host.controller = ComposerController(
         session: session, store: app.stores.keyValue, transport: app.archiveEnvironment.transport,
-        publisher: host.publisher, toasts: toasts, close: { [weak host] in host?.close() })
+        publisher: host.publisher, toasts: host.toasts, close: { [weak host] in host?.close() })
     }
     host.controller?.startFromIntent(host.intent ?? .object([:]))
   }

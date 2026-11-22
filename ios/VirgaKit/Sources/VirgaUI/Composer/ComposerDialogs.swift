@@ -218,16 +218,16 @@ struct GatesEditor: View {
 
   /// The account's own curation lists, read publicly.
   private func readLists() async {
-    lists = ("loading", [])
+    lists = (status: "loading", items: [])
     do {
       let body = try await PublicAppView.publicXrpc(
         "app.bsky.graph.getLists", ["actor": .string(did), "limit": 50], transport: transport)
       let items = (body["lists"]?.arrayValue ?? []).filter {
         $0["purpose"] == "app.bsky.graph.defs#curatelist" && !($0["uri"]?.stringValue ?? "").isEmpty
       }
-      lists = ("ready", items)
+      lists = (status: "ready", items: items)
     } catch {
-      lists = ("error", [])
+      lists = (status: "error", items: [])
     }
   }
 }

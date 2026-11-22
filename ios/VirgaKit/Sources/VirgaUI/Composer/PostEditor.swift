@@ -40,7 +40,7 @@ struct PostEditor: View {
   let placeholder: String
   let disabled: Bool
   @State private var caret = 0
-  @State private var detected: (text: String, segments: [HighlightSegment]) = ("", [])
+  @State private var detected: (text: String, segments: [HighlightSegment]) = (text: "", segments: [])
   @State private var mention: MentionLookup?
   @State private var pasteNote = ""
   @State private var focusTick = 0
@@ -123,7 +123,7 @@ struct PostEditor: View {
     let result = await Facets.detectFacets(text, DetectFacetsOptions(skipMentionResolution: true))
     if Task.isCancelled { return }
     let merged = InlineLinks.applyInlineLinks(text, links.map(\.span), result)
-    detected = (text, Highlight.highlightSegments(text, merged.facets, links))
+    detected = (text: text, segments: Highlight.highlightSegments(text, merged.facets, links))
     controller.detected(postId, text: text, postEmbeds: merged.postEmbeds, externalLinks: merged.externalLinks)
   }
 

@@ -142,6 +142,19 @@ APP (App/, Pages/, Legal/, SignIn/, Accounts/, Settings/, Platform/)
   app's own SessionModel runs over the demo session's environment, with the archive's
   reset and delete hooks wired as on a device.
 
+COMPOSER (Composer/)
+- `ComposerHost` (ComposerContext's role) is AppRoot's, above the per-account identity, put in the
+  environment by `.composerHost(_:)`, which also presents the sheet, shows the composer's toasts
+  and flushes the autosave when the scene goes to the background. `host.open(intent)` (the web's
+  intent JSON), `host.openLink(virga://compose?…)`; RoutedPage's `.intent` and `/posting/compose`
+  are `OpenComposerPage`, which opens it and moves to /posting, as Shell.jsx's OpenComposer does.
+- `ComposerController` holds Composer.jsx's state beside the post (ComposerStateModel holds the
+  post): startFromIntent, restoreFor, changeAsDid, addFiles, detected, submitPost, startOver.
+- `ComposerPublisher` (Composer/ComposerServices.swift) is publish.js's seam: `publish(state,
+  target:requireAltText:onProgress:)` → `ComposerPublishResult`. The app's is
+  `UnavailablePublisher` until VirgaPosting's port is wired: set `ComposerHost(publisher:)`.
+  `ComposerLinkCards.fetchLinkCard` is a stand-in for linkCard.js's, over the session's transport.
+
 ## Known gaps and deliberate differences
 
 - Left for later steps: the live sky (src/hillside, three.js) and the five taps on the

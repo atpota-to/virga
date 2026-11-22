@@ -182,7 +182,7 @@ extension ComposerController {
       }
       if videoJobs[postId]?.file == file { videoJobs[postId] = nil }
     }
-    videoJobs[postId] = (file, did, task)
+    videoJobs[postId] = (file: file, did: did, task: task)
   }
 
   func removeVideo(_ index: Int) {

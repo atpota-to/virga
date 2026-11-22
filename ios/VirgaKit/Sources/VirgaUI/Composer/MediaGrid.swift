@@ -10,6 +10,7 @@
 #if canImport(UIKit)
 import AVKit
 import SwiftUI
+import UIKit
 import VirgaCore
 import VirgaPosting
 

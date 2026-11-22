@@ -13,6 +13,7 @@
 import CoreTransferable
 import PhotosUI
 import SwiftUI
+import UIKit
 import UniformTypeIdentifiers
 import VirgaCore
 import VirgaPosting

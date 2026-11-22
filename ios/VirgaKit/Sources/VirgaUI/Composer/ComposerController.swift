@@ -263,13 +263,13 @@ public final class ComposerController {
       if let id = ComposerRestore.setAsideState(
         cur.asDid, cur.json, touched: model.lifespanTouched, store: store, now: now)
       {
-        aside = (cur.asDid, id)
+        aside = (did: cur.asDid, id: id)
       }
     } else if !ComposerModel.isEmptyComposer(cur) {
       ComposerRestore.clearKept(cur.asDid, store: store, now: now)
     }
     let keptId = ComposerRestore.setAsideKept(plan.asDid, base: base.json, store: store, now: now)
-    if aside == nil, let keptId { aside = (plan.asDid, keptId) }
+    if aside == nil, let keptId { aside = (did: plan.asDid, id: keptId) }
     if let aside { notes.append(asideNotice(aside.did, aside.id, "The post you were writing is set aside.")) }
     let seeded = ComposerIntent.seedFromIntent(base, plan)
     loadState(seeded)
@@ -525,14 +525,14 @@ public final class ComposerController {
     let did = state.asDid
     guard !did.isEmpty, !state.gates.custom, state.reply == nil else { return }
     let settings = settingsFor(did)
-    gatesInfo = (did, "loading", nil, nil)
+    gatesInfo = (did: did, status: "loading", source: nil, notice: nil)
     let session = self.session
     Task {
       let agent = try? await session.agentFor(did)
       let r = await PostingSettingsStore.resolveDefaultGates(settings, agent: agent?.gatesAgent)
       guard self.state.asDid.jsEquals(did) else { return }
       if !self.state.gates.custom { self.dispatch(.setDefaultGates(r.gates)) }
-      self.gatesInfo = (did, "ready", r.source, r.notice)
+      self.gatesInfo = (did: did, status: "ready", source: r.source, notice: r.notice)
     }
   }
 }

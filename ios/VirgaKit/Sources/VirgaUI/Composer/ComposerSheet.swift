@@ -388,7 +388,7 @@ struct ComposerDialogView: View {
         }, onClose: close)
     case .gates:
       GatesDialog(
-        did: controller.asDid, value: (controller.state.gates.reply, controller.state.gates.quotes),
+        did: controller.asDid, value: (reply: controller.state.gates.reply, quotes: controller.state.gates.quotes),
         sourceLine: controller.gatesLine, transport: controller.transport,
         onSave: { reply, quotes in
           let gates: JSONValue = ["reply": reply.map(JSONValue.array) ?? .null, "quotes": .bool(quotes)]

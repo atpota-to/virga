@@ -12,6 +12,7 @@
 #if canImport(UIKit)
 import PhotosUI
 import SwiftUI
+import UIKit
 import VirgaCore
 import VirgaNetwork
 import VirgaPosting
@@ -252,7 +253,7 @@ struct LinkCardDialog: View {
     .onAppear {
       title = card.title
       description = card.description
-      thumb = (card.thumb, card.thumbFile, false)
+      thumb = (url: card.thumb, file: card.thumbFile, removed: false)
     }
     .onChange(of: pick) { _, item in
       guard let item else { return }
@@ -297,7 +298,7 @@ struct LinkCardDialog: View {
       guard let file = try await PickedMedia.file(item) else { throw ImageProcessingError("That image couldn’t be used.", code: "IMAGE_PROCESSING_FAILED") }
       let prepared = try await Images.prepareImage(file, budget: Images.cardThumbBudget, encoder: ImageIOEncoder())
       let url = prepared.file.ref.map { URL(fileURLWithPath: $0).absoluteString }
-      thumb = (url, prepared.file, false)
+      thumb = (url: url, file: prepared.file, removed: false)
     } catch {
       self.error = ComposerController.optionalMessage(error) ?? "That image couldn’t be used."
     }
