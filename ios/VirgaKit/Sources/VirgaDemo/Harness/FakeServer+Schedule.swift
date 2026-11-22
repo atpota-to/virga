@@ -345,7 +345,7 @@ extension DemoServer {
       return .error("repeat.every must be one of: \(ServerRepeat.repeatEvery.joined(separator: ", "))")
     }
     let occurrence = given ?? 1
-    guard let zone = [raw["tz"], tz].first(where: ServerRepeat.isZone) ?? nil else {
+    guard let zone = [raw["tz"], tz].first(where: FakeServer.isZone) ?? nil else {
       return .error("repeat.tz must be a time zone this server knows")
     }
     func blank(_ v: JSONValue?) -> Bool { v == nil || v == .null || v == .string("") }

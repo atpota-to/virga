@@ -61,7 +61,7 @@ import VirgaTestSupport
   @Test func zone() throws {
     try Self.check("zone") { c in
       let tz = c.input["tz"]
-      let ok = ServerRepeat.isZone(tz)
+      let ok = FakeServer.isZone(tz)
       let walls: JSONValue? =
         ok
         ? .array(
