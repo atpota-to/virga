@@ -31,18 +31,22 @@ public enum Highlight {
     "app.bsky.richtext.facet#tag": "tag",
   ]
 
-  /// `a > b` for loose numbers (absent is NaN, so never greater).
-  static func greater(_ a: JSONValue?, _ b: JSONValue?) -> Bool { a.jsNumber > b.jsNumber }
+  /// `a > b` for loose values, as JavaScript compares them (two strings
+  /// by code unit; absent is NaN, so never greater).
+  static func greater(_ a: JSONValue?, _ b: JSONValue?) -> Bool { ComposerJS.greater(a, b) }
 
-  /// byteToCharIndex for any number (a facet's index needn't be whole).
-  static func byteToCharIndex(_ map: [Int], _ byteIndex: Double) -> Double {
+  /// byteToCharIndex for any value (a facet's index needn't be whole, or
+  /// even a number): the comparisons read it as a number, but only a number
+  /// is `===` the text's last offset.
+  static func byteToCharIndex(_ map: [Int], _ byteIndex: JSONValue?) -> Double {
+    let n = byteIndex.jsNumber
     guard !map.isEmpty else { return 0 }
-    for i in 0..<(map.count - 1) where Double(map[i]) <= byteIndex && byteIndex < Double(map[i + 1]) {
+    for i in 0..<(map.count - 1) where Double(map[i]) <= n && n < Double(map[i + 1]) {
       return Double(i)
     }
-    if byteIndex == Double(map[map.count - 1]) { return Double(map.count - 1) }
-    if byteIndex < 0 { return 0 }
-    if byteIndex > Double(map[map.count - 1]) { return Double(map.count - 1) }
+    if byteIndex?.doubleValue == Double(map[map.count - 1]) { return Double(map.count - 1) }
+    if n < 0 { return 0 }
+    if n > Double(map[map.count - 1]) { return Double(map.count - 1) }
     return 0
   }
 
@@ -59,8 +63,8 @@ public enum Highlight {
       let bs = f["index"]?["byteStart"]
       let be = f["index"]?["byteEnd"]
       guard greater(be, bs) else { continue }
-      let start = byteToCharIndex(map, bs.jsNumber)
-      let end = byteToCharIndex(map, be.jsNumber)
+      let start = byteToCharIndex(map, bs)
+      let end = byteToCharIndex(map, be)
       guard end > start, end <= Double(source.jsLength) else { continue }
       out.append(FacetRange(start: start, end: end, kind: kind))
     }
@@ -78,37 +82,48 @@ public enum Highlight {
     _ text: JSONValue?, _ facets: JSONValue? = .array([]), _ inlineLinks: JSONValue? = .array([])
   ) -> [HighlightSegment] {
     let source = text?.stringValue ?? ""
-    var marks: [FacetRange] = []
+    // A mark keeps the link's offsets as given: the web compares them as
+    // they are (two strings by code unit) and only slicing reads numbers.
+    struct Mark {
+      var start: JSONValue?
+      var end: JSONValue?
+      var kind: String
+    }
+    let less = ComposerJS.less
+    let greater = ComposerJS.greater
+    var marks: [Mark] = []
     for link in inlineLinks?.arrayValue ?? [] {
       guard greater(link["end"], link["start"]) else { continue }
-      let start = link["start"].jsNumber
-      let end = link["end"].jsNumber
-      let labelStart = link["labelStart"].jsNumber
-      let labelEnd = link["labelEnd"].jsNumber
-      if labelStart > start { marks.append(FacetRange(start: start, end: labelStart, kind: "syntax")) }
-      if labelEnd > labelStart { marks.append(FacetRange(start: labelStart, end: labelEnd, kind: "link")) }
-      if end > labelEnd { marks.append(FacetRange(start: labelEnd, end: end, kind: "syntax")) }
+      let (start, end, labelStart, labelEnd) = (link["start"], link["end"], link["labelStart"], link["labelEnd"])
+      if greater(labelStart, start) { marks.append(Mark(start: start, end: labelStart, kind: "syntax")) }
+      if greater(labelEnd, labelStart) { marks.append(Mark(start: labelStart, end: labelEnd, kind: "link")) }
+      if greater(end, labelEnd) { marks.append(Mark(start: labelEnd, end: end, kind: "syntax")) }
     }
     let linkSpans = marks
     for r in facetRanges(.string(source), facets) {
+      let (start, end): (JSONValue, JSONValue) = (.number(r.start), .number(r.end))
       // The inline link's own marks win over the facet laid on its label.
-      if linkSpans.contains(where: { r.start < $0.end && $0.start < r.end }) { continue }
-      marks.append(r)
+      if linkSpans.contains(where: { less(start, $0.end) && less($0.start, end) }) { continue }
+      marks.append(Mark(start: start, end: end, kind: r.kind))
     }
     marks = TimerJS.v8Sorted(marks) { a, b in
-      let byStart = a.start - b.start
-      return byStart != 0 && !byStart.isNaN ? byStart : b.end - a.end
+      let byStart = a.start.jsNumber - b.start.jsNumber
+      return byStart != 0 && !byStart.isNaN ? byStart : b.end.jsNumber - a.end.jsNumber
     }
 
     var out: [HighlightSegment] = []
-    var at = 0.0
+    var at: JSONValue? = .number(0)
     for m in marks {
-      if m.start < at { continue }  // overlapping; the earlier mark stands
-      if m.start > at { out.append(HighlightSegment(text: slice(source, at, m.start), kind: "plain")) }
-      out.append(HighlightSegment(text: slice(source, m.start, m.end), kind: m.kind))
+      if less(m.start, at) { continue }  // overlapping; the earlier mark stands
+      if greater(m.start, at) {
+        out.append(HighlightSegment(text: slice(source, at.jsNumber, m.start.jsNumber), kind: "plain"))
+      }
+      out.append(HighlightSegment(text: slice(source, m.start.jsNumber, m.end.jsNumber), kind: m.kind))
       at = m.end
     }
-    if at < Double(source.jsLength) { out.append(HighlightSegment(text: slice(source, at, nil), kind: "plain")) }
+    if less(at, .number(Double(source.jsLength))) {
+      out.append(HighlightSegment(text: slice(source, at.jsNumber, nil), kind: "plain"))
+    }
     return out
   }
 

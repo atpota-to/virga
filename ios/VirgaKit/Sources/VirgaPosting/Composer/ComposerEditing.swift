@@ -114,7 +114,7 @@ public enum ComposerEditing {
     -> InlineLinkPaste?
   {
     let source = ComposerJS.str(text)
-    guard end.jsNumber > start.jsNumber else { return nil }
+    guard ComposerJS.greater(end, start) else { return nil }
     let url = ComposerJS.str(pasted).jsTrimmed()
     guard isOneWebAddress(url), let destination = InlineLinks.linkDestination(url) else { return nil }
     let label = Highlight.slice(source, start.jsNumber, end.jsNumber)
@@ -172,9 +172,11 @@ public enum ComposerEditing {
     _ text: JSONValue?, charStart: JSONValue?, charEnd: JSONValue?, expect: JSONValue? = nil
   ) -> String {
     let source = ComposerJS.str(text)
+    guard ComposerJS.greater(charEnd, charStart), !ComposerJS.greater(charEnd, .number(Double(source.jsLength))) else {
+      return source
+    }
     let start = charStart.jsNumber
     let end = charEnd.jsNumber
-    guard end > start, !(end > Double(source.jsLength)) else { return source }
     if let expect, !expect.isNull, !ComposerJS.strictEquals(.string(Highlight.slice(source, start, end)), expect) {
       return source
     }

@@ -129,6 +129,36 @@ enum ComposerJS {
     object.jsValue(key.map(\.jsString) ?? "undefined")
   }
 
+  /// JavaScript's IsLessThan(a, b) for two loose values: true, false, or nil
+  /// where a NaN leaves it undefined. Each is made a primitive first (an
+  /// array or object becomes its String form); two strings compare code
+  /// unit by code unit ("10" < "9"), anything else as numbers (undefined is
+  /// NaN, null 0).
+  static func jsLessThan(_ a: JSONValue?, _ b: JSONValue?) -> Bool? {
+    func primitive(_ value: JSONValue?) -> JSONValue? {
+      switch value {
+      case .array?, .object?: return .string(value!.jsString)
+      default: return value
+      }
+    }
+    let (x, y) = (primitive(a), primitive(b))
+    if case .string(let s)? = x, case .string(let t)? = y {
+      return Array(s.utf16).lexicographicallyPrecedes(Array(t.utf16))
+    }
+    let (m, n) = (x.jsNumber, y.jsNumber)
+    if m.isNaN || n.isNaN { return nil }
+    return m < n
+  }
+
+  /// `a < b` for loose values.
+  static func less(_ a: JSONValue?, _ b: JSONValue?) -> Bool { jsLessThan(a, b) == true }
+
+  /// `a > b` for loose values.
+  static func greater(_ a: JSONValue?, _ b: JSONValue?) -> Bool { jsLessThan(b, a) == true }
+
+  /// `a >= b` for loose values (false where a NaN is involved).
+  static func greaterOrEqual(_ a: JSONValue?, _ b: JSONValue?) -> Bool { jsLessThan(a, b) == false }
+
   /// An object's members with `keys` taken out (`const { a, b, ...rest } = v`).
   static func without(_ value: JSONValue, _ keys: [String]) -> JSONValue {
     var members = spread(value)

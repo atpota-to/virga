@@ -435,7 +435,11 @@
       "id": "normalizeJobStatus#6",
       "fn": "normalizeJobStatus",
       "input": {
-        "result": null
+        "result": {
+          "jobStatus": [],
+          "jobId": "j1",
+          "state": "S"
+        }
       },
       "output": null
     },
@@ -443,12 +447,56 @@
       "id": "normalizeJobStatus#7",
       "fn": "normalizeJobStatus",
       "input": {
-        "result": "nope"
+        "result": {
+          "jobStatus": [
+            {
+              "jobId": "j1"
+            }
+          ],
+          "blob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm"
+            },
+            "mimeType": "video/mp4",
+            "size": 7700058
+          }
+        }
       },
       "output": null
     },
     {
       "id": "normalizeJobStatus#8",
+      "fn": "normalizeJobStatus",
+      "input": {
+        "result": {
+          "jobStatus": null,
+          "jobId": "j1"
+        }
+      },
+      "output": {
+        "jobStatus": null,
+        "jobId": "j1"
+      }
+    },
+    {
+      "id": "normalizeJobStatus#9",
+      "fn": "normalizeJobStatus",
+      "input": {
+        "result": null
+      },
+      "output": null
+    },
+    {
+      "id": "normalizeJobStatus#10",
+      "fn": "normalizeJobStatus",
+      "input": {
+        "result": "nope"
+      },
+      "output": null
+    },
+    {
+      "id": "normalizeJobStatus#11",
       "fn": "normalizeJobStatus",
       "input": {
         "result": []

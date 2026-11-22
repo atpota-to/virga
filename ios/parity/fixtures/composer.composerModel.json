@@ -14080,6 +14080,129 @@
       }
     },
     {
+      "id": "langs-string-long",
+      "fn": "validateComposer",
+      "input": {
+        "state": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p1",
+              "text": "x",
+              "images": [],
+              "video": null,
+              "record": null,
+              "card": null
+            }
+          ],
+          "reply": null,
+          "tags": [],
+          "langs": "abcd",
+          "labels": [],
+          "gates": {
+            "custom": false,
+            "reply": null,
+            "quotes": true
+          },
+          "schedule": null,
+          "lifespan": {
+            "enabled": false
+          },
+          "source": null
+        },
+        "now": 1773576000000,
+        "tz": "UTC"
+      },
+      "output": {
+        "problems": [
+          {
+            "postIndex": null,
+            "code": "TOO_MANY_LANGS",
+            "message": "Choose up to 3 languages."
+          }
+        ],
+        "calls": 0
+      }
+    },
+    {
+      "id": "langs-string-short",
+      "fn": "validateComposer",
+      "input": {
+        "state": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p1",
+              "text": "x",
+              "images": [],
+              "video": null,
+              "record": null,
+              "card": null
+            }
+          ],
+          "reply": null,
+          "tags": [],
+          "langs": "abc",
+          "labels": [],
+          "gates": {
+            "custom": false,
+            "reply": null,
+            "quotes": true
+          },
+          "schedule": null,
+          "lifespan": {
+            "enabled": false
+          },
+          "source": null
+        },
+        "now": 1773576000000,
+        "tz": "UTC"
+      },
+      "output": {
+        "problems": [],
+        "calls": 0
+      }
+    },
+    {
+      "id": "langs-number",
+      "fn": "validateComposer",
+      "input": {
+        "state": {
+          "asDid": "did:plc:me",
+          "posts": [
+            {
+              "id": "p1",
+              "text": "x",
+              "images": [],
+              "video": null,
+              "record": null,
+              "card": null
+            }
+          ],
+          "reply": null,
+          "tags": [],
+          "langs": 7,
+          "labels": [],
+          "gates": {
+            "custom": false,
+            "reply": null,
+            "quotes": true
+          },
+          "schedule": null,
+          "lifespan": {
+            "enabled": false
+          },
+          "source": null
+        },
+        "now": 1773576000000,
+        "tz": "UTC"
+      },
+      "output": {
+        "problems": [],
+        "calls": 0
+      }
+    },
+    {
       "id": "malformed-null",
       "fn": "validateComposer",
       "input": {

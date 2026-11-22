@@ -291,7 +291,9 @@ public enum Video {
   public static func normalizeJobStatus(_ result: JSONValue?) -> JSONValue? {
     // An array is an object too, but has no jobId, state or blob.
     guard let result, case .object = result else { return nil }
-    let status: JSONValue = ComposerJS.isObject(result["jobStatus"]) ? result["jobStatus"]! : result
+    // `typeof jobStatus === 'object'` holds for an array too, which then
+    // stands in for the status (and has none of its members).
+    let status: JSONValue = TimerJS.isObject(result["jobStatus"]) ? result["jobStatus"]! : result
     // (Not `cond ? status : nil`: JSONValue takes a nil literal as null.)
     guard ComposerJS.truthy(status["jobId"]) || ComposerJS.truthy(status["state"]) || ComposerJS.truthy(status["blob"])
     else { return nil }

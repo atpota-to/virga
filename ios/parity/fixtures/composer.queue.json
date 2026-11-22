@@ -14403,6 +14403,552 @@
       "output": null
     },
     {
+      "id": "zonedWallTime#185",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "UTC",
+        "value": "0050-06-01T12:00:00.000Z"
+      },
+      "output": {
+        "date": "1950-06-01",
+        "time": "12:00",
+        "weekday": "thu"
+      }
+    },
+    {
+      "id": "zonedWallTime#186",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "UTC",
+        "value": "0099-12-31T23:59:59.999Z"
+      },
+      "output": {
+        "date": "1999-12-31",
+        "time": "23:59",
+        "weekday": "fri"
+      }
+    },
+    {
+      "id": "zonedWallTime#187",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "UTC",
+        "value": "0100-01-01T00:00:00.000Z"
+      },
+      "output": {
+        "date": "100-01-01",
+        "time": "00:00",
+        "weekday": "fri"
+      }
+    },
+    {
+      "id": "zonedWallTime#188",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "UTC",
+        "value": "0150-06-01T12:00:00.000Z"
+      },
+      "output": {
+        "date": "150-06-01",
+        "time": "12:00",
+        "weekday": "mon"
+      }
+    },
+    {
+      "id": "zonedWallTime#189",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "UTC",
+        "value": "0001-01-01T00:00:00.000Z"
+      },
+      "output": {
+        "date": "1901-01-01",
+        "time": "00:00",
+        "weekday": "tue"
+      }
+    },
+    {
+      "id": "zonedWallTime#190",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "UTC",
+        "value": "0000-06-01T12:00:00.000Z"
+      },
+      "output": {
+        "date": "1901-06-01",
+        "time": "12:00",
+        "weekday": "sat"
+      }
+    },
+    {
+      "id": "zonedWallTime#191",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "UTC",
+        "value": "-000050-06-01T12:00:00.000Z"
+      },
+      "output": {
+        "date": "1951-06-01",
+        "time": "12:00",
+        "weekday": "fri"
+      }
+    },
+    {
+      "id": "zonedWallTime#192",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "UTC",
+        "value": -8640000000000000
+      },
+      "output": {
+        "date": "271822-04-20",
+        "time": "00:00",
+        "weekday": "sat"
+      }
+    },
+    {
+      "id": "zonedWallTime#193",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "UTC",
+        "value": -62135596800001
+      },
+      "output": {
+        "date": "1901-12-31",
+        "time": "23:59",
+        "weekday": "tue"
+      }
+    },
+    {
+      "id": "zonedWallTime#194",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "America/New_York",
+        "value": "0050-06-01T12:00:00.000Z"
+      },
+      "output": {
+        "date": "1950-06-01",
+        "time": "07:03",
+        "weekday": "thu"
+      }
+    },
+    {
+      "id": "zonedWallTime#195",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "America/New_York",
+        "value": "0099-12-31T23:59:59.999Z"
+      },
+      "output": {
+        "date": "1999-12-31",
+        "time": "19:03",
+        "weekday": "fri"
+      }
+    },
+    {
+      "id": "zonedWallTime#196",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "America/New_York",
+        "value": "0100-01-01T00:00:00.000Z"
+      },
+      "output": {
+        "date": "1999-12-31",
+        "time": "19:03",
+        "weekday": "fri"
+      }
+    },
+    {
+      "id": "zonedWallTime#197",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "America/New_York",
+        "value": "0150-06-01T12:00:00.000Z"
+      },
+      "output": {
+        "date": "150-06-01",
+        "time": "07:03",
+        "weekday": "mon"
+      }
+    },
+    {
+      "id": "zonedWallTime#198",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "America/New_York",
+        "value": "0001-01-01T00:00:00.000Z"
+      },
+      "output": {
+        "date": "1901-12-31",
+        "time": "19:03",
+        "weekday": "tue"
+      }
+    },
+    {
+      "id": "zonedWallTime#199",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "America/New_York",
+        "value": "0000-06-01T12:00:00.000Z"
+      },
+      "output": {
+        "date": "1901-06-01",
+        "time": "07:03",
+        "weekday": "sat"
+      }
+    },
+    {
+      "id": "zonedWallTime#200",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "America/New_York",
+        "value": "-000050-06-01T12:00:00.000Z"
+      },
+      "output": {
+        "date": "1951-06-01",
+        "time": "07:03",
+        "weekday": "fri"
+      }
+    },
+    {
+      "id": "zonedWallTime#201",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "America/New_York",
+        "value": -8640000000000000
+      },
+      "output": {
+        "date": "271822-04-19",
+        "time": "19:03",
+        "weekday": "fri"
+      }
+    },
+    {
+      "id": "zonedWallTime#202",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "America/New_York",
+        "value": -62135596800001
+      },
+      "output": {
+        "date": "1901-12-31",
+        "time": "19:03",
+        "weekday": "tue"
+      }
+    },
+    {
+      "id": "zonedWallTime#203",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Asia/Kolkata",
+        "value": "0050-06-01T12:00:00.000Z"
+      },
+      "output": {
+        "date": "1950-06-01",
+        "time": "17:53",
+        "weekday": "thu"
+      }
+    },
+    {
+      "id": "zonedWallTime#204",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Asia/Kolkata",
+        "value": "0099-12-31T23:59:59.999Z"
+      },
+      "output": {
+        "date": "100-01-01",
+        "time": "05:53",
+        "weekday": "fri"
+      }
+    },
+    {
+      "id": "zonedWallTime#205",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Asia/Kolkata",
+        "value": "0100-01-01T00:00:00.000Z"
+      },
+      "output": {
+        "date": "100-01-01",
+        "time": "05:53",
+        "weekday": "fri"
+      }
+    },
+    {
+      "id": "zonedWallTime#206",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Asia/Kolkata",
+        "value": "0150-06-01T12:00:00.000Z"
+      },
+      "output": {
+        "date": "150-06-01",
+        "time": "17:53",
+        "weekday": "mon"
+      }
+    },
+    {
+      "id": "zonedWallTime#207",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Asia/Kolkata",
+        "value": "0001-01-01T00:00:00.000Z"
+      },
+      "output": {
+        "date": "1901-01-01",
+        "time": "05:53",
+        "weekday": "tue"
+      }
+    },
+    {
+      "id": "zonedWallTime#208",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Asia/Kolkata",
+        "value": "0000-06-01T12:00:00.000Z"
+      },
+      "output": {
+        "date": "1901-06-01",
+        "time": "17:53",
+        "weekday": "sat"
+      }
+    },
+    {
+      "id": "zonedWallTime#209",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Asia/Kolkata",
+        "value": "-000050-06-01T12:00:00.000Z"
+      },
+      "output": {
+        "date": "1951-06-01",
+        "time": "17:53",
+        "weekday": "fri"
+      }
+    },
+    {
+      "id": "zonedWallTime#210",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Asia/Kolkata",
+        "value": -8640000000000000
+      },
+      "output": {
+        "date": "271822-04-20",
+        "time": "05:53",
+        "weekday": "sat"
+      }
+    },
+    {
+      "id": "zonedWallTime#211",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Asia/Kolkata",
+        "value": -62135596800001
+      },
+      "output": {
+        "date": "1901-01-01",
+        "time": "05:53",
+        "weekday": "tue"
+      }
+    },
+    {
+      "id": "zonedWallTime#212",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Pacific/Chatham",
+        "value": "0050-06-01T12:00:00.000Z"
+      },
+      "output": {
+        "date": "1950-06-02",
+        "time": "00:13",
+        "weekday": "fri"
+      }
+    },
+    {
+      "id": "zonedWallTime#213",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Pacific/Chatham",
+        "value": "0099-12-31T23:59:59.999Z"
+      },
+      "output": {
+        "date": "100-01-01",
+        "time": "12:13",
+        "weekday": "fri"
+      }
+    },
+    {
+      "id": "zonedWallTime#214",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Pacific/Chatham",
+        "value": "0100-01-01T00:00:00.000Z"
+      },
+      "output": {
+        "date": "100-01-01",
+        "time": "12:13",
+        "weekday": "fri"
+      }
+    },
+    {
+      "id": "zonedWallTime#215",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Pacific/Chatham",
+        "value": "0150-06-01T12:00:00.000Z"
+      },
+      "output": {
+        "date": "150-06-02",
+        "time": "00:13",
+        "weekday": "tue"
+      }
+    },
+    {
+      "id": "zonedWallTime#216",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Pacific/Chatham",
+        "value": "0001-01-01T00:00:00.000Z"
+      },
+      "output": {
+        "date": "1901-01-01",
+        "time": "12:13",
+        "weekday": "tue"
+      }
+    },
+    {
+      "id": "zonedWallTime#217",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Pacific/Chatham",
+        "value": "0000-06-01T12:00:00.000Z"
+      },
+      "output": {
+        "date": "1901-06-02",
+        "time": "00:13",
+        "weekday": "sun"
+      }
+    },
+    {
+      "id": "zonedWallTime#218",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Pacific/Chatham",
+        "value": "-000050-06-01T12:00:00.000Z"
+      },
+      "output": {
+        "date": "1951-06-02",
+        "time": "00:13",
+        "weekday": "sat"
+      }
+    },
+    {
+      "id": "zonedWallTime#219",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Pacific/Chatham",
+        "value": -8640000000000000
+      },
+      "output": {
+        "date": "271822-04-20",
+        "time": "12:13",
+        "weekday": "sat"
+      }
+    },
+    {
+      "id": "zonedWallTime#220",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Pacific/Chatham",
+        "value": -62135596800001
+      },
+      "output": {
+        "date": "1901-01-01",
+        "time": "12:13",
+        "weekday": "tue"
+      }
+    },
+    {
+      "id": "zonedWallTime#221",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "UTC",
+        "value": 8640000000000000
+      },
+      "output": {
+        "date": "275760-09-13",
+        "time": "00:00",
+        "weekday": "sat"
+      }
+    },
+    {
+      "id": "zonedWallTime#222",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "America/New_York",
+        "value": 8640000000000000
+      },
+      "output": {
+        "date": "275760-09-12",
+        "time": "20:00",
+        "weekday": "fri"
+      }
+    },
+    {
+      "id": "zonedWallTime#223",
+      "fn": "zonedWallTime",
+      "input": {
+        "tz": "UTC",
+        "zone": "Pacific/Honolulu",
+        "value": 8640000000000000
+      },
+      "output": {
+        "date": "275760-09-12",
+        "time": "14:00",
+        "weekday": "fri"
+      }
+    },
+    {
       "id": "default-utc/mid-march/UTC",
       "fn": "enumerateSlots",
       "input": {
@@ -18146,6 +18692,212 @@
           "2027-03-31T12:00:00.000Z",
           "2027-03-31T18:00:00.000Z"
         ]
+      }
+    },
+    {
+      "id": "ancient-0050-06-01T00:00:00.000Z-UTC",
+      "fn": "enumerateSlots",
+      "input": {
+        "schedule": {
+          "timezone": "UTC",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "tue": [
+              "09:00"
+            ],
+            "wed": [
+              "09:00"
+            ],
+            "thu": [
+              "09:00"
+            ],
+            "fri": [
+              "09:00"
+            ],
+            "sat": [
+              "09:00"
+            ],
+            "sun": [
+              "09:00"
+            ]
+          }
+        },
+        "from": "0050-06-01T00:00:00.000Z",
+        "tz": "UTC"
+      },
+      "output": {
+        "count": 0,
+        "first": [],
+        "last": []
+      }
+    },
+    {
+      "id": "ancient-0050-06-01T00:00:00.000Z-America/New_York",
+      "fn": "enumerateSlots",
+      "input": {
+        "schedule": {
+          "timezone": "America/New_York",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "tue": [
+              "09:00"
+            ],
+            "wed": [
+              "09:00"
+            ],
+            "thu": [
+              "09:00"
+            ],
+            "fri": [
+              "09:00"
+            ],
+            "sat": [
+              "09:00"
+            ],
+            "sun": [
+              "09:00"
+            ]
+          }
+        },
+        "from": "0050-06-01T00:00:00.000Z",
+        "tz": "UTC"
+      },
+      "output": {
+        "count": 0,
+        "first": [],
+        "last": []
+      }
+    },
+    {
+      "id": "ancient-0150-06-01T00:00:00.000Z-Asia/Kolkata",
+      "fn": "enumerateSlots",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "tue": [
+              "09:00"
+            ],
+            "wed": [
+              "09:00"
+            ],
+            "thu": [
+              "09:00"
+            ],
+            "fri": [
+              "09:00"
+            ],
+            "sat": [
+              "09:00"
+            ],
+            "sun": [
+              "09:00"
+            ]
+          }
+        },
+        "from": "0150-06-01T00:00:00.000Z",
+        "tz": "UTC"
+      },
+      "output": {
+        "count": 90,
+        "first": [
+          "0150-06-01T03:06:32.000Z",
+          "0150-06-02T03:06:32.000Z",
+          "0150-06-03T03:06:32.000Z",
+          "0150-06-04T03:06:32.000Z",
+          "0150-06-05T03:06:32.000Z",
+          "0150-06-06T03:06:32.000Z",
+          "0150-06-07T03:06:32.000Z",
+          "0150-06-08T03:06:32.000Z"
+        ],
+        "last": [
+          "0150-08-27T03:06:32.000Z",
+          "0150-08-28T03:06:32.000Z",
+          "0150-08-29T03:06:32.000Z"
+        ]
+      }
+    },
+    {
+      "id": "ancient--000050-06-01T00:00:00.000Z-UTC",
+      "fn": "enumerateSlots",
+      "input": {
+        "schedule": {
+          "timezone": "UTC",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "tue": [
+              "09:00"
+            ],
+            "wed": [
+              "09:00"
+            ],
+            "thu": [
+              "09:00"
+            ],
+            "fri": [
+              "09:00"
+            ],
+            "sat": [
+              "09:00"
+            ],
+            "sun": [
+              "09:00"
+            ]
+          }
+        },
+        "from": "-000050-06-01T00:00:00.000Z",
+        "tz": "UTC"
+      },
+      "output": {
+        "count": 0,
+        "first": [],
+        "last": []
+      }
+    },
+    {
+      "id": "ancient-+275760-08-01T00:00:00.000Z-UTC",
+      "fn": "enumerateSlots",
+      "input": {
+        "schedule": {
+          "timezone": "UTC",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "tue": [
+              "09:00"
+            ],
+            "wed": [
+              "09:00"
+            ],
+            "thu": [
+              "09:00"
+            ],
+            "fri": [
+              "09:00"
+            ],
+            "sat": [
+              "09:00"
+            ],
+            "sun": [
+              "09:00"
+            ]
+          }
+        },
+        "from": "+275760-08-01T00:00:00.000Z",
+        "tz": "UTC"
+      },
+      "output": {
+        "$throws": "Invalid time value"
       }
     },
     {

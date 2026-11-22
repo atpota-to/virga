@@ -15,9 +15,10 @@ public struct AppliedFixes: Codable, Hashable, Sendable {
 }
 
 /// applyWritingFixesToThread's answer: `{ posts, applied }` (the posts as
-/// given when nothing applied).
+/// given when nothing applied; nil when none were given, as the web's
+/// `{ posts: undefined }`).
 public struct AppliedThreadFixes: Codable, Hashable, Sendable {
-  public var posts: JSONValue
+  public var posts: JSONValue?
   public var applied: Int
 }
 
@@ -104,7 +105,7 @@ public enum AdviserAnalysis {
   /// containing its excerpt; one spanning two posts is skipped. The posts
   /// come back as given when nothing applied.
   public static func applyWritingFixesToThread(_ posts: JSONValue?, _ issues: JSONValue?) -> AppliedThreadFixes {
-    guard let list = posts?.arrayValue else { return AppliedThreadFixes(posts: posts ?? .null, applied: 0) }
+    guard let list = posts?.arrayValue else { return AppliedThreadFixes(posts: posts, applied: 0) }
     var texts = list.map { $0["text"]?.stringValue ?? "" }
     var applied = 0
     for issue in fixableWritingIssues(issues) {

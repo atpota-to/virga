@@ -2394,6 +2394,78 @@
           },
           null
         ],
+        "did": "did:plc:mira",
+        "tz": "UTC",
+        "limit": -1
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "at": "2026-03-12T09:00:00.000Z",
+          "replyTo": "did:plc:mira"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/7",
+          "at": "2026-03-12T09:00:00"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/9",
+          "at": "2026-03-12T09:00:00.000Z"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "at": "2026-03-10T09:00:00.000Z"
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/6",
+          "at": "junk"
+        }
+      ]
+    },
+    {
+      "id": "continueCandidates#6",
+      "fn": "continueCandidates",
+      "input": {
+        "rows": [
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+            "at": "2026-03-10T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+            "at": "2026-03-12T09:00:00.000Z",
+            "replyTo": "did:plc:mira"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/3",
+            "at": "2026-03-11T09:00:00.000Z",
+            "replyTo": "did:plc:wren"
+          },
+          {
+            "uri": "at://did:plc:wren/app.bsky.feed.post/4",
+            "at": "2026-03-13T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.repost/5",
+            "at": "2026-03-14T09:00:00.000Z"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/6",
+            "at": "junk"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/7",
+            "at": "2026-03-12T09:00:00"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/8"
+          },
+          {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/9",
+            "at": "2026-03-12T09:00:00.000Z"
+          },
+          null
+        ],
         "did": "did:plc:wren",
         "tz": "UTC"
       },
@@ -2405,7 +2477,7 @@
       ]
     },
     {
-      "id": "continueCandidates#6",
+      "id": "continueCandidates#7",
       "fn": "continueCandidates",
       "input": {
         "rows": null,

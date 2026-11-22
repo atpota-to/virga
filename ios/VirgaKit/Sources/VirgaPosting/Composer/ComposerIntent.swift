@@ -182,13 +182,15 @@ public enum ComposerIntent {
   /// What has to be read before the composer can show the intent, in order.
   public static func intentLoads(_ plan: ComposerIntentPlan?) -> [String] {
     guard let plan else { return [] }
-    if plan.scheduledId != nil { return ["scheduled"] }
-    if plan.draftId != nil { return ["draft"] }
+    // Each member as the web tests it: truthy.
+    func has(_ key: String) -> Bool { ComposerJS.truthy(plan.json[key]) }
+    if has("scheduledId") { return ["scheduled"] }
+    if has("draftId") { return ["draft"] }
     var out: [String] = []
-    if plan.reply != nil { out.append("reply") }
-    if plan.quote != nil { out.append("quote") }
-    if plan.templateId != nil { out.append("template") }
-    if plan.attach != nil { out.append("attach") }
+    if has("reply") { out.append("reply") }
+    if has("quote") { out.append("quote") }
+    if has("templateId") { out.append("template") }
+    if has("attach") { out.append("attach") }
     return out
   }
 

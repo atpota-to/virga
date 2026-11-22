@@ -445,6 +445,7 @@ export default async function cases() {
         { rows: ROWS, did: MIRA, tz: 'America/New_York' },
         { rows: ROWS, did: MIRA, tz: 'Pacific/Chatham', limit: 3 },
         { rows: ROWS, did: MIRA, tz: 'UTC', limit: 0 },
+        { rows: ROWS, did: MIRA, tz: 'UTC', limit: -1 },
         { rows: ROWS, did: WREN, tz: 'UTC' },
         { rows: null, did: MIRA, tz: 'UTC' },
       ],

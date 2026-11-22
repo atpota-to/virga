@@ -312,14 +312,37 @@ public enum PostingQueue {
   }
 
   /// Offset (ms) such that localWallClockUTCms = instantMs + offset, for `tz`
-  /// at `instantMs`, as formatToParts gives it: the wall clock to the
-  /// second, so an instant with milliseconds comes out that much short.
+  /// at `instantMs`, as the web works it out: the wall clock's parts from
+  /// formatToParts, to the second (so an instant with milliseconds comes out
+  /// that much short), put back together with Date.UTC. Both steps bend
+  /// early years, and the web's answer bends with them: formatToParts gives
+  /// the era's year without the era (1 BC is "1", 50 BC "50"), and Date.UTC
+  /// reads a year from 0 to 99 as 1900 to 1999. So an instant before the
+  /// year 100 comes out centuries off, and one whose wall clock is past the
+  /// end of time is NaN.
   static func tzOffsetMs(_ instantMs: Double, _ tz: String) throws -> Double {
     let zone = try zone(tz)
     let t = JSDate.timeClip(instantMs)
     guard t.isFinite else { throw PostingQueueError("Invalid time value") }
-    let wall = t + JSDate.offsetMs(at: t, timeZone: zone)
-    return (wall / 1000).rounded(.down) * 1000 - t
+    let wall = ((t + JSDate.offsetMs(at: t, timeZone: zone)) / 1000).rounded(.down) * 1000
+    guard let f = wallParts(wall) else { return .nan }
+    let year = f.year >= 1 ? f.year : 1 - f.year
+    let asUTC = JSDate.utc(
+      Double(year), Double(f.month), Double(f.date), Double(f.hours), Double(f.minutes), Double(f.seconds))
+    return asUTC - t
+  }
+
+  /// The calendar fields of a wall-clock time, also for one a zone's offset
+  /// pushes past either end of the range a Date holds (ICU formats those
+  /// all the same): read 400 years nearer, which is the same day of the
+  /// same weekday, and the year put back.
+  static func wallParts(_ wall: Double) -> JSDate.Fields? {
+    if let f = JSDate.utcFields(wall) { return f }
+    guard wall.isFinite else { return nil }
+    let cycle = 146_097 * msPerDay  // 400 Gregorian years
+    guard var f = JSDate.utcFields(wall < 0 ? wall + cycle : wall - cycle) else { return nil }
+    f.year += wall < 0 ? -400 : 400
+    return f
   }
 
   /// The calendar date that `instantMs` falls on in `tz`.

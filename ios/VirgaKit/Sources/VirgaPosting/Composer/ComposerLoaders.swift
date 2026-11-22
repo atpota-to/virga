@@ -150,7 +150,8 @@ public enum ComposerLoaders {
       default: break
       }
     } catch {
-      let status = (error as? PublicXrpcError)?.status
+      // `err?.status`: whichever read failed, by the status it carries.
+      let status = ComposerSubmit.status(of: error)
       if status == 400 || status == 404 {
         view = nil
       } else {
@@ -254,6 +255,7 @@ public enum ComposerLoaders {
       guard let uri = row["uri"]?.stringValue, PostingJS.hasPrefix(uri, prefix) else { return false }
       return isOwnThreadRow(row, did)
     }
-    return Array(TimerJS.v8Sorted(mine) { time($1) - time($0) }.prefix(Swift.max(0, limit)))
+    // `.slice(0, limit)`: a negative limit counts back from the end.
+    return ComposerJS.slice(TimerJS.v8Sorted(mine) { time($1) - time($0) }, 0, limit)
   }
 }

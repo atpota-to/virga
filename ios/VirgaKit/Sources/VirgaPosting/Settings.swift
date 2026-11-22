@@ -232,10 +232,16 @@ public enum PostingSettingsStore {
     return .array(out.map(JSONValue.string))
   }
 
-  /// `/^at:\/\/[^/]+\/app\.bsky\.graph\.list\/[^/]+$/`.
+  /// `/^at:\/\/[^/]+\/app\.bsky\.graph\.list\/[^/]+$/`: three non-empty
+  /// pieces, the record key anything without a '/' (a '?' or '#' in it
+  /// too, where an AT URI parser would stop).
   static func isListUri(_ uri: String) -> Bool {
-    guard let parsed = AtUri.parseExact(uri) else { return false }
-    return parsed.collection == "app.bsky.graph.list"
+    let units = Array(uri.utf16)
+    let scheme = Array("at://".utf16)
+    guard units.count > scheme.count, Array(units[0..<scheme.count]) == scheme else { return false }
+    let pieces = units[scheme.count...].split(separator: 0x2F, omittingEmptySubsequences: false)
+    return pieces.count == 3 && !pieces[0].isEmpty && !pieces[2].isEmpty
+      && Array(pieces[1]) == Array("app.bsky.graph.list".utf16)
   }
 
   static func checkReplyRule(_ rule: JSONValue?) -> JSONValue? {

@@ -25832,6 +25832,168 @@
       "output": []
     },
     {
+      "id": "mediaPatches#5",
+      "fn": "mediaPatches",
+      "input": {
+        "current": {
+          "posts": [
+            {
+              "id": 1,
+              "images": [
+                {
+                  "id": "a",
+                  "localRef": "r"
+                }
+              ]
+            },
+            {
+              "id": "2",
+              "images": [
+                {
+                  "id": "b",
+                  "localRef": "r"
+                }
+              ]
+            },
+            {
+              "images": [
+                {
+                  "id": "c",
+                  "localRef": "r"
+                }
+              ]
+            }
+          ]
+        },
+        "filled": {
+          "posts": [
+            {
+              "id": "1",
+              "images": [
+                {
+                  "id": "a",
+                  "localRef": "r",
+                  "file": {
+                    "$file": true,
+                    "name": "a.jpg",
+                    "type": "image/jpeg",
+                    "size": 1,
+                    "lastModified": 0
+                  }
+                }
+              ]
+            },
+            {
+              "id": 2,
+              "images": [
+                {
+                  "id": "b",
+                  "localRef": "r",
+                  "file": {
+                    "$file": true,
+                    "name": "a.jpg",
+                    "type": "image/jpeg",
+                    "size": 1,
+                    "lastModified": 0
+                  }
+                }
+              ]
+            },
+            {
+              "images": [
+                {
+                  "id": "c",
+                  "localRef": "r",
+                  "file": {
+                    "$file": true,
+                    "name": "a.jpg",
+                    "type": "image/jpeg",
+                    "size": 1,
+                    "lastModified": 0
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": [
+        {
+          "type": "updateImage",
+          "index": 2,
+          "id": "c",
+          "patch": {
+            "file": {
+              "$file": true,
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 1,
+              "lastModified": 0
+            },
+            "mime": "",
+            "size": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "mediaPatches#6",
+      "fn": "mediaPatches",
+      "input": {
+        "current": {
+          "posts": [
+            {
+              "id": 1,
+              "images": [
+                {
+                  "id": "a",
+                  "localRef": "r"
+                }
+              ]
+            }
+          ]
+        },
+        "filled": {
+          "posts": [
+            {
+              "id": 1,
+              "images": [
+                {
+                  "id": "a",
+                  "localRef": "r",
+                  "file": {
+                    "$file": true,
+                    "name": "a.jpg",
+                    "type": "image/jpeg",
+                    "size": 1,
+                    "lastModified": 0
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": [
+        {
+          "type": "updateImage",
+          "index": 0,
+          "id": "a",
+          "patch": {
+            "file": {
+              "$file": true,
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 1,
+              "lastModified": 0
+            },
+            "mime": "",
+            "size": 1
+          }
+        }
+      ]
+    },
+    {
       "id": "settingsConstants",
       "fn": "settingsConstants",
       "input": {},
@@ -28521,6 +28683,863 @@
               ],
               "gates": {
                 "reply": null,
+                "quotes": true
+              },
+              "lifespan": {
+                "enabled": false,
+                "deleteAt": null,
+                "lifespanSeconds": 86400,
+                "conditions": {
+                  "logic": "any",
+                  "clauses": [],
+                  "sense": "unless",
+                  "onSpare": "keep",
+                  "maxExtensions": 0
+                },
+                "effects": [
+                  {
+                    "action": "delete"
+                  }
+                ]
+              },
+              "queue": {
+                "timezone": "",
+                "slots": {
+                  "mon": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "tue": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "wed": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "thu": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "fri": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "sat": [],
+                  "sun": []
+                }
+              },
+              "defaultAction": "post",
+              "requireAltText": false,
+              "showThreadSuggestion": true,
+              "threadNumbering": "off",
+              "adviser": {
+                "enabled": false,
+                "checkBeforePublish": false,
+                "reviewMode": "significant",
+                "checkScope": "all",
+                "checkReplyContext": false,
+                "goals": {
+                  "presets": {
+                    "reduceNegativity": false,
+                    "lessConfrontational": false,
+                    "limitTopic": {
+                      "enabled": false,
+                      "topic": ""
+                    }
+                  },
+                  "customText": ""
+                },
+                "writingChecks": {
+                  "typos": false,
+                  "grammar": false,
+                  "clarity": false,
+                  "customText": "",
+                  "styleSampleSize": 100,
+                  "styleProfile": {
+                    "summary": "",
+                    "analyzedCount": 0,
+                    "updatedAt": "",
+                    "guidance": ""
+                  }
+                }
+              },
+              "suggestBestTimes": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "gates-list-uris",
+      "fn": "settingsScript",
+      "input": {
+        "script": {
+          "steps": [
+            {
+              "op": "write",
+              "did": "did:plc:mira",
+              "patch": {
+                "gates": {
+                  "reply": [
+                    {
+                      "type": "list",
+                      "list": "at://did:plc:mira/app.bsky.graph.list/l1?x=1"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "op": "write",
+              "did": "did:plc:mira",
+              "patch": {
+                "gates": {
+                  "reply": [
+                    {
+                      "type": "list",
+                      "list": "at://did:plc:mira/app.bsky.graph.list/l1#top"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "op": "write",
+              "did": "did:plc:mira",
+              "patch": {
+                "gates": {
+                  "reply": [
+                    {
+                      "type": "list",
+                      "list": "at://did:plc:mira/app.bsky.graph.list/"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "op": "write",
+              "did": "did:plc:mira",
+              "patch": {
+                "gates": {
+                  "reply": [
+                    {
+                      "type": "list",
+                      "list": "at://did:plc:mira/app.bsky.graph.list/a/b"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "op": "write",
+              "did": "did:plc:mira",
+              "patch": {
+                "gates": {
+                  "reply": [
+                    {
+                      "type": "list",
+                      "list": "at://did:plc:mira/app.bsky.graph.listx/a"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "op": "write",
+              "did": "did:plc:mira",
+              "patch": {
+                "gates": {
+                  "reply": [
+                    {
+                      "type": "list",
+                      "list": "at:///app.bsky.graph.list/a"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "op": "write",
+              "did": "did:plc:mira",
+              "patch": {
+                "gates": {
+                  "reply": [
+                    {
+                      "type": "list",
+                      "list": "AT://did:plc:mira/app.bsky.graph.list/a"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "op": "write",
+              "did": "did:plc:mira",
+              "patch": {
+                "gates": {
+                  "reply": [
+                    {
+                      "type": "list",
+                      "list": "at://did:plc:mira/app.bsky.graph.list/a\nb"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "output": {
+        "steps": [
+          {
+            "result": {
+              "langs": [
+                "en"
+              ],
+              "gates": {
+                "reply": [
+                  {
+                    "type": "list",
+                    "list": "at://did:plc:mira/app.bsky.graph.list/l1?x=1"
+                  }
+                ],
+                "quotes": true
+              },
+              "lifespan": {
+                "enabled": false,
+                "deleteAt": null,
+                "lifespanSeconds": 86400,
+                "conditions": {
+                  "logic": "any",
+                  "clauses": [],
+                  "sense": "unless",
+                  "onSpare": "keep",
+                  "maxExtensions": 0
+                },
+                "effects": [
+                  {
+                    "action": "delete"
+                  }
+                ]
+              },
+              "queue": {
+                "timezone": "",
+                "slots": {
+                  "mon": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "tue": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "wed": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "thu": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "fri": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "sat": [],
+                  "sun": []
+                }
+              },
+              "defaultAction": "post",
+              "requireAltText": false,
+              "showThreadSuggestion": true,
+              "threadNumbering": "off",
+              "adviser": {
+                "enabled": false,
+                "checkBeforePublish": false,
+                "reviewMode": "significant",
+                "checkScope": "all",
+                "checkReplyContext": false,
+                "goals": {
+                  "presets": {
+                    "reduceNegativity": false,
+                    "lessConfrontational": false,
+                    "limitTopic": {
+                      "enabled": false,
+                      "topic": ""
+                    }
+                  },
+                  "customText": ""
+                },
+                "writingChecks": {
+                  "typos": false,
+                  "grammar": false,
+                  "clarity": false,
+                  "customText": "",
+                  "styleSampleSize": 100,
+                  "styleProfile": {
+                    "summary": "",
+                    "analyzedCount": 0,
+                    "updatedAt": "",
+                    "guidance": ""
+                  }
+                }
+              },
+              "suggestBestTimes": true
+            },
+            "store": {
+              "virga:posting:did:plc:mira": {
+                "json": {
+                  "gates": {
+                    "reply": [
+                      {
+                        "type": "list",
+                        "list": "at://did:plc:mira/app.bsky.graph.list/l1?x=1"
+                      }
+                    ],
+                    "quotes": true
+                  }
+                }
+              }
+            }
+          },
+          {
+            "result": {
+              "langs": [
+                "en"
+              ],
+              "gates": {
+                "reply": [
+                  {
+                    "type": "list",
+                    "list": "at://did:plc:mira/app.bsky.graph.list/l1#top"
+                  }
+                ],
+                "quotes": true
+              },
+              "lifespan": {
+                "enabled": false,
+                "deleteAt": null,
+                "lifespanSeconds": 86400,
+                "conditions": {
+                  "logic": "any",
+                  "clauses": [],
+                  "sense": "unless",
+                  "onSpare": "keep",
+                  "maxExtensions": 0
+                },
+                "effects": [
+                  {
+                    "action": "delete"
+                  }
+                ]
+              },
+              "queue": {
+                "timezone": "",
+                "slots": {
+                  "mon": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "tue": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "wed": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "thu": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "fri": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "sat": [],
+                  "sun": []
+                }
+              },
+              "defaultAction": "post",
+              "requireAltText": false,
+              "showThreadSuggestion": true,
+              "threadNumbering": "off",
+              "adviser": {
+                "enabled": false,
+                "checkBeforePublish": false,
+                "reviewMode": "significant",
+                "checkScope": "all",
+                "checkReplyContext": false,
+                "goals": {
+                  "presets": {
+                    "reduceNegativity": false,
+                    "lessConfrontational": false,
+                    "limitTopic": {
+                      "enabled": false,
+                      "topic": ""
+                    }
+                  },
+                  "customText": ""
+                },
+                "writingChecks": {
+                  "typos": false,
+                  "grammar": false,
+                  "clarity": false,
+                  "customText": "",
+                  "styleSampleSize": 100,
+                  "styleProfile": {
+                    "summary": "",
+                    "analyzedCount": 0,
+                    "updatedAt": "",
+                    "guidance": ""
+                  }
+                }
+              },
+              "suggestBestTimes": true
+            },
+            "store": {
+              "virga:posting:did:plc:mira": {
+                "json": {
+                  "gates": {
+                    "reply": [
+                      {
+                        "type": "list",
+                        "list": "at://did:plc:mira/app.bsky.graph.list/l1#top"
+                      }
+                    ],
+                    "quotes": true
+                  }
+                }
+              }
+            }
+          },
+          {
+            "result": {
+              "$throws": "One of the reply rules isn’t one Bluesky knows.",
+              "field": "gates"
+            },
+            "store": {
+              "virga:posting:did:plc:mira": {
+                "json": {
+                  "gates": {
+                    "reply": [
+                      {
+                        "type": "list",
+                        "list": "at://did:plc:mira/app.bsky.graph.list/l1#top"
+                      }
+                    ],
+                    "quotes": true
+                  }
+                }
+              }
+            }
+          },
+          {
+            "result": {
+              "$throws": "One of the reply rules isn’t one Bluesky knows.",
+              "field": "gates"
+            },
+            "store": {
+              "virga:posting:did:plc:mira": {
+                "json": {
+                  "gates": {
+                    "reply": [
+                      {
+                        "type": "list",
+                        "list": "at://did:plc:mira/app.bsky.graph.list/l1#top"
+                      }
+                    ],
+                    "quotes": true
+                  }
+                }
+              }
+            }
+          },
+          {
+            "result": {
+              "$throws": "One of the reply rules isn’t one Bluesky knows.",
+              "field": "gates"
+            },
+            "store": {
+              "virga:posting:did:plc:mira": {
+                "json": {
+                  "gates": {
+                    "reply": [
+                      {
+                        "type": "list",
+                        "list": "at://did:plc:mira/app.bsky.graph.list/l1#top"
+                      }
+                    ],
+                    "quotes": true
+                  }
+                }
+              }
+            }
+          },
+          {
+            "result": {
+              "$throws": "One of the reply rules isn’t one Bluesky knows.",
+              "field": "gates"
+            },
+            "store": {
+              "virga:posting:did:plc:mira": {
+                "json": {
+                  "gates": {
+                    "reply": [
+                      {
+                        "type": "list",
+                        "list": "at://did:plc:mira/app.bsky.graph.list/l1#top"
+                      }
+                    ],
+                    "quotes": true
+                  }
+                }
+              }
+            }
+          },
+          {
+            "result": {
+              "$throws": "One of the reply rules isn’t one Bluesky knows.",
+              "field": "gates"
+            },
+            "store": {
+              "virga:posting:did:plc:mira": {
+                "json": {
+                  "gates": {
+                    "reply": [
+                      {
+                        "type": "list",
+                        "list": "at://did:plc:mira/app.bsky.graph.list/l1#top"
+                      }
+                    ],
+                    "quotes": true
+                  }
+                }
+              }
+            }
+          },
+          {
+            "result": {
+              "langs": [
+                "en"
+              ],
+              "gates": {
+                "reply": [
+                  {
+                    "type": "list",
+                    "list": "at://did:plc:mira/app.bsky.graph.list/a\nb"
+                  }
+                ],
+                "quotes": true
+              },
+              "lifespan": {
+                "enabled": false,
+                "deleteAt": null,
+                "lifespanSeconds": 86400,
+                "conditions": {
+                  "logic": "any",
+                  "clauses": [],
+                  "sense": "unless",
+                  "onSpare": "keep",
+                  "maxExtensions": 0
+                },
+                "effects": [
+                  {
+                    "action": "delete"
+                  }
+                ]
+              },
+              "queue": {
+                "timezone": "",
+                "slots": {
+                  "mon": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "tue": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "wed": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "thu": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "fri": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "sat": [],
+                  "sun": []
+                }
+              },
+              "defaultAction": "post",
+              "requireAltText": false,
+              "showThreadSuggestion": true,
+              "threadNumbering": "off",
+              "adviser": {
+                "enabled": false,
+                "checkBeforePublish": false,
+                "reviewMode": "significant",
+                "checkScope": "all",
+                "checkReplyContext": false,
+                "goals": {
+                  "presets": {
+                    "reduceNegativity": false,
+                    "lessConfrontational": false,
+                    "limitTopic": {
+                      "enabled": false,
+                      "topic": ""
+                    }
+                  },
+                  "customText": ""
+                },
+                "writingChecks": {
+                  "typos": false,
+                  "grammar": false,
+                  "clarity": false,
+                  "customText": "",
+                  "styleSampleSize": 100,
+                  "styleProfile": {
+                    "summary": "",
+                    "analyzedCount": 0,
+                    "updatedAt": "",
+                    "guidance": ""
+                  }
+                }
+              },
+              "suggestBestTimes": true
+            },
+            "store": {
+              "virga:posting:did:plc:mira": {
+                "json": {
+                  "gates": {
+                    "reply": [
+                      {
+                        "type": "list",
+                        "list": "at://did:plc:mira/app.bsky.graph.list/a\nb"
+                      }
+                    ],
+                    "quotes": true
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "events": [
+          {
+            "did": "did:plc:mira",
+            "settings": {
+              "langs": [
+                "en"
+              ],
+              "gates": {
+                "reply": [
+                  {
+                    "type": "list",
+                    "list": "at://did:plc:mira/app.bsky.graph.list/l1?x=1"
+                  }
+                ],
+                "quotes": true
+              },
+              "lifespan": {
+                "enabled": false,
+                "deleteAt": null,
+                "lifespanSeconds": 86400,
+                "conditions": {
+                  "logic": "any",
+                  "clauses": [],
+                  "sense": "unless",
+                  "onSpare": "keep",
+                  "maxExtensions": 0
+                },
+                "effects": [
+                  {
+                    "action": "delete"
+                  }
+                ]
+              },
+              "queue": {
+                "timezone": "",
+                "slots": {
+                  "mon": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "tue": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "wed": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "thu": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "fri": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "sat": [],
+                  "sun": []
+                }
+              },
+              "defaultAction": "post",
+              "requireAltText": false,
+              "showThreadSuggestion": true,
+              "threadNumbering": "off",
+              "adviser": {
+                "enabled": false,
+                "checkBeforePublish": false,
+                "reviewMode": "significant",
+                "checkScope": "all",
+                "checkReplyContext": false,
+                "goals": {
+                  "presets": {
+                    "reduceNegativity": false,
+                    "lessConfrontational": false,
+                    "limitTopic": {
+                      "enabled": false,
+                      "topic": ""
+                    }
+                  },
+                  "customText": ""
+                },
+                "writingChecks": {
+                  "typos": false,
+                  "grammar": false,
+                  "clarity": false,
+                  "customText": "",
+                  "styleSampleSize": 100,
+                  "styleProfile": {
+                    "summary": "",
+                    "analyzedCount": 0,
+                    "updatedAt": "",
+                    "guidance": ""
+                  }
+                }
+              },
+              "suggestBestTimes": true
+            }
+          },
+          {
+            "did": "did:plc:mira",
+            "settings": {
+              "langs": [
+                "en"
+              ],
+              "gates": {
+                "reply": [
+                  {
+                    "type": "list",
+                    "list": "at://did:plc:mira/app.bsky.graph.list/l1#top"
+                  }
+                ],
+                "quotes": true
+              },
+              "lifespan": {
+                "enabled": false,
+                "deleteAt": null,
+                "lifespanSeconds": 86400,
+                "conditions": {
+                  "logic": "any",
+                  "clauses": [],
+                  "sense": "unless",
+                  "onSpare": "keep",
+                  "maxExtensions": 0
+                },
+                "effects": [
+                  {
+                    "action": "delete"
+                  }
+                ]
+              },
+              "queue": {
+                "timezone": "",
+                "slots": {
+                  "mon": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "tue": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "wed": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "thu": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "fri": [
+                    "09:00",
+                    "17:00"
+                  ],
+                  "sat": [],
+                  "sun": []
+                }
+              },
+              "defaultAction": "post",
+              "requireAltText": false,
+              "showThreadSuggestion": true,
+              "threadNumbering": "off",
+              "adviser": {
+                "enabled": false,
+                "checkBeforePublish": false,
+                "reviewMode": "significant",
+                "checkScope": "all",
+                "checkReplyContext": false,
+                "goals": {
+                  "presets": {
+                    "reduceNegativity": false,
+                    "lessConfrontational": false,
+                    "limitTopic": {
+                      "enabled": false,
+                      "topic": ""
+                    }
+                  },
+                  "customText": ""
+                },
+                "writingChecks": {
+                  "typos": false,
+                  "grammar": false,
+                  "clarity": false,
+                  "customText": "",
+                  "styleSampleSize": 100,
+                  "styleProfile": {
+                    "summary": "",
+                    "analyzedCount": 0,
+                    "updatedAt": "",
+                    "guidance": ""
+                  }
+                }
+              },
+              "suggestBestTimes": true
+            }
+          },
+          {
+            "did": "did:plc:mira",
+            "settings": {
+              "langs": [
+                "en"
+              ],
+              "gates": {
+                "reply": [
+                  {
+                    "type": "list",
+                    "list": "at://did:plc:mira/app.bsky.graph.list/a\nb"
+                  }
+                ],
                 "quotes": true
               },
               "lifespan": {

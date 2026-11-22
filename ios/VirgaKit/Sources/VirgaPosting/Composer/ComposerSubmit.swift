@@ -165,7 +165,7 @@ public enum ComposerSubmit {
       guard let total = ComposerJS.or(event["total"], nil) else { return nil }
       let one = total == .number(1)
       let totalText = total.jsString
-      return event["done"].jsNumber >= total.jsNumber
+      return ComposerJS.greaterOrEqual(event["done"], total)
         ? "Uploaded \(one ? "the image" : "\(totalText) images")"
         : "Uploading \(one ? "the image" : "images, \(jsText(event["done"])) of \(totalText)")"
     }

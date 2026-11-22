@@ -165,6 +165,32 @@ async function editingCases() {
         { text: 'go here', start: 3, end: 7, pasted: 'javascript:alert(1)' },
         { text: 'go here', start: 3, end: 7, pasted: 'http://localhost' },
         { text: 'go here', start: 3, end: 7, pasted: 5 },
+        // Offsets as strings compare as strings ('7' > '10'), and only a
+        // number is a finite end for the replacement.
+        {
+          text: 'go here and there',
+          start: '10',
+          end: '7',
+          pasted: 'https://example.org',
+        },
+        {
+          text: 'go here and there',
+          start: '3',
+          end: '17',
+          pasted: 'https://example.org',
+        },
+        {
+          text: 'go here',
+          start: 3,
+          end: '7',
+          pasted: 'https://example.org',
+        },
+        {
+          text: 'go here',
+          start: [3],
+          end: [7],
+          pasted: 'https://example.org',
+        },
       ],
       (i) => pasteAsInlineLink(i.text, i.start, i.end, i.pasted),
     )),
@@ -219,6 +245,11 @@ async function editingCases() {
         { text: '😀 link', charStart: 3, charEnd: 7 },
         { text: ' link', charStart: 1, charEnd: 5 },
         { text: 'x link ', charStart: 2, charEnd: 6 },
+        { text: 'a long link here b', charStart: '2', charEnd: '16' },
+        { text: 'a long link here b', charStart: '16', charEnd: '2' },
+        { text: 'a long link here b', charStart: '2', charEnd: '9' },
+        { text: 'short', charStart: '1', charEnd: '99' },
+        { text: 'short', charStart: 1, charEnd: '4' },
       ],
       ({ text, ...range }) => removeLinkFromText(text, range),
     )),
@@ -310,6 +341,27 @@ async function highlightCases() {
       ],
     },
     { text: 'abcdef', facets: [], links: null },
+    // Offsets that aren't numbers: two strings compare as strings, and only
+    // a number is the text's end.
+    { text: 'short', facets: [tag('3', '10')] },
+    { text: 'short', facets: [tag('1', '5')] },
+    { text: 'short', facets: [tag(1, '5')] },
+    { text: 'short', facets: [tag('1', 5)] },
+    {
+      text: 'abcdefghijkl',
+      facets: [],
+      links: [{ start: '2', end: '10', labelStart: '3', labelEnd: '9' }],
+    },
+    {
+      text: 'abcdefghijkl',
+      facets: [],
+      links: [{ start: '9', end: '10', labelStart: '9', labelEnd: '10' }],
+    },
+    {
+      text: 'abcdefghijkl',
+      facets: [tag(0, 4)],
+      links: [{ start: 1, end: '3', labelStart: 2, labelEnd: '3' }],
+    },
   ];
   inputs.push(...loose);
   return [
@@ -639,6 +691,8 @@ async function languageCases() {
     { query: '  gre ' },
     { query: 's', limit: 20 },
     { query: 'a', limit: 0 },
+    { query: 'a', limit: -2 },
+    { query: '', limit: -180 },
     { query: null },
     { query: 5 },
   ];

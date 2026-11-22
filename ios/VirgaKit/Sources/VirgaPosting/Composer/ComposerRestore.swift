@@ -109,6 +109,21 @@ public enum ComposerRestore {
     Autosave.hasAutosaveContent(state) && !isUntouchedSeed(state, seed)
   }
 
+  /// A post id as a Map key: the value itself (SameValueZero), so the
+  /// number 1 and the string "1" are two keys and undefined is one of its
+  /// own. An object or array is a key only to itself, which a post read
+  /// from elsewhere never is: nil.
+  static func mapKey(_ id: JSONValue?) -> JSKey? {
+    switch id {
+    case nil: return JSKey("u")
+    case .null?: return JSKey("z")
+    case .bool(let flag)?: return JSKey(flag ? "b1" : "b0")
+    case .number(let n)?: return JSKey("n" + (n.isNaN ? "NaN" : JSNumber.format(n)))
+    case .string(let text)?: return JSKey("s" + text)
+    case .array?, .object?: return nil
+    }
+  }
+
   /// The web's loose file test: an object with a numeric size and a string type.
   static func isFile(_ value: JSONValue?) -> Bool {
     guard let value, ComposerJS.isObject(value) else { return false }
@@ -122,10 +137,10 @@ public enum ComposerRestore {
     var out: [ComposerAction] = []
     var byId: [JSKey: JSONValue] = [:]
     for post in ComposerJS.list(ComposerJS.or(filled?["posts"], nil)) {
-      byId[JSKey(post["id"]?.jsString ?? "\u{0}undefined")] = post
+      if let key = mapKey(post["id"]) { byId[key] = post }
     }
     for (index, post) in ComposerJS.list(ComposerJS.or(current?["posts"], nil)).enumerated() {
-      guard let found = byId[JSKey(post["id"]?.jsString ?? "\u{0}undefined")] else { continue }
+      guard let key = mapKey(post["id"]), let found = byId[key] else { continue }
       for image in ComposerJS.list(ComposerJS.or(post["images"], nil)) {
         if isFile(image["file"]) || !ComposerJS.truthy(image["localRef"]) { continue }
         let got = ComposerJS.list(ComposerJS.or(found["images"], nil)).first {

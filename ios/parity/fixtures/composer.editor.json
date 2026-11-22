@@ -580,6 +580,60 @@
       "output": null
     },
     {
+      "id": "pasteAsInlineLink#19",
+      "fn": "pasteAsInlineLink",
+      "input": {
+        "text": "go here and there",
+        "start": "10",
+        "end": "7",
+        "pasted": "https://example.org"
+      },
+      "output": null
+    },
+    {
+      "id": "pasteAsInlineLink#20",
+      "fn": "pasteAsInlineLink",
+      "input": {
+        "text": "go here and there",
+        "start": "3",
+        "end": "17",
+        "pasted": "https://example.org"
+      },
+      "output": null
+    },
+    {
+      "id": "pasteAsInlineLink#21",
+      "fn": "pasteAsInlineLink",
+      "input": {
+        "text": "go here",
+        "start": 3,
+        "end": "7",
+        "pasted": "https://example.org"
+      },
+      "output": {
+        "text": "go [here](https://example.org)here",
+        "caret": 30
+      }
+    },
+    {
+      "id": "pasteAsInlineLink#22",
+      "fn": "pasteAsInlineLink",
+      "input": {
+        "text": "go here",
+        "start": [
+          3
+        ],
+        "end": [
+          7
+        ],
+        "pasted": "https://example.org"
+      },
+      "output": {
+        "text": "go [here](https://example.org)here",
+        "caret": 30
+      }
+    },
+    {
       "id": "misleadingLinkNotes#1",
       "fn": "misleadingLinkNotes",
       "input": {
@@ -779,6 +833,56 @@
         "charEnd": 6
       },
       "output": "x"
+    },
+    {
+      "id": "removeLinkFromText#16",
+      "fn": "removeLinkFromText",
+      "input": {
+        "text": "a long link here b",
+        "charStart": "2",
+        "charEnd": "16"
+      },
+      "output": "a long link here b"
+    },
+    {
+      "id": "removeLinkFromText#17",
+      "fn": "removeLinkFromText",
+      "input": {
+        "text": "a long link here b",
+        "charStart": "16",
+        "charEnd": "2"
+      },
+      "output": "a long link herelong link here b"
+    },
+    {
+      "id": "removeLinkFromText#18",
+      "fn": "removeLinkFromText",
+      "input": {
+        "text": "a long link here b",
+        "charStart": "2",
+        "charEnd": "9"
+      },
+      "output": "a nk here b"
+    },
+    {
+      "id": "removeLinkFromText#19",
+      "fn": "removeLinkFromText",
+      "input": {
+        "text": "short",
+        "charStart": "1",
+        "charEnd": "99"
+      },
+      "output": "short"
+    },
+    {
+      "id": "removeLinkFromText#20",
+      "fn": "removeLinkFromText",
+      "input": {
+        "text": "short",
+        "charStart": 1,
+        "charEnd": "4"
+      },
+      "output": "st"
     },
     {
       "id": "limitAnnouncement#1",
@@ -1774,6 +1878,165 @@
         "links": null
       },
       "output": []
+    },
+    {
+      "id": "facetRanges#31",
+      "fn": "facetRanges",
+      "input": {
+        "text": "short",
+        "facets": [
+          {
+            "index": {
+              "byteStart": "3",
+              "byteEnd": "10"
+            },
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag"
+              }
+            ]
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "facetRanges#32",
+      "fn": "facetRanges",
+      "input": {
+        "text": "short",
+        "facets": [
+          {
+            "index": {
+              "byteStart": "1",
+              "byteEnd": "5"
+            },
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag"
+              }
+            ]
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "facetRanges#33",
+      "fn": "facetRanges",
+      "input": {
+        "text": "short",
+        "facets": [
+          {
+            "index": {
+              "byteStart": 1,
+              "byteEnd": "5"
+            },
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag"
+              }
+            ]
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "facetRanges#34",
+      "fn": "facetRanges",
+      "input": {
+        "text": "short",
+        "facets": [
+          {
+            "index": {
+              "byteStart": "1",
+              "byteEnd": 5
+            },
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag"
+              }
+            ]
+          }
+        ]
+      },
+      "output": [
+        {
+          "start": 1,
+          "end": 5,
+          "kind": "tag"
+        }
+      ]
+    },
+    {
+      "id": "facetRanges#35",
+      "fn": "facetRanges",
+      "input": {
+        "text": "abcdefghijkl",
+        "facets": [],
+        "links": [
+          {
+            "start": "2",
+            "end": "10",
+            "labelStart": "3",
+            "labelEnd": "9"
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "facetRanges#36",
+      "fn": "facetRanges",
+      "input": {
+        "text": "abcdefghijkl",
+        "facets": [],
+        "links": [
+          {
+            "start": "9",
+            "end": "10",
+            "labelStart": "9",
+            "labelEnd": "10"
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "facetRanges#37",
+      "fn": "facetRanges",
+      "input": {
+        "text": "abcdefghijkl",
+        "facets": [
+          {
+            "index": {
+              "byteStart": 0,
+              "byteEnd": 4
+            },
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag"
+              }
+            ]
+          }
+        ],
+        "links": [
+          {
+            "start": 1,
+            "end": "3",
+            "labelStart": 2,
+            "labelEnd": "3"
+          }
+        ]
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 4,
+          "kind": "tag"
+        }
+      ]
     },
     {
       "id": "highlightSegments#1",
@@ -2866,6 +3129,204 @@
       "output": [
         {
           "text": "abcdef",
+          "kind": "plain"
+        }
+      ]
+    },
+    {
+      "id": "highlightSegments#31",
+      "fn": "highlightSegments",
+      "input": {
+        "text": "short",
+        "facets": [
+          {
+            "index": {
+              "byteStart": "3",
+              "byteEnd": "10"
+            },
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag"
+              }
+            ]
+          }
+        ]
+      },
+      "output": [
+        {
+          "text": "short",
+          "kind": "plain"
+        }
+      ]
+    },
+    {
+      "id": "highlightSegments#32",
+      "fn": "highlightSegments",
+      "input": {
+        "text": "short",
+        "facets": [
+          {
+            "index": {
+              "byteStart": "1",
+              "byteEnd": "5"
+            },
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag"
+              }
+            ]
+          }
+        ]
+      },
+      "output": [
+        {
+          "text": "short",
+          "kind": "plain"
+        }
+      ]
+    },
+    {
+      "id": "highlightSegments#33",
+      "fn": "highlightSegments",
+      "input": {
+        "text": "short",
+        "facets": [
+          {
+            "index": {
+              "byteStart": 1,
+              "byteEnd": "5"
+            },
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag"
+              }
+            ]
+          }
+        ]
+      },
+      "output": [
+        {
+          "text": "short",
+          "kind": "plain"
+        }
+      ]
+    },
+    {
+      "id": "highlightSegments#34",
+      "fn": "highlightSegments",
+      "input": {
+        "text": "short",
+        "facets": [
+          {
+            "index": {
+              "byteStart": "1",
+              "byteEnd": 5
+            },
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag"
+              }
+            ]
+          }
+        ]
+      },
+      "output": [
+        {
+          "text": "s",
+          "kind": "plain"
+        },
+        {
+          "text": "hort",
+          "kind": "tag"
+        }
+      ]
+    },
+    {
+      "id": "highlightSegments#35",
+      "fn": "highlightSegments",
+      "input": {
+        "text": "abcdefghijkl",
+        "facets": [],
+        "links": [
+          {
+            "start": "2",
+            "end": "10",
+            "labelStart": "3",
+            "labelEnd": "9"
+          }
+        ]
+      },
+      "output": [
+        {
+          "text": "abcdefghijkl",
+          "kind": "plain"
+        }
+      ]
+    },
+    {
+      "id": "highlightSegments#36",
+      "fn": "highlightSegments",
+      "input": {
+        "text": "abcdefghijkl",
+        "facets": [],
+        "links": [
+          {
+            "start": "9",
+            "end": "10",
+            "labelStart": "9",
+            "labelEnd": "10"
+          }
+        ]
+      },
+      "output": [
+        {
+          "text": "abcdefghijkl",
+          "kind": "plain"
+        }
+      ]
+    },
+    {
+      "id": "highlightSegments#37",
+      "fn": "highlightSegments",
+      "input": {
+        "text": "abcdefghijkl",
+        "facets": [
+          {
+            "index": {
+              "byteStart": 0,
+              "byteEnd": 4
+            },
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag"
+              }
+            ]
+          }
+        ],
+        "links": [
+          {
+            "start": 1,
+            "end": "3",
+            "labelStart": 2,
+            "labelEnd": "3"
+          }
+        ]
+      },
+      "output": [
+        {
+          "text": "a",
+          "kind": "plain"
+        },
+        {
+          "text": "b",
+          "kind": "syntax"
+        },
+        {
+          "text": "c",
+          "kind": "link"
+        },
+        {
+          "text": "defghijkl",
           "kind": "plain"
         }
       ]
@@ -13587,6 +14048,550 @@
       "id": "searchLanguages#17",
       "fn": "searchLanguages",
       "input": {
+        "query": "a",
+        "limit": -2
+      },
+      "output": [
+        {
+          "code": "ab",
+          "name": "Abkhazian"
+        },
+        {
+          "code": "aa",
+          "name": "Afar"
+        },
+        {
+          "code": "af",
+          "name": "Afrikaans"
+        },
+        {
+          "code": "ak",
+          "name": "Akan"
+        },
+        {
+          "code": "tw",
+          "name": "Akan"
+        },
+        {
+          "code": "sq",
+          "name": "Albanian"
+        },
+        {
+          "code": "am",
+          "name": "Amharic"
+        },
+        {
+          "code": "ar",
+          "name": "Arabic"
+        },
+        {
+          "code": "an",
+          "name": "Aragonese"
+        },
+        {
+          "code": "hy",
+          "name": "Armenian"
+        },
+        {
+          "code": "as",
+          "name": "Assamese"
+        },
+        {
+          "code": "av",
+          "name": "Avaric"
+        },
+        {
+          "code": "ae",
+          "name": "Avestan"
+        },
+        {
+          "code": "ay",
+          "name": "Aymara"
+        },
+        {
+          "code": "az",
+          "name": "Azerbaijani"
+        },
+        {
+          "code": "bm",
+          "name": "Bambara"
+        },
+        {
+          "code": "bn",
+          "name": "Bangla"
+        },
+        {
+          "code": "ba",
+          "name": "Bashkir"
+        },
+        {
+          "code": "eu",
+          "name": "Basque"
+        },
+        {
+          "code": "be",
+          "name": "Belarusian"
+        },
+        {
+          "code": "bi",
+          "name": "Bislama"
+        },
+        {
+          "code": "bs",
+          "name": "Bosnian"
+        },
+        {
+          "code": "bg",
+          "name": "Bulgarian"
+        },
+        {
+          "code": "ca",
+          "name": "Catalan"
+        },
+        {
+          "code": "ch",
+          "name": "Chamorro"
+        },
+        {
+          "code": "cu",
+          "name": "Church Slavic"
+        },
+        {
+          "code": "cv",
+          "name": "Chuvash"
+        },
+        {
+          "code": "co",
+          "name": "Corsican"
+        },
+        {
+          "code": "hr",
+          "name": "Croatian"
+        },
+        {
+          "code": "da",
+          "name": "Danish"
+        },
+        {
+          "code": "dz",
+          "name": "Dzongkha"
+        },
+        {
+          "code": "eo",
+          "name": "Esperanto"
+        },
+        {
+          "code": "et",
+          "name": "Estonian"
+        },
+        {
+          "code": "fo",
+          "name": "Faroese"
+        },
+        {
+          "code": "fj",
+          "name": "Fijian"
+        },
+        {
+          "code": "ff",
+          "name": "Fula"
+        },
+        {
+          "code": "gl",
+          "name": "Galician"
+        },
+        {
+          "code": "lg",
+          "name": "Ganda"
+        },
+        {
+          "code": "ka",
+          "name": "Georgian"
+        },
+        {
+          "code": "de",
+          "name": "German"
+        },
+        {
+          "code": "gn",
+          "name": "Guarani"
+        },
+        {
+          "code": "gu",
+          "name": "Gujarati"
+        },
+        {
+          "code": "ht",
+          "name": "Haitian Creole"
+        },
+        {
+          "code": "ha",
+          "name": "Hausa"
+        },
+        {
+          "code": "hu",
+          "name": "Hungarian"
+        },
+        {
+          "code": "is",
+          "name": "Icelandic"
+        },
+        {
+          "code": "id",
+          "name": "Indonesian"
+        },
+        {
+          "code": "ia",
+          "name": "Interlingua"
+        },
+        {
+          "code": "ik",
+          "name": "Inupiaq"
+        },
+        {
+          "code": "it",
+          "name": "Italian"
+        },
+        {
+          "code": "ja",
+          "name": "Japanese"
+        },
+        {
+          "code": "jv",
+          "name": "Javanese"
+        },
+        {
+          "code": "kl",
+          "name": "Kalaallisut"
+        },
+        {
+          "code": "kn",
+          "name": "Kannada"
+        },
+        {
+          "code": "kr",
+          "name": "Kanuri"
+        },
+        {
+          "code": "ks",
+          "name": "Kashmiri"
+        },
+        {
+          "code": "kk",
+          "name": "Kazakh"
+        },
+        {
+          "code": "rw",
+          "name": "Kinyarwanda"
+        },
+        {
+          "code": "ko",
+          "name": "Korean"
+        },
+        {
+          "code": "kj",
+          "name": "Kuanyama"
+        },
+        {
+          "code": "lo",
+          "name": "Lao"
+        },
+        {
+          "code": "la",
+          "name": "Latin"
+        },
+        {
+          "code": "lv",
+          "name": "Latvian"
+        },
+        {
+          "code": "ln",
+          "name": "Lingala"
+        },
+        {
+          "code": "lt",
+          "name": "Lithuanian"
+        },
+        {
+          "code": "lu",
+          "name": "Luba-Katanga"
+        },
+        {
+          "code": "mk",
+          "name": "Macedonian"
+        },
+        {
+          "code": "mg",
+          "name": "Malagasy"
+        },
+        {
+          "code": "ms",
+          "name": "Malay"
+        },
+        {
+          "code": "ml",
+          "name": "Malayalam"
+        },
+        {
+          "code": "mt",
+          "name": "Maltese"
+        },
+        {
+          "code": "gv",
+          "name": "Manx"
+        },
+        {
+          "code": "mr",
+          "name": "Marathi"
+        },
+        {
+          "code": "mh",
+          "name": "Marshallese"
+        },
+        {
+          "code": "mn",
+          "name": "Mongolian"
+        },
+        {
+          "code": "na",
+          "name": "Nauru"
+        },
+        {
+          "code": "nv",
+          "name": "Navajo"
+        },
+        {
+          "code": "ng",
+          "name": "Ndonga"
+        },
+        {
+          "code": "ne",
+          "name": "Nepali"
+        },
+        {
+          "code": "se",
+          "name": "Northern Sami"
+        },
+        {
+          "code": "no",
+          "name": "Norwegian"
+        },
+        {
+          "code": "nb",
+          "name": "Norwegian Bokmål"
+        },
+        {
+          "code": "nn",
+          "name": "Norwegian Nynorsk"
+        },
+        {
+          "code": "ny",
+          "name": "Nyanja"
+        },
+        {
+          "code": "oc",
+          "name": "Occitan"
+        },
+        {
+          "code": "or",
+          "name": "Odia"
+        },
+        {
+          "code": "oj",
+          "name": "Ojibwa"
+        },
+        {
+          "code": "pi",
+          "name": "Pali"
+        },
+        {
+          "code": "ps",
+          "name": "Pashto"
+        },
+        {
+          "code": "fa",
+          "name": "Persian"
+        },
+        {
+          "code": "pa",
+          "name": "Punjabi"
+        },
+        {
+          "code": "qu",
+          "name": "Quechua"
+        },
+        {
+          "code": "ro",
+          "name": "Romanian"
+        },
+        {
+          "code": "rm",
+          "name": "Romansh"
+        },
+        {
+          "code": "ru",
+          "name": "Russian"
+        },
+        {
+          "code": "sm",
+          "name": "Samoan"
+        },
+        {
+          "code": "sg",
+          "name": "Sango"
+        },
+        {
+          "code": "sa",
+          "name": "Sanskrit"
+        },
+        {
+          "code": "sc",
+          "name": "Sardinian"
+        },
+        {
+          "code": "gd",
+          "name": "Scottish Gaelic"
+        },
+        {
+          "code": "sr",
+          "name": "Serbian"
+        },
+        {
+          "code": "sn",
+          "name": "Shona"
+        },
+        {
+          "code": "ii",
+          "name": "Sichuan Yi"
+        },
+        {
+          "code": "si",
+          "name": "Sinhala"
+        },
+        {
+          "code": "sk",
+          "name": "Slovak"
+        },
+        {
+          "code": "sl",
+          "name": "Slovenian"
+        },
+        {
+          "code": "so",
+          "name": "Somali"
+        },
+        {
+          "code": "es",
+          "name": "Spanish"
+        },
+        {
+          "code": "su",
+          "name": "Sundanese"
+        },
+        {
+          "code": "sw",
+          "name": "Swahili"
+        },
+        {
+          "code": "ss",
+          "name": "Swati"
+        },
+        {
+          "code": "ty",
+          "name": "Tahitian"
+        },
+        {
+          "code": "tg",
+          "name": "Tajik"
+        },
+        {
+          "code": "ta",
+          "name": "Tamil"
+        },
+        {
+          "code": "tt",
+          "name": "Tatar"
+        },
+        {
+          "code": "th",
+          "name": "Thai"
+        },
+        {
+          "code": "bo",
+          "name": "Tibetan"
+        },
+        {
+          "code": "ti",
+          "name": "Tigrinya"
+        },
+        {
+          "code": "to",
+          "name": "Tongan"
+        },
+        {
+          "code": "ts",
+          "name": "Tsonga"
+        },
+        {
+          "code": "tn",
+          "name": "Tswana"
+        },
+        {
+          "code": "uk",
+          "name": "Ukrainian"
+        },
+        {
+          "code": "ve",
+          "name": "Venda"
+        },
+        {
+          "code": "vi",
+          "name": "Vietnamese"
+        },
+        {
+          "code": "vo",
+          "name": "Volapük"
+        },
+        {
+          "code": "wa",
+          "name": "Walloon"
+        },
+        {
+          "code": "fy",
+          "name": "Western Frisian"
+        },
+        {
+          "code": "xh",
+          "name": "Xhosa"
+        }
+      ]
+    },
+    {
+      "id": "searchLanguages#18",
+      "fn": "searchLanguages",
+      "input": {
+        "query": "",
+        "limit": -180
+      },
+      "output": [
+        {
+          "code": "ab",
+          "name": "Abkhazian"
+        },
+        {
+          "code": "aa",
+          "name": "Afar"
+        },
+        {
+          "code": "af",
+          "name": "Afrikaans"
+        }
+      ]
+    },
+    {
+      "id": "searchLanguages#19",
+      "fn": "searchLanguages",
+      "input": {
         "query": null
       },
       "output": [
@@ -13625,7 +14630,7 @@
       ]
     },
     {
-      "id": "searchLanguages#18",
+      "id": "searchLanguages#20",
       "fn": "searchLanguages",
       "input": {
         "query": 5

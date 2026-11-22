@@ -725,6 +725,10 @@ const VALIDATE = [
     },
     {},
   ],
+  // `(state.langs || []).length` counts a string's characters.
+  ['langs-string-long', { ...one('x'), langs: 'abcd' }, {}],
+  ['langs-string-short', { ...one('x'), langs: 'abc' }, {}],
+  ['langs-number', { ...one('x'), langs: 7 }, {}],
   ['malformed-null', null, {}],
   ['malformed-object', {}, {}],
   [

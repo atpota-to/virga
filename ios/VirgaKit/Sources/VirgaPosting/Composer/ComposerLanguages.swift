@@ -103,7 +103,7 @@ public enum ComposerLanguages {
         .filter { languageCodes.jsIncludes($0) && !taken.contains(JSKey($0)) }
       let first = pref.map { LanguageChoice(code: $0, name: languageName($0, locale: locale)) }
       let rest = TimerJS.v8Sorted(all.filter { !pref.jsIncludes($0.code) }) { Double(compareNames($0.name, $1.name)) }
-      return Array((first + rest).prefix(Swift.max(0, limit)))
+      return ComposerJS.slice(first + rest, 0, limit)
     }
     let matches = all.filter { $0.code.jsEquals(q) || $0.name.jsLowercased().jsIndexOf(q) != -1 }
     let sorted = TimerJS.v8Sorted(matches) { a, b in
@@ -111,7 +111,7 @@ public enum ComposerLanguages {
       let bp = b.code.jsEquals(q) || PostingJS.hasPrefix(b.name.jsLowercased(), q) ? 0 : 1
       return ap != bp ? Double(ap - bp) : Double(compareNames(a.name, b.name))
     }
-    return Array(sorted.prefix(Swift.max(0, limit)))
+    return ComposerJS.slice(sorted, 0, limit)
   }
 
   /// `String(tag).split(/[-_]/)[0]`.

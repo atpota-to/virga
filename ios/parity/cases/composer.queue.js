@@ -499,6 +499,32 @@ async function queueCases() {
         0,
       ])
         wallTimeInputs.push({ tz, zone, value: v });
+  // The web's offset reads the wall clock back through formatToParts and
+  // Date.UTC: an era year without its era (1 BC is "1") and a year under
+  // 100 read as 19xx, so instants before the year 100 come out centuries
+  // off, as do the earliest a Date holds.
+  const ANCIENT = [
+    '0050-06-01T12:00:00.000Z',
+    '0099-12-31T23:59:59.999Z',
+    '0100-01-01T00:00:00.000Z',
+    '0150-06-01T12:00:00.000Z',
+    '0001-01-01T00:00:00.000Z',
+    '0000-06-01T12:00:00.000Z',
+    '-000050-06-01T12:00:00.000Z',
+    -8.64e15,
+    -62135596800001,
+  ];
+  for (const zone of [
+    'UTC',
+    'America/New_York',
+    'Asia/Kolkata',
+    'Pacific/Chatham',
+  ])
+    for (const v of ANCIENT) wallTimeInputs.push({ tz: 'UTC', zone, value: v });
+  // The latest a Date holds, in zones at or behind UTC (ahead of it the
+  // web's wall clock is past the end of time: 'NaN-NaN-NaN').
+  for (const zone of ['UTC', 'America/New_York', 'Pacific/Honolulu'])
+    wallTimeInputs.push({ tz: 'UTC', zone, value: 8.64e15 });
   all.push(
     ...(await each('zonedWallTime', wallTimeInputs, (i) =>
       inZone(i.tz, () => zonedWallTime(i.value, i.zone)),
@@ -543,6 +569,26 @@ async function queueCases() {
   all.push(
     ...(await each('enumerateSlots', slotInputs, (i) =>
       inZone(i.tz, () => sample([...enumerateSlots(i.schedule, at(i.from))])),
+    )),
+  );
+  // From an ancient instant the walk starts on the web's bent calendar.
+  all.push(
+    ...(await each(
+      'enumerateSlots',
+      [
+        ['0050-06-01T00:00:00.000Z', 'UTC'],
+        ['0050-06-01T00:00:00.000Z', 'America/New_York'],
+        ['0150-06-01T00:00:00.000Z', 'Asia/Kolkata'],
+        ['-000050-06-01T00:00:00.000Z', 'UTC'],
+        ['+275760-08-01T00:00:00.000Z', 'UTC'],
+      ].map(([from, zone]) => ({
+        $id: `ancient-${from}-${zone}`,
+        schedule: WEEK(zone, EVERY_DAY(['09:00'])),
+        from,
+        tz: 'UTC',
+      })),
+      (i) =>
+        inZone(i.tz, () => sample([...enumerateSlots(i.schedule, at(i.from))])),
     )),
   );
   // An explicit zone overrides the schedule's.

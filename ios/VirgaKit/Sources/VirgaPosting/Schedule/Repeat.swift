@@ -202,19 +202,7 @@ public enum Repeat {
 
   /// `a < b` for two loose values, as JavaScript compares them: two strings
   /// (or values that become strings) by code unit, anything else as numbers.
-  static func lessThan(_ a: JSONValue, _ b: JSONValue) -> Bool {
-    func primitive(_ v: JSONValue) -> JSONValue {
-      switch v {
-      case .array, .object: return .string(v.jsString)
-      default: return v
-      }
-    }
-    let (x, y) = (primitive(a), primitive(b))
-    if case .string(let s) = x, case .string(let t) = y {
-      return Array(s.utf16).lexicographicallyPrecedes(Array(t.utf16))
-    }
-    return x.jsNumber < y.jsNumber
-  }
+  static func lessThan(_ a: JSONValue, _ b: JSONValue) -> Bool { ComposerJS.less(a, b) }
 
   /// The rule as the server takes it in `payload.repeat`, or nil.
   public static func repeatForServer(_ raw: JSONValue?, _ tz: JSONValue?) -> JSONValue? {

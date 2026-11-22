@@ -576,6 +576,19 @@ async function intentCases() {
     ...(await each('intentLoads', [{ $id: 'null', intent: null }], () =>
       intentLoads(null),
     )),
+    // A plan from elsewhere is read member by member, by truthiness.
+    ...(await each(
+      'intentLoadsPlan',
+      [
+        { plan: { scheduledId: '', draftId: 'd1' } },
+        { plan: { scheduledId: 0, draftId: '', reply: { uri: 'x' } } },
+        { plan: { reply: null, quote: false, templateId: '', attach: 0 } },
+        { plan: { quote: {}, templateId: 't', attach: [] } },
+        { plan: { attach: false, reply: 1 } },
+        { plan: {} },
+      ],
+      (i) => intentLoads(i.plan),
+    )),
   );
   const base = JSON.parse(
     JSON.stringify(
@@ -646,6 +659,11 @@ async function submitCases() {
     { phase: 'writing', count: 3 },
     { phase: 'writing', count: 1 },
     { phase: 'done' },
+    // Two strings compare as strings: '10' >= '9' is false.
+    { phase: 'uploading', kind: 'images', done: '10', total: '9' },
+    { phase: 'uploading', kind: 'images', done: '9', total: '10' },
+    { phase: 'uploading', kind: 'images', done: '2', total: 2 },
+    { phase: 'uploading', kind: 'images', done: 'x', total: 2 },
   ];
   const progress = [];
   for (const event of EVENTS) progress.push({ event });

@@ -117,6 +117,10 @@ private struct FixtureError: Error, JSErrorConvertible, CancelMarkedError {
         c.id == "null" ? nil : ComposerIntent.normalizeIntent(c.input["intent"], activeDid: c.string("activeDid") ?? "")
       check(.array(ComposerIntent.intentLoads(plan).map(JSONValue.string)), c)
     }
+    for c in try cases(Self.f, "intentLoadsPlan") {
+      let plan = ComposerIntentPlan(json: c.input["plan"] ?? [:])
+      check(.array(ComposerIntent.intentLoads(plan).map(JSONValue.string)), c)
+    }
     for c in try cases(Self.f, "seedFromIntent") {
       let plan = ComposerIntent.normalizeIntent(c.input["intent"], activeDid: "did:plc:mira")
       checkCanon(ComposerIntent.seedFromIntent(ComposerState(json: c.input["base"] ?? [:]), plan).json, c)

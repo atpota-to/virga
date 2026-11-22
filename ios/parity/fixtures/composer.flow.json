@@ -33444,6 +33444,85 @@
       "output": []
     },
     {
+      "id": "intentLoadsPlan#1",
+      "fn": "intentLoadsPlan",
+      "input": {
+        "plan": {
+          "scheduledId": "",
+          "draftId": "d1"
+        }
+      },
+      "output": [
+        "draft"
+      ]
+    },
+    {
+      "id": "intentLoadsPlan#2",
+      "fn": "intentLoadsPlan",
+      "input": {
+        "plan": {
+          "scheduledId": 0,
+          "draftId": "",
+          "reply": {
+            "uri": "x"
+          }
+        }
+      },
+      "output": [
+        "reply"
+      ]
+    },
+    {
+      "id": "intentLoadsPlan#3",
+      "fn": "intentLoadsPlan",
+      "input": {
+        "plan": {
+          "reply": null,
+          "quote": false,
+          "templateId": "",
+          "attach": 0
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "intentLoadsPlan#4",
+      "fn": "intentLoadsPlan",
+      "input": {
+        "plan": {
+          "quote": {},
+          "templateId": "t",
+          "attach": []
+        }
+      },
+      "output": [
+        "quote",
+        "template",
+        "attach"
+      ]
+    },
+    {
+      "id": "intentLoadsPlan#5",
+      "fn": "intentLoadsPlan",
+      "input": {
+        "plan": {
+          "attach": false,
+          "reply": 1
+        }
+      },
+      "output": [
+        "reply"
+      ]
+    },
+    {
+      "id": "intentLoadsPlan#6",
+      "fn": "intentLoadsPlan",
+      "input": {
+        "plan": {}
+      },
+      "output": []
+    },
+    {
       "id": "seedFromIntent#1",
       "fn": "seedFromIntent",
       "input": {
@@ -36136,6 +36215,58 @@
     },
     {
       "id": "progressLine#24",
+      "fn": "progressLine",
+      "input": {
+        "event": {
+          "phase": "uploading",
+          "kind": "images",
+          "done": "10",
+          "total": "9"
+        }
+      },
+      "output": "Uploading images, 10 of 9"
+    },
+    {
+      "id": "progressLine#25",
+      "fn": "progressLine",
+      "input": {
+        "event": {
+          "phase": "uploading",
+          "kind": "images",
+          "done": "9",
+          "total": "10"
+        }
+      },
+      "output": "Uploaded 10 images"
+    },
+    {
+      "id": "progressLine#26",
+      "fn": "progressLine",
+      "input": {
+        "event": {
+          "phase": "uploading",
+          "kind": "images",
+          "done": "2",
+          "total": 2
+        }
+      },
+      "output": "Uploaded 2 images"
+    },
+    {
+      "id": "progressLine#27",
+      "fn": "progressLine",
+      "input": {
+        "event": {
+          "phase": "uploading",
+          "kind": "images",
+          "done": "x",
+          "total": 2
+        }
+      },
+      "output": "Uploading images, x of 2"
+    },
+    {
+      "id": "progressLine#28",
       "fn": "progressLine",
       "input": {
         "event": {

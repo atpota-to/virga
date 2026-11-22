@@ -213,6 +213,10 @@ export default async function cases() {
         { result: { error: 'InvalidToken', message: 'bad token' } },
         { result: { jobStatus: 'x', state: 'S' } },
         { result: { jobStatus: { other: 1 } } },
+        // An array is an object to typeof: it stands in for the status.
+        { result: { jobStatus: [], jobId: 'j1', state: 'S' } },
+        { result: { jobStatus: [{ jobId: 'j1' }], blob: BLOB } },
+        { result: { jobStatus: null, jobId: 'j1' } },
         { result: null },
         { result: 'nope' },
         { result: [] },

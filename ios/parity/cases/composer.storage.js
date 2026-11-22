@@ -912,6 +912,33 @@ async function autosaveCases() {
         { current: cur, filled: { posts: [] } },
         { current: cur, filled: null },
         { current: null, filled },
+        // Posts are found by id as a Map finds them: 1 and '1' are two ids.
+        {
+          current: {
+            posts: [
+              { id: 1, images: [{ id: 'a', localRef: 'r' }] },
+              { id: '2', images: [{ id: 'b', localRef: 'r' }] },
+              { images: [{ id: 'c', localRef: 'r' }] },
+            ],
+          },
+          filled: {
+            posts: [
+              { id: '1', images: [{ id: 'a', localRef: 'r', file: file() }] },
+              { id: 2, images: [{ id: 'b', localRef: 'r', file: file() }] },
+              { images: [{ id: 'c', localRef: 'r', file: file() }] },
+            ],
+          },
+        },
+        {
+          current: {
+            posts: [{ id: 1, images: [{ id: 'a', localRef: 'r' }] }],
+          },
+          filled: {
+            posts: [
+              { id: 1, images: [{ id: 'a', localRef: 'r', file: file() }] },
+            ],
+          },
+        },
       ],
       (i) => plain(mediaPatches(withFiles(i.current), withFiles(i.filled))),
     )),
@@ -1033,6 +1060,23 @@ const SETTINGS_SCRIPTS = [
         WRITE({ gates: { quotes: 0 } }),
         READ(),
       ],
+    },
+  ],
+  // A list rule's address as /^at:\/\/[^/]+\/app\.bsky\.graph\.list\/[^/]+$/
+  // reads it: the key may hold '?' or '#', but not a '/'.
+  [
+    'gates-list-uris',
+    {
+      steps: [
+        `${LIST}?x=1`,
+        `${LIST}#top`,
+        `at://${ME}/app.bsky.graph.list/`,
+        `at://${ME}/app.bsky.graph.list/a/b`,
+        `at://${ME}/app.bsky.graph.listx/a`,
+        `at:///app.bsky.graph.list/a`,
+        `AT://${ME}/app.bsky.graph.list/a`,
+        `at://${ME}/app.bsky.graph.list/a\nb`,
+      ].map((list) => WRITE({ gates: { reply: [{ type: 'list', list }] } })),
     },
   ],
   [

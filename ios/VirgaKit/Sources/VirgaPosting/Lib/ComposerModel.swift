@@ -327,7 +327,8 @@ public enum ComposerModel {
     }) {
       problem(nil, "TAG_INVALID", "Tags can be up to \(Tags.maxTagGraphemes) characters.")
     }
-    if ComposerJS.list(ComposerJS.or(state?["langs"], nil)).count > maxLangs {
+    // `(state.langs || []).length`: a string's length counts too.
+    if ComposerJS.length(ComposerJS.or(state?["langs"], nil)) > maxLangs {
       problem(nil, "TOO_MANY_LANGS", "Choose up to \(maxLangs) languages.")
     }
     let labels = ComposerJS.list(ComposerJS.or(state?["labels"], nil))
