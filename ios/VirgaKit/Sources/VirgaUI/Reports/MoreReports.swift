@@ -171,7 +171,9 @@ struct PeopleReportView: View {
     }
     // Under each list the same foot: Show 12 more, then "12 of 64" at the right.
     if ranked.count > rows.count {
-      SectionFoot(count: "\(AppLocale.formatNumber(rows.count)) of \(AppLocale.formatNumber(ranked.count))") {
+      // The ghost button's words start at the column's edge (`.card-foot >
+      // .btn--ghost:first-child`).
+      SectionFoot(count: "\(AppLocale.formatNumber(rows.count)) of \(AppLocale.formatNumber(ranked.count))", letOut: .small) {
         Button("Show \(min(Self.page, ranked.count - rows.count)) more") {
           if side == 0 { limits.inbound += Self.page } else { limits.outbound += Self.page }
         }
