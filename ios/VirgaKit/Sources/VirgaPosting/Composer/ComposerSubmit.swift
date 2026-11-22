@@ -275,7 +275,7 @@ public enum ComposerSubmit {
   }
 
   /// `err?.status` for the errors the scheduled service throws.
-  static func status(of error: any Error) -> Int? { JSErrorFields(error)?.status }
+  public static func status(of error: any Error) -> Int? { JSErrorFields(error)?.status }
 
   /// After a post went out from a draft or a scheduled post: delete the
   /// draft (as its owner), or cancel the scheduled row so it doesn't go out

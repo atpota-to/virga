@@ -108,8 +108,15 @@
       "synced": "fac34e76eafd"
     },
     "src/posting/composer/loaders.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerLoaders.swift"
+      ],
+      "fixtures": [
+        "composer.loaders"
+      ],
+      "note": "isOwnThreadRow is a private stand-in with library/model.js's code until the library's port (VirgaPosting/Library) is merged; the merge replaces it.",
+      "synced": "71bbc3c3937b"
     },
     "src/posting/composer/media.js": {
       "status": "partial",
