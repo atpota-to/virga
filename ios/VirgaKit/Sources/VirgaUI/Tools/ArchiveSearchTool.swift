@@ -109,7 +109,7 @@ struct ArchiveSearchBody: View {
     let shown = Array(results.prefix(limit))
     let count = AppLocale.formatNumber(results.count)
     let now = SyncStatus.now()
-    let found = "\(count) \(results.count == 1 ? "post" : "posts") in \(Periods.periodPhrase(period))\(q.isEmpty ? "" : " matching “\(query.jsTrimmed())”")"
+    let found: String = "\(count) \(results.count == 1 ? "post" : "posts") in \(Periods.periodPhrase(period))\(q.isEmpty ? "" : " matching “\(query.jsTrimmed())”")"
     VStack(alignment: .leading, spacing: 0) {
       toolbar
         .padding(.bottom, theme.space4)
