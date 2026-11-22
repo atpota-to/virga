@@ -110,8 +110,12 @@ public struct RoutedPage: View {
       reports(route.page)
     case .tools:
       tools(route.page)
-    case .posting, .intent:
-      posting(route.section == .intent ? "compose" : route.page)
+    case .intent:
+      OpenComposerPage(fromLink: true)
+    case .posting where route.page == "compose":
+      OpenComposerPage(fromLink: false)
+    case .posting:
+      posting(route.page)
     case .defense:
       if app.flags.defenseEnabled {
         defense(route.page)
