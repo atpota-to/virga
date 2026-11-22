@@ -148,10 +148,12 @@ struct DefenseHistoryPage: View {
             Button {
               openURL(url)
             } label: {
-              HStack(spacing: 3) {
+              // `.meta > * { gap: 5px }`, `.meta svg { width: 13px }`; a link is ink.
+              HStack(spacing: theme.points(ThemeKit.metaItemGap)) {
                 Text("the post").underline(true)
-                Image(systemName: Glyph.externalLink).font(.system(size: 11))
+                Image(systemName: Glyph.externalLink).font(.system(size: theme.points(ThemeKit.metaIconSize)))
               }
+              .foregroundStyle(theme.ink)
             }
             .buttonStyle(.plain)
             .accessibilityAddTraits(.isLink)

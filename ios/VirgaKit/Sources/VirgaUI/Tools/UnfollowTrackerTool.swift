@@ -122,7 +122,8 @@ struct UnfollowLog: View {
         limit = Self.page
       }
       Spacer(minLength: 0)
-      HStack(spacing: theme.space4) {
+      // `.head-actions`: link actions side by side, 24 apart.
+      HStack(spacing: theme.gap(ThemeKit.headActionsGap).column) {
         Button {
           syncNow()
         } label: {

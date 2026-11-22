@@ -42,7 +42,7 @@ struct ChosenHistory: View {
         )
       } else {
         ToolSplit(
-          minColumn: 300, columnGap: theme.gridGapX, rowGap: theme.gridGap, shares: [1, 2],
+          columnGap: theme.gridGapX, rowGap: theme.gridGap, shares: [1, 2], mins: [Measure.Tools.lookupTopMin, 0],
           stacked: theme.windowWidth <= Measure.Tools.lookupTopSplit
         ) {
           LookupTotals(model: model)
@@ -140,12 +140,14 @@ struct LookupPersonCard: View {
                 .font(theme.codeFont(around: theme.textSm))
                 .foregroundStyle(theme.muted)
                 .lineLimit(1)
-                .truncationMode(.middle)
+                .truncationMode(.tail)
                 .textSelection(.enabled)
             }
           }
         }
-        HStack(spacing: theme.space4) {
+        FlowLayout(
+          spacing: theme.gap(ThemeKit.headActionsGap).column, lineSpacing: theme.gap(ThemeKit.headActionsGap).row, alignment: .center
+        ) {
           Button {
             if let url = ToolPeople.profileUrl(card, who) { openURL(url) }
           } label: {
@@ -206,6 +208,20 @@ struct LookupTotals: View {
     let biggest = top
     let pad = theme.points(ThemeKit.tableCellPadding.top)
     return VirgaSection(title: "By kind, each way") {
+      // `.table-scroll`: the column's width when the table fits it, else
+      // the table at its own width, scrolling sideways.
+      ViewThatFits(in: .horizontal) {
+        table(totals, biggest: biggest, pad: pad)
+        ScrollView(.horizontal, showsIndicators: false) {
+          table(totals, biggest: biggest, pad: pad).fixedSize(horizontal: true, vertical: false)
+        }
+      }
+    }
+    .accessibilityElement(children: .contain)
+    .accessibilityIdentifier("lookup-totals")
+  }
+
+  private func table(_ totals: BothWays<KindTotals>, biggest: Int, pad: CGFloat) -> some View {
       Grid(alignment: .leading, horizontalSpacing: theme.space4, verticalSpacing: 0) {
         GridRow {
           Text("Kind")
@@ -219,7 +235,10 @@ struct LookupTotals: View {
         ForEach(InteractionModel.lookupKinds, id: \.self) { k in
           GridRow {
             HStack(spacing: Measure.Tools.kindGap) {
-              Image(systemName: ToolGlyph.kind(k)).font(.system(size: Measure.Tools.kindGlyph)).foregroundStyle(theme.muted)
+              Image(systemName: ToolGlyph.kind(k))
+                .font(.system(size: Measure.Tools.kindGlyph))
+                .foregroundStyle(theme.muted)
+                .frame(width: Measure.Tools.kindGlyph)
               Text(InteractionModel.kindLabel[k] ?? k)
             }
             .virgaText(.textBase, weight: VirgaWeight.medium)
@@ -249,9 +268,6 @@ struct LookupTotals: View {
           LookupEdgeCell(event: model.latest.out).padding(.vertical, pad)
         }
       }
-    }
-    .accessibilityElement(children: .contain)
-    .accessibilityIdentifier("lookup-totals")
   }
 
   private func rule(_ color: Color) -> some View {
@@ -261,7 +277,9 @@ struct LookupTotals: View {
   private func head(_ dir: String) -> some View {
     HStack(spacing: Measure.Tools.kindGap) {
       if !theme.isPhone {
-        Image(systemName: ToolGlyph.direction(dir)).font(.system(size: Measure.Tools.kindGlyph))
+        Image(systemName: ToolGlyph.direction(dir))
+          .font(.system(size: Measure.Tools.kindGlyph))
+          .frame(width: Measure.Tools.kindGlyph)
       }
       Text(InteractionLookup.directionLabel[dir] ?? "")
     }
@@ -386,14 +404,10 @@ struct EngagedPostsView: View {
   var body: some View {
     let engaged = model.engagedPosts
     if !engaged.known {
-      VirgaSection(
-        title: "Your posts they engaged with most",
+      LookupCannotRank(
         sub: engaged.of != 0
           ? "The archive keeps who engaged and when, not which post it was for, so there’s no ranking to show. Their replies, quotes and mentions are in the list below, each with a link to their post."
-          : "They haven’t liked, reposted, replied to or quoted you, as far as your notifications reach."
-      ) {
-        EmptyView()
-      }
+          : "They haven’t liked, reposted, replied to or quoted you, as far as your notifications reach.")
     } else {
       let shown = Array(engaged.rows.prefix(limit))
       VirgaSection(
@@ -552,7 +566,14 @@ struct LookupEvents: View {
       Segmented(
         label: "Kind",
         options: [SegmentedOption("all", "All")]
-          + InteractionModel.lookupKinds.map { SegmentedOption($0, InteractionModel.kindLabel[$0] ?? $0, systemImage: ToolGlyph.kind($0)) },
+          + InteractionModel.lookupKinds.map { k -> SegmentedOption<String> in
+            // `.kind-filter`: at 760 and under the kinds are their glyphs,
+            // their names kept for VoiceOver.
+            let name = InteractionModel.kindLabel[k] ?? k
+            return SegmentedOption(
+              k, name, systemImage: ToolGlyph.kind(k), accessibilityLabel: name, iconOnly: theme.isTablet,
+              minWidth: theme.isTablet ? Measure.Tools.kindFilterIconKey : nil)
+          },
         selection: kind, size: .small
       ) { value in
         kind = value
@@ -658,7 +679,7 @@ struct LookupHowCounted: View {
       model.engagedPosts.known
       ? ", except where the event says so." : ", which is also why it can’t rank your posts by how much they engaged with them."
     Disclosure("How this is counted") {
-      VStack(alignment: .leading, spacing: theme.space3) {
+      VStack(alignment: .leading, spacing: Measure.Tools.howCountedGap) {
         paragraph(
           "Them to you comes from your notifications: likes, reposts, replies, quotes and mentions aimed at you. Notifications only go back as far as Bluesky had kept them when your archive was first built, and a year at most\(inboundSince); what anyone did before that isn’t on record.\(truncated)"
         )
@@ -678,10 +699,36 @@ struct LookupHowCounted: View {
 
   private func paragraph(_ text: String) -> some View {
     Text(text)
-      .virgaText(.textSm)
+      .virgaText(.textBase)
       .foregroundStyle(theme.ink2)
       .fixedSize(horizontal: false, vertical: true)
-      .frame(maxWidth: theme.measure, alignment: .leading)
+      .frame(maxWidth: theme.characters(Measure.Tools.howCountedMeasure, size: theme.textBase), alignment: .leading)
+  }
+}
+
+/// `.lookup-cannot-card`: the heading of the posts they engaged with, and
+/// why there's no ranking under it, its line held to 78ch, 6 under the title.
+struct LookupCannotRank: View {
+  @Environment(\.virgaTheme) private var theme
+  let sub: String
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: Measure.Tools.cannotSpaceAbove) {
+      Text("Your posts they engaged with most")
+        .virgaText(
+          size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, tracking: ThemeKit.cardTitleTracking)
+        .foregroundStyle(theme.ink)
+        .fixedSize(horizontal: false, vertical: true)
+        .accessibilityAddTraits(.isHeader)
+      Text(sub)
+        .virgaText(size: theme.points(ThemeKit.cardSubFontSize))
+        .foregroundStyle(theme.color(ThemeKit.cardSubInk))
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: theme.characters(Measure.Tools.cannotMeasure, size: theme.points(ThemeKit.cardSubFontSize)), alignment: .leading)
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .accessibilityElement(children: .contain)
+    .accessibilityLabel("Your posts they engaged with most")
   }
 }
 #endif

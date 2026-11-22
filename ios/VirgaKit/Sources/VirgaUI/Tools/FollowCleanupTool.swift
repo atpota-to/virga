@@ -379,7 +379,7 @@ struct FollowCleanupPage: View {
         ToolSelect(
           label: "Sort", options: [("quiet", "Quiet longest"), ("interactions", "Fewest interactions"), ("oldest", "Followed longest ago")],
           selection: $sort)
-        HStack(spacing: theme.space4) {
+        HStack(spacing: theme.gap(ThemeKit.headActionsGap).column) {
           if keep.size > 0 {
             Button {
               showKept.toggle()
@@ -757,7 +757,7 @@ struct CleanupTable: View {
         .foregroundStyle(ink)
         .lineLimit(1)
         .padding(.horizontal, pad)
-      VStack(alignment: .trailing, spacing: 2) {
+      VStack(alignment: .trailing, spacing: Measure.Tools.actionErrorGap) {
         CleanupAction(
           row: row, archive: archive, follow: follow, name: name, following: following, hidden: anySelected,
           onUnfollowed: { onUnfollowed(row.did) })

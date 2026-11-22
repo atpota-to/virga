@@ -407,7 +407,7 @@ struct BandsCard: View {
       .fixedSize(horizontal: false, vertical: true)
     return Group {
       if theme.isPhone {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: Measure.Defense.phoneBandGap) {
           word
           means
         }

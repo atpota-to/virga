@@ -251,7 +251,7 @@ struct AddToListCard: View {
         ToolCheck(isOn: .constant(on), label: BandWords.bandWord[band] ?? "", disabled: disabled)
           .allowsHitTesting(false)
           .accessibilityHidden(true)
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: Measure.Defense.tickLineGap) {
           HStack(spacing: Measure.Defense.tickGap) {
             BandMark(band: band)
             Text(BandWords.bandWord[band] ?? "").virgaText(.textBase, weight: VirgaWeight.medium).foregroundStyle(ink)

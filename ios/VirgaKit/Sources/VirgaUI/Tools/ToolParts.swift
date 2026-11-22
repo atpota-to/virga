@@ -771,25 +771,60 @@ struct ToolCaption: View {
 
 /// `.report-split`: two sections side by side where each has its room
 /// (`minColumn`), one under the other where they don't; `shares` sets the
-/// columns' proportions (equal by default), `stacked` keeps them one under
-/// the other whatever the width (a media query's narrowing).
+/// columns' proportions (equal by default), `mins` each column's least
+/// width (`minmax(300px, 1fr)`: the columns side by side whenever those
+/// fit), `stacked` keeps them one under the other whatever the width (a
+/// media query's narrowing).
 struct ToolSplit: Layout {
   var minColumn: CGFloat = Measure.Tools.splitMin
   var columnGap: CGFloat
   var rowGap: CGFloat
   var shares: [CGFloat]? = nil
+  var mins: [CGFloat]? = nil
   var stacked = false
 
-  func sideBySide(_ width: CGFloat, _ count: Int) -> Bool {
-    !stacked && count > 1 && width >= CGFloat(count) * minColumn + CGFloat(count - 1) * columnGap
+  func floors(_ count: Int) -> [CGFloat] {
+    (0..<count).map { index in
+      guard let mins, index < mins.count else { return 0 }
+      return mins[index]
+    }
   }
 
+  func sideBySide(_ width: CGFloat, _ count: Int) -> Bool {
+    if stacked || count < 2 { return false }
+    let gaps = CGFloat(count - 1) * columnGap
+    if mins != nil { return width >= floors(count).reduce(0, +) + gaps }
+    return width >= CGFloat(count) * minColumn + gaps
+  }
+
+  /// The columns' widths as CSS grid shares `fr` among `minmax(min, Nfr)`
+  /// columns: a column whose share would be under its least width is held
+  /// at it, and the others share what is left.
   func widths(_ width: CGFloat, _ count: Int) -> [CGFloat] {
-    let room = width - CGFloat(count - 1) * columnGap
+    let room = Swift.max(0, width - CGFloat(count - 1) * columnGap)
     let given = shares.map { Array($0.prefix(count)) } ?? []
     let parts = given.count == count ? given : Array(repeating: 1, count: count)
-    let total = parts.reduce(0, +)
-    return parts.map { room * $0 / total }
+    let least = floors(count)
+    var held = Array(repeating: false, count: count)
+    var out = Array(repeating: CGFloat(0), count: count)
+    for _ in 0..<count {
+      let free = room - out.indices.filter { held[$0] }.map { out[$0] }.reduce(0, +)
+      let flex = parts.indices.filter { !held[$0] }.map { parts[$0] }.reduce(0, +)
+      if flex <= 0 { break }
+      var changed = false
+      for index in parts.indices where !held[index] {
+        let share = free * parts[index] / flex
+        if share < least[index] {
+          out[index] = least[index]
+          held[index] = true
+          changed = true
+        } else {
+          out[index] = share
+        }
+      }
+      if !changed { break }
+    }
+    return out
   }
 
   func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {

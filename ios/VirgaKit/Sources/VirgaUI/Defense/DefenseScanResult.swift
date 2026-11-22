@@ -81,7 +81,7 @@ struct ScanResultView: View {
     return SectionHead(
       "Who engaged", sub: own.map { ToolPosts.postText($0) } ?? result.post.uri,
       trailing: AnyView(
-        HStack(spacing: theme.space4) {
+        HStack(spacing: theme.gap(ThemeKit.headActionsGap).column) {
           if let link, let url = URL(string: link) {
             Button {
               openURL(url)

@@ -131,7 +131,7 @@ struct BestTimeSlots: View {
       if theme.isPhone {
         HStack(alignment: .firstTextBaseline, spacing: Measure.Tools.bestGap) {
           rank
-          VStack(alignment: .leading, spacing: 2) {
+          VStack(alignment: .leading, spacing: Measure.Tools.phoneBestLineGap) {
             Text(when).virgaText(.textMd, weight: VirgaWeight.medium).foregroundStyle(theme.ink)
             Text(posts).virgaText(.textSm).foregroundStyle(theme.muted)
           }

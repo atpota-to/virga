@@ -144,7 +144,7 @@ struct ListsToolRow: View {
     if counted, let n = list.subscribers { facts.append("\(AppLocale.formatNumber(n)) \(n == 1 ? "subscriber" : "subscribers")") }
     if let at = list.memberAt, !at.isEmpty { facts.append("added \(Time.formatDateShort(at))") }
     let moderation = list.purpose == "moderation"
-    return VStack(alignment: .leading, spacing: 4) {
+    return VStack(alignment: .leading, spacing: Measure.Tools.stackedRowGap) {
       HStack(alignment: .firstTextBaseline, spacing: theme.space3) {
         Button {
           if let url = ListsYoureOnBody.listUrl(list, owner?.handle) { openURL(url) }
