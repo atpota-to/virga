@@ -15,10 +15,12 @@
 // the column's start. Given the table's head apart, it holds the head over
 // the rows as they scroll (`thead th { position: sticky }`), the head and
 // the rows each a DataTable `part:` that keeps the other's cells at no
-// height, so the two grids' columns come out the same. A chart's table
-// (`.an-tableview .table`, `chart:`) has its head 8 from the top and each
-// row's first cell is the row's head (`<th scope="row">`: --ink-2, 400,
-// one line).
+// height, both laid out at the one width TableScroll gives them, so the two
+// grids' columns come out the same. A chart's table (`.an-tableview
+// .table`, `chart:`) has its head 8 from the top and each row's first cell
+// is the row's head (`<th scope="row">`: --ink-2, 400, one line); none of
+// its cells wraps or is cut short, so each column is at least as wide as
+// its words, sharing out any room the table has beyond them.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -64,12 +66,20 @@ public struct DataTable: View {
   }
 
   public var body: some View {
-    // The column's width when it fits; otherwise it scrolls in its own row.
-    ViewThatFits(in: .horizontal) {
-      grid
-      ScrollView(.horizontal, showsIndicators: false) {
-        grid.fixedSize(horizontal: true, vertical: false)
+    if part == .whole {
+      // The column's width when it fits; otherwise it scrolls in its own row.
+      ViewThatFits(in: .horizontal) {
+        grid
+        ScrollView(.horizontal, showsIndicators: false) {
+          grid.fixedSize(horizontal: true, vertical: false)
+        }
       }
+    } else {
+      // TableScroll's held head and its rows: each at the one width
+      // TableScroll gives them both, inside its one sideways scroll, so
+      // the two grids share their columns out alike (`thead` and `tbody`
+      // of one table). A scroll of their own would set them apart.
+      TableGridWidth { grid }
     }
   }
 
@@ -120,6 +130,11 @@ public struct DataTable: View {
       .virgaText(head ? .textSm : .textBase, weight: head ? ThemeKit.tableHeadWeight : VirgaWeight.regular, lineBox: true)
       .foregroundStyle(head ? theme.muted : rowHead ? theme.ink2 : theme.ink)
       .lineLimit(head || rowHead ? 1 : nil)
+      // A chart's table keeps every cell at its words' width
+      // (`.an-tableview .table th { white-space: nowrap }`; its values are
+      // single numbers, which don't break): no column is narrower than its
+      // words, and the table scrolls sideways when they need more room.
+      .fixedSize(horizontal: chart, vertical: false)
       .padding(.top, head ? (chart ? Measure.Chart.tableHeadSpaceAbove : 0) : padding.top)
       .padding(.bottom, head ? theme.points(ThemeKit.tableHeadSpaceBelow) : padding.bottom)
       .padding(.leading, first ? 0 : padding.leading)
@@ -138,6 +153,38 @@ public struct DataTable: View {
       .modifier(TableCellReading(label: first ? row.map { rowLabel($0) } : nil, hidden: head || !first, chosen: chosen))
       .modifier(TablePartCell(shown: shown))
       .gridColumnAlignment(numeric ? .trailing : .leading)
+  }
+}
+
+/// A held head's grid, or its rows', at the width TableScroll gives it: the
+/// columns share out whatever the table has beyond their words. When it has
+/// no more than that (a table as wide as its columns, scrolling sideways),
+/// each column is laid out at its own width, as a share would have to leave
+/// it anyway; and so it is too, at the start of the width, if a share would
+/// leave a later column narrower than its words. The head and the rows hold
+/// the same cells, so they come to the same columns.
+struct TableGridWidth: Layout {
+  /// A width this close to the columns' own is theirs (rounding).
+  private static let slack: CGFloat = 0.5
+
+  private func fitted(_ proposal: ProposedViewSize, _ grid: LayoutSubview) -> ProposedViewSize {
+    let own = ProposedViewSize(width: nil, height: proposal.height)
+    guard let width = proposal.width,
+      width > grid.sizeThatFits(.unspecified).width + Self.slack,
+      grid.sizeThatFits(proposal).width <= width + Self.slack
+    else { return own }
+    return proposal
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    guard let grid = subviews.first else { return .zero }
+    let size = grid.sizeThatFits(fitted(proposal, grid))
+    return CGSize(width: max(proposal.width ?? 0, size.width), height: size.height)
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    guard let grid = subviews.first else { return }
+    grid.place(at: bounds.origin, anchor: .topLeading, proposal: fitted(proposal, grid))
   }
 }
 
