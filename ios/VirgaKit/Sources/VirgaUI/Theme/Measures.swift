@@ -535,6 +535,14 @@ public enum Measure {
   public enum Dialog {
     /// `.dialog { width: min(520px, 100vw - 32px); border-radius: 16px }`
     public static let width: CGFloat = 520
+    /// The dialogs the web makes wider, each `min(640px, 100vw - 32px)`:
+    /// `.dialog.timer-dialog` (schedule.css), `.dialog.adviser-sheet,
+    /// .dialog.alt-dialog, .dialog.style-dialog` (adviser.css) and
+    /// `.dialog.tpl-dialog` (library.css).
+    public static let wideWidth: CGFloat = 640
+    /// `.dialog.lib-dialog { width: min(980px, 100vw - 32px); height: min(720px, 100svh - 48px) }`
+    public static let libraryWidth: CGFloat = 980
+    public static let libraryHeight: CGFloat = 720
     public static let radius: CGFloat = 16
     /// `.dialog-head { padding: 20px 16px 8px 24px }`; a phone's 16 10 8 18.
     public static let head = EdgeInsets(top: 20, leading: 24, bottom: 8, trailing: 16)

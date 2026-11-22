@@ -5,7 +5,9 @@
 // foot on the right with the confirm in ink. The web draws it as a modal at
 // every width (at most 520 wide, --surface with a --line edge, 16-point
 // corners and --shadow-lg over --scrim); on iOS it is a sheet, on --surface
-// with those corners, and from 560 down its buttons share the foot in equal
+// with those corners: wider than a phone, 520 wide and as tall as what's in
+// it, as the web's is (DialogSheetSizing), and on a phone rising from the
+// foot. From 560 down its buttons share the foot in equal
 // halves, 44 tall, or, for a dialog whose buttons say too much to share a
 // line (`stackActions`, `.dialog--stack-actions`), go one under the other,
 // the one that does it first. Swiping it down is the web's Escape: it
@@ -24,8 +26,9 @@
 import SwiftUI
 import VirgaCore
 
-/// How tall a dialog's sheet may be: one that fits a few lines (`.fit`, half
-/// the screen to start with), or a long one (`.tall`, the whole height).
+/// How tall a dialog's sheet may be on a phone: one that fits a few lines
+/// (`.fit`, half the screen to start with), or a long one (`.tall`, the
+/// whole height). Wider, either is as tall as what's in it.
 public enum DialogSize: Sendable {
   case fit, tall
 }
@@ -201,10 +204,47 @@ struct DialogSheet<Inner: View, Foot: View>: ViewModifier {
       DialogFrame(
         title: title, onClose: { isPresented = false }, hasActions: hasActions, stackActions: stackActions, autofocus: autofocus,
         content: inner, actions: foot)
-        .presentationDetents(size == .fit ? [.medium, .large] : [.large])
+        .dialogSheetSizing(phone: theme.isPhone, detents: size == .fit ? [.medium, .large] : [.large])
         .presentationBackground(theme.surface)
         .presentationCornerRadius(Measure.Dialog.radius)
     }
+  }
+}
+
+/// How a dialog's sheet is sized. On a phone it rises from the foot and
+/// holds at `detents`. Wider, it is the web's modal: `width` wide (`.dialog
+/// { width: min(520px, 100vw - 32px) }`, or the dialog's own) and as tall
+/// as what's in it, its foot straight under its last line, which the
+/// system keeps inside the window as `max-height: calc(100svh - 48px)`
+/// does; or `height` tall, for a dialog the web gives a height
+/// (`.lib-dialog`). A sheet sized by its content is iOS 18's; before that
+/// a wider window keeps the system's form sheet, at `detents`.
+struct DialogSheetSizing: ViewModifier {
+  let phone: Bool
+  let detents: Set<PresentationDetent>
+  var width: CGFloat = Measure.Dialog.width
+  var height: CGFloat?
+
+  func body(content: Content) -> some View {
+    if phone {
+      content.presentationDetents(detents)
+    } else if #available(iOS 18.0, *) {
+      content
+        .frame(idealWidth: width, idealHeight: height)
+        .presentationSizing(.form.fitted(horizontal: true, vertical: true))
+    } else {
+      content.presentationDetents(detents)
+    }
+  }
+}
+
+extension View {
+  /// A dialog's sheet: at `detents` on a phone, `width` wide and its
+  /// content's height (or `height`) on a wider window.
+  func dialogSheetSizing(
+    phone: Bool, detents: Set<PresentationDetent>, width: CGFloat = Measure.Dialog.width, height: CGFloat? = nil
+  ) -> some View {
+    modifier(DialogSheetSizing(phone: phone, detents: detents, width: width, height: height))
   }
 }
 

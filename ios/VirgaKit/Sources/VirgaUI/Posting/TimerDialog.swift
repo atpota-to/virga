@@ -74,8 +74,9 @@ struct PostTimerSheet: ViewModifier {
           onArmed(row)
         }
       )
-      // schedule.css: the timer dialog is a full-height sheet on a phone.
-      .presentationDetents([.large])
+      // A full-height sheet on a phone; wider, schedule.css's
+      // `.dialog.timer-dialog`, 640 wide and as tall as what's in it.
+      .dialogSheetSizing(phone: theme.isPhone, detents: [.large], width: Measure.Dialog.wideWidth)
       .presentationBackground(theme.surface)
       .presentationCornerRadius(Measure.Dialog.radius)
     }
