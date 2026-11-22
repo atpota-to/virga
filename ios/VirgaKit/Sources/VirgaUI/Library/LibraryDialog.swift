@@ -85,6 +85,9 @@ struct LibraryDialog: View {
       .padding(narrow ? LibraryMeasure.phoneDialogBody : LibraryMeasure.dialogBody)
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
+    // The Group's frame goes on the panel alone: before the model is made
+    // there's nothing in it, and the head would sit in the sheet's middle.
+    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     .background(theme.surface)
     .task {
       guard lib == nil else { return }

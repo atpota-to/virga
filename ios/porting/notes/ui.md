@@ -677,6 +677,11 @@ LIBRARY (Library/)
   `.scrollView` coordinate space). The shelves are `LibraryShelfRow` (`.lib-shelf`: a ScrollRow of
   words with their counts), the search the panel's own (its clear button, Escape, the dialog's
   autofocus), a shelf's or a search's failure `LibraryStatus`.
+- The panel's body is a VStack round its narrow or wide layout, not a Group: a Group gives its
+  modifiers to the view inside it, so its tasks and `onChange(initial:)` would start again at each
+  switch between the list and the chosen item on a phone (the asked-for template chosen again over
+  Back to the list). For the same reason a view whose `.task` reads what it shows (AltTextPreview)
+  is a ZStack: a Group with nothing in it yet runs nothing.
 - A post not read yet has `view: .null`: the detail tests `view.isTruthy` (bones, then
   `PostPreviewCard(view:)` in full, or why it couldn't be read), and hydrates unless it has a truthy
   view and a cid. A read called off by choosing another row isn't a failure.

@@ -310,7 +310,10 @@ struct AltTextPreview: View {
   @State private var image: UIImage?
 
   var body: some View {
-    Group {
+    // A ZStack, not a Group: a Group's modifiers go on each view inside it,
+    // and before the picture is read there is none, so `.task` would never
+    // run to read it.
+    ZStack {
       if let image {
         let size = image.size
         let aspect = size.height > 0 ? size.width / size.height : 1

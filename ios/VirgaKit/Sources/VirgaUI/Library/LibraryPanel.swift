@@ -252,7 +252,12 @@ struct LibraryPanel: View {
     let items = flat(sections)
     let selected = items.first { Optional($0.id).jsEquals(selectedId) } ?? (narrow ? nil : items.first)
     let shown = selected.map { hydrated[$0.id] ?? $0 }
-    Group {
+    // A stack, not a Group: a Group hands its modifiers to whichever view
+    // is inside it, so on a phone every switch between the list and the
+    // chosen item would start the tasks below again (a pasted link read
+    // again, the asked-for template chosen again over Back to the list,
+    // the search given the keyboard again).
+    VStack(alignment: .leading, spacing: 0) {
       if narrow {
         narrowBody(sections, items: items, shown: shown)
       } else {
@@ -552,12 +557,13 @@ struct LibraryPanel: View {
 
   /// `min-height: calc(var(--text-md) * 1.25 + 4px + var(--text-sm) * 1.45 +
   /// 13px)`: the chosen item's head (its title, the line under it, 12 below
-  /// and its rule), so the two rules in ink are one line across.
+  /// and its rule), so the two rules in ink are one line across. Both heads
+  /// draw their rule over the last point of their 12 here, so it is 12, not
+  /// 13; and the words' lines are as Dynamic Type has made them.
   private var itemHeadHeight: CGFloat {
-    let title: CGFloat = theme.textMd * CGFloat(ThemeKit.headingLineHeight)
-    let effect: CGFloat = theme.textSm * CGFloat(ThemeKit.bodyLineHeight)
-    let rule: CGFloat = 1
-    return title + LibraryMeasure.itemHeadGap + effect + LibraryMeasure.itemHeadBelow + rule
+    let title: CGFloat = theme.scaled(theme.textMd) * CGFloat(ThemeKit.headingLineHeight)
+    let effect: CGFloat = theme.scaled(theme.textSm) * CGFloat(ThemeKit.bodyLineHeight)
+    return title + LibraryMeasure.itemHeadGap + effect + LibraryMeasure.itemHeadBelow
   }
 
   /// The order for posts and replies, Only my posts while searching, New
