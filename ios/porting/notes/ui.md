@@ -426,7 +426,8 @@ COMPOSER TIMER (Composer/ComposerController+Timer.swift, Composer/LifespanDialog
 - The web's effect on `[defaultTimer, generation]` is ComposerBody's
   `.onChange(of: controller.defaultTimerKey, initial: true)` (`ComposerDefaultTimerKey`): `applyDefaultTimer()`
   puts the default on a post whose timer the writer hasn't chosen, whenever the default changes (the limits
-  read, the account, a reply, the session) or a state is loaded (`generation`). It runs while the sheet is up,
+  read, the account, a reply, the session) or a state is loaded (`generation`). The limits are read again when
+  the account or whether it can schedule changes (the web's effect on `[open, asDid, caps.canSchedule]`). It runs while the sheet is up,
   which is the only time the post is seen; a state loaded while it's down takes the default as it opens.
 - `timerNote` (why the default is off; once chosen, timerNeedsServer or timerRoomProblem with the scheduled
   row's `holds`) is a FieldHint under the post's settings while the post has no timer

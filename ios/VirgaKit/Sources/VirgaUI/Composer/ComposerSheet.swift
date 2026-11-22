@@ -183,8 +183,11 @@ struct ComposerBody: View {
       }
       ComposerStatus(controller: controller)
     }
-    // SCHEDULE: the account's limits, read as it opens and for each account it goes out as.
-    .task(id: controller.asDid) { await controller.refreshLimits(controller.asDid) }
+    // SCHEDULE: the account's limits, read as it opens, for each account it
+    // goes out as, and again when that account gains or loses Virga's server
+    // (the web's effect on [open, asDid, caps.canSchedule]); TIMER: the
+    // default timer waits on them.
+    .task(id: "\(controller.caps.canSchedule) \(controller.asDid)") { await controller.refreshLimits(controller.asDid) }
     // TIMER: a post whose timer the writer hasn't chosen takes the default,
     // whenever the default or the state loaded changes (ComposerController+Timer.swift).
     .onChange(of: controller.defaultTimerKey, initial: true) { _, _ in controller.applyDefaultTimer() }
