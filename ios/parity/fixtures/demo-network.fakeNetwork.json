@@ -379,6 +379,99 @@
             "url": "https://cardyb.bsky.app/v1/other"
           },
           {
+            "url": "https://plc.directory/"
+          },
+          {
+            "url": "https://plc.directory/did:plc:virgaharnesslab7k2pq/data"
+          },
+          {
+            "url": "https://plc.directory/%40mira.example.com"
+          },
+          {
+            "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles"
+          },
+          {
+            "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?others=did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=%40DEE.EXAMPLE.COM&limit=2"
+          },
+          {
+            "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did:plc:virgaharnessmira2zq4x&limit=0&cursor=-3"
+          },
+          {
+            "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did:plc:virgaharnessmira2zq4x&limit=2.5&cursor=1.5"
+          },
+          {
+            "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did:plc:virgaharnessmira2zq4x&filter=nonsense&limit=1"
+          },
+          {
+            "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at%3A%2F%2Fdid%3Aplc%3Avirgaharnessmira2zq4x%2Fapp.bsky.feed.post%2F3n273mgibdc23&depth=1.5&parentHeight=-1"
+          },
+          {
+            "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at%3A%2F%2Fdid%3Aplc%3Avirgaharnessmira2zq4x%2Fapp.bsky.feed.post%2F3n27wdjp5x225&depth=&parentHeight="
+          },
+          {
+            "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getList?list=at%3A%2F%2Fdid%3Aplc%3Avirgaharnessmira2zq4x%2Fapp.bsky.graph.list%2F3mklrfviy2222&limit=-1"
+          },
+          {
+            "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getLists?actor=nobody.example"
+          },
+          {
+            "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.searchActors?term=fi&q="
+          },
+          {
+            "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.searchActorsTypeahead?q=mi&limit=1.5"
+          },
+          {
+            "url": "https://public.api.bsky.app/xrpc/com.atproto.repo.getRecord?repo=did:plc:virgaharnesslab7k2pq&collection=toString&rkey=x"
+          },
+          {
+            "url": "https://pds.harness.example/xrpc/com.atproto.sync.getRepo?did=did:plc:virgaharnesslab7k2pq&since="
+          },
+          {
+            "url": "https://pds.harness.example/xrpc/com.atproto.repo.listRecords?repo=lab.example.org&collection=app.bsky.feed.post&reverse=true&limit=1"
+          },
+          {
+            "url": "https://pds.harness.example/xrpc/com.atproto.sync.getBlob?did=nobody&cid=x"
+          },
+          {
+            "url": "https://pds.harness.example/xrpc/"
+          },
+          {
+            "url": "https://pds.harness.example/.well-known/oauth-protected-resource/"
+          },
+          {
+            "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinks?subject=did%3Aplc%3Avirgaharnessmira2zq4x&source=app.bsky.feed.like%3Asubject.uri"
+          },
+          {
+            "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Avirgaharnessmira2zq4x%2Fapp.bsky.feed.post%2F3n27wdjp5x225&source=app.bsky.feed.like%3Asubject.uri"
+          },
+          {
+            "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getManyToMany?subject=at%3A%2F%2Fdid%3Aplc%3Avirgaharnesslst0000%2Fapp.bsky.graph.list%2F3mtddnnyoms22&limit=1"
+          },
+          {
+            "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinks?subject=at%3A%2F%2Fdid%3Aplc%3Avirgaharnesslst0000%2Fapp.bsky.graph.list%2F3mtddnnyoms22&source=app.bsky.graph.block%3Asubject"
+          },
+          {
+            "url": "https://constellation.microcosm.blue/links/all?target=at%3A%2F%2Fdid%3Aplc%3Avirgaharnessmira2zq4x%2Fapp.bsky.feed.post%2F3n273mgibdc23"
+          },
+          {
+            "url": "https://cardyb.bsky.app/v1/extract?url=http%3A%2F%2FEXAMPLE.com%2F"
+          },
+          {
+            "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fexample.com%3A8080%2Fa-b_c%3Fx%3D1%23y"
+          },
+          {
+            "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2F__proto__.example%2Fx"
+          },
+          {
+            "url": "https://cardyb.bsky.app/v1/extract?url=https%3A%2F%2Fa.example%2F.hidden%2Fv1.2"
+          },
+          {
+            "url": "https://cardyb.bsky.app/v1/image"
+          },
+          {
             "url": "https://example.com/"
           },
           {
@@ -4056,6 +4149,664 @@
           }
         },
         null,
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "id": "",
+            "alsoKnownAs": [
+              "at://handle.invalid"
+            ],
+            "service": [
+              {
+                "id": "#atproto_pds",
+                "type": "AtprotoPersonalDataServer",
+                "serviceEndpoint": "https://pds.harness.example"
+              }
+            ]
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "id": "did:plc:virgaharnesslab7k2pq",
+            "alsoKnownAs": [
+              "at://lab.example.org"
+            ],
+            "service": [
+              {
+                "id": "#atproto_pds",
+                "type": "AtprotoPersonalDataServer",
+                "serviceEndpoint": "https://pds.harness.example"
+              }
+            ]
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "id": "@mira.example.com",
+            "alsoKnownAs": [
+              "at://mira.example.com"
+            ],
+            "service": [
+              {
+                "id": "#atproto_pds",
+                "type": "AtprotoPersonalDataServer",
+                "serviceEndpoint": "https://pds.harness.example"
+              }
+            ]
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "profiles": []
+          }
+        },
+        {
+          "status": 400,
+          "type": "application/json",
+          "json": {
+            "error": "InvalidRequest",
+            "message": "Actor not found"
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "feed": [
+              {
+                "post": {
+                  "uri": "at://did:plc:virgaharnesscast0003/app.bsky.feed.post/3mzyjh2mp2222",
+                  "cid": "bafyharness",
+                  "author": {
+                    "did": "did:plc:virgaharnesscast0003",
+                    "handle": "dee.example.com",
+                    "displayName": "Dee Oyelaran",
+                    "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(268%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(268%2060%25%2024%25)%22%3ED%3C%2Ftext%3E%3C%2Fsvg%3E"
+                  },
+                  "record": {
+                    "$type": "app.bsky.feed.post",
+                    "text": "A post.",
+                    "createdAt": "2026-11-10T22:46:40.000Z"
+                  },
+                  "indexedAt": "2026-11-10T22:46:40.000Z"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "feed": [],
+            "cursor": "47"
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "$sha256": "30e7d9a3961e87dd18daf14ef6e9220f71d3634126da5b37aa7df1da9ea20429",
+            "feed": {
+              "$part": {
+                "count": 3,
+                "sha256": "3b94f1403f5d768ab8beba8143fbb70ca4c64bcdaa51264ec9d2fb78dd579a52",
+                "samples": [
+                  {
+                    "index": 0,
+                    "item": {
+                      "post": {
+                        "$type": "app.bsky.feed.defs#postView",
+                        "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2bcg6lscs27",
+                        "cid": "bafyharness",
+                        "author": {
+                          "did": "did:plc:virgaharnessmira2zq4x",
+                          "handle": "mira.example.com",
+                          "displayName": "Mira Okafor",
+                          "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E"
+                        },
+                        "record": {
+                          "$type": "app.bsky.feed.post",
+                          "text": "Slides from last night are here, along with the three questions I could not answer.",
+                          "createdAt": "2026-11-14T10:34:52.063Z",
+                          "langs": [
+                            "en"
+                          ],
+                          "reply": {
+                            "parent": {
+                              "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2bcg6lscs27",
+                              "cid": "bafyharness"
+                            },
+                            "root": {
+                              "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2bcg6lscs27",
+                              "cid": "bafyharness"
+                            }
+                          }
+                        },
+                        "likeCount": 6,
+                        "repostCount": 1,
+                        "replyCount": 0,
+                        "quoteCount": 0,
+                        "indexedAt": "2026-11-14T10:34:52.063Z",
+                        "labels": [],
+                        "viewer": {}
+                      }
+                    }
+                  },
+                  {
+                    "index": 1,
+                    "item": {
+                      "post": {
+                        "$type": "app.bsky.feed.defs#postView",
+                        "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2akv7aol226",
+                        "cid": "bafyharness",
+                        "author": {
+                          "did": "did:plc:virgaharnessmira2zq4x",
+                          "handle": "mira.example.com",
+                          "displayName": "Mira Okafor",
+                          "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E"
+                        },
+                        "record": {
+                          "$type": "app.bsky.feed.post",
+                          "text": "I counted: 41 tabs open, 11 of them the same page.",
+                          "createdAt": "2026-11-14T03:33:46.260Z",
+                          "langs": [
+                            "en"
+                          ]
+                        },
+                        "likeCount": 20,
+                        "repostCount": 3,
+                        "replyCount": 2,
+                        "quoteCount": 0,
+                        "indexedAt": "2026-11-14T03:33:46.260Z",
+                        "labels": [],
+                        "viewer": {}
+                      }
+                    }
+                  },
+                  {
+                    "index": 2,
+                    "item": {
+                      "post": {
+                        "$type": "app.bsky.feed.defs#postView",
+                        "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n27wdjp5x225",
+                        "cid": "bafyharness",
+                        "author": {
+                          "did": "did:plc:virgaharnessmira2zq4x",
+                          "handle": "mira.example.com",
+                          "displayName": "Mira Okafor",
+                          "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E"
+                        },
+                        "record": {
+                          "$type": "app.bsky.feed.post",
+                          "text": "An appreciation post for people who write alt text.",
+                          "createdAt": "2026-11-13T21:25:58.404Z",
+                          "langs": [
+                            "en"
+                          ],
+                          "embed": {
+                            "$type": "app.bsky.embed.images",
+                            "images": [
+                              {
+                                "alt": "",
+                                "image": {}
+                              },
+                              {
+                                "alt": "",
+                                "image": {}
+                              },
+                              {
+                                "alt": "",
+                                "image": {}
+                              }
+                            ]
+                          }
+                        },
+                        "likeCount": 43,
+                        "repostCount": 5,
+                        "replyCount": 2,
+                        "quoteCount": 0,
+                        "indexedAt": "2026-11-13T21:25:58.404Z",
+                        "labels": [],
+                        "viewer": {},
+                        "embed": {
+                          "$type": "app.bsky.embed.images#view",
+                          "images": [
+                            {
+                              "thumb": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20width%3D%22400%22%20height%3D%22300%22%20fill%3D%22hsl(68%2045%25%2082%25)%22%2F%3E%3Cpath%20d%3D%22M0%20220%20L120%20140%20L210%20200%20L290%20120%20L400%20210%20L400%20300%20L0%20300%20Z%22%20fill%3D%22hsl(68%2035%25%2058%25)%22%2F%3E%3Ccircle%20cx%3D%22320%22%20cy%3D%2270%22%20r%3D%2228%22%20fill%3D%22hsl(108%2070%25%2090%25)%22%2F%3E%3C%2Fsvg%3E",
+                              "fullsize": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20width%3D%22400%22%20height%3D%22300%22%20fill%3D%22hsl(68%2045%25%2082%25)%22%2F%3E%3Cpath%20d%3D%22M0%20220%20L120%20140%20L210%20200%20L290%20120%20L400%20210%20L400%20300%20L0%20300%20Z%22%20fill%3D%22hsl(68%2035%25%2058%25)%22%2F%3E%3Ccircle%20cx%3D%22320%22%20cy%3D%2270%22%20r%3D%2228%22%20fill%3D%22hsl(108%2070%25%2090%25)%22%2F%3E%3C%2Fsvg%3E",
+                              "alt": ""
+                            },
+                            {
+                              "thumb": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20width%3D%22400%22%20height%3D%22300%22%20fill%3D%22hsl(247%2045%25%2082%25)%22%2F%3E%3Cpath%20d%3D%22M0%20220%20L120%20140%20L210%20200%20L290%20120%20L400%20210%20L400%20300%20L0%20300%20Z%22%20fill%3D%22hsl(247%2035%25%2058%25)%22%2F%3E%3Ccircle%20cx%3D%22320%22%20cy%3D%2270%22%20r%3D%2228%22%20fill%3D%22hsl(287%2070%25%2090%25)%22%2F%3E%3C%2Fsvg%3E",
+                              "fullsize": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20width%3D%22400%22%20height%3D%22300%22%20fill%3D%22hsl(247%2045%25%2082%25)%22%2F%3E%3Cpath%20d%3D%22M0%20220%20L120%20140%20L210%20200%20L290%20120%20L400%20210%20L400%20300%20L0%20300%20Z%22%20fill%3D%22hsl(247%2035%25%2058%25)%22%2F%3E%3Ccircle%20cx%3D%22320%22%20cy%3D%2270%22%20r%3D%2228%22%20fill%3D%22hsl(287%2070%25%2090%25)%22%2F%3E%3C%2Fsvg%3E",
+                              "alt": ""
+                            },
+                            {
+                              "thumb": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20width%3D%22400%22%20height%3D%22300%22%20fill%3D%22hsl(66%2045%25%2082%25)%22%2F%3E%3Cpath%20d%3D%22M0%20220%20L120%20140%20L210%20200%20L290%20120%20L400%20210%20L400%20300%20L0%20300%20Z%22%20fill%3D%22hsl(66%2035%25%2058%25)%22%2F%3E%3Ccircle%20cx%3D%22320%22%20cy%3D%2270%22%20r%3D%2228%22%20fill%3D%22hsl(106%2070%25%2090%25)%22%2F%3E%3C%2Fsvg%3E",
+                              "fullsize": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20width%3D%22400%22%20height%3D%22300%22%20fill%3D%22hsl(66%2045%25%2082%25)%22%2F%3E%3Cpath%20d%3D%22M0%20220%20L120%20140%20L210%20200%20L290%20120%20L400%20210%20L400%20300%20L0%20300%20Z%22%20fill%3D%22hsl(66%2035%25%2058%25)%22%2F%3E%3Ccircle%20cx%3D%22320%22%20cy%3D%2270%22%20r%3D%2228%22%20fill%3D%22hsl(106%2070%25%2090%25)%22%2F%3E%3C%2Fsvg%3E",
+                              "alt": ""
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "cursor": "4"
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "feed": [
+              {
+                "post": {
+                  "$type": "app.bsky.feed.defs#postView",
+                  "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2chq77mc22a",
+                  "cid": "bafyharness",
+                  "author": {
+                    "did": "did:plc:virgaharnessmira2zq4x",
+                    "handle": "mira.example.com",
+                    "displayName": "Mira Okafor",
+                    "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E"
+                  },
+                  "record": {
+                    "$type": "app.bsky.feed.post",
+                    "text": "Three weeks of rain and the shed roof has finally told us where it leaks.",
+                    "createdAt": "2026-11-14T21:42:36.704Z",
+                    "langs": [
+                      "en"
+                    ],
+                    "reply": {
+                      "parent": {
+                        "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2chq77mc22a",
+                        "cid": "bafyharness"
+                      },
+                      "root": {
+                        "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2chq77mc22a",
+                        "cid": "bafyharness"
+                      }
+                    }
+                  },
+                  "likeCount": 3,
+                  "repostCount": 0,
+                  "replyCount": 0,
+                  "quoteCount": 0,
+                  "indexedAt": "2026-11-14T21:42:36.704Z",
+                  "labels": [],
+                  "viewer": {}
+                }
+              }
+            ],
+            "cursor": "1"
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "thread": {
+              "$type": "app.bsky.feed.defs#threadViewPost",
+              "post": {
+                "$type": "app.bsky.feed.defs#postView",
+                "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n273mgibdc23",
+                "cid": "bafyharness",
+                "author": {
+                  "did": "did:plc:virgaharnessmira2zq4x",
+                  "handle": "mira.example.com",
+                  "displayName": "Mira Okafor",
+                  "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E"
+                },
+                "record": {
+                  "$type": "app.bsky.feed.post",
+                  "text": "Does anyone have a sourdough starter that survived a house move? Mine did not.",
+                  "createdAt": "2026-11-13T13:27:45.993Z",
+                  "langs": [
+                    "en"
+                  ],
+                  "reply": {
+                    "parent": {
+                      "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n25lpliqds22",
+                      "cid": "bafyharness"
+                    },
+                    "root": {
+                      "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n25lpliqds22",
+                      "cid": "bafyharness"
+                    }
+                  }
+                },
+                "likeCount": 2,
+                "repostCount": 0,
+                "replyCount": 0,
+                "quoteCount": 0,
+                "indexedAt": "2026-11-13T13:27:45.993Z",
+                "labels": [],
+                "viewer": {}
+              },
+              "replies": []
+            }
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "thread": {
+              "$type": "app.bsky.feed.defs#threadViewPost",
+              "post": {
+                "$type": "app.bsky.feed.defs#postView",
+                "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n27wdjp5x225",
+                "cid": "bafyharness",
+                "author": {
+                  "did": "did:plc:virgaharnessmira2zq4x",
+                  "handle": "mira.example.com",
+                  "displayName": "Mira Okafor",
+                  "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E"
+                },
+                "record": {
+                  "$type": "app.bsky.feed.post",
+                  "text": "An appreciation post for people who write alt text.",
+                  "createdAt": "2026-11-13T21:25:58.404Z",
+                  "langs": [
+                    "en"
+                  ],
+                  "embed": {
+                    "$type": "app.bsky.embed.images",
+                    "images": [
+                      {
+                        "alt": "",
+                        "image": {}
+                      },
+                      {
+                        "alt": "",
+                        "image": {}
+                      },
+                      {
+                        "alt": "",
+                        "image": {}
+                      }
+                    ]
+                  }
+                },
+                "likeCount": 43,
+                "repostCount": 5,
+                "replyCount": 2,
+                "quoteCount": 0,
+                "indexedAt": "2026-11-13T21:25:58.404Z",
+                "labels": [],
+                "viewer": {},
+                "embed": {
+                  "$type": "app.bsky.embed.images#view",
+                  "images": [
+                    {
+                      "thumb": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20width%3D%22400%22%20height%3D%22300%22%20fill%3D%22hsl(68%2045%25%2082%25)%22%2F%3E%3Cpath%20d%3D%22M0%20220%20L120%20140%20L210%20200%20L290%20120%20L400%20210%20L400%20300%20L0%20300%20Z%22%20fill%3D%22hsl(68%2035%25%2058%25)%22%2F%3E%3Ccircle%20cx%3D%22320%22%20cy%3D%2270%22%20r%3D%2228%22%20fill%3D%22hsl(108%2070%25%2090%25)%22%2F%3E%3C%2Fsvg%3E",
+                      "fullsize": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20width%3D%22400%22%20height%3D%22300%22%20fill%3D%22hsl(68%2045%25%2082%25)%22%2F%3E%3Cpath%20d%3D%22M0%20220%20L120%20140%20L210%20200%20L290%20120%20L400%20210%20L400%20300%20L0%20300%20Z%22%20fill%3D%22hsl(68%2035%25%2058%25)%22%2F%3E%3Ccircle%20cx%3D%22320%22%20cy%3D%2270%22%20r%3D%2228%22%20fill%3D%22hsl(108%2070%25%2090%25)%22%2F%3E%3C%2Fsvg%3E",
+                      "alt": ""
+                    },
+                    {
+                      "thumb": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20width%3D%22400%22%20height%3D%22300%22%20fill%3D%22hsl(247%2045%25%2082%25)%22%2F%3E%3Cpath%20d%3D%22M0%20220%20L120%20140%20L210%20200%20L290%20120%20L400%20210%20L400%20300%20L0%20300%20Z%22%20fill%3D%22hsl(247%2035%25%2058%25)%22%2F%3E%3Ccircle%20cx%3D%22320%22%20cy%3D%2270%22%20r%3D%2228%22%20fill%3D%22hsl(287%2070%25%2090%25)%22%2F%3E%3C%2Fsvg%3E",
+                      "fullsize": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20width%3D%22400%22%20height%3D%22300%22%20fill%3D%22hsl(247%2045%25%2082%25)%22%2F%3E%3Cpath%20d%3D%22M0%20220%20L120%20140%20L210%20200%20L290%20120%20L400%20210%20L400%20300%20L0%20300%20Z%22%20fill%3D%22hsl(247%2035%25%2058%25)%22%2F%3E%3Ccircle%20cx%3D%22320%22%20cy%3D%2270%22%20r%3D%2228%22%20fill%3D%22hsl(287%2070%25%2090%25)%22%2F%3E%3C%2Fsvg%3E",
+                      "alt": ""
+                    },
+                    {
+                      "thumb": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20width%3D%22400%22%20height%3D%22300%22%20fill%3D%22hsl(66%2045%25%2082%25)%22%2F%3E%3Cpath%20d%3D%22M0%20220%20L120%20140%20L210%20200%20L290%20120%20L400%20210%20L400%20300%20L0%20300%20Z%22%20fill%3D%22hsl(66%2035%25%2058%25)%22%2F%3E%3Ccircle%20cx%3D%22320%22%20cy%3D%2270%22%20r%3D%2228%22%20fill%3D%22hsl(106%2070%25%2090%25)%22%2F%3E%3C%2Fsvg%3E",
+                      "fullsize": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20width%3D%22400%22%20height%3D%22300%22%20fill%3D%22hsl(66%2045%25%2082%25)%22%2F%3E%3Cpath%20d%3D%22M0%20220%20L120%20140%20L210%20200%20L290%20120%20L400%20210%20L400%20300%20L0%20300%20Z%22%20fill%3D%22hsl(66%2035%25%2058%25)%22%2F%3E%3Ccircle%20cx%3D%22320%22%20cy%3D%2270%22%20r%3D%2228%22%20fill%3D%22hsl(106%2070%25%2090%25)%22%2F%3E%3C%2Fsvg%3E",
+                      "alt": ""
+                    }
+                  ]
+                }
+              },
+              "replies": []
+            }
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "list": {
+              "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3mklrfviy2222",
+              "cid": "bafyharness",
+              "creator": {
+                "did": "did:plc:virgaharnessmira2zq4x",
+                "handle": "mira.example.com",
+                "displayName": "Mira Okafor",
+                "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E"
+              },
+              "name": "Neighbourhood",
+              "purpose": "app.bsky.graph.defs#curatelist",
+              "description": "People on the street and nearby.",
+              "listItemCount": 9,
+              "indexedAt": "2026-04-28T23:46:40.000Z"
+            },
+            "items": [
+              {
+                "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.listitem/3mklrfviy22220",
+                "subject": {
+                  "did": "did:plc:virgaharnesscast0000",
+                  "handle": "ana.example.com",
+                  "displayName": "Ana Nakamura",
+                  "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EA%3C%2Ftext%3E%3C%2Fsvg%3E"
+                }
+              }
+            ],
+            "cursor": "1"
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "lists": []
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "actors": [
+              {
+                "did": "did:plc:virgaharnesscast0005",
+                "handle": "fio.example.com",
+                "displayName": "Fio Okonkwo",
+                "avatar": ""
+              },
+              {
+                "did": "did:plc:virgaharnesscast0035",
+                "handle": "fio35.example.com",
+                "displayName": "Fio Sokolova",
+                "avatar": ""
+              },
+              {
+                "did": "did:plc:virgaharnesslab7k2pq",
+                "handle": "lab.example.org",
+                "displayName": "Field Lab",
+                "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+              }
+            ]
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "actors": [
+              {
+                "did": "did:plc:virgaharnessmira2zq4x",
+                "handle": "mira.example.com",
+                "displayName": "Mira Okafor",
+                "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E"
+              }
+            ]
+          }
+        },
+        {
+          "$throws": "world[ARRAYS[collection]] is not iterable",
+          "name": "TypeError"
+        },
+        {
+          "status": 200,
+          "type": "application/vnd.ipld.car",
+          "bytes": {
+            "length": 47436,
+            "sha256": "d82d3d7895a08e2e5f81c7b4fd885307097e20bfa03e00609cc1995f9552322e"
+          },
+          "length": "47436"
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "records": [
+              {
+                "uri": "at://did:plc:virgaharnesslab7k2pq/app.bsky.feed.post/3mzbtrpzh2k2c",
+                "cid": "bafyharness",
+                "value": {
+                  "$type": "app.bsky.feed.post",
+                  "text": "Notes from the river survey are up. Fewer snails than last year, more mayflies.",
+                  "createdAt": "2026-11-01T22:20:21.418Z",
+                  "langs": [
+                    "en"
+                  ]
+                }
+              }
+            ],
+            "cursor": "1"
+          }
+        },
+        {
+          "status": 400,
+          "type": "application/json",
+          "json": {
+            "error": "BlobNotFound",
+            "message": "Blob not found"
+          }
+        },
+        null,
+        null,
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "total": 0,
+            "records": [],
+            "cursor": null
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "total": 0
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "items": [
+              {
+                "linkRecord": {
+                  "did": "did:plc:virgaharnesslst0000",
+                  "collection": "app.bsky.graph.listitem",
+                  "rkey": "3mvornbt6ms22"
+                },
+                "otherSubject": "at://did:plc:virgaharnesslst0000/app.bsky.graph.list/3mtddnnyoms22"
+              }
+            ],
+            "cursor": "1"
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "total": 0,
+            "records": [],
+            "cursor": null
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "links": {
+              "app.bsky.feed.like": {
+                ".subject.uri": {
+                  "records": 2,
+                  "distinct_dids": 2
+                }
+              }
+            }
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "error": "",
+            "likely_type": "html",
+            "url": "http://example.com/",
+            "title": "Example Domain",
+            "description": "This domain is for use in documentation examples without needing permission.",
+            "image": "https://cardyb.bsky.app/v1/image?url=https%3A%2F%2Fexample.com%2Fog%2F1883395441.png"
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "error": "",
+            "likely_type": "html",
+            "url": "https://example.com:8080/a-b_c?x=1#y",
+            "title": "Example Domain",
+            "description": "This domain is for use in documentation examples without needing permission.",
+            "image": "https://cardyb.bsky.app/v1/image?url=https%3A%2F%2Fexample.com%2Fog%2F1953346895.png"
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "error": "",
+            "likely_type": "html",
+            "url": "https://__proto__.example/x",
+            "title": "X",
+            "description": "A page on __proto__.example.",
+            "image": "https://cardyb.bsky.app/v1/image?url=https%3A%2F%2F__proto__.example%2Fog%2F15005643.png"
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "error": "",
+            "likely_type": "html",
+            "url": "https://a.example/.hidden/v1.2",
+            "title": "a.example",
+            "description": "A page on a.example.",
+            "image": "https://cardyb.bsky.app/v1/image?url=https%3A%2F%2Fa.example%2Fog%2F332809476.png"
+          }
+        },
+        {
+          "status": 200,
+          "type": "image/png",
+          "bytes": {
+            "length": 567423,
+            "sha256": "8b4a01d83e6815cd160bde00e1bc5821e91a49159c7958c2fed0ee3baa95f017"
+          }
+        },
         null,
         null,
         null
