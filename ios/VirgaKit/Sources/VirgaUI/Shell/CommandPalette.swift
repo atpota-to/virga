@@ -17,7 +17,8 @@
 // beside the sidebar, where there is a keyboard to press.
 //
 // Run: a command with an address goes there through the navigator; New
-// post goes to the composer's address, which opens it; Sync
+// post opens the composer in place, over the page, once the palette's
+// sheet has gone (ComposerHost; its address where there is no host); Sync
 // runs the archive's sync; the period and the sky set the preference (the
 // period says, in a toast, what the charts show now); another account
 // opens as the account menu opens it; New dashboard opens the shell's
@@ -70,6 +71,7 @@ struct CommandPalette: View {
   @Environment(ToastCenter.self) private var toasts: ToastCenter?
   @Environment(ShellActions.self) private var actions: ShellActions?
   @Environment(PaletteState.self) private var paletteState: PaletteState?
+  @Environment(ComposerHost.self) private var composer: ComposerHost?
 
   @State private var query = ""
   @State private var active = 0
@@ -380,7 +382,13 @@ struct CommandPalette: View {
     }
     switch command.do ?? "" {
     case "newPost":
-      navigate("/posting/compose")
+      // The composer is a sheet of its own: it opens once this one has gone.
+      guard let composer else {
+        navigate("/posting/compose")
+        return
+      }
+      let open: @MainActor () -> Void = { composer.open() }
+      if let paletteState { paletteState.afterClose = open } else { open() }
     case "sync":
       if let archive, archive.sync == nil {
         let mode = SyncStatus.mode(archive)

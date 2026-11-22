@@ -540,8 +540,10 @@ LIVE SKY (Sky/, and VirgaCore/Hillside/ for everything that isn't drawing)
   description, once the share sheet has gone (one sheet at a time). New post (the sidebar's,
   the tab bar's round button) opens the composer in place, over the page it was pressed on, as
   Shell.jsx's does; VirgaUITests' `testNewPostOpensTheComposer` checks it opens and that Close
-  shuts it. The palette's New post still goes through /posting/compose (OpenComposerPage opens
-  the composer and moves to /posting), and the n shortcut isn't there yet.
+  shuts it. The palette's New post opens it the same way, once the palette's sheet has gone.
+  The n shortcut isn't there: a SwiftUI shortcut without a modifier can't tell that a field has
+  the focus or that another sheet is up, as useNewPostShortcut does, and a key command for a bare
+  letter risks taking the letter from every field.
 - Customize is the web's phone path at every width (each card a line, opened by its name to its
   size, Settings and Remove); the wide screen's grid with the chosen card's floating tools and
   the library beside it isn't drawn. VirgaUITests opens the first line (`arrange-open-<type>`)

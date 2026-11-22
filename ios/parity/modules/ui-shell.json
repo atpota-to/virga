@@ -415,11 +415,11 @@
       "synced": "5c001a7a1f56"
     },
     "src/shell/CommandPalette.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Shell/CommandPalette.swift"
       ],
-      "note": "The palette as a full-height sheet, over VirgaInsights' Commands (buildCommands with CommandContext.app, paletteGroups, rememberRecent and parseRecent under virga:palette-recent, moveActive): the field on its line with Close, the groups, each option's icon (the account's picture for another account), title, hint (under the title on a phone, once there is a search) and tick, the empty line, the foot beside the sidebar, the result count read out, and the arrows, Home, End, Return and Escape on a hardware keyboard. Search in the app bar, the sidebar and the rail opens it, and ⌘K. Running: an address through the navigator, Sync, the period (with the web's toast), the sky, another account, Customize this dashboard (?edit=1 and the dashboard's page made again, so it opens customizing: the shell's ShellActions) and New dashboard (the shell's dialog, once the palette's sheet has gone). On an iPad the option under the pointer is the highlighted one, and a title keeps its words where a hint gives way. Not yet: New post opens through /posting/compose (OpenComposerPage, which opens the composer and moves to /posting), not in place over the page.",
+      "note": "The palette as a full-height sheet, over VirgaInsights' Commands (buildCommands with CommandContext.app, paletteGroups, rememberRecent and parseRecent under virga:palette-recent, moveActive): the field on its line with Close, the groups, each option's icon (the account's picture for another account), title, hint (under the title on a phone, once there is a search) and tick, the empty line, the foot beside the sidebar, the result count read out, and the arrows, Home, End, Return and Escape on a hardware keyboard. Search in the app bar, the sidebar and the rail opens it, and ⌘K. Running: an address through the navigator, Sync, the period (with the web's toast), the sky, another account, Customize this dashboard (?edit=1 and the dashboard's page made again, so it opens customizing: the shell's ShellActions) and New dashboard (the shell's dialog, once the palette's sheet has gone). On an iPad the option under the pointer is the highlighted one, and a title keeps its words where a hint gives way. New post opens the composer in place, over the page (ComposerHost), once the palette's sheet has gone; with no host (a preview) it goes to /posting/compose.",
       "synced": "5138c6649f81"
     },
     "src/shell/FirstRun.jsx": {
