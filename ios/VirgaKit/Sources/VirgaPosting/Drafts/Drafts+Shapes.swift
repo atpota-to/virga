@@ -196,7 +196,7 @@ extension Drafts {
       "deviceName": .string(name.isEmpty ? deviceNameDefault : name),
       "posts": .array(
         try posts.enumerated().map { index, post in
-          let given = index < texts.count && texts[index].isTruthy ? texts[index] : nil
+          let given: JSONValue? = index < texts.count && texts[index].isTruthy ? texts[index] : JSONValue?.none
           let text: JSONValue = given ?? ["text": post["text"].truthy ?? "", "facets": []]
           return try draftPost(
             post, text, index: index, tags: tags, selfLabels: selfLabels, reply: index == 0 ? reply : nil,
@@ -357,7 +357,7 @@ extension Drafts {
     var state = ComposerModel.emptyComposerState(asDid: asDid.map(JSONValue.string), defaults: defaults).json
     let draft: JSONValue = isObject(draftView?["draft"]) ? draftView!["draft"]! : [:]
     let posts = Array((draft["posts"]?.arrayValue ?? []).prefix(limits.posts))
-    let first: JSONValue = posts.first.flatMap { $0.isTruthy ? $0 : nil } ?? [:]
+    let first: JSONValue = posts.first.flatMap { $0.isTruthy ? $0 : JSONValue?.none } ?? [:]
     if !posts.isEmpty { state["posts"] = .array(posts.map { readPost($0, asDid, readId: readId) }) }
     if let parent = first["reply"]?["parent"], let uri = parent["uri"], uri.isTruthy {
       var root: JSONValue = ["uri": uri, "cid": parent["cid"].truthy ?? .null]
@@ -431,7 +431,7 @@ extension Drafts {
   public static func summarizeDraft(_ draftView: JSONValue?, deviceId: String? = nil) -> JSONValue {
     let draft: JSONValue = isObject(draftView?["draft"]) ? draftView!["draft"]! : [:]
     let posts = draft["posts"]?.arrayValue ?? []
-    let first: JSONValue = posts.first.flatMap { $0.isTruthy ? $0 : nil } ?? [:]
+    let first: JSONValue = posts.first.flatMap { $0.isTruthy ? $0 : JSONValue?.none } ?? [:]
     let (record, media) = embedParts(first["embed"])
     let localImages = looseLength(first["embedImages"])
     let storedImages = media?["$type"]?.stringValue == imagesType ? looseLength(media?["images"]) : 0

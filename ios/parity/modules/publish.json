@@ -16,8 +16,16 @@
       "synced": "70973d79bd33"
     },
     "src/posting/drafts/drafts.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Drafts/Drafts.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Drafts/Drafts+Shapes.swift"
+      ],
+      "fixtures": [
+        "publish.drafts"
+      ],
+      "note": "The agent is the session's XRPCAgent, always through withBlueskyAppView(); a call's AbortSignal is the task's cancellation. postingDeviceId reads and writes the KeyValueStore it is given (the web's localStorage; nil for none), and the length refusal counts in the locale given (nil: the active one). openDraft's makePreviewUrl defaults to none (URL.createObjectURL has no logic-side equivalent) and its fetchCard to LinkCard over HTTP.transport. isDraftLimitError doesn't read an error's constructor name: the SDK's DraftLimitReachedError is an XRPCError whose `error` says DraftLimitReached, which it does read. The SDK checks the AppView's answers against the lexicon and the port doesn't, so a page's broken entries are filtered where the web would refuse the page; the fixtures answer only what the lexicon accepts.",
+      "synced": "b05af8e6f5fd"
     },
     "src/posting/lib/linkCard.js": {
       "status": "ported",
