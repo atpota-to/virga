@@ -52,6 +52,13 @@ final class PostingPagesUITests: XCTestCase {
     // takes the first item's identifier and whose middle is the account button.
     let search = app.buttons.matching(identifier: "palette-open").firstMatch
     XCTAssertTrue(search.waitForExistence(timeout: 10), "no Search")
+    // On a part's front page the phone's app bar is in the page and scrolls
+    // away with it (as `.appbar` on the web): back to the top for Search.
+    var swipes = 0
+    while search.frame.minY < 0 && swipes < 6 {
+      app.swipeDown()
+      swipes += 1
+    }
     // Straight after a sheet closes (the composer, a dialog), Search is in the
     // hierarchy before it can be pressed, and a tap in the closing animation
     // is dropped: wait until it can be, and press once more if the palette

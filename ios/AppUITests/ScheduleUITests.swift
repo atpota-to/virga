@@ -62,6 +62,13 @@ final class ScheduleUITests: XCTestCase {
     // takes the first item's identifier and whose middle is the account button.
     let search = app.buttons.matching(identifier: "palette-open").firstMatch
     XCTAssertTrue(search.waitForExistence(timeout: 10), "no Search")
+    // On a part's front page the phone's app bar is in the page and scrolls
+    // away with it (as `.appbar` on the web): back to the top for Search.
+    var swipes = 0
+    while search.frame.minY < 0 && swipes < 6 {
+      app.swipeDown()
+      swipes += 1
+    }
     // Straight after a sheet closes (the composer, a dialog), Search is in the
     // hierarchy before it can be pressed, and a tap in the closing animation
     // is dropped: wait until it can be, and press once more if the palette
@@ -102,15 +109,44 @@ final class ScheduleUITests: XCTestCase {
   /// A row's ⋯, then one of its items, by the item's words.
   private func menuItem(_ app: XCUIApplication, rowMenu: XCUIElement, _ label: String) -> Bool {
     guard rowMenu.waitForExistence(timeout: 5) else { return false }
+    scrollTo(app, rowMenu)
+    guard rowMenu.isHittable else { return false }
     rowMenu.tap()
     let item = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", label)).firstMatch
     guard item.waitForExistence(timeout: 5) else {
-      // Shut the menu by a tap clear of it, at the window's top corner.
-      app.coordinate(withNormalizedOffset: CGVector(dx: 0.02, dy: 0.02)).tap()
+      closeMenu(app, openedFrom: rowMenu)
       return false
     }
     item.tap()
     return true
+  }
+
+  /// The first ⋯ in `container` whose menu has `label`, and that item
+  /// pressed: which row has it depends on the demo's rows, so each ⋯ is
+  /// tried in turn (a few at most). False when none has it.
+  private func menuItem(_ app: XCUIApplication, in container: String, _ label: String) -> Bool {
+    let menus = element(app, container).descendants(matching: .button)
+      .matching(NSPredicate(format: "label BEGINSWITH 'More for the post at'"))
+    guard menus.firstMatch.waitForExistence(timeout: 5) else { return false }
+    for index in 0..<Swift.min(menus.count, 4) where menuItem(app, rowMenu: menus.element(boundBy: index), label) {
+      return true
+    }
+    return false
+  }
+
+  /// Shuts an open menu with a tap clear of it, on the row it came from,
+  /// well left of the ⋯ (the menu opens over the ⋯ and leftwards of it, about
+  /// 250 wide). A tap over the status bar doesn't shut it, and while it is
+  /// open nothing under it can be pressed or scrolled (run 69).
+  private func closeMenu(_ app: XCUIApplication, openedFrom rowMenu: XCUIElement) {
+    var tries = 0
+    while !rowMenu.isHittable && tries < 3 {
+      let clear = Swift.max(-rowMenu.frame.minX + 8, -320)
+      rowMenu.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.5)).withOffset(CGVector(dx: clear, dy: 0)).tap()
+      let shut = XCTNSPredicateExpectation(predicate: NSPredicate(format: "isHittable == true"), object: rowMenu)
+      _ = XCTWaiter.wait(for: [shut], timeout: 2)
+      tries += 1
+    }
   }
 
   /// A question's Keep it, and the question gone.
@@ -261,10 +297,7 @@ final class ScheduleUITests: XCTestCase {
 
     // The questions before an action, each kept and left.
     scrollToTop(app)
-    let repeating = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'More for the post at'"))
-    let timedMenu = repeating.element(boundBy: Swift.max(0, repeating.count - 1))
-    scrollTo(app, timedMenu)
-    if menuItem(app, rowMenu: timedMenu, "Skip this one") {
+    if menuItem(app, in: "sched-timed", "Skip this one") {
       if element(app, "schedule-dialog").waitForExistence(timeout: 5) { snapshot("scheduled-skip-dialog") }
       keepIt(app)
     }

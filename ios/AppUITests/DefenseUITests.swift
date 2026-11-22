@@ -92,6 +92,13 @@ final class DefenseUITests: XCTestCase {
     // takes the first item's identifier and whose middle is the account button.
     let search = app.buttons.matching(identifier: "palette-open").firstMatch
     XCTAssertTrue(search.waitForExistence(timeout: 5), "no Search")
+    // On a part's front page the phone's app bar is in the page and scrolls
+    // away with it (as `.appbar` on the web): back to the top for Search.
+    var swipes = 0
+    while search.frame.minY < 0 && swipes < 6 {
+      app.swipeDown()
+      swipes += 1
+    }
     search.tap()
     let field = element(app, "palette-field")
     XCTAssertTrue(field.waitForExistence(timeout: 5), "the palette didn't open")
