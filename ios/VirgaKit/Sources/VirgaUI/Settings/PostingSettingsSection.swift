@@ -404,6 +404,7 @@ struct LifespanDefaultsCard: View {
           next.enabled = enabled
           save(next)
         }
+        .accessibilityIdentifier("default-timer-on")
       }
       if lifespan.enabled {
         // A block row with no label: the editor alone, as a row.
