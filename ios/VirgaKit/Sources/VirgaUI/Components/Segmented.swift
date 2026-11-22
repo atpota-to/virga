@@ -85,6 +85,7 @@ public struct Segmented<Value: Hashable>: View {
     .padding(.horizontal, -Measure.Touch.segmentedReach)
     .accessibilityElement(children: .contain)
     .accessibilityLabel(label)
+    .preference(key: HoldsSegmentedKey.self, value: true)
   }
 
   private var keys: some View {

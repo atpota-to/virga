@@ -119,7 +119,7 @@ struct DashboardPage: View {
           title: dashboard.name,
           sub: editing ? "Press a card to move, resize or remove it. Changes save as you go." : Periods.periodLine(period, nowMs),
           crumbs: [Crumb("Dashboards")]),
-        titleTools: AnyView(titleTools), actions: AnyView(headerActions))
+        titleTools: AnyView(titleTools), period: editing ? nil : AnyView(PeriodPicker()), actions: AnyView(headerActions))
     ) {
       if editing {
         Button {
@@ -255,16 +255,15 @@ struct DashboardPage: View {
       .accessibilityAddTraits(.isSelected)
       .accessibilityIdentifier("customize-done")
     } else {
-      HStack(spacing: theme.space4) {
-        Button {
-          editing = true
-        } label: {
-          Label("Customize", systemImage: Glyph.customize)
-        }
-        .buttonStyle(.linkAction)
-        .accessibilityIdentifier("customize")
-        PeriodPicker()
+      // The period goes to the header apart (its `period:`), which puts it
+      // first on a phone and this at the row's far end.
+      Button {
+        editing = true
+      } label: {
+        Label("Customize", systemImage: Glyph.customize)
       }
+      .buttonStyle(.linkAction)
+      .accessibilityIdentifier("customize")
     }
   }
 }

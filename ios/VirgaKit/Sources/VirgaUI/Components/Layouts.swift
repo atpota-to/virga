@@ -86,6 +86,98 @@ public struct FlowLayout: Layout {
   }
 }
 
+/// Two views: the first takes the room the second leaves beside it at its
+/// own width, and when that room would be narrower than `minLead` (or the
+/// whole width, if that is less) the second goes under the first, at its
+/// start, `rowGap` below: a wrapping flex row whose first item is
+/// `flex: 1 1 <basis>` and whose second is `flex: none` (a section's
+/// heading and its tools, a page's words and its controls). Beside, the
+/// two share their first text baseline (`align-items: baseline`) or their
+/// tops.
+struct BesideOrUnder: Layout {
+  var minLead: CGFloat
+  var columnGap: CGFloat
+  var rowGap: CGFloat
+  var baseline: Bool
+
+  struct Plan {
+    var beside = true
+    var lead = CGSize.zero
+    var trail = CGSize.zero
+    var leadY: CGFloat = 0
+    var trailY: CGFloat = 0
+    var height: CGFloat = 0
+  }
+
+  func plan(width: CGFloat?, subviews: Subviews) -> Plan {
+    var out = Plan()
+    guard let first = subviews.first else { return out }
+    guard subviews.count > 1 else {
+      out.lead = first.sizeThatFits(ProposedViewSize(width: width, height: nil))
+      out.height = out.lead.height
+      return out
+    }
+    let second = subviews[1]
+    let trailIdeal = second.sizeThatFits(.unspecified)
+    let room = width.map { $0 - trailIdeal.width - columnGap }
+    if let width, let room, room < min(minLead, width) {
+      out.beside = false
+      out.lead = first.sizeThatFits(ProposedViewSize(width: width, height: nil))
+      out.trail = second.sizeThatFits(ProposedViewSize(width: width, height: nil))
+      out.trailY = out.lead.height + rowGap
+      out.height = out.trailY + out.trail.height
+      return out
+    }
+    let leadProposal = ProposedViewSize(width: room, height: nil)
+    out.lead = first.sizeThatFits(leadProposal)
+    out.trail = trailIdeal
+    if baseline {
+      let leadLine = first.dimensions(in: leadProposal)[VerticalAlignment.firstTextBaseline]
+      let trailLine = second.dimensions(in: .unspecified)[VerticalAlignment.firstTextBaseline]
+      if leadLine >= trailLine { out.trailY = leadLine - trailLine } else { out.leadY = trailLine - leadLine }
+    }
+    out.height = max(out.leadY + out.lead.height, out.trailY + out.trail.height)
+    return out
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    let plan = plan(width: proposal.width, subviews: subviews)
+    let width = proposal.width ?? (plan.lead.width + (subviews.count > 1 ? columnGap + plan.trail.width : 0))
+    return CGSize(width: width, height: plan.height)
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    let plan = plan(width: bounds.width, subviews: subviews)
+    guard let first = subviews.first else { return }
+    first.place(
+      at: CGPoint(x: bounds.minX, y: bounds.minY + plan.leadY),
+      proposal: ProposedViewSize(width: plan.lead.width, height: plan.lead.height))
+    guard subviews.count > 1 else { return }
+    let x = plan.beside ? bounds.maxX - plan.trail.width : bounds.minX
+    subviews[1].place(
+      at: CGPoint(x: x, y: bounds.minY + plan.trailY),
+      proposal: ProposedViewSize(width: plan.trail.width, height: plan.trail.height))
+  }
+}
+
+/// Said by a Segmented, for the heading or the header it sits in to place
+/// it as the stylesheets place `> .segmented`.
+struct HoldsSegmentedKey: PreferenceKey {
+  static let defaultValue = false
+  static func reduce(value: inout Bool, nextValue: () -> Bool) {
+    value = value || nextValue()
+  }
+}
+
+/// Said by a primary button, for a phone's header to put a lone one (the
+/// dashboard's Done) beside the title, as `.btn--primary:only-child`.
+struct HoldsPrimaryButtonKey: PreferenceKey {
+  static let defaultValue = false
+  static func reduce(value: inout Bool, nextValue: () -> Bool) {
+    value = value || nextValue()
+  }
+}
+
 /// Which edges of a sideways row have more behind them.
 struct OverflowEdges: Equatable {
   var start = false

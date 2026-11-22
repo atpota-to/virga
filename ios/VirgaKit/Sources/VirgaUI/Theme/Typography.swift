@@ -161,6 +161,16 @@ extension VirgaTheme {
     lineSpacing(size: size, lineHeight: lineHeight, weight: weight) / 2
   }
 
+  /// Half of what a CSS line-height shorter than the face's own line takes
+  /// from it (a title's 1.1 against Instrument Sans' 1.22), as negative
+  /// padding: the line's box is the browser's, its glyphs reaching past it
+  /// above and below. Zero for a line-height at or over the face's.
+  @MainActor
+  public func overflowingLeading(size: CGFloat, lineHeight: Double, weight: Double = VirgaWeight.regular) -> CGFloat {
+    let points = scaled(size)
+    return min(0, (points * CGFloat(lineHeight) - naturalLine(points: points, weight: weight)) / 2)
+  }
+
   /// The face's own line at `points` (Instrument Sans: 1.22em).
   @MainActor
   func naturalLine(points: CGFloat, weight: Double) -> CGFloat {

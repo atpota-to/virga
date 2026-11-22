@@ -106,6 +106,7 @@ struct VirgaButtonBody<Label: View>: View {
       .opacity(isEnabled ? 1 : ThemeKit.disabledOpacity)
       .animation(theme.motion.control, value: isPressed)
       .virgaFocusOutline(Capsule())
+      .preference(key: HoldsPrimaryButtonKey.self, value: style.tier == .primary)
   }
 
   struct Metrics {

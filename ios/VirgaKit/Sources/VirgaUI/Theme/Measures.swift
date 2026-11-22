@@ -154,6 +154,10 @@ public enum Measure {
     /// `.card-head > :first-child { min-width: min(100%, 16rem) }`: the title's
     /// least room before its group wraps under it.
     public static let titleMinWidth: CGFloat = 256
+    /// `.card-head:has(> :nth-child(2)) { column-gap: 16px }` at 560 and under.
+    public static let phoneHeadGap: CGFloat = 16
+    /// A list's rows: `border-bottom: 1px solid var(--line)`.
+    public static let hairline: CGFloat = 1
     /// `.empty-block .empty { max-width: 56ch }`
     public static let emptyMeasure: CGFloat = 56
     /// `.card-head .btn--icon { margin-top: -12px }` on touch: a 44 icon over the title's line.
@@ -500,6 +504,11 @@ public enum Measure {
     public static let rowGap: CGFloat = 16
     public static let columnGap: CGFloat = 32
     public static let textGap: CGFloat = 6
+    /// `.page-header-text { flex: 1 1 320px }`: the words' least room before
+    /// the controls go under them.
+    public static let wordsBasis: CGFloat = 320
+    /// `.page-header-row { gap: 12px }` at 560 and under.
+    public static let phoneRowGap: CGFloat = 12
     /// `.page-sub, .page-access { max-width: 68ch }`
     public static let subMeasure: CGFloat = 68
     /// `.page-actions { gap: 12px 32px }`; 16 on a phone.

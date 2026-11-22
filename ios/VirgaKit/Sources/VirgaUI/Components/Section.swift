@@ -22,6 +22,9 @@ import VirgaCore
 
 public struct SectionHead: View {
   @Environment(\.virgaTheme) private var theme
+  /// Whether `trailing` is a small Segmented (it says so), which the
+  /// stylesheet places apart from the other tools.
+  @State private var segmented = false
   private let title: String
   private let sub: String?
   private let trailing: AnyView?
@@ -33,29 +36,83 @@ public struct SectionHead: View {
   }
 
   public var body: some View {
-    VStack(alignment: .leading, spacing: theme.points(ThemeKit.cardSubSpaceAbove)) {
-      HStack(alignment: .firstTextBaseline, spacing: theme.gap(ThemeKit.cardHeadGap).column) {
-        Text(title)
-          .virgaText(
-            size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, lineHeight: ThemeKit.headingLineHeight,
-            tracking: ThemeKit.cardTitleTracking)
-          .foregroundStyle(theme.ink)
-          .fixedSize(horizontal: false, vertical: true)
-          .accessibilityAddTraits(.isHeader)
-        Spacer(minLength: 0)
-        if let trailing {
-          trailing
-        }
-      }
-      if let sub {
-        Text(sub)
-          .virgaText(size: theme.points(ThemeKit.cardSubFontSize))
-          .foregroundStyle(theme.color(ThemeKit.cardSubInk))
-          .fixedSize(horizontal: false, vertical: true)
-          .frame(maxWidth: theme.measure, alignment: .leading)
+    Group {
+      if theme.isPhone {
+        phone
+      } else {
+        wide
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
+  }
+
+  /// From 561 up: the title and its line in one column, taking what the
+  /// tools leave beside them on the title's baseline; the tools go under
+  /// the words only when that column would be narrower than 16rem. A
+  /// Segmented's 44-point keys reach out 13 above and below, so the title's
+  /// line keeps its height.
+  private var wide: some View {
+    let gap = theme.gap(ThemeKit.cardHeadGap)
+    return BesideOrUnder(minLead: Measure.Section.titleMinWidth, columnGap: gap.column, rowGap: gap.row, baseline: true) {
+      VStack(alignment: .leading, spacing: theme.points(ThemeKit.cardSubSpaceAbove)) {
+        titleText
+        subText
+      }
+      if let trailing {
+        tools(trailing)
+          .padding(.vertical, segmented ? -Measure.Segmented.headLift : 0)
+      }
+    }
+  }
+
+  /// At 560 and under: the title with what is at its right centred beside
+  /// it, the line under the title across the whole width beneath both, and
+  /// a small Segmented on a row of its own under that, 8 down.
+  private var phone: some View {
+    VStack(alignment: .leading, spacing: 0) {
+      if let trailing, !segmented {
+        HStack(alignment: .center, spacing: Measure.Section.phoneHeadGap) {
+          titleText
+          Spacer(minLength: 0)
+          tools(trailing)
+        }
+      } else {
+        titleText
+      }
+      subText
+        .padding(.top, theme.points(ThemeKit.cardSubSpaceAbove))
+      if let trailing, segmented {
+        tools(trailing)
+          .padding(.top, Measure.Segmented.headSpaceAbove)
+      }
+    }
+  }
+
+  private func tools(_ trailing: AnyView) -> some View {
+    trailing
+      .onPreferenceChange(HoldsSegmentedKey.self) { holds in
+        if segmented != holds { segmented = holds }
+      }
+  }
+
+  private var titleText: some View {
+    Text(title)
+      .virgaText(
+        size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, lineHeight: ThemeKit.headingLineHeight,
+        tracking: ThemeKit.cardTitleTracking)
+      .foregroundStyle(theme.ink)
+      .fixedSize(horizontal: false, vertical: true)
+      .accessibilityAddTraits(.isHeader)
+  }
+
+  @ViewBuilder private var subText: some View {
+    if let sub {
+      Text(sub)
+        .virgaText(size: theme.points(ThemeKit.cardSubFontSize))
+        .foregroundStyle(theme.color(ThemeKit.cardSubInk))
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: theme.measure, alignment: .leading)
+    }
   }
 }
 
@@ -95,6 +152,7 @@ public struct VirgaSection<Content: View>: View {
         }
       }
       content
+        .environment(\.virgaUnderRuledHead, flush && title != nil)
       if let caption {
         Text(caption)
           .virgaText(.textSm)
@@ -109,19 +167,34 @@ public struct VirgaSection<Content: View>: View {
 }
 
 /// `.card-foot`: under a list, a quiet action first and a count at the right.
+/// A ghost button first ("Show 30 more") is let out by its own padding and
+/// edge (`letOut`: its size), so its words sit on the section's edge.
 public struct SectionFoot<Leading: View>: View {
   @Environment(\.virgaTheme) private var theme
   private let leading: Leading
   private let count: String?
+  private let letOut: KitSize?
 
-  public init(count: String? = nil, @ViewBuilder leading: () -> Leading) {
+  /// - Parameter letOut: the size of the ghost button `leading` starts with
+  ///   (`.card-foot > .btn--ghost:first-child`), nil for anything else.
+  public init(count: String? = nil, letOut: KitSize? = nil, @ViewBuilder leading: () -> Leading) {
     self.count = count
+    self.letOut = letOut
     self.leading = leading()
+  }
+
+  /// `margin-left: -17px` (medium), `-13px` (small): the button's padding
+  /// and its 1-point edge.
+  private var lead: CGFloat {
+    guard let letOut else { return 0 }
+    let padding = letOut == .small ? ThemeKit.smallButtonPadding.left : ThemeKit.buttonPadding.left
+    return theme.points(padding) + theme.points(ThemeKit.buttonBorder)
   }
 
   public var body: some View {
     HStack(spacing: theme.space3) {
       leading
+        .padding(.leading, -lead)
       Spacer(minLength: 0)
       if let count {
         Text(count).virgaText(.textSm).foregroundStyle(theme.muted)
@@ -169,7 +242,7 @@ public struct VirgaRow<Words: View, Actions: View>: View {
     }
     .padding(.vertical, pad)
     .overlay(alignment: .bottom) {
-      Rectangle().fill(theme.line).frame(height: 1)
+      Rectangle().fill(theme.line).frame(height: Measure.Section.hairline)
     }
   }
 }
