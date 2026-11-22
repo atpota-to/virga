@@ -329,21 +329,30 @@
       "synced": "9ce1436bac34"
     },
     "src/posting/pages/hub.css": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateMeasures.swift",
         "ios/VirgaKit/Sources/VirgaUI/Posting/TemplatesPage.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Posting/PostingParts.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostingParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/HubMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/HubParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/HubPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/DraftsPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostedPage.swift"
       ],
-      "note": "The Templates page (.hub-row, .tpl-row-item with Use and the ⋯ on the name's line, .tpl-name, .tpl-shortcut-chip, .tpl-chip as a tint, .tpl-group-head), the notice, the empty block, the bones (.hub-skeleton, .hub-bone) and the error. Not yet: the overview's columns and nav, the timed rows, the quotes and the spinner, which come with their pages.",
+      "note": "The Templates page (.hub-row, .tpl-row-item with Use and the ⋯ on the name's line, .tpl-name, .tpl-shortcut-chip, .tpl-chip as a tint, .tpl-group-head), the notice, the empty block, the bones (.hub-skeleton, .hub-bone) and the error, in Measure.Templates; the overview (.posting-nav and its counts, .hub-columns one column from 1180 down, .hub-card's notice, the timed rows' day over hour in the time column and their phone line, the failed day in red, .hub-inline-action with a finger's reach, .hub-row--open), the posts' and drafts' rows (.hub-row-text two lines, a draft's three, .hub-row-link, .hub-row-why and .hub-row-note, the corner ⋯ on a phone), .hub-quote, .hub-confirm and .hub-spinner, in Measure.Hub.",
       "synced": "428ed1747963"
     },
     "src/posting/pages/schedule.css": {
       "status": "partial",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaUI/Posting/LifespanRuleEditor.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Posting/LifespanRuleEditor.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/HubMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/TimersPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/TimerDialog.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/DraftsPage.swift"
       ],
-      "note": "The timer's rule editor (.lifespan-editor, .lse-*: the switch row, the blocks and their legends, the chips, Other…'s fields, the sub-questions, the condition rows, the checks, the spare row, the sentence), in Measure.Lifespan. The scheduling pages' own come with them.",
+      "note": "The timer's rule editor (.lifespan-editor, .lse-*: the switch row, the blocks and their legends, the chips, Other…'s fields, the sub-questions, the condition rows, the checks, the spare row, the sentence), in Measure.Lifespan. The Timers page and the timer dialog (.sched-page's closing lines, .sched-timer rows, .sched-rule, .sched-row-why, .sched-acted and its marks, .sched-settled under a rule in ink, .sched-confirm; .timer-dialog full height on a phone, .timer-dialog-body, .sched-quote, .sched-dialog-skeleton, .lse-sub) and Schedule this draft's buttons one under another on a phone (.when-dialog), in Measure.Hub. The scheduling pages' own come with them.",
       "synced": "6e4ceba4938b"
     },
     "src/posting/posting.css": {
