@@ -382,8 +382,8 @@ THE POSTING PAGES (Posting/: HubPage, DraftsPage, PostedPage, TimersPage, TimerD
   `HubCornerRow(words:button:menu:)` (`.has-corner-menu`: on a phone the ⋯ in the row's top corner and the
   button under the words), `DraftsRowMenu` (the ⋯, a `HubSpinner` while the row works), `HubQuote`, and
   `PostingPagesError` (a sentence a page throws to its dialog, which shows it).
-- `.postTimerDialog($post, did:onArmed:)` is TimerDialog.jsx (`PostTimerDialog`: the composer's
-  stand-in already holds the name TimerDialog), over a `PostTimerTarget` (uri, cid, extraUris, text,
+- `.postTimerDialog($post, did:onArmed:)` is TimerDialog.jsx (`PostTimerDialog`, beside the
+  composer's own `LifespanDialog`, COMPOSER TIMER below), over a `PostTimerTarget` (uri, cid, extraUris, text,
   postedAt, reply; nil reply or postedAt is the web's undefined and is read from Bluesky).
   `PostTimerTarget(arm)` takes a scheduled post's timer note (ScheduleModel.TimerNoteArm), for the
   Scheduled page's "Set a timer" (SCHEDULING above). `onArmed` hears the armed row after the sheet has
@@ -416,6 +416,48 @@ THE POSTING PAGES (Posting/: HubPage, DraftsPage, PostedPage, TimersPage, TimerD
   in timerRowModel) is left out where the web's page would fail. The web shows
   no PostPreview on the posted or scheduled rows (only in the composer's dialogs, a quote's card, the
   reply's context and the library), so neither does the app.
+
+COMPOSER TIMER (Composer/ComposerController+Timer.swift, Composer/LifespanDialog.swift)
+- The post's timer is the state's `lifespan`; `model.lifespanTouched` (ComposerStateModel) says the writer
+  chose it. Every line that reaches the timer from the composer's other files is marked `TIMER`.
+- `timerFit` is composerTimerFit (a reply can't limit replies; without a long session there's no timer).
+  `defaultTimer` is ComposerDefaults.defaultTimerFor over the settings' `lifespan`, `caps.canSchedule`, the
+  limits as `controller.limits` has them (loading until read for the account) and the fit's `available`.
+- The web's effect on `[defaultTimer, generation]` is ComposerBody's
+  `.onChange(of: controller.defaultTimerKey, initial: true)` (`ComposerDefaultTimerKey`): `applyDefaultTimer()`
+  puts the default on a post whose timer the writer hasn't chosen, whenever the default changes (the limits
+  read, the account, a reply, the session) or a state is loaded (`generation`). It runs while the sheet is up,
+  which is the only time the post is seen; a state loaded while it's down takes the default as it opens.
+- `timerNote` (why the default is off; once chosen, timerNeedsServer or timerRoomProblem with the scheduled
+  row's `holds`) is a FieldHint under the post's settings while the post has no timer
+  (`composer-timer-note`), and the Timer button's `.help` and VoiceOver hint (the web's `title`).
+- `LifespanDialog(value:fit:publishAt:limits:did:holds:note:transport:onSave:onClose:)` is ComposerDialogs.jsx's
+  LifespanDialog over THE POSTING PAGES' `LifespanRuleEditor`: the rule is a `@State` set from the post's as
+  the sheet is presented (useResetOnOpen: the composer redrawing underneath doesn't reset it), the note a warn
+  Callout over the editor, Cancel, and Done (`saveTimer`: touched, then setLifespan). The sheet takes the whole
+  height (`ComposerDialog.timer.isTall`). Identifiers: `lifespan-dialog`, `lifespan-dialog-note`,
+  `lifespan-dialog-cancel`, `lifespan-dialog-done`, and the editor's own (`lifespan-editor`,
+  `lifespan-sentence`); the editor's switch is found by its label, "Put a timer on this post".
+- Posting now (submitPost): validateComposer's lifespanProblem is immediateTimerProblem where a timer can be
+  set; `askNoFreeTimer` reads the limits again and asks "No free timer" (`ask-edit`, `ask-without`: Post
+  without it turns the timer off and marks it chosen); after the adviser, `timerChecked` throws a passed set
+  time's sentence (a `JSError`, said under the post) and turns the timer off without a server. Once the post is
+  out, `armAfterPublish(s, result)` arms it through TimerService.armAfterPublish over the root post's account's
+  `VirgaBackend`, with the fit as it is then, the first post's snippet and the first record's `createdAt`; it
+  isn't waited for: an adjustment's note is a toast, a failure "Your post went out, but without its timer."
+  with the error's message (danger, `Measure.Schedule.warningToastSeconds`), and the limits are read again.
+- Save as draft's toast starts its notes with draftTimerNote (the default as the save began). A scheduled
+  post's timer is submitSchedule's (SCHEDULING above: its own No free timer, scheduledTimerProblem,
+  serializeForSchedule's fit), unchanged; a scheduled post opened to edit loads touched, so the default never
+  replaces its timer.
+- ComposerTimerUITests (`testATimerOnAPostFromTheComposer`, no archive build): a new post's Timer, the dialog,
+  the switch on and 6 hours, Done, the post sent, and Posting › Timers listing it (`composer-timer-none`,
+  `composer-timer-dialog`, `composer-timer-editor`, `composer-timer-set`, `composer-timer-posted`,
+  `composer-timer-on-timers`; `composer-timer-no-free-timer` and `composer-timer-not-armed` if the demo says
+  so), each `-ipad` on the iPad.
+- Deliberate difference: Done on a rule left as it was sets `lifespanTouched` but writes nothing, since the
+  model keeps a state only when it changes (the web's reducer always makes a new state, so its autosave writes
+  the touched flag at once); the flag is written with the next change.
 
 SHELL, ROUND 6
 - `ShellActions` (in the shell's environment): `creatingDashboard` opens the shell's
@@ -534,8 +576,8 @@ LIVE SKY (Sky/, and VirgaCore/Hillside/ for everything that isn't drawing)
 ## Known gaps and deliberate differences
 
 - Left for later steps: dragging cards, a card's settings dialog, the dashboard cards and reports not listed
-  above, ChartNotes and the charts' notes and milestones; of posting, what the composer's entries
-  (Composer.jsx, ComposerDialogs.jsx) list, its own timer among it, every posting page being in;
+  above, ChartNotes and the charts' notes and milestones; of posting, what the composer's entry
+  (Composer.jsx) lists, its timer and every posting page being in;
   "Keep it when space runs low" (iOS has nothing to ask).
 - Copy is the web's word for word, including words that only fit a browser ("This
   browser's region", "Forget X on this browser", "Saving the repo to this browser"). Worth
