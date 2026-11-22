@@ -26,18 +26,23 @@ public struct SegmentedOption<Value: Hashable>: Identifiable {
   public var systemImage: String?
   /// What VoiceOver reads instead of the label (the web's aria-label).
   public var accessibilityLabel: String?
+  /// What the key means, read by VoiceOver after its name (the web's
+  /// `title`, the browser's tooltip: "Posts per week" for Weekly).
+  public var hint: String?
   /// The glyph alone, its words kept as its name (a phone's Custom key).
   public var iconOnly: Bool
 
   public var id: Value { value }
 
   public init(
-    _ value: Value, _ label: String, systemImage: String? = nil, accessibilityLabel: String? = nil, iconOnly: Bool = false
+    _ value: Value, _ label: String, systemImage: String? = nil, accessibilityLabel: String? = nil, hint: String? = nil,
+    iconOnly: Bool = false
   ) {
     self.value = value
     self.label = label
     self.systemImage = systemImage
     self.accessibilityLabel = accessibilityLabel
+    self.hint = hint
     self.iconOnly = iconOnly
   }
 }
@@ -80,6 +85,7 @@ public struct Segmented<Value: Hashable>: View {
     .padding(.horizontal, -Measure.Touch.segmentedReach)
     .accessibilityElement(children: .contain)
     .accessibilityLabel(label)
+    .preference(key: HoldsSegmentedKey.self, value: true)
   }
 
   private var keys: some View {
@@ -105,20 +111,22 @@ struct SegmentedKey<Value: Hashable>: View {
     let underline = theme.isHighContrast ? ThemeKit.highContrastSegmentedOnUnderline : ThemeKit.segmentedOnUnderline
     let lineWidth = abs(theme.points(underline.first?.y ?? .px(-2)))
     Button(action: action) {
-      HStack(spacing: theme.points(ThemeKit.linkActionGap)) {
+      HStack(spacing: Measure.Segmented.keyGap) {
         if let image = option.systemImage {
           Image(systemName: image)
-            .font(.system(size: theme.points(ThemeKit.segmentedIconSize)))
+            .virgaGlyph(theme.points(ThemeKit.segmentedIconSize), beside: fontSize)
         }
         // The word in bold holds the key's width, so pressing doesn't nudge
         // the keys beside it.
         if !(option.iconOnly && option.systemImage != nil) {
           ZStack {
             Text(option.label)
-              .virgaText(size: fontSize, weight: ThemeKit.segmentedOnWeight)
+              .virgaText(size: fontSize, weight: ThemeKit.segmentedOnWeight, lineHeight: Measure.Lines.segmentedKey)
               .hidden()
             Text(option.label)
-              .virgaText(size: fontSize, weight: isOn ? ThemeKit.segmentedOnWeight : ThemeKit.segmentedKeyWeight)
+              .virgaText(
+                size: fontSize, weight: isOn ? ThemeKit.segmentedOnWeight : ThemeKit.segmentedKeyWeight,
+                lineHeight: Measure.Lines.segmentedKey)
           }
         }
       }
@@ -134,10 +142,14 @@ struct SegmentedKey<Value: Hashable>: View {
       }
       .touchReach(horizontal: Measure.Touch.segmentedReach, vertical: 0)
       .animation(theme.motion.control, value: isOn)
+      // Where the pressed key is, for a row that scrolls to bring it clear
+      // of the fade (ScrollRow).
+      .scrollRowFocus(isOn)
     }
     .buttonStyle(.plain)
     .virgaFocusOutline(RoundedRectangle(cornerRadius: theme.radiusSm), placement: .inside)
     .accessibilityLabel(option.accessibilityLabel ?? option.label)
+    .accessibilityHint(option.hint ?? "")
     .accessibilityAddTraits(isOn ? [.isSelected] : [])
   }
 }

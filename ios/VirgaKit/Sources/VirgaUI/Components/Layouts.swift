@@ -86,10 +86,110 @@ public struct FlowLayout: Layout {
   }
 }
 
+/// Two views: the first takes the room the second leaves beside it at its
+/// own width, and when that room would be narrower than `minLead` (or the
+/// whole width, if that is less) the second goes under the first, at its
+/// start, `rowGap` below: a wrapping flex row whose first item is
+/// `flex: 1 1 <basis>` and whose second is `flex: none` (a section's
+/// heading and its tools, a page's words and its controls). Beside, the
+/// two share their first text baseline (`align-items: baseline`) or their
+/// tops.
+struct BesideOrUnder: Layout {
+  var minLead: CGFloat
+  var columnGap: CGFloat
+  var rowGap: CGFloat
+  var baseline: Bool
+
+  struct Plan {
+    var beside = true
+    var lead = CGSize.zero
+    var trail = CGSize.zero
+    var leadY: CGFloat = 0
+    var trailY: CGFloat = 0
+    var height: CGFloat = 0
+  }
+
+  func plan(width: CGFloat?, subviews: Subviews) -> Plan {
+    var out = Plan()
+    guard let first = subviews.first else { return out }
+    guard subviews.count > 1 else {
+      out.lead = first.sizeThatFits(ProposedViewSize(width: width, height: nil))
+      out.height = out.lead.height
+      return out
+    }
+    let second = subviews[1]
+    let trailIdeal = second.sizeThatFits(.unspecified)
+    let room = width.map { $0 - trailIdeal.width - columnGap }
+    if let width, let room, room < min(minLead, width) {
+      out.beside = false
+      out.lead = first.sizeThatFits(ProposedViewSize(width: width, height: nil))
+      out.trail = second.sizeThatFits(ProposedViewSize(width: width, height: nil))
+      out.trailY = out.lead.height + rowGap
+      out.height = out.trailY + out.trail.height
+      return out
+    }
+    let leadProposal = ProposedViewSize(width: room, height: nil)
+    out.lead = first.sizeThatFits(leadProposal)
+    out.trail = trailIdeal
+    if baseline {
+      let leadLine = first.dimensions(in: leadProposal)[VerticalAlignment.firstTextBaseline]
+      let trailLine = second.dimensions(in: .unspecified)[VerticalAlignment.firstTextBaseline]
+      if leadLine >= trailLine { out.trailY = leadLine - trailLine } else { out.leadY = trailLine - leadLine }
+    }
+    out.height = max(out.leadY + out.lead.height, out.trailY + out.trail.height)
+    return out
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    let plan = plan(width: proposal.width, subviews: subviews)
+    let width = proposal.width ?? (plan.lead.width + (subviews.count > 1 ? columnGap + plan.trail.width : 0))
+    return CGSize(width: width, height: plan.height)
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    let plan = plan(width: bounds.width, subviews: subviews)
+    guard let first = subviews.first else { return }
+    first.place(
+      at: CGPoint(x: bounds.minX, y: bounds.minY + plan.leadY),
+      proposal: ProposedViewSize(width: plan.lead.width, height: plan.lead.height))
+    guard subviews.count > 1 else { return }
+    let x = plan.beside ? bounds.maxX - plan.trail.width : bounds.minX
+    subviews[1].place(
+      at: CGPoint(x: x, y: bounds.minY + plan.trailY),
+      proposal: ProposedViewSize(width: plan.trail.width, height: plan.trail.height))
+  }
+}
+
+/// Said by a Segmented, for the heading or the header it sits in to place
+/// it as the stylesheets place `> .segmented`.
+struct HoldsSegmentedKey: PreferenceKey {
+  static let defaultValue = false
+  static func reduce(value: inout Bool, nextValue: () -> Bool) {
+    value = value || nextValue()
+  }
+}
+
+/// Said by a primary button, for a phone's header to put a lone one (the
+/// dashboard's Done) beside the title, as `.btn--primary:only-child`.
+struct HoldsPrimaryButtonKey: PreferenceKey {
+  static let defaultValue = false
+  static func reduce(value: inout Bool, nextValue: () -> Bool) {
+    value = value || nextValue()
+  }
+}
+
 /// Which edges of a sideways row have more behind them.
 struct OverflowEdges: Equatable {
   var start = false
   var end = false
+}
+
+/// What a sideways row has measured: its width, its content's, and where
+/// its chosen item is.
+struct RowMeasures: Equatable {
+  var viewport: CGFloat
+  var whole: CGFloat
+  var focus: CGRect?
 }
 
 private struct RowFrameKey: PreferenceKey {
@@ -99,17 +199,47 @@ private struct RowFrameKey: PreferenceKey {
   }
 }
 
+/// Where a sideways row's chosen item is, in the row's own space.
+private struct RowFocusFrameKey: PreferenceKey {
+  static let defaultValue: CGRect? = nil
+  static func reduce(value: inout CGRect?, nextValue: () -> CGRect?) {
+    value = nextValue() ?? value
+  }
+}
+
+/// The name of a ScrollRow's own space, in which its items say where they are.
+let scrollRowSpace = "scroll-row"
+
+extension View {
+  /// Marks this item of a ScrollRow as the one to bring into view (the
+  /// pressed key, `[aria-pressed='true']`) when `isChosen`.
+  public func scrollRowFocus(_ isChosen: Bool) -> some View {
+    background {
+      if isChosen {
+        GeometryReader { geometry in
+          Color.clear.preference(key: RowFocusFrameKey.self, value: geometry.frame(in: .named(scrollRowSpace)))
+        }
+      }
+    }
+  }
+}
+
 /// `.scroll-row`: one line that scrolls sideways when it doesn't fit,
 /// without a scroll bar, fading the edges with more behind them. `focus`
-/// (an item's id, given with `.id(_:)` inside) is brought into view, clear
-/// of the fade, when the row appears.
+/// (an item's id, given with `.id(_:)` inside, and marked with
+/// `.scrollRowFocus(true)`) is brought into view when the row appears, as
+/// useOverflowEdge does: only when it is under the fade, and only far
+/// enough to clear it by 24 points.
 public struct ScrollRow<Content: View>: View {
   @Environment(\.virgaTheme) private var theme
   @State private var viewport: CGFloat = 0
+  @State private var whole: CGFloat = 0
+  @State private var focusFrame: CGRect?
+  @State private var brought = false
   @State private var edges = OverflowEdges()
   private let focus: AnyHashable?
   private let content: Content
-  private let space = "scroll-row"
+  private let space = scrollRowSpace
 
   public init(focus: AnyHashable? = nil, @ViewBuilder content: () -> Content) {
     self.focus = focus
@@ -137,12 +267,35 @@ public struct ScrollRow<Content: View>: View {
       .onPreferenceChange(RowFrameKey.self) { frame in
         let next = OverflowEdges(start: frame.minX < -1, end: frame.maxX > viewport + 1)
         if next != edges { edges = next }
+        if whole != frame.width { whole = frame.width }
+      }
+      .onPreferenceChange(RowFocusFrameKey.self) { frame in
+        if focusFrame != frame { focusFrame = frame }
+      }
+      .onChange(of: RowMeasures(viewport: viewport, whole: whole, focus: focusFrame), initial: true) { _, _ in
+        bring(proxy)
       }
       .mask(fade)
-      .onAppear {
-        if let focus { proxy.scrollTo(focus, anchor: .center) }
-      }
     }
+  }
+
+  /// useOverflowEdge on mount: with the row at its start, a chosen item
+  /// whose end is under the far fade is scrolled to end 24 points short of
+  /// the row's edge; one already clear of it stays where it is.
+  private func bring(_ proxy: ScrollViewProxy) {
+    guard !brought, let focus, let frame = focusFrame, viewport > 0, whole > 0 else { return }
+    brought = true
+    let spare = Measure.Segmented.spare
+    guard whole > viewport, frame.maxX > viewport - spare else { return }
+    let room = viewport - frame.width
+    guard room > 0 else {
+      proxy.scrollTo(focus, anchor: .leading)
+      return
+    }
+    // scrollTo lines the item's point at `x` of its width up with the same
+    // point of the row's: its end lands `spare` short of the row's end.
+    let x = min(1, max(0, (viewport - spare - frame.width) / room))
+    proxy.scrollTo(focus, anchor: UnitPoint(x: x, y: 0.5))
   }
 
   /// ThemeKit.scrollFadeWidth: black from 24 points in, at the edges with more.

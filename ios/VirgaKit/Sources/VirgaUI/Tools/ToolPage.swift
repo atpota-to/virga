@@ -193,8 +193,9 @@ struct ToolRow: View {
     return FlowLayout(spacing: 0, lineSpacing: 0, alignment: .center) {
       AccessLine([tool.access], prefix: planned ? "Not built yet." : nil)
       if !planned, let stat, !stat.isEmpty {
+        // The access item's 5-point gap and the dot's own 1: 6 after the word.
         Text("·")
-          .padding(.leading, theme.points(ThemeKit.metaDotMargin.left))
+          .padding(.leading, theme.points(ThemeKit.metaItemGap) + theme.points(ThemeKit.metaDotMargin.left))
           .padding(.trailing, theme.points(ThemeKit.metaDotMargin.right))
           .accessibilityHidden(true)
         Text(stat)

@@ -52,6 +52,53 @@ public enum Measure {
     /// `.link-action::after, .more-link::after { inset: -13px -6px }`
     public static let reachAbove: CGFloat = 13
     public static let reachSides: CGFloat = 6
+    /// `.link-action, .more-link { line-height: 1.45 }`
+    public static let lineHeight: Double = 1.45
+    /// `.link-action { text-decoration-thickness: 1px }`; 2px while what it
+    /// opens is open (`[aria-expanded='true']`) and under the pointer.
+    public static let underline: CGFloat = 1
+    public static let heavyUnderline: CGFloat = 2
+  }
+
+  /// controls.css's controls whose words are one line in a box of their own.
+  public enum Lines {
+    /// `.btn { line-height: 1 }`
+    public static let button: Double = 1
+    /// `.segmented-key { line-height: 1 }`
+    public static let segmentedKey: Double = 1
+    /// `.token { line-height: 1.2 }`
+    public static let token: Double = 1.2
+  }
+
+  public enum Avatar {
+    /// The most of the disc its letter may take under Dynamic Type.
+    public static let letterShare: CGFloat = 0.5
+  }
+
+  public enum Token {
+    /// `.token { border: 1px solid var(--line-2); font-size: var(--text-sm); font-weight: 500 }`
+    public static let border: CGFloat = 1
+    public static let fontSize: ThemeToken = .textSm
+    public static let weight: Double = 500
+  }
+
+  public enum Badge {
+    /// `.badge { border: 1px solid transparent }`: an edge that only forced
+    /// colours draw, there in the pill's size all the same.
+    public static let border: CGFloat = 1
+  }
+
+  public enum Segmented {
+    /// `.segmented-key { gap: 6px }`: a key's glyph to its word.
+    public static let keyGap: CGFloat = 6
+    /// Segmented.jsx's SPARE: how far clear of the fade a key is scrolled
+    /// when it is pressed under it.
+    public static let spare: CGFloat = 24
+    /// `.card-head > .segmented { margin-top: 8px }` at 560 and under, and
+    /// `margin-block: -13px` on touch from 561 up, so the 44 keys don't
+    /// make the title's line taller.
+    public static let headSpaceAbove: CGFloat = 8
+    public static let headLift: CGFloat = 13
   }
 
   public enum Touch {
@@ -67,12 +114,35 @@ public enum Measure {
   public enum Field {
     /// `.search > svg { width: 16px }`
     public static let searchIcon: CGFloat = 16
+    /// `select.input { padding-right: 30px }` with its chevron, two 5px
+    /// halves drawn 11 to 21 in from the right edge: the system's chevron at
+    /// about that size, 11 in, and room for it before the words stop.
+    public static let selectChevron: CGFloat = 9
+    public static let selectChevronInset: CGFloat = 11
+    public static let selectChevronGap: CGFloat = 9
+    /// What a TextEditor's own text view keeps inside it (UITextView's
+    /// textContainerInset, 8 above and below, and lineFragmentPadding, 5 at
+    /// the sides), which a text area's padding is drawn less of.
+    public static let textEditorInset = EdgeInsets(top: 8, leading: 5, bottom: 8, trailing: 5)
   }
 
   public enum Disclosure {
     /// `.disclosure > summary::before`: a 6px chevron of 1.5px strokes,
     /// drawn as the system's chevron at about its height.
     public static let chevron: CGFloat = 8
+    /// `.disclosure > summary { gap: 8px }`
+    public static let gap: CGFloat = 8
+  }
+
+  /// The browser's own checkbox (`input[type='checkbox']` with
+  /// `accent-color`), drawn: corners of 3, a 1-point edge in --line-2, the
+  /// tick at 60% of the box.
+  public enum Check {
+    public static let radius: CGFloat = 3
+    public static let edge: CGFloat = 1
+    public static let tickShare: CGFloat = 0.6
+    /// A radio's dot, half the ring.
+    public static let radioDotShare: CGFloat = 0.5
   }
 
   public enum Switch {
@@ -85,12 +155,19 @@ public enum Measure {
     /// 128 when there are exactly five.
     public static let minWidth: CGFloat = 168
     public static let fiveMinWidth: CGFloat = 128
+    /// `.figures-note .delta:not(:last-child)::after { margin: 0 6px 0 4px }`
+    public static let noteDotBefore: CGFloat = 4
+    public static let noteDotAfter: CGFloat = 6
   }
 
   public enum Section {
     /// `.card-head > :first-child { min-width: min(100%, 16rem) }`: the title's
     /// least room before its group wraps under it.
     public static let titleMinWidth: CGFloat = 256
+    /// `.card-head:has(> :nth-child(2)) { column-gap: 16px }` at 560 and under.
+    public static let phoneHeadGap: CGFloat = 16
+    /// A list's rows: `border-bottom: 1px solid var(--line)`.
+    public static let hairline: CGFloat = 1
     /// `.empty-block .empty { max-width: 56ch }`
     public static let emptyMeasure: CGFloat = 56
     /// `.card-head .btn--icon { margin-top: -12px }` on touch: a 44 icon over the title's line.
@@ -101,8 +178,14 @@ public enum Measure {
     public static let selectedRowBleed: CGFloat = 10
     /// `.callout svg { width: 16px; margin-top: 2px }`
     public static let calloutIcon: CGFloat = 16
+    public static let calloutIconSpaceAbove: CGFloat = 2
     /// `.info-tip-pop { top: calc(100% + 6px) }`, an info tip's glyph 13.
     public static let infoTipIcon: CGFloat = 13
+    /// `.info-tip-pop { line-height: 1.45 }`
+    public static let infoTipLineHeight: Double = 1.45
+    /// The touch block's `.info-tip-button { margin: -8px -6px }`: the 32
+    /// button laid out 6 narrower at each side and 8 shorter at each end.
+    public static let infoTipLetOut = CGSize(width: 6, height: 8)
   }
 
   // MARK: shell.css
@@ -200,9 +283,12 @@ public enum Measure {
 
   /// dashboards.css.
   public enum Dashboard {
-    /// `.stat { gap: 8px; padding-top: 16px; border-top: 2px }`, its head
-    /// 8 apart, the label's glyph 14 and 6 from its words, the number's
-    /// line 16 from the trend (`.stat-value { letter-spacing: -0.04em }`).
+    /// `.stat { gap: 8px; padding-top: 16px; border-top: 2px }` (12 at 560
+    /// and under, which the dashboards' own measures hold), its head 8
+    /// apart, the label's glyph 14 and 6 from its words, the number's line
+    /// 16 from the trend (`.stat-value { letter-spacing: -0.04em }`). A
+    /// report tile's padding (reports.css `.report-tile`) is 16 at every
+    /// width.
     public static let statGap: CGFloat = 8
     public static let statPaddingTop: CGFloat = 16
     public static let statHeadGap: CGFloat = 8
@@ -213,12 +299,14 @@ public enum Measure {
     public static let noteGap: CGFloat = 6
     public static let sparkMinWidth: CGFloat = 48
     public static let sparkMaxWidth: CGFloat = 120
-    /// A card's head: its title, the way to the full report, 12 above its body.
+    /// A list card's head (`.widget--list > .widget-head { padding-bottom:
+    /// 12px; border-bottom: 1px solid var(--rule) }`): 12 above its rule. Any
+    /// other card's head is the kit's (ThemeKit.cardHeadSpaceBelow, 16).
     public static let headGap: CGFloat = 12
     /// Customize: the dashed outline (1, dashes 4 3), a line of the arrange
-    /// list at least 56 tall.
+    /// list at least 52 tall (`.arrange-line { min-height: 52px }`).
     public static let editDash: [CGFloat] = [4, 3]
-    public static let arrangeRowHeight: CGFloat = 56
+    public static let arrangeRowHeight: CGFloat = 52
     /// The grid's column gap on a phone (`.dash-grid { column-gap: 20px }`).
     public static let phoneColumnGap: CGFloat = 20
     /// Where the grid narrows (`@container dash`): from 860 down a third
@@ -276,8 +364,9 @@ public enum Measure {
     /// `.an-tableview-scroll { max-height: 20rem }`, 8 under the foot.
     public static let tableMaxHeight: CGFloat = 320
     public static let tableSpaceAbove: CGFloat = 8
-    /// `.an-tableview .table { min-width: min(100%, 28rem) }`
-    public static let tableMinWidth: CGFloat = 280
+    /// `.an-tableview .table { min-width: min(100%, 28rem) }`: 28rem, held
+    /// to the column by TableScroll.
+    public static let tableMinWidth: CGFloat = 448
     /// `.chart-foot { gap: 8px 24px; margin-top: var(--space-3) }`
     public static let footGap: CGFloat = 24
     public static let footLineGap: CGFloat = 8
@@ -431,6 +520,11 @@ public enum Measure {
     public static let rowGap: CGFloat = 16
     public static let columnGap: CGFloat = 32
     public static let textGap: CGFloat = 6
+    /// `.page-header-text { flex: 1 1 320px }`: the words' least room before
+    /// the controls go under them.
+    public static let wordsBasis: CGFloat = 320
+    /// `.page-header-row { gap: 12px }` at 560 and under.
+    public static let phoneRowGap: CGFloat = 12
     /// `.page-sub, .page-access { max-width: 68ch }`
     public static let subMeasure: CGFloat = 68
     /// `.page-actions { gap: 12px 32px }`; 16 on a phone.
@@ -472,6 +566,8 @@ public enum Measure {
     public static let choicePadding = EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 0)
     public static let choiceGap: CGFloat = 12
     public static let choiceRule: CGFloat = 2
+    /// `.choice input { margin-top: 3px }`
+    public static let choiceInputSpaceAbove: CGFloat = 3
   }
 
   public enum Toast {

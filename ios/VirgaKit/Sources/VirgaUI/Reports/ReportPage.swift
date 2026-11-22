@@ -33,11 +33,7 @@ enum ReportParts {
     let shown = value.map { ChartFormat.fmtFigure($0, decimals: decimals) + unit }
     let note: AnyView?
     if delta != nil || sub != nil {
-      note = AnyView(
-        HStack(spacing: 6) {
-          if let delta { DeltaView(pct: delta, title: deltaTitle) }
-          if let sub { Text(sub) }
-        })
+      note = AnyView(FigureNote(delta: delta, deltaTitle: deltaTitle, words: sub))
     } else {
       note = nil
     }

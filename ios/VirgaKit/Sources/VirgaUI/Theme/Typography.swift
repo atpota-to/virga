@@ -124,6 +124,16 @@ extension VirgaTheme {
     return Font.system(size: points, weight: Self.systemWeight(weight)).monospacedDigit()
   }
 
+  /// The face at `points` already scaled (a size worked out after Dynamic
+  /// Type, such as one held to the room it has), in tabular figures.
+  @MainActor
+  public func font(points: CGFloat, weight: Double = VirgaWeight.regular) -> Font {
+    if hasTypeface, let face = VirgaTypeface.face(size: points, weight: weight) {
+      return Font(face)
+    }
+    return Font.system(size: points, weight: Self.systemWeight(weight)).monospacedDigit()
+  }
+
   /// A type-scale token's face.
   @MainActor
   public func font(_ token: ThemeToken, weight: Double = VirgaWeight.regular) -> Font {
@@ -150,11 +160,34 @@ extension VirgaTheme {
   @MainActor
   public func lineSpacing(size: CGFloat, lineHeight: Double, weight: Double = VirgaWeight.regular) -> CGFloat {
     let points = scaled(size)
-    var natural = points * 1.2
+    return max(0, points * CGFloat(lineHeight) - naturalLine(points: points, weight: weight))
+  }
+
+  /// Half of what a CSS line-height adds to the face's own line (its
+  /// half-leading), at a size of the scale: what goes above and below a
+  /// line for its box to be as tall as a browser's (`line-height × size`).
+  @MainActor
+  public func halfLeading(size: CGFloat, lineHeight: Double, weight: Double = VirgaWeight.regular) -> CGFloat {
+    lineSpacing(size: size, lineHeight: lineHeight, weight: weight) / 2
+  }
+
+  /// Half of what a CSS line-height shorter than the face's own line takes
+  /// from it (a title's 1.1 against Instrument Sans' 1.22), as negative
+  /// padding: the line's box is the browser's, its glyphs reaching past it
+  /// above and below. Zero for a line-height at or over the face's.
+  @MainActor
+  public func overflowingLeading(size: CGFloat, lineHeight: Double, weight: Double = VirgaWeight.regular) -> CGFloat {
+    let points = scaled(size)
+    return min(0, (points * CGFloat(lineHeight) - naturalLine(points: points, weight: weight)) / 2)
+  }
+
+  /// The face's own line at `points` (Instrument Sans: 1.22em).
+  @MainActor
+  func naturalLine(points: CGFloat, weight: Double) -> CGFloat {
     if hasTypeface, let face = VirgaTypeface.face(size: points, weight: weight) {
-      natural = CTFontGetAscent(face) + CTFontGetDescent(face) + CTFontGetLeading(face)
+      return CTFontGetAscent(face) + CTFontGetDescent(face) + CTFontGetLeading(face)
     }
-    return max(0, points * CGFloat(lineHeight) - natural)
+    return points * 1.2
   }
 
   /// Letter-spacing in em (ThemeKit's tracking), in points at a size.
@@ -179,6 +212,22 @@ extension VirgaTheme {
       }
     }
     return ("0" as NSString).size(withAttributes: [.font: UIFont.systemFont(ofSize: points)]).width
+  }
+
+  /// The advance of a space in the face at `size` (scaled by Dynamic Type).
+  @MainActor
+  func spaceWidth(size: CGFloat) -> CGFloat {
+    let points = scaled(size)
+    if hasTypeface, let face = VirgaTypeface.face(size: points, weight: VirgaWeight.regular) {
+      var glyph = CGGlyph(0)
+      var space = UniChar(0x20)
+      if CTFontGetGlyphsForCharacters(face, &space, &glyph, 1) {
+        var advance = CGSize.zero
+        CTFontGetAdvancesForGlyphs(face, .horizontal, &glyph, &advance, 1)
+        return advance.width
+      }
+    }
+    return (" " as NSString).size(withAttributes: [.font: UIFont.systemFont(ofSize: points)]).width
   }
 
   static func systemWeight(_ weight: Double) -> Font.Weight {
@@ -207,6 +256,14 @@ extension VirgaTheme {
 }
 
 /// Text in the type scale: a size, a weight, a CSS line-height and tracking.
+///
+/// The line-height is the body's 1.45 (base.css) unless given: a heading
+/// passes ThemeKit.headingLineHeight (1.25), a control whose words are one
+/// line in a box of its own (a button, a segmented key, a figure's number)
+/// passes 1. SwiftUI adds it between lines only, so a single line keeps the
+/// face's own 1.22; `lineBox` adds the half-leading above and below as
+/// well, for a line whose box's height is what lays it out (a link action,
+/// a more link, a meta line, a table's cell), as a browser's line box is.
 public struct VirgaTextStyle: ViewModifier {
   @Environment(\.virgaTheme) private var theme
   var size: CGFloat?
@@ -214,30 +271,66 @@ public struct VirgaTextStyle: ViewModifier {
   var weight: Double
   var lineHeight: Double?
   var tracking: ThemeLength?
+  var lineBox: Bool = false
 
   public func body(content: Content) -> some View {
     let points = size ?? token.map { theme.points($0) } ?? theme.textBase
+    let line = lineHeight ?? ThemeKit.bodyLineHeight
     content
       .font(theme.font(size: points, weight: weight))
-      .lineSpacing(lineHeight.map { theme.lineSpacing(size: points, lineHeight: $0, weight: weight) } ?? 0)
+      .lineSpacing(theme.lineSpacing(size: points, lineHeight: line, weight: weight))
       .tracking(tracking.map { theme.tracking($0, size: points) } ?? 0)
+      .padding(.vertical, lineBox ? theme.halfLeading(size: points, lineHeight: line, weight: weight) : 0)
+  }
+}
+
+/// A glyph (an SF Symbol) at `size` points, scaled by Dynamic Type as the
+/// words beside it are (a browser grows an icon in rem or em with its text;
+/// the web's lucide glyphs are px, but on iOS a 13-point eye beside words
+/// of 30 reads as a speck).
+public struct GlyphFont: ViewModifier {
+  @Environment(\.virgaTheme) private var theme
+  var size: CGFloat
+  var weight: Font.Weight
+  var words: CGFloat?
+  var upTo: CGFloat?
+
+  public func body(content: Content) -> some View {
+    let style = VirgaTheme.textStyle(for: words ?? size)
+    let points = theme.scaled(size, relativeTo: style)
+    content.font(.system(size: upTo.map { min(points, $0) } ?? points, weight: weight))
   }
 }
 
 extension View {
-  /// The type scale's `token` (theme.textBase by default) at `weight`, with
-  /// a CSS line-height and tracking when given.
-  public func virgaText(
-    _ token: ThemeToken = .textBase, weight: Double = VirgaWeight.regular, lineHeight: Double? = nil, tracking: ThemeLength? = nil
+  /// An SF Symbol at `size` points (and `weight`), grown with Dynamic Type
+  /// as words of `words` points (the glyph's own size by default) are, and
+  /// at most `upTo` (a glyph alone in a box of fixed size).
+  public func virgaGlyph(
+    _ size: CGFloat, weight: Font.Weight = .regular, beside words: CGFloat? = nil, upTo: CGFloat? = nil
   ) -> some View {
-    modifier(VirgaTextStyle(size: nil, token: token, weight: weight, lineHeight: lineHeight, tracking: tracking))
+    modifier(GlyphFont(size: size, weight: weight, words: words, upTo: upTo))
+  }
+
+  /// The type scale's `token` (theme.textBase by default) at `weight`, at a
+  /// CSS line-height (the body's 1.45 unless given) and tracking when given;
+  /// `lineBox` gives a single line the browser's box (its half-leading above
+  /// and below).
+  public func virgaText(
+    _ token: ThemeToken = .textBase, weight: Double = VirgaWeight.regular, lineHeight: Double? = nil, tracking: ThemeLength? = nil,
+    lineBox: Bool = false
+  ) -> some View {
+    modifier(
+      VirgaTextStyle(size: nil, token: token, weight: weight, lineHeight: lineHeight, tracking: tracking, lineBox: lineBox))
   }
 
   /// A size in points (a kit measure already through the theme) at `weight`.
   public func virgaText(
-    size: CGFloat, weight: Double = VirgaWeight.regular, lineHeight: Double? = nil, tracking: ThemeLength? = nil
+    size: CGFloat, weight: Double = VirgaWeight.regular, lineHeight: Double? = nil, tracking: ThemeLength? = nil,
+    lineBox: Bool = false
   ) -> some View {
-    modifier(VirgaTextStyle(size: size, token: nil, weight: weight, lineHeight: lineHeight, tracking: tracking))
+    modifier(
+      VirgaTextStyle(size: size, token: nil, weight: weight, lineHeight: lineHeight, tracking: tracking, lineBox: lineBox))
   }
 }
 #endif

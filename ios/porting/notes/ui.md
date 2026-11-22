@@ -80,7 +80,16 @@ THEME (Theme/)
   `VirgaTheme+Tokens.swift`); `theme.points(ThemeKit.x)`, `theme.color(ThemeKit.x)`,
   `theme.insets(box)`, `theme.shadow(...)`.
 - Type: `theme.font(.textBase, weight:)`, `.virgaText(.textSm, weight:, lineHeight:,
-  tracking:)`, `theme.measure`, `theme.characters(n)`. Instrument Sans is bundled
+  tracking:, lineBox:)`, `theme.measure`, `theme.characters(n)`. A text's line height is
+  the body's 1.45 between lines unless it says otherwise: a heading passes
+  `ThemeKit.headingLineHeight` (1.25), a button or a segmented key `Measure.Lines` (1). SwiftUI
+  adds it between lines only, so a single line keeps the face's own 1.22; `lineBox: true` adds
+  the half-leading above and below too, for a line whose box lays it out (a link action, a more
+  link, a meta line, a table's cell). A line-height under 1.22 (the page title's 1.1, a figure's
+  1) is `.padding(.vertical, theme.overflowingLeading(size:lineHeight:weight:))`, the glyphs
+  reaching past the box. A glyph beside words is `.virgaGlyph(size, beside: wordsSize)`, grown
+  with Dynamic Type as they are; `theme.font(points:)` is a face at points already scaled.
+  Instrument Sans is bundled
   (Resources/Fonts, OFL) and registered from `Bundle.module`; the font is built from a
   CoreText descriptor with the wght axis (400/500/600) and tabular figures, scaled by
   UIFontMetrics; the system font if registration fails.
@@ -97,27 +106,55 @@ THEME (Theme/)
 COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
 - Buttons: `.buttonStyle(.virga(.primary, size: .large, icon:, isOn:, destructive:))` for the
   quiet, primary, ghost and danger tiers in small, medium and large (danger keeps the deep
-  red at night); `.linkAction`; `MoreLink(_, to:)`. The kit's sizes are `KitSize`.
-- `Segmented(label:options:selection:size:)` (scrolls with faded edges, keys held at their
-  bold width), `ChipStyle`, `TokenView`/`TokenRow`, `Badge`, `MetaLine`/`MetaPiece`,
-  `StateDot`, `Avatar`, `AccessLine`.
+  red at night; a button keeps its words, `fixedSize`); `.linkAction` (its own 1-point line
+  at a 3-point offset, 2 while open or pressed; a Label's title is underlined, not its icon);
+  `MoreLink(_, to:)`. The kit's sizes are `KitSize`.
+- `Segmented(label:options:selection:size:)` (scrolls with faded edges, the pressed key
+  brought clear of the fade only when it is under it, keys held at their bold width; an
+  option's web `title` is `SegmentedOption(hint:)`), `ChipStyle`, `TokenView`/`TokenRow`,
+  `Badge`, `MetaLine`/`MetaPiece` (the dot 6 after its word), `StateDot`, `Avatar`,
+  `AccessLine`.
 - `.toggleStyle(.virgaSwitch)` draws the capsule and its knob and no words, as the web's
   `.switch` (its label is VoiceOver's name for it, the web's aria-label; the row beside it
   says what it is, as `SettingsSwitch`'s and the timer editor's rows do: a ToggleStyle
   can't see `.labelsHidden()`, so it once drew its label beside it, "Require alt text"
-  twice); `.virgaCheck` draws its words beside the box. `.virgaField(invalid:size:)`,
-  `.virgaTextArea()`, `FieldStack`, `FieldHint(_, isOver:)`, `SearchField`.
+  twice); `.virgaCheck` draws its words beside the box (16, 8 from them, centred), and
+  `.virgaTermsCheck` is the terms page's (18, 12, top). `.virgaField(invalid:size:)` round
+  `VirgaTextField(prompt, text:)` (a TextField whose placeholder is --muted; a plain
+  `TextField(prompt, text:)` gets the system's pale grey), `.virgaTextArea()` round a
+  TextEditor (its padding less the editor's own insets) or `.virgaTextArea(editor: false)`
+  round a `TextField(axis: .vertical)`, which has none, `FieldStack`,
+  `FieldHint(_, isOver:)`, `SearchField`, `VirgaSelect(label, selection:, options:
+  [SelectChoice])` for select.input (a Picker in virgaField draws its value in the accent,
+  centred, on two lines).
 - Menus: `MoreMenu`/`VirgaMenu` over `[MenuEntry]` (`.item(MenuItem(...))`, `.separator`),
-  a native Menu.
-- `.virgaDialog(isPresented:title:size:) { } actions: { }` (a sheet), `InfoTip`,
-  `FollowerCountTip`, `Callout(tone:)`, `EmptyState`, `NoteText`, `ProgressLine(value:)`,
+  a native Menu; each item's icon comes coloured (--ink-2, or the system red of a destructive
+  item's words), since a native menu tints a plain image with the window's accent.
+- `.virgaDialog(isPresented:title:size:stackActions:autofocus:) { } actions: { }` (a sheet;
+  `stackActions` puts a phone's buttons one under the other, the last given first;
+  `autofocus: true` focuses, when it opens, the field marked `.dialogAutofocus()`, the web's
+  `[data-autofocus]`: the focus state is the dialog's, inside the sheet, since a caller's
+  `@FocusState` outside the sheet doesn't reach a field inside it), `DialogFrame` (the same),
+  `ChoiceRow(_, description:, isOn:, kind: .radio | .check)` (rows share one hairline),
+  `InfoTip` (laid out 20 × 16, pressed through 44), `FollowerCountTip`, `Callout(tone:)`,
+  `EmptyState` (16 under a flush section's rule), `NoteText`, `ProgressLine(value:)`,
   `Disclosure`.
-- Data: `FiguresView([FigureItem])`, `DeltaView(pct:)` (ChartFormat.deltaText),
-  `DataTable(columns:rows:selected:)`.
+- Data: `FiguresView([FigureItem])` (a line of cells shares its label, number and note rows),
+  `FigureNote(delta:deltaTitle:words:)` (a note's change, faint dot and words as one line),
+  `DeltaView(pct:)` (ChartFormat.deltaText), `DataTable(columns:rows:selected:)` (a row is one
+  VoiceOver element), `TableScroll(maxHeight:) { DataTable }` (a chart's table: at least the
+  column or 28rem, at its start).
 - Page structure: `PageHeader(PageHeaderModel(title:sub:access:crumbs:), titleTools:,
-  actions:, extra:)`, `VirgaPage`, `PageColumn`, `VirgaSection(title:sub:trailing:flush:
-  caption:)`, `SectionFoot`, `VirgaRow(roomy:time:) { } actions: { }`, `RowWords`.
-- Helpers: `FlowLayout`, `ScrollRow`, `.touchReach`, `.touchTarget`, `.virgaFocusOutline`.
+  period:, actions:, extra:)` (pass the period picker as `period:` and the rest as `actions:`:
+  a phone puts the period first and the rest at the far end; a lone primary action sits beside
+  the title), `VirgaPage`, `PageColumn`, `VirgaSection(title:sub:trailing:flush:caption:)` (a
+  small Segmented as `trailing` says so, and goes under the line on a phone), `SectionFoot(count:
+  letOut:)` (`letOut:` the size of a ghost button that starts it), `VirgaRow(roomy:time:) { }
+  actions: { }`, `RowWords`.
+- Helpers: `FlowLayout`, `ScrollRow` (`.scrollRowFocus(_:)` marks the item to bring into
+  view), `BesideOrUnder` (a wrapping flex row of two), `.touchReach`, `.touchTarget`,
+  `.virgaFocusOutline` (put on the Button or Menu itself, or inside a ButtonStyle's body: it
+  binds its own FocusState and also reads `isFocused`).
 - Toasts: `ToastCenter` (in the shell's environment) and `ToastStack`.
 
 SHELL (Shell/)

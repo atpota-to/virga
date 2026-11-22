@@ -61,7 +61,8 @@ public struct Callout<Content: View>: View {
     return HStack(alignment: .top, spacing: theme.points(ThemeKit.calloutGap)) {
       if let systemImage {
         Image(systemName: systemImage)
-          .font(.system(size: Measure.Section.calloutIcon))
+          .virgaGlyph(Measure.Section.calloutIcon, beside: theme.textSm)
+          .padding(.top, Measure.Section.calloutIconSpaceAbove)
           .accessibilityHidden(true)
       }
       content
@@ -83,6 +84,7 @@ public struct Callout<Content: View>: View {
 
 public struct EmptyState: View {
   @Environment(\.virgaTheme) private var theme
+  @Environment(\.virgaUnderRuledHead) private var underRuledHead
   private let sentence: String
   private let actionTitle: String?
   private let action: (() -> Void)?
@@ -105,6 +107,21 @@ public struct EmptyState: View {
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
+    // `.card--flush > .card-head ~ .empty-block { padding-top: var(--space-4) }`:
+    // under a ruled heading it keeps the air a first row would have.
+    .padding(.top, underRuledHead ? theme.space4 : 0)
+  }
+}
+
+private struct UnderRuledHeadKey: EnvironmentKey {
+  static let defaultValue = false
+}
+
+extension EnvironmentValues {
+  /// Set on a flush section's content, under the rule its heading ends in.
+  var virgaUnderRuledHead: Bool {
+    get { self[UnderRuledHeadKey.self] }
+    set { self[UnderRuledHeadKey.self] = newValue }
   }
 }
 
@@ -164,10 +181,12 @@ public struct ProgressLine: View {
           // `progress-slide`: from one of its widths left of the track to
           // three to the right of it.
           let share = width * Self.indeterminateShare
+          // Under Reduce Motion the web's animation runs 0.01ms once and ends
+          // untransformed: a still 35% at the track's start.
           Capsule()
             .fill(fill)
             .frame(width: share)
-            .offset(x: sliding ? share * 3 : -share)
+            .offset(x: theme.motion.reduced ? 0 : (sliding ? share * 3 : -share))
             .onAppear {
               guard let animation = theme.motion.indeterminate else { return }
               withAnimation(animation) { sliding = true }
@@ -195,13 +214,14 @@ public struct Disclosure<Content: View>: View {
   }
 
   public var body: some View {
-    VStack(alignment: .leading, spacing: theme.space3) {
+    // `<details>` sets no gap between its summary and what it opens.
+    VStack(alignment: .leading, spacing: 0) {
       Button {
         withAnimation(theme.motion.chevron) { open.toggle() }
       } label: {
-        HStack(spacing: theme.space2) {
+        HStack(spacing: Measure.Disclosure.gap) {
           Image(systemName: Glyph.chevronRight)
-            .font(.system(size: Measure.Disclosure.chevron, weight: .semibold))
+            .virgaGlyph(Measure.Disclosure.chevron, weight: .semibold, beside: theme.textSm)
             .rotationEffect(.degrees(open ? 90 : 0))
           Text(summary)
             .virgaText(.textSm, weight: VirgaWeight.medium)
@@ -213,6 +233,8 @@ public struct Disclosure<Content: View>: View {
       }
       .buttonStyle(.plain)
       .virgaFocusOutline(RoundedRectangle(cornerRadius: theme.radiusSm))
+      // A summary is read with its state, as a browser reads <details>.
+      .accessibilityValue(open ? "Expanded" : "Collapsed")
       if open {
         content
       }

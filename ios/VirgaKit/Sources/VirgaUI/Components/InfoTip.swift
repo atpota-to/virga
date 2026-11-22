@@ -27,14 +27,17 @@ public struct InfoTip: View {
 
   public var body: some View {
     let side = theme.points(ThemeKit.touchInfoTipButtonSize)
+    // Drawn and focused at 32, pressed through 44, and laid out as the
+    // touch block's `margin: -8px -6px` leaves it (20 × 16), so the line it
+    // sits in keeps its height and the (i) stays close to its number.
     Button {
       open.toggle()
     } label: {
       Image(systemName: Glyph.info)
-        .font(.system(size: Measure.Section.infoTipIcon))
+        .virgaGlyph(Measure.Section.infoTipIcon)
         .foregroundStyle(open ? theme.ink : theme.muted)
         .frame(width: side, height: side)
-        .contentShape(Circle())
+        .contentShape(Circle().inset(by: -max(0, (Measure.Touch.target - side) / 2)))
     }
     .buttonStyle(.plain)
     .virgaFocusOutline(Circle())
@@ -42,7 +45,7 @@ public struct InfoTip: View {
     .accessibilityHint(text)
     .popover(isPresented: $open, arrowEdge: .top) {
       Text(text)
-        .virgaText(.textSm, lineHeight: ThemeKit.metaLineHeight)
+        .virgaText(.textSm, lineHeight: Measure.Section.infoTipLineHeight)
         .foregroundStyle(theme.color(ThemeKit.infoTipInk))
         .fixedSize(horizontal: false, vertical: true)
         .padding(theme.insets(ThemeKit.infoTipPadding))
@@ -50,6 +53,8 @@ public struct InfoTip: View {
         .presentationCompactAdaptation(.popover)
         .presentationBackground(theme.color(ThemeKit.infoTipFill))
     }
+    .padding(.horizontal, -Measure.Section.infoTipLetOut.width)
+    .padding(.vertical, -Measure.Section.infoTipLetOut.height)
   }
 }
 

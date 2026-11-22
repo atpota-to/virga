@@ -73,7 +73,7 @@ public struct TermsGateView: View {
               .foregroundStyle(theme.ink)
               .fixedSize(horizontal: false, vertical: true)
           }
-          .toggleStyle(.virgaCheck)
+          .toggleStyle(.virgaTermsCheck)
           .accessibilityFocused($checkFocused)
           .accessibilityIdentifier("terms-check")
           .onChange(of: agreed) { _, now in if now { nudge = false } }

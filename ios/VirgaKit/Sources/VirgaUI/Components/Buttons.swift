@@ -89,8 +89,11 @@ struct VirgaButtonBody<Label: View>: View {
     let paint = self.paint
     label
       .labelStyle(InlineLabelStyle(gap: metrics.gap))
-      .virgaText(size: metrics.fontSize, weight: paint.weight)
+      .virgaText(size: metrics.fontSize, weight: paint.weight, lineHeight: Measure.Lines.button)
       .lineLimit(1)
+      // `white-space: nowrap`, and a flex item's least width is its words:
+      // a row short of room gives way around the button, which keeps them.
+      .fixedSize(horizontal: true, vertical: false)
       .foregroundStyle(paint.ink)
       .padding(.horizontal, style.icon ? 0 : metrics.padding)
       .frame(minWidth: style.icon ? metrics.width : nil, minHeight: metrics.height)
@@ -103,6 +106,7 @@ struct VirgaButtonBody<Label: View>: View {
       .opacity(isEnabled ? 1 : ThemeKit.disabledOpacity)
       .animation(theme.motion.control, value: isPressed)
       .virgaFocusOutline(Capsule())
+      .preference(key: HoldsPrimaryButtonKey.self, value: style.tier == .primary)
   }
 
   struct Metrics {
@@ -130,10 +134,13 @@ struct VirgaButtonBody<Label: View>: View {
     case .medium:
       let height = theme.points(ThemeKit.touchButtonHeight)
       let width = theme.points(style.tier == .ghost ? ThemeKit.touchGhostIconButtonSize : ThemeKit.touchIconButtonWidth)
+      // 40 tall, pressed through 44 (DESIGN.md's Touch: every control at
+      // least 44 to press, without looking bigger); a ghost icon is 44.
+      let reach: CGFloat = style.tier == .ghost && style.icon ? 0 : max(0, (Measure.Touch.target - height) / 2)
       return Metrics(
         height: style.tier == .ghost && style.icon ? width : height, width: width,
         padding: theme.points(ThemeKit.buttonPadding.left), fontSize: theme.points(ThemeKit.buttonFontSize),
-        gap: theme.points(ThemeKit.buttonGap), reach: 0)
+        gap: theme.points(ThemeKit.buttonGap), reach: reach)
     case .large:
       let height = theme.points(ThemeKit.touchLargeButtonHeight)
       return Metrics(
@@ -186,10 +193,12 @@ struct VirgaButtonBody<Label: View>: View {
 
 // MARK: - Link action
 
-/// `.link-action`: every other verb, as words in ink with a line under them,
-/// led by a 14-point icon (Export, Show as table, Add an account). Heavier,
-/// with a 2-point line, while what it opens is open (`isOpen`). A finger
-/// presses it through 13 points above and below and 6 at the sides.
+/// `.link-action`: every other verb, as words in ink with a line under them
+/// (1 point, 3 under the baseline), led by a 14-point icon (Export, Show as
+/// table, Add an account). Heavier, with a 2-point line, while what it opens
+/// is open (`isOpen`), and while pressed (the pointer's hover). Its line is
+/// 1.45 of its words, and a finger presses it through 13 points above and
+/// below that and 6 at the sides.
 public struct LinkActionStyle: ButtonStyle {
   public var isOpen: Bool
 
@@ -207,35 +216,88 @@ extension ButtonStyle where Self == LinkActionStyle {
   public static func linkAction(isOpen: Bool) -> LinkActionStyle { LinkActionStyle(isOpen: isOpen) }
 }
 
-/// The 14-point glyph a link action leads with.
+private struct LinkLineKey: EnvironmentKey {
+  static let defaultValue: CGFloat = Measure.LinkAction.underline
+}
+
+extension EnvironmentValues {
+  /// How thick a link action's line is (1, or 2 while open or pressed).
+  var virgaLinkLine: CGFloat {
+    get { self[LinkLineKey.self] }
+    set { self[LinkLineKey.self] = newValue }
+  }
+}
+
+/// Set by a link action's label style, so the action knows its words
+/// draw their own line (a Label's title) and it doesn't draw another.
+private struct LinkTitledKey: PreferenceKey {
+  static let defaultValue = false
+  static func reduce(value: inout Bool, nextValue: () -> Bool) {
+    value = value || nextValue()
+  }
+}
+
+/// `text-decoration: underline` at `text-underline-offset: 3px` and the
+/// environment's thickness: a rule in the words' colour whose top is 3
+/// points under their last baseline. SwiftUI's own underline takes the
+/// font's thickness and offset, which can't be set.
+struct LinkUnderline: ViewModifier {
+  @Environment(\.virgaTheme) private var theme
+  @Environment(\.virgaLinkLine) private var thickness
+  var drawn: Bool = true
+
+  func body(content: Content) -> some View {
+    let offset = theme.points(ThemeKit.linkActionUnderlineOffset)
+    content
+      .overlay(alignment: Alignment(horizontal: .leading, vertical: .lastTextBaseline)) {
+        if drawn {
+          Rectangle()
+            .frame(height: thickness)
+            .alignmentGuide(.lastTextBaseline) { _ in -offset }
+            .accessibilityHidden(true)
+        }
+      }
+  }
+}
+
+/// The 14-point glyph a link action leads with, centred on its words' line;
+/// the line under the words alone.
 struct LinkActionIconStyle: LabelStyle {
   @Environment(\.virgaTheme) private var theme
 
   func makeBody(configuration: Configuration) -> some View {
     HStack(spacing: theme.points(ThemeKit.linkActionGap)) {
       configuration.icon
-        .font(.system(size: theme.points(ThemeKit.linkActionIconSize)))
+        .virgaGlyph(theme.points(ThemeKit.linkActionIconSize), beside: theme.points(ThemeKit.linkActionFontSize))
       configuration.title
+        .modifier(LinkUnderline())
     }
+    .preference(key: LinkTitledKey.self, value: true)
   }
 }
 
 struct LinkActionBody<Label: View>: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(\.isEnabled) private var isEnabled
+  @State private var titled = false
   let label: Label
   let isPressed: Bool
   let isOpen: Bool
 
   var body: some View {
+    let heavy = isOpen || (isPressed && isEnabled)
     label
       .labelStyle(LinkActionIconStyle())
+      // Words alone (Button("Renumber")): the line is drawn under them here.
+      .modifier(LinkUnderline(drawn: !titled))
+      .onPreferenceChange(LinkTitledKey.self) { titled = $0 }
       .virgaText(
-        size: theme.points(ThemeKit.linkActionFontSize), weight: isOpen ? ThemeKit.linkActionOpenWeight : ThemeKit.linkActionWeight)
-      .underline(true)
+        size: theme.points(ThemeKit.linkActionFontSize), weight: isOpen ? ThemeKit.linkActionOpenWeight : ThemeKit.linkActionWeight,
+        lineHeight: Measure.LinkAction.lineHeight, lineBox: true)
       .lineLimit(1)
       .foregroundStyle(theme.ink)
-      .opacity(isEnabled ? (isPressed ? 0.7 : 1) : ThemeKit.disabledOpacity)
+      .environment(\.virgaLinkLine, heavy ? Measure.LinkAction.heavyUnderline : Measure.LinkAction.underline)
+      .opacity(isEnabled ? 1 : ThemeKit.disabledOpacity)
       .touchReach(horizontal: Measure.LinkAction.reachSides, vertical: Measure.LinkAction.reachAbove)
       .virgaFocusOutline(RoundedRectangle(cornerRadius: theme.radiusSm))
   }
@@ -245,8 +307,8 @@ struct LinkActionBody<Label: View>: View {
 
 /// `.more-link`: the way to the whole of a list, at the right of its
 /// heading (All scheduled, All posts), in muted words: a place to go.
+/// Pressed (the pointer's hover), its words turn ink and take a line.
 public struct MoreLink: View {
-  @Environment(\.virgaTheme) private var theme
   @Environment(\.navigate) private var navigate
   private let title: String
   private let address: String
@@ -261,14 +323,34 @@ public struct MoreLink: View {
       navigate(address)
     } label: {
       Text(title)
-        .virgaText(size: theme.points(ThemeKit.moreLinkFontSize), weight: ThemeKit.moreLinkWeight)
-        .foregroundStyle(theme.color(ThemeKit.moreLinkInk))
-        .lineLimit(1)
-        .touchReach(horizontal: Measure.LinkAction.reachSides, vertical: Measure.LinkAction.reachAbove)
     }
-    .buttonStyle(.plain)
+    .buttonStyle(MoreLinkStyle())
     .accessibilityAddTraits(.isLink)
     .accessibilityRemoveTraits(.isButton)
+  }
+}
+
+struct MoreLinkStyle: ButtonStyle {
+  func makeBody(configuration: Configuration) -> some View {
+    MoreLinkBody(label: configuration.label, isPressed: configuration.isPressed)
+  }
+}
+
+struct MoreLinkBody<Label: View>: View {
+  @Environment(\.virgaTheme) private var theme
+  let label: Label
+  let isPressed: Bool
+
+  var body: some View {
+    label
+      .modifier(LinkUnderline(drawn: isPressed))
+      .virgaText(
+        size: theme.points(ThemeKit.moreLinkFontSize), weight: ThemeKit.moreLinkWeight, lineHeight: Measure.LinkAction.lineHeight,
+        lineBox: true)
+      .foregroundStyle(isPressed ? theme.ink : theme.color(ThemeKit.moreLinkInk))
+      .lineLimit(1)
+      .touchReach(horizontal: Measure.LinkAction.reachSides, vertical: Measure.LinkAction.reachAbove)
+      .virgaFocusOutline(RoundedRectangle(cornerRadius: theme.radiusSm))
   }
 }
 

@@ -51,7 +51,8 @@ struct ChipBody<Label: View>: View {
       .frame(minHeight: theme.points(ThemeKit.touchChipHeight))
       .background(Capsule().fill(fill))
       .overlay(Capsule().strokeBorder(edge, lineWidth: theme.points(ThemeKit.chipBorder)))
-      .contentShape(Capsule())
+      // 40 tall, pressed through 44 (DESIGN.md's Touch).
+      .contentShape(Capsule().inset(by: -max(0, (Measure.Touch.target - theme.points(ThemeKit.touchChipHeight)) / 2)))
       .opacity(isEnabled ? 1 : ThemeKit.disabledOpacity)
       .animation(theme.motion.control, value: isOn)
       .virgaFocusOutline(Capsule())
@@ -75,26 +76,47 @@ public struct TokenView: View {
   }
 
   public var body: some View {
-    let remove = theme.points(ThemeKit.tokenRemoveSize)
     HStack(spacing: theme.points(ThemeKit.tokenGap)) {
       Text(text)
-        .virgaText(size: theme.points(ThemeKit.chipFontSize), weight: ThemeKit.chipWeight)
+        .virgaText(Measure.Token.fontSize, weight: Measure.Token.weight, lineHeight: Measure.Lines.token)
         .lineLimit(1)
         .foregroundStyle(theme.ink)
       Button(action: onRemove) {
         Image(systemName: Glyph.close)
-          .font(.system(size: theme.points(ThemeKit.tokenRemoveIconSize), weight: .medium))
-          .foregroundStyle(theme.muted)
-          .frame(width: remove, height: remove)
-          .background(Circle().fill(Color.clear))
-          .contentShape(Circle().inset(by: -Measure.Touch.tokenRemoveReach))
       }
-      .buttonStyle(.plain)
+      .buttonStyle(TokenRemoveStyle())
       .accessibilityLabel(removeLabel)
     }
     .padding(theme.insets(ThemeKit.tokenPadding))
     .frame(minHeight: theme.points(ThemeKit.touchTokenHeight))
-    .overlay(Capsule().strokeBorder(theme.line2, lineWidth: 1))
+    .overlay(Capsule().strokeBorder(theme.line2, lineWidth: Measure.Token.border))
+  }
+}
+
+/// `.token-remove`: a 24-point disc with the ✕ in muted, the hover's fill
+/// and ink while pressed, pressed through 10 points past it; keyboard focus
+/// draws the kit's outline round it.
+struct TokenRemoveStyle: ButtonStyle {
+  func makeBody(configuration: Configuration) -> some View {
+    TokenRemoveBody(label: configuration.label, isPressed: configuration.isPressed)
+  }
+}
+
+struct TokenRemoveBody<Label: View>: View {
+  @Environment(\.virgaTheme) private var theme
+  let label: Label
+  let isPressed: Bool
+
+  var body: some View {
+    let side = theme.points(ThemeKit.tokenRemoveSize)
+    label
+      .virgaGlyph(theme.points(ThemeKit.tokenRemoveIconSize), weight: .medium)
+      .foregroundStyle(isPressed ? theme.ink : theme.muted)
+      .frame(width: side, height: side)
+      .background(Circle().fill(isPressed ? theme.hover : Color.clear))
+      .contentShape(Circle().inset(by: -Measure.Touch.tokenRemoveReach))
+      .animation(theme.motion.control, value: isPressed)
+      .virgaFocusOutline(Circle())
   }
 }
 
@@ -135,10 +157,14 @@ public struct Badge: View {
   public var body: some View {
     let fill = tone == .warn ? ThemeKit.warnBadgeFill : ThemeKit.dangerBadgeFill
     let ink = tone == .warn ? ThemeKit.warnBadgeInk : ThemeKit.dangerBadgeInk
+    // `border: 1px solid transparent`: the pill is its line and its padding
+    // plus that edge, 22 tall and 8 in at the sides.
+    let edge = Measure.Badge.border
     HStack(spacing: theme.points(ThemeKit.badgeGap)) {
       if let systemImage {
         Image(systemName: systemImage)
-          .font(.system(size: theme.points(ThemeKit.badgeIconSize)))
+          .virgaGlyph(theme.points(ThemeKit.badgeIconSize), beside: theme.points(ThemeKit.badgeFontSize))
+          .accessibilityHidden(true)
       }
       Text(text)
         .virgaText(size: theme.points(ThemeKit.badgeFontSize), weight: ThemeKit.badgeWeight)
@@ -146,8 +172,10 @@ public struct Badge: View {
     }
     .foregroundStyle(theme.color(ink))
     .padding(theme.insets(ThemeKit.badgePadding))
-    .frame(minHeight: theme.points(ThemeKit.badgeLineHeight))
+    .padding(edge)
+    .frame(minHeight: theme.points(ThemeKit.badgeLineHeight) + edge * 2)
     .background(Capsule().fill(theme.color(fill)))
+    .accessibilityElement(children: .combine)
   }
 }
 
@@ -202,19 +230,25 @@ struct MetaItemView: View {
 
   var body: some View {
     let dot = ThemeKit.metaDotMargin
+    // `.meta > * { display: inline-flex; gap: 5px }`: the dot (its ::after)
+    // is one of the item's flex items, so it sits the gap and its own 1
+    // after the word, 6 in all, and 6 before the next.
     HStack(spacing: theme.points(ThemeKit.metaItemGap)) {
       if let image = item.systemImage {
         Image(systemName: image)
-          .font(.system(size: theme.points(ThemeKit.metaIconSize)))
+          .virgaGlyph(theme.points(ThemeKit.metaIconSize), beside: size)
           .accessibilityHidden(true)
       }
       Text(item.text)
-        .virgaText(size: size, weight: item.isKey ? ThemeKit.metaKeyWeight : VirgaWeight.regular, lineHeight: ThemeKit.metaLineHeight)
+        .virgaText(
+          size: size, weight: item.isKey ? ThemeKit.metaKeyWeight : VirgaWeight.regular, lineHeight: ThemeKit.metaLineHeight,
+          lineBox: true)
         .foregroundStyle(item.isKey ? theme.color(ThemeKit.metaKeyInk) : theme.color(ThemeKit.metaInk))
       if !isLast {
         Text("·")
-          .virgaText(size: size)
-          .padding(.leading, theme.points(dot.left) - theme.points(ThemeKit.metaItemGap))
+          .virgaText(size: size, lineHeight: ThemeKit.metaLineHeight, lineBox: true)
+          .foregroundStyle(theme.color(ThemeKit.metaInk))
+          .padding(.leading, theme.points(dot.left))
           .padding(.trailing, theme.points(dot.right))
           .accessibilityHidden(true)
       }
@@ -236,16 +270,23 @@ public struct MetaPiece<Content: View>: View {
 
   public var body: some View {
     let size = theme.points(ThemeKit.metaFontSize)
-    HStack(spacing: 0) {
+    // An item of `.meta`: inline-flex with a 5-point gap, its dot one of
+    // its flex items, 1 more after the gap (6 from the word) and 6 before
+    // the next.
+    HStack(spacing: theme.points(ThemeKit.metaItemGap)) {
       content
       if !isLast {
         Text("·")
+          .foregroundStyle(theme.color(ThemeKit.metaInk))
           .padding(.leading, theme.points(ThemeKit.metaDotMargin.left))
           .padding(.trailing, theme.points(ThemeKit.metaDotMargin.right))
           .accessibilityHidden(true)
       }
     }
     .virgaText(size: size, lineHeight: ThemeKit.metaLineHeight)
+    // The meta line's box, 1.45 of its words, as MetaItemView's; a taller
+    // piece (a badge) keeps its own height.
+    .frame(minHeight: theme.scaled(size) * CGFloat(ThemeKit.metaLineHeight))
     .foregroundStyle(theme.color(ThemeKit.metaInk))
   }
 }

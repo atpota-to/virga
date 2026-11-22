@@ -823,7 +823,7 @@ struct ToolMoreFoot: View {
 
   var body: some View {
     if total > shown {
-      SectionFoot(count: "\(AppLocale.formatNumber(shown)) of \(AppLocale.formatNumber(total))") {
+      SectionFoot(count: "\(AppLocale.formatNumber(shown)) of \(AppLocale.formatNumber(total))", letOut: .small) {
         Button("Show \(AppLocale.formatNumber(min(page, total - shown))) more", action: onMore)
           .buttonStyle(.virga(.ghost, size: .small))
       }
