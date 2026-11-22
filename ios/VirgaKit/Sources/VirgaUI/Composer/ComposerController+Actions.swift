@@ -346,7 +346,7 @@ extension ComposerController {
     case .failed(_, let soft)?: replyBlocks = !soft
     default: replyBlocks = false
     }
-    let blockedByLoad = loads["scheduled"] == .loading || loads["draft"] == .loading || replyBlocks
+    let blockedByLoad = loads["scheduled"] == .loading || loads["draft"] == .loading || loads["media"] == .loading || replyBlocks
     if blockedByLoad {
       var failed = false
       if case .failed? = loads["reply"] { failed = true }

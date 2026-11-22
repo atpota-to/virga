@@ -152,6 +152,12 @@ struct ComposerBody: View {
               .buttonStyle(.virga(size: .small))
           }
         }
+      } else if controller.loads["draft"] == .loading {
+        // The composer's shape while a draft is read (ComposerSkeleton).
+        LibrarySkeleton(rows: 3)
+          .accessibilityElement()
+          .accessibilityLabel("Opening the draft")
+          .accessibilityIdentifier("composer-skeleton")
       } else {
         ComposerPosts(controller: controller, disabled: disabled)
         ComposerOptions(controller: controller, disabled: disabled)

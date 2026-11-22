@@ -82,8 +82,7 @@ extension ComposerController {
           openDraft: { view, did in
             await Drafts.openDraft(
               view, asDid: did, defaults: defaults, media: media,
-              // A picture read back is a temporary file: its preview is the file.
-              makePreviewUrl: { file in ComposerFile(json: file)?.ref.map { URL(fileURLWithPath: $0).absoluteString } },
+              makePreviewUrl: Self.previewOfFile,
               fetchCard: Drafts.networkCardFetch(transport: transport))
           })
         guard self.loadToken == token else { return }
@@ -111,6 +110,34 @@ extension ComposerController {
         guard self.loadToken == token else { return }
         self.loads["draft"] = .failed(Self.message(error), soft: false)
       }
+    }
+  }
+
+  /// A file read back from the draft store is a temporary file: its preview is the file.
+  static let previewOfFile: @Sendable (JSONValue) throws -> String? = { file in
+    ComposerFile(json: file)?.ref.map { URL(fileURLWithPath: $0).absoluteString }
+  }
+
+  /// A restored post's images and video that live in this device's draft
+  /// store (by localRef) are read back in, so they aren't asked for again.
+  func fillMedia(_ kept: ComposerState, token: Int) {
+    guard !DraftMedia.missingDraftMedia(kept.json).isEmpty else { return }
+    loads["media"] = .loading
+    let media = draftMedia(kept.asDid)
+    Task {
+      let filled = await DraftMedia.loadDraftMedia(kept.asDid, kept.json, media: media, makePreviewUrl: Self.previewOfFile)
+      guard self.loadToken == token else { return }
+      for action in ComposerRestore.mediaPatches(self.state.json, filled.state) { self.dispatch(action) }
+      self.loads["media"] = nil
+      let n = filled.missing.count
+      guard n > 0 else { return }
+      self.notices.removeAll { $0.key == "missing-media" }
+      self.notices.append(
+        ComposerNotice(
+          key: "missing-media", tone: .warn,
+          text:
+            "\(n == 1 ? "One image or video in this post isn’t" : "\(n) images or videos in this post aren’t") in this browser any more. Add \(n == 1 ? "it" : "them") again before posting."
+        ))
     }
   }
 

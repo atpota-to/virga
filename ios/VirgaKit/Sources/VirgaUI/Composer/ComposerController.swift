@@ -360,6 +360,7 @@ public final class ComposerController {
     loads = [:]
     loadState(state, touched: touched)
     notices = notes
+    fillMedia(state, token: loadToken)
   }
 
   static func touchedJSON(_ aside: TakenAside) -> JSONValue {
