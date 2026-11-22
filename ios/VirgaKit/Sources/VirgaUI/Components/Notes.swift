@@ -237,43 +237,78 @@ public struct ProgressLine: View {
 }
 
 /// `.disclosure`: a sentence to open, the chevron turning as it does.
+///
+/// `settingsRow` is a disclosure that is a row of its own in Settings
+/// (settings.css's `.settings-section-body > .disclosure`): its arrow on
+/// the sentence's first line, and the sentence pressed through 44 points
+/// that reach into the row's air, so the row is no taller for it.
+/// `keepsContent` keeps what it opens in place while it's closed, as a
+/// closed `<details>` keeps its children (an editor's unsaved rows), hidden
+/// and out of reach.
 public struct Disclosure<Content: View>: View {
   @Environment(\.virgaTheme) private var theme
   @State private var open = false
   private let summary: String
+  private let settingsRow: Bool
+  private let keepsContent: Bool
   private let content: Content
 
-  public init(_ summary: String, @ViewBuilder content: () -> Content) {
+  public init(_ summary: String, settingsRow: Bool = false, keepsContent: Bool = false, @ViewBuilder content: () -> Content) {
     self.summary = summary
+    self.settingsRow = settingsRow
+    self.keepsContent = keepsContent
     self.content = content()
   }
 
   public var body: some View {
     // `<details>` sets no gap between its summary and what it opens.
     VStack(alignment: .leading, spacing: 0) {
-      Button {
-        withAnimation(theme.motion.chevron) { open.toggle() }
-      } label: {
-        HStack(spacing: Measure.Disclosure.gap) {
-          Image(systemName: Glyph.chevronRight)
-            .virgaGlyph(Measure.Disclosure.chevron, weight: .semibold, beside: theme.textSm)
-            .rotationEffect(.degrees(open ? 90 : 0))
-          Text(summary)
-            .virgaText(.textSm, weight: VirgaWeight.medium)
-            .multilineTextAlignment(.leading)
-        }
-        .foregroundStyle(theme.ink)
-        .frame(minHeight: Measure.Touch.target)
-        .contentShape(Rectangle())
-      }
-      .buttonStyle(.plain)
-      .virgaFocusOutline(RoundedRectangle(cornerRadius: theme.radiusSm))
-      // A summary is read with its state, as a browser reads <details>.
-      .accessibilityValue(open ? "Expanded" : "Collapsed")
-      if open {
+      summaryButton
+      if keepsContent {
+        content
+          .frame(height: open ? nil : 0, alignment: .top)
+          .opacity(open ? 1 : 0)
+          .allowsHitTesting(open)
+          .disabled(!open)
+          .accessibilityHidden(!open)
+      } else if open {
         content
       }
     }
+  }
+
+  /// `(44px − 1.45em) / 2`: how far a Settings row's sentence reaches past
+  /// its line, above and below.
+  private var reach: CGFloat {
+    settingsRow ? max(0, (Measure.Touch.target - theme.textSm * CGFloat(ThemeKit.bodyLineHeight)) / 2) : 0
+  }
+
+  private var summaryButton: some View {
+    Button {
+      withAnimation(theme.motion.chevron) { open.toggle() }
+    } label: {
+      HStack(alignment: settingsRow ? .firstTextBaseline : .center, spacing: Measure.Disclosure.gap) {
+        // The arrow is drawn, not read (`summary::before`).
+        Image(systemName: Glyph.chevronRight)
+          .virgaGlyph(Measure.Disclosure.chevron, weight: .semibold, beside: theme.textSm)
+          .rotationEffect(.degrees(open ? 90 : 0))
+          .accessibilityHidden(true)
+        Text(summary)
+          .virgaText(.textSm, weight: VirgaWeight.medium, lineBox: settingsRow)
+          .multilineTextAlignment(.leading)
+          .fixedSize(horizontal: false, vertical: settingsRow)
+      }
+      .foregroundStyle(theme.ink)
+      .padding(.vertical, reach)
+      .frame(minHeight: settingsRow ? nil : Measure.Touch.target)
+      .contentShape(Rectangle())
+    }
+    .buttonStyle(.plain)
+    .virgaFocusOutline(RoundedRectangle(cornerRadius: theme.radiusSm))
+    // A summary is read with its state, as a browser reads <details>.
+    .accessibilityValue(open ? "Expanded" : "Collapsed")
+    // The reach is the row's air, not more of the row.
+    .padding(.vertical, -reach)
   }
 }
 

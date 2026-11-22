@@ -22,13 +22,17 @@ import VirgaCore
 
 public struct ChipStyle: ButtonStyle {
   public var isOn: Bool
+  /// How faint a disabled chip is: a button's 45% unless its rule says
+  /// otherwise (the timer editor's, `.lse-chips .chip:disabled`, 50%).
+  public var disabledOpacity: Double
 
-  public init(isOn: Bool) {
+  public init(isOn: Bool, disabledOpacity: Double = ThemeKit.disabledOpacity) {
     self.isOn = isOn
+    self.disabledOpacity = disabledOpacity
   }
 
   public func makeBody(configuration: Configuration) -> some View {
-    ChipBody(label: configuration.label, isOn: isOn, isPressed: configuration.isPressed)
+    ChipBody(label: configuration.label, isOn: isOn, isPressed: configuration.isPressed, disabledOpacity: disabledOpacity)
   }
 }
 
@@ -38,6 +42,7 @@ struct ChipBody<Label: View>: View {
   let label: Label
   let isOn: Bool
   let isPressed: Bool
+  var disabledOpacity: Double = ThemeKit.disabledOpacity
 
   var body: some View {
     let fill = isOn ? theme.color(ThemeKit.chipOnFill) : Color.clear
@@ -53,7 +58,7 @@ struct ChipBody<Label: View>: View {
       .overlay(Capsule().strokeBorder(edge, lineWidth: theme.points(ThemeKit.chipBorder)))
       // 40 tall, pressed through 44 (DESIGN.md's Touch).
       .contentShape(Capsule().inset(by: -max(0, (Measure.Touch.target - theme.points(ThemeKit.touchChipHeight)) / 2)))
-      .opacity(isEnabled ? 1 : ThemeKit.disabledOpacity)
+      .opacity(isEnabled ? 1 : disabledOpacity)
       .animation(theme.motion.control, value: isOn)
       .virgaFocusOutline(Capsule())
       .accessibilityAddTraits(isOn ? [.isSelected] : [])
