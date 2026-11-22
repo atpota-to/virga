@@ -387,7 +387,8 @@ Posting/WhenPicker.swift, Composer/ComposerController+Schedule.swift, Composer/C
   (words with links the navigator follows, through
   `InternalLink`), `ScheduledListLoad` (hubParts' useLoad over listScheduled, with the limits when asked,
   read again on `virga:scheduled-changed` / `virga:timers-changed` for the account), and the small
-  helpers `ScheduleIds` (lists of ids; two ids are `===` as THE POSTING PAGES' `PostingPages.sameValue`),
+  helpers `ScheduleIds` (lists of ids; two ids are `===` as THE POSTING PAGES' `PostingPages.sameValue`, which is
+  the main actor's, so `contains`, `index` and `sameOrder` are `@MainActor` too),
   `ScheduleText` (the clock; a thrown error's `err.message` is `PostingPages.message`), `ScheduleSaid` (a sentence
   as an error, a `ScheduleErrorObject`), `ScheduleGlyph` (the glyphs the posting pages draw too are `HubGlyph`'s).
   `Measure.Schedule.confirmGap` stays beside `Measure.Hub.confirmGap`: they are two rules (`.sched-confirm`,
@@ -402,7 +403,8 @@ Posting/WhenPicker.swift, Composer/ComposerController+Schedule.swift, Composer/C
   (inline below 900, in the page's margin from 900) takes a drag over the rows' frames
   (`QueueRowFrames`; a drag the system cancels, which calls no onEnded, is seen through a `@GestureState` and puts
   the row back), the keys (Space or Return, the arrows, Escape) and VoiceOver's adjust (its value the row's place,
-  each step said); a phone has Move earlier and Move later. A taken time pressed in the week gives its row's first
+  each step said, `adjust`); a phone has Move earlier and Move later (`step`, which says only that the order is saved,
+  as the web's arrows do). A taken time pressed in the week gives its row's first
   button (the handle, else Retry or Edit) the focus, a keyboard's and VoiceOver's (`ScheduleRowFocus`). On a phone
   the ⋯ (and a timer note's ✕) is out of the row's flow, centred 9.5 into it (`Measure.Schedule.cornerMenuCentre`),
   and the time line's dot is `WhenDot`. A question keeps the row it asked about while its sheet slides away

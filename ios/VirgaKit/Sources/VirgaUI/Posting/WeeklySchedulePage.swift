@@ -425,9 +425,11 @@ struct WeeklySchedulePage: View {
       footWords
     } else {
       ViewThatFits(in: .horizontal) {
-        HStack(alignment: .center, spacing: theme.space3) {
+        // `gap: var(--space-3)`: the spacer is the gap, at least 12, so the
+        // line needs no more room than the web's does.
+        HStack(alignment: .center, spacing: 0) {
           footWords
-          Spacer(minLength: 0)
+          Spacer(minLength: theme.space3)
           resetLink
         }
         VStack(alignment: .leading, spacing: theme.space3) {
