@@ -109,6 +109,9 @@ extension Measure.Dashboard {
   /// `.arrange-line { min-height: 52px }`: the name 8 after the arrows, the
   /// value 12 after the name, the chevron (16) 8 after that.
   static let arrangeLineHeight: CGFloat = 52
+  /// `.arrange-line > .btn:first-child { margin-left: -14px }` on touch: the
+  /// first arrow's glyph on the page's edge.
+  static let arrangeArrowBleed: CGFloat = 14
   static let arrangeNameSpaceBefore: CGFloat = 8
   static let arrangeValueSpaceBefore: CGFloat = 12
   static let arrangeChevronSpaceBefore: CGFloat = 8

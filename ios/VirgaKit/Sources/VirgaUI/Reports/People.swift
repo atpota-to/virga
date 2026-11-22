@@ -121,16 +121,16 @@ struct PersonRow: View {
 
   var body: some View {
     let resolved = model.flatMap { People.found($0, archive, did) }
-    let card = People.choose(resolved, self.card)
-    let name = People.displayName(card.handle, card.displayName, did)
-    let handle = card.handle.flatMap { h in h.isEmpty || (name.hasPrefix("@") && String(name.dropFirst()).jsEquals(h)) ? nil : h }
+    let face = People.choose(resolved, card)
+    let name = People.displayName(face.handle, face.displayName, did)
+    let handle = face.handle.flatMap { h in h.isEmpty || (name.hasPrefix("@") && String(name.dropFirst()).jsEquals(h)) ? nil : h }
     let sets = ReportModels.relationSets(archive)
     let followsYou = rel && sets.isFollower(did)
     let phone = theme.isPhone
     HStack(spacing: phone ? Measure.Dashboard.phonePersonGap : Measure.Dashboard.personGap) {
-      Avatar(src: card.avatar, name: card.displayName ?? card.handle ?? "?")
+      Avatar(src: face.avatar, name: face.displayName ?? face.handle ?? "?")
       VStack(alignment: .leading, spacing: 0) {
-        Button(name) { if let url = People.profileUrl(card.handle, did) { openURL(url) } }
+        Button(name) { if let url = People.profileUrl(face.handle, did) { openURL(url) } }
           .buttonStyle(.plain)
           .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Dashboard.personLineHeight)
           .foregroundStyle(theme.ink)

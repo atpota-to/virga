@@ -370,8 +370,8 @@ struct WidgetCard: View {
   /// The heading: the title (and its lines), the chart's modes, and the
   /// tools; in a card 440 wide or less the modes go under the titles.
   private func head(title: String?) -> some View {
-    let modes = self.modes
-    let under = modes != nil && (width ?? .infinity) <= Measure.Dashboard.headModesAt
+    let chartModes = modes
+    let under = chartModes != nil && (width ?? .infinity) <= Measure.Dashboard.headModesAt
     return VStack(alignment: .leading, spacing: 0) {
       HStack(alignment: .firstTextBaseline, spacing: theme.space2) {
         VStack(alignment: .leading, spacing: 2) {
@@ -387,11 +387,11 @@ struct WidgetCard: View {
           }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        if !under, let modes { modes }
+        if !under, let chartModes { chartModes }
         tools(title: title)
       }
-      if under, let modes {
-        modes.padding(.top, Measure.Dashboard.headModesSpaceAbove)
+      if under, let chartModes {
+        chartModes.padding(.top, Measure.Dashboard.headModesSpaceAbove)
       }
     }
   }
@@ -495,6 +495,7 @@ struct ArrangeList: View {
         .buttonStyle(.virga(.ghost, icon: true))
         .disabled(index == 0)
         .accessibilityLabel("Move \(name) up")
+        .padding(.leading, -Measure.Dashboard.arrangeArrowBleed)
         Button {
           dashboards.moveWidget(dashboard.id, card.id, to: index + 1)
         } label: {
