@@ -179,8 +179,12 @@ struct PostedPage: View {
       }
     } else {
       HStack(alignment: .center, spacing: Measure.Tools.toolbarColumnGap) {
+        // `.list-toolbar > .search { flex: 1 1 240px; max-width: 420px }`:
+        // the search grows to its 420 first; only what is left after that
+        // goes to the Spacer.
         SearchField("Search your posts", text: $query)
           .frame(minWidth: Measure.Tools.toolbarSearchMin, maxWidth: Measure.Tools.toolbarSearchMax)
+          .layoutPriority(1)
           .accessibilityIdentifier("posted-search")
         segmented
         Spacer(minLength: 0)

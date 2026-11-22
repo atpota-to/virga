@@ -32,7 +32,7 @@ enum ScheduleGlyph {
   static let down = "arrow.down"  // ArrowDown
   static let ban = "nosign"  // Ban
   static let replyingTo = "arrow.turn.down.right"  // CornerDownRight
-  static let grip = "line.3.horizontal"  // GripVertical
+  // GripVertical has no SF Symbol: it is drawn (GripVerticalGlyph).
   static let hourglass = "hourglass"  // Hourglass
   static let listPlus = "text.badge.plus"  // ListPlus
   static let listTree = "list.bullet.indent"  // ListTree
@@ -42,6 +42,43 @@ enum ScheduleGlyph {
   static let close = "xmark"  // X
   static let plus = "plus"  // Plus
   static let restart = "arrow.counterclockwise"  // RotateCcw
+}
+
+/// lucide's GripVertical, the queue's handle: six dots, two columns of
+/// three. No SF Symbol draws it (line.3.horizontal, the nearest, reads as
+/// a list), so it is drawn as lucide does: on its 24-point grid, circles of
+/// 1 at x 9 and 15, y 5, 12 and 19, under its 2-point stroke, so each dot
+/// is 4 across. The glyph is `size` square, grown with Dynamic Type as
+/// virgaGlyph grows a symbol beside words of `words` points, at most
+/// `upTo`, in the foreground style.
+struct GripVerticalGlyph: View {
+  @Environment(\.virgaTheme) private var theme
+  let size: CGFloat
+  var words: CGFloat?
+  var upTo: CGFloat?
+
+  var body: some View {
+    let points = theme.scaled(size, relativeTo: VirgaTheme.textStyle(for: words ?? size))
+    let side = upTo.map { min(points, $0) } ?? points
+    GripVerticalShape()
+      .frame(width: side, height: side)
+      .accessibilityHidden(true)
+  }
+}
+
+private struct GripVerticalShape: Shape {
+  func path(in rect: CGRect) -> Path {
+    let unit = min(rect.width, rect.height) / 24
+    let left = rect.midX - 12 * unit
+    let top = rect.midY - 12 * unit
+    var path = Path()
+    for x: CGFloat in [9, 15] {
+      for y: CGFloat in [5, 12, 19] {
+        path.addEllipse(in: CGRect(x: left + (x - 2) * unit, y: top + (y - 2) * unit, width: 4 * unit, height: 4 * unit))
+      }
+    }
+    return path
+  }
 }
 
 /// The scheduling pages' clock. (A thrown error's `err.message` is

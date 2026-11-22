@@ -127,7 +127,7 @@ enum HubGlyph {
   static let reply = "bubble.left"  // MessageSquare
   static let quote = "quote.opening"  // Quote
   static let again = "repeat"  // Repeat
-  static let gates = "arrowshape.turn.up.left"  // MessageSquareLock
+  static let gates = "lock.square"  // MessageSquareLock (no SF Symbol has a bubble with a lock)
   static let timer = "timer"  // Timer
   static let template = "rectangle.3.offgrid"  // LayoutTemplate
   static let external = "arrow.up.right.square"  // ExternalLink

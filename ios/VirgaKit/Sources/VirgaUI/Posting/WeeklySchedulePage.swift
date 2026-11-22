@@ -715,7 +715,11 @@ struct DayRow: View {
       )
       .labelsHidden()
       .environment(\.timeZone, ClockTime.utc)
-      .frame(minWidth: Measure.Schedule.addInputWidth, alignment: .leading)
+      // The system's pill, at its own width, Add 8 after it. Its words
+      // give no baseline the row can use, so its first baseline is put at
+      // its foot: the line's baseline is then the tokens' (or Add's), and
+      // the day's name stays on it (`.sched-day { align-items: baseline }`).
+      .alignmentGuide(.firstTextBaseline) { $0[.bottom] }
       .focused($focus, equals: .time)
       .accessibilityFocused($spoken, equals: .time)
       .onAppear {

@@ -94,9 +94,12 @@ struct MenuItemButton: View {
       item.action?()
     } label: {
       // A native menu item reads its first Text as the title, a second as
-      // the hint under it, and an Image as its icon.
+      // the hint under it, and an Image as its icon. The hint is given the
+      // secondary style outright (`.menu-item-hint { color: var(--muted) }`)
+      // rather than left to inherit one: inheriting, the Posted ⋯'s hints
+      // were laid out but drawn as nothing (the account menu's were drawn).
       Text(item.label)
-      if let hint = item.hint { Text(hint) }
+      if let hint = item.hint { Text(hint).foregroundStyle(.secondary) }
       if let image = item.systemImage { icon(image) }
     }
     .accessibilityIdentifier(item.accessibilityIdentifier ?? "menu-\(item.key)")
