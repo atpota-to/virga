@@ -25,9 +25,9 @@ const TEXTS = [
   'end.',
   '(x)',
   'x\ny',
-  'x y',
+  'x\u00A0y',
   '🌿🌿',
-  'é',
+  'e\u0301',
   '  spaced  ',
 ];
 const SELECTIONS = [
@@ -72,7 +72,7 @@ insertInputs.push(
   { text: 'Hi)', token: '{{x}}', selection: { start: 2, end: 2 } },
   { text: 'Hi]', token: '{{x}}', selection: { start: 2, end: 2 } },
   { text: 'Hi\t', token: '{{x}}', selection: { start: 2, end: 2 } },
-  { text: ' Hi', token: '{{x}}', selection: { start: 1, end: 1 } },
+  { text: '\u2028Hi', token: '{{x}}', selection: { start: 1, end: 1 } },
 );
 
 const DRAFTS = {
@@ -135,6 +135,9 @@ addInputs.push(
     }),
     label: 'Which app?',
   },
+  // `{ ...draft, text }` copies an array's or a string's indexes.
+  { $id: 'array-draft', draft: ['a', { key: 'b' }], label: 'Which app?' },
+  { $id: 'string-draft', draft: 'Hi', label: 'Which app?' },
 );
 
 export default async function cases() {
@@ -183,6 +186,11 @@ export default async function cases() {
           key: 'app',
           patch: { label: 'x' },
         },
+        // `{ ...value }` copies an array's or a string's indexes.
+        { $id: 'array-patch', draft: base, key: 'app', patch: ['p', 'q'] },
+        { $id: 'string-patch', draft: base, key: 'app', patch: 'pq' },
+        { $id: 'array-draft', draft: ['a', 'b'], key: 'app', patch: {} },
+        { $id: 'string-draft', draft: 'ab\u{1F33F}', key: 'app', patch: {} },
       ],
       ({ draft, key, patch }) => EM.patchVariable(draft, key, patch),
     )),

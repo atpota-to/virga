@@ -65,10 +65,9 @@ public enum EditorDrafts {
 
   // MARK: Variables
 
-  /// The members of `{ ...v }`: an object's own members (anything else
-  /// spreads nothing a draft keeps).
+  /// The members of `{ ...v }` (an array's or a string's indexes too).
   static func members(_ value: JSONValue?) -> [String: JSONValue] {
-    value?.objectValue ?? [:]
+    TemplateJS.spread(value)
   }
 
   static func draftVariable(_ v: JSONValue?) -> JSONValue {
@@ -165,7 +164,12 @@ public enum EditorDrafts {
     var draft = base
     draft["variables"] = .array(TemplateJS.list(base["variables"]).map(draftVariable))
     draft["keywords"] = .array(keywords)
-    draft["langs"] = .array(TemplateJS.list(base["langs"]))
+    // `(base.langs || []).slice()`: a string's slice is the string itself.
+    if case .string(let langs)? = base["langs"], !langs.isEmpty {
+      draft["langs"] = .string(langs)
+    } else {
+      draft["langs"] = .array(TemplateJS.list(base["langs"]))
+    }
     draft["keywordsText"] = .string(joined(keywords, ", "))
     let quote = quoteFields(base["embed"])
     draft["quoteMode"] = .string(quote.mode)
@@ -177,9 +181,13 @@ public enum EditorDrafts {
   static let escapeRegExpSet: Set<UInt16> = Set(".*+?^${}()|[]\\".utf16)
 
   // Text a first name inside must stay as written: links, email addresses,
-  // handles and hashtags.
+  // handles and hashtags. The web's flags are `giu`: under `iu` a character
+  // matches a class when its simple case folding does, which adds exactly
+  // two characters to these classes (checked over every code point in
+  // Node): the long s (U+017F, folding to "s") to `https?`, and the
+  // combining ypogegrammeni (U+0345, folding to "ι") to each letter class.
   static let nameProtected = JSRegex(
-    #"[hH][tT][tT][pP][sSſ]?://[^\#(JSRegex.space)]+|[\p{L}\p{N}._%+\-]+@[\p{L}\p{N}\-]+(?:\.[\p{L}\p{N}\-]+)+|@[\p{L}\p{N}._\-]+|#[\p{L}\p{N}_]+"#)
+    #"[hH][tT][tT][pP][sSſ]?://[^\#(JSRegex.space)]+|[\p{L}\p{N}\u0345._%+\-]+@[\p{L}\p{N}\u0345\-]+(?:\.[\p{L}\p{N}\u0345\-]+)+|@[\p{L}\p{N}\u0345._\-]+|#[\p{L}\p{N}\u0345_]+"#)
 
   /// What draftFromReply reads, as the web's one object of named arguments:
   /// `text`, `reply` (ComposerState.reply) or `replyTo` (a post view),

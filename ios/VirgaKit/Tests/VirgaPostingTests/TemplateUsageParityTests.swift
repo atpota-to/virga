@@ -71,6 +71,17 @@ import VirgaTestSupport
     #expect(stamped >= before.rounded(.down) - 1)
   }
 
+  /// A time past what a JavaScript Date holds (±8.64e15 ms) is an invalid
+  /// date there, so the use is stamped now rather than left without a time.
+  @Test func aTimeNoJavaScriptDateHoldsStampsNow() {
+    let store = InMemoryKeyValueStore()
+    let before = Date().timeIntervalSince1970 * 1000
+    let entry = TemplateUsage.recordTemplateUse("3la", alice, Date(timeIntervalSince1970: 1e14), store: store)
+    let stamped = JSDate.parse(entry?.lastUsedAt ?? "", timeZone: TimeZone(identifier: "UTC")!)
+    #expect(entry?.lastUsedAt != nil)
+    #expect(stamped >= before.rounded(.down) - 1)
+  }
+
   @Test func aStoreThatRefusesStillCounts() {
     let store = InMemoryKeyValueStore()
     store.refusesWrites = true

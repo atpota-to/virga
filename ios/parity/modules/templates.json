@@ -11,19 +11,21 @@
         "ios/VirgaKit/Sources/VirgaPosting/Library/TemplateEditorModel.swift"
       ],
       "fixtures": [
-        "templates.editorModel"
+        "templates.editorModel",
+        "templates.random"
       ],
       "synced": "0db1094dd00a"
     },
     "src/posting/templates/editorDrafts.js": {
       "status": "ported",
-      "note": "Each function works on the web's objects (JSONValue), with typed forms over TemplateDraft, DraftVariable and PostTemplate that go through them. As in postTemplates, a shape the web throws a TypeError on (variables or choices that aren't arrays where the web calls .filter or .map, a keyword that isn't a string where it calls toLowerCase) reads as absent; those inputs are kept out of the fixture. JSONValue objects don't keep key order, which nothing here shows.",
+      "note": "Each function works on the web's objects (JSONValue), with typed forms over TemplateDraft, DraftVariable and PostTemplate that go through them. `{ ...value }` copies an array's or a string's indexes as the web's spreads do. As in postTemplates, a shape the web throws a TypeError on (variables or choices that aren't arrays where the web calls .filter or .map, keywords that are a string where it joins them, a keyword that isn't a string where it calls toLowerCase) reads as absent; those inputs are kept out of the fixtures. JSONValue objects don't keep key order, which nothing here shows.",
       "swift": [
         "ios/VirgaKit/Sources/VirgaPosting/Templates/EditorDrafts.swift",
         "ios/VirgaKit/Sources/VirgaPosting/Templates/EditorDrafts+Typed.swift"
       ],
       "fixtures": [
-        "templates.editorDrafts"
+        "templates.editorDrafts",
+        "templates.random"
       ],
       "synced": "78aa9d52d76e"
     },
@@ -37,7 +39,8 @@
       ],
       "fixtures": [
         "templates.postTemplates",
-        "templates.fill"
+        "templates.fill",
+        "templates.random"
       ],
       "synced": "87238481a9e9"
     },
@@ -54,12 +57,13 @@
     },
     "src/posting/templates/templateUsage.js": {
       "status": "ported",
-      "note": "The store is passed in (`store:`), as the web's optional `{ store }`; nil is no localStorage. localeCompare is Foundation's ICU collation in the given (or active) locale, where the web uses the runtime's (VirgaPosting/Support/LocaleCompare.swift).",
+      "note": "The store is passed in (`store:`), as the web's optional `{ store }`; nil is no localStorage. The stored JSON is the web's byte for byte, keys in JS object order; a `__proto__` rkey is counted and returned but never stored, and a stored `__proto__` member is read back, as setting that key on a JS object sets its prototype. localeCompare is Foundation's ICU collation in the given (or active) locale, where the web uses the runtime's (VirgaPosting/Support/LocaleCompare.swift).",
       "swift": [
         "ios/VirgaKit/Sources/VirgaPosting/Templates/TemplateUsage.swift"
       ],
       "fixtures": [
-        "templates.templateUsage"
+        "templates.templateUsage",
+        "templates.random"
       ],
       "synced": "0004a0a028e3"
     },

@@ -50,6 +50,12 @@ public struct TemplateUsageCounts: Hashable, Sendable, Codable {
 
   public private(set) var entries: [Entry] = []
 
+  /// What `usage['__proto__']` holds. Setting that key on a JavaScript
+  /// object sets its prototype instead, so the entry is never listed,
+  /// counted or stored, but reading the key gives it back (a stored
+  /// `"__proto__"` member, which JSON.parse keeps, counts on from there).
+  var protoEntry: TemplateUseEntry?
+
   public init() {}
 
   public var isEmpty: Bool { entries.isEmpty }
@@ -58,8 +64,16 @@ public struct TemplateUsageCounts: Hashable, Sendable, Codable {
 
   /// `usage[rkey]`, by code unit.
   public subscript(rkey: String) -> TemplateUseEntry? {
-    get { entries.first { $0.rkey.jsEquals(rkey) }?.use }
+    get {
+      if rkey.jsEquals("__proto__") { return protoEntry }
+      return entries.first { $0.rkey.jsEquals(rkey) }?.use
+    }
     set {
+      if rkey.jsEquals("__proto__") {
+        // `delete usage.__proto__` removes nothing, so only a set lands.
+        if let newValue { protoEntry = newValue }
+        return
+      }
       if let index = entries.firstIndex(where: { $0.rkey.jsEquals(rkey) }) {
         if let newValue { entries[index].use = newValue } else { entries.remove(at: index) }
         return
@@ -117,8 +131,9 @@ public enum TemplateUsage {
     var out = TemplateUsageCounts()
     for member in members {
       // `out['__proto__'] = …` sets the object's prototype on the web, so
-      // that entry is never kept.
-      if member.key.isEmpty || member.key == "__proto__" { continue }
+      // that entry is never listed or written back (the subscript keeps it
+      // aside).
+      if member.key.isEmpty { continue }
       guard member.value.isObjectLike else { continue }
       let entry = member.value.value
       guard case .number(let raw)? = entry.templateField("count"), raw.isFinite else { continue }
@@ -155,8 +170,10 @@ public enum TemplateUsage {
     _ rkey: String?, _ did: String?, _ now: Date = Date(), store: (any KeyValueStore)?, timeZone: TimeZone? = nil
   ) -> TemplateUseEntry? {
     guard let rkey, !rkey.isEmpty, let did, !did.isEmpty else { return nil }
+    // A JavaScript Date holds no time past ±8.64e15 ms (it is invalid, and
+    // the web stamps the present instead).
     var ms = now.timeIntervalSince1970 * 1000
-    if !ms.isFinite { ms = Date().timeIntervalSince1970 * 1000 }
+    if !ms.isFinite || abs(ms) > 8.64e15 { ms = Date().timeIntervalSince1970 * 1000 }
     var usage = readTemplateUsage(did, store: store)
     let entry = TemplateUseEntry(
       count: (usage[rkey]?.count ?? 0) + 1,

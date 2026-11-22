@@ -676,6 +676,133 @@
       }
     },
     {
+      "id": "protoKey",
+      "fn": "script",
+      "input": {
+        "store": {},
+        "steps": [
+          [
+            "record",
+            "__proto__",
+            "did:plc:aaaaaaaaaaaaaaaaaaaaaaaa",
+            "2026-10-01T00:00:00.000Z"
+          ],
+          [
+            "record",
+            "__proto__",
+            "did:plc:aaaaaaaaaaaaaaaaaaaaaaaa",
+            "2026-10-02T00:00:00.000Z"
+          ],
+          [
+            "record",
+            "constructor",
+            "did:plc:aaaaaaaaaaaaaaaaaaaaaaaa",
+            "2026-10-03T00:00:00.000Z"
+          ],
+          [
+            "record",
+            "toString",
+            "did:plc:aaaaaaaaaaaaaaaaaaaaaaaa",
+            "2026-10-04T00:00:00.000Z"
+          ],
+          [
+            "read",
+            "did:plc:aaaaaaaaaaaaaaaaaaaaaaaa"
+          ]
+        ]
+      },
+      "output": {
+        "results": [
+          {
+            "count": 1,
+            "lastUsedAt": "2026-10-01T00:00:00.000Z"
+          },
+          {
+            "count": 1,
+            "lastUsedAt": "2026-10-02T00:00:00.000Z"
+          },
+          {
+            "count": 1,
+            "lastUsedAt": "2026-10-03T00:00:00.000Z"
+          },
+          {
+            "count": 1,
+            "lastUsedAt": "2026-10-04T00:00:00.000Z"
+          },
+          [
+            [
+              "constructor",
+              {
+                "count": 1,
+                "lastUsedAt": "2026-10-03T00:00:00.000Z"
+              }
+            ],
+            [
+              "toString",
+              {
+                "count": 1,
+                "lastUsedAt": "2026-10-04T00:00:00.000Z"
+              }
+            ]
+          ]
+        ],
+        "store": {
+          "virga:template-usage:did:plc:aaaaaaaaaaaaaaaaaaaaaaaa": "{\"constructor\":{\"count\":1,\"lastUsedAt\":\"2026-10-03T00:00:00.000Z\"},\"toString\":{\"count\":1,\"lastUsedAt\":\"2026-10-04T00:00:00.000Z\"}}"
+        }
+      }
+    },
+    {
+      "id": "protoStored",
+      "fn": "script",
+      "input": {
+        "store": {
+          "virga:template-usage:did:plc:aaaaaaaaaaaaaaaaaaaaaaaa": "{\"__proto__\":{\"count\":4,\"lastUsedAt\":\"2026-01-01T00:00:00.000Z\"},\"3la\":{\"count\":1,\"lastUsedAt\":null}}"
+        },
+        "steps": [
+          [
+            "read",
+            "did:plc:aaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          [
+            "record",
+            "__proto__",
+            "did:plc:aaaaaaaaaaaaaaaaaaaaaaaa",
+            "2026-10-01T00:00:00.000Z"
+          ],
+          [
+            "record",
+            "3la",
+            "did:plc:aaaaaaaaaaaaaaaaaaaaaaaa",
+            "2026-10-02T00:00:00.000Z"
+          ]
+        ]
+      },
+      "output": {
+        "results": [
+          [
+            [
+              "3la",
+              {
+                "count": 1,
+                "lastUsedAt": null
+              }
+            ]
+          ],
+          {
+            "count": 5,
+            "lastUsedAt": "2026-10-01T00:00:00.000Z"
+          },
+          {
+            "count": 2,
+            "lastUsedAt": "2026-10-02T00:00:00.000Z"
+          }
+        ],
+        "store": {
+          "virga:template-usage:did:plc:aaaaaaaaaaaaaaaaaaaaaaaa": "{\"3la\":{\"count\":2,\"lastUsedAt\":\"2026-10-02T00:00:00.000Z\"}}"
+        }
+      }
+    },
+    {
       "id": "dropsLeastRecent",
       "fn": "script",
       "input": {

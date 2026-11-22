@@ -139,7 +139,7 @@ public enum TemplateEditorModel {
       n += 1
     }
     let inserted = insertAtSelection(draft?.templateField("text"), "{{\(key)}}", selection)
-    var spread = draft?.objectValue ?? [:]
+    var spread = TemplateJS.spread(draft)
     spread["text"] = .string(inserted.text)
     let synced = EditorDrafts.syncDraftVariables(.object(spread))
     let question = TemplateJS.string(label).jsTrimmed()
@@ -167,10 +167,10 @@ public enum TemplateEditorModel {
   public static func patchVariable(_ draft: JSONValue?, _ key: String, _ patch: JSONValue?) -> JSONValue {
     let variables = TemplateJS.list(draft?.templateField("variables")).map { v -> JSONValue in
       guard v.templateField("key")?.stringValue?.jsEquals(key) == true, case .object(var members) = v else { return v }
-      for (name, value) in patch?.objectValue ?? [:] { members[name] = value }
+      for (name, value) in TemplateJS.spread(patch) { members[name] = value }
       return .object(members)
     }
-    var out = draft?.objectValue ?? [:]
+    var out = TemplateJS.spread(draft)
     out["variables"] = .array(variables)
     return .object(out)
   }

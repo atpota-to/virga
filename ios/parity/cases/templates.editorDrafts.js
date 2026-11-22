@@ -161,7 +161,7 @@ const REPLIES = [
   { $id: 'possessive', text: "wren's idea, wren’s too, wren'", replyTo: wren },
   { $id: 'case', text: 'Wren WREN wren wReN', replyTo: wren },
   { $id: 'digits', text: 'wren2 2wren wren', replyTo: wren },
-  { $id: 'marks', text: 'wreń wren', replyTo: wren },
+  { $id: 'marks', text: 'wren\u0301 wren', replyTo: wren },
   { $id: 'emoji', text: '🌿wren🌿 wren!', replyTo: wren },
   {
     $id: 'email-unicode',
@@ -187,7 +187,7 @@ const REPLIES = [
   {
     $id: 'combining-name',
     text: 'Merci élise, élise',
-    replyTo: named('élise D'),
+    replyTo: named('e\u0301lise D'),
   },
   {
     $id: 'cjk-name',
@@ -235,7 +235,7 @@ const REPLIES = [
     card: { url: 'https://card.example' },
     linkUrl: null,
   },
-  { $id: 'trailing-space', text: 'Hi Wren \n\t  ', replyTo: named('Wren') },
+  { $id: 'trailing-space', text: 'Hi Wren \n\t\u00A0\u2028', replyTo: named('Wren') },
   { $id: 'only-space', text: ' \n ', replyTo: named('Wren') },
   { $id: 'no-text', replyTo: named('Wren') },
   { $id: 'number-text', text: 42, replyTo: named('Wren') },
@@ -252,6 +252,16 @@ const REPLIES = [
     text: 'Hi Bartholomew-Alexander',
     replyTo: named('Bartholomew-Alexander von X'),
   },
+  // NAME_PROTECTED's `iu` flags let U+0345 (which folds to a letter) into
+  // a handle's or an address's letters, so the name after it stays.
+  { $id: 'ypogegrammeni-handle', text: '@a\u0345.wren hi', replyTo: wren },
+  { $id: 'ypogegrammeni-domain', text: 'x@y.a\u0345.wren', replyTo: wren },
+  {
+    $id: 'ypogegrammeni-local',
+    text: 'wren@a\u0345.b ok wren',
+    replyTo: wren,
+  },
+  { $id: 'ypogegrammeni-hashtag', text: '#a\u0345 wren', replyTo: wren },
 ];
 
 const DRAFTS = {
@@ -293,7 +303,7 @@ const DRAFTS = {
   keywordsTextNumber: { text: 'x', keywordsText: 5, keywords: ['three'] },
   keywordsUnicode: {
     text: 'x',
-    keywordsText: 'ΣΑΣ, σας, İstanbul, i̇stanbul, é, é',
+    keywordsText: 'ΣΑΣ, σας, İstanbul, i\u0307stanbul, é, e\u0301',
   },
   variablesOdd: {
     text: '{{a}} {{b}} {{c}} {{their.firstName}}',
@@ -386,6 +396,9 @@ const SYNC = {
     ],
   },
   textMissing: { variables: [{ key: 'a' }] },
+  // `{ ...draft, variables }` copies an array's or a string's indexes.
+  arrayDraft: ['x', { key: 'a' }],
+  stringDraft: 'a\u{1F33F}',
   numberText: { text: 5, variables: [] },
   null: null,
   nonObjectEntries: {
@@ -395,7 +408,7 @@ const SYNC = {
   unicodeKeys: {
     text: '{{é}} {{K}}',
     variables: [
-      { key: 'é', label: 'decomposed' },
+      { key: 'e\u0301', label: 'decomposed' },
       { key: 'K', label: 'kelvin' },
     ],
   },
@@ -479,6 +492,11 @@ export default async function cases() {
       embed: null,
     },
     seedDraft: ED.draftFromReply({ text: 'Not yet, Wren!', reply }).draft,
+    // `(base.langs || []).slice()` keeps a string as it is.
+    stringLangs: { name: 'S', text: 'x', langs: 'en' },
+    emptyStringLangs: { name: 'S', text: 'x', langs: '' },
+    stringTemplate: 'tpl',
+    arrayTemplate: ['a', { text: 'b' }],
     extraFields: {
       name: 'X',
       text: '{{a}}',

@@ -753,6 +753,38 @@
       }
     },
     {
+      "id": "arrayDraft",
+      "fn": "syncDraftVariables",
+      "input": {
+        "draft": [
+          "x",
+          {
+            "key": "a"
+          }
+        ]
+      },
+      "output": {
+        "0": "x",
+        "1": {
+          "key": "a"
+        },
+        "variables": []
+      }
+    },
+    {
+      "id": "stringDraft",
+      "fn": "syncDraftVariables",
+      "input": {
+        "draft": "a🌿"
+      },
+      "output": {
+        "0": "a",
+        "1": "�",
+        "2": "�",
+        "variables": []
+      }
+    },
+    {
       "id": "numberText",
       "fn": "syncDraftVariables",
       "input": {
@@ -1322,6 +1354,134 @@
         "variables": [],
         "embed": null,
         "use": "reply",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "stringLangs",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "name": "S",
+          "text": "x",
+          "langs": "en"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "S",
+        "text": "x",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": "en",
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "emptyStringLangs",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": {
+          "name": "S",
+          "text": "x",
+          "langs": ""
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "S",
+        "text": "x",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "stringTemplate",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": "tpl"
+      },
+      "output": {
+        "0": "t",
+        "1": "p",
+        "2": "l",
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "arrayTemplate",
+      "fn": "draftFromTemplate",
+      "input": {
+        "template": [
+          "a",
+          {
+            "text": "b"
+          }
+        ]
+      },
+      "output": {
+        "0": "a",
+        "1": {
+          "text": "b"
+        },
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
         "group": "",
         "shortcut": "",
         "keywords": [],
@@ -3766,6 +3926,111 @@
         "variables": [],
         "embed": null,
         "use": "reply",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "stringLangs",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "name": "S",
+          "text": "x",
+          "langs": "en"
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "S",
+        "text": "x",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "emptyStringLangs",
+      "fn": "roundTrip",
+      "input": {
+        "template": {
+          "name": "S",
+          "text": "x",
+          "langs": ""
+        }
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "S",
+        "text": "x",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "stringTemplate",
+      "fn": "roundTrip",
+      "input": {
+        "template": "tpl"
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "arrayTemplate",
+      "fn": "roundTrip",
+      "input": {
+        "template": [
+          "a",
+          {
+            "text": "b"
+          }
+        ]
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "",
+        "variables": [],
+        "embed": null,
+        "use": "any",
         "group": "",
         "shortcut": "",
         "keywords": [],
@@ -7036,6 +7301,150 @@
           "quoteView": null
         },
         "note": "“Bartholomew-Alexander” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "ypogegrammeni-handle",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "@aͅ.wren hi",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "@aͅ.wren hi",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "ypogegrammeni-domain",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "x@y.aͅ.wren",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "x@y.aͅ.wren",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": null
+      }
+    },
+    {
+      "id": "ypogegrammeni-local",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "wren@aͅ.b ok wren",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "wren@aͅ.b ok {{their.firstName}}",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“wren” became a blank that fills in with the first name of whoever you reply to."
+      }
+    },
+    {
+      "id": "ypogegrammeni-hashtag",
+      "fn": "draftFromReply",
+      "input": {
+        "text": "#aͅ wren",
+        "replyTo": {
+          "author": {
+            "handle": "wren.example",
+            "displayName": "wren"
+          }
+        }
+      },
+      "output": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "#aͅ {{their.firstName}}",
+          "variables": [],
+          "embed": null,
+          "use": "reply",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "note": "“wren” became a blank that fills in with the first name of whoever you reply to."
       }
     },
     {

@@ -164,6 +164,30 @@ const SCRIPTS = {
       ['read', ALICE],
     ],
   },
+  // Setting `__proto__` on an object sets its prototype: the use is
+  // counted and returned but never stored, and a stored `__proto__` member
+  // (JSON.parse keeps it) is read back through the prototype.
+  protoKey: {
+    store: {},
+    steps: [
+      ['record', '__proto__', ALICE, '2026-10-01T00:00:00.000Z'],
+      ['record', '__proto__', ALICE, '2026-10-02T00:00:00.000Z'],
+      ['record', 'constructor', ALICE, '2026-10-03T00:00:00.000Z'],
+      ['record', 'toString', ALICE, '2026-10-04T00:00:00.000Z'],
+      ['read', ALICE],
+    ],
+  },
+  protoStored: {
+    store: {
+      [key(ALICE)]:
+        '{"__proto__":{"count":4,"lastUsedAt":"2026-01-01T00:00:00.000Z"},"3la":{"count":1,"lastUsedAt":null}}',
+    },
+    steps: [
+      ['read', ALICE],
+      ['record', '__proto__', ALICE, '2026-10-01T00:00:00.000Z'],
+      ['record', '3la', ALICE, '2026-10-02T00:00:00.000Z'],
+    ],
+  },
   dropsLeastRecent: {
     store: { [key(ALICE)]: JSON.stringify(many(500)) },
     steps: [

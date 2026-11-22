@@ -51,6 +51,24 @@ enum TemplateJS {
     }
   }
 
+  /// The members `{ ...v }` copies: an object's own members, an array's
+  /// elements under their indexes, a string's code units under theirs, and
+  /// nothing for any other value (null and undefined included).
+  static func spread(_ value: JSONValue?) -> [String: JSONValue] {
+    switch value {
+    case .object(let members)?: return members
+    case .array(let items)?:
+      var out: [String: JSONValue] = [:]
+      for (index, item) in items.enumerated() { out[String(index)] = item }
+      return out
+    case .string(let text)?:
+      var out: [String: JSONValue] = [:]
+      for (index, unit) in text.utf16.enumerated() { out[String(index)] = .string(String(jsUnits: [unit])) }
+      return out
+    default: return [:]
+    }
+  }
+
   /// `(v || [])` walked as a list: an array's items. A truthy value of
   /// another type reads as no items (where the web would mostly throw a
   /// TypeError calling `.map` on it, or walk a string's characters to no

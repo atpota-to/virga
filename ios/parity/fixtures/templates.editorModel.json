@@ -9107,6 +9107,71 @@
       }
     },
     {
+      "id": "array-draft",
+      "fn": "addBlank",
+      "input": {
+        "draft": [
+          "a",
+          {
+            "key": "b"
+          }
+        ],
+        "label": "Which app?"
+      },
+      "output": {
+        "draft": {
+          "0": "a",
+          "1": {
+            "key": "b"
+          },
+          "text": "{{whichApp}}",
+          "variables": [
+            {
+              "label": "Which app?",
+              "hint": "",
+              "kind": "text",
+              "default": "",
+              "optional": false,
+              "key": "whichApp",
+              "choices": [],
+              "choicesText": ""
+            }
+          ]
+        },
+        "caret": 12,
+        "key": "whichApp"
+      }
+    },
+    {
+      "id": "string-draft",
+      "fn": "addBlank",
+      "input": {
+        "draft": "Hi",
+        "label": "Which app?"
+      },
+      "output": {
+        "draft": {
+          "0": "H",
+          "1": "i",
+          "text": "{{whichApp}}",
+          "variables": [
+            {
+              "label": "Which app?",
+              "hint": "",
+              "kind": "text",
+              "default": "",
+              "optional": false,
+              "key": "whichApp",
+              "choices": [],
+              "choicesText": ""
+            }
+          ]
+        },
+        "caret": 12,
+        "key": "whichApp"
+      }
+    },
+    {
       "id": "choice",
       "fn": "patchVariable",
       "input": {
@@ -9427,6 +9492,186 @@
       },
       "output": {
         "text": "x",
+        "variables": []
+      }
+    },
+    {
+      "id": "array-patch",
+      "fn": "patchVariable",
+      "input": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Hi {{their.firstName}}, try {{app}}",
+          "variables": [
+            {
+              "label": "",
+              "hint": "",
+              "kind": "text",
+              "default": "",
+              "optional": false,
+              "key": "app",
+              "choices": [],
+              "choicesText": ""
+            }
+          ],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "key": "app",
+        "patch": [
+          "p",
+          "q"
+        ]
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "Hi {{their.firstName}}, try {{app}}",
+        "variables": [
+          {
+            "0": "p",
+            "1": "q",
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "app",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "string-patch",
+      "fn": "patchVariable",
+      "input": {
+        "draft": {
+          "uri": null,
+          "cid": null,
+          "rkey": "",
+          "name": "",
+          "text": "Hi {{their.firstName}}, try {{app}}",
+          "variables": [
+            {
+              "label": "",
+              "hint": "",
+              "kind": "text",
+              "default": "",
+              "optional": false,
+              "key": "app",
+              "choices": [],
+              "choicesText": ""
+            }
+          ],
+          "embed": null,
+          "use": "any",
+          "group": "",
+          "shortcut": "",
+          "keywords": [],
+          "langs": [],
+          "createdAt": null,
+          "updatedAt": null,
+          "keywordsText": "",
+          "quoteMode": "none",
+          "quoteUrl": "",
+          "quoteView": null
+        },
+        "key": "app",
+        "patch": "pq"
+      },
+      "output": {
+        "uri": null,
+        "cid": null,
+        "rkey": "",
+        "name": "",
+        "text": "Hi {{their.firstName}}, try {{app}}",
+        "variables": [
+          {
+            "0": "p",
+            "1": "q",
+            "label": "",
+            "hint": "",
+            "kind": "text",
+            "default": "",
+            "optional": false,
+            "key": "app",
+            "choices": [],
+            "choicesText": ""
+          }
+        ],
+        "embed": null,
+        "use": "any",
+        "group": "",
+        "shortcut": "",
+        "keywords": [],
+        "langs": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "keywordsText": "",
+        "quoteMode": "none",
+        "quoteUrl": "",
+        "quoteView": null
+      }
+    },
+    {
+      "id": "array-draft",
+      "fn": "patchVariable",
+      "input": {
+        "draft": [
+          "a",
+          "b"
+        ],
+        "key": "app",
+        "patch": {}
+      },
+      "output": {
+        "0": "a",
+        "1": "b",
+        "variables": []
+      }
+    },
+    {
+      "id": "string-draft",
+      "fn": "patchVariable",
+      "input": {
+        "draft": "ab🌿",
+        "key": "app",
+        "patch": {}
+      },
+      "output": {
+        "0": "a",
+        "1": "b",
+        "2": "�",
+        "3": "�",
         "variables": []
       }
     },

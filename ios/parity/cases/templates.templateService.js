@@ -37,7 +37,7 @@ const DID = 'did:plc:bob';
 const OTHER = 'did:plc:carol';
 const CID = 'bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
 const NOW = Date.parse('2026-10-14T12:00:00.000Z');
-const FAMILY = '\u{1F468}‍\u{1F469}‍\u{1F467}‍\u{1F466}';
+const FAMILY = '\u{1F468}\u200D\u{1F469}\u200D\u{1F467}\u200D\u{1F466}';
 
 const uriFor = (rkey, did = DID) =>
   `at://${did}/${TEMPLATE_COLLECTION}/${rkey}`;
@@ -909,7 +909,7 @@ export default async function cases() {
     },
     { $id: 'code', plain: true, code: 'RecordNotFound' },
     { $id: 'message', message: 'record not found' },
-    { $id: 'message-spaces', message: 'Record\n\t not   Found here' },
+    { $id: 'message-spaces', message: 'Record\n\t not  \u00A0Found here' },
     { $id: 'could-not-find', message: 'COULD NOT FIND RECORD' },
     { $id: 'could-not-locate-two-spaces', message: 'could not  locate record' },
     { $id: 'embedded', message: 'xRecordNotFoundx' },
