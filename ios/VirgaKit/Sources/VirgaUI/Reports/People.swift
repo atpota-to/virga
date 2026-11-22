@@ -123,7 +123,9 @@ struct PersonRow: View {
     let resolved = model.flatMap { People.found($0, archive, did) }
     let face = People.choose(resolved, card)
     let name = People.displayName(face.handle, face.displayName, did)
-    let handle = face.handle.flatMap { h in h.isEmpty || (name.hasPrefix("@") && String(name.dropFirst()).jsEquals(h)) ? nil : h }
+    // `name.replace(/^@/, '') !== card.handle`: no handle under a name that already is it.
+    let bare = name.hasPrefix("@") ? String(name.dropFirst()) : name
+    let handle = face.handle.flatMap { h in h.isEmpty || bare.jsEquals(h) ? nil : h }
     let sets = ReportModels.relationSets(archive)
     let followsYou = rel && sets.isFollower(did)
     let phone = theme.isPhone

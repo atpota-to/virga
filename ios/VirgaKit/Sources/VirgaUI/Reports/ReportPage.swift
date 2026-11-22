@@ -232,18 +232,19 @@ enum ReportExport {
       return model.exportRows("blocks", rows)
     case "people":
       let m = ReportModels.peopleModel(archive, period, nowMs)
-      let handle = { (did: String) -> JSONValue? in .string(People.card(model, archive, did).handle ?? "") }
+      func handle(_ did: String) -> JSONValue? { .string(People.card(model, archive, did).handle ?? "") }
+      func of(_ r: TopActor, _ kind: String) -> JSONValue? { n(r.byKind[kind] ?? 0) }
       var rows: [[JSONValue?]] = [ToolExport.row(["direction", "did", "handle", "total", "likes", "reposts", "replies", "quotes", "mentions"])]
       for r in m.inbound {
         rows.append([
-          .string("received"), .string(r.did), handle(r.did), n(r.total), n(r.byKind["like"] ?? 0), n(r.byKind["repost"] ?? 0),
-          n(r.byKind["reply"] ?? 0), n(r.byKind["quote"] ?? 0), n(r.byKind["mention"] ?? 0),
+          .string("received"), .string(r.did), handle(r.did), n(r.total), of(r, "like"), of(r, "repost"), of(r, "reply"), of(r, "quote"),
+          of(r, "mention"),
         ])
       }
       for r in m.outbound {
         rows.append([
-          .string("given"), .string(r.did), handle(r.did), n(r.total), n(r.byKind["like"] ?? 0), n(r.byKind["repost"] ?? 0),
-          n(r.byKind["reply"] ?? 0), n(r.byKind["quote"] ?? 0), .string(""),
+          .string("given"), .string(r.did), handle(r.did), n(r.total), of(r, "like"), of(r, "repost"), of(r, "reply"), of(r, "quote"),
+          .string(""),
         ])
       }
       return model.exportRows("people", rows)
@@ -650,25 +651,23 @@ struct FollowersReportView: View {
     let series = ChartPoint.of(cumulative ? m.cumulative : m.counts)
     let days = ReportParts.days(period)
     let phrase = Periods.periodPhrase(period)
+    // The figures that change shape, worked out first, so the list below
+    // stays a short expression for the type checker.
+    let listed: AnyView? = (m.counterGap ?? 0) != 0 ? AnyView(ListedNote(profileCount: m.profileCount ?? m.total, listed: m.total)) : nil
+    let unfollows = Self.unfollowsFigure(log)
     if archive.followers.isEmpty {
       SyncEmpty(text: "Your followers haven’t been read yet. Run a sync to gather the list.")
     } else {
       FiguresView(
         [
-          ReportParts.fig(
-            "Followers", text: ChartFormat.fmtFigure(Double(m.profileCount ?? m.total)),
-            note: (m.counterGap ?? 0) != 0 ? AnyView(ListedNote(profileCount: m.profileCount ?? m.total, listed: m.total)) : nil),
+          ReportParts.fig("Followers", text: ChartFormat.fmtFigure(Double(m.profileCount ?? m.total)), note: listed),
           ReportParts.fig(
             days ? "New in \(phrase)" : "Gained, all time", Double(m.gained),
             delta: days ? .some(m.compare.pct) : nil,
             deltaTitle: days ? "\(Periods.periodBefore(period, true)): \(AppLocale.formatNumber(m.compare.previous))" : nil,
             sub: days ? "\(AppLocale.formatNumber(m.compare.previous)) \(Periods.periodBefore(period))" : nil),
           ReportParts.fig("Per day", m.perDay, decimals: true, sub: "Averaged over the window"),
-          log.tracking
-            ? ReportParts.fig(
-              "Unfollows at the last sync", text: ChartFormat.fmtFigure(Double(log.latestLost.count)),
-              note: AnyView(NoteLink(text: "Open the Unfollow tracker", to: "/tools/unfollow-tracker")))
-            : ReportParts.fig("Unfollows at the last sync", text: "—", sub: "Counted from your next sync"),
+          unfollows,
         ], label: "Followers in figures")
       ReportCard(
         title: "Growth",
@@ -716,6 +715,17 @@ struct FollowersReportView: View {
               + (m.undated > 0 ? " \(AppLocale.formatNumber(m.undated)) followers carry no readable follow date and sit outside the chart." : "")
           ])
     }
+  }
+
+  /// "Unfollows at the last sync": the count with the way to the Unfollow
+  /// tracker once the log is kept, else when counting starts.
+  static func unfollowsFigure(_ log: FollowerLogReport) -> FigureItem {
+    if log.tracking {
+      return ReportParts.fig(
+        "Unfollows at the last sync", text: ChartFormat.fmtFigure(Double(log.latestLost.count)),
+        note: AnyView(NoteLink(text: "Open the Unfollow tracker", to: "/tools/unfollow-tracker")))
+    }
+    return ReportParts.fig("Unfollows at the last sync", text: "—", sub: "Counted from your next sync")
   }
 }
 
@@ -821,23 +831,30 @@ struct EngagementReportView: View {
   private func figures(_ m: EngagementReport) -> some View {
     let days = ReportParts.days(period)
     let head = ReportParts.head(kind)
-    let best = m.top.first
-    return FiguresView(
-      [
-        ReportParts.fig(
-          kind == "all" ? "Received" : "\(head) received", Double(m.total),
-          delta: days ? .some(m.compare.pct) : nil,
-          deltaTitle: days ? "On posts from \(Periods.periodBefore(period)): \(AppLocale.formatNumber(m.compare.previous))" : nil,
-          sub: "On \(AppLocale.formatNumber(m.posts)) posts"),
-        ReportParts.fig(
-          "Per post", text: m.ownRate == nil ? "—" : ChartFormat.fmtRate(m.ownRate),
-          delta: m.rateCompare.map { $0.pct },
-          deltaTitle: m.rateCompare.map { "\(Periods.periodBefore(period, true)): \(ChartFormat.fmtRate($0.previous))" },
-          sub: "Posts and threads"),
-        ReportParts.fig(
-          "Best post", Double(best.map { Analytics.engagementOf($0, kind) } ?? 0),
-          sub: best.map { Time.formatDateShort($0.at ?? "") }),
-      ], label: "Engagement in figures")
+    // Each figure's parts worked out first, so the list below stays a
+    // short expression for the type checker.
+    let received: FigureItem = ReportParts.fig(
+      kind == "all" ? "Received" : "\(head) received", Double(m.total),
+      delta: days ? .some(m.compare.pct) : nil,
+      deltaTitle: days ? "On posts from \(Periods.periodBefore(period)): \(AppLocale.formatNumber(m.compare.previous))" : nil,
+      sub: "On \(AppLocale.formatNumber(m.posts)) posts")
+    var rateDelta: Double?? = nil
+    var rateTitle: String? = nil
+    if let compare = m.rateCompare {
+      rateDelta = .some(compare.pct)
+      rateTitle = "\(Periods.periodBefore(period, true)): \(ChartFormat.fmtRate(compare.previous))"
+    }
+    let perPost: FigureItem = ReportParts.fig(
+      "Per post", text: m.ownRate == nil ? "—" : ChartFormat.fmtRate(m.ownRate), delta: rateDelta, deltaTitle: rateTitle,
+      sub: "Posts and threads")
+    var bestCount = 0
+    var bestWhen: String? = nil
+    if let best = m.top.first {
+      bestCount = Analytics.engagementOf(best, kind)
+      bestWhen = Time.formatDateShort(best.at ?? "")
+    }
+    let bestPost: FigureItem = ReportParts.fig("Best post", Double(bestCount), sub: bestWhen)
+    return FiguresView([received, perPost, bestPost], label: "Engagement in figures")
   }
 
   private func lead(_ m: EngagementReport) -> some View {
