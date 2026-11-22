@@ -118,15 +118,16 @@
       "synced": "943739766b94"
     },
     "src/share/chartImage.js": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaInsights/Share/ChartImage.swift",
-        "ios/VirgaKit/Sources/VirgaInsights/Share/ChartImage+Canvas.swift"
+        "ios/VirgaKit/Sources/VirgaInsights/Share/ChartImage+Canvas.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Share/ShareImage.swift"
       ],
       "fixtures": [
         "insights.chartImage"
       ],
-      "note": "Everything but renderShareImage is ported: the sizes and plot, readShareTheme (over VirgaCore's ResolvedTheme, with the web's fallbacks), seriesLayout, axisLabels, fitText and drawShareImage, which makes the web's canvas calls one for one on a ShareCanvas (the 2D canvas API's calls and state; the fixture holds 90 drawings, 22,884 calls, to the web's). renderShareImage (waiting for the typeface, a <canvas>, toBlob, a File) is VirgaUI's: a ShareCanvas over SwiftUI's GraphicsContext inside a Canvas view of ChartImage.shareWidth × shareHeight, measuring text in Instrument Sans (ChartImage.fontFamily) with CoreText, rendered to PNG with ImageRenderer as 'virga-chart.png'. The canvas's arc angles are the canvas API's (radians, clockwise in a y-down space). drawShareImage returns false where the web's drawing throws part way (a line with no buckets, whose last point it reads; shareSpec never gives one), after the same calls and none after, so VirgaUI makes no picture, as renderShareImage rejects (insights.chartImage drawShareImagePartly).",
+      "note": "Everything is ported: the sizes and plot, readShareTheme (over VirgaCore's ResolvedTheme, with the web's fallbacks), seriesLayout, axisLabels, fitText and drawShareImage, which makes the web's canvas calls one for one on a ShareCanvas (the 2D canvas API's calls and state; the fixture holds 90 drawings, 22,884 calls, to the web's). renderShareImage is VirgaUI's ShareImage.render (Share/ShareImage.swift): a ShareCanvas over SwiftUI's GraphicsContext inside a Canvas view of ChartImage.shareWidth × shareHeight, measuring and setting text in Instrument Sans (its wght axis, without the app's tabular figures, as a canvas sets it) through the context's resolved text, rendered to PNG with ImageRenderer at one pixel a point, as 'virga-chart.png'. The canvas's arc angles are the canvas API's (radians, clockwise in a y-down space). drawShareImage returns false where the web's drawing throws part way (a line with no buckets, whose last point it reads; shareSpec never gives one), after the same calls and none after, so VirgaUI makes no picture, as renderShareImage rejects (insights.chartImage drawShareImagePartly). ShareFont has a public init for a canvas's starting font.",
       "synced": "7493c2843a90"
     },
     "src/share/shareSpec.js": {

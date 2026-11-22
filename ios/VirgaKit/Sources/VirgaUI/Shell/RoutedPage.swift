@@ -142,15 +142,12 @@ public struct RoutedPage: View {
 
   @ViewBuilder
   private func tools(_ key: String?) -> some View {
+    // Tools/ToolPage.swift: the index, each tool, and the page of one that
+    // isn't built.
     if let key {
-      if let tool = ToolsRegistry.toolByKey[key], tool.planned != true {
-        UnportedPage(PageHeaderModel(title: tool.name, sub: tool.desc, access: [tool.access], crumbs: [Crumb("Tools", to: "/tools")]))
-      } else {
-        UnbuiltToolPage(tool: ToolsRegistry.toolByKey[key])
-      }
+      ToolPage(key: key)
     } else {
-      UnportedPage(
-        PageHeaderModel(title: "Tools", sub: "Small tools for looking after your account. Each says what it can touch before it touches it."))
+      ToolsIndex()
     }
   }
 

@@ -154,44 +154,86 @@
       "synced": "96555b05c896"
     },
     "src/share/ShareDialog.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Share/ShareDialog.swift"
+      ],
+      "note": "Post this chart as a sheet: the spec from ShareSpec.shareSpec over the card's type, its own settings and the account's notes (Annotations.readAnnotations), for the card's period or the page's; 'There’s nothing on this card to draw yet.'; the picture (ShareImage, the on-screen theme's colours) with its edge, 'Drawing the picture…' or the failure; the description (ShareSpec.shareAltText) in a text area held to 2,000 with its hint, over the limit past 1,800; Save the picture (into Photos, add-only, after asking; a toast says it was saved or couldn't be: iOS's own words, as a browser's download needs none) and Write a post with it, first and on its own line on a phone. Write a post with it opens the composer through the `shareComposer` environment hook (asDid, sharePostText, the PNG and the description) once a composer sets it; until then it is a ShareLink of virga-chart.png with the post's first line. The hook for the dashboards and reports: PostChartButton (a card's ghost icon, 'Post <name> as a picture'), PostChartLink ('Post this chart') and .shareDialog($request, period:) with ShareRequest.",
+      "synced": "117ad4a1eb68"
     },
     "src/tools/ArchiveSearch.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Tools/ArchiveSearchTool.swift"
+      ],
+      "note": "matchesWords (a word in the text or the sites linked; a # word a whole tag, any case, or the written tag on an older row), the window, the kind, the sort (newest, oldest, most engagement then newest, in V8's sort) over the archive's posts; the toolbar (the search field, Kind of post, Sort), the count with what was searched for, the line until the archive's content shape, Export as a menu (these posts and every post as CSV, everything as JSON, through the system's exporter), each post as PostRow (two lines of its words, the way to it on Bluesky, its meta line of when, reply or quote, and its counts), Show 30 more and the caption. The search isn't deferred.",
+      "synced": "1a46ba98fb15"
     },
     "src/tools/BestTime.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Tools/BestTimeTool.swift"
+      ],
+      "note": "The header with the period picker offering 90d, 1y, All and Custom (the window in use pressed: bestTimeWindow reads the year under 90 days), the sentence (bestTimeSentence), the heatmap with Hours per column (Hourly, 2 hours, 4 hours; cells 22 or 30 tall), the caption, every slot with posts as a table under Show as table (in a 384-point window), the best slots (rank, when, typical, posts; on a phone the posts under the slot) with the way to the weekly schedule, and By weekday as a BarList with its caption, side by side from 400 a column. The zone is the device's (TimeZone identifier, underscores as spaces).",
+      "synced": "19972a896381"
     },
     "src/tools/FollowBack.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Tools/FollowBackTool.swift"
+      ],
+      "note": "The queue over followBackModel for the period, less the dismissed (KeepListModel 'followback' on the app's key-value store): its count and line, Bring back N dismissed, the callout before the follows are read, a person row each (the count of interactions, then kindsLine by count where the row has room; Follow back; the ✕ that dismisses), anyone followed from here kept at the top as 'followed just now' until the page is left, Show 25 more, and the caption. People rows are ToolParts' port of people.jsx's PersonRow and useFollow.",
+      "synced": "6187f4fa5818"
     },
     "src/tools/FollowCleanup.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Tools/FollowCleanupTool.swift"
+      ],
+      "note": "Every follow once (the earliest record), with its interactions (all, and the last year), whether they follow you, and the activity on its card; the header's line; the callout before the follows are read; the activity check (ArchiveModel.checkActivity through the session's network, its progress with Stop, which cancels it, then the toast), Quiet after 30/90/180/365 days; the four filter figures; the line over the table (the sort, Show/Hide kept, Export 'follows'; or the count selected with Clear, Keep, don’t suggest and Unfollow n; or Unfollowing n of m…); Select all shown; each row (its tick box, face, name struck through once unfollowed, handle and Kept, Unfollow or Undo, its error, and the meta line: the activity with its dot, followed, follows you, interactions); Show 50 more; the caption; and the confirm dialog. The kept list is KeepListModel 'cleanup'. Not here: the table's columns from 641 wide (every row is set as the web's phone sets it).",
+      "synced": "186dcedd56f3"
     },
     "src/tools/Identity.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Tools/IdentityTool.swift"
+      ],
+      "note": "The account (the open account's profile: face, name, handle), the four figures (followers, following, posts, the year it was made with the day under it, from the PLC log's first operation or the profile's createdAt), Identifiers (the DID in the code face, the handle or 'Not verified right now', the PDS from Atproto.resolvePds while 'Looking it up…' or 'Couldn’t be resolved', the DID document's host as a link; Copy on each, which says Copied for a moment), the handle and server history from Atproto.getPlcHistory (historyEvents: created, handle changed, moved, deactivated, newest first, on a timeline; 'Reading the log…', a did:web's line, or the directory's), and the repo's records, collections, apps and oldest record with the way to the Atmosphere report. Both reads go through the session's transport and DID-document cache (the archive's environment).",
+      "synced": "05e789a0d6ed"
     },
     "src/tools/InteractionLookup.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Tools/InteractionLookupTool.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Tools/InteractionChosen.swift"
+      ],
+      "note": "The chosen account in the address (?who= on the navigator, cleared when the page is left), an address that names a handle looked up through Atproto.getProfile on the session's transport (missing or failed in a warn callout); PersonSearch (matchPeople's seven, the lookup option for a whole handle or DID, 'Looking up @…', the not-found and couldn’t-reach lines, the hint, Return taking the first); StartingPoint with its legend, PairCount and Show 12 more; Chosen: the person (Open on Bluesky, Choose someone else, the three facts), By kind, each way (bars to the largest, the sum, first and latest), Interactions per month (both ways, the line under the chart and its table, the caption), the posts they engaged with (or the line why not) and your replies and quotes, Every interaction (Direction and Kind, Export as one file or a choice, each event's date, glyph, phrase, words and its post), and How this is counted. Not here: the suggestions float over the page on the web and open under the field here, and the ↑/↓/Escape keys of the combobox.",
+      "synced": "6cd82245b3d9"
     },
     "src/tools/ListsYoureOn.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Tools/ListsTool.swift"
+      ],
+      "note": "Before lists are read: the sentence and Sync now; none: No lists here. Then the three filter figures (Every list, Moderation lists with their subscribers, Curation lists), the count with Export ('lists'), and each list as the web's phone sets the table's row, at every width: its name (or Untitled list) as the way to it on Bluesky with its kind at the right (Moderation a step louder), and a meta line of by @owner, its subscribers (moderation lists only) and when you were added, a cell with nothing to say left out (an owner whose name hasn't been read is left out, as on a phone). Not here: the table's columns from 641 wide, and the owner's 'Unknown account' with the DID as its title.",
+      "synced": "ad96bd914617"
     },
     "src/tools/ToolPage.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Tools/ToolPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/RoutedPage.swift"
+      ],
+      "note": "ToolHeader (Tools in the crumbs, the name, the line, what it touches, and the page's controls), the page of a tool that isn't built (or of an address that names none) with See every tool, and ToolsIndex: the kinds in two columns where there is room (each at least 360), each kind's heading over a rule in ink, a row per tool (its glyph, name, line, AccessLine with 'Not built yet.' for a planned one, and useToolStats' line: follows and checked, the last sync's unfollows, the queue, lists and moderation lists, accounts on record, posts, collections), the way in at the right; a planned tool is a quieter row that goes nowhere.",
+      "synced": "805d5d3cc834"
     },
     "src/tools/UnfollowTracker.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Tools/UnfollowTrackerTool.swift"
+      ],
+      "note": "Before a second list: the sentence and Sync now. Then the four figures (the last sync's, and in all since the log began), Left and Arrived as the heading's keys with Sync now and Export (ArchiveModel.exportRows 'follower-changes', through the system's exporter) at the right, the changes under the sync that noticed each (Noticed …, since the sync on … · n), each a person row with the log's card standing in, 'had followed you since …' or 'followed …', Show 40 more, and the caption. The 'in this browser' words are the web's.",
+      "synced": "fb8350731fd5"
     }
   }
 }
