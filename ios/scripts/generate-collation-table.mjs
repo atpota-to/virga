@@ -147,6 +147,18 @@ for (const x of singles) {
   if (ys.length) swaps.set(cpOf(x), ys);
 }
 
+// Accent-only code points that are several accents (ﳳ is a damma and a
+// shadda, its compatibility decomposition's marks): expansions, below.
+const markExpansions = new Map();
+for (let i = accentOnly.length - 1; i >= 0; i -= 1) {
+  const c = accentOnly[i];
+  const run = [...c.normalize('NFKD')].filter((x) => accentSet.has(x));
+  if (run.length > 1 && accent.compare(`a${c}`, `a${run.join('')}`) === 0) {
+    markExpansions.set(c, run);
+    accentOnly.splice(i, 1);
+  }
+}
+
 // Accent-only code points (combining marks, mostly): their order is the
 // order of `a` followed by each. Ones the collator tells apart only by
 // case share an accent and differ in case.
@@ -200,6 +212,8 @@ for (const c of weighed) {
     }
   }
 }
+
+for (const [c, run] of markExpansions) expansions.set(c, unitsOf(run));
 
 // The ideographs in the collator's order: each is its own primary weight.
 implicitChars.sort((x, y) => full.compare(x, y));
@@ -431,12 +445,28 @@ function accentSlot(c, run) {
   return slot;
 }
 
-/** A part's cases, lightest first, or null when it has none (a mark, an ideograph). */
+/** The cases of each accent: `{ t, rep }`, lightest first. */
+const markCases = new Map();
+for (const [m, { rank, t }] of accentWeight) {
+  if (!markCases.has(rank)) markCases.set(rank, []);
+  const cases = markCases.get(rank);
+  if (!cases.some((x) => x.t === tertiary(t))) cases.push({ t: tertiary(t), rep: m });
+}
+for (const cases of markCases.values()) cases.sort((x, y) => x.t - y.t);
+
+/**
+ * A part's cases, lightest first, and a key naming them, or null when it
+ * has none (an ideograph).
+ */
 function casesOf(u) {
+  if (accentWeight.has(u)) {
+    const { rank } = accentWeight.get(u);
+    return { key: `m${rank}`, cases: markCases.get(rank) };
+  }
   const g = groupOf.get(u);
   const w = weights.get(u);
   if (!g || !w || !g.cases.has(w.mark)) return null;
-  return { g, mark: w.mark, cases: g.cases.get(w.mark) };
+  return { key: `${groups.indexOf(g)}|${w.mark}`, cases: g.cases.get(w.mark) };
 }
 const lightest = (u) => casesOf(u)?.cases[0].rep ?? u;
 const heaviest = (u) => casesOf(u)?.cases.at(-1).rep ?? u;
@@ -502,7 +532,7 @@ for (const [c, run] of expansions) {
   if (place.at)
     placed.push({
       c,
-      key: `${groups.indexOf(place.at.g)}|${place.at.mark}|${place.k}|${place.fixed.join('')}`,
+      key: `${place.at.key}|${place.k}|${place.fixed.join('')}`,
       after: place.after,
       expansion: e,
       done: ({ t }) => (e.slot = t),

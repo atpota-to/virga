@@ -103,8 +103,10 @@ public enum JSCollation {
     var implicitRuns: [(first: UInt32, count: UInt32, order: UInt32)] = []
     var decompositions: [UInt32: [UInt32]] = [:]
     var combiningClass: [UInt32: UInt8] = [:]
-    /// Contractions by the first code point of their decomposition, longest first.
-    var contractions: [UInt32: [(parts: [UInt32], cp: UInt32)]] = [:]
+    /// The runs of code points the collator weighs as one (contractions),
+    /// with the code the table weighs each under, and every run's prefixes.
+    var contractions: [[UInt32]: UInt32] = [:]
+    var contractionPrefixes: Set<[UInt32]> = []
     /// The vowels weighed after the consonant they're written before, with those consonants.
     var swaps: [UInt32: Set<UInt32>] = [:]
 
@@ -144,10 +146,8 @@ public enum JSCollation {
     }
     for item in items(contractionSource) {
       guard let (cp, parts) = mapping(item) else { continue }
-      table.contractions[parts[0], default: []].append((parts, cp))
-    }
-    for (first, list) in table.contractions {
-      table.contractions[first] = list.sorted { $0.parts.count > $1.parts.count }
+      table.contractions[parts] = cp
+      for n in 1...parts.count { table.contractionPrefixes.insert(Array(parts.prefix(n))) }
     }
     for item in items(swapSource) {
       guard let gt = item.firstIndex(of: ">"), let vowel = hex(item[..<gt]) else { continue }
@@ -284,7 +284,7 @@ public enum JSCollation {
     out.reserveCapacity(cps.count)
     var i = 0
     while i < cps.count {
-      if let candidates = table.contractions[cps[i]] { contract(candidates, at: i, in: &cps, table: table) }
+      if table.contractionPrefixes.contains([cps[i]]) { contract(at: i, in: &cps, table: table) }
       if let consonants = table.swaps[cps[i]], i + 1 < cps.count, consonants.contains(cps[i + 1]) {
         append(cps[i + 1], to: &out)
         append(cps[i], to: &out)
@@ -297,37 +297,38 @@ public enum JSCollation {
     return out
   }
 
-  /// Puts the contraction starting at `i` back together: its parts become
-  /// the one code point the table weighs. The parts in a row, or (UCA
-  /// S2.1) a first code point and a mark further on that nothing between
-  /// blocks, as with the shadda in و + ّ + ٔ (canonical order puts it
-  /// before the hamza of ؤ).
-  static func contract(
-    _ candidates: [(parts: [UInt32], cp: UInt32)], at i: Int, in cps: inout [UInt32], table: Table
-  ) {
-    for candidate in candidates {
-      let n = candidate.parts.count
-      guard i + n <= cps.count, cps[i..<(i + n)].elementsEqual(candidate.parts) else { continue }
-      cps.replaceSubrange(i..<(i + n), with: [candidate.cp])
-      return
+  /// Puts the contraction starting at `i` back together (UCA S2.1): the
+  /// longest run in a row the table weighs as one, then the marks further
+  /// on that nothing skipped blocks and that make a longer one, as with the
+  /// shadda in و + ّ + ٔ (canonical order puts it before the hamza of ؤ) or
+  /// ෝ's al-lakuna after a nukta. The contraction's code takes the first
+  /// code point's place and the rest of its parts go; skipped marks stay.
+  static func contract(at i: Int, in cps: inout [UInt32], table: Table) {
+    var matched = [cps[i]]
+    var used: [Int] = []
+    var best: (cp: UInt32, used: [Int])?
+    var k = i + 1
+    while k < cps.count, table.contractionPrefixes.contains(matched + [cps[k]]) {
+      matched.append(cps[k])
+      used.append(k)
+      if let cp = table.contractions[matched] { best = (cp, used) }
+      k += 1
     }
-    // A mark is unblocked when no code point between it and the first has
-    // combining class 0 or one at least its own.
-    var highest: UInt8 = 0
-    var j = i + 1
-    while j < cps.count {
-      let ccc = table.combiningClass[cps[j]] ?? 0
-      if ccc == 0 { break }
-      if ccc > highest || j == i + 1,
-        let candidate = candidates.first(where: { $0.parts.count == 2 && $0.parts[1] == cps[j] })
-      {
-        cps.remove(at: j)
-        cps[i] = candidate.cp
-        return
+    // A mark is blocked by one skipped before it whose class is at least its own.
+    var skipped: UInt8 = 0
+    while k < cps.count, let ccc = table.combiningClass[cps[k]], ccc != 0 {
+      if ccc > skipped, table.contractionPrefixes.contains(matched + [cps[k]]) {
+        matched.append(cps[k])
+        used.append(k)
+        if let cp = table.contractions[matched] { best = (cp, used) }
+      } else {
+        skipped = Swift.max(skipped, ccc)
       }
-      highest = Swift.max(highest, ccc)
-      j += 1
+      k += 1
     }
+    guard let best else { return }
+    cps[i] = best.cp
+    for index in best.used.reversed() { cps.remove(at: index) }
   }
 
   /// Appends the elements `cp` weighs: each its own tertiary plus
