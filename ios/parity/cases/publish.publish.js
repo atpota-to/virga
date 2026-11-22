@@ -32,7 +32,6 @@ import {
 
 export const sources = ['src/posting/lib/publish.js'];
 
-const POST = 'app.bsky.feed.post';
 const VIDEO = 'https://video.bsky.app/xrpc/app.bsky.video.';
 const VIDEO_BLOB = {
   $type: 'blob',
