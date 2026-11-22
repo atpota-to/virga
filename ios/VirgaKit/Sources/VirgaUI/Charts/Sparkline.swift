@@ -2,9 +2,10 @@
 // Ports src/charts/charts.css (.sparkline)
 //
 // A small line for a figure's trend: no axes, no labels (the figure beside
-// it is the number), 32 tall and as wide as it is given, its stroke 1.5
-// whatever the stretch, over the --chart-area wash. Hidden from VoiceOver:
-// the figure says it.
+// it is the number), 32 tall (a figure card's 40) and as wide as it is
+// given, its stroke 1.5 whatever the stretch, over the --chart-area wash;
+// a gap in the values is left out, as the web's drops nulls. Hidden from
+// VoiceOver: the figure says it.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -13,10 +14,12 @@ public struct Sparkline: View {
   @Environment(\.virgaTheme) private var theme
   private let values: [Double]
   private let area: Bool
+  private let height: CGFloat
 
-  public init(values: [Double?], area: Bool = true) {
+  public init(values: [Double?], area: Bool = true, height: CGFloat = Measure.Chart.sparkHeight) {
     self.values = values.compactMap { $0 }.filter(\.isFinite)
     self.area = area
+    self.height = height
   }
 
   public var body: some View {
@@ -31,7 +34,7 @@ public struct Sparkline: View {
         }
       }
     }
-    .frame(height: Measure.Chart.sparkHeight)
+    .frame(height: height)
     .accessibilityHidden(true)
   }
 

@@ -3,7 +3,8 @@
 //
 // A grid of cells shaded on one ramp (--heat-0 for nothing to --heat-6),
 // weekdays down the side, hours across. A cell with too little to say is an
-// outline, not a zero; the best is ringed in ink. The steps are
+// outline, not a zero; the best is ringed in ink, and in high contrast
+// every other shaded cell has an edge in --line-soft (theme.css). The steps are
 // ChartFormat.heatSteps (each value's rank among those above zero). Every
 // cell's number is in its title (a pointer's tooltip, and the cell's name to
 // VoiceOver when it is reached); `summary`, one sentence on where it peaks,
@@ -125,6 +126,9 @@ public struct Heatmap: View {
           shape.strokeBorder(theme.line, lineWidth: 1)
         } else if cell.best {
           shape.strokeBorder(theme.ink, lineWidth: 2)
+        } else if theme.isHighContrast, let edge = ThemeKit.highContrastHeatCellEdge.first {
+          // High contrast outlines every shaded cell, so a pale one still shows.
+          shape.strokeBorder(theme.color(edge.color ?? .variable(.lineSoft)), lineWidth: theme.points(edge.spread ?? .px(1)))
         }
       }
       .frame(maxWidth: .infinity)

@@ -143,13 +143,20 @@ public struct SeriesChart: View {
 
   private var shownMarks: [SeriesMark] { marks.filter { $0.i >= 0 && $0.i < n } }
 
-  private var scale: ChartScale {
+  /// `dataMax`: the series, the second line as plotted, the trend's top and
+  /// the ghost's reach.
+  private var dataMax: Double {
     let values = series.map { $0.v ?? 0 }
     let second = secondaryPlot?.map { $0.v ?? 0 } ?? []
     let trendMax = trend.map { $0.map { $0.v ?? 0 }.max() ?? 0 } ?? 0
-    let high = (values + second + [trendMax, showGhost ? ghost?.v ?? 0 : 0]).max() ?? 0
+    return (values + second + [trendMax, showGhost ? ghost?.v ?? 0 : 0]).max() ?? 0
+  }
+
+  private var scale: ChartScale {
+    let values = series.map { $0.v ?? 0 }
+    let second = secondaryPlot?.map { $0.v ?? 0 } ?? []
     let low = (values + second).min() ?? 0
-    return ChartFormat.chartScale(low, high, zeroBase: zeroBase, bars: mode == .bars)
+    return ChartFormat.chartScale(low, dataMax, zeroBase: zeroBase, bars: mode == .bars)
   }
 
   private var trendName: String? {
@@ -207,7 +214,7 @@ public struct SeriesChart: View {
     let slot = max(1, (width - Measure.Chart.labelColumn - gutterPoints) / CGFloat(max(1, n)))
     let gutter = Double(gutterPoints / slot)
     let barWidth = max(1, min(Measure.Chart.barMax, slot - Measure.Chart.barGap))
-    let stops = ChartFormat.axisStops(series.map(\.seriesPoint), unit)
+    let stops = Self.dates(ChartFormat.axisStops(series.map(\.seriesPoint), unit), slot: slot, reach: mode == .bars ? barWidth / 2 : 0, width: width)
     return Chart {
       dataMarks(barWidth: barWidth, scale: scale)
       trendMarks
@@ -254,6 +261,35 @@ public struct SeriesChart: View {
     .accessibilityIdentifier("series-chart")
   }
 
+  /// The dates under the plot: the middle one steps aside when a narrow
+  /// chart would run it into an end one (the web's estimate of the words'
+  /// width at 12 points is enough to tell). The ends hang from a bar's own
+  /// edges, a line's from its points.
+  static func dates(_ stops: [AxisStop], slot: CGFloat, reach: CGFloat, width: CGFloat) -> [AxisStop] {
+    func x(_ i: Int) -> CGFloat { Measure.Chart.labelColumn + slot * (CGFloat(i) + 0.5) }
+    func at(_ s: AxisStop) -> CGFloat {
+      switch s.anchor {
+      case "start": return max(0, x(s.i) - reach)
+      case "end": return min(width, x(s.i) + reach)
+      default: return x(s.i)
+      }
+    }
+    func words(_ s: AxisStop) -> CGFloat { CGFloat(s.text.jsLength) * Measure.Chart.dateCharWidth }
+    var out: [AxisStop] = []
+    for (k, s) in stops.enumerated() {
+      guard s.anchor == "middle", let first = stops.first else {
+        out.append(s)
+        continue
+      }
+      let half = words(s) / 2
+      let clearsFirst = at(s) - half > at(first) + words(first) + Measure.Chart.dateClearance
+      let next = k + 1 < stops.count ? stops[k + 1] : nil
+      let clearsLast = next.map { at(s) + half < at($0) - words($0) - Measure.Chart.dateClearance } ?? true
+      if clearsFirst && clearsLast { out.append(s) }
+    }
+    return out
+  }
+
   static func anchor(_ name: String?) -> UnitPoint {
     switch name {
     case "start": return .topLeading
@@ -263,8 +299,7 @@ public struct SeriesChart: View {
   }
 
   private func summary(_ scale: ChartScale) -> String {
-    let peak = (series.map { $0.v ?? 0 } + (secondaryPlot?.map { $0.v ?? 0 } ?? [])).max() ?? 0
-    var out = "\(label): \(n) \(unit.rawValue) buckets, peak \(format(peak))"
+    var out = "\(label): \(n) \(unit.rawValue) buckets, peak \(format(dataMax))"
     if showGhost, let ghost {
       out += "; dashed reference reaching \(AppLocale.formatNumber(ghost.v.jsRounded))"
     }
@@ -387,7 +422,7 @@ public struct SeriesChart: View {
     let point = series[i]
     out.append(.init(text: (seriesLabel.map { "\($0) " } ?? "") + format(point.v), style: .strong))
     if let s = secondarySeries?[i], let v = s.v {
-      out.append(.init(text: "\(secondary?.label ?? "") \(AppLocale.formatNumber(v.jsRounded))", style: .second))
+      out.append(.init(text: "\(secondary?.label ?? "") \(AppLocale.formatNumber(v.jsRounded))", style: .strongSecond))
     }
     if stacked, let total = secondaryPlot?[i].v {
       out.append(.init(text: "Total \(AppLocale.formatNumber(total.jsRounded))", style: .strong))
@@ -537,7 +572,9 @@ struct Dot: View {
 /// night), its first line strong.
 struct ChartTip: View {
   struct Line: Hashable {
-    enum Style { case strong, second, plain, mark }
+    /// `strong` the first line; `strongSecond` the second series' value
+    /// (`<strong className="an-chart-tip-secondary">`); `second` the trend's.
+    enum Style { case strong, strongSecond, second, plain, mark }
     var text: String
     var style: Style
   }
@@ -554,6 +591,10 @@ struct ChartTip: View {
           Text(line.text)
             .virgaText(.textBase, weight: VirgaWeight.semibold)
             .foregroundStyle(night ? Measure.Chart.tipStrongNight : Measure.Chart.tipStrongDay)
+        case .strongSecond:
+          Text(line.text)
+            .virgaText(.textBase, weight: VirgaWeight.semibold)
+            .foregroundStyle(theme.secondTip)
         case .second:
           Text(line.text).foregroundStyle(theme.secondTip)
         case .mark:
