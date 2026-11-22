@@ -158,11 +158,14 @@ public struct RoutedPage: View {
     }
   }
 
-  /// PostingPage: a page that runs on Virga's server shows NeedsBackend
-  /// instead for an account without a long session; Templates
-  /// (Posting/TemplatesPage.swift), keyed by the open account, with the
-  /// part of the address after it; every other posting page its header
-  /// (PostingHeader) and that it isn't here yet.
+  /// PostingPage: a page that runs on Virga's server (`needsBackend`:
+  /// Scheduled, the weekly schedule, Timers) shows NeedsBackend under its
+  /// header, without its access line, for an account that can't schedule;
+  /// otherwise the page, keyed by the open account (so a switch never shows
+  /// one account's page state under another's name), with the part of the
+  /// address after it where it takes one: the overview (HubPage), Drafts,
+  /// Posted, Timers, Templates and the Library (Posting/, Library/). A page
+  /// not in the app yet shows its header and says so.
   @ViewBuilder
   private func posting(_ key: String?, id: String?) -> some View {
     let pageKey = key == "compose" ? "hub" : (key ?? "hub")
