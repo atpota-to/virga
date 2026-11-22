@@ -55,9 +55,33 @@ func expectOutput(
   #expect(d == nil, "\(c): \(d ?? "")", sourceLocation: sourceLocation)
 }
 
-/// `Parity.diff`, then `scalarDiff`.
+/// `Parity.diff`, then `scalarDiff`, then `numberDiff`.
 func exactDiff(_ actual: JSONValue, _ expected: JSONValue, strictNulls: Bool = false) -> String? {
-  Parity.diff(actual, expected, strictNulls: strictNulls) ?? scalarDiff(actual, expected)
+  Parity.diff(actual, expected, strictNulls: strictNulls) ?? scalarDiff(actual, expected) ?? numberDiff(actual, expected)
+}
+
+/// Where a number in `actual` isn't the very double in the same place in
+/// `expected`, or nil. `Parity.diff` lets numbers differ by a part in a
+/// billion; the web's sums, means and pixel positions are doubles worked
+/// out in a set order, and the port must get the same ones, bit for bit.
+func numberDiff(_ actual: JSONValue, _ expected: JSONValue, path: String = "$") -> String? {
+  switch (actual, expected) {
+  case (.number(let a), .number(let b)):
+    return a == b ? nil : "\(path): \(JSNumber.format(a)) ≠ expected \(JSNumber.format(b)) (exactly)"
+  case (.array(let a), .array(let b)):
+    for (index, pair) in zip(a, b).enumerated() {
+      if let d = numberDiff(pair.0, pair.1, path: "\(path)[\(index)]") { return d }
+    }
+    return nil
+  case (.object(let a), .object(let b)):
+    for key in a.keys.sorted() {
+      guard let other = b[key] else { continue }
+      if let d = numberDiff(a[key]!, other, path: "\(path).\(key)") { return d }
+    }
+    return nil
+  default:
+    return nil
+  }
 }
 
 /// Where a string in `actual` differs from the one in the same place in

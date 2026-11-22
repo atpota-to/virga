@@ -1,6 +1,6 @@
-// Ports harness/harness.js (the worlds createHarness holds, in part) and
-// harness/fakeNetwork.js (its repo CAR cache, in part); the rest of both
-// files is the fake network, which comes later.
+// Ports harness/harness.js (the worlds createHarness holds) and
+// harness/fakeNetwork.js (its repo CAR cache); the rest of both files is in
+// Harness/Harness+Flags.swift and Harness/FakeNetwork.swift.
 //
 // The made-up world the iOS app's demo mode, SwiftUI previews and UI tests
 // run on: both accounts the web harness shows (Mira Okafor and Field Lab),
@@ -10,9 +10,9 @@
 // It holds what harness/harness.js's createHarness holds of the worlds
 // (`worlds`, `worldOf`, each world's granted scope and PDS, `grantOf`,
 // `regrant`; the scope helpers are in Harness/Harness.swift) and the repo
-// CAR cache harness/fakeNetwork.js keeps;
-// the fake network itself (the AppView, PDS, Constellation and Virga's
-// server behind MockTransport) is built on this once VirgaNetwork is in.
+// CAR cache harness/fakeNetwork.js keeps. The fake network on it (the
+// AppView, PDS, Constellation and Virga's server, as an HTTPTransport) is
+// DemoTransport; the signed-in session on that is DemoSession.
 //
 // Thread-safe: the worlds sit behind a lock, so a fake network answering on
 // any task and a preview reading on the main actor see the same state.
