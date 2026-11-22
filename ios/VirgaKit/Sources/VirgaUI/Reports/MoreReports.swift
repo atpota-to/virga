@@ -5,8 +5,9 @@
 // bucket) with its table and the report's actions. People: who engages with
 // you and who you engage with, side by side where there is room, each under
 // a rule in ink, twelve more at a time ("Show 12 more", "12 of 64" at the
-// right), each a person with their counts by kind and Follow, and the
-// caption under the first. Atmosphere: the figures, records written per
+// right), each a person with their counts by kind and Follow (someone
+// followed from Not following keeps their row until the filter changes),
+// and the caption under the first. Atmosphere: the figures, records written per
 // bucket with its table and the report's actions, and by collection (the
 // first sixteen, Show all on a line of its own under the bars). Each with
 // How this is counted, word for word.
@@ -94,13 +95,19 @@ struct PeopleReportView: View {
   /// Whom to show: "all", "not" (not followed) or "following".
   var relation = "all"
   @State private var limits = (inbound: PeopleReportView.page, outbound: PeopleReportView.page)
+  /// Someone followed from "Not following" keeps their row until the
+  /// filter changes, now reading Following, rather than vanishing.
+  @State private var kept: (relation: String, dids: Set<JSKey>) = ("all", [])
   static let page = 12
 
   var body: some View {
     let m = ReportModels.peopleModel(archive, period, archive.nowMs ?? SyncStatus.now(), kind: kind)
     let sets = ReportModels.relationSets(archive)
     let follows = { (did: String) in sets.following.contains { $0.jsEquals(did) } }
-    let keep = { (r: TopActor) in relation == "not" ? !follows(r.did) : relation == "following" ? follows(r.did) : true }
+    let keptDids: Set<JSKey> = kept.relation == relation ? kept.dids : []
+    let keep = { (r: TopActor) in
+      keptDids.contains(JSKey(r.did)) || (relation == "not" ? !follows(r.did) : relation == "following" ? follows(r.did) : true)
+    }
     let inRanked = m.inbound.filter(keep)
     let outRanked = m.outbound.filter(keep)
     let inTop = Array(inRanked.prefix(limits.inbound))
@@ -152,7 +159,11 @@ struct PeopleReportView: View {
       PersonList {
         ForEach(rows, id: \.did) { r in
           let detail = InteractionModel.kindsLine(r.byKind, byCount: true)
-          PersonRow(archive: archive, did: r.did, meta: detail, value: AppLocale.formatNumber(r.total), follow: true)
+          PersonRow(
+            archive: archive, did: r.did, meta: detail, value: AppLocale.formatNumber(r.total), follow: true,
+            onFollowed: { did in
+              kept = (relation, (kept.relation == relation ? kept.dids : []).union([JSKey(did)]))
+            })
         }
       }
       .accessibilityElement(children: .contain)

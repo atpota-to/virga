@@ -114,6 +114,8 @@ struct PersonRow: View {
   var follow = false
   var followLabel = "Follow"
   var rel = true
+  /// After a follow or an unfollow went through (People's kept rows).
+  var onFollowed: ((String) -> Void)? = nil
   @State private var busy = false
   @State private var error: String?
 
@@ -193,6 +195,7 @@ struct PersonRow: View {
         do {
           try await model.setFollow(did, !on)
           error = nil
+          onFollowed?(did)
         } catch {
           self.error = "Couldn’t \(on ? "unfollow" : "follow"): \(error.localizedDescription)"
         }

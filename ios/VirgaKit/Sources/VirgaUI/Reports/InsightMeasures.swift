@@ -60,6 +60,8 @@ extension Measure.Reports {
 }
 
 extension Measure.Dashboard {
+  /// `.stat { padding-top: 16px }`, 12 at 560 and under.
+  static let phoneStatPaddingTop: CGFloat = 12
   /// `@container widget (max-width: 250px) { .stat-window { display: none } }`
   static let statWindowHiddenAt: CGFloat = 250
   /// `.stat .sparkline { flex: 0 1 46%; height: 40px; margin-bottom: 4px }`,

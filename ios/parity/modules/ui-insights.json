@@ -9,7 +9,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Charts/BarList.swift"
       ],
-      "note": "A Grid of label (136, or 200 for NSIDs set a step smaller), bar (at least 96, or 60) and value, at most 640 wide; each row read as its title or label and its value. The web's label may be markup; here a row says whether its label is an NSID (`code`).",
+      "note": "A Grid of label (136, or 200 for NSIDs set a step smaller), bar (at least 96, or 60) and value, at most 640 wide; each row read as its label and its value, its title (the web's tooltip) the hint; in high contrast the track's edge in --line-soft (theme.css). The web's label may be markup; here a row says whether its label is an NSID (`code`).",
       "synced": "17cf00152b78"
     },
     "src/charts/ChartTable.jsx": {
@@ -17,7 +17,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Charts/ChartTable.swift"
       ],
-      "note": "ChartTable and ShowAsTable: the line under a chart (Show as table as a link action, then the chart's other actions), and the buckets newest first in a DataTable of at most 320 points that scrolls inside, with the trend's column named as the legend names it.",
+      "note": "ChartTable and ShowAsTable: the line under a chart (Show as table as a link action, then the chart's other actions, each 44 points tall with no gap between wrapped lines, as controls.css's touch rules have them; a phone's ⋯ at the line's end), and the buckets newest first in a table at the column's leading edge, as wide as its columns need and at least min(100%, 28rem), at most 320 points and scrolling inside under a head that stays put (two grids, each holding every row, so their columns agree), sideways in its own box when it must, with the trend's column named as the legend names it and each row's head in --ink-2.",
       "synced": "fafd2752a711"
     },
     "src/charts/Heatmap.jsx": {
@@ -25,7 +25,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Charts/Heatmap.swift"
       ],
-      "note": "A Grid of the day labels and the cells on the --heat ramp (ChartFormat.heatSteps), empty cells outlined and the best ringed, the hours under them over their spans, and the legend; the summary is the grid's VoiceOver label, each cell's title its tooltip (.help).",
+      "note": "A Grid of the day labels and the cells on the --heat ramp (ChartFormat.heatSteps), empty cells outlined and the best ringed, every other shaded cell edged in --line-soft in high contrast (theme.css), the hours under them over their spans, and the legend; the summary is the grid's VoiceOver label, each cell's title its tooltip (.help).",
       "synced": "a1c8b6bc30a1"
     },
     "src/charts/SeriesChart.jsx": {
@@ -33,7 +33,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Charts/SeriesChart.swift"
       ],
-      "note": "In Swift Charts over bucket indices (equal slots): bars (at most 24 wide, a 2-point gap, 90% with the pressed one whole) or a line over the wash with its last dot; the trend (broken at gaps) and its legend; the second line, dashed, or stacked with its wash; the ghost's dashed reach past the last bucket with its open dot and words (drawn through the chart's proxy); the marks' rules and diamonds, and the newest five listed under the chart; the rules with their numbers (fmtTick) and the dates under the first, middle and last bucket (axisStops); a press is the hover (chartXSelection), with the crosshair, the markers and the readout on its own ground; the web's aria label. Swift Charts lays out the plot's margins and the rules' numbers itself (on the leading axis rather than on each rule at the column's edge), and a bar's foot is rounded as well as its top.",
+      "note": "In Swift Charts over bucket indices (equal slots): bars (at most 24 wide, a 2-point gap, 90% with the pressed one whole) or a line over the wash with its last dot; the trend (broken at gaps) and its legend; the second line, dashed, or stacked with its wash; the ghost's dashed reach past the last bucket with its open dot and words (drawn through the chart's proxy); the marks' rules and diamonds, and the newest five listed under the chart; the rules with their numbers (fmtTick) and the dates under the first, middle and last bucket (axisStops), the middle one stepping aside when it would run into an end one (the web's 6.6-a-character estimate and 12 clear); a press is the hover (chartXSelection), with the crosshair, the markers and the readout on its own ground (the second series' value strong, the trend's plain); the web's aria label, its peak the web's dataMax (the trend's top and the ghost's reach with the series). Swift Charts lays out the plot's margins and the rules' numbers itself (on the leading axis rather than on each rule at the column's edge), and a bar's foot is rounded as well as its top.",
       "synced": "66b41ce06428"
     },
     "src/charts/Sparkline.jsx": {
@@ -41,7 +41,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Charts/Sparkline.swift"
       ],
-      "note": "The web's 100 by 30 box stretched to the width given, 32 tall, the line 1.5 over the wash; hidden from VoiceOver.",
+      "note": "The web's 100 by 30 box stretched to the width given, 32 tall (or the height asked for: a figure card's 40), the line 1.5 over the wash, gaps left out; hidden from VoiceOver.",
       "synced": "1ac1f49dceea"
     },
     "src/dashboards/DashboardPage.jsx": {
@@ -49,7 +49,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Dashboards/DashboardPage.swift"
       ],
-      "note": "The header (the name with its ⋯: Rename, Duplicate, New dashboard, Reset or Clear with its toast, Delete with its dialog; the period's line; Customize and the period picker; Done), the twelve-column grid with dashboards.css's narrowing (CardGrid), the cards under their titles with the way to the full report, the empty state, ?edit=1, and Customize as the web's phone and keyboard path at every width (each card a line to move up or down, its size, Remove, with toasts) with the library in a dialog (search, kind, Add). The card settings dialog (title, period, kind of engagement, rows, Use the defaults) opens from a card's line in Customize. OwnLine says a card's own period and kind under its title, and Post this chart is each chart card's PostChartButton (the share dialog). Not yet, and why: dragging cards and reports; SwiftUI's draggable and dropDestination give no place between two cards of a custom twelve-column layout to drop on, and List's onMove, the system's long-press reorder, can't hold the grid; the up and down controls are the whole web keyboard path, and VoiceOver's. Nor the chosen card's floating tools.",
+      "note": "The header (the name with its ⋯: Rename, Duplicate, New dashboard, Reset or Clear with its toast, Delete with its dialog; the period's line; Customize and the period picker, the picker first and Customize at the row's end on a phone; Done), the twelve-column grid with dashboards.css's narrowing (CardGrid), the cards under their titles (a list's on a rule in ink; a chart's modes under the title in a card 440 wide or less; OwnLine before the count line, each part with the web's title as its hint) with Post this chart (PostChartButton) and the way to the full report, the empty state, and ?edit=1, which leaves the address once read. Customize is the web's phone and keyboard path at every width: each card a line to move up or down, with its name, its figure's number or how many rows it shows, and a chevron; pressing the name opens it (one at a time) to its size on a wide screen under its caption, Settings and Remove, with toasts. The library is a dialog: the count of reports and how many are on this dashboard, the search and the kinds held over the list, which scrolls under them on a rule in ink, each report with its glyph, name, Figure, description, On this dashboard (×n) and Add. The card settings dialog (title, focused; period, kind of engagement and rows as fields; Use the defaults; Cancel and Save in its foot) opens from a card's line. Rename keeps the dialog open for an empty name. Not yet, and why: dragging cards and reports; SwiftUI's draggable and dropDestination give no place between two cards of a custom twelve-column layout to drop on, and List's onMove, the system's long-press reorder, can't hold the grid; the up and down controls are the whole web keyboard path, and VoiceOver's. Nor the wide screen's grid of chosen cards with their floating tools, or the library beside the grid: every width customizes as the web's phone does.",
       "synced": "55c8f98f100f"
     },
     "src/dashboards/DashboardsContext.jsx": {
@@ -65,7 +65,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Dashboards/DashboardPage.swift"
       ],
-      "note": "The name (at most 60) and Start from (Empty, or a template with its count), Create; an empty dashboard opens for customizing (?edit=1).",
+      "note": "The name (at most 60, focused as the dialog opens; Return creates) and Start from (Empty, or a template with its count), Cancel and Create in the dialog's foot; an empty dashboard opens for customizing (?edit=1).",
       "synced": "3b7c85e8d37d"
     },
     "src/dashboards/widgets/content.jsx": {
@@ -74,7 +74,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift",
         "ios/VirgaKit/Sources/VirgaUI/Dashboards/MoreWidgets.swift"
       ],
-      "note": "A typical post, media described, formats (with its standout sentence) and length, tags and sites, each with its foot and the line for an archive the next sync must read first.",
+      "note": "A typical post, media described, formats (with its standout sentence, small) and length, tags and sites (lists: what isn't rows stands 16 off the rule under the heading), each with its foot and the line for an archive the next sync must read first.",
       "synced": "d8886917b04c"
     },
     "src/dashboards/widgets/index.jsx": {
@@ -83,7 +83,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift",
         "ios/VirgaKit/Sources/VirgaUI/Dashboards/MoreWidgets.swift"
       ],
-      "note": "Every card: the figures (followers, new followers, unfollows, engagement, per post, given, posts, blocked by), the charts (follower growth with the ghost and the milestones, new followers, engagement over time, rate, by type and given, posting cadence, Best time, blocks over time, repo activity) with the notes marked, and the lists (top posts, top engagers, you engage with, follow-back, newest followers, unfollows, the lists you're on, records by collection) with Follow and the names filled in. WIDGET_HEADS: the follower chart's Total and New in its heading, and the lists' count under the title of the lists you're on.",
+      "note": "Every card: the figures (followers, with the listable count and its (i); new followers, unfollows, engagement, per post, given, posts, blocked by), the charts (follower growth with the ghost and the milestones, new followers, engagement over time, rate, by type and given, posting cadence, Best time with its sentence small, blocks over time, repo activity) with the notes marked, and the lists (top posts, top engagers, you engage with, follow-back, newest followers, unfollows with the log's remembered names standing in, the lists you're on as one line each with Moderation a step louder, records by collection with rowsShown) with Follow and the names filled in; in a list card what isn't rows stands 16 off the rule. WIDGET_HEADS: the follower chart's Total and New in its heading, and the lists' count under the title of the lists you're on.",
       "synced": "6a863f721549"
     },
     "src/dashboards/widgets/parts.jsx": {
@@ -91,7 +91,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift"
       ],
-      "note": "ROWS and HEIGHT (WidgetParts), and Stat: the label (a link to its report) with its glyph, the window, the number at --figure-size, the trend beside it on a card wider than a quarter, and the note line in parts.",
+      "note": "ROWS, HEIGHT, MORE_ROWS, rowsFor and rowsShown (WidgetParts), and Stat: the label (a link to its report) with its glyph, the window (left out on a card 250 wide or less), the number at --figure-size, the trend beside it on a card 300 wide or more (40 tall, up to 46% of the line, its gaps left out), and the note as one line of text, a faint dot after the change and after each part but the last; a figure drawn down to its number for Customize's line (`statValueOnly`).",
       "synced": "ae9b483b20c9"
     },
     "src/dashboards/widgets/posting.jsx": {
@@ -99,15 +99,15 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift"
       ],
-      "note": "Its cards (scheduled, timers, going out next, latest drafts) are in the library and on the grid with their titles, and say they need the composer, which isn't in the app yet.",
+      "note": "Its cards (scheduled, timers, going out next, latest drafts) are in the library and on the grid with their titles; Scheduled and Timers are figures with their label. An account without a long session gets the web's words (Needs a long session; going out next's Scheduling needs a long session… See how). With one, each says it needs the posting pages, which aren't in the iOS app yet: the scheduled posts' and timers' reads and the hub's overview (scheduleService.js, hubModel.js) are still to be ported.",
       "synced": "d108e840532d"
     },
     "src/people/people.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Reports/People.swift"
       ],
-      "note": "cardFor, displayName and profileUrl (People), and PersonRow: the picture, the name (a link to the profile), the handle where the name isn't it, follows you, a fact, the value, Follow (archive.setFollow, held while the sync reads follows, its error under the name) and the way to the Interaction lookup. useWantActors is a .task on the rows shown. Not yet: a row followed under Not following stays until the filter changes on the web (useFollow's kept set); here it leaves at once. FollowButton is the kit's small button.",
+      "note": "cardFor, displayName and profileUrl (People), and PersonRow: the picture (34), the name (a link to the profile, --text-md 500), one line under it cut short at its end of the handle where the name isn't it, follows you and a fact, a dot between them, leaving follows you out of a row with a fact in a list under 600 wide and the handle too under 480 (PersonList measures the list, the web's container); a card the caller remembers (`card`, the unfollows log's) standing in until a fresher one; the value, the way to the Interaction lookup (not on a phone), and Follow (archive.setFollow, held while the sync reads follows, its error under the name) in a slot 92 wide above a phone. useWantActors is a .task on the rows shown; useFollow's kept rows are the People report's (onFollowed). FollowButton is the kit's small button.",
       "synced": "9ce56098d8ab"
     },
     "src/reports/ChartNotes.jsx": {
@@ -115,7 +115,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Reports/ChartNotes.swift"
       ],
-      "note": "Notes on your charts: the day (the system's date picker, up to today) and what happened (at most 80), Add note, the notes newest first with Remove, and the empty line, over one AnnotationsModel per account (ChartNotesModels); on the followers, posts and engagement reports. useChartMarks is ChartNotesModels.marks: the notes, and the follower milestones on the follower charts, on the reports' charts and the dashboard's. The widget's visually hidden marks list (.widget .an-chart-marks) is drawn under the card's chart here.",
+      "note": "Notes on your charts: the day (the system's date picker, up to today) and what happened (at most 80; Return adds the note, as the web's form does), Add note, the notes newest first on a rule in ink 18 under the form, each row at least 46 tall with its day in a column of 108 (84 at 760 and under), with Remove, and the empty line, over one AnnotationsModel per account (ChartNotesModels); on the followers and posts reports. useChartMarks is ChartNotesModels.marks: the notes, and the follower milestones on the follower charts, on the reports' charts and the dashboard's. The widget's visually hidden marks list (.widget .an-chart-marks) is drawn under the card's chart here.",
       "synced": "d2a0b9be0794"
     },
     "src/reports/ContentReport.jsx": {
@@ -123,7 +123,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Reports/ContentReport.swift"
       ],
-      "note": "The figures, by format and by length (each with its standout sentence, typical post or posts, and its table), tags and sites (the first twelve, Show all, their table), threads, languages (named in English by the system's Locale, as Intl.DisplayNames(['en']) does), the line on posts not read, the two SyncEmpty states and How this is counted, word for word.",
+      "note": "The figures, by format and by length side by side where there is room (each with its standout sentence 16 over the bars, typical post or posts, and its table; By format's line carries the report's actions), tags and sites (the first twelve, Show all with its chevron on the line under the bars, their table), threads and languages (named in English by the system's Locale, as Intl.DisplayNames(['en']) does), the line on posts not read, the two SyncEmpty states and How this is counted, word for word.",
       "synced": "7d0a12014262"
     },
     "src/reports/PostRow.jsx": {
@@ -131,7 +131,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Reports/People.swift"
       ],
-      "note": "PostRowView with postText, postUrl and postWhen: the words (a link to the post on Bluesky), when (relative within a week, else the short date with the year when it isn't this one), reply and quote, and the counts by kind (the ones not counted dimmed), or the one total with its rank.",
+      "note": "PostRowView with postText, postUrl and postWhen: the words (a link to the post on Bluesky, --text-md, two lines at most), and a meta line of when (relative within a week, else the short date with the year when it isn't this one) · reply · quote · the counts by kind as a group 12 apart with their 13-point glyphs (the ones not counted dimmed), or the one total with its rank.",
       "synced": "0adefe7512b7"
     },
     "src/reports/ReportPage.jsx": {
@@ -142,7 +142,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Reports/ContentReport.swift",
         "ios/VirgaKit/Sources/VirgaUI/Reports/ReportExtras.swift"
       ],
-      "note": "ReportsIndex and every report: Followers (Total, With blocks, per bucket; the unfollow figure; newest followers; biggest days with the post that day or the day before; How this is counted), Posts, Engagement (received or given, by kind; top posts), Content, Blocks, People (by kind; everyone, not following or following) and Atmosphere, each chart with its table and notes. Add to dashboard (REPORT_WIDGET, AddToDashboard) is a link action in the header beside the period picker, where the web puts it on the line under the chart (and in a phone's ⋯); the new-dashboard toast has no Open it link (a toast here holds words only).",
+      "note": "ReportsIndex (two to a row on a phone without the descriptions, which stay as each tile's hint; four from 1000; else at least 280) and every report: Followers (Total, With blocks, per bucket; the listable count's (i); the unfollow figure with the way to the Unfollow tracker; newest followers and biggest days side by side, the day rows in their columns; How this is counted), Posts (How this is counted), Engagement (received: Received, Per post with its change and Best post, the chart by post date and By type headed by the kind, the engagement rate card with its own unit, top posts, How this is counted; or given, from ?direction=given in the address as useSearchParam has it), Content, Blocks (Through lists with the way to the Lists tool), People (by kind; everyone, not following or following once follows are read, someone followed under Not following keeping their row; the two lists side by side with their foot and caption) and Atmosphere, each chart with its table and notes, its modes named Chart (under the title on a phone), the empty ones with Sync now. The filters are one row that scrolls sideways with a hairline between groups, the kinds as glyphs at 760 and under. Export (exportReport's files, through the system's exporter), Post this chart (the share dialog; not for the given direction) and Add to dashboard (REPORT_WIDGET, AddToDashboard with its buttons in the dialog's foot, stacked on a phone) are on the line under the lead chart, or a ⋯ at its end on a phone; People's end its filter row, as words where they fit and a ⋯ where they don't. The new-dashboard toast has no Open it link (a toast here holds words only).",
       "synced": "18e37669d694"
     },
     "src/reports/parts.jsx": {
@@ -151,7 +151,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Reports/ReportPage.swift",
         "ios/VirgaKit/Sources/VirgaUI/Reports/ContentReport.swift"
       ],
-      "note": "Card (ReportCard), ModeToggle (a small Segmented, each key's title its VoiceOver name), unitOptions, fig, SyncEmpty (with Sync now), HowCounted (a Disclosure) and GroupTable (a bar list's table behind Show as table).",
+      "note": "Card (ReportCard: a small Segmented under the title and its line on a phone; flush for a list; a caption), ModeToggle (a small Segmented named Chart, each key's title its VoiceOver name), unitOptions, fig (its note one wrapping line with the dot after the change; a unit small and muted beside the number; a note that is a link, or words with an (i)), SyncEmpty (with Sync now), HowCounted (a Disclosure) and GroupTable (a bar list's table behind Show as table, with actions on that line).",
       "synced": "96555b05c896"
     },
     "src/share/ShareDialog.jsx": {
@@ -159,7 +159,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Share/ShareDialog.swift"
       ],
-      "note": "Post this chart as a sheet: the spec from ShareSpec.shareSpec over the card's type, its own settings and the account's notes (Annotations.readAnnotations), for the card's period or the page's; 'There’s nothing on this card to draw yet.'; the picture (ShareImage, the on-screen theme's colours) with its edge, 'Drawing the picture…' or the failure; the description (ShareSpec.shareAltText) in a text area held to 2,000 with its hint, over the limit past 1,800; Save the picture (into Photos, add-only, after asking; a toast says it was saved or couldn't be: iOS's own words, as a browser's download needs none) and Write a post with it, first and on its own line on a phone. Write a post with it opens the composer through the `shareComposer` environment hook (asDid, sharePostText, the PNG and the description) once a composer sets it; until then it is a ShareLink of virga-chart.png with the post's first line. The hook for the dashboards and reports: PostChartButton (a card's ghost icon, 'Post <name> as a picture'), PostChartLink ('Post this chart') and .shareDialog($request, period:) with ShareRequest.",
+      "note": "Post this chart as a sheet: the spec from ShareSpec.shareSpec over the card's type, its own settings and the account's notes (Annotations.readAnnotations), for the card's period or the page's; 'There’s nothing on this card to draw yet.'; the picture (ShareImage, the on-screen theme's colours) with its edge, 'Drawing the picture…' or the failure; the description (ShareSpec.shareAltText) in a text area held to 2,000 with its hint, the hint over the limit past 1,800; Save the picture (into Photos, add-only, after asking; a toast says it was saved or couldn't be: iOS's own words, as a browser's download needs none) and Write a post with it, first and on its own line on a phone. Write a post with it hands ComposerHost (the app's `shareComposer`) the PNG as a file, the description as its alt and sharePostText as the first line, for the archive's account, once the dialog has gone, and the composer opens with them (the web's images intent); a view with no composer set (a preview) offers ShareLink of virga-chart.png instead. The hook: PostChartButton (a dashboard card's ghost icon, 'Post <name> as a picture') and .shareDialog($request, period:) with ShareRequest (a report's Post this chart and its ⋯).",
       "synced": "117ad4a1eb68"
     },
     "src/tools/ArchiveSearch.jsx": {

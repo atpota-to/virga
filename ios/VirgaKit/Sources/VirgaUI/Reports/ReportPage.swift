@@ -271,12 +271,13 @@ struct ReportsIndex: View {
     let period = preferences.period()
     let headline = headlines(period)
     let phone = theme.isPhone
+    let columns: Int? = phone ? 2 : (theme.windowWidth >= Measure.Reports.indexWideAt ? Measure.Reports.indexWideColumns : nil)
     VirgaPage(
       header: PageHeader(
         PageHeaderModel(title: "Reports", sub: "Every number Virga works out, one page each."), actions: AnyView(PeriodPicker()))
     ) {
       ReportIndexLayout(
-        columns: phone ? 2 : theme.windowWidth >= Measure.Reports.indexWideAt ? Measure.Reports.indexWideColumns : nil,
+        columns: columns,
         minWidth: Measure.Reports.tileMinWidth, columnGap: phone ? Measure.Reports.phoneIndexColumnGap : theme.gridGapX,
         rowGap: theme.gridGap, spanOddLast: phone
       ) {

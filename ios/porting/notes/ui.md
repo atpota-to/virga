@@ -144,9 +144,14 @@ CHARTS (Charts/), in Swift Charts over bucket indices
   mode: .bars|.line, unit:, zeroBase:, ghost: ChartGhost?, format:, marks: [SeriesMark]?, height:,
   accessibilityLabel:)`; `ChartPoint.of(...)` takes SeriesPoint, TrendPoint or RatePoint arrays.
   A press is the hover (`chartXSelection`), with the readout on its own ground.
-- `ChartTable(series:secondary:trend:unit:valueHead:secondaryHead:format:) { actions }` and
-  `ShowAsTable`: the line under every chart and its table. `BarList(rows: [BarListRow])`,
-  `Heatmap(rows:columns:summary:)`, `Sparkline(values:)`.
+- `ChartTable(series:secondary:trend:unit:valueHead:secondaryHead:format:trailing:) { actions }` and
+  `ShowAsTable(actions:trailing:table:)`: the line under every chart (44 points a line, `trailing` a
+  phone's ⋯ at its end) and its table, `ChartTableView(columns:rows:)` (its head held over the rows:
+  two grids that each hold every row, the other's at no height). `BarList(rows: [BarListRow])`,
+  `Heatmap(rows:columns:summary:)`, `Sparkline(values:height:)`.
+- More of charts.css', dashboards.css' and reports.css' measures are in Reports/InsightMeasures.swift
+  (extensions of Measure.Chart, .Dashboard and .Reports); Theme/Measures.swift's
+  `Measure.Chart.tableMinWidth` (280) and `Measure.Reports.tileMin` (220) are no longer read.
 
 DASHBOARDS AND REPORTS (Dashboards/, Reports/)
 - `ShellDashboards` is DashboardsContext's provider now: every action over Layouts, written back
@@ -156,10 +161,21 @@ DASHBOARDS AND REPORTS (Dashboards/, Reports/)
   `WidgetBody` draws the ported cards (four figures, six charts, Best time); the rest show their
   title and `Unported.card` (posting cards: `Unported.postingCard`).
 - `ReportsIndex`, `ReportPage(report:)`: every report (Followers, Posts, Engagement, Content,
-  Blocks, People, Atmosphere), with `PersonRow` and `PostRowView` (Reports/People.swift);
-  `ChartNotes` and `ChartNotesModels.marks` (one AnnotationsModel per account) put the notes
-  and the follower milestones on the charts; every dashboard card (`MoreWidget`), and the card
-  settings dialog (`CardSettings`) from Customize.
+  Blocks, People, Atmosphere), with `PersonRow`, `PersonList` (measures a list for its rows' meta
+  line) and `PostRowView` (Reports/People.swift); `ChartNotes` and `ChartNotesModels.marks` (one
+  AnnotationsModel per account) put the notes and the follower milestones on the charts; every
+  dashboard card (`MoreWidget`), and the card settings dialog (`CardSettings`) from Customize.
+- A report's actions (`ReportActionWords`, or the ⋯ on a phone) are passed to its report view as
+  `actions:`/`more:` and end up on its lead ChartTable's line; Export is `ReportExport.file` through
+  `.toolExporter`, Post this chart `.shareDialog`. The engagement report's direction is
+  `?direction=given` (`ReportQuery.replace`, the web's replaceState; DashboardPage drops `?edit=1`
+  the same way). `ReportCard` puts a small Segmented under the title on a phone; `ReportSplit` is
+  `.report-split` over the tools' ToolSplit; `ReportParts.fig` notes are `FigNote` (one Text).
+- Dialogs whose foot acts on what is typed in them draw their own `DialogFrame` and are presented
+  with `.dashboardDialog(isPresented:size:)`: RenameDashboard, NewDashboardDialog (also from
+  Settings › Dashboards and the shell), CardSettings, AddToDashboard, and the report library (its
+  own `DialogHead`, the search held over the list). A card's width is `\.widgetWidth` (the web's
+  `@container widget`), and `\.statValueOnly` draws a figure down to its number.
 
 TOOLS (Tools/)
 - `RoutedPage` sends `/tools` to `ToolsIndex` and `/tools/<key>` to `ToolPage(toolKey:)`, which
@@ -183,17 +199,18 @@ TOOLS (Tools/)
 
 SHARING (Share/)
 - The hook, for a card or a report: `PostChartButton(type:name:options:period:)` (a card's
-  ghost icon), `PostChartLink(type:name:kind:period:)` (a report's link action), or
-  `@State var share: ShareRequest?` with `.shareDialog($share, period:)`. Each draws nothing
-  for a type ShareSpec can't picture.
+  ghost icon), or `@State var share: ShareRequest?` with `.shareDialog($share, period:)` (a
+  report's Post this chart and its ⋯). Each draws nothing for a type ShareSpec can't picture.
 - The picture is `ShareImage.render(spec, theme:)`: VirgaInsights' ShareSpec drawn by
   ChartImage onto `GraphicsShareCanvas` (its `ShareCanvas` over a SwiftUI GraphicsContext)
   in an ImageRenderer at scale 1, 1200 × 675, under the sky on screen.
 - Write a post with it calls `@Environment(\.shareComposer)` (a `ShareComposer` taking a
-  `ShareDraft`: whose post, its first line, the PNG and its description) once the composer
-  sets it; until then the picture and the first line go out through ShareLink as
-  virga-chart.png. Save the picture asks Photos for add-only access
-  (NSPhotoLibraryAddUsageDescription in project.yml) and says how it went in a toast.
+  `ShareDraft`: whose post, its first line, the PNG and its description) once the dialog's sheet
+  has gone; ComposerHost's modifier sets it, writing the PNG as a temporary file and opening the
+  composer with `images: [{ file, alt }]`. Where nothing sets it (a preview) the picture and the
+  first line go out through ShareLink as virga-chart.png. Save the picture asks Photos for
+  add-only access (NSPhotoLibraryAddUsageDescription in project.yml) and says how it went in a
+  toast.
 
 DEFENSE (Defense/)
 - `RoutedPage` sends `/defense/<page>` to `DefensePage(pageKey:)` (scan, lists, history)
@@ -351,16 +368,16 @@ LIBRARY (Library/)
 ## Known gaps and deliberate differences
 
 - Left for later steps: the live sky (src/hillside, three.js) and the five taps on the
-  mark; dragging cards, a card's settings dialog, the dashboard cards and reports not listed
-  above, ChartNotes and the charts' notes and milestones; posting (the composer, its pages,
-  Settings › Posting and the pending-work warnings before a sign-out, which wait for
-  VirgaPosting's services); "Keep it when space runs low" (iOS has nothing to ask).
+  mark; dragging cards; the posting cards' reads (they wait for the posting pages:
+  scheduleService.js and hubModel.js); posting (the composer, its pages, Settings › Posting and
+  the pending-work warnings before a sign-out, which wait for VirgaPosting's services); "Keep it
+  when space runs low" (iOS has nothing to ask).
 - Copy is the web's word for word, including words that only fit a browser ("This
   browser's region", "Forget X on this browser", "Saving the repo to this browser"). Worth
   raising on the web side rather than changing on one side.
 - New copy the web has no counterpart for: "This page isn't in the iOS app yet.", "This
   section isn't in the iOS app yet.", "This card isn't in the iOS app yet." and "This card
-  needs the composer, which isn't in the iOS app yet."; the share dialog's toasts after
+  needs the posting pages, which aren’t in the iOS app yet."; the share dialog's toasts after
   Save the picture ("Saved to Photos." and "The picture couldn’t be saved.") and Photos'
   permission line ("Virga saves a chart's picture to your photos when you ask it to."),
   since the web downloads the file instead.
@@ -370,7 +387,12 @@ LIBRARY (Library/)
   five rows).
 - Every window shares one session, so the web's "another tab switched accounts" notice
   has no case; TermsGate's Reload can't fetch newer documents (they are bundled).
-- Until the composer is in the app, Post this chart's Write a post with it is the system's
-  share sheet. New post (the sidebar's, the tab bar's round button) opens the composer in
-  place, over the page it was pressed on, as Shell.jsx's does; VirgaUITests'
-  `testNewPostOpensTheComposer` checks it opens and that Close shuts it.
+- Post this chart's Write a post with it opens the composer with the picture and its
+  description, once the share sheet has gone (one sheet at a time). New post (the sidebar's,
+  the tab bar's round button) opens the composer in place, over the page it was pressed on, as
+  Shell.jsx's does; VirgaUITests' `testNewPostOpensTheComposer` checks it opens and that Close
+  shuts it.
+- Customize is the web's phone path at every width (each card a line, opened by its name to its
+  size, Settings and Remove); the wide screen's grid with the chosen card's floating tools and
+  the library beside it isn't drawn. VirgaUITests opens the first line (`arrange-open-<type>`)
+  before it presses `card-settings-<type>`.

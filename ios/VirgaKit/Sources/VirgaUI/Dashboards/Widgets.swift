@@ -351,13 +351,14 @@ struct Stat: View {
           .foregroundStyle(theme.ink)
           .lineLimit(1)
           .minimumScaleFactor(0.6)
+          .layoutPriority(1)
         // The trend, where a card is wide enough to give it room: a third
-        // of a row or more, about half the line.
+        // of a row or more, at the line's end, up to 46% of it.
         if let spark, wide >= Measure.Dashboard.statSparkAt, width != nil {
-          Spacer(minLength: 0)
           Sparkline(values: spark, height: Measure.Dashboard.statSparkHeight)
-            .frame(width: wide * Measure.Dashboard.statSparkShare)
+            .frame(maxWidth: wide * Measure.Dashboard.statSparkShare)
             .padding(.bottom, Measure.Dashboard.statSparkSpaceBelow)
+            .frame(maxWidth: .infinity, alignment: .trailing)
         }
       }
       if delta != nil || sub != nil || subView != nil {
@@ -366,7 +367,7 @@ struct Stat: View {
           .foregroundStyle(theme.muted)
       }
     }
-    .padding(.top, theme.isPhone ? Measure.Reports.phoneTilePaddingTop : Measure.Dashboard.statPaddingTop)
+    .padding(.top, theme.isPhone ? Measure.Dashboard.phoneStatPaddingTop : Measure.Dashboard.statPaddingTop)
     .overlay(alignment: .top) { Rectangle().fill(theme.line).frame(height: 2) }
     .accessibilityElement(children: .combine)
   }
