@@ -237,16 +237,16 @@ public enum TemplateUsage {
         if ga.isEmpty { return 1 }
         if gb.isEmpty { return -1 }
         // Groups that differ only in case sort together but stay apart.
-        let byName = LocaleCompare.compare(ga, gb, locale: locale, sensitivity: .base)
-        return Double(byName != 0 ? byName : (LocaleCompare.codeUnitLess(ga, gb) ? -1 : 1))
+        let byName = JSCollation.localeCompare(ga, gb, locale: locale, sensitivity: .base)
+        return Double(byName != 0 ? byName : (ga.utf16.lexicographicallyPrecedes(gb.utf16) ? -1 : 1))
       }
       let used = count(b) - count(a)
       if used != 0 && !used.isNaN { return used }
-      let names = LocaleCompare.compare(
+      let names = JSCollation.localeCompare(
         TemplateJS.orEmpty(a.templateField("name")), TemplateJS.orEmpty(b.templateField("name")),
         locale: locale, sensitivity: .base)
       if names != 0 { return Double(names) }
-      return Double(LocaleCompare.compare(
+      return Double(JSCollation.localeCompare(
         TemplateJS.orEmpty(a.templateField("rkey")), TemplateJS.orEmpty(b.templateField("rkey")), locale: locale))
     }
   }
