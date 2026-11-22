@@ -101,30 +101,10 @@ struct CardSettings: View {
     done()
   }
 
-  /// `<select class="input">`: the choice in a field's pane and edge, the
-  /// whole width, with the select's chevrons at its end.
+  /// `<select class="input">`: the kit's VirgaSelect, the whole width.
   private func picker(_ label: String, _ value: Binding<String>, _ choices: [(String, String)]) -> some View {
-    let current = choices.first { $0.0.jsEquals(value.wrappedValue) }?.1 ?? ""
-    return Menu {
-      Picker(label, selection: value) {
-        ForEach(choices, id: \.0) { choice in
-          Text(choice.1).tag(choice.0)
-        }
-      }
-    } label: {
-      HStack(spacing: theme.space2) {
-        Text(current)
-          .lineLimit(1)
-          .frame(maxWidth: .infinity, alignment: .leading)
-        Image(systemName: "chevron.up.chevron.down")
-          .font(.system(size: Measure.Tools.linkGlyph, weight: .medium))
-          .foregroundStyle(theme.muted)
-      }
-      .virgaField()
-      .contentShape(Rectangle())
-    }
-    .accessibilityLabel(label)
-    .accessibilityValue(current)
+    let options: [SelectChoice<String>] = choices.map { SelectChoice($0.0, $0.1) }
+    return VirgaSelect(label, selection: value, options: options)
   }
 }
 #endif

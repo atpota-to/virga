@@ -70,9 +70,6 @@ extension Measure.Dashboard {
   static let statSparkHeight: CGFloat = 40
   static let statSparkShare: CGFloat = 0.46
   static let statSparkSpaceBelow: CGFloat = 4
-  /// `.stat-note .delta:not(:last-child)::after { margin: 0 6px 0 4px }`
-  static let noteDotBefore: CGFloat = 4
-  static let noteDotAfter: CGFloat = 6
   /// `.stat-note { line-height: 1.35 }`
   static let noteLineHeight: Double = 1.35
   /// `@container widget (max-width: 440px)`: a chart's modes under the title, 8 down.

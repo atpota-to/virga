@@ -190,7 +190,7 @@ SHELL (Shell/)
   (`SettingsControlKind`: `.button`, `.segmented`, `.toggle`, `.state`, `.prose`; a switch
   by default where `compactControl` is set, else a button) says how far the control is
   drawn up to centre it on the name's first line, as settings.css does on a touch screen.
-  A select is `SettingsSelect` (a Menu over a Picker, its words in ink), laid out by
+  A select is `SettingsSelect` (the kit's VirgaSelect over a preference), laid out by
   `SettingsSelects`; the sky's and the accent's grids are `ChoiceGrid` (auto-fill columns
   from the grid's own width), radio groups on a hardware keyboard.
 
@@ -206,8 +206,8 @@ CHARTS (Charts/), in Swift Charts over bucket indices
   other's at no height). `BarList(rows: [BarListRow])`,
   `Heatmap(rows:columns:summary:)`, `Sparkline(values:height:)`.
 - More of charts.css', dashboards.css' and reports.css' measures are in Reports/InsightMeasures.swift
-  (extensions of Measure.Chart, .Dashboard and .Reports); Theme/Measures.swift's
-  `Measure.Reports.tileMin` (220) is no longer read.
+  (extensions of Measure.Chart, .Dashboard and .Reports), which Theme/Measures.swift no longer
+  repeats.
 
 DASHBOARDS AND REPORTS (Dashboards/, Reports/)
 - `ShellDashboards` is DashboardsContext's provider now: every action over Layouts, written back

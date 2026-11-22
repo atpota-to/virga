@@ -495,58 +495,19 @@ struct AppearanceSection: View {
   }
 }
 
-extension Measure.Settings {
-  /// `select.input`'s chevron: two 5-point halves, 10 across, in --ink-2.
-  static let selectChevron: CGFloat = 10
-}
-
-/// `.settings-row-control > select.input`: the chosen option's words in ink
-/// on one line, the chevron at its right, in the field's chrome; the options
-/// in the system's menu, the chosen one ticked.
+/// `.settings-row-control > select.input`: the kit's VirgaSelect (the chosen
+/// option's words in ink on one line, the chevron at its right, in the
+/// field's chrome, the whole field opening the system's menu with the
+/// chosen one ticked), over a preference and its setter.
 struct SettingsSelect<Value: Hashable>: View {
-  @Environment(\.virgaTheme) private var theme
   let label: String
   let options: [(Value, String)]
   let selection: Value
   let onChange: (Value) -> Void
 
   var body: some View {
-    let current = options.first { $0.0 == selection }?.1 ?? ""
-    Menu {
-      Picker(label, selection: Binding(get: { selection }, set: { onChange($0) })) {
-        ForEach(Array(options.enumerated()), id: \.offset) { _, option in
-          Text(option.1).tag(option.0)
-        }
-      }
-    } label: {
-      // The chrome is the label's, so the whole field opens the menu.
-      SelectFace(text: current)
-        .virgaField()
-    }
-    .accessibilityLabel(label)
-    .accessibilityValue(current)
-  }
-}
-
-/// What a closed select shows: its words, cut short on one line, and the
-/// chevron at the far end.
-struct SelectFace: View {
-  @Environment(\.virgaTheme) private var theme
-  let text: String
-
-  var body: some View {
-    HStack(spacing: theme.space2) {
-      Text(text)
-        .lineLimit(1)
-        .truncationMode(.tail)
-        .foregroundStyle(theme.ink)
-        .frame(maxWidth: .infinity, alignment: .leading)
-      Image(systemName: "chevron.down")
-        .font(.system(size: Measure.Settings.selectChevron, weight: .semibold))
-        .foregroundStyle(theme.ink2)
-        .accessibilityHidden(true)
-    }
-    .contentShape(Rectangle())
+    let choices: [SelectChoice<Value>] = options.map { SelectChoice($0.0, $0.1) }
+    VirgaSelect(label, selection: Binding(get: { selection }, set: { onChange($0) }), options: choices)
   }
 }
 

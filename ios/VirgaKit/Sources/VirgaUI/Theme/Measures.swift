@@ -275,11 +275,8 @@ public enum Measure {
     public static let tick: CGFloat = 13
   }
 
-  /// reports.css.
-  public enum Reports {
-    /// `.report-index`: tiles at least 220 wide.
-    public static let tileMin: CGFloat = 220
-  }
+  /// reports.css (its measures are in Reports/InsightMeasures.swift).
+  public enum Reports {}
 
   /// dashboards.css.
   public enum Dashboard {
@@ -296,17 +293,11 @@ public enum Measure {
     public static let statIcon: CGFloat = 14
     public static let statLineGap: CGFloat = 16
     public static let statTracking: ThemeLength = .em(-0.04)
-    public static let noteGap: CGFloat = 6
-    public static let sparkMinWidth: CGFloat = 48
-    public static let sparkMaxWidth: CGFloat = 120
-    /// A list card's head (`.widget--list > .widget-head { padding-bottom:
-    /// 12px; border-bottom: 1px solid var(--rule) }`): 12 above its rule. Any
-    /// other card's head is the kit's (ThemeKit.cardHeadSpaceBelow, 16).
-    public static let headGap: CGFloat = 12
-    /// Customize: the dashed outline (1, dashes 4 3), a line of the arrange
-    /// list at least 52 tall (`.arrange-line { min-height: 52px }`).
+    /// Customize: the dashed outline (1, dashes 4 3). A card's head, the
+    /// stat's note and spark, and the arrange list's lines are in
+    /// Reports/InsightMeasures.swift (a list card's head 12 over its rule,
+    /// any other card's the kit's ThemeKit.cardHeadSpaceBelow, 16).
     public static let editDash: [CGFloat] = [4, 3]
-    public static let arrangeRowHeight: CGFloat = 52
     /// The grid's column gap on a phone (`.dash-grid { column-gap: 20px }`).
     public static let phoneColumnGap: CGFloat = 20
     /// Where the grid narrows (`@container dash`): from 860 down a third
