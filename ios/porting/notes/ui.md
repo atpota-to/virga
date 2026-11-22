@@ -130,7 +130,9 @@ COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
   round a `TextField(axis: .vertical)`, which has none, `FieldStack`,
   `FieldHint(_, isOver:)`, `SearchField`, `VirgaSelect(label, selection:, options:
   [SelectChoice])` for select.input (a Picker in virgaField draws its value in the accent,
-  centred, on two lines).
+  centred, on two lines; disabled, a select's value is --muted on --surface-2, as
+  `.input:disabled`, and `.keepingFillWhenDisabled()` keeps the field's own ground, the timer
+  editor's `.lse-op:disabled`).
 - Menus: `MoreMenu`/`VirgaMenu` over `[MenuEntry]` (`.item(MenuItem(...))`, `.separator`),
   a native Menu; each item's icon comes coloured (--ink-2, or the system red of a destructive
   item's words), since a native menu tints a plain image with the window's accent.

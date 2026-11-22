@@ -11,7 +11,9 @@
 // it (FieldHint's `isOver`). A placeholder is --muted (`.input::placeholder`),
 // which only a TextField built with its prompt can say: VirgaTextField and
 // SearchField are. A select (`select.input`) is VirgaSelect: its value in
-// ink at the field's start, on one line, a chevron in --ink-2 at its end.
+// ink at the field's start, on one line, a chevron in --ink-2 at its end;
+// disabled, its value --muted on --surface-2, as any field's
+// (`keepingFillWhenDisabled()` keeps the field's own ground instead).
 //
 //   VirgaTextField("you.bsky.social", text: $handle).virgaField()
 //   TextEditor(text: $text).virgaTextArea()
@@ -38,6 +40,9 @@ struct FieldChrome: ViewModifier {
   /// A text area round a TextEditor, whose text view keeps insets of its
   /// own; a `TextField(axis: .vertical)` keeps none.
   var editorInset = false
+  /// A disabled field that keeps the field's own ground, only its edge and
+  /// words dimmed (schedule.css's `.lse-op:disabled`).
+  var keepsFill = false
 
   func body(content: Content) -> some View {
     // A field in trouble declares its ring again, in the danger colour.
@@ -82,7 +87,7 @@ struct FieldChrome: ViewModifier {
       .padding(.trailing, padding.trailing)
       .padding(.vertical, textArea ? padding.top : 0)
       .frame(minHeight: height, alignment: textArea ? .topLeading : .leading)
-      .background(shape.fill(isEnabled ? theme.color(ThemeKit.inputFill) : theme.color(ThemeKit.disabledInputFill)))
+      .background(shape.fill(isEnabled || keepsFill ? theme.color(ThemeKit.inputFill) : theme.color(ThemeKit.disabledInputFill)))
       .overlay(shape.strokeBorder(edge, lineWidth: theme.points(ThemeKit.inputBorder)))
       .overlay {
         if focused {
@@ -262,6 +267,7 @@ public struct VirgaSelect<Value: Hashable>: View {
   private let options: [SelectChoice<Value>]
   private let size: FieldSize
   private let invalid: Bool
+  private var keepsFill = false
 
   /// - Parameter label: the select's name, for VoiceOver (its field label).
   public init(
@@ -286,24 +292,35 @@ public struct VirgaSelect<Value: Hashable>: View {
       .labelsHidden()
     } label: {
       SelectFieldFace(current: current)
-        .virgaField(invalid: invalid, size: size)
+        .modifier(FieldChrome(invalid: invalid, size: size, leading: nil, textArea: false, keepsFill: keepsFill))
     }
     .menuOrder(.fixed)
     .accessibilityLabel(label)
     .accessibilityValue(current)
+  }
+
+  /// Disabled, the select keeps the field's own ground and dims only its
+  /// edge and words (the timer editor's comparison, `.lse-op:disabled`),
+  /// so it reads as one line with what turns it on.
+  public func keepingFillWhenDisabled() -> VirgaSelect {
+    var select = self
+    select.keepsFill = true
+    return select
   }
 }
 
 /// What a select shows: its value, then the chevron at the end.
 struct SelectFieldFace: View {
   @Environment(\.virgaTheme) private var theme
+  @Environment(\.isEnabled) private var isEnabled
   let current: String
 
   var body: some View {
     HStack(spacing: 0) {
+      // Ink, not the menu's tint; --muted while disabled (`.input:disabled`).
       Text(current)
         .lineLimit(1)
-        .foregroundStyle(theme.ink)
+        .foregroundStyle(isEnabled ? theme.ink : theme.muted)
       Spacer(minLength: Measure.Field.selectChevronGap)
       Image(systemName: Glyph.chevronDown)
         .virgaGlyph(Measure.Field.selectChevron, weight: .semibold)

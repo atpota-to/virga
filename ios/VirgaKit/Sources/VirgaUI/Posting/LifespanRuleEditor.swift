@@ -518,7 +518,11 @@ struct LifespanRuleEditor: View {
             selection: Binding(
               get: { filter?.followersOver ?? 10_000 },
               set: { emit(LifespanModel.withQuoteFilter(rule, ["followersOver": .number(Double($0))])) }),
-            options: Self.followerChoices)
+            options: Self.followerChoices
+          )
+          // `.lse-op:disabled`: off, it keeps the field's own ground, only
+          // its edge and words dimmed, so it reads with the box beside it.
+          .keepingFillWhenDisabled()
           // `.lse-check-with .lse-op { width: auto }`
           .fixedSize(horizontal: true, vertical: false)
           .disabled(filter?.followersOver == nil)
@@ -570,10 +574,12 @@ struct LifespanRuleEditor: View {
   /// `.lse-chips .chip`: pressed while on (`aria-pressed`), 50% while
   /// disabled; `expanded` says whether what it opens is open (`aria-expanded`).
   private func chip(_ label: String, on: Bool, expanded: Bool? = nil, action: @escaping () -> Void) -> some View {
-    Button(label, action: action)
+    // A String, so the value is the words as they are (no literal to infer).
+    let state: String = expanded.map { open in open ? "Expanded" : "Collapsed" } ?? ""
+    return Button(label, action: action)
       .buttonStyle(ChipStyle(isOn: on, disabledOpacity: Measure.Lifespan.disabledChipOpacity))
       .accessibilityAddTraits(on ? .isSelected : [])
-      .accessibilityValue(expanded.map { $0 ? "Expanded" : "Collapsed" } ?? "")
+      .accessibilityValue(state)
   }
 }
 
