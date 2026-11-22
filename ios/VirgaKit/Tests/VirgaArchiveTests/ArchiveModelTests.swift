@@ -4,6 +4,7 @@
 // the exports. Against MockTransport.
 
 import Foundation
+import Observation
 import Testing
 import VirgaCore
 import VirgaNetwork
@@ -65,14 +66,108 @@ private func smallWorld(_ transport: MockTransport, hangFeed: Bool = false) {
 @MainActor
 private func model(
   _ transport: MockTransport, files: (any FileStore)? = nil, registry: AnalyticsStoreRegistry = AnalyticsStoreRegistry(),
-  agent: Bool = true, postsChanged: PostsChangedListener? = nil
+  agent: Bool = true, postsChanged: PostsChangedListener? = nil, at time: Double = now
 ) -> ArchiveModel {
   let env = ArchiveEnvironment(
-    files: files, registry: registry, transport: transport, clock: .instant(now: now), didDocuments: PromiseCache(),
+    files: files, registry: registry, transport: transport, clock: .instant(now: time), didDocuments: PromiseCache(),
     timeZone: TimeZone(identifier: "UTC")!, locale: "en-US", postsChanged: postsChanged)
   return ArchiveModel(
     agent: agent ? XRPCAgent(service: "https://pds.example", transport: transport) : nil, did: me, handle: "owner.test",
     environment: env)
+}
+
+/// Two hours on: an archive built at `now` is stale, so a mount tops it up
+/// at once.
+private let later = now + 2 * 3_600_000
+
+/// The small world's archive, built at `now` in `files`.
+@MainActor
+private func buildArchive(in files: any FileStore) async {
+  let transport = MockTransport()
+  smallWorld(transport)
+  let first = model(transport, files: files)
+  await first.start()
+  await first.runSync()
+  first.stop()
+}
+
+/// A file store in memory whose next call on a path the test picks waits
+/// until the test lets it go, so a test puts a stop at an exact point of a
+/// store's open or first read, whatever the scheduler does.
+private actor GatedFileStore: FileStore {
+  private let base = InMemoryFileStore()
+  private var gate: (@Sendable (String) -> Bool)?
+  private var held: CheckedContinuation<Void, Never>?
+  private var released = false
+  private var arrivals: [CheckedContinuation<Void, Never>] = []
+  /// Every call since the last `hold`: what it did, and where.
+  private(set) var calls: [String] = []
+
+  /// The next call on a path `matching` accepts waits for `release()`.
+  func hold(_ matching: @escaping @Sendable (String) -> Bool) {
+    gate = matching
+    released = false
+    calls = []
+  }
+
+  /// Returns once the held call is waiting.
+  func arrival() async {
+    if held != nil { return }
+    await withCheckedContinuation { arrivals.append($0) }
+  }
+
+  /// Lets the held call go on.
+  func release() {
+    released = true
+    held?.resume()
+    held = nil
+  }
+
+  private func pass(_ op: String, _ path: String) async {
+    calls.append("\(op) \(path)")
+    guard let gate, gate(path) else { return }
+    self.gate = nil
+    if released { return }
+    await withCheckedContinuation { waiting in
+      held = waiting
+      for arrival in arrivals { arrival.resume() }
+      arrivals = []
+    }
+  }
+
+  func read(_ path: String) async throws -> Data? {
+    await pass("read", path)
+    return try await base.read(path)
+  }
+
+  func write(_ data: Data, to path: String) async throws {
+    await pass("write", path)
+    try await base.write(data, to: path)
+  }
+
+  func delete(_ path: String) async throws {
+    await pass("delete", path)
+    try await base.delete(path)
+  }
+
+  func list(_ directory: String) async throws -> [String] {
+    await pass("list", directory)
+    return try await base.list(directory)
+  }
+}
+
+/// Returns once `condition` holds, waking at each change of the observable
+/// state it reads rather than after a count of yields (which a loaded
+/// machine can outrun). A test using it carries a time limit.
+@MainActor
+func waitUntil(_ condition: @escaping @MainActor () -> Bool) async {
+  while !condition() {
+    await withCheckedContinuation { (changed: CheckedContinuation<Void, Never>) in
+      MainActor.assumeIsolated {
+        withObservationTracking { _ = condition() } onChange: { changed.resume() }
+      }
+    }
+  }
 }
 
 /// A listener the test can fire, as the posting events bus would.
@@ -244,22 +339,84 @@ final class FakePostingEvents: @unchecked Sendable {
   }
 
   /// Unmounted while its store was still opening: the web's effect sees
-  /// `cancelled` and neither reads the store nor listens; mounted again,
-  /// it does both.
-  @Test func aMountStoppedBeforeItsStoreOpensDoesNothingMore() async {
+  /// `cancelled` and neither reads the store, nor listens, nor tops up the
+  /// stale archive; mounted again, it does all three. The open is held at
+  /// its first file call until the stop is in.
+  @Test(.timeLimit(.minutes(1))) func aMountStoppedBeforeItsStoreOpensDoesNothingMore() async {
+    let files = GatedFileStore()
+    await buildArchive(in: files)
     let transport = MockTransport()
     smallWorld(transport)
     let events = FakePostingEvents()
-    let m = model(transport, files: SlowFileStore(), postsChanged: events.listener)
+    let m = model(transport, files: files, postsChanged: events.listener, at: later)
+    await files.hold { $0.hasSuffix("/schema.json") }
     let mount = Task { await m.start() }
-    await Task.yield()
+    await files.arrival()
     m.stop()
+    await files.release()
     await mount.value
+    let calls = await files.calls
+    #expect(calls.count == 1 && calls[0].hasPrefix("read ") && calls[0].hasSuffix("/schema.json"), "\(calls)")
     #expect(m.data.loaded == false)
     #expect(events.listening == false)
+    #expect(transport.requests.isEmpty)
+    #expect(m.isSyncing == false)
     await m.start()
     #expect(m.data.loaded)
     #expect(events.listening)
+    #expect(transport.requests.contains { $0.url.contains("getAuthorFeed") })
+    m.stop()
+  }
+
+  /// Unmounted while it read the store: what it read stays, but it neither
+  /// listens nor tops up the stale archive (on the web both are effects of
+  /// the mounted component, gone with it); mounted again, it does both.
+  /// The first read after the open is held until the stop is in.
+  @Test(.timeLimit(.minutes(1))) func aMountStoppedWhileItReadsItsStoreNeitherListensNorSyncs() async {
+    let files = GatedFileStore()
+    await buildArchive(in: files)
+    let transport = MockTransport()
+    smallWorld(transport)
+    let events = FakePostingEvents()
+    let m = model(transport, files: files, postsChanged: events.listener, at: later)
+    await files.hold { !$0.hasSuffix("/schema.json") }
+    let mount = Task { await m.start() }
+    await files.arrival()
+    m.stop()
+    await files.release()
+    await mount.value
+    #expect(m.data.loaded)
+    #expect(events.listening == false)
+    #expect(transport.requests.isEmpty)
+    #expect(m.isSyncing == false)
+    await m.start()
+    #expect(events.listening)
+    #expect(transport.requests.contains { $0.url.contains("getAuthorFeed") })
+    m.stop()
+  }
+
+  /// Mounted again while the stopped mount still reads the store: the new
+  /// mount waits for that read, then listens and tops the archive up. The
+  /// release is queued on the main actor, so it runs only once the new
+  /// mount has stopped there to wait.
+  @Test(.timeLimit(.minutes(1))) func aMountMadeWhileAStoppedOneReadsWaitsForTheData() async {
+    let files = GatedFileStore()
+    await buildArchive(in: files)
+    let transport = MockTransport()
+    smallWorld(transport)
+    let events = FakePostingEvents()
+    let m = model(transport, files: files, postsChanged: events.listener, at: later)
+    await files.hold { !$0.hasSuffix("/schema.json") }
+    let first = Task { await m.start() }
+    await files.arrival()
+    m.stop()
+    let release = Task { @MainActor in await files.release() }
+    await m.start()
+    await first.value
+    await release.value
+    #expect(m.data.loaded)
+    #expect(events.listening)
+    #expect(transport.requests.contains { $0.url.contains("getAuthorFeed") })
     m.stop()
   }
 
@@ -288,7 +445,7 @@ final class FakePostingEvents: @unchecked Sendable {
     #expect(m.sync == nil)
   }
 
-  @Test func hearsOfPostsMadeAndDeletedElsewhere() async throws {
+  @Test(.timeLimit(.minutes(1))) func hearsOfPostsMadeAndDeletedElsewhere() async throws {
     let transport = MockTransport()
     smallWorld(transport)
     let events = FakePostingEvents()
@@ -308,7 +465,7 @@ final class FakePostingEvents: @unchecked Sendable {
         "added": [["uri": .string("at://\(me)/app.bsky.feed.post/3c"), "record": ["text": "new", "createdAt": "2026-11-14T00:00:00.000Z"]]],
         "removed": [.string("at://\(me)/app.bsky.feed.post/3a")],
       ])
-    for _ in 0..<100 where m.data.rev == rev { await Task.yield() }
+    await waitUntil { m.data.rev != rev }
     #expect(m.data.rev == rev + 1)
     #expect(m.data.posts.map(\.uri).sorted() == ["at://\(me)/app.bsky.feed.post/3b", "at://\(me)/app.bsky.feed.post/3c"])
     // Another account's post isn't this archive's.
