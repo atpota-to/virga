@@ -60,8 +60,15 @@
       "swift": []
     },
     "src/posting/schedule/scheduleService.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/ScheduleService.swift"
+      ],
+      "fixtures": [
+        "scheduling.scheduleService"
+      ],
+      "note": "The requester is ScheduleRequester (the web's req.request(path, { method, query, body, timeoutMs })); VirgaBackend conforms here. A call's AbortSignal is the task's cancellation: a reorder's row-by-row fallback fails the moves left with CancellationError once the task is cancelled (the web's signal.reason). Times without an offset are read in timeZone; events go to target (PostingEventBus.shared by default).",
+      "synced": "da1f97763b09"
     },
     "src/posting/schedule/scheduledPostError.js": {
       "status": "ported",
