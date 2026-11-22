@@ -58,8 +58,9 @@ final class ShortcutUITests: XCTestCase {
     field.tap()
     app.typeKey("n", modifierFlags: [])
     app.typeKey("n", modifierFlags: [])
+    // Either case: the field capitalizes its first letter ("Nn", run 74).
     XCTAssertTrue(
-      (field.value as? String)?.hasPrefix("nn") == true,
+      (field.value as? String)?.lowercased().hasPrefix("nn") == true,
       "N wasn't typed into the field: \(String(describing: field.value))")
     XCTAssertFalse(element(app, "composer-title").exists, "N in a field opened the composer")
     snapshot("shortcut-typed-in-a-field-ipad")

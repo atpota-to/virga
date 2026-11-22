@@ -6,8 +6,8 @@ count; ios/parity/modules/*.json say file by file.
 ## In one paragraph
 
 Every logic domain of the web app is ported and audited, and the SwiftUI
-layer is built and audited. Of the web app's 306 source files, 267 are
-ported and 39 partly; none is still to do, so `Parity with the web app` is
+layer is built and audited. Of the web app's 306 source files, 268 are
+ported and 38 partly; none is still to do, so `Parity with the web app` is
 green (since CI run 64). A file stays "partial" where the web leans on
 something iOS has no counterpart for, or where a piece is knowingly left
 out; its entry in ios/parity/modules/*.json says which. The logic is held
@@ -59,7 +59,6 @@ The order follows the dependencies between the web modules.
 6. ~~**The SwiftUI layer, continued**~~ Built and audited on 2026-11-22 (VirgaUI; `ios/DESIGN.md` is the guide, CI's `iOS app` job the compiler, its screenshots the eyes). Dashboards, reports, sharing a chart, the tools, Defense and the radar, the composer with everything it sends, the posting pages with scheduling and timers, Settings › Posting, and the live sky in Metal are all in. Both audits (189 and 187 confirmed differences) are fixed. What is knowingly not done, with the reasons in each file's module map entry and in notes/ui.md:
    - drag and drop into the composer;
    - dragging dashboard cards (Customize uses the web's phone and keyboard path, up and down, at every width), and the wide screen's grid of chosen cards with the library beside it;
-   - the `n` shortcut for a new post;
    - "Keep it when space runs low" (iOS asks nothing like the browser's storage prompt).
 7. **Final review** (still to do): an adversarial review of every domain against the web code, a completeness check, a pass over `npm run parity:drift`, and a look through the screenshots of every screen on both devices once CI is green on the posting fixes.
 

@@ -460,7 +460,7 @@
       "synced": "25b2e5064862"
     },
     "src/shell/Shell.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Shell/Shell.swift",
         "ios/VirgaKit/Sources/VirgaUI/Shell/RoutedPage.swift",
