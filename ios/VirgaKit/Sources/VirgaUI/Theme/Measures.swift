@@ -136,6 +136,8 @@ public enum Measure {
     public static let radius: CGFloat = 3
     public static let edge: CGFloat = 1
     public static let tickShare: CGFloat = 0.6
+    /// A radio's dot, half the ring.
+    public static let radioDotShare: CGFloat = 0.5
   }
 
   public enum Switch {
@@ -148,6 +150,9 @@ public enum Measure {
     /// 128 when there are exactly five.
     public static let minWidth: CGFloat = 168
     public static let fiveMinWidth: CGFloat = 128
+    /// `.figures-note .delta:not(:last-child)::after { margin: 0 6px 0 4px }`
+    public static let noteDotBefore: CGFloat = 4
+    public static let noteDotAfter: CGFloat = 6
   }
 
   public enum Section {
@@ -349,8 +354,9 @@ public enum Measure {
     /// `.an-tableview-scroll { max-height: 20rem }`, 8 under the foot.
     public static let tableMaxHeight: CGFloat = 320
     public static let tableSpaceAbove: CGFloat = 8
-    /// `.an-tableview .table { min-width: min(100%, 28rem) }`
-    public static let tableMinWidth: CGFloat = 280
+    /// `.an-tableview .table { min-width: min(100%, 28rem) }`: 28rem, held
+    /// to the column by TableScroll.
+    public static let tableMinWidth: CGFloat = 448
     /// `.chart-foot { gap: 8px 24px; margin-top: var(--space-3) }`
     public static let footGap: CGFloat = 24
     public static let footLineGap: CGFloat = 8
@@ -550,6 +556,8 @@ public enum Measure {
     public static let choicePadding = EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 0)
     public static let choiceGap: CGFloat = 12
     public static let choiceRule: CGFloat = 2
+    /// `.choice input { margin-top: 3px }`
+    public static let choiceInputSpaceAbove: CGFloat = 3
   }
 
   public enum Toast {

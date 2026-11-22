@@ -204,6 +204,22 @@ extension VirgaTheme {
     return ("0" as NSString).size(withAttributes: [.font: UIFont.systemFont(ofSize: points)]).width
   }
 
+  /// The advance of a space in the face at `size` (scaled by Dynamic Type).
+  @MainActor
+  func spaceWidth(size: CGFloat) -> CGFloat {
+    let points = scaled(size)
+    if hasTypeface, let face = VirgaTypeface.face(size: points, weight: VirgaWeight.regular) {
+      var glyph = CGGlyph(0)
+      var space = UniChar(0x20)
+      if CTFontGetGlyphsForCharacters(face, &space, &glyph, 1) {
+        var advance = CGSize.zero
+        CTFontGetAdvancesForGlyphs(face, .horizontal, &glyph, &advance, 1)
+        return advance.width
+      }
+    }
+    return (" " as NSString).size(withAttributes: [.font: UIFont.systemFont(ofSize: points)]).width
+  }
+
   static func systemWeight(_ weight: Double) -> Font.Weight {
     if weight >= 600 { return .semibold }
     if weight >= 500 { return .medium }

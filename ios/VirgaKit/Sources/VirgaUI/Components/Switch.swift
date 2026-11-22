@@ -113,24 +113,12 @@ struct CheckBody: View {
   var body: some View {
     let box = terms ? Measure.Legal.checkBox : theme.points(ThemeKit.checkboxSize)
     let gap = terms ? Measure.Legal.checkGap : theme.points(ThemeKit.checkGap)
-    let shape = RoundedRectangle(cornerRadius: Measure.Check.radius)
     Button {
       configuration.isOn.toggle()
     } label: {
       HStack(alignment: terms ? .top : .center, spacing: gap) {
-        ZStack {
-          shape
-            .fill(configuration.isOn ? theme.accent : theme.surface)
-          shape
-            .strokeBorder(configuration.isOn ? theme.accent : theme.line2, lineWidth: Measure.Check.edge)
-          if configuration.isOn {
-            Image(systemName: Glyph.check)
-              .font(.system(size: box * Measure.Check.tickShare, weight: .bold))
-              .foregroundStyle(theme.onAccent)
-          }
-        }
-        .frame(width: box, height: box)
-        .padding(.top, terms ? Measure.Legal.checkSpaceAbove : 0)
+        CheckBox(isOn: configuration.isOn, side: box)
+          .padding(.top, terms ? Measure.Legal.checkSpaceAbove : 0)
         configuration.label
           .frame(maxWidth: .infinity, alignment: .leading)
       }
@@ -142,6 +130,31 @@ struct CheckBody: View {
     .accessibilityRepresentation {
       Toggle(isOn: configuration.$isOn) { configuration.label }
     }
+  }
+}
+
+/// The browser's checkbox (`input[type='checkbox']` with `accent-color`),
+/// drawn: `side` square, a 1-point edge in --line-2, filled with the accent
+/// and ticked in --on-accent when on.
+struct CheckBox: View {
+  @Environment(\.virgaTheme) private var theme
+  let isOn: Bool
+  let side: CGFloat
+
+  var body: some View {
+    let shape = RoundedRectangle(cornerRadius: Measure.Check.radius)
+    ZStack {
+      shape
+        .fill(isOn ? theme.accent : theme.surface)
+      shape
+        .strokeBorder(isOn ? theme.accent : theme.line2, lineWidth: Measure.Check.edge)
+      if isOn {
+        Image(systemName: Glyph.check)
+          .font(.system(size: side * Measure.Check.tickShare, weight: .bold))
+          .foregroundStyle(theme.onAccent)
+      }
+    }
+    .frame(width: side, height: side)
   }
 }
 

@@ -86,11 +86,9 @@ public struct ChartTable<Actions: View>: View {
   public var body: some View {
     if !series.isEmpty {
       ShowAsTable(actions: { actions }) {
-        ScrollView([.vertical, .horizontal]) {
+        TableScroll(maxHeight: Measure.Chart.tableMaxHeight) {
           DataTable(columns: columns, rows: rows)
-            .frame(minWidth: Measure.Chart.tableMinWidth, alignment: .leading)
         }
-        .frame(maxHeight: Measure.Chart.tableMaxHeight)
         .accessibilityIdentifier("chart-table")
       }
     }

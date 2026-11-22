@@ -279,7 +279,7 @@ struct RemoveAccountDialog: ViewModifier {
           "Also delete what it keeps in this browser",
           description:
             "Its archive, dashboards, tool lists, posting settings and unsent drafts’ pictures. Nothing in the account itself is touched.",
-          isOn: $deleteData)
+          isOn: $deleteData, kind: .check)
       }
     } actions: {
       Button("Cancel") { account = nil }.buttonStyle(.virga)
