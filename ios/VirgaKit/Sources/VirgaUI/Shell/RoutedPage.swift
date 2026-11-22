@@ -177,6 +177,8 @@ public struct RoutedPage: View {
       HubPage(session: app.session, did: did).id(did ?? "")
     } else if pageKey == "drafts" {
       DraftsPage(session: app.session, did: did, id: id).id(did ?? "")
+    } else if pageKey == "posted" {
+      PostedPage(did: did).id(did ?? "")
     } else if pageKey == "templates" {
       TemplatesPage(session: app.session, did: app.session.did, id: id)
         .id(app.session.did ?? "")

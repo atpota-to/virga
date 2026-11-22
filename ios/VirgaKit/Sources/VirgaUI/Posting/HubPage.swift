@@ -601,10 +601,25 @@ struct HubDraftRow: View {
   }
 }
 
-/// A post that went out: its words, the way to it on Bluesky, and its line.
-/// A post in a thread of the account's own isn't called a reply.
+/// A post that went out, as a row of a list: its words and its line.
 struct HubPostedRow: View {
   @Environment(\.virgaTheme) private var theme
+  let row: JSONValue
+  let did: String?
+  let now: Double
+
+  var body: some View {
+    HubPostWords(row: row, did: did, now: now)
+      .padding(.vertical, theme.rowPad)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+  }
+}
+
+/// A post's words, the way to it on Bluesky, and its line under them (a
+/// post in a thread of the account's own isn't called a reply). `extra`
+/// ends the line.
+struct HubPostWords: View {
   @Environment(\.openURL) private var openURL
   let row: JSONValue
   let did: String?
@@ -627,9 +642,7 @@ struct HubPostedRow: View {
       .accessibilityHint("Open on Bluesky")
       HubPostMeta(post: post, now: now, extra: extra)
     }
-    .padding(.vertical, theme.rowPad)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
   }
 }
 #endif

@@ -318,6 +318,18 @@ enum PostingPages {
     return false
   }
 
+  /// `err.message`, as the web reads a thrown error ('' when it has none).
+  static func message(_ error: (any Error)?) -> String {
+    guard let error else { return "" }
+    return ScheduledPostError.errorObject(error)["message"]?.stringValue ?? ""
+  }
+
+  /// `err.code`, as the web reads it.
+  static func code(_ error: (any Error)?) -> String {
+    guard let error else { return "" }
+    return ScheduledPostError.errorObject(error)["code"]?.stringValue ?? ""
+  }
+
   /// `postingDeviceId()`.
   static func deviceId(_ app: AppModel) -> String? {
     Drafts.postingDeviceId(app.stores.keyValue)
