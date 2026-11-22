@@ -1,0 +1,9208 @@
+{
+  "name": "scheduling.queueSuggestions",
+  "sources": [
+    "src/posting/schedule/queueSuggestions.js"
+  ],
+  "cases": [
+    {
+      "id": "suggestionsFromBestTimes#1",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 0,
+            "col": 9,
+            "avg": 12,
+            "posts": 4
+          },
+          {
+            "day": 6,
+            "col": 20,
+            "avg": 9,
+            "posts": 3
+          }
+        ],
+        "block": 1
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "20:00"
+        }
+      ]
+    },
+    {
+      "id": "suggestionsFromBestTimes#2",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 2,
+            "col": 9
+          }
+        ],
+        "block": 2
+      },
+      "output": [
+        {
+          "dayKey": "wed",
+          "time": "18:00"
+        }
+      ]
+    },
+    {
+      "id": "suggestionsFromBestTimes#3",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 2,
+            "col": 9
+          }
+        ],
+        "block": 3
+      },
+      "output": []
+    },
+    {
+      "id": "suggestionsFromBestTimes#4",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 2,
+            "col": 9
+          }
+        ],
+        "block": 4
+      },
+      "output": []
+    },
+    {
+      "id": "suggestionsFromBestTimes#5",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 9,
+            "col": 1
+          },
+          {
+            "day": 1,
+            "col": 30
+          },
+          null,
+          {
+            "day": 1,
+            "col": 3
+          },
+          {
+            "day": 1,
+            "col": 3
+          }
+        ],
+        "block": 1
+      },
+      "output": [
+        {
+          "dayKey": "tue",
+          "time": "03:00"
+        }
+      ]
+    },
+    {
+      "id": "suggestionsFromBestTimes#6",
+      "fn": "suggestionsFromBestTimes",
+      "input": {},
+      "output": []
+    },
+    {
+      "id": "suggestionsFromBestTimes#7",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": null
+      },
+      "output": []
+    },
+    {
+      "id": "suggestionsFromBestTimes#8",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": []
+      },
+      "output": []
+    },
+    {
+      "id": "suggestionsFromBestTimes#9",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": "1",
+            "col": "7"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "tue",
+          "time": "07:00"
+        }
+      ]
+    },
+    {
+      "id": "suggestionsFromBestTimes#10",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": [
+              3
+            ],
+            "col": [
+              8
+            ]
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "thu",
+          "time": "08:00"
+        }
+      ]
+    },
+    {
+      "id": "suggestionsFromBestTimes#11",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 0,
+            "col": 0
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "00:00"
+        }
+      ]
+    },
+    {
+      "id": "suggestionsFromBestTimes#12",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 1.5,
+            "col": 3
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "suggestionsFromBestTimes#13",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": "01",
+            "col": 3
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "suggestionsFromBestTimes#14",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": true,
+            "col": 3
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "suggestionsFromBestTimes#15",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": null,
+            "col": 3
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "suggestionsFromBestTimes#16",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 4,
+            "col": 23
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "fri",
+          "time": "23:00"
+        }
+      ]
+    },
+    {
+      "id": "suggestionsFromBestTimes#17",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 4,
+            "col": 24
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "suggestionsFromBestTimes#18",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 4,
+            "col": -1
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "suggestionsFromBestTimes#19",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 4,
+            "col": 2.5
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "suggestionsFromBestTimes#20",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 4,
+            "col": 2.5
+          }
+        ],
+        "block": 2
+      },
+      "output": [
+        {
+          "dayKey": "fri",
+          "time": "05:00"
+        }
+      ]
+    },
+    {
+      "id": "suggestionsFromBestTimes#21",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 4,
+            "col": "x"
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "suggestionsFromBestTimes#22",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 4,
+            "col": null
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "fri",
+          "time": "00:00"
+        }
+      ]
+    },
+    {
+      "id": "suggestionsFromBestTimes#23",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 4
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "suggestionsFromBestTimes#24",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 5,
+            "col": 6
+          }
+        ],
+        "block": "2"
+      },
+      "output": [
+        {
+          "dayKey": "sat",
+          "time": "12:00"
+        }
+      ]
+    },
+    {
+      "id": "suggestionsFromBestTimes#25",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 5,
+            "col": 6
+          }
+        ],
+        "block": null
+      },
+      "output": [
+        {
+          "dayKey": "sat",
+          "time": "00:00"
+        }
+      ]
+    },
+    {
+      "id": "suggestionsFromBestTimes#26",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 5,
+            "col": 6
+          }
+        ],
+        "block": 0
+      },
+      "output": [
+        {
+          "dayKey": "sat",
+          "time": "00:00"
+        }
+      ]
+    },
+    {
+      "id": "suggestionsFromBestTimes#27",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 5,
+            "col": 6
+          }
+        ],
+        "block": -1
+      },
+      "output": []
+    },
+    {
+      "id": "suggestionsFromBestTimes#28",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 5,
+            "col": 6
+          }
+        ],
+        "block": 0.5
+      },
+      "output": [
+        {
+          "dayKey": "sat",
+          "time": "03:00"
+        }
+      ]
+    },
+    {
+      "id": "suggestionsFromBestTimes#29",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 0,
+            "col": 1
+          },
+          {
+            "day": 0,
+            "col": 1
+          },
+          {
+            "day": "0",
+            "col": "1"
+          },
+          {
+            "day": 0,
+            "col": 2
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "01:00"
+        },
+        {
+          "dayKey": "mon",
+          "time": "02:00"
+        }
+      ]
+    },
+    {
+      "id": "suggestionsFromBestTimes#30",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": "mon"
+      },
+      "output": []
+    },
+    {
+      "id": "suggestionsFromBestTimes#31",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": 5
+      },
+      "output": {
+        "$throws": "(best || []) is not iterable"
+      }
+    },
+    {
+      "id": "suggestionsFromBestTimes#32",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": {
+          "day": 0,
+          "col": 9
+        }
+      },
+      "output": {
+        "$throws": "(best || []) is not iterable"
+      }
+    },
+    {
+      "id": "suggestionsFromBestTimes#33",
+      "fn": "suggestionsFromBestTimes",
+      "input": {
+        "best": [
+          {
+            "day": 0,
+            "col": 0
+          },
+          {
+            "day": 1,
+            "col": 5
+          },
+          {
+            "day": 2,
+            "col": 10
+          },
+          {
+            "day": 3,
+            "col": 15
+          },
+          {
+            "day": 4,
+            "col": 20
+          },
+          {
+            "day": 5,
+            "col": 25
+          },
+          {
+            "day": 6,
+            "col": 4
+          },
+          {
+            "day": 0,
+            "col": 9
+          },
+          {
+            "day": 1,
+            "col": 14
+          },
+          {
+            "day": 2,
+            "col": 19
+          },
+          {
+            "day": 3,
+            "col": 24
+          },
+          {
+            "day": 4,
+            "col": 3
+          },
+          {
+            "day": 5,
+            "col": 8
+          },
+          {
+            "day": 6,
+            "col": 13
+          },
+          {
+            "day": 0,
+            "col": 18
+          },
+          {
+            "day": 1,
+            "col": 23
+          },
+          {
+            "day": 2,
+            "col": 2
+          },
+          {
+            "day": 3,
+            "col": 7
+          },
+          {
+            "day": 4,
+            "col": 12
+          },
+          {
+            "day": 5,
+            "col": 17
+          },
+          {
+            "day": 6,
+            "col": 22
+          },
+          {
+            "day": 0,
+            "col": 1
+          },
+          {
+            "day": 1,
+            "col": 6
+          },
+          {
+            "day": 2,
+            "col": 11
+          },
+          {
+            "day": 3,
+            "col": 16
+          },
+          {
+            "day": 4,
+            "col": 21
+          },
+          {
+            "day": 5,
+            "col": 0
+          },
+          {
+            "day": 6,
+            "col": 5
+          },
+          {
+            "day": 0,
+            "col": 10
+          },
+          {
+            "day": 1,
+            "col": 15
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "00:00"
+        },
+        {
+          "dayKey": "tue",
+          "time": "05:00"
+        },
+        {
+          "dayKey": "wed",
+          "time": "10:00"
+        },
+        {
+          "dayKey": "thu",
+          "time": "15:00"
+        },
+        {
+          "dayKey": "fri",
+          "time": "20:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "04:00"
+        },
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        },
+        {
+          "dayKey": "tue",
+          "time": "14:00"
+        },
+        {
+          "dayKey": "wed",
+          "time": "19:00"
+        },
+        {
+          "dayKey": "fri",
+          "time": "03:00"
+        },
+        {
+          "dayKey": "sat",
+          "time": "08:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "13:00"
+        },
+        {
+          "dayKey": "mon",
+          "time": "18:00"
+        },
+        {
+          "dayKey": "tue",
+          "time": "23:00"
+        },
+        {
+          "dayKey": "wed",
+          "time": "02:00"
+        },
+        {
+          "dayKey": "thu",
+          "time": "07:00"
+        },
+        {
+          "dayKey": "fri",
+          "time": "12:00"
+        },
+        {
+          "dayKey": "sat",
+          "time": "17:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "22:00"
+        },
+        {
+          "dayKey": "mon",
+          "time": "01:00"
+        },
+        {
+          "dayKey": "tue",
+          "time": "06:00"
+        },
+        {
+          "dayKey": "wed",
+          "time": "11:00"
+        },
+        {
+          "dayKey": "thu",
+          "time": "16:00"
+        },
+        {
+          "dayKey": "fri",
+          "time": "21:00"
+        },
+        {
+          "dayKey": "sat",
+          "time": "00:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "05:00"
+        },
+        {
+          "dayKey": "mon",
+          "time": "10:00"
+        },
+        {
+          "dayKey": "tue",
+          "time": "15:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#1",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "07:00"
+        },
+        {
+          "dayKey": "sat",
+          "time": "11:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#2",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": []
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#3",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": null
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#4",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "sun",
+          "time": "23:59"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#5",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "tue",
+          "time": "07:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#6",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#7",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "holiday",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#8",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": 9
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#9",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#10",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#11",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "missingSuggestions#12",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "0",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#13",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        },
+        {
+          "dayKey": "mon",
+          "time": "07:00"
+        },
+        {
+          "dayKey": "sat",
+          "time": "11:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#14",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": null,
+        "suggestions": []
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#15",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": null,
+        "suggestions": null
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#16",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "sun",
+          "time": "23:59"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#17",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "tue",
+          "time": "07:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#18",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#19",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "holiday",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#20",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": 9
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#21",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#22",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#23",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "missingSuggestions#24",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "0",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#25",
+      "fn": "missingSuggestions",
+      "input": {
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        },
+        {
+          "dayKey": "mon",
+          "time": "07:00"
+        },
+        {
+          "dayKey": "sat",
+          "time": "11:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#26",
+      "fn": "missingSuggestions",
+      "input": {
+        "suggestions": []
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#27",
+      "fn": "missingSuggestions",
+      "input": {
+        "suggestions": null
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#28",
+      "fn": "missingSuggestions",
+      "input": {
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "sun",
+          "time": "23:59"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#29",
+      "fn": "missingSuggestions",
+      "input": {
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "tue",
+          "time": "07:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#30",
+      "fn": "missingSuggestions",
+      "input": {
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#31",
+      "fn": "missingSuggestions",
+      "input": {
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "holiday",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#32",
+      "fn": "missingSuggestions",
+      "input": {
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": 9
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#33",
+      "fn": "missingSuggestions",
+      "input": {
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#34",
+      "fn": "missingSuggestions",
+      "input": {
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#35",
+      "fn": "missingSuggestions",
+      "input": {
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "missingSuggestions#36",
+      "fn": "missingSuggestions",
+      "input": {
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "0",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#37",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        },
+        {
+          "dayKey": "mon",
+          "time": "07:00"
+        },
+        {
+          "dayKey": "sat",
+          "time": "11:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#38",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {},
+        "suggestions": []
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#39",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {},
+        "suggestions": null
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#40",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "sun",
+          "time": "23:59"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#41",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "tue",
+          "time": "07:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#42",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#43",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "holiday",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#44",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": 9
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#45",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#46",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#47",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "missingSuggestions#48",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "0",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#49",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        },
+        {
+          "dayKey": "mon",
+          "time": "07:00"
+        },
+        {
+          "dayKey": "sat",
+          "time": "11:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#50",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": []
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#51",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": null
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#52",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "sun",
+          "time": "23:59"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#53",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "tue",
+          "time": "07:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#54",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#55",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "holiday",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#56",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": 9
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#57",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#58",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#59",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "missingSuggestions#60",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "0",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#61",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        },
+        {
+          "dayKey": "mon",
+          "time": "07:00"
+        },
+        {
+          "dayKey": "sat",
+          "time": "11:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#62",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": []
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#63",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": null
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#64",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "sun",
+          "time": "23:59"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#65",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#66",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#67",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "holiday",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#68",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": 9
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#69",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#70",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#71",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "missingSuggestions#72",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "0",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#73",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "07:00"
+        },
+        {
+          "dayKey": "sat",
+          "time": "11:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#74",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": []
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#75",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": null
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#76",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "sun",
+          "time": "23:59"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#77",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "tue",
+          "time": "07:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#78",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#79",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "holiday",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#80",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": 9
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#81",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#82",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#83",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "missingSuggestions#84",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "0",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#85",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "07:00"
+        },
+        {
+          "dayKey": "sat",
+          "time": "11:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#86",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": []
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#87",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": null
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#88",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "sun",
+          "time": "23:59"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#89",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "tue",
+          "time": "07:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#90",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#91",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "holiday",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#92",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#93",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#94",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#95",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "missingSuggestions#96",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "0",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#97",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        },
+        {
+          "dayKey": "mon",
+          "time": "07:00"
+        },
+        {
+          "dayKey": "sat",
+          "time": "11:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#98",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": []
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#99",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": null
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#100",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "sun",
+          "time": "23:59"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#101",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "tue",
+          "time": "07:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#102",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#103",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "holiday",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#104",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#105",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#106",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#107",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "missingSuggestions#108",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "0",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#109",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        },
+        {
+          "dayKey": "mon",
+          "time": "07:00"
+        },
+        {
+          "dayKey": "sat",
+          "time": "11:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#110",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": []
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#111",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": null
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#112",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "sun",
+          "time": "23:59"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#113",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "tue",
+          "time": "07:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#114",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#115",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "holiday",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#116",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": 9
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#117",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#118",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#119",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "missingSuggestions#120",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "0",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#121",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        },
+        {
+          "dayKey": "mon",
+          "time": "07:00"
+        },
+        {
+          "dayKey": "sat",
+          "time": "11:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#122",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": []
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#123",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": null
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#124",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "sun",
+          "time": "23:59"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#125",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "tue",
+          "time": "07:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#126",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#127",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "holiday",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#128",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": 9
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#129",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#130",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#131",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "missingSuggestions#132",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "0",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#133",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        },
+        {
+          "dayKey": "mon",
+          "time": "07:00"
+        },
+        {
+          "dayKey": "sat",
+          "time": "11:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#134",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": "week",
+        "suggestions": []
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#135",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": "week",
+        "suggestions": null
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#136",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "sun",
+          "time": "23:59"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#137",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "tue",
+          "time": "07:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#138",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#139",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "holiday",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#140",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": 9
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#141",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#142",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#143",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "missingSuggestions#144",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "0",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#145",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        },
+        {
+          "dayKey": "mon",
+          "time": "07:00"
+        },
+        {
+          "dayKey": "sat",
+          "time": "11:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#146",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": []
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#147",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": null
+      },
+      "output": []
+    },
+    {
+      "id": "missingSuggestions#148",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "sun",
+          "time": "23:59"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        },
+        {
+          "dayKey": "sun",
+          "time": "00:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#149",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "tue",
+          "time": "07:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#150",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": "09:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#151",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "holiday",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#152",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon",
+          "time": 9
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#153",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "mon"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#154",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#155",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "missingSuggestions#156",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": [
+        {
+          "dayKey": "0",
+          "time": "10:00"
+        }
+      ]
+    },
+    {
+      "id": "missingSuggestions#157",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": "mon"
+      },
+      "output": {
+        "$throws": "(suggestions || []).filter is not a function"
+      }
+    },
+    {
+      "id": "missingSuggestions#158",
+      "fn": "missingSuggestions",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": {
+          "0": {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        }
+      },
+      "output": {
+        "$throws": "(suggestions || []).filter is not a function"
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#1",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Europe/Paris",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "fri": [
+            "17:00"
+          ],
+          "sat": [
+            "11:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#2",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": []
+      },
+      "output": {
+        "timezone": "Europe/Paris",
+        "slots": {
+          "mon": [
+            "09:00"
+          ],
+          "fri": [
+            "17:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#3",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": null
+      },
+      "output": {
+        "timezone": "Europe/Paris",
+        "slots": {
+          "mon": [
+            "09:00"
+          ],
+          "fri": [
+            "17:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#4",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Europe/Paris",
+        "slots": {
+          "mon": [
+            "09:00"
+          ],
+          "fri": [
+            "17:00"
+          ],
+          "sun": [
+            "00:00",
+            "23:59"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#5",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Europe/Paris",
+        "slots": {
+          "mon": [
+            "09:00"
+          ],
+          "fri": [
+            "17:00"
+          ],
+          "tue": [
+            "07:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#6",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Europe/Paris",
+        "slots": {
+          "mon": [
+            "09:00"
+          ],
+          "fri": [
+            "17:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#7",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Europe/Paris",
+        "slots": {
+          "mon": [
+            "09:00"
+          ],
+          "fri": [
+            "17:00"
+          ],
+          "holiday": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#8",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Europe/Paris",
+        "slots": {
+          "mon": [
+            "09:00",
+            9
+          ],
+          "fri": [
+            "17:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#9",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Europe/Paris",
+        "slots": {
+          "mon": [
+            "09:00",
+            null
+          ],
+          "fri": [
+            "17:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#10",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Europe/Paris",
+        "slots": {
+          "mon": [
+            "09:00"
+          ],
+          "fri": [
+            "17:00"
+          ],
+          "undefined": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#11",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#12",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Europe/Paris",
+        "slots": {
+          "0": [
+            "10:00"
+          ],
+          "mon": [
+            "09:00"
+          ],
+          "fri": [
+            "17:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#13",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "sat": [
+            "11:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#14",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": null,
+        "suggestions": []
+      },
+      "output": {
+        "timezone": "",
+        "slots": {}
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#15",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": null,
+        "suggestions": null
+      },
+      "output": {
+        "timezone": "",
+        "slots": {}
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#16",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "sun": [
+            "00:00",
+            "23:59"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#17",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "tue": [
+            "07:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#18",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "09:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#19",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "holiday": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#20",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            9
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#21",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            null
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#22",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "undefined": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#23",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#24",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": null,
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "0": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#25",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "sat": [
+            "11:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#26",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "suggestions": []
+      },
+      "output": {
+        "timezone": "",
+        "slots": {}
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#27",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "suggestions": null
+      },
+      "output": {
+        "timezone": "",
+        "slots": {}
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#28",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "sun": [
+            "00:00",
+            "23:59"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#29",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "tue": [
+            "07:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#30",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "09:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#31",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "holiday": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#32",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            9
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#33",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            null
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#34",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "undefined": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#35",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#36",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "0": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#37",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "sat": [
+            "11:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#38",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {},
+        "suggestions": []
+      },
+      "output": {
+        "timezone": "",
+        "slots": {}
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#39",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {},
+        "suggestions": null
+      },
+      "output": {
+        "timezone": "",
+        "slots": {}
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#40",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "sun": [
+            "00:00",
+            "23:59"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#41",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "tue": [
+            "07:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#42",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "09:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#43",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "holiday": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#44",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            9
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#45",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            null
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#46",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "undefined": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#47",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#48",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {},
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "0": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#49",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "sat": [
+            "11:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#50",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": []
+      },
+      "output": {
+        "slots": {},
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#51",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": null
+      },
+      "output": {
+        "slots": {},
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#52",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "sun": [
+            "00:00",
+            "23:59"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#53",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "tue": [
+            "07:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#54",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": [
+            "09:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#55",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "holiday": [
+            "10:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#56",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": [
+            9
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#57",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": [
+            null
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#58",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "undefined": [
+            "10:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#59",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#60",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": null
+        },
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "0": [
+            "10:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#61",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Asia/Kolkata",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "tue": [
+            "09:00",
+            "07:00"
+          ],
+          "sat": [
+            "11:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#62",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": []
+      },
+      "output": {
+        "timezone": "Asia/Kolkata",
+        "slots": {
+          "mon": [],
+          "tue": [
+            "09:00",
+            "07:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#63",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": null
+      },
+      "output": {
+        "timezone": "Asia/Kolkata",
+        "slots": {
+          "mon": [],
+          "tue": [
+            "09:00",
+            "07:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#64",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Asia/Kolkata",
+        "slots": {
+          "mon": [],
+          "tue": [
+            "09:00",
+            "07:00"
+          ],
+          "sun": [
+            "00:00",
+            "23:59"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#65",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Asia/Kolkata",
+        "slots": {
+          "mon": [],
+          "tue": [
+            "09:00",
+            "07:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#66",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Asia/Kolkata",
+        "slots": {
+          "mon": [
+            "09:00"
+          ],
+          "tue": [
+            "09:00",
+            "07:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#67",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Asia/Kolkata",
+        "slots": {
+          "mon": [],
+          "tue": [
+            "09:00",
+            "07:00"
+          ],
+          "holiday": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#68",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Asia/Kolkata",
+        "slots": {
+          "mon": [
+            9
+          ],
+          "tue": [
+            "09:00",
+            "07:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#69",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Asia/Kolkata",
+        "slots": {
+          "mon": [
+            null
+          ],
+          "tue": [
+            "09:00",
+            "07:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#70",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Asia/Kolkata",
+        "slots": {
+          "mon": [],
+          "tue": [
+            "09:00",
+            "07:00"
+          ],
+          "undefined": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#71",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#72",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Asia/Kolkata",
+          "slots": {
+            "mon": [],
+            "tue": [
+              "09:00",
+              "07:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Asia/Kolkata",
+        "slots": {
+          "0": [
+            "10:00"
+          ],
+          "mon": [],
+          "tue": [
+            "09:00",
+            "07:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#73",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "sat": [
+            "11:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#74",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": []
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "09:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#75",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": null
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "09:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#76",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "09:00"
+          ],
+          "sun": [
+            "00:00",
+            "23:59"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#77",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "09:00"
+          ],
+          "tue": [
+            "07:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#78",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "09:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#79",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "09:00"
+          ],
+          "holiday": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#80",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "09:00",
+            9
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#81",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "09:00",
+            null
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#82",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "09:00"
+          ],
+          "undefined": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#83",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#84",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": 5,
+          "slots": {
+            "mon": [
+              "09:00"
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "0": [
+            "10:00"
+          ],
+          "mon": [
+            "09:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#85",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": [
+            "0",
+            "0",
+            "0",
+            "07:00",
+            "9",
+            ":",
+            "x",
+            "y"
+          ],
+          "sat": [
+            "11:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#86",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": []
+      },
+      "output": {
+        "slots": {
+          "mon": "x09:00y"
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#87",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": null
+      },
+      "output": {
+        "slots": {
+          "mon": "x09:00y"
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#88",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": "x09:00y",
+          "sun": [
+            "00:00",
+            "23:59"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#89",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": "x09:00y",
+          "tue": [
+            "07:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#90",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": "x09:00y"
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#91",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": "x09:00y",
+          "holiday": [
+            "10:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#92",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": "x09:00y"
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#93",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": [
+            "0",
+            "0",
+            "0",
+            "9",
+            ":",
+            "x",
+            "y",
+            null
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#94",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": "x09:00y",
+          "undefined": [
+            "10:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#95",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#96",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": "x09:00y"
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "0": [
+            "10:00"
+          ],
+          "mon": "x09:00y"
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#97",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": [
+            "07:00",
+            "08:00",
+            "09:00",
+            "23:00",
+            9,
+            null
+          ],
+          "sat": [
+            "11:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#98",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": []
+      },
+      "output": {
+        "slots": {
+          "mon": [
+            "23:00",
+            9,
+            "08:00",
+            null
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#99",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": null
+      },
+      "output": {
+        "slots": {
+          "mon": [
+            "23:00",
+            9,
+            "08:00",
+            null
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#100",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": [
+            "23:00",
+            9,
+            "08:00",
+            null
+          ],
+          "sun": [
+            "00:00",
+            "23:59"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#101",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": [
+            "23:00",
+            9,
+            "08:00",
+            null
+          ],
+          "tue": [
+            "07:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#102",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": [
+            "08:00",
+            "09:00",
+            "23:00",
+            9,
+            null
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#103",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": [
+            "23:00",
+            9,
+            "08:00",
+            null
+          ],
+          "holiday": [
+            "10:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#104",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": [
+            "23:00",
+            9,
+            "08:00",
+            null
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#105",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": [
+            "08:00",
+            "23:00",
+            9,
+            null,
+            null
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#106",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "mon": [
+            "23:00",
+            9,
+            "08:00",
+            null
+          ],
+          "undefined": [
+            "10:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#107",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#108",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": {
+            "mon": [
+              "23:00",
+              9,
+              "08:00",
+              null
+            ]
+          }
+        },
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "0": [
+            "10:00"
+          ],
+          "mon": [
+            "23:00",
+            9,
+            "08:00",
+            null
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#109",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "0": "a",
+          "1": "b",
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "sat": [
+            "11:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#110",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": []
+      },
+      "output": {
+        "slots": {
+          "0": "a",
+          "1": "b"
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#111",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": null
+      },
+      "output": {
+        "slots": {
+          "0": "a",
+          "1": "b"
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#112",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "0": "a",
+          "1": "b",
+          "sun": [
+            "00:00",
+            "23:59"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#113",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "0": "a",
+          "1": "b",
+          "tue": [
+            "07:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#114",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "0": "a",
+          "1": "b",
+          "mon": [
+            "09:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#115",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "0": "a",
+          "1": "b",
+          "holiday": [
+            "10:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#116",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "0": "a",
+          "1": "b",
+          "mon": [
+            9
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#117",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "0": "a",
+          "1": "b",
+          "mon": [
+            null
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#118",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "0": "a",
+          "1": "b",
+          "undefined": [
+            "10:00"
+          ]
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#119",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#120",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "slots": [
+            "a",
+            "b"
+          ]
+        },
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "slots": {
+          "0": [
+            "10:00",
+            "a"
+          ],
+          "1": "b"
+        },
+        "timezone": ""
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#121",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": {
+        "0": 1,
+        "1": 2,
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "sat": [
+            "11:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#122",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": []
+      },
+      "output": {
+        "0": 1,
+        "1": 2,
+        "timezone": "",
+        "slots": {}
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#123",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": null
+      },
+      "output": {
+        "0": 1,
+        "1": 2,
+        "timezone": "",
+        "slots": {}
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#124",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": {
+        "0": 1,
+        "1": 2,
+        "timezone": "",
+        "slots": {
+          "sun": [
+            "00:00",
+            "23:59"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#125",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": {
+        "0": 1,
+        "1": 2,
+        "timezone": "",
+        "slots": {
+          "tue": [
+            "07:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#126",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": {
+        "0": 1,
+        "1": 2,
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "09:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#127",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "0": 1,
+        "1": 2,
+        "timezone": "",
+        "slots": {
+          "holiday": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#128",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": {
+        "0": 1,
+        "1": 2,
+        "timezone": "",
+        "slots": {
+          "mon": [
+            9
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#129",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": {
+        "0": 1,
+        "1": 2,
+        "timezone": "",
+        "slots": {
+          "mon": [
+            null
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#130",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "0": 1,
+        "1": 2,
+        "timezone": "",
+        "slots": {
+          "undefined": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#131",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#132",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": [
+          1,
+          2
+        ],
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "0": 1,
+        "1": 2,
+        "timezone": "",
+        "slots": {
+          "0": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#133",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "sat": [
+            "11:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#134",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": "week",
+        "suggestions": []
+      },
+      "output": {
+        "timezone": "",
+        "slots": {}
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#135",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": "week",
+        "suggestions": null
+      },
+      "output": {
+        "timezone": "",
+        "slots": {}
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#136",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "sun": [
+            "00:00",
+            "23:59"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#137",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "tue": [
+            "07:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#138",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "09:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#139",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "holiday": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#140",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            9
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#141",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            null
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#142",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "undefined": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#143",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#144",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": "week",
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "0": [
+            "10:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#145",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "sun": [
+            "12:00"
+          ],
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "sat": [
+            "11:00"
+          ]
+        },
+        "extra": true
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#146",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": []
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "sun": [
+            "12:00"
+          ]
+        },
+        "extra": true
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#147",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": null
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "sun": [
+            "12:00"
+          ]
+        },
+        "extra": true
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#148",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "dayKey": "sun",
+            "time": "23:59"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          },
+          {
+            "dayKey": "sun",
+            "time": "00:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "sun": [
+            "00:00",
+            "12:00",
+            "23:59"
+          ]
+        },
+        "extra": true
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#149",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "dayKey": "tue",
+            "time": "07:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "sun": [
+            "12:00"
+          ],
+          "tue": [
+            "07:00"
+          ]
+        },
+        "extra": true
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#150",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "sun": [
+            "12:00"
+          ],
+          "mon": [
+            "09:00"
+          ]
+        },
+        "extra": true
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#151",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "dayKey": "holiday",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "sun": [
+            "12:00"
+          ],
+          "holiday": [
+            "10:00"
+          ]
+        },
+        "extra": true
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#152",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": 9
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "sun": [
+            "12:00"
+          ],
+          "mon": [
+            9
+          ]
+        },
+        "extra": true
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#153",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "dayKey": "mon"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "sun": [
+            "12:00"
+          ],
+          "mon": [
+            null
+          ]
+        },
+        "extra": true
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#154",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "sun": [
+            "12:00"
+          ],
+          "undefined": [
+            "10:00"
+          ]
+        },
+        "extra": true
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#155",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'dayKey')"
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#156",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "",
+          "slots": {
+            "sun": [
+              "12:00"
+            ]
+          },
+          "extra": true
+        },
+        "suggestions": [
+          {
+            "dayKey": "0",
+            "time": "10:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "0": [
+            "10:00"
+          ],
+          "sun": [
+            "12:00"
+          ]
+        },
+        "extra": true
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#157",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": 5
+      },
+      "output": {
+        "$throws": "(suggestions || []) is not iterable"
+      }
+    },
+    {
+      "id": "mergeSuggestionsIntoSchedule#158",
+      "fn": "mergeSuggestionsIntoSchedule",
+      "input": {
+        "schedule": {
+          "timezone": "Europe/Paris",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "fri": [
+              "17:00"
+            ]
+          }
+        },
+        "suggestions": {
+          "0": {
+            "dayKey": "mon",
+            "time": "09:00"
+          }
+        }
+      },
+      "output": {
+        "$throws": "(suggestions || []) is not iterable"
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#1",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "UTC",
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ],
+        "timezone": "America/Chicago"
+      },
+      "output": {
+        "timezone": "America/Chicago",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [
+            "11:00"
+          ],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#2",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "UTC",
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "UTC",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [
+            "11:00"
+          ],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#3",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "UTC",
+        "suggestions": []
+      },
+      "output": {
+        "timezone": "UTC",
+        "slots": {
+          "mon": [],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#4",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "UTC"
+      },
+      "output": {
+        "timezone": "UTC",
+        "slots": {
+          "mon": [],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#5",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "America/Chicago",
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ],
+        "timezone": "America/Chicago"
+      },
+      "output": {
+        "timezone": "America/Chicago",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [
+            "11:00"
+          ],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#6",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "America/Chicago",
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "America/Chicago",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [
+            "11:00"
+          ],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#7",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "America/Chicago",
+        "suggestions": []
+      },
+      "output": {
+        "timezone": "America/Chicago",
+        "slots": {
+          "mon": [],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#8",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "America/Chicago"
+      },
+      "output": {
+        "timezone": "America/Chicago",
+        "slots": {
+          "mon": [],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#9",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "Asia/Kolkata",
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ],
+        "timezone": "America/Chicago"
+      },
+      "output": {
+        "timezone": "America/Chicago",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [
+            "11:00"
+          ],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#10",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "Asia/Kolkata",
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Asia/Calcutta",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [
+            "11:00"
+          ],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#11",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "Asia/Kolkata",
+        "suggestions": []
+      },
+      "output": {
+        "timezone": "Asia/Calcutta",
+        "slots": {
+          "mon": [],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#12",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "Asia/Kolkata"
+      },
+      "output": {
+        "timezone": "Asia/Calcutta",
+        "slots": {
+          "mon": [],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#13",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ],
+        "timezone": "America/Chicago"
+      },
+      "output": {
+        "timezone": "America/Chicago",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [
+            "11:00"
+          ],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#14",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ]
+      },
+      "output": {
+        "timezone": "Pacific/Chatham",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [
+            "11:00"
+          ],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#15",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "suggestions": []
+      },
+      "output": {
+        "timezone": "Pacific/Chatham",
+        "slots": {
+          "mon": [],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#16",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "Pacific/Chatham"
+      },
+      "output": {
+        "timezone": "Pacific/Chatham",
+        "slots": {
+          "mon": [],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#17",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "UTC",
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ],
+        "timezone": ""
+      },
+      "output": {
+        "timezone": "UTC",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [
+            "11:00"
+          ],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#18",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "UTC",
+        "suggestions": [
+          {
+            "dayKey": "mon",
+            "time": "09:00"
+          },
+          {
+            "dayKey": "mon",
+            "time": "07:00"
+          },
+          {
+            "dayKey": "sat",
+            "time": "11:00"
+          }
+        ],
+        "timezone": 7
+      },
+      "output": {
+        "timezone": "",
+        "slots": {
+          "mon": [
+            "07:00",
+            "09:00"
+          ],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [
+            "11:00"
+          ],
+          "sun": []
+        }
+      }
+    },
+    {
+      "id": "scheduleFromSuggestions#19",
+      "fn": "scheduleFromSuggestions",
+      "input": {
+        "tz": "UTC",
+        "suggestions": [
+          {
+            "dayKey": "funday",
+            "time": "10:00"
+          }
+        ],
+        "timezone": "UTC"
+      },
+      "output": {
+        "timezone": "UTC",
+        "slots": {
+          "mon": [],
+          "tue": [],
+          "wed": [],
+          "thu": [],
+          "fri": [],
+          "sat": [],
+          "sun": [],
+          "funday": [
+            "10:00"
+          ]
+        }
+      }
+    }
+  ]
+}

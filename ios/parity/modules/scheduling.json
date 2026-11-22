@@ -21,16 +21,39 @@
       "swift": []
     },
     "src/posting/schedule/queueCalendar.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/QueueCalendar.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/ScheduleJS.swift"
+      ],
+      "fixtures": [
+        "scheduling.queueCalendar"
+      ],
+      "note": "The device's days are timeZone's (nil: the active zone); instants are epoch ms, Dates in the web. A row that is null throws as the web's does; rows that aren't a list read as none.",
+      "synced": "aa65f1cc00a9"
     },
     "src/posting/schedule/queueReorder.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/QueueReorder.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/ScheduleJS.swift"
+      ],
+      "fixtures": [
+        "scheduling.queueReorder"
+      ],
+      "note": "Times without an offset are read in timeZone (the device's). queueTimerConflict and planQueueReorder take now: for the pin's words, which the web says against Date.now() (one clock with the plan's now, as the app calls it).",
+      "synced": "e2508fdcb9c0"
     },
     "src/posting/schedule/queueSuggestions.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/QueueSuggestions.swift"
+      ],
+      "fixtures": [
+        "scheduling.queueSuggestions"
+      ],
+      "note": "scheduleFromSuggestions takes the device zone as localZone. Not reproduced (corrupt input only): a cell day of 'length' or an inherited array method, which the web takes for a day key, and suggestions that are numbers or strings.",
+      "synced": "08c5c2a6bc55"
     },
     "src/posting/schedule/scheduleSerialize.js": {
       "status": "pending",
@@ -41,8 +64,15 @@
       "swift": []
     },
     "src/posting/schedule/scheduledPostError.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/ScheduledPostError.swift"
+      ],
+      "fixtures": [
+        "scheduling.scheduledPostError"
+      ],
+      "note": "An error is read as the web's object of members (code, status, detail, payload, message); the any-Error overloads make one first (ScheduledPostError.errorObject: BackendError keeps detail and payload). Not reproduced: a code naming an inherited member ('constructor') finds it in BY_THROWN_CODE on the web.",
+      "synced": "14cb0c23c5b8"
     }
   }
 }
