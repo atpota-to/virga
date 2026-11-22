@@ -292,7 +292,7 @@ struct CommandPalette: View {
   @ViewBuilder
   private func icon(_ command: Command) -> some View {
     if command.do == "switchAccount" {
-      let account = session.accounts.first { $0.did.jsEquals(command.arg) }
+      let account = command.arg.flatMap { arg in session.accounts.first { $0.did.jsEquals(arg) } }
       Avatar(src: account?.avatar, name: account?.displayName ?? account?.handle ?? "", size: .small)
     } else {
       Image(systemName: Self.glyph(command))
@@ -388,7 +388,7 @@ struct CommandPalette: View {
     case "sky":
       if let sky = command.arg.flatMap(SkyChoice.init(rawValue:)) { preferences.setPref(\.sky, sky) }
     case "switchAccount":
-      if let account = session.accounts.first(where: { $0.did.jsEquals(command.arg) }) {
+      if let arg = command.arg, let account = session.accounts.first(where: { $0.did.jsEquals(arg) }) {
         AccountActions.open(account, session: session)
       }
     default:
