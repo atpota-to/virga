@@ -47,6 +47,7 @@ public struct Sidebar: View {
   @Environment(AppModel.self) private var app
   @Environment(ArchiveModel.self) private var archive: ArchiveModel?
   @Environment(ShellActions.self) private var actions: ShellActions?
+  @Environment(ComposerHost.self) private var composer: ComposerHost?
   private let firstRun: Bool
 
   /// - Parameter firstRun: whether the page is the first build's.
@@ -81,7 +82,7 @@ public struct Sidebar: View {
       .frame(minHeight: Measure.Sidebar.topHeight)
       AccountMenu(compact: false)
       Button {
-        navigate("/posting/compose")
+        newPost()
       } label: {
         Label("New post", systemImage: Glyph.newPost)
       }
@@ -107,6 +108,12 @@ public struct Sidebar: View {
     .padding(.bottom, Measure.Sidebar.paddingBottom)
   }
 
+  /// New post: the composer opens in place, over the page (Shell.jsx's
+  /// `composer.open({})`).
+  private func newPost() {
+    if let composer { composer.open() } else { navigate("/posting/compose") }
+  }
+
   // MARK: Folded
 
   private var rail: some View {
@@ -114,7 +121,7 @@ public struct Sidebar: View {
       Brand(showsName: false)
         .frame(minHeight: Measure.Sidebar.topHeight)
       Button {
-        navigate("/posting/compose")
+        newPost()
       } label: {
         Image(systemName: Glyph.newPost)
       }
