@@ -69,6 +69,7 @@ struct LibraryDialog: View {
         Button(action: onClose) { Image(systemName: Glyph.close) }
           .buttonStyle(.virga(.ghost, size: .small, icon: true))
           .accessibilityLabel("Close")
+          .accessibilityIdentifier("library-close")
       }
       .padding(theme.isPhone ? Measure.Dialog.phoneHead : Measure.Dialog.head)
       ScrollView {

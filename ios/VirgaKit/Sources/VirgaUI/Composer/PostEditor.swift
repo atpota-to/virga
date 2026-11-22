@@ -370,6 +370,7 @@ struct SlashList: View {
     }
     .buttonStyle(.plain)
     .accessibilityLabel(template.shortcut.isEmpty ? name : "\(name), /\(template.shortcut)")
+    .accessibilityIdentifier("slash-template-\(template.shortcut)")
   }
 }
 
