@@ -102,9 +102,12 @@ extension Measure {
 
     /// `.timer-dialog-body { gap: 14px }`
     static let timerBodyGap: CGFloat = 14
-    /// `.sched-dialog-skeleton { gap: 10px }`, its button bones 32 tall.
+    /// `.sched-dialog-skeleton { gap: 10px }`, its button bones 32 tall; TimerDialog.jsx's line
+    /// bones 40% and 70% of the width.
     static let timerSkeletonGap: CGFloat = 10
     static let timerSkeletonBone: CGFloat = 32
+    static let timerSkeletonFirst: CGFloat = 0.4
+    static let timerSkeletonSecond: CGFloat = 0.7
     /// `.lse-sub { gap: 8px }`
     static let subGap: CGFloat = 8
     /// The snippet a timer dialog quotes (`slice(0, 280)`), and a call-off's (200).

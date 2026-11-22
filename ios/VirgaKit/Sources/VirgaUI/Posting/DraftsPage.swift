@@ -168,6 +168,9 @@ struct DraftsPage: View {
     }
     .onDisappear { list.end() }
     .onChange(of: list.phase) { _, phase in if phase == .ready { prune() } }
+    // And once the composer closes, as the web's effect on composerOpen
+    // does: /posting/drafts/<id> opens it before the list is read.
+    .onChange(of: composer?.isOpen ?? false) { _, open in if !open && list.phase == .ready { prune() } }
     .postingConfirm(
       isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }), title: "Delete this draft?",
       onConfirm: { if let row = deleting { try await remove(row) } }

@@ -199,9 +199,9 @@ struct PostTimerDialog: View {
     VStack(alignment: .leading, spacing: Measure.Hub.timerSkeletonGap) {
       GeometryReader { geometry in
         VStack(alignment: .leading, spacing: Measure.Hub.timerSkeletonGap) {
-          bone(geometry.size.width * 0.4, Measure.Templates.rowBoneHeight)
+          bone(geometry.size.width * Measure.Hub.timerSkeletonFirst, Measure.Templates.rowBoneHeight)
           bone(geometry.size.width, Measure.Hub.timerSkeletonBone, pill: true)
-          bone(geometry.size.width * 0.7, Measure.Templates.rowBoneHeight)
+          bone(geometry.size.width * Measure.Hub.timerSkeletonSecond, Measure.Templates.rowBoneHeight)
           bone(geometry.size.width, Measure.Hub.timerSkeletonBone, pill: true)
         }
       }

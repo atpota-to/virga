@@ -176,6 +176,7 @@ struct HubPage: View {
       content()
     }
     .accessibilityElement(children: .contain)
+    .accessibilityLabel(title)
     .accessibilityIdentifier(id)
   }
 

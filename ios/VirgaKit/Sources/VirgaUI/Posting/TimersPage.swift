@@ -105,8 +105,14 @@ struct TimersPage: View {
             EmptyView()
           }
         } else if loading {
-          VirgaSection(flush: true) { RowSkeleton(rows: 3, actions: 1) }
-            .accessibilityLabel("Loading timers")
+          // `<section aria-label="Loading timers">` over bones VoiceOver doesn't read.
+          // `.card--flush > .hub-list:first-child` carries the rule in ink itself.
+          VirgaSection(flush: true) {
+            Rectangle().fill(theme.color(ThemeKit.flushHeadRule)).frame(height: theme.points(ThemeKit.flushHeadRule))
+            RowSkeleton(rows: 3, actions: 1)
+          }
+          .accessibilityElement(children: .ignore)
+          .accessibilityLabel("Loading timers")
         } else if groups.isEmpty {
           empty
         } else {
