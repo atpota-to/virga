@@ -5,8 +5,12 @@
   "summary": "The composer and the posting pages as SwiftUI screens.",
   "files": {
     "src/posting/PostingPage.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/RoutedPage.swift"
+      ],
+      "note": "RoutedPage's posting case: a page that needs Virga's server (needsBackend) shows NeedsBackend under its header without its access line for an account that can't schedule; Templates is TemplatesPage, keyed by the open account, with the part of the address after it. Not yet: the hub, Drafts, Scheduled, Weekly schedule, Timers, Posted and Library pages, which show their header and that they aren't in the app yet (they wait for the scheduling port).",
+      "synced": "bef217b0e836"
     },
     "src/posting/PostingSettingsSection.jsx": {
       "status": "ported",
@@ -271,12 +275,12 @@
       "synced": "961de3ed1b7a"
     },
     "src/posting/ui/PostingHeader.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Posting/PostingParts.swift",
         "ios/VirgaKit/Sources/VirgaUI/Shell/RoutedPage.swift"
       ],
-      "note": "The header's model (Posting in the crumbs except on the overview, the page's title and line, what it touches, or not), used by Templates and every posting page not here yet. Not yet: a caller's own crumbs, title, line, actions and children.",
+      "note": "PostingHeader.model and .header: Posting in the crumbs (except on the overview) or the caller's own, the page's title and line or the caller's, what it touches or not (showAccess, false where NeedsBackend stands in for the page), and the caller's actions and what goes under the header (children), drawn only when given.",
       "synced": "37014d77c200"
     },
     "src/posting/ui/QueueSettings.jsx": {
