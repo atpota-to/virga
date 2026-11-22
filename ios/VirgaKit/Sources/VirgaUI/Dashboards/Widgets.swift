@@ -8,18 +8,22 @@
 // (VirgaInsights' ReportModels) for the dashboard's period (or the card's
 // own), so a card says the same as the report it links to. A figure (kind
 // "stat") is a Stat: its label (a link to its report), the window it
-// answers for, the number at --figure-size, its trend beside it where the
-// card is wide enough, and a line under it (the change against the window
-// before, and a note in parts). The charts are SeriesChart at the height
-// for their size, and Best time is its sentence, the heatmap and its foot.
+// answers for (left out on a card 250 wide or less, where the line under
+// the page's title says it), the number at --figure-size, its trend beside
+// it on a card 300 wide or more, and a line under it (the change against
+// the window before, and a note in parts, a faint dot after each but the
+// last, wrapping a word at a time). The charts are SeriesChart at the
+// height for their size, and Best time is its sentence, the heatmap and its
+// foot.
 //
 // Here: the followers, new followers, engagement and posts figures;
 // follower growth, new followers, engagement over time, engagement rate,
 // posting cadence and Best time; every other card is MoreWidget's
 // (MoreWidgets.swift). The posting cards (scheduled posts, timers, what
-// goes out next, drafts) say they need the composer, which isn't ported.
-// The chart cards carry the notes, and the follower cards the milestones
-// (ChartNotesModels.marks, useChartMarks).
+// goes out next, drafts) say what an account without a long session can't
+// have, and otherwise that they need the posting pages, which aren't
+// ported. The chart cards carry the notes, and the follower cards the
+// milestones (ChartNotesModels.marks, useChartMarks).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -30,16 +34,52 @@ import VirgaInsights
 extension Unported {
   /// A card whose body isn't ported yet.
   public static let card = "This card isn’t in the iOS app yet."
-  /// A posting card: it needs the composer.
-  public static let postingCard = "This card needs the composer, which isn’t in the iOS app yet."
+  /// A posting card: it reads what the Posting overview reads.
+  public static let postingCard = "This card needs the posting pages, which aren’t in the iOS app yet."
+}
+
+private struct WidgetWidthKey: EnvironmentKey {
+  static let defaultValue: CGFloat? = nil
+}
+
+private struct StatValueOnlyKey: EnvironmentKey {
+  static let defaultValue = false
+}
+
+extension EnvironmentValues {
+  /// The width of the card a view is in (`@container widget`).
+  var widgetWidth: CGFloat? {
+    get { self[WidgetWidthKey.self] }
+    set { self[WidgetWidthKey.self] = newValue }
+  }
+
+  /// A figure drawn down to its number (Customize's line, `.arrange-value`).
+  var statValueOnly: Bool {
+    get { self[StatValueOnlyKey.self] }
+    set { self[StatValueOnlyKey.self] = newValue }
+  }
 }
 
 /// `ROWS`, `HEIGHT`: a list's rows and a chart's height by the card's size.
 enum WidgetParts {
   static let rows: [String: Int] = ["xs": 3, "s": 4, "m": 5, "l": 6, "xl": 8]
   static let height: [String: CGFloat] = ["xs": 140, "s": 150, "m": 180, "l": 220, "xl": 240]
+  /// `MORE_ROWS`: a list of bars is shorter a row than a list of names.
+  static let moreRows: [String: Int] = ["repo-collections": 3]
 
   static func height(_ size: String) -> CGFloat { height[size] ?? 180 }
+
+  /// `rowsFor(size, rows)`: what the card was set to, else what fits its size.
+  static func rowsFor(_ size: String, _ rows: Int?) -> Int {
+    if let rows, rows != 0 { return rows }
+    return Self.rows[size] ?? Self.rows["m"] ?? 5
+  }
+
+  /// `rowsShown(type, size, rows)`: rowsFor, for a list that shows more.
+  static func rowsShown(_ type: String, _ size: String, _ rows: Int?) -> Int {
+    if let rows, rows != 0 { return rows }
+    return (Self.rows[size] ?? Self.rows["m"] ?? 5) + (moreRows[type] ?? 0)
+  }
 
   /// `KIND_ICON`.
   static let kindGlyph: [String: String] = ["like": Glyph.heart, "repost": Glyph.repost, "reply": Glyph.reply, "quote": Glyph.quote]
@@ -121,15 +161,9 @@ struct WidgetBody: View {
 
   // MARK: Figures
 
-  /// A card wide enough draws its trend beside the number; a quarter of a
-  /// row doesn't.
-  private func spark(_ values: [Double]) -> [Double]? {
-    card.size == "xs" ? nil : values
-  }
-
-  private func change(_ compare: PeriodComparison) -> DeltaView? {
+  private func change(_ compare: PeriodComparison) -> StatDelta? {
     guard let days = period.days, days != 0, compare.previous != 0 else { return nil }
-    return DeltaView(pct: compare.pct, title: WidgetParts.compareTitle(period, compare.previous))
+    return StatDelta(text: ChartFormat.deltaText(compare.pct), hint: WidgetParts.compareTitle(period, compare.previous))
   }
 
   private var statFollowers: some View {
@@ -139,12 +173,9 @@ struct WidgetBody: View {
     return Stat(
       icon: def.sfSymbol, label: title ?? "Followers", to: def.href, window: "Now",
       value: ChartFormat.fmtFigure(Double(lead)),
-      delta: AnyView(
-        Text("+\(AppLocale.formatNumber(m.gained))").virgaText(size: theme.points(ThemeKit.deltaFontSize), weight: ThemeKit.deltaWeight)
-          .foregroundStyle(theme.ink)
-          .accessibilityHint("New in \(Periods.periodPhrase(period))")),
-      sub: differs ? "\(AppLocale.formatNumber(m.total)) can be listed" : nil,
-      spark: spark(m.cumulative.map(\.v)))
+      delta: StatDelta(text: "+\(AppLocale.formatNumber(m.gained))", hint: "New in \(Periods.periodPhrase(period))"),
+      sub: nil, subView: differs ? AnyView(ListedNote(profileCount: lead, listed: m.total)) : nil,
+      spark: m.cumulative.map { Optional($0.v) })
   }
 
   private var statNewFollowers: some View {
@@ -159,8 +190,8 @@ struct WidgetBody: View {
     }
     return Stat(
       icon: def.sfSymbol, label: title ?? "New followers", to: def.href, window: Periods.periodWindowWord(period),
-      value: ChartFormat.fmtFigure(Double(m.gained)), delta: change(m.compare).map { AnyView($0) }, sub: sub,
-      spark: spark(m.counts.map(\.v)))
+      value: ChartFormat.fmtFigure(Double(m.gained)), delta: change(m.compare), sub: sub,
+      spark: m.counts.map { Optional($0.v) })
   }
 
   private var statEngagement: some View {
@@ -168,8 +199,8 @@ struct WidgetBody: View {
     return Stat(
       icon: def.sfSymbol, label: title ?? WidgetParts.kindWord(kind, "Engagement"), to: def.href,
       window: Periods.periodWindowWord(period), value: ChartFormat.fmtFigure(Double(m.total)),
-      delta: change(m.compare).map { AnyView($0) },
-      sub: m.ownRate.map { "\(ChartFormat.fmtRate($0)) per post" } ?? "No posts in this window", spark: spark(m.series.map(\.v)))
+      delta: change(m.compare),
+      sub: m.ownRate.map { "\(ChartFormat.fmtRate($0)) per post" } ?? "No posts in this window", spark: m.series.map { Optional($0.v) })
   }
 
   private var statPosts: some View {
@@ -177,8 +208,8 @@ struct WidgetBody: View {
     let replies = m.count != 0 ? Int((Double(m.replies) / Double(m.count) * 100).jsRounded) : 0
     return Stat(
       icon: def.sfSymbol, label: title ?? "Posts", to: def.href, window: Periods.periodWindowWord(period),
-      value: ChartFormat.fmtFigure(Double(m.count)), delta: change(m.compare).map { AnyView($0) },
-      sub: "\(ChartFormat.fmtFigure(m.perDay, decimals: true)) a day · \(replies)% replies", spark: spark(m.counts.map(\.v)))
+      value: ChartFormat.fmtFigure(Double(m.count)), delta: change(m.compare),
+      sub: "\(ChartFormat.fmtFigure(m.perDay, decimals: true)) a day · \(replies)% replies", spark: m.counts.map { Optional($0.v) })
   }
 
   // MARK: Charts
@@ -243,8 +274,9 @@ struct WidgetBody: View {
     let m = ReportModels.bestTimeModel(archive, window, nowMs)
     let sentence = WidgetParts.bestTimeSentence(m)
     return VStack(alignment: .leading, spacing: theme.space3) {
+      // `.widget-insight`: the sentence over a card's chart, small.
       Text(sentence)
-        .virgaText(.textBase)
+        .virgaText(.textSm)
         .foregroundStyle(theme.ink2)
         .fixedSize(horizontal: false, vertical: true)
       Heatmap(rows: WidgetParts.bestTimeRows(m), columns: ReportModels.hourColumns(m.block).map { HeatmapColumn(label: $0.label, span: $0.span) }, summary: sentence)
@@ -256,21 +288,42 @@ struct WidgetBody: View {
   }
 }
 
+/// A figure's change: its words ("+8.4%", "+12") and what it was
+/// compared with, VoiceOver's hint.
+struct StatDelta {
+  var text: String
+  var hint: String?
+}
+
 /// `Stat`: a figure tile, under a 2-point rule in --line.
 struct Stat: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(\.navigate) private var navigate
+  @Environment(\.widgetWidth) private var width
+  @Environment(\.statValueOnly) private var valueOnly
   let icon: String?
   let label: String
   let to: String?
   let window: String?
   let value: String
-  let delta: AnyView?
+  let delta: StatDelta?
   let sub: String?
-  let spark: [Double]?
+  /// A note that is more than words (the count and its (i)).
+  var subView: AnyView? = nil
+  /// The trend beside the number; nil values are gaps, left out.
+  let spark: [Double?]?
 
   var body: some View {
-    VStack(alignment: .leading, spacing: Measure.Dashboard.statGap) {
+    if valueOnly {
+      Text(value).virgaText(.textSm).foregroundStyle(theme.muted).lineLimit(1).fixedSize()
+    } else {
+      tile
+    }
+  }
+
+  private var tile: some View {
+    let wide = width ?? .infinity
+    return VStack(alignment: .leading, spacing: Measure.Dashboard.statGap) {
       HStack(spacing: Measure.Dashboard.statHeadGap) {
         Button {
           if let to { navigate(to) }
@@ -284,8 +337,10 @@ struct Stat: View {
         .disabled(to == nil)
         .accessibilityAddTraits(to == nil ? [] : .isLink)
         Spacer(minLength: 0)
-        if let window {
-          Text(window).foregroundStyle(theme.muted).lineLimit(1)
+        // The line under the page's title says it for every card, so a
+        // narrow one leaves it out.
+        if let window, wide > Measure.Dashboard.statWindowHiddenAt {
+          Text(window).virgaText(.textSm).foregroundStyle(theme.muted).lineLimit(1).fixedSize()
         }
       }
       .virgaText(.textSm, weight: VirgaWeight.medium)
@@ -296,27 +351,57 @@ struct Stat: View {
           .foregroundStyle(theme.ink)
           .lineLimit(1)
           .minimumScaleFactor(0.6)
-        if let spark {
-          Sparkline(values: spark.map { Optional($0) })
-            .frame(minWidth: Measure.Dashboard.sparkMinWidth, maxWidth: Measure.Dashboard.sparkMaxWidth)
+        // The trend, where a card is wide enough to give it room: a third
+        // of a row or more, about half the line.
+        if let spark, wide >= Measure.Dashboard.statSparkAt, width != nil {
+          Spacer(minLength: 0)
+          Sparkline(values: spark, height: Measure.Dashboard.statSparkHeight)
+            .frame(width: wide * Measure.Dashboard.statSparkShare)
+            .padding(.bottom, Measure.Dashboard.statSparkSpaceBelow)
         }
       }
-      if delta != nil || sub != nil {
-        FlowLayout(spacing: Measure.Dashboard.noteGap, lineSpacing: 2) {
-          if let delta { delta }
-          if let sub {
-            ForEach(Array(sub.components(separatedBy: " · ").enumerated()), id: \.offset) { _, part in
-              Text(part)
-            }
-          }
-        }
-        .virgaText(.textSm)
-        .foregroundStyle(theme.muted)
+      if delta != nil || sub != nil || subView != nil {
+        note
+          .virgaText(.textSm, lineHeight: Measure.Dashboard.noteLineHeight)
+          .foregroundStyle(theme.muted)
       }
     }
-    .padding(.top, Measure.Dashboard.statPaddingTop)
+    .padding(.top, theme.isPhone ? Measure.Reports.phoneTilePaddingTop : Measure.Dashboard.statPaddingTop)
     .overlay(alignment: .top) { Rectangle().fill(theme.line).frame(height: 2) }
     .accessibilityElement(children: .combine)
+  }
+
+  /// `.stat-note`: the change and the words about it as one line of text,
+  /// a faint dot after the change and after each part but the last.
+  @ViewBuilder private var note: some View {
+    if let subView {
+      FlowLayout(spacing: 0, lineSpacing: 0) {
+        if delta != nil { words(parts: [], dotAfter: true) }
+        subView
+      }
+      .accessibilityHint(delta?.hint ?? "")
+    } else {
+      words(parts: sub.map { $0.components(separatedBy: " · ") } ?? [], dotAfter: false)
+        .fixedSize(horizontal: false, vertical: true)
+        .accessibilityHint(delta?.hint ?? "")
+    }
+  }
+
+  /// The delta and the parts, a faint dot (the font's no-break spaces for
+  /// the web's 4 and 6 round it) after each but the last.
+  private func words(parts: [String], dotAfter: Bool) -> Text {
+    let dot = Text("\u{00A0}·\u{00A0}").foregroundStyle(theme.faint)
+    var pieces: [Text] = []
+    if let delta {
+      pieces.append(Text(delta.text).font(theme.font(ThemeKit.deltaFontSize, weight: ThemeKit.deltaWeight)).foregroundStyle(theme.ink))
+    }
+    pieces += parts.map { Text($0) }
+    var out = Text("")
+    for (i, piece) in pieces.enumerated() {
+      out = out + piece
+      if i < pieces.count - 1 || dotAfter { out = out + dot }
+    }
+    return out
   }
 }
 #endif

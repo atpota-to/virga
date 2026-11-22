@@ -66,9 +66,7 @@ struct DashboardsSection: View {
         SettingsText("Kept in this browser, like your archive. Another browser starts with the three starting dashboards.")
       }
     }
-    .virgaDialog(
-      isPresented: Binding(get: { renaming != nil }, set: { if !$0 { renaming = nil } }), title: "Rename dashboard"
-    ) {
+    .dashboardDialog(isPresented: Binding(get: { renaming != nil }, set: { if !$0 { renaming = nil } })) {
       if let renaming {
         RenameDashboard(dashboard: renaming) { self.renaming = nil }
       }
@@ -88,7 +86,7 @@ struct DashboardsSection: View {
         .buttonStyle(.virga(.danger))
         .accessibilityIdentifier("dash-confirm")
     }
-    .virgaDialog(isPresented: $creating, title: "New dashboard") {
+    .dashboardDialog(isPresented: $creating) {
       NewDashboardDialog { creating = false }
     }
   }

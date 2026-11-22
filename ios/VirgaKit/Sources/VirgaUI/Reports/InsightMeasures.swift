@@ -46,6 +46,10 @@ extension Measure.Reports {
   static let tileGap: CGFloat = 8
   static let phoneTilePaddingTop: CGFloat = 12
   static let tileDescSpaceAbove: CGFloat = 4
+  /// controls.css's touch `.info-tip-button { margin: -8px -6px }`: the (i)
+  /// beside a note's words takes no more of the line than its 20 points.
+  static let infoTipMarginV: CGFloat = 8
+  static let infoTipMarginH: CGFloat = 6
   /// `.chart-notes-list { margin-top: 18px }`, its rows at least 46 tall in
   /// a 108 | 1fr | auto grid (84 at 760 and under), 12 apart.
   static let notesListSpaceAbove: CGFloat = 18
@@ -100,12 +104,34 @@ extension Measure.Dashboard {
   static let postCountDim: Double = 0.5
   /// `.list-row { gap: 12px }`
   static let listRowGap: CGFloat = 12
-  /// `.arrange-tools { gap: 8px 24px }`; the line's chevron 16.
+  /// `.arrange-line { min-height: 52px }`: the name 8 after the arrows, the
+  /// value 12 after the name, the chevron (16) 8 after that.
+  static let arrangeLineHeight: CGFloat = 52
+  static let arrangeNameSpaceBefore: CGFloat = 8
+  static let arrangeValueSpaceBefore: CGFloat = 12
+  static let arrangeChevronSpaceBefore: CGFloat = 8
+  static let arrangeChevron: CGFloat = 16
+  /// `.arrange-detail { gap: 16px; padding: 4px 0 16px }`, `.arrange-size { gap: 4px }`.
+  static let arrangeDetailGap: CGFloat = 16
+  static let arrangeDetailSpaceAbove: CGFloat = 4
+  static let arrangeDetailSpaceBelow: CGFloat = 16
+  static let arrangeSizeGap: CGFloat = 4
+  /// `.arrange-tools { gap: 8px 24px }`
   static let arrangeToolsGap: CGFloat = 24
   static let arrangeToolsLineGap: CGFloat = 8
-  static let arrangeChevron: CGFloat = 16
-  /// `.library-on`'s check, 13.
+  /// `.library { gap: 14px }`; `.library-item { gap: 12px }`, its icon 16
+  /// in a box 20 tall, `.library-text { gap: 2px }`, `.library-name { gap: 8px }`,
+  /// `.library-on { gap: 5px }` with its 13-point check.
+  static let libraryGap: CGFloat = 14
+  static let libraryItemGap: CGFloat = 12
+  static let libraryIcon: CGFloat = 16
+  static let libraryIconBox: CGFloat = 20
+  static let libraryTextGap: CGFloat = 2
+  static let libraryNameGap: CGFloat = 8
+  static let libraryOnGap: CGFloat = 5
   static let libraryOnIcon: CGFloat = 13
+  /// `.library-text { line-height: 1.35 }`
+  static let libraryLineHeight: Double = 1.35
 }
 
 extension Measure.Chart {
@@ -117,5 +143,9 @@ extension Measure.Chart {
   static let tableFullMinWidth: CGFloat = 448
   /// `.an-tableview .table thead th { padding-top: 8px }`
   static let tableHeadSpaceAbove: CGFloat = 8
+  /// `.chart-foot > .menu:last-child:has(> .btn--icon) { margin-right: -14px }`
+  /// on touch (and `.report-filter-actions > .menu`'s): a ⋯'s dots end on
+  /// the column's edge.
+  static let footMenuBleed: CGFloat = 14
 }
 #endif

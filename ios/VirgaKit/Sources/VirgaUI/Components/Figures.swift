@@ -32,14 +32,17 @@ public struct FigureItem: Identifiable {
   public var label: String
   public var value: Value?
   public var note: AnyView?
+  /// A unit after the number ("%"), small and muted (reports.css `.fig-unit`).
+  public var unit: String?
 
   public var id: String { key }
 
-  public init(key: String? = nil, label: String, value: Value?, note: AnyView? = nil) {
+  public init(key: String? = nil, label: String, value: Value?, note: AnyView? = nil, unit: String? = nil) {
     self.key = key ?? label
     self.label = label
     self.value = value
     self.note = note
+    self.unit = unit
   }
 
   var shown: String? {
@@ -147,11 +150,18 @@ struct FigureCell: View {
       Text(item.label)
         .virgaText(size: theme.points(ThemeKit.figureLabelFontSize), weight: ThemeKit.figureLabelWeight)
         .foregroundStyle(theme.color(ThemeKit.figureLabelInk))
-      Text(item.shown ?? "")
-        .virgaText(size: valueSize, weight: ThemeKit.figureValueWeight, tracking: ThemeKit.figureValueTracking)
-        .foregroundStyle(theme.ink)
-        .minimumScaleFactor(0.5)
-        .lineLimit(1)
+      HStack(alignment: .firstTextBaseline, spacing: Measure.Reports.figUnitGap) {
+        Text(item.shown ?? "")
+          .virgaText(size: valueSize, weight: ThemeKit.figureValueWeight, tracking: ThemeKit.figureValueTracking)
+          .foregroundStyle(theme.ink)
+        if let unit = item.unit {
+          Text(unit)
+            .virgaText(size: valueSize * Measure.Reports.figUnitScale, weight: Measure.Reports.figUnitWeight)
+            .foregroundStyle(theme.muted)
+        }
+      }
+      .minimumScaleFactor(0.5)
+      .lineLimit(1)
       if let note = item.note {
         note
           .virgaText(size: theme.points(ThemeKit.figureNoteFontSize), lineHeight: ThemeKit.figureNoteLineHeight)

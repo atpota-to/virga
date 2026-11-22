@@ -1,13 +1,17 @@
 // Ports src/dashboards/widgets/index.jsx (the other figures, charts and lists)
 // Ports src/dashboards/widgets/content.jsx
+// Ports src/dashboards/widgets/posting.jsx (an account without a long session)
 //
 // The cards WidgetBody hands on: the unfollows, per-post, given and blocked
 // figures; engagement by type and given, blocks over time and repo
 // activity; the lists (top posts, top engagers, you engage with, the
-// follow-back queue, newest followers, unfollows, the lists you're on,
-// records by collection); and the content cards (a typical post, media
-// described, formats, length, tags, sites). The posting cards say they
-// need the composer.
+// follow-back queue, newest followers, unfollows with the names the log
+// remembers, the lists you're on, records by collection); and the content
+// cards (a typical post, media described, formats, length, tags, sites).
+// In a list card what isn't rows (bars, a sentence) stands 16 off the rule
+// under its heading. The posting cards say what an account without a long
+// session can't have; with one, that they need the posting pages, which
+// aren't ported (the scheduled posts' and timers' reads, hubModel.js).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -24,11 +28,22 @@ struct MoreWidget: View {
   let period: AnalyticsPeriod
   let title: String?
 
+  @Environment(AppModel.self) private var app
   private var kind: String { card.options?.kind ?? "all" }
   private var nowMs: Double { archive.nowMs ?? SyncStatus.now() }
-  private var rows: Int { card.options?.rows ?? WidgetParts.rows[card.size] ?? 5 }
-  private var spark: Bool { card.size != "xs" }
+  /// `rowsFor(size, rows)`.
+  private var rows: Int { WidgetParts.rowsFor(card.size, card.options?.rows) }
   static let needsSync = "Read from your repo at the next sync."
+  /// posting.jsx's `NEEDS`.
+  static let needsLongSession = "Needs a long session"
+
+  /// Whether the account can use Virga's server (posting.jsx's useBackend).
+  private var hasBackend: Bool { app.session.capabilitiesFor(archive.did).canSchedule }
+
+  /// What isn't rows under a list's rule stands 16 off it.
+  private func offRule<V: View>(_ view: V) -> some View {
+    view.padding(.top, Measure.Dashboard.listBodySpaceAbove)
+  }
 
   var body: some View {
     switch card.type {
@@ -73,11 +88,46 @@ struct MoreWidget: View {
     case "repo-collections": repoCollections
     case "content-formats", "content-length": contentGroups
     case "top-tags", "top-links": contentUsed
+    case "stat-scheduled", "stat-timers": postingStat
+    case "posting-next": postingNext
     default:
-      Text(def.category == "posting" ? Unported.postingCard : Unported.card)
-        .virgaText(.textSm)
-        .foregroundStyle(theme.muted)
-        .fixedSize(horizontal: false, vertical: true)
+      placeholder(def.category == "posting" ? Unported.postingCard : Unported.card)
+        .padding(.top, def.options?.contains("rows") == true ? Measure.Dashboard.listBodySpaceAbove : 0)
+    }
+  }
+
+  private func placeholder(_ text: String) -> some View {
+    Text(text)
+      .virgaText(.textSm)
+      .foregroundStyle(theme.muted)
+      .fixedSize(horizontal: false, vertical: true)
+  }
+
+  // MARK: Posting
+
+  /// StatScheduled and StatTimers: "Needs a long session" without Virga's
+  /// server; with it, what they read isn't in the app yet.
+  private var postingStat: some View {
+    let label = title ?? (card.type == "stat-scheduled" ? "Scheduled" : "Timers")
+    return Stat(
+      icon: def.sfSymbol, label: label, to: def.href, window: nil, value: "—", delta: nil,
+      sub: hasBackend ? Unported.postingCard : Self.needsLongSession, spark: nil)
+  }
+
+  /// PostingNext without a long session; with one, the placeholder.
+  @ViewBuilder private var postingNext: some View {
+    if hasBackend {
+      offRule(placeholder(Unported.postingCard))
+    } else {
+      offRule(
+        FlowLayout(spacing: 0, lineSpacing: 0) {
+          Text("Scheduling needs a long session, because Virga’s server posts while this browser is closed. ")
+            .virgaText(.textBase)
+            .foregroundStyle(theme.muted)
+            .fixedSize(horizontal: false, vertical: true)
+          NoteLink(text: "See how", to: def.href)
+            .virgaText(.textBase)
+        })
     }
   }
 
@@ -96,22 +146,23 @@ struct MoreWidget: View {
   private var statPerPost: some View {
     let m = ReportModels.engagementModel(archive, period, nowMs, kind: kind)
     let delta = m.rateCompare.flatMap { c in
-      c.previous.map { AnyView(DeltaView(pct: c.pct, title: "\(Periods.periodBefore(period, true)): \(ChartFormat.fmtRate($0))")) }
+      c.previous.map { StatDelta(text: ChartFormat.deltaText(c.pct), hint: "\(Periods.periodBefore(period, true)): \(ChartFormat.fmtRate($0))") }
     }
+    // The rate's gaps (a week with nothing posted) are left out of its line.
     return Stat(
       icon: def.sfSymbol, label: title ?? "\(WidgetParts.kindWord(kind, "Engagement")) per post", to: def.href,
       window: Periods.periodWindowWord(period), value: m.ownRate == nil ? "—" : ChartFormat.fmtRate(m.ownRate), delta: delta,
-      sub: "Over \(AppLocale.formatNumber(m.ownPosts)) posts and threads", spark: spark ? m.rate.map { $0.v ?? 0 } : nil)
+      sub: "Over \(AppLocale.formatNumber(m.ownPosts)) posts and threads", spark: m.rate.map(\.v))
   }
 
   private var statGiven: some View {
     let m = ReportModels.givenModel(archive, period, nowMs, kind: kind)
-    let delta: AnyView? = (period.days ?? 0) != 0 && m.compare.previous != 0
-      ? AnyView(DeltaView(pct: m.compare.pct, title: WidgetParts.compareTitle(period, m.compare.previous))) : nil
+    let delta: StatDelta? = (period.days ?? 0) != 0 && m.compare.previous != 0
+      ? StatDelta(text: ChartFormat.deltaText(m.compare.pct), hint: WidgetParts.compareTitle(period, m.compare.previous)) : nil
     return Stat(
       icon: def.sfSymbol, label: title ?? "\(WidgetParts.kindWord(kind, "Engagement")) given", to: def.href,
       window: Periods.periodWindowWord(period), value: ChartFormat.fmtFigure(Double(m.total)), delta: delta,
-      sub: "To \(AppLocale.formatNumber(m.accounts)) accounts", spark: spark ? m.series.map(\.v) : nil)
+      sub: "To \(AppLocale.formatNumber(m.accounts)) accounts", spark: m.series.map { Optional($0.v) })
   }
 
   @ViewBuilder private var statBlocks: some View {
@@ -121,11 +172,9 @@ struct MoreWidget: View {
       let m = ReportModels.blocksModel(archive, period, nowMs)
       Stat(
         icon: def.sfSymbol, label: title ?? "Blocked by", to: def.href, window: "Now", value: ChartFormat.fmtFigure(Double(m.total)),
-        delta: AnyView(
-          Text("+\(AppLocale.formatNumber(m.received))").virgaText(size: theme.points(ThemeKit.deltaFontSize), weight: ThemeKit.deltaWeight)
-            .foregroundStyle(theme.ink).accessibilityHint("New in \(Periods.periodPhrase(period))")),
+        delta: StatDelta(text: "+\(AppLocale.formatNumber(m.received))", hint: "New in \(Periods.periodPhrase(period))"),
         sub: "\(AppLocale.formatNumber(m.directTotal)) direct · \(AppLocale.formatNumber(m.listTotal)) via lists",
-        spark: spark ? m.cumulative.map(\.v) : nil)
+        spark: m.cumulative.map { Optional($0.v) })
     }
   }
 
@@ -182,7 +231,7 @@ struct MoreWidget: View {
     let m = ReportModels.engagementModel(archive, period, nowMs, kind: kind)
     let shown = Array(m.top.prefix(rows))
     if shown.isEmpty {
-      EmptyState("No posts in this window.")
+      offRule(EmptyState("No posts in this window."))
     } else {
       VStack(alignment: .leading, spacing: 0) {
         ForEach(Array(shown.enumerated()), id: \.element.uri) { i, post in
@@ -192,17 +241,21 @@ struct MoreWidget: View {
     }
   }
 
+  /// `PeopleList`: a row each, the names asked for; a row the caller
+  /// remembers a card for (the log's) has it stand in.
   @ViewBuilder
-  private func people(_ list: [(did: String, value: String?, meta: String?)], empty: String, followLabel: String = "Follow", rel: Bool = true)
-    -> some View
-  {
+  private func people(
+    _ list: [(did: String, value: String?, meta: String?)], cards: [JSKey: People.Card] = [:], empty: String, followLabel: String = "Follow",
+    rel: Bool = true
+  ) -> some View {
     let shown = Array(list.prefix(rows))
     if shown.isEmpty {
-      EmptyState(empty)
+      offRule(EmptyState(empty))
     } else {
-      VStack(alignment: .leading, spacing: 0) {
+      PersonList {
         ForEach(shown, id: \.did) { r in
-          PersonRow(archive: archive, did: r.did, meta: r.meta, value: r.value, follow: true, followLabel: followLabel, rel: rel)
+          PersonRow(
+            archive: archive, did: r.did, card: cards[JSKey(r.did)], meta: r.meta, value: r.value, follow: true, followLabel: followLabel, rel: rel)
         }
       }
       .task(id: shown.map(\.did).joined(separator: "|")) { await model?.wantActors(shown.map(\.did)) }
@@ -212,36 +265,51 @@ struct MoreWidget: View {
   @ViewBuilder private var unfollows: some View {
     let m = ReportModels.followerLogModel(archive)
     if !m.tracking {
-      EmptyState("Unfollows are found by comparing two syncs. Counting starts with your next one.")
+      offRule(EmptyState("Unfollows are found by comparing two syncs. Counting starts with your next one."))
     } else {
       people(
-        m.lost.map { ($0.did, nil, $0.at.map { "noticed \(Time.relativeTime($0, now: SyncStatus.now()))" }) },
+        m.lost.map { ($0.did, nil, $0.at.map { "noticed \(Time.relativeTime($0, now: SyncStatus.now()))" }) }, cards: Self.remembered(m.lost),
         empty: "Nobody has unfollowed you since \(m.since.map { Time.relativeTime($0, now: SyncStatus.now()) } ?? "").")
     }
   }
 
+  /// The log remembers who left as they were: their card stands in until a
+  /// fresher one is read (`r.handle != null`).
+  static func remembered(_ entries: [FollowerLogEntry]) -> [JSKey: People.Card] {
+    var cards: [JSKey: People.Card] = [:]
+    for e in entries where e.handle != nil { cards[JSKey(e.did)] = (e.handle, e.displayName, e.avatar) }
+    return cards
+  }
+
+  /// `PURPOSE_WORD`.
+  static let purposeWord = ["moderation": "Moderation", "curation": "Curation"]
+
+  /// The lists you're on, one line each: the name, and at the row's end
+  /// what it is for (Moderation a step louder) and who subscribes.
   @ViewBuilder private var listsOn: some View {
     if archive.meta.lists == nil {
-      EmptyState("Lists are read at the next sync.")
+      offRule(EmptyState("Lists are read at the next sync."))
     } else {
       let lists = ReportModels.listsModel(archive)
       if lists.isEmpty {
-        EmptyState("You aren’t on any lists.")
+        offRule(EmptyState("You aren’t on any lists."))
       } else {
         VStack(alignment: .leading, spacing: 0) {
-          ForEach(lists.prefix(rows), id: \.uri) { list in
-            VStack(alignment: .leading, spacing: 2) {
-              Text(list.name.isEmpty ? "Untitled list" : list.name).virgaText(.textBase, weight: VirgaWeight.medium).foregroundStyle(theme.ink)
-              HStack(spacing: theme.space2) {
-                Text(list.purpose == "moderation" ? "Moderation" : list.purpose == "curation" ? "Curation" : list.purpose)
-                  .fontWeight(list.purpose == "moderation" ? .semibold : .regular)
-                if let subs = list.subscribers { Text("\(AppLocale.formatNumber(subs)) subscribers") }
-              }
-              .virgaText(.textSm)
-              .foregroundStyle(theme.muted)
+          ForEach(lists.prefix(WidgetParts.rowsShown(card.type, card.size, card.options?.rows)), id: \.uri) { list in
+            HStack(spacing: Measure.Dashboard.listRowGap) {
+              Text(list.name.isEmpty ? "Untitled list" : list.name)
+                .virgaText(.textMd, weight: VirgaWeight.medium)
+                .foregroundStyle(theme.ink)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(maxWidth: .infinity, alignment: .leading)
+              MetaLine(
+                [MetaItem(Self.purposeWord[list.purpose] ?? list.purpose, isKey: list.purpose == "moderation")]
+                  + (list.subscribers.map { [MetaItem("\(AppLocale.formatNumber($0)) subscribers")] } ?? [])
+              )
+              .fixedSize()
             }
             .padding(.vertical, theme.rowPad)
-            .frame(maxWidth: .infinity, alignment: .leading)
             .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
           }
         }
@@ -251,23 +319,28 @@ struct MoreWidget: View {
 
   @ViewBuilder private var repoCollections: some View {
     if let m = ReportModels.atmosphereModel(archive, period, nowMs) {
-      let n = rows + 3
+      let n = WidgetParts.rowsShown(card.type, card.size, card.options?.rows)
       let shown = Array(m.ranked.prefix(n))
       if shown.isEmpty {
-        EmptyState("No records written in this window.")
+        offRule(EmptyState("No records written in this window."))
       } else {
-        BarList(
-          rows: shown.map { BarListRow(key: $0.collection, label: $0.collection, value: Double($0.count), title: $0.collection, code: true) },
-          accessibilityLabel: "Records by collection")
-        Text(
-          (m.ranked.count > n ? "And \(AppLocale.formatNumber(m.ranked.count - n)) more collections. " : "")
-            + "\(AppLocale.formatNumber(m.total)) records in \(Periods.periodPhrase(period))."
-        )
-        .virgaText(.textSm)
-        .foregroundStyle(theme.muted)
+        // `.widget-stack`: the bars and the caption under them, 12 apart.
+        offRule(
+          VStack(alignment: .leading, spacing: theme.space3) {
+            BarList(
+              rows: shown.map { BarListRow(key: $0.collection, label: $0.collection, value: Double($0.count), title: $0.collection, code: true) },
+              accessibilityLabel: "Records by collection")
+            Text(
+              (m.ranked.count > n ? "And \(AppLocale.formatNumber(m.ranked.count - n)) more collections. " : "")
+                + "\(AppLocale.formatNumber(m.total)) records in \(Periods.periodPhrase(period))."
+            )
+            .virgaText(.textSm)
+            .foregroundStyle(theme.muted)
+            .fixedSize(horizontal: false, vertical: true)
+          })
       }
     } else {
-      EmptyState("The repo is read at the next sync.")
+      offRule(EmptyState("The repo is read at the next sync."))
     }
   }
 
@@ -283,7 +356,8 @@ struct MoreWidget: View {
       EmptyState("No posts in this window.")
     } else {
       if formats, let insight = ContentWords.standout(m.formats, m.typical, "text", noun: ContentWords.formatNoun) {
-        Text(insight).virgaText(.textBase).foregroundStyle(theme.ink2).fixedSize(horizontal: false, vertical: true)
+        // `.widget-insight`: small, over the bars.
+        Text(insight).virgaText(.textSm).foregroundStyle(theme.ink2).fixedSize(horizontal: false, vertical: true)
       }
       BarList(
         rows: groups.map { ContentWords.barRow(key: $0.key, label: $0.label, posts: $0.posts, share: $0.share, typical: $0.typical, measure: "typical") },
@@ -298,10 +372,16 @@ struct MoreWidget: View {
     let all = tags ? m.tags : m.links
     let shown = Array(all.prefix(rows))
     if !m.ready {
-      EmptyState(Self.needsSync)
+      offRule(EmptyState(Self.needsSync))
     } else if shown.isEmpty {
-      EmptyState(tags ? "No tags on your posts in this window." : "No links in your posts in this window.")
+      offRule(EmptyState(tags ? "No tags on your posts in this window." : "No links in your posts in this window."))
     } else {
+      offRule(contentUsedBars(all: all, shown: shown, tags: tags))
+    }
+  }
+
+  private func contentUsedBars(all: [ContentUse], shown: [ContentUse], tags: Bool) -> some View {
+    VStack(alignment: .leading, spacing: theme.space3) {
       BarList(
         rows: shown.map {
           BarListRow(
@@ -316,6 +396,7 @@ struct MoreWidget: View {
       )
       .virgaText(.textSm)
       .foregroundStyle(theme.muted)
+      .fixedSize(horizontal: false, vertical: true)
     }
   }
 }

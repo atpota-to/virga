@@ -24,27 +24,37 @@ public struct ShowAsTable<Actions: View, Table: View>: View {
   @Environment(\.virgaTheme) private var theme
   @State private var open = false
   private let actions: Actions
+  private let trailing: AnyView?
   private let table: Table
 
-  public init(@ViewBuilder actions: () -> Actions, @ViewBuilder table: () -> Table) {
+  /// - Parameter trailing: a ⋯ at the line's end (a phone's, holding what
+  ///   `actions` would say in words), its dots on the column's edge.
+  public init(@ViewBuilder actions: () -> Actions, trailing: AnyView? = nil, @ViewBuilder table: () -> Table) {
     self.actions = actions()
+    self.trailing = trailing
     self.table = table()
   }
 
   public var body: some View {
     VStack(alignment: .leading, spacing: 0) {
-      FlowLayout(spacing: theme.gap(ThemeKit.chartFootGap).column, lineSpacing: 0) {
-        Button {
-          open.toggle()
-        } label: {
-          Label("Show as table", systemImage: Glyph.table)
-        }
-        .buttonStyle(.linkAction(isOpen: open))
-        .modifier(ChartFootAction())
-        .accessibilityValue(open ? "Open" : "Closed")
-        .accessibilityIdentifier("show-as-table")
-        Group { actions }
+      HStack(alignment: .top, spacing: theme.gap(ThemeKit.chartFootGap).column) {
+        FlowLayout(spacing: theme.gap(ThemeKit.chartFootGap).column, lineSpacing: 0) {
+          Button {
+            open.toggle()
+          } label: {
+            Label("Show as table", systemImage: Glyph.table)
+          }
+          .buttonStyle(.linkAction(isOpen: open))
           .modifier(ChartFootAction())
+          .accessibilityValue(open ? "Open" : "Closed")
+          .accessibilityIdentifier("show-as-table")
+          Group { actions }
+            .modifier(ChartFootAction())
+        }
+        if let trailing {
+          Spacer(minLength: 0)
+          trailing.padding(.trailing, -Measure.Chart.footMenuBleed)
+        }
       }
       .padding(.top, theme.points(ThemeKit.chartFootSpaceAbove))
       if open {
@@ -66,8 +76,8 @@ struct ChartFootAction: ViewModifier {
 }
 
 extension ShowAsTable where Actions == EmptyView {
-  public init(@ViewBuilder table: () -> Table) {
-    self.init(actions: { EmptyView() }, table: table)
+  public init(trailing: AnyView? = nil, @ViewBuilder table: () -> Table) {
+    self.init(actions: { EmptyView() }, trailing: trailing, table: table)
   }
 }
 
@@ -81,13 +91,17 @@ public struct ChartTable<Actions: View>: View {
   private let format: (Double?) -> String
   private let trendFormat: (Double?) -> String
   private let actions: Actions
+  private let trailing: AnyView?
 
-  /// - Parameter format: nil is `fmtCount` (and the trend's averages keep
-  ///   their decimal, as in the chart's readout).
+  /// - Parameters:
+  ///   - format: nil is `fmtCount` (and the trend's averages keep their
+  ///     decimal, as in the chart's readout).
+  ///   - trailing: a ⋯ at the end of the line under the chart.
   public init(
     series: [ChartPoint], secondary: [ChartPoint]? = nil, trend: [ChartPoint]? = nil, unit: AnalyticsUnit, valueHead: String,
-    secondaryHead: String? = nil, format: ((Double?) -> String)? = nil, @ViewBuilder actions: () -> Actions
+    secondaryHead: String? = nil, format: ((Double?) -> String)? = nil, trailing: AnyView? = nil, @ViewBuilder actions: () -> Actions
   ) {
+    self.trailing = trailing
     self.series = series
     self.secondary = secondary
     self.trend = trend
@@ -101,7 +115,7 @@ public struct ChartTable<Actions: View>: View {
 
   public var body: some View {
     if !series.isEmpty {
-      ShowAsTable(actions: { actions }) {
+      ShowAsTable(actions: { actions }, trailing: trailing) {
         ChartTableView(columns: columns, rows: rows)
       }
     }
@@ -134,11 +148,11 @@ public struct ChartTable<Actions: View>: View {
 extension ChartTable where Actions == EmptyView {
   public init(
     series: [ChartPoint], secondary: [ChartPoint]? = nil, trend: [ChartPoint]? = nil, unit: AnalyticsUnit, valueHead: String,
-    secondaryHead: String? = nil, format: ((Double?) -> String)? = nil
+    secondaryHead: String? = nil, format: ((Double?) -> String)? = nil, trailing: AnyView? = nil
   ) {
     self.init(
       series: series, secondary: secondary, trend: trend, unit: unit, valueHead: valueHead, secondaryHead: secondaryHead,
-      format: format, actions: { EmptyView() })
+      format: format, trailing: trailing, actions: { EmptyView() })
   }
 }
 
