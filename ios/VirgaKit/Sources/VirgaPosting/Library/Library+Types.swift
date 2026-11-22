@@ -500,3 +500,31 @@ public enum LibraryContextInput: Hashable, Sendable {
     }
   }
 }
+
+/// A run of a shelf's items under one heading: `{ id, heading, muted, items }`
+/// (a template group, the templates not offered here, or a feed's group).
+public struct LibrarySection: Hashable, Sendable {
+  public var id: String
+  public var heading: String?
+  public var muted: Bool
+  public var items: [LibraryItem]
+
+  public init(id: String, heading: String?, muted: Bool, items: [LibraryItem]) {
+    self.id = id
+    self.heading = heading
+    self.muted = muted
+    self.items = items
+  }
+}
+
+extension LibrarySection: Codable {
+  enum CodingKeys: String, CodingKey { case id, heading, muted, items }
+
+  public func encode(to encoder: Encoder) throws {
+    var c = encoder.container(keyedBy: CodingKeys.self)
+    try c.encode(id, forKey: .id)
+    try c.encode(heading, forKey: .heading)
+    try c.encode(muted, forKey: .muted)
+    try c.encode(items, forKey: .items)
+  }
+}
