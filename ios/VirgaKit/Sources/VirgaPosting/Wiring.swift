@@ -12,6 +12,10 @@
 //   bus (`PostingEvents.postsChangedListener(target:)`), so a post made or
 //   deleted here reaches the archive's model as virga:posts-changed does
 //   on the web.
+// - Pending work: pendingWork.js's posting services (listScheduled,
+//   listTimers, isActiveScheduledRow, isLiveTimer) as VirgaSession's
+//   PendingWorkServices (`PendingWorkServices.posting()`), which the app's
+//   sign-out and remove-account dialogs read waiting work through.
 // - Gates: the write account's XRPCAgent as gates.js's agent
 //   (`XRPCGatesAgent`, which posting settings' resolveDefaultGates and
 //   updatePostGates take), and XRPCError naming its lexicon error, so a
@@ -21,6 +25,7 @@ import Foundation
 import VirgaArchive
 import VirgaCore
 import VirgaNetwork
+import VirgaSession
 
 // MARK: - Timers
 
@@ -42,6 +47,23 @@ extension BackendError: TimerErrorConvertible {
   /// status (0 for no answer), name and payload.
   public var timerServiceError: TimerServiceError {
     TimerServiceError(code: codeString, message: message, status: status, name: name, payload: payload)
+  }
+}
+
+// MARK: - Pending work
+
+extension PendingWorkServices {
+  /// What pendingWork.js imports from the posting services: the scheduled
+  /// rows (scheduleService's listScheduled and isActiveScheduledRow) and the
+  /// timers (timerService's listTimers, which settles the timers'
+  /// availability in `context` as any read of them does, and isLiveTimer),
+  /// each over the account's VirgaBackend.
+  public static func posting(context: TimerServiceContext = .shared) -> PendingWorkServices {
+    PendingWorkServices(
+      listScheduled: { req in try await ScheduleService.listScheduled(req).rows },
+      listTimers: { req in try await TimerService.listTimers(req, context: context).rows },
+      isActiveScheduledRow: { ScheduleService.isActiveScheduledRow($0) },
+      isLiveTimer: { TimerService.isLiveTimer($0) })
   }
 }
 

@@ -129,9 +129,11 @@ public final class AppModel {
   public let notices: SessionNoticesModel
   @ObservationIgnored public let lookups: SignInLookups
   /// The posting services a sign-out reads waiting work through
-  /// (pendingWork.js). Nil until VirgaPosting's schedule and timer services
-  /// are wired to Virga's server: a long session's sign-out then says it
-  /// couldn't check, as the web does when the read fails.
+  /// (pendingWork.js): VirgaPosting's listScheduled and listTimers over the
+  /// account's VirgaBackend, so a long session's sign-out and removal say
+  /// what is scheduled or on a timer. Nil only where nothing can be read
+  /// (a long session's sign-out then says it couldn't check, as the web
+  /// does when the read fails).
   @ObservationIgnored public let pendingWork: PendingWorkServices?
   /// What every account's archive is read through (its file store, the
   /// public network, the clock), less the account itself.
@@ -151,7 +153,7 @@ public final class AppModel {
     self.isDemo = isDemo
     self.stores = stores
     self.lookups = lookups
-    self.pendingWork = nil
+    self.pendingWork = PendingWorkServices.posting()
     self.archiveEnvironment = archiveEnvironment
     self.demoSession = demoSession
     preferences = PreferencesModel(

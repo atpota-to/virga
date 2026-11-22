@@ -79,16 +79,17 @@ struct AdviserSettingsCard: View {
         }
         .accessibilityIdentifier("adviser-enabled")
       }
+      .pressingName { save(AdviserSetup.nextPostingAdviserState(adviser.json)) }
       if adviser.enabled {
         on(adviser)
       }
       usage
-      Disclosure("What’s sent, and to whom") { sent }
+      Disclosure("What’s sent, and to whom", settingsRow: true) { sent }
         .padding(.vertical, theme.rowPadLg)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
       if !error.isEmpty {
-        Callout(tone: .danger) { Text(error) }
-          .padding(.top, Measure.Settings.calloutSpaceAbove)
+        PostingSettingsRefusal(words: error)
       }
     }
     .adviserStyleDialog(isPresented: $styleOpen, did: did, model: model)
@@ -106,9 +107,15 @@ struct AdviserSettingsCard: View {
     ) {
       SettingsSwitch(label: "Check before posting", isOn: adviser.checkBeforePublish) { on in change { $0.checkBeforePublish = on } }
     }
+    .pressingName { change { $0.checkBeforePublish = !adviser.checkBeforePublish } }
     if adviser.checkBeforePublish {
-      SettingsRow(label: "Stop me", hint: "“When something’s off” stops for a post that goes against a goal, or a slip in the writing.") {
-        Segmented(label: "When the check stops a post", options: Self.reviewOptions, selection: adviser.reviewMode, size: .small) { v in
+      // Segmented's own size, md, as Appearance's are: drawn up for its
+      // 44-point keys.
+      SettingsRow(
+        label: "Stop me", hint: "“When something’s off” stops for a post that goes against a goal, or a slip in the writing.",
+        kind: .segmented
+      ) {
+        Segmented(label: "When the check stops a post", options: Self.reviewOptions, selection: adviser.reviewMode) { v in
           change { $0.reviewMode = v }
         }
       }
@@ -137,6 +144,7 @@ struct AdviserSettingsCard: View {
         change { $0.checkReplyContext = on }
       }
     }
+    .pressingName { change { $0.checkReplyContext = !adviser.checkReplyContext } }
     SettingsRow(
       label: "Your goals", hint: "What a post is read against. The adviser says when one goes against them; it doesn’t rewrite it.",
       block: true
@@ -168,7 +176,7 @@ struct AdviserSettingsCard: View {
         change { $0.goals.presets.limitTopic.enabled = on }
       }
       if topic.enabled {
-        TextField(
+        VirgaTextField(
           "For example: politics, the news",
           text: Binding(
             get: { topic.topic },
@@ -180,14 +188,10 @@ struct AdviserSettingsCard: View {
       }
       VStack(alignment: .leading, spacing: theme.points(ThemeKit.fieldGap)) {
         Text("Goals in your own words").virgaText(.textBase, weight: VirgaWeight.medium).foregroundStyle(theme.ink)
-        TextEditor(
-          text: Binding(
-            get: { adviser.goals.customText },
-            set: { next in change { $0.goals.customText = next.jsSlice(0, goalsLimit) } })
-        )
-        .frame(minHeight: theme.points(ThemeKit.textAreaMinHeight) * Measure.Adviser.notesRows / 3)
-        .virgaTextArea()
-        .accessibilityLabel("Goals in your own words")
+        textArea(
+          "Goals in your own words", prompt: "For example: keep it warm and curious; double-check anything I state as fact",
+          text: adviser.goals.customText
+        ) { next in change { $0.goals.customText = next.jsSlice(0, goalsLimit) } }
         FieldHint("\(adviser.goals.customText.utf16.count) of \(goalsLimit)")
       }
     }
@@ -215,14 +219,10 @@ struct AdviserSettingsCard: View {
       }
       VStack(alignment: .leading, spacing: theme.points(ThemeKit.fieldGap)) {
         Text("Notes for the proofread").virgaText(.textBase, weight: VirgaWeight.medium).foregroundStyle(theme.ink)
-        TextEditor(
-          text: Binding(
-            get: { adviser.writingChecks.customText },
-            set: { next in change { $0.writingChecks.customText = next.jsSlice(0, notesLimit) } })
-        )
-        .frame(minHeight: theme.points(ThemeKit.textAreaMinHeight) * Measure.Adviser.notesRows / 3)
-        .virgaTextArea()
-        .accessibilityLabel("Notes for the proofread")
+        textArea(
+          "Notes for the proofread", prompt: "For example: I skip apostrophes on purpose; never flag “gonna”",
+          text: adviser.writingChecks.customText
+        ) { next in change { $0.writingChecks.customText = next.jsSlice(0, notesLimit) } }
         FieldHint("These come before everything else the proofread goes by.")
       }
       FlowLayout(spacing: Measure.Adviser.styleRowGap, lineSpacing: theme.space2) {
@@ -250,6 +250,25 @@ struct AdviserSettingsCard: View {
       .overlay(alignment: .top) { Rectangle().fill(theme.line).frame(height: 1) }
     }
     .frame(maxWidth: Measure.Adviser.stackMax, alignment: .leading)
+  }
+
+  /// `textarea.input rows=2` with its `placeholder`: the example in
+  /// --muted where the words start, while the area is empty.
+  private func textArea(_ label: String, prompt: String, text: String, onChange: @escaping (String) -> Void) -> some View {
+    TextEditor(text: Binding(get: { text }, set: onChange))
+      .frame(minHeight: theme.points(ThemeKit.textAreaMinHeight) * Measure.Adviser.notesRows / 3)
+      .overlay(alignment: .topLeading) {
+        if text.isEmpty {
+          // Where the editor's own text view starts its words.
+          Text(prompt)
+            .foregroundStyle(theme.muted)
+            .padding(Measure.Field.textEditorInset)
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+        }
+      }
+      .virgaTextArea()
+      .accessibilityLabel(label)
   }
 
   /// `.adviser-check`: a box, and its label over its hint.
