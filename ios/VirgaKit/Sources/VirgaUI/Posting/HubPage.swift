@@ -22,6 +22,7 @@ import SwiftUI
 import VirgaArchive
 import VirgaCore
 import VirgaInsights
+import VirgaNetwork
 import VirgaPosting
 import VirgaSession
 

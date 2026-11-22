@@ -25,6 +25,7 @@
 #if canImport(UIKit)
 import SwiftUI
 import VirgaCore
+import VirgaNetwork
 import VirgaPosting
 import VirgaSession
 
