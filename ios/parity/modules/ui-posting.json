@@ -17,11 +17,12 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController.swift",
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController+Actions.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController+Library.swift",
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerSheet.swift",
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerOptions.swift",
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerServices.swift"
       ],
-      "note": "Ported: opening from an intent (normalizeIntent, seedFromIntent, setting aside what was being written, the notices), restoring what was kept (keptPostFor, takeSetAside, openAside, elsewhereNotices), loading a reply or a quote, posting as another account (changeAsDid, gatesForAccount), the default reply settings, adding pictures (picked, pasted, an intent's described ones) and a video (uploaded as soon as it's added), quotes and link cards found in the text, splitting, renumbering and its undo, removing and adding posts, the settings row (tags, language, replies, timer, More › Start over), the busy line, the slow and hard publish watch, publishErrorView, the posted toast and resetting after a send, the autosave (flushed on Close and when the app goes to the background). Publishing goes through ComposerPublisher (VirgaUI/Composer/ComposerServices.swift); until publish.js's port is wired, UnavailablePublisher shows the web's busy line and then says publishing isn't in the iOS app yet, and Schedule, Add to queue and Save as draft do the same. Link cards come through ComposerLinkCards, a stand-in for linkCard.js's fetchLinkCard over the session's transport. Not yet, because what they call isn't ported: scheduling and the weekly queue (WhenPicker, the queue's next slot, submitSchedule), drafts (saveDraft, loading a draft or a scheduled post, the draft media store, finishSource), the timer (LifespanEditor, getLimits, the default timer, armAfterPublish), the adviser (Check this post, the gate before posting), the library and templates (applyPlan, applyTemplate, Save as a template, Continue a thread), the duplicate guard (publish.js's), drag and drop, and the posted toast's View it on Bluesky link (the shell's toasts are words only). On a phone the main button is in the foot under the thumb (ios/DESIGN.md), not in the web's top bar.",
+      "note": "Ported: opening from an intent (normalizeIntent, seedFromIntent, setting aside what was being written, the notices), restoring what was kept (keptPostFor, takeSetAside, openAside, elsewhereNotices), loading a reply or a quote, posting as another account (changeAsDid, gatesForAccount), the default reply settings, adding pictures (picked, pasted, an intent's described ones) and a video (uploaded as soon as it's added), quotes and link cards found in the text, splitting, renumbering and its undo, removing and adding posts, the settings row (tags, language, replies, timer, More › Continue a thread and Start over), a \"/\" template applied over its shortcut (applyTemplate, applyPlan: its text and what it attaches), Continue a thread (the archive's posts, else the author feed), the phone's bar at the top (Close, the title and the send button, 640 and under), the busy line, the slow and hard publish watch, publishErrorView, the posted toast and resetting after a send, the autosave (flushed on Close and when the app goes to the background). Publishing goes through ComposerPublisher (VirgaUI/Composer/ComposerServices.swift); until publish.js's port is wired, UnavailablePublisher shows the web's busy line and then says publishing isn't in the iOS app yet, and Schedule, Add to queue and Save as draft do the same. Link cards come through ComposerLinkCards, a stand-in for linkCard.js's fetchLinkCard over the session's transport. Not yet, because what they call isn't ported: scheduling and the weekly queue (WhenPicker, the queue's next slot, submitSchedule), drafts (saveDraft, loading a draft or a scheduled post, the draft media store, finishSource), the timer (LifespanEditor, getLimits, the default timer, armAfterPublish), the adviser (Check this post, the gate before posting), the library's panel (LibraryDialog: a template with blanks to fill says the library isn't in the iOS app yet), Save as a template (TemplateEditor), the duplicate guard (publish.js's), drag and drop, and the posted toast's View it on Bluesky link (the shell's toasts are words only).",
       "synced": "9be49b62b520"
     },
     "src/posting/composer/ComposerContext.jsx": {
@@ -36,7 +37,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerDialogs.swift"
       ],
-      "note": "ConfirmDialog, MetaDialog, GatesDialog and VideoAltDialog are ported. LifespanDialog says the timer isn't in the iOS app yet (LifespanEditor.jsx isn't ported); ContinueThreadDialog waits for the library's sources (readArchivePosts, fetchOwnPosts).",
+      "note": "ConfirmDialog, MetaDialog, GatesDialog, VideoAltDialog and ContinueThreadDialog are ported. LifespanDialog says the timer isn't in the iOS app yet (LifespanEditor.jsx isn't ported).",
       "synced": "65d002b47fa1"
     },
     "src/posting/composer/EmbedCards.jsx": {
@@ -81,7 +82,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Composer/PostEditor.swift"
       ],
-      "note": "The highlights are attributes on a UITextView's own text rather than a layer under a transparent textarea. Not yet: the \"/\" templates (library/model.js's detectSlashCommand, rankTemplatesForSlash and applying a template aren't ported), and a hardware keyboard's arrows through the mention suggestions.",
+      "note": "The highlights are attributes on a UITextView's own text rather than a layer under a transparent textarea. The \"/\" templates come from Library.detectSlashCommand, rankTemplatesForSlash and PostTemplates.matchShortcut. Not yet: the slash list's Open the library (the library's panel isn't ported), and a hardware keyboard's arrows (and Escape) through the mention and template suggestions.",
       "synced": "e2081a195f8b"
     },
     "src/posting/composer/PublishButton.jsx": {

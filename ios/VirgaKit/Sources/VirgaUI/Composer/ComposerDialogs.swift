@@ -11,7 +11,8 @@
 // service (aiService.js, altTextModel.js), which isn't ported; the web
 // offers no Generate button without a server requester either, which is
 // how the dialog is here. The timer's editor (LifespanEditor.jsx) isn't
-// ported: its dialog says so.
+// ported: its dialog says so. Continue a thread lists the account's own
+// recent posts.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -305,6 +306,84 @@ extension DescribeDialog {
       title: "Describe the video", fieldLabel: "What happens in it", placeholder: "", initial: alt,
       max: Video.videoAltMaxGraphemes, preview: nil, countLabel: { n in "\(n) of \(Video.videoAltMaxGraphemes)" },
       onSave: onSave, onClose: onClose)
+  }
+}
+
+/// Pick one of the account's own recent posts to continue as a thread.
+struct ContinueThreadDialog: View {
+  @Environment(\.virgaTheme) private var theme
+  let status: String
+  let items: [JSONValue]
+  let error: String
+  let onPick: (JSONValue) -> Void
+  let onRetry: () -> Void
+  let onClose: () -> Void
+
+  var body: some View {
+    DialogFrame(title: "Continue a thread", onClose: onClose) {
+      DialogForm {
+        FieldHint("Your post will reply to the one you pick, so it reads as the next part of that thread.")
+        if status == "loading" {
+          VStack(alignment: .leading, spacing: theme.space3) {
+            ForEach(0..<3, id: \.self) { _ in
+              VStack(alignment: .leading, spacing: theme.space2) {
+                Capsule().fill(theme.surface3).frame(width: 120, height: 10)
+                Capsule().fill(theme.surface3).frame(height: 10)
+              }
+            }
+          }
+          .accessibilityElement()
+          .accessibilityLabel("Your recent posts")
+        }
+        if status == "error" {
+          Callout(tone: .danger) {
+            VStack(alignment: .leading, spacing: theme.space2) {
+              Text(error.isEmpty ? "Couldn’t read your recent posts." : error)
+              Button("Try again", action: onRetry).buttonStyle(.virga(size: .small))
+            }
+          }
+        }
+        if status == "ready" && items.isEmpty {
+          Text("No posts of yours to continue yet. Post something first.").foregroundStyle(theme.muted)
+        }
+        if status == "ready" && !items.isEmpty {
+          VStack(alignment: .leading, spacing: 0) {
+            ForEach(Array(items.enumerated()), id: \.offset) { _, item in
+              row(item)
+            }
+          }
+          .accessibilityElement(children: .contain)
+          .accessibilityLabel("Your recent posts")
+        }
+      }
+    } actions: {
+      Button("Cancel", action: onClose).buttonStyle(.virga)
+    }
+  }
+
+  private func row(_ item: JSONValue) -> some View {
+    let text = item["text"]?.stringValue ?? ""
+    let at = item["at"]?.stringValue ?? ""
+    let when = at.isEmpty ? "" : Time.relativeTime(at, now: Date().timeIntervalSince1970 * 1000)
+    return Button {
+      onPick(item)
+    } label: {
+      VStack(alignment: .leading, spacing: theme.space1) {
+        ComposerPostPreview(view: item["view"].flatMap { $0.isNull ? nil : $0 }, text: text)
+        if !when.isEmpty, item["view"]?["author"] == nil {
+          Text(when).virgaText(.textSm).foregroundStyle(theme.muted)
+        }
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .padding(.vertical, theme.space3)
+      .contentShape(Rectangle())
+    }
+    .buttonStyle(.plain)
+    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+    .accessibilityElement(children: .ignore)
+    .accessibilityLabel("Continue the post from \(when): \(text.isEmpty ? "no text" : text)")
+    .accessibilityAddTraits(.isButton)
+    .accessibilityIdentifier("continue-item")
   }
 }
 

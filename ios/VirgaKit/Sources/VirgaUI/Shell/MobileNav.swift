@@ -48,6 +48,7 @@ public struct TabBar: View {
   @Environment(ShellNavigator.self) private var navigator
   @Environment(ShellDashboards.self) private var dashboards
   @Environment(AppModel.self) private var app
+  @Environment(ComposerHost.self) private var composer: ComposerHost?
 
   public init() {}
 
@@ -75,7 +76,8 @@ public struct TabBar: View {
       }
       .frame(maxWidth: Measure.TabBar.tabsMaxWidth)
       Button {
-        navigate("/posting/compose")
+        // The composer opens in place, over the page (Shell.jsx's composer.open({})).
+        if let composer { composer.open() } else { navigate("/posting/compose") }
       } label: {
         Image(systemName: Glyph.newPost)
           .font(.system(size: Measure.TabBar.icon, weight: .medium))

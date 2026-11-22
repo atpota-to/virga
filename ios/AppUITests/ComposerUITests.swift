@@ -1,10 +1,12 @@
 // The composer, in demo mode (it needs no built archive): opened from New
 // post, empty; with words in it (a mention and a tag highlighted); a
 // thread of three; two pictures (pasted, as the simulator's photo library
-// may be empty); a link card read from the demo's card service; the
-// language picker; the post-as picker; and pressing Post, which says
-// publishing isn't in the iOS app yet. Each is kept as a screenshot (an
-// XCTAttachment kept always), on the iPhone and the iPad.
+// may be empty); the "/" templates; a link card read from the demo's card
+// service; the language picker; the post-as picker; pressing Post, which
+// says publishing isn't in the iOS app yet; and Continue a thread. On a
+// phone, the bar at the top with the keyboard up. Each is kept as a
+// screenshot (an XCTAttachment kept always), on the iPhone and the iPad,
+// all in one launch.
 
 import UIKit
 import XCTest
@@ -96,6 +98,13 @@ final class ComposerUITests: XCTestCase {
     XCTAssertTrue(text(app, containing: "of 300").waitForExistence(timeout: 5))
     sleep(1)
     snapshot("composer-text")
+    if !isDesk(app) && !isPad {
+      // A phone: Close, the title and the send button in the bar at the
+      // top, the keyboard up below.
+      XCTAssertTrue(element(app, "composer-bar").exists, "no bar at the top of the phone's composer")
+      XCTAssertTrue(element(app, "publish").isHittable, "the send button is under the keyboard")
+      snapshot("composer-bar-keyboard")
+    }
 
     // Two pictures, pasted into the first post.
     if pastePicture(app, into: first, hue: 0.3) {
@@ -113,6 +122,13 @@ final class ComposerUITests: XCTestCase {
     let second = editor(app, 1)
     XCTAssertTrue(second.waitForExistence(timeout: 5))
     second.tap()
+    // The "/" shortcuts: the account's templates, or why there are none.
+    second.typeText("/")
+    if element(app, "slash-templates").waitForExistence(timeout: 10) {
+      sleep(1)
+      snapshot("composer-slash")
+    }
+    second.typeText(XCUIKeyboardKey.delete.rawValue)
     second.typeText("Bring seeds in labelled envelopes; we'll have spares.")
     scrollTo(app, addPost)
     addPost.tap()
@@ -161,5 +177,31 @@ final class ComposerUITests: XCTestCase {
     publish.tap()
     XCTAssertTrue(text(app, containing: "Publishing isn’t in the iOS app yet.").waitForExistence(timeout: 10))
     snapshot("composer-publish")
+
+    // Continue a thread: one of the account's own recent posts.
+    if isDesk(app) || isPad {
+      let more = app.buttons["More for this post"]
+      scrollTo(app, more)
+      more.tap()
+      let item = app.buttons["Continue a thread"]
+      XCTAssertTrue(item.waitForExistence(timeout: 5))
+      item.tap()
+    } else {
+      let more = element(app, "option-more")
+      scrollTo(app, more)
+      more.tap()
+      let item = element(app, "option-continue")
+      scrollTo(app, item)
+      item.tap()
+    }
+    XCTAssertTrue(text(app, containing: "Your post will reply to the one you pick").waitForExistence(timeout: 5))
+    let pick = element(app, "continue-item")
+    _ = pick.waitForExistence(timeout: 15)
+    snapshot("composer-continue")
+    if pick.exists {
+      pick.tap()
+      XCTAssertTrue(text(app, containing: "Continuing your thread").waitForExistence(timeout: 15))
+      snapshot("composer-continue-reply")
+    }
   }
 }

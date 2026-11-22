@@ -2,12 +2,15 @@
 // Ports src/posting/composer/composer.css (.composer-dialog, .composer, .composer-bar, .composer-busy, .composer-actions)
 //
 // The composer: one sheet for writing a post or a thread, as any of the
-// accounts on this device. Its head is the title and Close; its body
-// scrolls (who it goes out as, the notices, what it replies to, the
-// posts, the post's settings, the busy line and the error); its foot holds
-// the main button, under the thumb on a phone, with the post's own tools
-// and why the button is off. Inside it nothing is a box but a field and
-// what a post holds; the send button is ink.
+// accounts on this device. Wider than a phone, its head is the title and
+// Close and its foot ends in the main button; on a phone (640 and under)
+// the sheet fills the screen, with Close, its title and the send button in
+// a bar held at the top, where the keyboard can't cover them. Its body
+// scrolls (who it goes out as, the notices, what it replies to, the posts,
+// the post's settings, the busy line and the error); the foot holds the
+// post's own tools (760 and under), why the main button is off, and Save
+// as draft and Schedule. Inside it nothing is a box but a field and what a
+// post holds; the send button is ink.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -30,10 +33,14 @@ struct ComposerSheet: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      ComposerHead(title: title, phone: theme.isPhone) { controller.closeComposer() }
+      if theme.composerNarrow {
+        ComposerBar(controller: controller, title: title)
+      } else {
+        ComposerHead(title: title) { controller.closeComposer() }
+      }
       ScrollView {
         ComposerBody(controller: controller)
-          .padding(.horizontal, theme.isPhone ? ComposerMeasure.phoneSide : ComposerMeasure.side)
+          .padding(.horizontal, theme.composerNarrow ? ComposerMeasure.phoneSide : ComposerMeasure.side)
           .padding(.bottom, theme.space4)
       }
       .scrollDismissesKeyboard(.interactively)
@@ -56,34 +63,63 @@ struct ComposerSheet: View {
   }
 }
 
-/// The sheet's head: the title, and Close (a phone's in words, at the left).
+/// A wider window's head: the dialog's title and its Close.
 struct ComposerHead: View {
   @Environment(\.virgaTheme) private var theme
   let title: String
-  let phone: Bool
   let onClose: () -> Void
 
   var body: some View {
     HStack(spacing: theme.space3) {
-      if phone {
-        Button("Close", action: onClose)
-          .buttonStyle(.virga(.ghost, size: .small))
-          .accessibilityIdentifier("composer-close")
-      }
       Text(title)
         .virgaText(.textLg, weight: VirgaWeight.semibold, tracking: Measure.Dialog.titleTracking)
         .foregroundStyle(theme.ink)
         .accessibilityAddTraits(.isHeader)
         .accessibilityIdentifier("composer-title")
       Spacer(minLength: 0)
-      if !phone {
-        Button(action: onClose) { Image(systemName: Glyph.close) }
-          .buttonStyle(.virga(.ghost, size: .small, icon: true))
-          .accessibilityLabel("Close")
-          .accessibilityIdentifier("composer-close")
+      Button(action: onClose) { Image(systemName: Glyph.close) }
+        .buttonStyle(.virga(.ghost, size: .small, icon: true))
+        .accessibilityLabel("Close")
+        .accessibilityIdentifier("composer-close")
+    }
+    .padding(Measure.Dialog.head)
+  }
+}
+
+/// A phone's bar (`.composer-bar`), in the dialog head's place and held at
+/// the top, where the keyboard can't cover it: Close, the title, and the
+/// send button.
+struct ComposerBar: View {
+  @Environment(\.virgaTheme) private var theme
+  let controller: ComposerController
+  let title: String
+
+  var body: some View {
+    let model = controller.actionSet
+    HStack(spacing: ComposerMeasure.barGap) {
+      Button("Close") { controller.closeComposer() }
+        .buttonStyle(.plain)
+        .virgaText(.textBase, weight: VirgaWeight.medium)
+        .foregroundStyle(theme.ink)
+        .frame(minHeight: ComposerMeasure.barCloseHeight)
+        .contentShape(Rectangle())
+        .accessibilityIdentifier("composer-close")
+      Text(title)
+        .virgaText(.textBase, weight: VirgaWeight.semibold)
+        .foregroundStyle(theme.ink)
+        .lineLimit(1)
+        .truncationMode(.tail)
+        .frame(maxWidth: .infinity)
+        .accessibilityAddTraits(.isHeader)
+        .accessibilityIdentifier("composer-title")
+      PublishButton(state: controller.state, model: model, busy: controller.busy != nil, also: controller.also) {
+        controller.runAction($0)
       }
     }
-    .padding(phone ? Measure.Dialog.phoneHead : Measure.Dialog.head)
+    .frame(minHeight: ComposerMeasure.barHeight)
+    .padding(ComposerMeasure.bar)
+    .background(theme.surface)
+    .accessibilityIdentifier("composer-bar")
   }
 }
 
@@ -303,13 +339,14 @@ struct ComposerFoot: View {
     let also = controller.also
     let busy = controller.busy != nil
     let toolsIndex = min(controller.activeIndex, max(0, state.posts.count - 1))
+    let narrow = theme.composerNarrow
     VStack(spacing: 0) {
       Rectangle().fill(theme.line).frame(height: 1)
       HStack(spacing: ComposerMeasure.actionsGap) {
-        if theme.isPhone, state.posts.indices.contains(toolsIndex) {
+        if theme.composerToolsInFoot, state.posts.indices.contains(toolsIndex) {
           PostTools(controller: controller, post: state.posts[toolsIndex], disabled: controller.disabled)
         }
-        Text(theme.isPhone && passing ? "" : why)
+        Text(narrow && passing ? "" : why)
           .virgaText(.textSm)
           .foregroundStyle(theme.muted)
           .frame(maxWidth: .infinity, alignment: .leading)
@@ -328,9 +365,12 @@ struct ComposerFoot: View {
           .buttonStyle(.virga)
           .disabled(busy || model.actions.schedule.disabled)
         }
-        PublishButton(state: state, model: model, busy: busy, also: also) { controller.runAction($0) }
+        // On a phone the main button is in the bar at the top of the sheet.
+        if !narrow {
+          PublishButton(state: state, model: model, busy: busy, also: also) { controller.runAction($0) }
+        }
       }
-      .padding(theme.isPhone ? ComposerMeasure.phoneFoot : ComposerMeasure.foot)
+      .padding(narrow ? ComposerMeasure.phoneFoot : ComposerMeasure.foot)
     }
     .background(theme.surface)
   }
@@ -403,6 +443,11 @@ struct ComposerDialogView: View {
         onUseDefault: useDefault, onClose: close)
     case .timer:
       TimerDialog(note: "", onClose: close)
+    case .continueThread:
+      ContinueThreadDialog(
+        status: controller.continueState.status, items: controller.continueState.items,
+        error: controller.continueState.error, onPick: { controller.pickContinue($0) },
+        onRetry: { controller.openContinue() }, onClose: close)
     }
   }
 }

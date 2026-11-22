@@ -3,8 +3,8 @@
 //
 // The post's settings, under a rule in ink: each a button with its name
 // and its value apart (a phone's rows, between hairlines), or one short
-// phrase (a wider window's row of words). More holds Start over; Continue a
-// thread and Save as a template wait for the library's port.
+// phrase (a wider window's row of words). More holds Continue a thread and
+// Start over; Save as a template waits for the template editor's port.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -69,7 +69,7 @@ struct ComposerOptions: View {
   var body: some View {
     let state = controller.state
     let replying = state.reply != nil
-    let phone = theme.isPhone
+    let phone = theme.composerNarrow
     VStack(alignment: .leading, spacing: phone ? 0 : ComposerMeasure.optionsTop) {
       Rectangle().fill(theme.rule).frame(height: 1)
       if phone {
@@ -106,9 +106,24 @@ struct ComposerOptions: View {
     }
     word(ComposerGlyph.timer, controller.timerValue, id: "option-timer") { controller.dialog = .timer }
       .accessibilityLabel(controller.timerOn ? "Timer: \(controller.timerValue)" : "Timer: none")
-    MoreMenu(
-      label: "More for this post",
-      entries: [.item(MenuItem("Start over", key: "over", destructive: true) { controller.startOver() })])
+    MoreMenu(label: "More for this post", entries: moreEntries(replying: replying))
+  }
+
+  /// More: Continue a thread (not on a reply), then Start over. Save as a
+  /// template waits for the template editor's port.
+  private func moreEntries(replying: Bool) -> [MenuEntry] {
+    var out: [MenuEntry] = []
+    if !replying {
+      out.append(
+        .item(
+          MenuItem(
+            "Continue a thread", key: "continue", hint: "Reply to one of your own posts",
+            accessibilityIdentifier: "more-continue"
+          ) { controller.openContinue() }))
+    }
+    out.append(.separator)
+    out.append(.item(MenuItem("Start over", key: "over", destructive: true) { controller.startOver() }))
+    return out
   }
 
   private func word(_ symbol: String, _ text: String, id: String, action: @escaping () -> Void) -> some View {
@@ -140,22 +155,30 @@ struct ComposerOptions: View {
       .accessibilityLabel(controller.timerOn ? "Timer: \(controller.timerValue)" : "Timer: none")
     row(ComposerGlyph.more, "More", nil, chevron: ComposerGlyph.chevronDown, id: "option-more") { moreOpen.toggle() }
     if moreOpen {
-      Button {
-        moreOpen = false
-        controller.startOver()
-      } label: {
-        Text("Start over")
-          .virgaText(.textBase, weight: VirgaWeight.medium)
-          .foregroundStyle(theme.danger)
-          .frame(maxWidth: .infinity, minHeight: Measure.Touch.target, alignment: .leading)
-          .padding(.leading, theme.space6)
-          .contentShape(Rectangle())
+      if !replying {
+        subRow("Continue a thread", danger: false, id: "option-continue") { controller.openContinue() }
       }
-      .buttonStyle(.plain)
-      .disabled(disabled)
-      .accessibilityLabel("Start over")
-      .accessibilityIdentifier("option-start-over")
+      subRow("Start over", danger: true, id: "option-start-over") { controller.startOver() }
     }
+  }
+
+  /// One of More's rows, under the others: the rows close as it's chosen.
+  private func subRow(_ label: String, danger: Bool, id: String, action: @escaping () -> Void) -> some View {
+    Button {
+      moreOpen = false
+      action()
+    } label: {
+      Text(label)
+        .virgaText(.textBase, weight: VirgaWeight.medium)
+        .foregroundStyle(danger ? theme.danger : theme.ink)
+        .frame(maxWidth: .infinity, minHeight: Measure.Touch.target, alignment: .leading)
+        .padding(.leading, theme.space6)
+        .contentShape(Rectangle())
+    }
+    .buttonStyle(.plain)
+    .disabled(disabled)
+    .accessibilityLabel(label)
+    .accessibilityIdentifier(id)
   }
 
   private func row(

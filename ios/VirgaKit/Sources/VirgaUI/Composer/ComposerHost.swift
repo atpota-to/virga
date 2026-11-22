@@ -11,8 +11,8 @@
 //
 // Once opened, the composer's state stays (the controller is the host's),
 // closed, so what was being written is still there the next time. It is a
-// sheet: on a phone the whole height, with the main button under the
-// thumb; on a wider window the composer's 640-point dialog. The scene going
+// sheet: on a phone the whole height, with the send button in a bar at
+// the top; on a wider window the composer's 640-point dialog. The scene going
 // to the background flushes the autosave.
 
 #if canImport(UIKit)
@@ -93,7 +93,7 @@ struct ComposerHostModifier: ViewModifier {
         if let controller = host.controller {
           ComposerSheet(controller: controller)
             .environment(host.toasts)
-            .modifier(ComposerSheetSizing(phone: theme.isPhone))
+            .modifier(ComposerSheetSizing(phone: theme.composerNarrow))
         }
       }
       .onChange(of: host.opens) { _, _ in start() }
@@ -117,7 +117,9 @@ struct ComposerHostModifier: ViewModifier {
     if host.controller == nil {
       host.controller = ComposerController(
         session: session, store: app.stores.keyValue, transport: app.archiveEnvironment.transport,
-        publisher: host.publisher, toasts: host.toasts, close: { [weak host] in host?.close() })
+        publisher: host.publisher, toasts: host.toasts,
+        openArchive: LibraryEnvironment.archive(files: app.archiveEnvironment.files),
+        close: { [weak host] in host?.close() })
     }
     host.controller?.startFromIntent(host.intent ?? .object([:]))
   }
