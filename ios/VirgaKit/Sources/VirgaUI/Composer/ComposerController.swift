@@ -16,6 +16,7 @@
 #if canImport(UIKit)
 import Foundation
 import Observation
+import VirgaArchive
 import VirgaCore
 import VirgaNetwork
 import VirgaPosting
@@ -77,6 +78,7 @@ enum ComposerDialog: Identifiable, Equatable {
   case meta
   case gates
   case timer
+  case continueThread
   var id: String {
     switch self {
     case .alt(let p, let i): return "alt-\(p)-\(i)"
@@ -85,6 +87,7 @@ enum ComposerDialog: Identifiable, Equatable {
     case .meta: return "meta"
     case .gates: return "gates"
     case .timer: return "timer"
+    case .continueThread: return "continue"
     }
   }
 }
@@ -100,6 +103,10 @@ public final class ComposerController {
   @ObservationIgnored let publisher: any ComposerPublisher
   @ObservationIgnored let toasts: ToastCenter
   @ObservationIgnored let closeSheet: () -> Void
+  /// The account's archive, read for Continue a thread.
+  @ObservationIgnored let openArchive: OpenArchiveStore
+  /// The account's templates, for the "/" shortcuts (useTemplates).
+  let templates: TemplatesModel
   /// The account the autosaver may still write for (its `currentDid`).
   @ObservationIgnored let currentDid: Locked<String?>
 
@@ -124,6 +131,8 @@ public final class ComposerController {
   var gatesInfo: (did: String, status: String, source: String?, notice: String?)?
   /// The editor that should take the caret, by post id, once it's drawn.
   var focusPostId: String?
+  /// Continue a thread's list: `{ status, items, error }`.
+  var continueState: (status: String, items: [JSONValue], error: String) = (status: "idle", items: [], error: "")
   /// A caret the controller put into a post's text (a split, a mention).
   var pendingCaret: [String: Int] = [:]
 
@@ -140,8 +149,10 @@ public final class ComposerController {
 
   init(
     session: SessionModel, store: (any KeyValueStore)?, transport: any HTTPTransport,
-    publisher: any ComposerPublisher, toasts: ToastCenter, close: @escaping () -> Void
+    publisher: any ComposerPublisher, toasts: ToastCenter, openArchive: @escaping OpenArchiveStore,
+    close: @escaping () -> Void
   ) {
+    self.openArchive = openArchive
     self.session = session
     self.store = store
     self.transport = transport
@@ -155,7 +166,9 @@ public final class ComposerController {
     self.autosaver = autosaver
     let defaults = PostingSettingsStore.readPostingSettings(did, store: store, language: Self.language).json
     model = ComposerStateModel(asDid: did, defaults: defaults, autosaver: autosaver)
+    templates = TemplatesModel(session: session, did: did.isEmpty ? nil : did)
     seenAccounts = Set(session.accounts.map { JSKey($0.did) })
+    templates.start()
   }
 
   // MARK: Reading
@@ -201,7 +214,14 @@ public final class ComposerController {
 
   func dispatch(_ action: ComposerAction) {
     model.dispatch(action)
-    currentDid.withLock { $0 = model.state.asDid }
+    followAccount()
+  }
+
+  /// The autosave and the templates follow the account the post goes out as.
+  func followAccount() {
+    let did = model.state.asDid
+    currentDid.withLock { $0 = did }
+    templates.setAccount(did.isEmpty ? nil : did)
   }
 
   /// The autosave written at once (Close, or the app going to the background).
@@ -216,7 +236,7 @@ public final class ComposerController {
     seed = nil
     postNow = false
     model.load(next, touched: touched)
-    currentDid.withLock { $0 = model.state.asDid }
+    followAccount()
     generation += 1
     processing = [:]
     cardLoading = []

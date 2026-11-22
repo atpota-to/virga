@@ -443,6 +443,11 @@ struct ComposerDialogView: View {
         onUseDefault: useDefault, onClose: close)
     case .timer:
       TimerDialog(note: "", onClose: close)
+    case .continueThread:
+      ContinueThreadDialog(
+        status: controller.continueState.status, items: controller.continueState.items,
+        error: controller.continueState.error, onPick: { controller.pickContinue($0) },
+        onRetry: { controller.openContinue() }, onClose: close)
     }
   }
 }

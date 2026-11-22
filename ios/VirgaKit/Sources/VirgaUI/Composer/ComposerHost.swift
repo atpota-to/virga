@@ -117,7 +117,9 @@ struct ComposerHostModifier: ViewModifier {
     if host.controller == nil {
       host.controller = ComposerController(
         session: session, store: app.stores.keyValue, transport: app.archiveEnvironment.transport,
-        publisher: host.publisher, toasts: host.toasts, close: { [weak host] in host?.close() })
+        publisher: host.publisher, toasts: host.toasts,
+        openArchive: LibraryEnvironment.archive(files: app.archiveEnvironment.files),
+        close: { [weak host] in host?.close() })
     }
     host.controller?.startFromIntent(host.intent ?? .object([:]))
   }

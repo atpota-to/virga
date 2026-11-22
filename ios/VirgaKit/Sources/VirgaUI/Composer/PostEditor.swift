@@ -11,8 +11,10 @@
 // ms after typing stops, and the composer hears which record links and
 // web addresses it found.
 //
-// Not here yet: the "/" templates (library/model.js's detectSlashCommand
-// and rankTemplatesForSlash, and applying a template, aren't ported).
+// Typing "/" at the start of a word suggests templates by shortcut
+// (Library.detectSlashCommand, rankTemplatesForSlash, matchShortcut); a
+// template picked goes in over the shortcut. Not here yet: the list's
+// "Open the library" (the library's panel isn't ported).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -54,6 +56,12 @@ struct PostEditor: View {
     return m
   }
 
+  /// The "/shortcut" being typed, while no mention is.
+  private var slash: SlashCommand? {
+    guard partial == nil else { return nil }
+    return Library.detectSlashCommand(text, caret)
+  }
+
   var body: some View {
     let text = self.text
     // Until detection catches up, the text is drawn plain: never stale
@@ -69,6 +77,11 @@ struct PostEditor: View {
       }
       if let mention, mention.range.query.jsEquals(partial?.query ?? "\u{0}") {
         MentionList(mention: mention) { actor in pick(actor) }
+      }
+      if let slash {
+        SlashList(controller: controller, slash: slash) { template in
+          controller.applyTemplate(postId, template, range: TextSelection(start: slash.start, end: slash.end))
+        }
       }
     }
     .task(id: text) { await detect(text) }
@@ -282,6 +295,66 @@ struct MentionList: View {
     }
     .buttonStyle(.plain)
     .accessibilityLabel("\(name), @\(handle)")
+  }
+}
+
+/// `.suggest-pop` for "/": the templates the shortcut could mean, or why
+/// there are none.
+struct SlashList: View {
+  @Environment(\.virgaTheme) private var theme
+  let controller: ComposerController
+  let slash: SlashCommand
+  let pick: (PostTemplate) -> Void
+
+  var body: some View {
+    let replying = controller.state.reply != nil
+    let templates = controller.templates.templates
+    let ranked = Library.rankTemplatesForSlash(
+      templates, parentText: controller.state.reply?.text ?? "", usage: controller.templateUsage(), replying: replying)
+    let matches = PostTemplates.matchShortcut(ranked, slash.query, replying: replying, limit: 5)
+    VStack(alignment: .leading, spacing: 0) {
+      ForEach(Array(matches.enumerated()), id: \.offset) { _, template in
+        row(template)
+      }
+      if matches.isEmpty {
+        Text(status(templates))
+          .virgaText(.textSm)
+          .foregroundStyle(theme.muted)
+          .padding(theme.space3)
+      }
+    }
+    .background(theme.surface, in: RoundedRectangle(cornerRadius: theme.radiusLg))
+    .overlay(RoundedRectangle(cornerRadius: theme.radiusLg).strokeBorder(theme.line))
+    .accessibilityElement(children: .contain)
+    .accessibilityLabel("Templates")
+    .accessibilityIdentifier("slash-templates")
+  }
+
+  private func status(_ templates: [PostTemplate]) -> String {
+    if controller.templates.loading { return "Looking for your templates…" }
+    if controller.templates.error != nil { return "Couldn’t load your templates." }
+    if templates.isEmpty { return "No templates yet. Make one from your library." }
+    return slash.query.isEmpty ? "None of your templates has a shortcut yet." : "No template uses /\(slash.query)."
+  }
+
+  private func row(_ template: PostTemplate) -> some View {
+    let name = template.name.isEmpty ? "Untitled template" : template.name
+    return Button {
+      pick(template)
+    } label: {
+      HStack(spacing: theme.space2) {
+        Text(name).virgaText(.textBase, weight: VirgaWeight.medium).foregroundStyle(theme.ink)
+        if !template.shortcut.isEmpty {
+          Text("/\(template.shortcut)").virgaText(.textSm).foregroundStyle(theme.muted)
+        }
+        Spacer(minLength: 0)
+      }
+      .padding(.horizontal, theme.space3)
+      .frame(minHeight: Measure.Touch.target)
+      .contentShape(Rectangle())
+    }
+    .buttonStyle(.plain)
+    .accessibilityLabel(template.shortcut.isEmpty ? name : "\(name), /\(template.shortcut)")
   }
 }
 
