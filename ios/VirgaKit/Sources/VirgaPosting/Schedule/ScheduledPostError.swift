@@ -258,7 +258,8 @@ public enum ScheduledPostError {
 
   /// A thrown error as the web's Error object, with the members the
   /// scheduling code reads: `name`, `message`, and where the error has them
-  /// `code`, `status`, `detail`, `payload` (Virga's server's refusals),
+  /// `code`, `status`, `detail`, `payload` (Virga's server's refusals, also
+  /// as the timer service hands them back in a TimerServiceError),
   /// `problems` (a publish's), the serializer's extras (`postIndex`,
   /// `imageId`, `size`, `limit`) and `reorderUnsupported`.
   public static func errorObject(_ error: any Error) -> JSONValue {
@@ -275,6 +276,18 @@ public enum ScheduledPostError {
     case let publish as PublishError:
       var out = publish.jsFields.json
       if let problems = publish.problems { out["problems"] = json(problems) }
+      return out
+    case let timer as TimerServiceError:
+      // The timer service's errors (an ArmOutcome's, a timer call's) are
+      // the requester's on the web, or its own coded ones. Its `detail` is
+      // requestError's: the body's `error` when that is a string.
+      var out: JSONValue = ["name": .string(timer.name ?? "Error"), "message": .string(timer.message)]
+      if let code = timer.code { out["code"] = .string(code) }
+      if let status = timer.status { out["status"] = .number(Double(status)) }
+      if let payload = timer.payload {
+        out["payload"] = payload
+        out["detail"] = payload["error"]?.stringValue.map(JSONValue.string) ?? .null
+      }
       return out
     default:
       return PublishRecord.errorObject(error)

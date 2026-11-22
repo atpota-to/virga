@@ -61,4 +61,43 @@ import VirgaTestSupport
   @Test func aPlainErrorSaysItsMessageAsASentence() {
     #expect(ScheduledPostError.scheduleErrorMessage(JSError(message: "it broke. try later")) == "It broke. Try later.")
   }
+
+  /// On the web a timer call's refusal (TimerDialog's `outcome.error`) is
+  /// the requester's error itself; here the timer service hands it back as
+  /// a TimerServiceError, which must say the same.
+  @Test func aTimerRefusalReadsAsTheRequestersError() {
+    let refusals: [(Int, JSONValue?)] = [
+      (409, ["success": false, "error": "quota", "code": "QUOTA_EXCEEDED", "feature": "postTimers", "limit": 1]),
+      (409, ["success": false, "error": "quota", "code": "QUOTA_EXCEEDED", "feature": "conditionalTimers", "limit": 3]),
+      (400, ["success": false, "error": "the delete time must be after the post goes out"]),
+      (400, ["success": false, "error": "monthly_limit"]),
+      (409, ["success": false, "error": "no", "code": "NOT_REARMABLE"]),
+      (409, ["success": false, "code": "MEDIA_MISSING"]),
+      (502, nil),
+      (401, ["success": false, "error": "Sign in again.", "code": "SIGNED_OUT"]),
+      (200, ["success": false, "error": "a thread can have at most 25 posts"]),
+    ]
+    for (status, body) in refusals {
+      let backend = BackendClient.requestError(status, body)
+      let web = ScheduledPostError.scheduleErrorMessage(backend)
+      #expect(ScheduledPostError.scheduleErrorMessage(backend.timerServiceError) == web, "\(status) \(body ?? .null)")
+    }
+    let offline = BackendError(message: "Couldn’t reach Virga’s server.", status: 0, code: "NETWORK_ERROR")
+    #expect(
+      ScheduledPostError.scheduleErrorMessage(offline.timerServiceError)
+        == "Couldn’t reach Virga’s server. Check the connection and try again.")
+    // The service's own coded refusals read by their codes.
+    #expect(
+      ScheduledPostError.scheduleErrorMessage(
+        TimerServiceError(code: "NEEDS_BACKEND", message: "Timers need this account signed in through Virga’s server."))
+        == "Scheduling needs this account signed in through Virga’s server. Reconnect it for a longer session.")
+    #expect(
+      ScheduledPostError.scheduleErrorMessage(
+        TimerServiceError(code: "TIMER_PROBLEM", message: "pick a later delete time", name: "Error"))
+        == "pick a later delete time")
+    let slot = ScheduledPostError.scheduleErrorMessage(
+      BackendClient.requestError(409, ["code": "QUOTA_EXCEEDED", "feature": "postTimers", "limit": 1])
+        .timerServiceError)
+    #expect(slot == SelfDestruct.timerSlotRefusal(["feature": "postTimers", "limit": 1]))
+  }
 }
