@@ -587,7 +587,7 @@ struct ScheduleDraftDialog: View {
           Callout(tone: .warn, room)
             .toolAnnounces(room, onAppear: true)
         }
-        if phase == .failed { Callout(tone: .warn) { Text("Your queue couldn’t be read, so only a set time can be chosen.") } }
+        if phase == .failed { Callout(tone: .warn, "Your queue couldn’t be read, so only a set time can be chosen.") }
         FieldHint("Once it’s scheduled, the draft is deleted: the scheduled post takes its place.")
         if !error.isEmpty { Callout(tone: .danger, error) }
       }

@@ -96,7 +96,7 @@ struct TimersPage: View {
     VirgaPage(PostingHeader.model("timers")) {
       VStack(alignment: .leading, spacing: theme.sectionGap) {
         ForEach(full, id: \.self) { line in
-          Callout(tone: .warn) { Text(line) }
+          Callout(tone: .warn, line)
         }
         if unreadable {
           LoadError(message: "Couldn’t read \(name)’s timers. \(ScheduledPostError.scheduleErrorMessage(timers.error))") {

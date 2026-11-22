@@ -228,11 +228,7 @@ struct PostTimerDialog: View {
     let notes = self.notes
     let counting = self.counting
     if let existing {
-      Callout {
-        Text(
-          "It already has a timer: \(SelfDestruct.describeTimer(ScheduleModel.ruleOfTimerRow(existing), now: now)) The rule below takes its place."
-        )
-      }
+      Callout("It already has a timer: \(SelfDestruct.describeTimer(ScheduleModel.ruleOfTimerRow(existing), now: now)) The rule below takes its place.")
     }
     VStack(alignment: .leading, spacing: Measure.Hub.subGap) {
       FieldLabel("Start counting")
