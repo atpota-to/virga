@@ -314,8 +314,9 @@ DEFENSE (Defense/)
   history (DefenseHistoryPage, every 15 seconds while anything waits) run over VirgaDefense's
   models with the session's transport and agent. `Measure.Defense` names defense.css's
   measures.
-- In the demo: `-VirgaDefense on` (and `-VirgaDefenseModerator on`) turn the build's flags on
-  (`AppModel.demoFlags`), and `-VirgaDemoFlags "defense=on"` (the scan) or `"defense=lists"`
+- In the demo, Defense and its moderator are on whatever the build says, as the web's harness
+  has them (vite.harness.config.js); `-VirgaDefense off` (or `-VirgaDefenseModerator off`)
+  turns one off (`AppModel.demoFlags`), and `-VirgaDemoFlags "defense=on"` (the scan) or `"defense=lists"`
   (the lists' permission too) has the demo grant it. The demo's server answers every Defense
   route (VirgaDemo's DemoDefense), and `AppModel.demo` starts its workers
   (`DemoSession.startCron()`, every `cron=` seconds, 20 by default), so a plan's adds and
@@ -700,7 +701,8 @@ APP (App/, Pages/, Legal/, SignIn/, Accounts/, Settings/, Platform/)
   `-VirgaDemoFlags "<query>"` in the web's address form (accounts=1, signedout,
   expired=<handle>, scope=read, defense=on, terms=ask, latency=<ms>, now=…, appview=…);
   `-VirgaDemoTerms YES` and `-VirgaDemoSignedOut YES` are terms=ask and signedout;
-  `-VirgaDefense on` and `-VirgaDefenseModerator on` turn Defense's build flags on. The
+  Defense and its moderator are on, as in the web's harness, unless `-VirgaDefense off` or
+  `-VirgaDefenseModerator off` says otherwise. The
   app's own SessionModel runs over the demo session's environment, with the archive's
   reset and delete hooks wired as on a device.
 

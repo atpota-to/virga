@@ -246,10 +246,11 @@ public final class AppModel {
     let defaults = UserDefaults.standard
     var flags = AppConfig.Flags(infoDictionary: Bundle.main.infoDictionary ?? [:])
     if defaults.bool(forKey: "VirgaDemo") {
-      // The demo may turn Defense on whatever the build says (`-VirgaDefense
-      // on`, and `-VirgaDefenseModerator on` for its moderator), so the UI
-      // tests reach its pages; the grant is the harness's
-      // (`-VirgaDemoFlags "defense=on"`).
+      // Defense and its moderator are on in the demo whatever the build
+      // says, as the web's harness has them (vite.harness.config.js:
+      // VITE_DEFENSE ??= 'on'); `-VirgaDefense off` or
+      // `-VirgaDefenseModerator off` turns one off. The grant is the
+      // harness's (`-VirgaDemoFlags "defense=on"`).
       flags = demoFlags(flags, defense: defaults.string(forKey: "VirgaDefense"), moderator: defaults.string(forKey: "VirgaDefenseModerator"))
       return demo(
         flags: flags,
@@ -261,13 +262,13 @@ public final class AppModel {
     return device(flags: flags)
   }()
 
-  /// The build's flags with the demo's own say on Defense: "on" turns it
-  /// (or its moderator) on, anything else leaves the build's word.
+  /// The build's flags with the demo's own say on Defense, as the web's
+  /// harness sets VITE_DEFENSE and VITE_DEFENSE_MODERATOR: on when not
+  /// given, on for "on", off for anything else.
   static func demoFlags(_ flags: AppConfig.Flags, defense: String?, moderator: String?) -> AppConfig.Flags {
-    let on = defense == "on" || flags.defenseEnabled
-    return AppConfig.Flags(
-      authMode: flags.authMode, backendURL: flags.backendURL, defenseEnabled: on,
-      defenseModeratorEnabled: moderator == "on" || flags.defenseModeratorEnabled)
+    AppConfig.Flags(
+      authMode: flags.authMode, backendURL: flags.backendURL, defenseEnabled: (defense ?? "on") == "on",
+      defenseModeratorEnabled: (moderator ?? "on") == "on")
   }
 
   /// Signed in through Virga's server, over the device's stores.
