@@ -64,8 +64,13 @@
       "synced": "0004a0a028e3"
     },
     "src/posting/templates/useTemplates.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "note": "TemplatesModel, a @MainActor @Observable class over TemplatesSession (SessionModel conforms: its agentFor, asked at call time) and TemplateService (.shared by default). The hook's lifetime is calls the view makes: init is the first render (the cached copy, loading), start() the effect (subscribe, load unless confirmed), setAccount(_:enabled:) a new did or enabled (the effect runs again at once, so the PENDING state lasts no longer than that call), stop() the unmount. Held by behaviour tests: the hook's own two, plus the effect's load, a failed load over the cache, following the service, an account switch with the old load landing late, writes for the open account, and a read through a SessionModel signed in through Virga's server.",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Templates/TemplatesModel.swift"
+      ],
+      "fixtures": [],
+      "synced": "7224c05355b0"
     }
   }
 }
