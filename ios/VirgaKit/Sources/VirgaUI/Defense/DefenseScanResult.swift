@@ -117,7 +117,9 @@ struct ScanResultView: View {
       }
       .buttonStyle(.linkAction)
     } table: {
-      DataTable(
+      // `.an-tableview-scroll > .table`: a chart's table, at least 28rem
+      // wide, scrolling inside 20rem under its head.
+      ChartTableView(
         columns: columns,
         rows: rows.map { r in
           [BandWords.bandWord[r.band] ?? r.band.rawValue] + r.cells.map { AppLocale.fmtInt(Double($0)) } + [AppLocale.fmtInt(Double(r.total))]
