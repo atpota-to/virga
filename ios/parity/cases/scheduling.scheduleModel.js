@@ -536,6 +536,19 @@ const TIMER_ROWS = [
       ['delete'],
     ],
   },
+  // A step without an action but with a detail: the web throws reading
+  // `entry.action.toLowerCase()`.
+  {
+    ...LIVE,
+    status: 'acted',
+    acted: [{ ok: true, detail: 'replies limited' }],
+  },
+  { ...LIVE, status: 'acted', acted: [{ action: 5, ok: true, detail: 'x' }] },
+  {
+    ...LIVE,
+    status: 'acted',
+    acted: [{ action: null, ok: false, detail: 'x' }],
+  },
   { ...LIVE, status: 'spared', resolution: 'kept it: 12 likes!' },
   { ...LIVE, status: 'cancelled', resolution: 'ßtraße called off' },
   { ...LIVE, status: 'failed', lastErrorCode: 'ENGAGEMENT_UNAVAILABLE' },

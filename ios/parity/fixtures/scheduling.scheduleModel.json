@@ -20015,6 +20015,188 @@
           "id": "t1",
           "postUri": "at://did:plc:me/app.bsky.feed.post/3abc",
           "snippet": "A post",
+          "status": "acted",
+          "checkAt": "2026-11-12T16:00:00Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 5
+              }
+            ],
+            "sense": "unless"
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "extensions": 2,
+          "clientKey": "virga",
+          "acted": [
+            {
+              "ok": true,
+              "detail": "replies limited"
+            }
+          ]
+        }
+      },
+      "output": {
+        "enabled": true,
+        "deleteAt": null,
+        "lifespanSeconds": 3600,
+        "conditions": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 5
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        },
+        "effects": [
+          {
+            "action": "delete"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ruleOfTimerRow#11",
+      "fn": "ruleOfTimerRow",
+      "input": {
+        "row": {
+          "id": "t1",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/3abc",
+          "snippet": "A post",
+          "status": "acted",
+          "checkAt": "2026-11-12T16:00:00Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 5
+              }
+            ],
+            "sense": "unless"
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "extensions": 2,
+          "clientKey": "virga",
+          "acted": [
+            {
+              "action": 5,
+              "ok": true,
+              "detail": "x"
+            }
+          ]
+        }
+      },
+      "output": {
+        "enabled": true,
+        "deleteAt": null,
+        "lifespanSeconds": 3600,
+        "conditions": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 5
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        },
+        "effects": [
+          {
+            "action": "delete"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ruleOfTimerRow#12",
+      "fn": "ruleOfTimerRow",
+      "input": {
+        "row": {
+          "id": "t1",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/3abc",
+          "snippet": "A post",
+          "status": "acted",
+          "checkAt": "2026-11-12T16:00:00Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 5
+              }
+            ],
+            "sense": "unless"
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "extensions": 2,
+          "clientKey": "virga",
+          "acted": [
+            {
+              "action": null,
+              "ok": false,
+              "detail": "x"
+            }
+          ]
+        }
+      },
+      "output": {
+        "enabled": true,
+        "deleteAt": null,
+        "lifespanSeconds": 3600,
+        "conditions": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 5
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        },
+        "effects": [
+          {
+            "action": "delete"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ruleOfTimerRow#13",
+      "fn": "ruleOfTimerRow",
+      "input": {
+        "row": {
+          "id": "t1",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/3abc",
+          "snippet": "A post",
           "status": "spared",
           "checkAt": "2026-11-12T16:00:00Z",
           "lifespanSeconds": 3600,
@@ -20063,7 +20245,7 @@
       }
     },
     {
-      "id": "ruleOfTimerRow#11",
+      "id": "ruleOfTimerRow#14",
       "fn": "ruleOfTimerRow",
       "input": {
         "row": {
@@ -20118,7 +20300,7 @@
       }
     },
     {
-      "id": "ruleOfTimerRow#12",
+      "id": "ruleOfTimerRow#15",
       "fn": "ruleOfTimerRow",
       "input": {
         "row": {
@@ -20173,7 +20355,7 @@
       }
     },
     {
-      "id": "ruleOfTimerRow#13",
+      "id": "ruleOfTimerRow#16",
       "fn": "ruleOfTimerRow",
       "input": {
         "row": {
@@ -20228,7 +20410,7 @@
       }
     },
     {
-      "id": "ruleOfTimerRow#14",
+      "id": "ruleOfTimerRow#17",
       "fn": "ruleOfTimerRow",
       "input": {
         "row": {
@@ -20284,7 +20466,7 @@
       }
     },
     {
-      "id": "ruleOfTimerRow#15",
+      "id": "ruleOfTimerRow#18",
       "fn": "ruleOfTimerRow",
       "input": {
         "row": {
@@ -20339,7 +20521,7 @@
       }
     },
     {
-      "id": "ruleOfTimerRow#16",
+      "id": "ruleOfTimerRow#19",
       "fn": "ruleOfTimerRow",
       "input": {
         "row": {
@@ -20393,7 +20575,7 @@
       }
     },
     {
-      "id": "ruleOfTimerRow#17",
+      "id": "ruleOfTimerRow#20",
       "fn": "ruleOfTimerRow",
       "input": {
         "row": {
@@ -20428,7 +20610,7 @@
       }
     },
     {
-      "id": "ruleOfTimerRow#18",
+      "id": "ruleOfTimerRow#21",
       "fn": "ruleOfTimerRow",
       "input": {
         "row": {
@@ -20454,7 +20636,7 @@
       }
     },
     {
-      "id": "ruleOfTimerRow#19",
+      "id": "ruleOfTimerRow#22",
       "fn": "ruleOfTimerRow",
       "input": {
         "row": {}
@@ -20478,7 +20660,7 @@
       }
     },
     {
-      "id": "ruleOfTimerRow#20",
+      "id": "ruleOfTimerRow#23",
       "fn": "ruleOfTimerRow",
       "input": {
         "row": null
@@ -21050,6 +21232,134 @@
           "id": "t1",
           "postUri": "at://did:plc:me/app.bsky.feed.post/3abc",
           "snippet": "A post",
+          "status": "acted",
+          "checkAt": "2026-11-12T16:00:00Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 5
+              }
+            ],
+            "sense": "unless"
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "extensions": 2,
+          "clientKey": "virga",
+          "acted": [
+            {
+              "ok": true,
+              "detail": "replies limited"
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "Cannot read properties of undefined (reading 'toLowerCase')"
+      }
+    },
+    {
+      "id": "timerRowModel#11",
+      "fn": "timerRowModel",
+      "input": {
+        "tz": "UTC",
+        "locale": "en-US",
+        "row": {
+          "id": "t1",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/3abc",
+          "snippet": "A post",
+          "status": "acted",
+          "checkAt": "2026-11-12T16:00:00Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 5
+              }
+            ],
+            "sense": "unless"
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "extensions": 2,
+          "clientKey": "virga",
+          "acted": [
+            {
+              "action": 5,
+              "ok": true,
+              "detail": "x"
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "entry.action.toLowerCase is not a function"
+      }
+    },
+    {
+      "id": "timerRowModel#12",
+      "fn": "timerRowModel",
+      "input": {
+        "tz": "UTC",
+        "locale": "en-US",
+        "row": {
+          "id": "t1",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/3abc",
+          "snippet": "A post",
+          "status": "acted",
+          "checkAt": "2026-11-12T16:00:00Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 5
+              }
+            ],
+            "sense": "unless"
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "extensions": 2,
+          "clientKey": "virga",
+          "acted": [
+            {
+              "action": null,
+              "ok": false,
+              "detail": "x"
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'toLowerCase')"
+      }
+    },
+    {
+      "id": "timerRowModel#13",
+      "fn": "timerRowModel",
+      "input": {
+        "tz": "UTC",
+        "locale": "en-US",
+        "row": {
+          "id": "t1",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/3abc",
+          "snippet": "A post",
           "status": "spared",
           "checkAt": "2026-11-12T16:00:00Z",
           "lifespanSeconds": 3600,
@@ -21089,7 +21399,7 @@
       }
     },
     {
-      "id": "timerRowModel#11",
+      "id": "timerRowModel#14",
       "fn": "timerRowModel",
       "input": {
         "tz": "UTC",
@@ -21137,7 +21447,7 @@
       }
     },
     {
-      "id": "timerRowModel#12",
+      "id": "timerRowModel#15",
       "fn": "timerRowModel",
       "input": {
         "tz": "UTC",
@@ -21185,7 +21495,7 @@
       }
     },
     {
-      "id": "timerRowModel#13",
+      "id": "timerRowModel#16",
       "fn": "timerRowModel",
       "input": {
         "tz": "UTC",
@@ -21233,7 +21543,7 @@
       }
     },
     {
-      "id": "timerRowModel#14",
+      "id": "timerRowModel#17",
       "fn": "timerRowModel",
       "input": {
         "tz": "UTC",
@@ -21282,7 +21592,7 @@
       }
     },
     {
-      "id": "timerRowModel#15",
+      "id": "timerRowModel#18",
       "fn": "timerRowModel",
       "input": {
         "tz": "UTC",
@@ -21330,7 +21640,7 @@
       }
     },
     {
-      "id": "timerRowModel#16",
+      "id": "timerRowModel#19",
       "fn": "timerRowModel",
       "input": {
         "tz": "UTC",
@@ -21377,7 +21687,7 @@
       }
     },
     {
-      "id": "timerRowModel#17",
+      "id": "timerRowModel#20",
       "fn": "timerRowModel",
       "input": {
         "tz": "UTC",
@@ -21411,7 +21721,7 @@
       }
     },
     {
-      "id": "timerRowModel#18",
+      "id": "timerRowModel#21",
       "fn": "timerRowModel",
       "input": {
         "tz": "UTC",
@@ -21435,7 +21745,7 @@
       }
     },
     {
-      "id": "timerRowModel#19",
+      "id": "timerRowModel#22",
       "fn": "timerRowModel",
       "input": {
         "tz": "UTC",
@@ -21457,7 +21767,7 @@
       }
     },
     {
-      "id": "timerRowModel#20",
+      "id": "timerRowModel#23",
       "fn": "timerRowModel",
       "input": {
         "tz": "UTC",
@@ -21479,7 +21789,7 @@
       }
     },
     {
-      "id": "timerRowModel#21",
+      "id": "timerRowModel#24",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -21526,7 +21836,7 @@
       }
     },
     {
-      "id": "timerRowModel#22",
+      "id": "timerRowModel#25",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -21573,7 +21883,7 @@
       }
     },
     {
-      "id": "timerRowModel#23",
+      "id": "timerRowModel#26",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -21620,7 +21930,7 @@
       }
     },
     {
-      "id": "timerRowModel#24",
+      "id": "timerRowModel#27",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -21667,7 +21977,7 @@
       }
     },
     {
-      "id": "timerRowModel#25",
+      "id": "timerRowModel#28",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -21736,7 +22046,7 @@
       }
     },
     {
-      "id": "timerRowModel#26",
+      "id": "timerRowModel#29",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -21790,7 +22100,7 @@
       }
     },
     {
-      "id": "timerRowModel#27",
+      "id": "timerRowModel#30",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -21857,7 +22167,7 @@
       }
     },
     {
-      "id": "timerRowModel#28",
+      "id": "timerRowModel#31",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -21916,7 +22226,7 @@
       }
     },
     {
-      "id": "timerRowModel#29",
+      "id": "timerRowModel#32",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -22018,7 +22328,135 @@
       }
     },
     {
-      "id": "timerRowModel#30",
+      "id": "timerRowModel#33",
+      "fn": "timerRowModel",
+      "input": {
+        "tz": "America/New_York",
+        "locale": "en-US",
+        "row": {
+          "id": "t1",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/3abc",
+          "snippet": "A post",
+          "status": "acted",
+          "checkAt": "2026-11-12T16:00:00Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 5
+              }
+            ],
+            "sense": "unless"
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "extensions": 2,
+          "clientKey": "virga",
+          "acted": [
+            {
+              "ok": true,
+              "detail": "replies limited"
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "Cannot read properties of undefined (reading 'toLowerCase')"
+      }
+    },
+    {
+      "id": "timerRowModel#34",
+      "fn": "timerRowModel",
+      "input": {
+        "tz": "America/New_York",
+        "locale": "en-US",
+        "row": {
+          "id": "t1",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/3abc",
+          "snippet": "A post",
+          "status": "acted",
+          "checkAt": "2026-11-12T16:00:00Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 5
+              }
+            ],
+            "sense": "unless"
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "extensions": 2,
+          "clientKey": "virga",
+          "acted": [
+            {
+              "action": 5,
+              "ok": true,
+              "detail": "x"
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "entry.action.toLowerCase is not a function"
+      }
+    },
+    {
+      "id": "timerRowModel#35",
+      "fn": "timerRowModel",
+      "input": {
+        "tz": "America/New_York",
+        "locale": "en-US",
+        "row": {
+          "id": "t1",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/3abc",
+          "snippet": "A post",
+          "status": "acted",
+          "checkAt": "2026-11-12T16:00:00Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 5
+              }
+            ],
+            "sense": "unless"
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "extensions": 2,
+          "clientKey": "virga",
+          "acted": [
+            {
+              "action": null,
+              "ok": false,
+              "detail": "x"
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'toLowerCase')"
+      }
+    },
+    {
+      "id": "timerRowModel#36",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -22066,7 +22504,7 @@
       }
     },
     {
-      "id": "timerRowModel#31",
+      "id": "timerRowModel#37",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -22114,7 +22552,7 @@
       }
     },
     {
-      "id": "timerRowModel#32",
+      "id": "timerRowModel#38",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -22162,7 +22600,7 @@
       }
     },
     {
-      "id": "timerRowModel#33",
+      "id": "timerRowModel#39",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -22210,7 +22648,7 @@
       }
     },
     {
-      "id": "timerRowModel#34",
+      "id": "timerRowModel#40",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -22259,7 +22697,7 @@
       }
     },
     {
-      "id": "timerRowModel#35",
+      "id": "timerRowModel#41",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -22307,7 +22745,7 @@
       }
     },
     {
-      "id": "timerRowModel#36",
+      "id": "timerRowModel#42",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -22354,7 +22792,7 @@
       }
     },
     {
-      "id": "timerRowModel#37",
+      "id": "timerRowModel#43",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -22388,7 +22826,7 @@
       }
     },
     {
-      "id": "timerRowModel#38",
+      "id": "timerRowModel#44",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -22412,7 +22850,7 @@
       }
     },
     {
-      "id": "timerRowModel#39",
+      "id": "timerRowModel#45",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
@@ -22434,7 +22872,7 @@
       }
     },
     {
-      "id": "timerRowModel#40",
+      "id": "timerRowModel#46",
       "fn": "timerRowModel",
       "input": {
         "tz": "America/New_York",
