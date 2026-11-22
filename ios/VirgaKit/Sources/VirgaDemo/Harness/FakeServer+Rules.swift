@@ -166,12 +166,22 @@ extension FakeServer {
   }
 
   /// `describeAllow(entries)`: the server's describeAllow, what a written
-  /// gate lets reply, in words.
-  public static func describeAllow(_ entries: [JSONValue]?) -> String {
+  /// gate lets reply, in words. `entries` is iterated as the web's
+  /// `for…of` iterates it: a list by its items, text by its code points
+  /// (none of which is a word), and anything else is refused with V8's
+  /// TypeError.
+  public static func describeAllow(_ entries: JSONValue?) throws -> String {
+    let items: [JSONValue]
+    switch entries {
+    case .some(.array(let list)): items = list
+    case .some(.string(let text)): items = text.unicodeScalars.map { .string(String($0)) }
+    case .some(let value) where value.isTruthy: throw HarnessJSError.typeError("(entries || []) is not iterable")
+    default: items = []
+    }
     let words = [("follower", "your followers"), ("following", "people you follow"), ("mention", "people you mentioned")]
     var parts: [String] = []
     var lists = 0
-    for entry in entries ?? [] {
+    for entry in items {
       if case .string(let word) = entry {
         if let text = words.first(where: { $0.0 == word })?.1 ?? inheritedText(word) { parts.append(text) }
       } else if entry.isTruthy, entry["list"]?.isTruthy == true {
@@ -303,11 +313,21 @@ extension FakeServer {
   }
 
   /// `timerBucket({ conditions, effects })`: which limit a timer counts
-  /// against. Anything but a plain delete is conditional.
-  public static func timerBucket(conditions: JSONValue?, effects: JSONValue?) -> String {
+  /// against. Anything but a plain delete is conditional. Effects that
+  /// aren't a list (or hold a null) are refused with V8's TypeError, as
+  /// `(effects || []).some(e => e.action …)` refuses them.
+  public static func timerBucket(conditions: JSONValue?, effects: JSONValue?) throws -> String {
     let clauses = conditions?["clauses"].jsTruthy
-    let gentle = (effects.flatMap { $0.isTruthy ? $0.arrayValue : nil } ?? []).contains {
-      $0["action"] != .string("delete")
+    var gentle = false
+    if let effects, effects.isTruthy {
+      guard case .array(let items) = effects else { throw HarnessJSError.typeError("(effects || []).some is not a function") }
+      for e in items {
+        if e.isNull { throw HarnessJSError.typeError("Cannot read properties of null (reading 'action')") }
+        if e["action"] != .string("delete") {
+          gentle = true
+          break
+        }
+      }
     }
     return jsLengthOf(clauses ?? .array([])) > 0 || gentle ? "conditional" : "plain"
   }
@@ -357,37 +377,70 @@ extension FakeServer {
     public var json: JSONValue { ["spare": .bool(spare), "matched": .bool(matched), "reason": .string(reason)] }
   }
 
-  /// `a > b` and `a >= b` as JavaScript compares two values JSON can hold.
+  /// `a > b` and `a >= b` as JavaScript compares two values JSON can hold:
+  /// each made a primitive first (a list is its items joined, an object
+  /// "[object Object]"), then two strings compare by code unit and
+  /// anything else as numbers.
   static func jsCompare(_ a: JSONValue?, _ b: JSONValue?, orEqual: Bool) -> Bool {
-    if case .string(let x)? = a, case .string(let y)? = b {
+    func primitive(_ v: JSONValue?) -> JSONValue? {
+      switch v {
+      case .some(.array), .some(.object): return .string(v!.jsString)
+      default: return v
+      }
+    }
+    let (p, q) = (primitive(a), primitive(b))
+    if case .string(let x)? = p, case .string(let y)? = q {
       let (u, v) = (Array(x.utf16), Array(y.utf16))
       return v.lexicographicallyPrecedes(u) || (orEqual && u == v)
     }
-    func primitive(_ v: JSONValue?) -> Double {
-      guard let v else { return .nan }
-      if case .object = v { return .nan }
-      return v.jsNumber
-    }
-    let (x, y) = (primitive(a), primitive(b))
+    let (x, y) = (p.map(\.jsNumber) ?? .nan, q.map(\.jsNumber) ?? .nan)
     return orEqual ? x >= y : x > y
   }
 
+  /// `counts[c.metric]`: the count a clause reads (the metric as a key,
+  /// as JavaScript writes it), and what `${…}` writes for it. A key the
+  /// counts don't have but a plain object inherits reads as the builtin
+  /// (compared as its source text, as JavaScript turns it into one).
+  static func countOf(_ counts: JSONValue, _ c: JSONValue) throws -> (value: JSONValue?, text: String) {
+    let key = c["metric"].map(\.jsString) ?? "undefined"
+    switch counts {
+    case .null: throw HarnessJSError.typeError("Cannot read properties of null (reading '\(key)')")
+    case .object(let members):
+      if let value = members.jsValue(key) { return (value, value.jsString) }
+      if let inherited = inheritedText(key) { return (.string(inherited), inherited) }
+      return (nil, "undefined")
+    default:
+      guard let value = counts[key] else { return (nil, "undefined") }
+      return (value, value.jsString)
+    }
+  }
+
   /// `evaluateConditions(conditions, counts)`: whether the rule spares the
-  /// post on these counts, and why.
+  /// post on these counts, and why. Clauses that aren't a list, a clause
+  /// that is null, and conditions that are missing are refused with V8's
+  /// TypeErrors. `counts` is the server's own `{ likes, replies, … }`
+  /// (a JSON object; other values read only their own members).
   public static func evaluateConditions(_ conditions: JSONValue?, _ counts: JSONValue) throws -> Verdict {
-    let clauses = conditions?["clauses"].flatMap { $0.isTruthy ? $0.arrayValue : nil } ?? []
-    let met = clauses.filter { c in
-      let have = c["metric"].flatMap { $0.stringValue.flatMap { counts[$0] } }
-      return jsCompare(have, c["value"], orEqual: c["op"] != .string("gt"))
+    var clauses: [JSONValue] = []
+    if let given = conditions?["clauses"], given.isTruthy {
+      guard case .array(let list) = given else {
+        throw HarnessJSError.typeError("clauses.filter is not a function")
+      }
+      clauses = list
+    }
+    var met = 0
+    for c in clauses {
+      if c.isNull { throw HarnessJSError.typeError("Cannot read properties of null (reading 'op')") }
+      let have = try countOf(counts, c).value
+      if jsCompare(have, c["value"], orEqual: c["op"] != .string("gt")) { met += 1 }
     }
     guard let conditions, !conditions.isNull else {
       throw HarnessJSError.typeError("Cannot read properties of \(conditions == nil ? "undefined" : "null") (reading 'logic')")
     }
-    let matched = conditions["logic"] == .string("all") ? met.count == clauses.count : !met.isEmpty
+    let matched = conditions["logic"] == .string("all") ? met == clauses.count : met > 0
     let spare = conditions["sense"] == .string("onlyIf") ? !matched : matched
-    let reason = clauses.map { c -> String in
-      let have = c["metric"].flatMap { $0.stringValue.flatMap { counts[$0] } }
-      return "\(have.map(\.jsString) ?? "undefined") of \(c["value"].map(\.jsString) ?? "undefined") \(c["metric"].map(\.jsString) ?? "undefined")"
+    let reason = try clauses.map { c -> String in
+      "\(try countOf(counts, c).text) of \(c["value"].map(\.jsString) ?? "undefined") \(c["metric"].map(\.jsString) ?? "undefined")"
     }.joined(separator: ", ")
     return Verdict(spare: spare, matched: matched, reason: matched ? "matched with \(reason)" : "short of \(reason)")
   }

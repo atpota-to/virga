@@ -29,24 +29,102 @@ enum ServerRepeat {
 
   // MARK: Zones (postingQueue.js)
 
-  /// A zone named as Intl reads `timeZone`, or nil where Intl throws.
-  static func timeZone(named name: String) -> TimeZone? {
-    if !name.isEmpty, let zone = TimeZone(identifier: name) { return zone }
-    if let offset = offsetSeconds(name) { return TimeZone(secondsFromGMT: offset) }
-    let folded = name.uppercased()
-    if ["UTC", "GMT", "ETC/UTC", "ETC/GMT"].contains(folded) { return TimeZone(identifier: "UTC") }
-    guard let known = TimeZone.knownTimeZoneIdentifiers.first(where: { $0.uppercased() == folded }) else { return nil }
-    return TimeZone(identifier: known)
+  /// A zone as Intl reads `timeZone`: a fixed offset (ECMA-402's offset
+  /// time zones, which may be up to 23:59 either side, past what a
+  /// Foundation TimeZone can hold) or a named zone.
+  enum IntlZone {
+    case offset(seconds: Int)
+    case named(TimeZone)
+
+    /// What the zone's clock is ahead of UTC at `ms`, in ms.
+    func offsetMs(at ms: Double) -> Double {
+      switch self {
+      case .offset(let seconds): return Double(seconds) * 1000
+      case .named(let zone): return JSDate.offsetMs(at: ms, timeZone: zone)
+      }
+    }
   }
 
-  /// '+HH:MM', '-HHMM' or '+HH' as seconds east of UTC.
+  /// `new Intl.DateTimeFormat('en-US', { timeZone: name })`'s zone, or nil
+  /// where Intl throws (a RangeError). Intl reads an IANA name, a link or
+  /// ICU's own legacy ids in any case; it doesn't take Foundation's own
+  /// "GMT+5" or "UTC-03:00" forms, nor tzdata's "Factory".
+  static func intlZone(named name: String) -> IntlZone? {
+    if let seconds = offsetSeconds(name) { return .offset(seconds: seconds) }
+    let upper = String(name.unicodeScalars.map { s -> Character in
+      (0x61...0x7A).contains(s.value) ? Character(Unicode.Scalar(s.value - 0x20)!) : Character(s)
+    })
+    if ["UTC", "GMT", "ETC/UTC", "ETC/GMT"].contains(upper) { return TimeZone(identifier: "UTC").map(IntlZone.named) }
+    if upper == "FACTORY" { return nil }
+    let units = Array(upper.utf16)
+    if units.count > 3, upper.hasPrefix("GMT") || upper.hasPrefix("UTC"), units[3] == 0x2B || units[3] == 0x2D {
+      // Only IANA's GMT+0 and GMT-0 links; Foundation would read any offset.
+      return upper == "GMT+0" || upper == "GMT-0" ? TimeZone(identifier: "UTC").map(IntlZone.named) : nil
+    }
+    for candidate in caseForms(name, upper) {
+      guard !candidate.isEmpty, let zone = TimeZone(identifier: candidate) else { continue }
+      // A custom zone Foundation made up from an offset in the name isn't one Intl knows.
+      if zone.identifier.hasPrefix("GMT+") || zone.identifier.hasPrefix("GMT-") { return nil }
+      return .named(zone)
+    }
+    return nil
+  }
+
+  /// The spellings of a zone name to look up, since Intl matches them in
+  /// any case and Foundation only as written: as given, as one of the
+  /// canonical names, then each part between the slashes title-cased (as
+  /// V8 writes a location: `America/Port-au-Prince`) or in capitals (`US`,
+  /// `GB`, `EST5EDT`).
+  static func caseForms(_ name: String, _ upper: String) -> [String] {
+    var out = [name]
+    if let known = TimeZone.knownTimeZoneIdentifiers.first(where: { $0.uppercased() == upper }) { out.append(known) }
+    func title(_ part: Substring, small: Bool) -> String {
+      var word = ""
+      var out = ""
+      func flush() {
+        let lower = word.lowercased()
+        // V8's own: of, es and au stay in lower case inside a name.
+        if small, !out.isEmpty, ["of", "es", "au"].contains(lower) {
+          out += lower
+        } else {
+          out += lower.prefix(1).uppercased() + lower.dropFirst()
+        }
+        word = ""
+      }
+      for c in part {
+        if c == "_" || c == "-" {
+          flush()
+          out.append(c)
+        } else {
+          word.append(c)
+        }
+      }
+      flush()
+      return out
+    }
+    let parts = name.split(separator: "/", omittingEmptySubsequences: false)
+    guard parts.count <= 4 else { return out }
+    for small in [true, false] {
+      for mask in 0..<(1 << parts.count) {
+        let form = parts.enumerated().map { i, part in mask & (1 << i) != 0 ? part.uppercased() : title(part, small: small) }
+        out.append(form.joined(separator: "/"))
+      }
+    }
+    out.append(upper)
+    if upper.hasPrefix("SYSTEMV/") { out.append("SystemV/" + upper.dropFirst(8)) }
+    return out
+  }
+
+  /// ECMA-402's offset time zones, '±HH', '±HHMM' or '±HH:MM' (the minus
+  /// sign also as U+2212), as seconds east of UTC.
   static func offsetSeconds(_ text: String) -> Int? {
-    let units = Array(text.utf8)
-    guard let sign = units.first, sign == 0x2B || sign == 0x2D else { return nil }
-    let rest = Array(units.dropFirst())
-    func digits(_ slice: ArraySlice<UInt8>) -> Int? {
+    var scalars = Array(text.unicodeScalars)
+    guard let sign = scalars.first, ["+", "-", "\u{2212}"].contains(sign) else { return nil }
+    scalars.removeFirst()
+    let rest = scalars.map { $0.value }
+    func digits(_ slice: ArraySlice<UInt32>) -> Int? {
       guard !slice.isEmpty, slice.allSatisfy({ $0 >= 0x30 && $0 <= 0x39 }) else { return nil }
-      return Int(String(decoding: slice, as: UTF8.self))
+      return slice.reduce(0) { $0 * 10 + Int($1 - 0x30) }
     }
     var hours: Int?
     var minutes = 0
@@ -62,22 +140,23 @@ enum ServerRepeat {
     default: return nil
     }
     guard let hours, hours <= 23, minutes <= 59 else { return nil }
-    return (sign == 0x2D ? -1 : 1) * (hours * 3600 + minutes * 60)
+    return (sign == "+" ? 1 : -1) * (hours * 3600 + minutes * 60)
   }
 
-  /// Whether `new Intl.DateTimeFormat('en-US', { timeZone: z })` takes `z`.
+  /// Whether `new Intl.DateTimeFormat('en-US', { timeZone: z })` takes `z`
+  /// (fakeServer.js's own check of a repeating post's zone).
   static func isZone(_ z: JSONValue?) -> Bool {
     guard let z, z.isTruthy else { return false }
-    return timeZone(named: z.jsString) != nil
+    return intlZone(named: z.jsString) != nil
   }
 
   /// `tzOffsetMs(instantMs, tz)`: what the wall clock reads (to the second)
   /// minus the instant; nil where Intl throws.
   static func tzOffsetMs(_ instantMs: Double, _ tz: JSONValue?) -> Double? {
-    guard let zone = timeZone(named: tz.map(\.jsString) ?? "undefined") else { return nil }
+    guard let zone = intlZone(named: tz.map(\.jsString) ?? "undefined") else { return nil }
     let t = JSDate.timeClip(instantMs)
     guard t.isFinite else { return nil }
-    let wall = t + JSDate.offsetMs(at: t, timeZone: zone)
+    let wall = t + zone.offsetMs(at: t)
     return (wall / 1000).rounded(.down) * 1000 - t
   }
 

@@ -141,7 +141,7 @@ extension DemoServer {
 
   /// `timerUsage(did, { exceptScheduledId, exceptPostUri })`: timers in use
   /// per bucket, live ones plus scheduled posts waiting with one.
-  func timerUsage(_ s: State, _ did: String, exceptScheduledId: JSONValue? = nil, exceptPostUri: String? = nil)
+  func timerUsage(_ s: State, _ did: String, exceptScheduledId: JSONValue? = nil, exceptPostUri: String? = nil) throws
     -> (plain: Int, conditional: Int)
   {
     var plain = 0
@@ -150,12 +150,12 @@ extension DemoServer {
       if bucket == "plain" { plain += 1 } else { conditional += 1 }
     }
     for i in liveTimers(s, did) where !(exceptPostUri.map { s.timers[i].post_uri.jsEquals($0) } ?? false) {
-      count(FakeServer.timerBucket(conditions: s.timers[i].conditions, effects: s.timers[i].effects))
+      count(try FakeServer.timerBucket(conditions: s.timers[i].conditions, effects: s.timers[i].effects))
     }
     for i in activeScheduled(s, did, except: exceptScheduledId) {
       let r = s.scheduled[i]
       if r.status == "pending", let sd = r.payload["selfDestruct"], sd.isTruthy {
-        count(FakeServer.timerBucket(conditions: sd["conditions"], effects: sd["effects"]))
+        count(try FakeServer.timerBucket(conditions: sd["conditions"], effects: sd["effects"]))
       }
     }
     return (plain, conditional)
@@ -166,10 +166,10 @@ extension DemoServer {
     _ s: State, _ did: String, conditions: JSONValue?, effects: JSONValue?, exceptScheduledId: JSONValue? = nil,
     exceptPostUri: String? = nil
   ) throws {
-    let bucket = FakeServer.timerBucket(conditions: conditions, effects: effects)
+    let bucket = try FakeServer.timerBucket(conditions: conditions, effects: effects)
     let feature = FakeServer.bucketFeature(bucket)
     guard let limit = limitFor(feature) else { return }
-    let usage = timerUsage(s, did, exceptScheduledId: exceptScheduledId, exceptPostUri: exceptPostUri)
+    let usage = try timerUsage(s, did, exceptScheduledId: exceptScheduledId, exceptPostUri: exceptPostUri)
     guard (bucket == "plain" ? usage.plain : usage.conditional) >= limit else { return }
     let kind = bucket == "conditional" ? "conditional timer" : "plain timer"
     throw Self.refusal(
@@ -352,21 +352,20 @@ extension DemoServer {
     if !blank(raw["until"]) && !blank(raw["count"]) {
       return .error("a repeating post ends on a date or after a number of times, not both.")
     }
-    guard
-      var value = ServerRepeat.anchoredRepeat(
-        ["every": .string(every)], .string(iso(dateParse(scheduledFor))), zone, occurrence: occurrence)?.objectValue
-    else {
-      throw HarnessJSError.typeError("Cannot read properties of null (reading 'anchor')")
-    }
+    // Null only for a zone the clock can't read, which the check above
+    // already refused; then, as on the web, only an end throws over it.
+    var value = ServerRepeat.anchoredRepeat(
+      ["every": .string(every)], .string(iso(dateParse(scheduledFor))), zone, occurrence: occurrence)?.objectValue
     if !blank(raw["until"]) {
       guard case .string(let until)? = raw["until"], ServerRepeat.fields(.string(until), [4, 2, 2], 0x2D) != nil else {
         return .error("repeat.until must be a date, as YYYY-MM-DD")
       }
-      let anchorDate = value["anchor"]?["date"]?.stringValue ?? ""
+      guard value != nil else { throw HarnessJSError.typeError("Cannot read properties of null (reading 'anchor')") }
+      let anchorDate = value?["anchor"]?["date"]?.stringValue ?? ""
       if Array(until.utf16).lexicographicallyPrecedes(Array(anchorDate.utf16)) {
         return .error("the date a repeating post ends on is before it next goes out.")
       }
-      value["until"] = .string(until)
+      value?["until"] = .string(until)
     }
     if !blank(raw["count"]) {
       let count = raw["count"].jsNumber
@@ -377,14 +376,14 @@ extension DemoServer {
         return .error(
           "a post can repeat at most \(ServerRepeat.maxRepeatCount) times. choose an end date, or no end, for more.")
       }
-      let n = FakeServer.jsCompare(.number(count), occurrence, orEqual: true)
-      if !n && FakeServer.jsCompare(occurrence, .number(count), orEqual: false) {
+      if FakeServer.jsCompare(occurrence, .number(count), orEqual: false) {
         return .error(
           "this post has already gone out \(JSNumber.format(occurrence.jsNumber - 1)) times, so it can't end after \(JSNumber.format(count)).")
       }
-      value["count"] = .number(count)
+      guard value != nil else { throw HarnessJSError.typeError("Cannot set properties of null (setting 'count')") }
+      value?["count"] = .number(count)
     }
-    return .value(.object(value))
+    return .value(value.map(JSONValue.object) ?? .null)
   }
 
   /// A refusal of validateCreate: its sentence, and its code when it has one.
@@ -951,8 +950,8 @@ extension DemoServer {
 
   /// GET /api/limits/status: flat, unlimited unless set, the caps always
   /// reported.
-  func limitsStatus(_ did: String) -> ServerAnswer {
-    state.withLock { s in
+  func limitsStatus(_ did: String) throws -> ServerAnswer {
+    try state.withLock { s in
       var features: [String: JSONValue] = [:]
       for key in FakeServer.features {
         if let limit = limitFor(key) {
@@ -961,7 +960,7 @@ extension DemoServer {
           features[key] = ["isUnlimited": true, "limit": .null]
         }
       }
-      let usage = timerUsage(s, did)
+      let usage = try timerUsage(s, did)
       return ServerAnswer(
         200,
         [

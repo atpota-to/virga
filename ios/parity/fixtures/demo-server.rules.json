@@ -1670,6 +1670,1535 @@
       }
     },
     {
+      "id": "zone#0",
+      "fn": "zone",
+      "input": {
+        "tz": "UTC"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "12:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#1",
+      "fn": "zone",
+      "input": {
+        "tz": "utc"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "12:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#2",
+      "fn": "zone",
+      "input": {
+        "tz": "GMT"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "12:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#3",
+      "fn": "zone",
+      "input": {
+        "tz": "Etc/UTC"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "12:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#4",
+      "fn": "zone",
+      "input": {
+        "tz": "etc/gmt"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "12:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#5",
+      "fn": "zone",
+      "input": {
+        "tz": "Europe/London"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "13:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#6",
+      "fn": "zone",
+      "input": {
+        "tz": "europe/london"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "13:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#7",
+      "fn": "zone",
+      "input": {
+        "tz": "EUROPE/LONDON"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "13:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#8",
+      "fn": "zone",
+      "input": {
+        "tz": "America/New_York"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "07:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "08:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#9",
+      "fn": "zone",
+      "input": {
+        "tz": "america/new_york"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "07:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "08:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#10",
+      "fn": "zone",
+      "input": {
+        "tz": "Asia/Calcutta"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "17:30",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "17:30",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#11",
+      "fn": "zone",
+      "input": {
+        "tz": "asia/kolkata"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "17:30",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "17:30",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#12",
+      "fn": "zone",
+      "input": {
+        "tz": "US/Eastern"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "07:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "08:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#13",
+      "fn": "zone",
+      "input": {
+        "tz": "us/eastern"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "07:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "08:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#14",
+      "fn": "zone",
+      "input": {
+        "tz": "Navajo"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "05:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "06:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#15",
+      "fn": "zone",
+      "input": {
+        "tz": "NAVAJO"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "05:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "06:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#16",
+      "fn": "zone",
+      "input": {
+        "tz": "GB"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "13:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#17",
+      "fn": "zone",
+      "input": {
+        "tz": "gb"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "13:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#18",
+      "fn": "zone",
+      "input": {
+        "tz": "NZ-CHAT"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-16",
+            "time": "01:45",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-16",
+            "time": "00:45",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#19",
+      "fn": "zone",
+      "input": {
+        "tz": "nz-chat"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-16",
+            "time": "01:45",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-16",
+            "time": "00:45",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#20",
+      "fn": "zone",
+      "input": {
+        "tz": "W-SU"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "15:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "15:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#21",
+      "fn": "zone",
+      "input": {
+        "tz": "EST"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "07:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "07:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#22",
+      "fn": "zone",
+      "input": {
+        "tz": "est"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "07:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "07:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#23",
+      "fn": "zone",
+      "input": {
+        "tz": "PST"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "04:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "05:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#24",
+      "fn": "zone",
+      "input": {
+        "tz": "pst"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "04:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "05:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#25",
+      "fn": "zone",
+      "input": {
+        "tz": "PST8PDT"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "04:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "05:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#26",
+      "fn": "zone",
+      "input": {
+        "tz": "Pst8pdt"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "04:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "05:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#27",
+      "fn": "zone",
+      "input": {
+        "tz": "EST5EDT"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "07:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "08:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#28",
+      "fn": "zone",
+      "input": {
+        "tz": "CET"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "13:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "14:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#29",
+      "fn": "zone",
+      "input": {
+        "tz": "SystemV/AST4"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "08:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "08:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#30",
+      "fn": "zone",
+      "input": {
+        "tz": "systemv/est5"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "07:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "07:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#31",
+      "fn": "zone",
+      "input": {
+        "tz": "Etc/GMT+5"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "07:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "07:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#32",
+      "fn": "zone",
+      "input": {
+        "tz": "etc/gmt+5"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "07:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "07:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#33",
+      "fn": "zone",
+      "input": {
+        "tz": "Etc/GMT-14"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-16",
+            "time": "02:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-16",
+            "time": "02:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#34",
+      "fn": "zone",
+      "input": {
+        "tz": "Etc/GMT+13"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#35",
+      "fn": "zone",
+      "input": {
+        "tz": "GMT0"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "12:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#36",
+      "fn": "zone",
+      "input": {
+        "tz": "GMT+0"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "12:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#37",
+      "fn": "zone",
+      "input": {
+        "tz": "gmt+0"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "12:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#38",
+      "fn": "zone",
+      "input": {
+        "tz": "GMT-0"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "12:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#39",
+      "fn": "zone",
+      "input": {
+        "tz": "GMT+5"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#40",
+      "fn": "zone",
+      "input": {
+        "tz": "gmt+5"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#41",
+      "fn": "zone",
+      "input": {
+        "tz": "GMT-03:00"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#42",
+      "fn": "zone",
+      "input": {
+        "tz": "GMT+05:00"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#43",
+      "fn": "zone",
+      "input": {
+        "tz": "UTC+5"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#44",
+      "fn": "zone",
+      "input": {
+        "tz": "utc+0"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#45",
+      "fn": "zone",
+      "input": {
+        "tz": "UTC-0"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#46",
+      "fn": "zone",
+      "input": {
+        "tz": "Factory"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#47",
+      "fn": "zone",
+      "input": {
+        "tz": "factory"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#48",
+      "fn": "zone",
+      "input": {
+        "tz": "Etc/Unknown"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#49",
+      "fn": "zone",
+      "input": {
+        "tz": "Asia/Riyadh87"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#50",
+      "fn": "zone",
+      "input": {
+        "tz": "Mars/Olympus"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#51",
+      "fn": "zone",
+      "input": {
+        "tz": "America/Port-au-Prince"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "07:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "08:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#52",
+      "fn": "zone",
+      "input": {
+        "tz": "america/port-au-prince"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "07:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "08:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#53",
+      "fn": "zone",
+      "input": {
+        "tz": "Europe/Isle_of_Man"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "13:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#54",
+      "fn": "zone",
+      "input": {
+        "tz": "europe/isle_of_man"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "13:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#55",
+      "fn": "zone",
+      "input": {
+        "tz": "Africa/Dar_es_Salaam"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "15:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "15:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#56",
+      "fn": "zone",
+      "input": {
+        "tz": "africa/dar_es_salaam"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "15:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "15:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#57",
+      "fn": "zone",
+      "input": {
+        "tz": "America/Argentina/Buenos_Aires"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "09:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "09:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#58",
+      "fn": "zone",
+      "input": {
+        "tz": "america/argentina/buenos_aires"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "09:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "09:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#59",
+      "fn": "zone",
+      "input": {
+        "tz": "+05:30"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "17:30",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "17:30",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#60",
+      "fn": "zone",
+      "input": {
+        "tz": "+0530"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "17:30",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "17:30",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#61",
+      "fn": "zone",
+      "input": {
+        "tz": "+05"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "17:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "17:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#62",
+      "fn": "zone",
+      "input": {
+        "tz": "-0800"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "04:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "04:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#63",
+      "fn": "zone",
+      "input": {
+        "tz": "+14"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-16",
+            "time": "02:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-16",
+            "time": "02:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#64",
+      "fn": "zone",
+      "input": {
+        "tz": "+23:59"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-16",
+            "time": "11:59",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-16",
+            "time": "11:59",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#65",
+      "fn": "zone",
+      "input": {
+        "tz": "-23:59"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-14",
+            "time": "12:01",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-14",
+            "time": "12:01",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#66",
+      "fn": "zone",
+      "input": {
+        "tz": "+2359"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-16",
+            "time": "11:59",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-16",
+            "time": "11:59",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#67",
+      "fn": "zone",
+      "input": {
+        "tz": "−05:00"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "07:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "07:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#68",
+      "fn": "zone",
+      "input": {
+        "tz": "−00"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "12:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#69",
+      "fn": "zone",
+      "input": {
+        "tz": "+00:00"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "12:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#70",
+      "fn": "zone",
+      "input": {
+        "tz": "-00"
+      },
+      "output": {
+        "ok": true,
+        "walls": [
+          {
+            "date": "2026-01-15",
+            "time": "12:00",
+            "occurrence": 1
+          },
+          {
+            "date": "2026-07-15",
+            "time": "12:00",
+            "occurrence": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone#71",
+      "fn": "zone",
+      "input": {
+        "tz": "+24:00"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#72",
+      "fn": "zone",
+      "input": {
+        "tz": "+00:60"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#73",
+      "fn": "zone",
+      "input": {
+        "tz": "+1"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#74",
+      "fn": "zone",
+      "input": {
+        "tz": "+005"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#75",
+      "fn": "zone",
+      "input": {
+        "tz": "+05:30:00"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#76",
+      "fn": "zone",
+      "input": {
+        "tz": "+05.30"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#77",
+      "fn": "zone",
+      "input": {
+        "tz": "Z"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#78",
+      "fn": "zone",
+      "input": {
+        "tz": " UTC"
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#79",
+      "fn": "zone",
+      "input": {
+        "tz": "UTC "
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
+      "id": "zone#80",
+      "fn": "zone",
+      "input": {
+        "tz": ""
+      },
+      "output": {
+        "ok": false,
+        "walls": null
+      }
+    },
+    {
       "id": "narrow#0",
       "fn": "narrowAllow",
       "input": {
@@ -2304,6 +3833,64 @@
         "entries": null
       },
       "output": "replies limited to nobody"
+    },
+    {
+      "id": "describe#12",
+      "fn": "describeAllow",
+      "input": {
+        "entries": "follower"
+      },
+      "output": "replies limited to nobody"
+    },
+    {
+      "id": "describe#13",
+      "fn": "describeAllow",
+      "input": {
+        "entries": ""
+      },
+      "output": "replies limited to nobody"
+    },
+    {
+      "id": "describe#14",
+      "fn": "describeAllow",
+      "input": {
+        "entries": 5
+      },
+      "output": {
+        "$throws": "(entries || []) is not iterable"
+      }
+    },
+    {
+      "id": "describe#15",
+      "fn": "describeAllow",
+      "input": {
+        "entries": true
+      },
+      "output": {
+        "$throws": "(entries || []) is not iterable"
+      }
+    },
+    {
+      "id": "describe#16",
+      "fn": "describeAllow",
+      "input": {
+        "entries": {}
+      },
+      "output": {
+        "$throws": "(entries || []) is not iterable"
+      }
+    },
+    {
+      "id": "describe#17",
+      "fn": "describeAllow",
+      "input": {
+        "entries": {
+          "list": "at://did:plc:x/app.bsky.graph.list/moots"
+        }
+      },
+      "output": {
+        "$throws": "(entries || []) is not iterable"
+      }
     },
     {
       "id": "effects#0",
@@ -3973,7 +5560,496 @@
       "output": "plain"
     },
     {
+      "id": "bucket#10",
+      "fn": "timerBucket",
+      "input": {
+        "conditions": {
+          "clauses": {
+            "length": 2
+          }
+        }
+      },
+      "output": "conditional"
+    },
+    {
+      "id": "bucket#11",
+      "fn": "timerBucket",
+      "input": {
+        "conditions": 5,
+        "effects": [
+          {
+            "action": "delete"
+          }
+        ]
+      },
+      "output": "plain"
+    },
+    {
+      "id": "bucket#12",
+      "fn": "timerBucket",
+      "input": {
+        "effects": "delete"
+      },
+      "output": {
+        "$throws": "(effects || []).some is not a function"
+      }
+    },
+    {
+      "id": "bucket#13",
+      "fn": "timerBucket",
+      "input": {
+        "effects": 5
+      },
+      "output": {
+        "$throws": "(effects || []).some is not a function"
+      }
+    },
+    {
+      "id": "bucket#14",
+      "fn": "timerBucket",
+      "input": {
+        "effects": true
+      },
+      "output": {
+        "$throws": "(effects || []).some is not a function"
+      }
+    },
+    {
+      "id": "bucket#15",
+      "fn": "timerBucket",
+      "input": {
+        "effects": {}
+      },
+      "output": {
+        "$throws": "(effects || []).some is not a function"
+      }
+    },
+    {
+      "id": "bucket#16",
+      "fn": "timerBucket",
+      "input": {
+        "effects": [
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'action')"
+      }
+    },
+    {
+      "id": "bucket#17",
+      "fn": "timerBucket",
+      "input": {
+        "effects": [
+          {
+            "action": "disableQuotes"
+          },
+          null
+        ]
+      },
+      "output": "conditional"
+    },
+    {
+      "id": "bucket#18",
+      "fn": "timerBucket",
+      "input": {
+        "effects": [
+          {
+            "action": "delete"
+          },
+          null
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'action')"
+      }
+    },
+    {
+      "id": "bucket#19",
+      "fn": "timerBucket",
+      "input": {
+        "effects": [
+          "delete"
+        ]
+      },
+      "output": "conditional"
+    },
+    {
       "id": "evaluate#0",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "clauses": "x"
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "$throws": "clauses.filter is not a function"
+      }
+    },
+    {
+      "id": "evaluate#1",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "clauses": {}
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "$throws": "clauses.filter is not a function"
+      }
+    },
+    {
+      "id": "evaluate#2",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "clauses": 5,
+          "logic": "all"
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "$throws": "clauses.filter is not a function"
+      }
+    },
+    {
+      "id": "evaluate#3",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "clauses": [
+            null
+          ]
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'op')"
+      }
+    },
+    {
+      "id": "evaluate#4",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 1
+            },
+            null
+          ]
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'op')"
+      }
+    },
+    {
+      "id": "evaluate#5",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "clauses": [
+            "likes"
+          ]
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": false,
+        "matched": false,
+        "reason": "short of undefined of undefined undefined"
+      }
+    },
+    {
+      "id": "evaluate#6",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "clauses": [
+            {
+              "metric": "toString",
+              "op": "gte",
+              "value": "a"
+            }
+          ]
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": true,
+        "matched": true,
+        "reason": "matched with function toString() { [native code] } of a toString"
+      }
+    },
+    {
+      "id": "evaluate#7",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "clauses": [
+            {
+              "metric": "__proto__",
+              "op": "gt",
+              "value": 0
+            }
+          ]
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": false,
+        "matched": false,
+        "reason": "short of [object Object] of 0 __proto__"
+      }
+    },
+    {
+      "id": "evaluate#8",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "clauses": [
+            {
+              "metric": 5,
+              "op": "gte",
+              "value": 1
+            }
+          ]
+        },
+        "counts": {
+          "5": 2,
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": true,
+        "matched": true,
+        "reason": "matched with 2 of 1 5"
+      }
+    },
+    {
+      "id": "evaluate#9",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "logic": "all",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": "1_000"
+            },
+            {
+              "metric": "replies",
+              "op": "gt",
+              "value": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        "counts": {
+          "likes": [
+            4
+          ],
+          "replies": "a",
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": true,
+        "matched": true,
+        "reason": "matched with 4 of 1_000 likes, a of 1,2 replies"
+      }
+    },
+    {
+      "id": "evaluate#10",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": [
+                12
+              ]
+            }
+          ]
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": true,
+        "matched": true,
+        "reason": "matched with 12 of 12 likes"
+      }
+    },
+    {
+      "id": "evaluate#11",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": {}
+            }
+          ]
+        },
+        "counts": {
+          "likes": {},
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": true,
+        "matched": true,
+        "reason": "matched with [object Object] of [object Object] likes"
+      }
+    },
+    {
+      "id": "evaluate#12",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 1
+            }
+          ]
+        },
+        "counts": null
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'likes')"
+      }
+    },
+    {
+      "id": "evaluate#13",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "clauses": []
+        },
+        "counts": null
+      },
+      "output": {
+        "spare": false,
+        "matched": false,
+        "reason": "short of "
+      }
+    },
+    {
+      "id": "evaluate#14",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": null,
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'logic')"
+      }
+    },
+    {
+      "id": "evaluate#15",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": 5,
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": false,
+        "matched": false,
+        "reason": "short of "
+      }
+    },
+    {
+      "id": "evaluate#16",
       "fn": "evaluateConditions",
       "input": {
         "conditions": {
@@ -4002,7 +6078,7 @@
       }
     },
     {
-      "id": "evaluate#1",
+      "id": "evaluate#17",
       "fn": "evaluateConditions",
       "input": {
         "conditions": {
@@ -4031,7 +6107,7 @@
       }
     },
     {
-      "id": "evaluate#2",
+      "id": "evaluate#18",
       "fn": "evaluateConditions",
       "input": {
         "conditions": {
@@ -4060,7 +6136,7 @@
       }
     },
     {
-      "id": "evaluate#3",
+      "id": "evaluate#19",
       "fn": "evaluateConditions",
       "input": {
         "conditions": {
@@ -4089,7 +6165,7 @@
       }
     },
     {
-      "id": "evaluate#4",
+      "id": "evaluate#20",
       "fn": "evaluateConditions",
       "input": {
         "conditions": {
@@ -4123,7 +6199,7 @@
       }
     },
     {
-      "id": "evaluate#5",
+      "id": "evaluate#21",
       "fn": "evaluateConditions",
       "input": {
         "conditions": {
@@ -4157,7 +6233,7 @@
       }
     },
     {
-      "id": "evaluate#6",
+      "id": "evaluate#22",
       "fn": "evaluateConditions",
       "input": {
         "conditions": {
@@ -4195,7 +6271,7 @@
       }
     },
     {
-      "id": "evaluate#7",
+      "id": "evaluate#23",
       "fn": "evaluateConditions",
       "input": {
         "conditions": {
@@ -4217,7 +6293,7 @@
       }
     },
     {
-      "id": "evaluate#8",
+      "id": "evaluate#24",
       "fn": "evaluateConditions",
       "input": {
         "conditions": {
@@ -4239,7 +6315,7 @@
       }
     },
     {
-      "id": "evaluate#9",
+      "id": "evaluate#25",
       "fn": "evaluateConditions",
       "input": {
         "conditions": {
@@ -4267,7 +6343,7 @@
       }
     },
     {
-      "id": "evaluate#10",
+      "id": "evaluate#26",
       "fn": "evaluateConditions",
       "input": {
         "conditions": {
@@ -4288,7 +6364,7 @@
       }
     },
     {
-      "id": "evaluate#11",
+      "id": "evaluate#27",
       "fn": "evaluateConditions",
       "input": {
         "conditions": null,

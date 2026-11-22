@@ -556,7 +556,7 @@ public final class DemoServer: Sendable {
     case ("POST", "/api/self-destruct/create"): return try timerCreate(did, body)
     case ("GET", "/api/self-destruct/list"): return timerList(did, query)
     case ("POST", "/api/self-destruct/cancel"): return try timerCancel(did, body, query)
-    case ("GET", "/api/limits/status"): return limitsStatus(did)
+    case ("GET", "/api/limits/status"): return try limitsStatus(did)
     case ("POST", "/api/ai/analyze-post"): return try await analyzePostRoute(did, body)
     case ("POST", "/api/ai/synthesize-style"): return try await synthesizeStyleRoute(did, body)
     case ("POST", "/api/ai/alt-text"): return try await altTextRoute(did, body)

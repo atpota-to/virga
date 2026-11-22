@@ -36,7 +36,7 @@ import VirgaTestSupport
   }
 
   @Test func describeAllow() throws {
-    try Self.check("describeAllow") { .string(FakeServer.describeAllow($0.input["entries"]?.arrayValue)) }
+    try Self.check("describeAllow") { .string(try FakeServer.describeAllow($0.input["entries"])) }
   }
 
   @Test func parseEffects() throws {
@@ -49,12 +49,27 @@ import VirgaTestSupport
 
   @Test func timerBucket() throws {
     try Self.check("timerBucket") {
-      .string(FakeServer.timerBucket(conditions: $0.input["conditions"], effects: $0.input["effects"]))
+      .string(try FakeServer.timerBucket(conditions: $0.input["conditions"], effects: $0.input["effects"]))
     }
   }
 
   @Test func evaluateConditions() throws {
     try Self.check("evaluateConditions") { try FakeServer.evaluateConditions($0.input["conditions"], $0["counts"]).json }
+  }
+
+  /// validateRepeat's check of a zone (Intl's), and what the zone's clock reads.
+  @Test func zone() throws {
+    try Self.check("zone") { c in
+      let tz = c.input["tz"]
+      let ok = ServerRepeat.isZone(tz)
+      let walls: JSONValue? =
+        ok
+        ? .array(
+          ["2026-01-15T12:00:00.000Z", "2026-07-15T12:00:00.000Z"].map {
+            ServerRepeat.anchoredRepeat(["every": "day"], .string($0), tz)?["anchor"] ?? .null
+          }) : nil
+      return ["ok": .bool(ok), "walls": walls ?? .null]
+    }
   }
 
   /// The stand-in for repeat.js's anchoredRepeat and nextOccurrence.

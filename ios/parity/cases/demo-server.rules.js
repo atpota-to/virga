@@ -46,6 +46,94 @@ const REPEATS = [
   ['month', '+05:30', '2026-11-30T23:00:00Z'],
 ];
 
+// The zones a repeating post may name: fakeServer.js's validateRepeat takes
+// what `new Intl.DateTimeFormat('en-US', { timeZone })` takes, an IANA name
+// or link in any case, ICU's legacy ids, or an offset up to 23:59 either
+// side, and nothing else (not "GMT+5", not tzdata's "Factory").
+const ZONE_NAMES = [
+  'UTC',
+  'utc',
+  'GMT',
+  'Etc/UTC',
+  'etc/gmt',
+  'Europe/London',
+  'europe/london',
+  'EUROPE/LONDON',
+  'America/New_York',
+  'america/new_york',
+  'Asia/Calcutta',
+  'asia/kolkata',
+  'US/Eastern',
+  'us/eastern',
+  'Navajo',
+  'NAVAJO',
+  'GB',
+  'gb',
+  'NZ-CHAT',
+  'nz-chat',
+  'W-SU',
+  'EST',
+  'est',
+  'PST',
+  'pst',
+  'PST8PDT',
+  'Pst8pdt',
+  'EST5EDT',
+  'CET',
+  'SystemV/AST4',
+  'systemv/est5',
+  'Etc/GMT+5',
+  'etc/gmt+5',
+  'Etc/GMT-14',
+  'Etc/GMT+13',
+  'GMT0',
+  'GMT+0',
+  'gmt+0',
+  'GMT-0',
+  'GMT+5',
+  'gmt+5',
+  'GMT-03:00',
+  'GMT+05:00',
+  'UTC+5',
+  'utc+0',
+  'UTC-0',
+  'Factory',
+  'factory',
+  'Etc/Unknown',
+  'Asia/Riyadh87',
+  'Mars/Olympus',
+  'America/Port-au-Prince',
+  'america/port-au-prince',
+  'Europe/Isle_of_Man',
+  'europe/isle_of_man',
+  'Africa/Dar_es_Salaam',
+  'africa/dar_es_salaam',
+  'America/Argentina/Buenos_Aires',
+  'america/argentina/buenos_aires',
+  '+05:30',
+  '+0530',
+  '+05',
+  '-0800',
+  '+14',
+  '+23:59',
+  '-23:59',
+  '+2359',
+  '\u221205:00',
+  '\u221200',
+  '+00:00',
+  '-00',
+  '+24:00',
+  '+00:60',
+  '+1',
+  '+005',
+  '+05:30:00',
+  '+05.30',
+  'Z',
+  ' UTC',
+  'UTC ',
+  '',
+];
+
 const GATE = 'app.bsky.feed.threadgate';
 const LIST = 'at://did:plc:x/app.bsky.graph.list/moots';
 const rule = (name) => ({ $type: `${GATE}#${name}` });
@@ -111,6 +199,14 @@ const DESCRIBE = [
   ['follower', 'constructor', '__proto__'],
   undefined,
   null,
+  // Iterated as for…of iterates: text by its code points, and anything
+  // else that isn't a list is refused.
+  'follower',
+  '',
+  5,
+  true,
+  {},
+  { list: LIST },
 ];
 
 const EFFECTS = [
@@ -260,10 +356,64 @@ const BUCKETS = [
   { effects: null },
   { conditions: { clauses: 'x' } },
   { conditions: { clauses: '' } },
+  { conditions: { clauses: { length: 2 } } },
+  { conditions: 5, effects: [{ action: 'delete' }] },
+  // Effects that aren't a list, or hold a null, throw as `.some` does.
+  { effects: 'delete' },
+  { effects: 5 },
+  { effects: true },
+  { effects: {} },
+  { effects: [null] },
+  { effects: [{ action: 'disableQuotes' }, null] },
+  { effects: [{ action: 'delete' }, null] },
+  { effects: ['delete'] },
 ];
 
 const COUNTS = { likes: 12, replies: 3, reposts: 0, quotes: 2, selfReplies: 1 };
 const EVALUATE = [
+  // Clauses that aren't a list, a null clause, a metric read off the
+  // object's prototype, and counts compared as JavaScript compares them
+  // (a list as its joined text, text against text by code unit).
+  { conditions: { clauses: 'x' }, counts: COUNTS },
+  { conditions: { clauses: {} }, counts: COUNTS },
+  { conditions: { clauses: 5, logic: 'all' }, counts: COUNTS },
+  { conditions: { clauses: [null] }, counts: COUNTS },
+  { conditions: { clauses: [clause('likes', 1), null] }, counts: COUNTS },
+  { conditions: { clauses: ['likes'] }, counts: COUNTS },
+  {
+    conditions: { clauses: [{ metric: 'toString', op: 'gte', value: 'a' }] },
+    counts: COUNTS,
+  },
+  {
+    conditions: { clauses: [{ metric: '__proto__', op: 'gt', value: 0 }] },
+    counts: COUNTS,
+  },
+  {
+    conditions: { clauses: [{ metric: 5, op: 'gte', value: 1 }] },
+    counts: { ...COUNTS, 5: 2 },
+  },
+  {
+    conditions: {
+      logic: 'all',
+      clauses: [
+        { metric: 'likes', op: 'gte', value: '1_000' },
+        { metric: 'replies', op: 'gt', value: [1, 2] },
+      ],
+    },
+    counts: { ...COUNTS, likes: [4], replies: 'a' },
+  },
+  {
+    conditions: { clauses: [{ metric: 'likes', op: 'gte', value: [12] }] },
+    counts: COUNTS,
+  },
+  {
+    conditions: { clauses: [{ metric: 'likes', op: 'gte', value: {} }] },
+    counts: { ...COUNTS, likes: {} },
+  },
+  { conditions: { clauses: [clause('likes', 1)] }, counts: null },
+  { conditions: { clauses: [] }, counts: null },
+  { conditions: null, counts: COUNTS },
+  { conditions: 5, counts: COUNTS },
   {
     conditions: {
       logic: 'any',
@@ -526,6 +676,30 @@ export default async function cases() {
           for (const from of [1, 2, 7, null])
             next.push(nextOccurrence(anchored, from, start + offset));
         return { anchored, next };
+      },
+    )),
+    ...(await each(
+      'zone',
+      ZONE_NAMES.map((tz, i) => ({ $id: `zone#${i}`, tz })),
+      ({ tz }) => {
+        // validateRepeat's own check of the zone.
+        let ok;
+        try {
+          ok =
+            Boolean(tz) &&
+            Boolean(new Intl.DateTimeFormat('en-US', { timeZone: tz }));
+        } catch {
+          ok = false;
+        }
+        const at = ['2026-01-15T12:00:00.000Z', '2026-07-15T12:00:00.000Z'];
+        return {
+          ok,
+          walls: ok
+            ? at.map(
+                (a) => anchoredRepeat({ every: 'day' }, a, tz)?.anchor ?? null,
+              )
+            : null,
+        };
       },
     )),
     ...(await each(

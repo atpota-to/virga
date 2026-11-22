@@ -311,7 +311,7 @@ extension DemoServer {
         "$type": .string(FakeServer.gate), "post": .string(row.post_uri), "createdAt": .string(iso(t)),
         "allow": .array(allow), "hiddenReplies": existing?.value["hiddenReplies"].jsTruthy ?? [],
       ], now: now())
-    return ["ok": true, "detail": .string(FakeServer.describeAllow(allow.compactMap(FakeServer.allowEntryFromRecord)))]
+    return ["ok": true, "detail": .string(try FakeServer.describeAllow(.array(allow.compactMap(FakeServer.allowEntryFromRecord))))]
   }
 
   /// `settleTimer(row)`: the post's counts read, and the rule acted on:
