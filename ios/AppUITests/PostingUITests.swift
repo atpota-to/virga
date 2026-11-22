@@ -108,7 +108,9 @@ final class PostingUITests: XCTestCase {
     XCTAssertTrue(composerTitle.waitForExistence(timeout: 10), "Use didn't open the composer")
     XCTAssertTrue(element(app, "template-question-0").waitForExistence(timeout: 15), "Use didn't apply the template")
     snapshot("posting-template-use")
-    element(app, "library-close").tap()
+    // The library's dialog closes from its head's Close, the kit's dialog
+    // head (Dialog.jsx's), as in ComposerUITests.
+    element(app, "dialog-close").tap()
     XCTAssertTrue(element(app, "library-panel").waitForNonExistence(timeout: 5), "the library stayed open")
     element(app, "composer-close").tap()
     XCTAssertTrue(element(app, "composer-title").waitForNonExistence(timeout: 5), "the composer stayed open")

@@ -44,17 +44,15 @@ struct ComposerWhenPanel: View {
     let underRows = theme.composerNarrow && !controller.optionsNoteShown
     return VStack(alignment: .leading, spacing: Measure.Schedule.panelGap) {
       // What it is on the left, the way back to posting now on the right,
-      // on one baseline; wrapped when they don't fit.
-      ViewThatFits(in: .horizontal) {
-        HStack(alignment: .firstTextBaseline, spacing: Measure.Schedule.panelHeadGap) {
-          head(mode: mode)
-          Spacer(minLength: 0)
-          postNow
-        }
-        FlowLayout(spacing: Measure.Schedule.panelHeadGap, lineSpacing: Measure.Schedule.panelHeadLineGap, alignment: .firstTextBaseline) {
-          head(mode: mode)
-          postNow
-        }
+      // on one baseline; under the words only when it can't fit beside
+      // them. One layout holding each view once: a ViewThatFits here (both
+      // of its candidates alive, Post now instead in each) hung the main
+      // thread as the panel turned off on Schedule or Add to queue (run 74).
+      BesideOrUnder(
+        minLead: 0, columnGap: Measure.Schedule.panelHeadGap, rowGap: Measure.Schedule.panelHeadLineGap, baseline: true
+      ) {
+        head(mode: mode)
+        postNow
       }
       if mode == "at" {
         picker
