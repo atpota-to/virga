@@ -170,7 +170,7 @@ struct DashboardPage: View {
       NewDashboardDialog { dialog = nil }
     }
     .virgaDialog(isPresented: binding(.library), title: "Report library", size: .tall) {
-      Library(dashboard: dashboard, toasts: toasts)
+      ReportLibrary(dashboard: dashboard, toasts: toasts)
     }
   }
 
@@ -433,7 +433,7 @@ struct ArrangeList: View {
 }
 
 /// The report library: a search, a kind, and each report with its Add.
-struct Library: View {
+struct ReportLibrary: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(ShellDashboards.self) private var dashboards
   let dashboard: Dashboard

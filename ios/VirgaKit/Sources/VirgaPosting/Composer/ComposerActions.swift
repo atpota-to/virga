@@ -26,6 +26,12 @@ public struct ComposerActionState: Codable, Hashable, Sendable {
   public var disabled: Bool
   public var reason: String?
 
+  /// Public, so the composer's SwiftUI (another module) can make one.
+  public init(disabled: Bool, reason: String? = nil) {
+    self.disabled = disabled
+    self.reason = reason
+  }
+
   public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     try container.encode(disabled, forKey: .disabled)
