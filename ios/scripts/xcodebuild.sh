@@ -53,6 +53,23 @@ fi
 destination="platform=iOS Simulator,id=$SIMULATOR_ID"
 common=(-destination "$destination" -skipPackagePluginValidation -skipMacroValidation CODE_SIGNING_ALLOWED=NO)
 
+# Boots the simulator and waits until it has finished booting, before the
+# build, so it has settled by the time the tests start. Left to xcodebuild,
+# it boots as the first test launches, and on a busy runner a UI test's
+# first rotation then times out ("Timed out waiting for confirmation of
+# orientation change"). In CI, the simulators an earlier step left running
+# are shut down first, so the iPad isn't booting beside the iPhone.
+boot_simulator() {
+  if [ -n "${CI:-}" ]; then
+    xcrun simctl shutdown all || true
+  fi
+  xcrun simctl bootstatus "$SIMULATOR_ID" -b
+}
+
+case "$step" in
+  package-test | app-test | ipad-test) boot_simulator ;;
+esac
+
 case "$step" in
   package-test)
     cd "$ios/VirgaKit"
