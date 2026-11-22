@@ -118,12 +118,28 @@
       "synced": "943739766b94"
     },
     "src/share/chartImage.js": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Share/ChartImage.swift",
+        "ios/VirgaKit/Sources/VirgaInsights/Share/ChartImage+Canvas.swift"
+      ],
+      "fixtures": [
+        "insights.chartImage"
+      ],
+      "note": "Everything but renderShareImage is ported: the sizes and plot, readShareTheme (over VirgaCore's ResolvedTheme, with the web's fallbacks), seriesLayout, axisLabels, fitText and drawShareImage, which makes the web's canvas calls one for one on a ShareCanvas (the 2D canvas API's calls and state; the fixture holds 90 drawings, 22,884 calls, to the web's). renderShareImage (waiting for the typeface, a <canvas>, toBlob, a File) is VirgaUI's: a ShareCanvas over SwiftUI's GraphicsContext inside a Canvas view of ChartImage.shareWidth × shareHeight, measuring text in Instrument Sans (ChartImage.fontFamily) with CoreText, rendered to PNG with ImageRenderer as 'virga-chart.png'. The canvas's arc angles are the canvas API's (radians, clockwise in a y-down space).",
+      "synced": "7493c2843a90"
     },
     "src/share/shareSpec.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Share/ShareSpec.swift"
+      ],
+      "fixtures": [
+        "insights.share",
+        "insights.archives"
+      ],
+      "note": "All of it. A spec is ShareSpecification (the web's spec, `format` as ShareNumberFormat .count/.rate, the web's fmtCount/fmtRate); a card's options are ShareOptions (kind, rows, title, notes). One deliberate difference, in types the app never asks for: card types are looked up as own keys, so 'constructor', 'toString' and '__proto__' can't be shared (the web's plain-object lookup finds Object.prototype's members: canShare says yes and shareSpec calls Object with the archive).",
+      "synced": "15280dd5dda1"
     },
     "src/shell/commands.js": {
       "status": "ported",
