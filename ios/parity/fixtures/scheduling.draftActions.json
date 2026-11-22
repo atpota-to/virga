@@ -1559,6 +1559,18 @@
       "fn": "draftActionMessage",
       "input": {
         "err": {
+          "code": "NEEDS_BACKEND",
+          "message": "Sign in."
+        },
+        "action": "schedule"
+      },
+      "output": "The draft couldn’t be scheduled. Sign in."
+    },
+    {
+      "id": "draftActionMessage#6",
+      "fn": "draftActionMessage",
+      "input": {
+        "err": {
           "problems": [
             {
               "message": "Too long."
@@ -1573,7 +1585,7 @@
       "output": "Too long."
     },
     {
-      "id": "draftActionMessage#6",
+      "id": "draftActionMessage#7",
       "fn": "draftActionMessage",
       "input": {
         "err": {
@@ -1584,7 +1596,7 @@
       "output": "The draft couldn’t be posted. Try again."
     },
     {
-      "id": "draftActionMessage#7",
+      "id": "draftActionMessage#8",
       "fn": "draftActionMessage",
       "input": {
         "err": {
@@ -1595,7 +1607,7 @@
       "output": "The draft couldn’t be posted. Offline."
     },
     {
-      "id": "draftActionMessage#8",
+      "id": "draftActionMessage#9",
       "fn": "draftActionMessage",
       "input": {
         "err": {},
@@ -1604,7 +1616,7 @@
       "output": "The draft couldn’t be scheduled. Try again."
     },
     {
-      "id": "draftActionMessage#9",
+      "id": "draftActionMessage#10",
       "fn": "draftActionMessage",
       "input": {
         "err": {
@@ -1615,7 +1627,7 @@
       "output": "The draft couldn’t be posted. Try again."
     },
     {
-      "id": "draftActionMessage#10",
+      "id": "draftActionMessage#11",
       "fn": "draftActionMessage",
       "input": {
         "err": null,
@@ -1624,7 +1636,7 @@
       "output": ""
     },
     {
-      "id": "draftActionMessage#11",
+      "id": "draftActionMessage#12",
       "fn": "draftActionMessage",
       "input": {
         "err": {
@@ -1636,7 +1648,7 @@
       "output": "The draft couldn’t be scheduled. quota"
     },
     {
-      "id": "draftActionMessage#12",
+      "id": "draftActionMessage#13",
       "fn": "draftActionMessage",
       "input": {
         "err": {

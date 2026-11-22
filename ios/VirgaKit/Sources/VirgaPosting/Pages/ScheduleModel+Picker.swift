@@ -253,7 +253,9 @@ extension ScheduleModel {
         cancelled = true
       } catch {
         let object = ScheduledPostError.errorObject(error)
-        if object["code"] == "NOT_CANCELLABLE" || object["code"] == "NOT_SKIPPABLE"
+        // By code unit: JSONValue's `==` is Swift's, where a Kelvin sign is a K.
+        if ComposerJS.strictEquals(object["code"], "NOT_CANCELLABLE")
+          || ComposerJS.strictEquals(object["code"], "NOT_SKIPPABLE")
           || ComposerJS.strictEquals(object["status"], .number(409))
         {
           break

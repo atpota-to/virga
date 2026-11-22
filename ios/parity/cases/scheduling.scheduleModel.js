@@ -972,6 +972,16 @@ const postNowScripts = [
       skip: [{ message: 'no', code: 'NOT_SKIPPABLE', status: 409 }],
     },
   ],
+  // A code matches by code unit: with a Kelvin sign it isn't a refusal,
+  // so the skip is tried again.
+  [
+    'repeating-skip-kelvin',
+    {
+      row: repeating(),
+      state: { posts: [], lifespan: { enabled: false } },
+      skip: [{ message: 'no', code: 'NOT_S\u212AIPPABLE' }, 'ok'],
+    },
+  ],
   [
     'repeating-no-skip-dep',
     { row: repeating(), state: { posts: [], lifespan: { enabled: false } } },

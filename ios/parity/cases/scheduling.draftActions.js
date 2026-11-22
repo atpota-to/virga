@@ -143,6 +143,11 @@ const MESSAGES = [
   { err: { code: 'NEEDS_BACKEND', message: 'Sign in.' }, action: 'schedule' },
   { err: { code: 'DRAFT_LIMIT', message: 'Too many drafts.' }, action: 'post' },
   { err: { code: 'MISSING_SCOPE', message: 'No scope.' }, action: 'post' },
+  // Codes match by code unit: a Kelvin sign isn't a K.
+  {
+    err: { code: 'NEEDS_BAC\u212AEND', message: 'Sign in.' },
+    action: 'schedule',
+  },
   {
     err: { problems: [{ message: 'Too long.' }, { message: 'Also this.' }] },
     action: 'post',

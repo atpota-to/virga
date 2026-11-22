@@ -35738,6 +35738,112 @@
       }
     },
     {
+      "id": "repeating-skip-kelvin",
+      "fn": "postScheduledNow",
+      "input": {
+        "row": {
+          "id": "r",
+          "scheduledFor": "2026-11-13T09:00:00Z",
+          "status": "pending",
+          "queued": false,
+          "clientKey": "virga",
+          "payload": {
+            "posts": [
+              {
+                "record": {
+                  "text": "weekly"
+                }
+              }
+            ],
+            "repeat": {
+              "every": "week",
+              "tz": "UTC",
+              "until": null,
+              "count": null,
+              "anchor": {
+                "date": "2026-11-13",
+                "time": "09:00",
+                "occurrence": 1
+              }
+            }
+          },
+          "seriesId": "s",
+          "occurrence": 1
+        },
+        "state": {
+          "posts": [],
+          "lifespan": {
+            "enabled": false
+          }
+        },
+        "skip": [
+          {
+            "message": "no",
+            "code": "NOT_SKIPPABLE"
+          },
+          "ok"
+        ]
+      },
+      "output": {
+        "result": {
+          "written": [
+            {
+              "uri": "at://p"
+            }
+          ],
+          "root": {
+            "uri": "at://p"
+          }
+        },
+        "cancelled": true,
+        "timer": null,
+        "notes": [],
+        "calls": [
+          [
+            "reconstructFromScheduled",
+            "r",
+            {},
+            "did:plc:me"
+          ],
+          [
+            "targetFor",
+            "did:plc:me"
+          ],
+          [
+            "publish",
+            {
+              "posts": [],
+              "lifespan": {
+                "enabled": false
+              },
+              "schedule": null
+            },
+            {
+              "did": "did:plc:me"
+            },
+            "function"
+          ],
+          [
+            "emitPostsChanged",
+            "did:plc:me",
+            [
+              {
+                "uri": "at://p"
+              }
+            ]
+          ],
+          [
+            "skipScheduled",
+            "r"
+          ],
+          [
+            "skipScheduled",
+            "r"
+          ]
+        ]
+      }
+    },
+    {
       "id": "repeating-no-skip-dep",
       "fn": "postScheduledNow",
       "input": {

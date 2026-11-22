@@ -380,7 +380,10 @@ public enum DraftActions {
   public static func draftActionMessage(_ err: JSONValue?, action: String) -> String {
     guard let err, err.isTruthy else { return "" }
     let code = err["code"]
-    if code == "MEDIA_MISSING" || code == "NEEDS_BACKEND" || code == "DRAFT_LIMIT" || code == "MISSING_SCOPE" {
+    // By code unit: JSONValue's `==` is Swift's, where a Kelvin sign is a K.
+    if ["MEDIA_MISSING", "NEEDS_BACKEND", "DRAFT_LIMIT", "MISSING_SCOPE"].contains(where: {
+      ComposerJS.strictEquals(code, .string($0))
+    }) {
       return err["message"].map { $0.isNull ? "null" : $0.jsString } ?? "undefined"
     }
     if ComposerJS.length(err["problems"]) > 0 {
