@@ -40,10 +40,11 @@ extension Measure {
     public static let gridGap: CGFloat = 16
     /// `.tpl-shortcut { gap: 6px }`
     public static let shortcutGap: CGFloat = 6
-    /// `.tpl-actions { gap: 8px; padding: 14px 24px 20px }`; `.tpl-actions-note { flex: 1 1 200px }`.
+    /// `.tpl-actions { gap: 8px; padding: 14px 24px 20px }`, 12 18 16 at 560
+    /// and under; `.tpl-actions-note { flex: 1 1 200px }`.
     public static let actionsGap: CGFloat = 8
-    public static let actionsTop: CGFloat = 14
-    public static let actionsBottom: CGFloat = 20
+    public static let actionsPadding = EdgeInsets(top: 14, leading: 24, bottom: 20, trailing: 24)
+    public static let phoneActionsPadding = EdgeInsets(top: 12, leading: 18, bottom: 16, trailing: 18)
     public static let actionsNoteMin: CGFloat = 200
     /// `textarea rows=5`, and a choice question's `rows=3`.
     public static let textRows: CGFloat = 5

@@ -168,10 +168,19 @@ struct TemplateEditorForm: View {
     let showProblems = tried || serverError?.fieldErrors != nil
     let problem = { (field: String) -> String? in showProblems ? problems[field] : nil }
     let changed = initial.map { TemplateEditorModel.editorHasChanges($0, draft) } ?? false
-    DialogFrame(title: template != nil ? "Edit the template" : "New template", onClose: { requestClose(changed) }, hasActions: true) {
+    // `.tpl-actions` is the editor's own foot, not the dialog's: its
+    // buttons at their own widths, Delete apart at the start, on the
+    // dialog's ground under a hairline, held at the bottom as the form
+    // scrolls.
+    DialogFrame(title: template != nil ? "Edit the template" : "New template", onClose: { requestClose(changed) }, hasActions: false) {
       form(problem: problem, templates: templates)
     } actions: {
-      foot(changed: changed)
+      EmptyView()
+    }
+    .safeAreaInset(edge: .bottom, spacing: 0) {
+      TemplateEditorFoot {
+        foot(changed: changed)
+      }
     }
     .interactiveDismissDisabled(changed || saving)
     .onKeyPress(.escape) {
@@ -200,16 +209,8 @@ struct TemplateEditorForm: View {
         await readInitialQuote(start)
       }
     }
-    .task(id: draft.quoteMode == "post" && posts.status == "idle") {
-      guard draft.quoteMode == "post", posts.status == "idle", let did else { return }
-      posts.status = "loading"
-      do {
-        let read = try await LibrarySources.fetchOwnPosts(did, transport: transport)
-        posts = PostsState(status: "ready", items: read.items, cursor: read.cursor)
-      } catch {
-        posts.status = "error"
-      }
-    }
+    .onChange(of: draft.quoteMode, initial: true) { _, _ in readPostsIfWanted() }
+    .onChange(of: posts.status) { _, _ in readPostsIfWanted() }
     .onDisappear { model?.stop() }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("template-editor")
@@ -220,6 +221,24 @@ struct TemplateEditorForm: View {
     var out = TemplateEditorModel.editorProblems(draft, others)
     for entry in serverError?.fieldErrors?.entries ?? [] { out[entry.field] = entry.message }
     return out
+  }
+
+  /// Recent posts, when the writer chooses to attach one: the web's effect
+  /// on `[quoteMode, posts.status]`. Its read is a task of its own, so the
+  /// loading it sets doesn't call it off (a `.task(id:)` keyed on the
+  /// status would be cancelled by it), and it lands as the web's does.
+  private func readPostsIfWanted() {
+    guard draft.quoteMode == "post", posts.status == "idle", let did else { return }
+    posts.status = "loading"
+    let transport = self.transport
+    Task {
+      do {
+        let read = try await LibrarySources.fetchOwnPosts(did, transport: transport)
+        posts = PostsState(status: "ready", items: read.items, cursor: read.cursor)
+      } catch {
+        posts.status = "error"
+      }
+    }
   }
 
   // MARK: Closing
@@ -267,7 +286,7 @@ struct TemplateEditorForm: View {
       }
       groupAndShortcut(problem)
       FieldStack("Suggest it when a post mentions") {
-        TextField("app, client, reader", text: $draft.keywordsText)
+        VirgaTextField("app, client, reader", text: $draft.keywordsText)
           .textInputAutocapitalization(.never)
           .virgaField(invalid: problem("keywords") != nil)
           .focused($focus, equals: .keywords)
@@ -276,9 +295,11 @@ struct TemplateEditorForm: View {
         fieldError(problem("keywords"))
       }
       if let serverError, serverError.fieldErrors == nil {
-        Callout(tone: .danger) {
+        let said = serverError.message.isEmpty ? "The template couldn’t be saved. Try again." : serverError.message
+        // role="alert": read out as it appears.
+        Callout(tone: .danger, alert: said) {
           VStack(alignment: .leading, spacing: theme.space3) {
-            Text(serverError.message.isEmpty ? "The template couldn’t be saved. Try again." : serverError.message)
+            Text(said)
             if serverError.permission, let did {
               Button("Sign in again") { AccountCopy.requestReauth(did, immediate: true) }
                 .buttonStyle(.virga(size: .small))
@@ -287,14 +308,14 @@ struct TemplateEditorForm: View {
         }
         .accessibilityIdentifier("template-editor-error")
       } else if let otherError {
-        Callout(tone: .danger) { Text(otherError) }
+        Callout(tone: .danger, otherError)
       }
     }
   }
 
   private func nameField(_ problem: (String) -> String?) -> some View {
     FieldStack("Name") {
-      TextField("Is there an app for that?", text: $draft.name)
+      VirgaTextField("Is there an app for that?", text: $draft.name)
         .virgaField(invalid: problem("name") != nil)
         .focused($focus, equals: .name)
         .onChange(of: draft.name) { _, next in if next.utf16.count > 200 { draft.name = next.jsSlice(0, 200) } }
@@ -317,11 +338,16 @@ struct TemplateEditorForm: View {
         .accessibilityIdentifier("template-text")
       // One line under the text: what can be put in it, and its count.
       HStack(alignment: .firstTextBaseline, spacing: Measure.Templates.footColumnGap) {
+        // `<Menu variant="link">`: a link action's words, with no glyph.
         VirgaMenu(accessibilityLabel: "Insert", entries: insertEntries) {
-          Label("Insert", systemImage: "chevron.down")
-            .labelStyle(TrailingIconLabelStyle())
-            .virgaText(size: theme.points(ThemeKit.linkActionFontSize), weight: ThemeKit.linkActionWeight)
+          Text("Insert")
+            .modifier(LinkUnderline())
+            .virgaText(
+              size: theme.points(ThemeKit.linkActionFontSize), weight: ThemeKit.linkActionWeight,
+              lineHeight: Measure.LinkAction.lineHeight, lineBox: true)
+            .lineLimit(1)
             .foregroundStyle(theme.ink)
+            .touchReach(horizontal: Measure.LinkAction.reachSides, vertical: Measure.LinkAction.reachAbove)
         }
         .accessibilityIdentifier("template-insert")
         Spacer(minLength: 0)
@@ -347,7 +373,7 @@ struct TemplateEditorForm: View {
     VStack(alignment: .leading, spacing: Measure.Templates.newBlankGap) {
       FieldLabel("What should it ask?")
       HStack(spacing: Measure.Templates.rowGap) {
-        TextField("Which app?", text: Binding(get: { blankLabel ?? "" }, set: { blankLabel = $0 }))
+        VirgaTextField("Which app?", text: Binding(get: { blankLabel ?? "" }, set: { blankLabel = $0 }))
           .virgaField()
           .focused($focus, equals: .blank)
           .onSubmit { addAskedBlank() }
@@ -422,12 +448,12 @@ struct TemplateEditorForm: View {
   private func question(_ v: DraftVariable) -> some View {
     let wide = theme.windowWidth >= Measure.Templates.blankFieldsSideBySide
     let ask = FieldStack("Question") {
-      TextField("Fill in “\(v.key)”", text: Binding(get: { v.label }, set: { patch(v.key, ["label": .string($0)]) }))
+      VirgaTextField("Fill in “\(v.key)”", text: Binding(get: { v.label }, set: { patch(v.key, ["label": .string($0)]) }))
         .virgaField()
         .accessibilityLabel("Question")
     }
     let hint = FieldStack("Example or hint") {
-      TextField("", text: Binding(get: { v.hint }, set: { patch(v.key, ["hint": .string($0)]) }))
+      VirgaTextField("", text: Binding(get: { v.hint }, set: { patch(v.key, ["hint": .string($0)]) }))
         .virgaField()
         .accessibilityLabel("Example or hint")
     }
@@ -487,7 +513,7 @@ struct TemplateEditorForm: View {
       }
       if draft.quoteMode == "link" {
         HStack(spacing: Measure.Templates.rowGap) {
-          TextField(
+          VirgaTextField(
             "https://bsky.app/profile/…/post/…, or any web page",
             text: Binding(
               get: { draft.quoteUrl },
@@ -628,7 +654,7 @@ struct TemplateEditorForm: View {
 
   private func groupAndShortcut(_ problem: (String) -> String?) -> some View {
     let group = FieldStack("Group") {
-      TextField("Optional", text: $draft.group)
+      VirgaTextField("Optional", text: $draft.group)
         .virgaField(invalid: problem("group") != nil)
         .focused($focus, equals: .group)
         .accessibilityLabel("Group")
@@ -637,7 +663,7 @@ struct TemplateEditorForm: View {
     let shortcut = FieldStack("Shortcut") {
       HStack(spacing: Measure.Templates.shortcutGap) {
         Text("/").font(theme.codeFont(around: theme.textBase)).foregroundStyle(theme.muted).accessibilityHidden(true)
-        TextField(
+        VirgaTextField(
           "app",
           text: Binding(
             get: { draft.shortcut },
@@ -697,38 +723,69 @@ struct TemplateEditorForm: View {
           .disabled(saving)
       }
     } else {
-      HStack(spacing: Measure.Templates.actionsGap) {
-        if let rkey = template?.rkey, !rkey.isEmpty {
-          Button {
-            confirmDelete = true
-          } label: {
-            Label("Delete", systemImage: Glyph.trash)
-          }
-          .buttonStyle(.virga(destructive: true))
-          .disabled(saving)
-          if !theme.isPhone { Spacer(minLength: 0) }
+      let canDelete = !(template?.rkey ?? "").isEmpty
+      // flex-wrap with `justify-content: flex-end` and Delete's
+      // `margin-right: auto`: one line where the three fit, else Delete on
+      // a line of its own over Cancel and Save template at the end.
+      ViewThatFits(in: .horizontal) {
+        HStack(spacing: Measure.Templates.actionsGap) {
+          if canDelete { deleteButton }
+          Spacer(minLength: 0)
+          cancelAndSave(changed: changed)
         }
-        Button("Cancel") { requestClose(changed) }
-          .buttonStyle(.virga)
-          .disabled(saving)
-        Button(saving ? "Saving…" : "Save template") { Task { await save() } }
-          .buttonStyle(.virga(.primary))
-          .disabled(saving)
-          .accessibilityIdentifier("template-save")
+        VStack(alignment: .leading, spacing: Measure.Templates.actionsGap) {
+          if canDelete { deleteButton }
+          HStack(spacing: Measure.Templates.actionsGap) {
+            Spacer(minLength: 0)
+            cancelAndSave(changed: changed)
+          }
+        }
       }
     }
   }
 
-  /// A prompt in the foot's place: its question, then its two answers.
+  /// `.tpl-delete`: the kit's destructive outline, apart at the foot's start.
+  private var deleteButton: some View {
+    Button {
+      confirmDelete = true
+    } label: {
+      Label("Delete", systemImage: Glyph.trash)
+    }
+    .buttonStyle(.virga(destructive: true))
+    .disabled(saving)
+  }
+
+  @ViewBuilder
+  private func cancelAndSave(changed: Bool) -> some View {
+    Button("Cancel") { requestClose(changed) }
+      .buttonStyle(.virga)
+      .disabled(saving)
+    Button(saving ? "Saving…" : "Save template") { Task { await save() } }
+      .buttonStyle(.virga(.primary))
+      .disabled(saving)
+      .accessibilityIdentifier("template-save")
+  }
+
+  /// A prompt in the foot's place: its question (`.tpl-actions-note`,
+  /// `flex: 1 1 200px`), then its two answers at the end; under it when the
+  /// question would have less than 200 beside them.
   private func prompt<Buttons: View>(_ question: String, @ViewBuilder buttons: () -> Buttons) -> some View {
-    VStack(alignment: .leading, spacing: Measure.Templates.actionsGap) {
-      Text(question)
-        .virgaText(.textSm)
-        .foregroundStyle(theme.ink2)
-        .fixedSize(horizontal: false, vertical: true)
-      HStack(spacing: Measure.Templates.actionsGap) {
-        if !theme.isPhone { Spacer(minLength: 0) }
-        buttons()
+    let words = Text(question)
+      .virgaText(.textSm)
+      .foregroundStyle(theme.ink2)
+      .fixedSize(horizontal: false, vertical: true)
+    let answers = HStack(spacing: Measure.Templates.actionsGap) { buttons() }
+    return ViewThatFits(in: .horizontal) {
+      HStack(alignment: .center, spacing: Measure.Templates.actionsGap) {
+        words.frame(minWidth: Measure.Templates.actionsNoteMin, idealWidth: Measure.Templates.actionsNoteMin, maxWidth: .infinity, alignment: .leading)
+        answers
+      }
+      VStack(alignment: .leading, spacing: Measure.Templates.actionsGap) {
+        words.frame(maxWidth: .infinity, alignment: .leading)
+        HStack(spacing: 0) {
+          Spacer(minLength: 0)
+          answers
+        }
       }
     }
     .accessibilityElement(children: .contain)
@@ -765,8 +822,15 @@ struct TemplateEditorForm: View {
     } catch let error as TemplateServiceError {
       serverError = error
     } catch {
-      otherError = (error as? LocalizedError)?.errorDescription ?? "The template couldn’t be saved. Try again."
+      otherError = Self.saidOrSaveFailed(error)
     }
+  }
+
+  /// `serverError.message || 'The template couldn’t be saved. Try again.'`:
+  /// an error's own words, never Foundation's generic sentence.
+  static func saidOrSaveFailed(_ error: any Error) -> String {
+    let said = (error as? LocalizedError)?.errorDescription ?? ""
+    return said.isEmpty ? "The template couldn’t be saved. Try again." : said
   }
 
   private func doDelete() async {
@@ -782,7 +846,7 @@ struct TemplateEditorForm: View {
       onClose()
     } catch {
       onDeleting?(nil)
-      if let failed = error as? TemplateServiceError { serverError = failed } else { otherError = error.localizedDescription }
+      if let failed = error as? TemplateServiceError { serverError = failed } else { otherError = Self.saidOrSaveFailed(error) }
       confirmDelete = false
     }
   }
@@ -827,13 +891,22 @@ struct TemplateBones: View {
   }
 }
 
-/// A label with its icon after its words (a menu's chevron).
-struct TrailingIconLabelStyle: LabelStyle {
-  func makeBody(configuration: Configuration) -> some View {
-    HStack(spacing: 4) {
-      configuration.title
-      configuration.icon.imageScale(.small)
-    }
+/// `.tpl-actions`: the editor's foot, on the dialog's ground under a
+/// hairline, out to the dialog's sides (14 24 20; 12 18 16 at 560 and under).
+struct TemplateEditorFoot<Content: View>: View {
+  @Environment(\.virgaTheme) private var theme
+  private let content: Content
+
+  init(@ViewBuilder content: () -> Content) {
+    self.content = content()
+  }
+
+  var body: some View {
+    content
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .padding(theme.isPhone ? Measure.Templates.phoneActionsPadding : Measure.Templates.actionsPadding)
+      .background(theme.surface)
+      .overlay(alignment: .top) { Rectangle().fill(theme.line).frame(height: 1) }
   }
 }
 #endif
