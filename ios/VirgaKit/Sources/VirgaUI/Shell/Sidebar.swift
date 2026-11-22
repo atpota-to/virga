@@ -56,7 +56,7 @@ public struct Sidebar: View {
       if collapsed { rail } else { open }
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-    .background(SkyWash().ignoresSafeArea())
+    // No ground: the shell's sky is behind it.
     .accessibilityElement(children: .contain)
     .accessibilityLabel("Main")
     .accessibilityIdentifier("sidebar")
