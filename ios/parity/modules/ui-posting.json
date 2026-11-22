@@ -224,7 +224,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Posting/HubParts.swift",
         "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduleParts.swift"
       ],
-      "note": "RowSkeleton, LoadError and ConfirmDialog (busy, and a refusal's message kept in the dialog) in PostingParts; useLoad as PostingLoad (HubParts): a read for a key, again when the key changes or one of its posting events arrives for the account, loading only until the first answer, a failed reload keeping what's on screen, idle when not enabled; the scheduling pages read their list through their own useLoad, ScheduledListLoad (ScheduleParts), over listScheduled with the limits.",
+      "note": "RowSkeleton (an odd row one line of bones, the action bones under them on a phone, pulsing), LoadError (role=\"alert\", read out; its triangle centred with the sentence and Try again) and ConfirmDialog (busy, not swiped away while it is, and a refusal's message kept in the dialog and read out) in PostingParts; useLoad as PostingLoad (HubParts): a read for a key, again when the key changes or one of its posting events arrives for the account, loading only until the first answer, a failed reload keeping what's on screen, idle when not enabled; the scheduling pages read their list through their own useLoad, ScheduledListLoad (ScheduleParts), over listScheduled with the limits.",
       "synced": "7e2519aca49f"
     },
     "src/posting/pages/scheduleParts.jsx": {
