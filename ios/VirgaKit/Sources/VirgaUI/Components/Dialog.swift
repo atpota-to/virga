@@ -9,8 +9,9 @@
 // halves, 44 tall, or, for a dialog whose buttons say too much to share a
 // line (`stackActions`, `.dialog--stack-actions`), go one under the other,
 // the one that does it first. Swiping it down is the web's Escape: it
-// closes. A field marked to take focus (`autofocus`, the web's
-// `[data-autofocus]`) has it when the dialog opens.
+// closes. A dialog built with `autofocus: true` focuses, when it opens,
+// the field inside it marked `.dialogAutofocus()` (the web's
+// `[data-autofocus]`); the focus is the dialog's own, inside its sheet.
 //
 //   .virgaDialog(isPresented: $confirming, title: "Sign out of Mira Okafor") {
 //     Callout(…)
@@ -50,16 +51,19 @@ public struct DialogFrame<Content: View, Actions: View>: View {
   private let actions: Actions
   private let hasActions: Bool
   private let stackActions: Bool
-  private let autofocus: FocusState<Bool>.Binding?
+  private let autofocus: Bool
+  /// The marked field's focus, held here, inside the sheet, where the
+  /// field is.
+  @FocusState private var autofocused: Bool
 
   /// - Parameters:
   ///   - stackActions: on a phone, the buttons one under the other, each
   ///     the full width and 44 tall, the last given (the confirm) first.
-  ///   - autofocus: the focus of the field the dialog opens on, set when it
-  ///     appears.
+  ///   - autofocus: whether the field in `content` marked
+  ///     `.dialogAutofocus()` takes focus when the dialog appears.
   public init(
     title: String, onClose: @escaping () -> Void, hasActions: Bool = true, stackActions: Bool = false,
-    autofocus: FocusState<Bool>.Binding? = nil, @ViewBuilder content: () -> Content, @ViewBuilder actions: () -> Actions
+    autofocus: Bool = false, @ViewBuilder content: () -> Content, @ViewBuilder actions: () -> Actions
   ) {
     self.title = title
     self.onClose = onClose
@@ -103,8 +107,11 @@ public struct DialogFrame<Content: View, Actions: View>: View {
       }
     }
     .background(theme.surface)
+    // The field (or the button) marked `.dialogAutofocus()`, in the body or
+    // the foot.
+    .environment(\.virgaDialogAutofocus, autofocus ? $autofocused : nil)
     .onAppear {
-      autofocus?.wrappedValue = true
+      if autofocus { autofocused = true }
     }
   }
 
@@ -119,6 +126,41 @@ public struct DialogFrame<Content: View, Actions: View>: View {
         actions
       }
     }
+  }
+}
+
+private struct DialogAutofocusKey: EnvironmentKey {
+  static let defaultValue: FocusState<Bool>.Binding? = nil
+}
+
+extension EnvironmentValues {
+  /// Set by a dialog built with `autofocus: true`: the focus its marked
+  /// field binds to.
+  var virgaDialogAutofocus: FocusState<Bool>.Binding? {
+    get { self[DialogAutofocusKey.self] }
+    set { self[DialogAutofocusKey.self] = newValue }
+  }
+}
+
+/// Binds a field to its dialog's focus, when the dialog has one.
+struct DialogAutofocus: ViewModifier {
+  @Environment(\.virgaDialogAutofocus) private var focus
+
+  func body(content: Content) -> some View {
+    if let focus {
+      content.focused(focus)
+    } else {
+      content
+    }
+  }
+}
+
+extension View {
+  /// `[data-autofocus]`: the field a dialog opens on. It takes focus when a
+  /// dialog built with `autofocus: true` appears; anywhere else it does
+  /// nothing.
+  public func dialogAutofocus() -> some View {
+    modifier(DialogAutofocus())
   }
 }
 
@@ -150,7 +192,7 @@ struct DialogSheet<Inner: View, Foot: View>: ViewModifier {
   let size: DialogSize
   let hasActions: Bool
   var stackActions = false
-  var autofocus: FocusState<Bool>.Binding?
+  var autofocus = false
   let inner: () -> Inner
   let foot: () -> Foot
 
@@ -167,13 +209,14 @@ struct DialogSheet<Inner: View, Foot: View>: ViewModifier {
 }
 
 extension View {
-  /// A dialog over this view, while `isPresented`.
+  /// A dialog over this view, while `isPresented`. `autofocus`: its field
+  /// marked `.dialogAutofocus()` takes focus when it opens.
   public func virgaDialog<Content: View, Actions: View>(
     isPresented: Binding<Bool>,
     title: String,
     size: DialogSize = .fit,
     stackActions: Bool = false,
-    autofocus: FocusState<Bool>.Binding? = nil,
+    autofocus: Bool = false,
     @ViewBuilder content: @escaping () -> Content,
     @ViewBuilder actions: @escaping () -> Actions
   ) -> some View {
@@ -188,7 +231,7 @@ extension View {
     isPresented: Binding<Bool>,
     title: String,
     size: DialogSize = .fit,
-    autofocus: FocusState<Bool>.Binding? = nil,
+    autofocus: Bool = false,
     @ViewBuilder content: @escaping () -> Content
   ) -> some View {
     modifier(
@@ -243,7 +286,6 @@ public struct ChoiceRow: View {
   public var body: some View {
     let hairline = Measure.Section.hairline
     mark
-      .padding(Measure.Dialog.choicePadding)
       .overlay(alignment: .leading) {
         Rectangle().fill(isOn ? theme.accent : Color.clear).frame(width: Measure.Dialog.choiceRule)
       }
@@ -271,8 +313,13 @@ public struct ChoiceRow: View {
       }
       .buttonStyle(.plain)
       .virgaFocusOutline(RoundedRectangle(cornerRadius: theme.radiusSm), placement: .inside)
+      // Read as a switch, on or off, with its description as the radio's
+      // combined row reads it.
       .accessibilityRepresentation {
-        Toggle(isOn: $isOn) { Text(label) }
+        Toggle(isOn: $isOn) {
+          Text(label)
+          if let description { Text(description) }
+        }
       }
     }
   }
@@ -301,6 +348,9 @@ public struct ChoiceRow: View {
       .fixedSize(horizontal: false, vertical: true)
       .frame(maxWidth: .infinity, alignment: .leading)
     }
+    // The row's padding is inside the button: the whole row is the
+    // `<label>`, pressed anywhere in it.
+    .padding(Measure.Dialog.choicePadding)
     .contentShape(Rectangle())
   }
 }

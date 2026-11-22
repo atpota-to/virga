@@ -263,7 +263,7 @@ struct DescribeDialog: View {
         FieldStack(fieldLabel) {
           TextField(placeholder, text: $text, axis: .vertical)
             .lineLimit(5...12)
-            .virgaTextArea(invalid: over)
+            .virgaTextArea(invalid: over, editor: false)
             .accessibilityIdentifier("describe-text")
           FieldHint(countLabel(count), isOver: over)
         }

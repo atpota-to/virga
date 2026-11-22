@@ -119,7 +119,9 @@ COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
   twice); `.virgaCheck` draws its words beside the box (16, 8 from them, centred), and
   `.virgaTermsCheck` is the terms page's (18, 12, top). `.virgaField(invalid:size:)` round
   `VirgaTextField(prompt, text:)` (a TextField whose placeholder is --muted; a plain
-  `TextField(prompt, text:)` gets the system's pale grey), `.virgaTextArea()`, `FieldStack`,
+  `TextField(prompt, text:)` gets the system's pale grey), `.virgaTextArea()` round a
+  TextEditor (its padding less the editor's own insets) or `.virgaTextArea(editor: false)`
+  round a `TextField(axis: .vertical)`, which has none, `FieldStack`,
   `FieldHint(_, isOver:)`, `SearchField`, `VirgaSelect(label, selection:, options:
   [SelectChoice])` for select.input (a Picker in virgaField draws its value in the accent,
   centred, on two lines).
@@ -128,7 +130,9 @@ COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
   item's words), since a native menu tints a plain image with the window's accent.
 - `.virgaDialog(isPresented:title:size:stackActions:autofocus:) { } actions: { }` (a sheet;
   `stackActions` puts a phone's buttons one under the other, the last given first;
-  `autofocus` is a `FocusState<Bool>.Binding` set when it opens), `DialogFrame` (the same),
+  `autofocus: true` focuses, when it opens, the field marked `.dialogAutofocus()`, the web's
+  `[data-autofocus]`: the focus state is the dialog's, inside the sheet, since a caller's
+  `@FocusState` outside the sheet doesn't reach a field inside it), `DialogFrame` (the same),
   `ChoiceRow(_, description:, isOn:, kind: .radio | .check)` (rows share one hairline),
   `InfoTip` (laid out 20 × 16, pressed through 44), `FollowerCountTip`, `Callout(tone:)`,
   `EmptyState` (16 under a flush section's rule), `NoteText`, `ProgressLine(value:)`,

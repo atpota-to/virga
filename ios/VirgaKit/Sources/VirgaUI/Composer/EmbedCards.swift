@@ -236,7 +236,7 @@ struct LinkCardDialog: View {
         }
         FieldStack("Description") {
           TextField("", text: $description, axis: .vertical).lineLimit(3...6)
-            .virgaTextArea(invalid: descCount > ComposerLinkCards.descriptionMax)
+            .virgaTextArea(invalid: descCount > ComposerLinkCards.descriptionMax, editor: false)
           FieldHint("\(descCount) of \(ComposerLinkCards.descriptionMax)", isOver: descCount > ComposerLinkCards.descriptionMax)
         }
         imageField

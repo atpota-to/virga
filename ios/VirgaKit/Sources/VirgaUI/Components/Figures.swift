@@ -261,9 +261,11 @@ public struct FigureNote: View {
     return out
   }
 
-  /// A space whose advance is `points`: the face's own space, kerned.
+  /// A space whose advance is `points`: the face's own space, kerned. It is
+  /// a no-break space, as the web's margins are no break at all: the change,
+  /// its dot and the first word stay on one line, and the words after wrap.
   private func space(_ points: CGFloat, size: CGFloat) -> Text {
-    Text(" ")
+    Text("\u{00A0}")
       .font(theme.font(size: size))
       .kerning(points - theme.spaceWidth(size: size))
   }

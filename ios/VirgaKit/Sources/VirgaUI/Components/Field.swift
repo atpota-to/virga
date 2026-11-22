@@ -35,6 +35,9 @@ struct FieldChrome: ViewModifier {
   let size: FieldSize
   let leading: CGFloat?
   let textArea: Bool
+  /// A text area round a TextEditor, whose text view keeps insets of its
+  /// own; a `TextField(axis: .vertical)` keeps none.
+  var editorInset = false
 
   func body(content: Content) -> some View {
     // A field in trouble declares its ring again, in the danger colour.
@@ -48,7 +51,7 @@ struct FieldChrome: ViewModifier {
     let radius = theme.points(ThemeKit.inputRadius)
     let shape = RoundedRectangle(cornerRadius: radius)
     var padding = textArea ? theme.insets(ThemeKit.textAreaPadding) : theme.insets(size == .large ? ThemeKit.largeInputPadding : ThemeKit.inputPadding)
-    if textArea {
+    if textArea && editorInset {
       // A TextEditor keeps its text view's own insets inside it; the field
       // gives only the rest, so the words start where the web's do.
       let own = Measure.Field.textEditorInset
@@ -125,10 +128,13 @@ extension View {
     modifier(FieldChrome(invalid: invalid, size: size, leading: leading, textArea: false))
   }
 
-  /// The kit's text area round a TextEditor.
-  public func virgaTextArea(invalid: Bool = false) -> some View {
+  /// The kit's text area round a TextEditor, or, with `editor: false`, round
+  /// a `TextField(axis: .vertical)`: an editor's own text view keeps 8 above
+  /// and below and 5 at the sides, which the field's padding leaves out; a
+  /// vertical TextField keeps none, so it takes the whole padding.
+  public func virgaTextArea(invalid: Bool = false, editor: Bool = true) -> some View {
     scrollContentBackground(.hidden)
-      .modifier(FieldChrome(invalid: invalid, size: .medium, leading: nil, textArea: true))
+      .modifier(FieldChrome(invalid: invalid, size: .medium, leading: nil, textArea: true, editorInset: editor))
   }
 }
 

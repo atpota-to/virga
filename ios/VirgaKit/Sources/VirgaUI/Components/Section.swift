@@ -74,9 +74,11 @@ public struct SectionHead: View {
   private var phone: some View {
     VStack(alignment: .leading, spacing: 0) {
       if let trailing, !segmented {
+        // `minmax(0, 1fr) auto` 16 apart: the title takes what the tools
+        // leave (a Spacer here would take the gap twice).
         HStack(alignment: .center, spacing: Measure.Section.phoneHeadGap) {
           titleText
-          Spacer(minLength: 0)
+            .frame(maxWidth: .infinity, alignment: .leading)
           tools(trailing)
         }
       } else {

@@ -209,9 +209,11 @@ public struct PageHeader: View {
   /// a sheet's Done sits; the lines under the title take the whole width.
   private var phoneDone: some View {
     VStack(alignment: .leading, spacing: Measure.PageHeader.textGap) {
+      // `minmax(0, 1fr) auto`, 16 apart: the title takes what Done leaves
+      // (a Spacer here would take the gap twice).
       HStack(alignment: .top, spacing: Measure.PageHeader.phoneActionsGap) {
         titleRow
-        Spacer(minLength: 0)
+          .frame(maxWidth: .infinity, alignment: .leading)
         if let actions {
           actions
             .fixedSize()

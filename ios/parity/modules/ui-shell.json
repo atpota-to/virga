@@ -112,7 +112,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Components/Dialog.swift"
       ],
       "synced": "f4405d5f2771",
-      "note": "DialogFrame and .virgaDialog (a sheet): the title, Close, the content, the foot in equal halves on a phone; `stackActions` (.dialog--stack-actions: one under the other, the confirm first) and `autofocus` ([data-autofocus]: a field's focus, set when it opens). Not yet: the card settings, New dashboard and Add to dashboard dialogs draw their own foot inside the body rather than the actions slot, and pass no autofocus"
+      "note": "DialogFrame and .virgaDialog (a sheet): the title, Close, the content, the foot in equal halves on a phone; `stackActions` (.dialog--stack-actions: one under the other, the confirm first) and `autofocus: true` with `.dialogAutofocus()` on the field ([data-autofocus]: the dialog's own focus, inside its sheet, set when it opens). Not yet: the card settings, New dashboard and Add to dashboard dialogs draw their own foot inside the body rather than the actions slot, and pass no autofocus"
     },
     "src/components/Figures.jsx": {
       "status": "ported",

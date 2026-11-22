@@ -167,7 +167,7 @@ struct AltTextDialog: View {
       )
       .lineLimit(5...12)
       .frame(minHeight: Measure.Adviser.altTextMin, alignment: .topLeading)
-      .virgaTextArea(invalid: count.over)
+      .virgaTextArea(invalid: count.over, editor: false)
       .foregroundStyle(pending != nil ? theme.muted : theme.ink)
       .disabled(pending != nil)
       .accessibilityLabel("Description")
