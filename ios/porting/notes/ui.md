@@ -111,8 +111,11 @@ DASHBOARDS AND REPORTS (Dashboards/, Reports/)
   in a dialog), the period picker; `CardGrid` (twelve columns, dashboards.css's 860/620 rules);
   `WidgetBody` draws the ported cards (four figures, six charts, Best time); the rest show their
   title and `Unported.card` (posting cards: `Unported.postingCard`).
-- `ReportsIndex`, `ReportPage(report:)`: Followers, Posts and Engagement; the others keep their
-  header and the unported sentence.
+- `ReportsIndex`, `ReportPage(report:)`: every report (Followers, Posts, Engagement, Content,
+  Blocks, People, Atmosphere), with `PersonRow` and `PostRowView` (Reports/People.swift);
+  `ChartNotes` and `ChartNotesModels.marks` (one AnnotationsModel per account) put the notes
+  and the follower milestones on the charts; every dashboard card (`MoreWidget`), and the card
+  settings dialog (`CardSettings`) from Customize.
 
 APP (App/, Pages/, Legal/, SignIn/, Accounts/, Settings/, Platform/)
 - `AppModel` builds the stores and models once per process; `AppModel.archive(for:)` makes

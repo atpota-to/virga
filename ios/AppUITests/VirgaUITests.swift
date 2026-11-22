@@ -219,6 +219,9 @@ final class VirgaUITests: XCTestCase {
     XCTAssertFalse(element(app, "first-run-error").exists, "the first build failed")
     XCTAssertTrue(built, "the first build didn't finish in three minutes")
     waitForTitle(app, "Overview")
+    // The rest of the sync (engagement, notifications) runs on after the
+    // first build's page has gone: the full Overview is after it ends.
+    _ = element(app, "sync-cancel").waitForNonExistence(timeout: 180)
     snapshot("dashboard-built")
 
     let heatmap = element(app, "widget-best-time")
@@ -234,9 +237,48 @@ final class VirgaUITests: XCTestCase {
     snapshot("customize")
     element(app, "customize-done").tap()
 
+    // A card's own settings, from its line in Customize.
+    customize.tap()
+    let settings = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'card-settings-'")).firstMatch
+    if settings.waitForExistence(timeout: 5) {
+      scrollTo(app, settings)
+      settings.tap()
+      if element(app, "card-settings-save").waitForExistence(timeout: 5) {
+        snapshot("card-settings")
+        button(app, "Cancel").tap()
+      }
+    }
+    element(app, "customize-done").tap()
+
     part(app, "reports").tap()
     waitForTitle(app, "Reports")
     snapshot("reports-built")
+
+    // A note on the follower chart, beside its milestones.
+    element(app, "report-followers").tap()
+    waitForTitle(app, "Followers")
+    let note = element(app, "chart-note-label")
+    scrollTo(app, note)
+    if note.exists {
+      note.tap()
+      note.typeText("A post went round")
+      element(app, "chart-note-add").tap()
+      app.swipeDown()
+      app.swipeDown()
+      snapshot("chart-note")
+    }
+    part(app, "reports").tap()
+    waitForTitle(app, "Reports")
+
+    for (key, title) in [("content", "Content"), ("people", "People")] {
+      let tile = element(app, "report-\(key)")
+      scrollTo(app, tile)
+      tile.tap()
+      waitForTitle(app, title)
+      snapshot("report-\(key)")
+      part(app, "reports").tap()
+      waitForTitle(app, "Reports")
+    }
     for (key, title) in [("followers", "Followers"), ("posts", "Posts")] {
       let tile = element(app, "report-\(key)")
       scrollTo(app, tile)
