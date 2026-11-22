@@ -276,7 +276,11 @@ struct LibraryPanel: View {
     .task(id: trimmed) { await readPasted(trimmed) }
     .task(id: shown?.id) { if let shown { await hydrate(shown) } }
     .onChange(of: lib.items("templates").count, initial: true) { _, _ in focusOnTemplate() }
+    // A use's error is the item's it was for (the web's effect on
+    // [selectedId, activeId]): a wider window shows the first item with no
+    // row chosen, and a shelf or a search can put another one there.
     .onChange(of: selectedId) { _, _ in useError = nil }
+    .onChange(of: shown?.id) { _, _ in useError = nil }
     // `data-autofocus` in the dialog: the search has the keyboard as it opens.
     .onAppear { if mode == .dialog { searchFocused = true } }
     .accessibilityElement(children: .contain)
