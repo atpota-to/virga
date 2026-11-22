@@ -106,30 +106,34 @@ func uncancellableSleep(seconds: Double) async {
 }
 
 @Suite struct GatesBehaviour {
+  // These tests ask whether the answer came at the deadline rather than when
+  // the read ended, by whether the read had ended, not by the clock: a clock
+  // bound fails when the parallel suite starves the pool on a loaded machine.
   @Test func aSlowPreferencesReadIsNilInTime() async {
+    let readEnded = Locked(false)
     let agent = FakeGatesAgent(preferences: {
       try await Task.sleep(for: .seconds(600))
+      readEnded.set(true)
       return ["preferences": []]
     })
-    let started = Date()
     let gates = await Gates.readDefaultGates(agent, timeoutMs: 30)
     #expect(gates == nil)
-    #expect(Date().timeIntervalSince(started) < 120)
+    #expect(!readEnded.wrappedValue, "answered at the deadline, not when the read ended")
   }
 
   /// The web races the read against a timer (`Promise.race`), so the answer
   /// is null at the deadline even when the read carries on. A task group
   /// would wait for a read that ignores cancellation.
   @Test func aReadThatIgnoresCancellationStillTimesOut() async {
+    let readEnded = Locked(false)
     let agent = FakeGatesAgent(preferences: {
       await uncancellableSleep(seconds: 300)
+      readEnded.set(true)
       return ["preferences": []]
     })
-    let started = Date()
     let gates = await Gates.readDefaultGates(agent, timeoutMs: 50)
     #expect(gates == nil)
-    // Far under the read's five minutes, with room for a loaded machine.
-    #expect(Date().timeIntervalSince(started) < 120, "returned at the deadline, not when the read ended")
+    #expect(!readEnded.wrappedValue, "returned at the deadline, not when the read ended")
   }
 
   /// A wait setTimeout can't make (infinite, not a number, negative, past
@@ -137,13 +141,14 @@ func uncancellableSleep(seconds: Double) async {
   /// trapping in Duration.
   @Test func aTimeoutOutsideTheTimersRangeEndsAtOnce() async {
     for timeoutMs in [Double.infinity, -.infinity, .nan, -5, 1e300] {
+      let readEnded = Locked(false)
       let agent = FakeGatesAgent(preferences: {
         try await Task.sleep(for: .seconds(600))
+        readEnded.set(true)
         return ["preferences": []]
       })
-      let started = Date()
       #expect(await Gates.readDefaultGates(agent, timeoutMs: timeoutMs) == nil, "\(timeoutMs)")
-      #expect(Date().timeIntervalSince(started) < 120, "\(timeoutMs)")
+      #expect(!readEnded.wrappedValue, "\(timeoutMs)")
     }
     #expect(PromiseRace.timerDelay(250) == .milliseconds(250))
     #expect(PromiseRace.timerDelay(2_147_483_647) == .milliseconds(2_147_483_647))
@@ -156,16 +161,17 @@ func uncancellableSleep(seconds: Double) async {
   }
 
   @Test func aCancelledCallerGetsNil() async {
+    let readEnded = Locked(false)
     let agent = FakeGatesAgent(preferences: {
       await uncancellableSleep(seconds: 300)
+      readEnded.set(true)
       return ["preferences": []]
     })
     let task = Task { await Gates.readDefaultGates(agent, timeoutMs: 600_000) }
     try? await Task.sleep(for: .milliseconds(20))
     task.cancel()
-    let started = Date()
     #expect(await task.value == nil)
-    #expect(Date().timeIntervalSince(started) < 120)
+    #expect(!readEnded.wrappedValue, "answered on cancelling, not when the read ended")
   }
 
   @Test func readsTheAccountsDefaults() async {
