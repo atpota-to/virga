@@ -69,12 +69,21 @@
       "swift": []
     },
     "src/posting/library/TemplateEditor.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateEditor.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateEditorSources.swift"
+      ],
+      "note": "The editor as a full-height sheet, its foot held under the form: the note, a seed's note, Name, Text with Insert (A blank… and the four context inserts) and its count against 300, naming a new blank in place (Add, Don’t add a blank), the hint; Questions for each blank asked (its key, Question and Example or hint side by side from 640 wide, Typed answer or Pick from a list, the choices one per line, Optional) and what fills itself; Attach (Nothing, One of your posts with the recent ones five at a time and Show more, A link with Read the link; what it attaches named, Gone, the other kind kept with Remove it); Offer it when; Group and Shortcut; Suggest it when a post mentions; the server's refusal (with Sign in again for a permission) and the fields' own; and the foot: Delete, Cancel, Save template, or Discard your changes? / Delete … for good? in its place, Escape putting a prompt away. Saved through TemplatesModel with its toasts. The editor's reads (fetchOwnPosts, hydrateEmbedViews, resolveRecordLink) are written in TemplateEditorSources over VirgaNetwork's PublicAppView until sources.js is ported. Not yet: a web page's link card (linkCard.js's fetchLinkCard, the publish domain's), so such a link says it couldn't be read; the caret (SwiftUI's text editor doesn't give it on iOS 17, so Insert and a blank go at the end of the text); the groups already used offered under Group (a datalist). A swipe down is held while there are changes.",
+      "synced": "aa70d34f4580"
     },
     "src/posting/library/TemplateQuestions.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateQuestions.swift"
+      ],
+      "note": "TemplateQuestions (a field per typed question, ChoiceGroup per choice question with the arrows, Home and End and choosing again to clear an optional one, · optional, the hint and note, Answer this one first., Return going to the next unanswered question, the count of those still to answer read out), ChoiceGroup and TemplatePreview (Your post / Your reply will read, the count against 300, added words, what fills itself underlined, answers on the accent's tint, blanks to answer, the attachment's card, the notes and what stops it). The preview is the caller's, or LibraryPreview.forTemplate: previewFor for a template on its own (its words into an empty post, nothing attached), written here until library/model.js is ported. Not yet: the preview within a post under way (state, postIndex, insertion), which waits for model.js's previewFor, and templateContextFrom (the caller passes a template context).",
+      "synced": "8e7bb01d7704"
     },
     "src/posting/pages/DraftsPage.jsx": {
       "status": "pending",
@@ -97,8 +106,12 @@
       "swift": []
     },
     "src/posting/pages/TemplatesPage.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/TemplatesPage.swift"
+      ],
+      "note": "The page over the account's own TemplatesModel (useTemplates) and TemplateUsage (readTemplateUsage, sortTemplatesForShelf): the permission notice with Sign in again when the sign-in can't write templates; the read-again failure over the last ones seen; the bones while the first read runs; the failure with Try again; No templates yet with New template; then the count and its line with New template, the groups (Other templates for those without one), and each row: the name as the way into the editor with its /shortcut, Use and the ⋯ (Edit, Delete with its dialog and toast) on the name's line, the words with each blank marked (named as it is asked, or as it fills itself; No text: it only attaches something), and the facts (who it's for, the questions, what it attaches, the words that suggest it, how often it was used here). The editor is TemplateEditor. Not yet: Use opens the composer only once VirgaUI's composer sets \\.openComposer (the slot; until then it goes to the composer's address). iOS additions: /posting/templates/new and /posting/templates/<rkey> open the editor. A blank's chip is drawn on a tint in the run of words; the focus after a delete is the system's.",
+      "synced": "8c1a4a3607f8"
     },
     "src/posting/pages/TimersPage.jsx": {
       "status": "pending",
@@ -109,8 +122,12 @@
       "swift": []
     },
     "src/posting/pages/hubParts.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostingParts.swift"
+      ],
+      "note": "RowSkeleton, LoadError and ConfirmDialog (busy, and a refusal's message kept in the dialog). The rest (the post rows, the posting nav, the long-session notice) come with the pages that use them.",
+      "synced": "7e2519aca49f"
     },
     "src/posting/pages/scheduleParts.jsx": {
       "status": "pending",
@@ -157,8 +174,13 @@
       "swift": []
     },
     "src/posting/ui/PostingHeader.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostingParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/RoutedPage.swift"
+      ],
+      "note": "The header's model (Posting in the crumbs except on the overview, the page's title and line, what it touches, or not), used by Templates and every posting page not here yet. Not yet: a caller's own crumbs, title, line, actions and children.",
+      "synced": "37014d77c200"
     },
     "src/posting/ui/QueueSettings.jsx": {
       "status": "pending",

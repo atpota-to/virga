@@ -34,6 +34,7 @@ import SwiftUI
 import VirgaArchive
 import VirgaCore
 import VirgaDemo
+import VirgaPosting
 import VirgaNetwork
 import VirgaSession
 
@@ -155,6 +156,9 @@ public final class AppModel {
       reporter: TermsAcceptanceModel.reporter(backendUrl: environment.backendUrl, transport: reporterTransport))
     profile = ProfileModel(fetch: fetchProfile)
     notices = SessionNoticesModel(session: session, tabStorage: stores.tab)
+    // The templates' cache, in the app's own store (templateService.js's
+    // localStorage), for every TemplatesModel the screens make.
+    TemplateService.shared = TemplateService(store: stores.keyValue)
   }
 
   /// The session's start, once for the process.

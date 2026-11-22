@@ -113,7 +113,7 @@ public struct RoutedPage: View {
     case .tools:
       tools(route.page)
     case .posting, .intent:
-      posting(route.section == .intent ? "compose" : route.page)
+      posting(route.section == .intent ? "compose" : route.page, id: route.id)
     case .defense:
       if app.flags.defenseEnabled {
         defense(route.page)
@@ -153,13 +153,18 @@ public struct RoutedPage: View {
     }
   }
 
-  /// PostingHeader: Posting in the crumbs (except on the overview), the
-  /// page's title and line, and what it touches.
-  private func posting(_ key: String?) -> some View {
+  /// PostingPage: Templates (Posting/TemplatesPage.swift), keyed by the
+  /// open account, with the part of the address after it; every other
+  /// posting page its header (PostingHeader) and that it isn't here yet.
+  @ViewBuilder
+  private func posting(_ key: String?, id: String?) -> some View {
     let pageKey = key == "compose" ? "hub" : (key ?? "hub")
-    let page = PostingRoutes.postingPageByKey[pageKey] ?? PostingRoutes.postingPageByKey["hub"]
-    let crumbs = page?.key == "hub" || page == nil ? [] : [Crumb("Posting", to: PostingRoutes.postingBase)]
-    return UnportedPage(PageHeaderModel(title: page?.title ?? "Posting", sub: page?.desc, access: page?.access ?? [], crumbs: crumbs))
+    if pageKey == "templates" {
+      TemplatesPage(session: app.session, did: app.session.did, id: id)
+        .id(app.session.did ?? "")
+    } else {
+      UnportedPage(PostingHeader.model(pageKey))
+    }
   }
 
   /// Defense/DefensePage.swift: a scan (the front page), its lists and their history.

@@ -252,12 +252,24 @@
       "swift": []
     },
     "src/posting/library/library.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateEditor.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateQuestions.swift"
+      ],
+      "note": "The template editor (.tpl-form, the text's foot, a new blank's rule, the questions between hairlines and their two columns from 640, the attach rows and the posts to quote with the accent's rule, the grid, the shortcut's slash, the foot), the questions and the preview (.lib-questions, .lib-answers, .lib-preview, the parts, the attachment's card, the bones). Measure.Templates names them. Not yet: the library panel's (its shelves, list, detail and dialog) and the hover rules. A blank still to answer is in brackets in the run of words, where the web draws a dashed chip.",
+      "synced": "9ce1436bac34"
     },
     "src/posting/pages/hub.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/TemplatesPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostingParts.swift"
+      ],
+      "note": "The Templates page (.hub-row, .tpl-row-item with Use and the ⋯ on the name's line, .tpl-name, .tpl-shortcut-chip, .tpl-chip as a tint, .tpl-group-head), the notice, the empty block, the bones (.hub-skeleton, .hub-bone) and the error. Not yet: the overview's columns and nav, the timed rows, the quotes and the spinner, which come with their pages.",
+      "synced": "428ed1747963"
     },
     "src/posting/pages/schedule.css": {
       "status": "pending",
