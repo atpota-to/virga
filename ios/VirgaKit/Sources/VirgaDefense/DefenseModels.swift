@@ -75,6 +75,11 @@ public final class DefenseAccountModel {
   /// Defense: `.scan`, `.lists`, or nil to give Defense up (the web's
   /// false). `asking` is busy until the sign-in comes back, then nil, or
   /// the words for why it didn't start. Nothing happens without an account.
+  ///
+  /// A sign-in called off on the system's sheet (Cancel, or coming back
+  /// from the host) has nothing to say, as everywhere else in the app
+  /// (SignInFlow.tripFailureNotice's rule): the web's page has left by
+  /// then, so its catch only ever sees a sign-in that didn't start.
   public func askFor(_ level: AppConfig.DefenseLevel?) async {
     guard let account else { return }
     asking = .busy
@@ -85,7 +90,7 @@ public final class DefenseAccountModel {
         SignInOptions(mode: mode, intent: "reauth", defense: level.map { .string($0.rawValue) } ?? .bool(false), did: account.did))
       asking = nil
     } catch {
-      asking = .error(OAuthClient.signInErrorMessage(error))
+      asking = SignInFlow.tripFailureNotice(error, nil) == nil ? nil : .error(OAuthClient.signInErrorMessage(error))
     }
   }
 }

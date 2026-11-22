@@ -178,6 +178,27 @@ private func lists(waiting: Int, name: String = "Pile-on") -> JSONValue {
     #expect(model.asking == .error(OAuthClient.signInErrorMessage(Refused())))
   }
 
+  @Test func saysNothingOfASignInCalledOff() async {
+    // Cancel on the system's sign-in sheet (SessionController's AbortError,
+    // code CANCELLED), or the reader coming back from the host: no words,
+    // as the rest of the app has none for it.
+    let session = FakeSession(did: mira, accounts: [account])
+    let model = DefenseAccountModel(session: session)
+    session.signInError = BackendError(name: "AbortError", message: "The sign-in was called off", code: "CANCELLED")
+    await model.askFor(.scan)
+    #expect(model.asking == nil)
+    session.signInError = BackendError(name: "Error", message: "User navigated back")
+    await model.askFor(nil)
+    #expect(model.asking == nil)
+    // One that didn't start still says so, and a later cancel clears it.
+    session.signInError = Refused()
+    await model.askFor(.lists)
+    #expect(model.asking == .error(OAuthClient.signInErrorMessage(Refused())))
+    session.signInError = BackendError(name: "AbortError", message: "The sign-in was called off", code: "CANCELLED")
+    await model.askFor(.lists)
+    #expect(model.asking == nil)
+  }
+
   @Test func signsInByDidWhenThereIsNoHandleAndKeepsTheAccountsMode() async {
     let bare = SessionAccount(did: lab, handle: nil, mode: "browser")
     let session = FakeSession(did: lab, accounts: [bare])
