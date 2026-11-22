@@ -5,12 +5,27 @@
   "summary": "Post templates: records, filling, the service and usage.",
   "files": {
     "src/posting/library/templateEditorModel.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "note": "editorHasChanges compares what saving would write by value (JSONStringify, sorted keys), where the web compares JSON.stringify text, so an attached record rebuilt with its keys in another order is no change here and a change on the web (a behaviour test pins it). Typed forms over TemplateDraft beside the JSONValue ones.",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Library/TemplateEditorModel.swift"
+      ],
+      "fixtures": [
+        "templates.editorModel"
+      ],
+      "synced": "0db1094dd00a"
     },
     "src/posting/templates/editorDrafts.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "note": "Each function works on the web's objects (JSONValue), with typed forms over TemplateDraft, DraftVariable and PostTemplate that go through them. As in postTemplates, a shape the web throws a TypeError on (variables or choices that aren't arrays where the web calls .filter or .map, a keyword that isn't a string where it calls toLowerCase) reads as absent; those inputs are kept out of the fixture. JSONValue objects don't keep key order, which nothing here shows.",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Templates/EditorDrafts.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Templates/EditorDrafts+Typed.swift"
+      ],
+      "fixtures": [
+        "templates.editorDrafts"
+      ],
+      "synced": "78aa9d52d76e"
     },
     "src/posting/templates/postTemplates.js": {
       "status": "ported",
