@@ -22,7 +22,9 @@
 // not as a new page load on the return path, so "a sign-in that came back
 // without a session" is the session's error, whichever page is up; it
 // says so until it is dismissed. A universal link to the return page (a
-// sign-in finished in Safari) is finished the same way.
+// sign-in finished in Safari) is finished the same way. A compose link,
+// virga://compose?… or the universal link to /intent/compose, opens the
+// composer filled in, or is kept for after the sign-in.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -83,7 +85,9 @@ public struct AppRoot: View {
         finishReturn(url)
       }
       .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
-        if let url = activity.webpageURL { finishReturn(url) }
+        guard let url = activity.webpageURL else { return }
+        if openCompose(url) { return }
+        finishReturn(url)
       }
   }
 
@@ -145,14 +149,15 @@ public struct AppRoot: View {
     }
   }
 
-  /// virga://compose?text=…&url=…&tags=…: the composer, filled in. Kept
-  /// for after the sign-in when nobody is signed in yet.
+  /// virga://compose?text=…&url=…&tags=…, or the universal link
+  /// https://<virga>/intent/compose?… (the only one the app's associated
+  /// domain claims): the composer, filled in. Kept for after the sign-in
+  /// when nobody is signed in yet.
   private func openCompose(_ url: URL) -> Bool {
-    guard url.scheme?.lowercased() == "virga", url.host?.lowercased() == "compose" else { return false }
+    guard let search = ComposeIntent.composeLinkSearch(url) else { return false }
     if session.did != nil, session.session != nil, terms.status == .accepted {
       composer.openLink(url)
     } else {
-      let search = url.query.map { "?\($0)" } ?? ""
       let now = Date().timeIntervalSince1970 * 1000
       if PendingCompose.rememberPendingCompose(ComposeIntent.intentComposePath, search, store: app.stores.tab, now: now) {
         composing = true

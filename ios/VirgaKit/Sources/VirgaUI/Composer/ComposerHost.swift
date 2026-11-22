@@ -8,7 +8,9 @@
 // intent's shape is the web's DESIGN.md §6.3: text, texts, reply, quote,
 // tags, langs, asDid, fromLink, url, …); New post, /posting/compose and
 // /intent/compose come through OpenComposerPage, and
-// virga://compose?text=…&url=…&tags=… through the app's onOpenURL.
+// virga://compose?text=…&url=…&tags=… and the universal link
+// https://<virga>/intent/compose?… through the app's onOpenURL and
+// onContinueUserActivity.
 //
 // Once opened, the composer's state stays (the controller is the host's),
 // closed, so what was being written is still there the next time. It is a
@@ -59,12 +61,13 @@ public final class ComposerHost {
     isOpen = false
   }
 
-  /// virga://compose?text=…&url=…&tags=…: the composer, filled in, as an
+  /// virga://compose?text=…&url=…&tags=…, or the universal link
+  /// https://<virga>/intent/compose?…: the composer, filled in, as an
   /// /intent/compose link opens it. False for any other address.
   @discardableResult
   public func openLink(_ url: URL) -> Bool {
-    guard url.scheme?.lowercased() == "virga", url.host?.lowercased() == "compose" else { return false }
-    open(Self.intent(search: url.query.map { "?\($0)" } ?? "", fromLink: true))
+    guard let search = ComposeIntent.composeLinkSearch(url) else { return false }
+    open(Self.intent(search: search, fromLink: true))
     return true
   }
 
@@ -242,7 +245,7 @@ struct OpenComposerPage: View {
     }
     .task {
       // Opened here, so a link kept from the front page is spent.
-      _ = PendingCompose.takePendingCompose(store: app.stores.keyValue, now: Date().timeIntervalSince1970 * 1000)
+      _ = PendingCompose.takePendingCompose(store: app.stores.tab, now: Date().timeIntervalSince1970 * 1000)
       host?.open(ComposerHost.intent(search: navigator.search, fromLink: fromLink))
       navigator.navigate("/posting", keepQuery: false)
     }
