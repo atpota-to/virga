@@ -494,7 +494,7 @@ public final class ComposerController {
     dispatch(.setReply(nil))
   }
 
-  static func message(_ error: any Error) -> String {
+  nonisolated static func message(_ error: any Error) -> String {
     JSErrorFields(error)?.message ?? (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
   }
 
