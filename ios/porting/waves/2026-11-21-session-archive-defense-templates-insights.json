@@ -1,0 +1,99 @@
+{
+ "wtA": "/home/user/virga/.worktrees/w5-a",
+ "branchA": "ios/w5-a",
+ "wtB": "/home/user/virga/.worktrees/w5-b",
+ "branchB": "ios/w5-b",
+ "swift": "/root/.swift-toolchain/swift-6.4.2-RELEASE-ubuntu24.04/usr/bin",
+ "session": "https://claude.ai/code/session_017yeQBdtuT73Tejxzi5PoX7",
+ "context": "Earlier waves ported and audited core (VirgaCore), network (VirgaNetwork), repo (VirgaRepo), posting-text and timers (VirgaPosting), the insights tables (VirgaInsights), the Defense engine (VirgaDefense) and the demo world (VirgaDemo); session (VirgaSession) and theme (VirgaCore/Theme) are ported but not yet audited. ios/STATUS.md says where the port stands.\n\nEach domain's API map, conventions and known gaps are in ios/porting/notes/<domain>.md (core, network, repo, posting-text, timers, insights, defense, demo-world, theme). Before writing code, read the notes for every target you build on: they name the types and functions to reuse (JSCompat, JSONValue, AppLocale, JSDate, HTTPTransport and MockTransport, XRPCAgent, VirgaBackend, KeyValueStore and FileStore, Locked, and so on). Never define a second copy of a type another target owns.\n\nios/porting/WEB-BUGS.md lists the web bugs already found (the Swift port keeps the web's behaviour, bug included, unless the notes say otherwise). Report new ones in your result; don't fix web code.\n\nKnown harness flaw: the fixture writer's toJSON in ios/parity/cases/_helpers.js assigns keys with out[k] =, so a __proto__ key is lost, and it recurses, so a value nested ~2,000 deep reads as a thrown error. Keep generators away from both.\n\nAnother chain works concurrently in a second worktree on other domains (listed in your brief). Stay inside the files your brief names; where you need something from a domain the other chain is porting, take it as an injected closure or protocol in your own target and say so in your result, so the merge can wire it.",
+ "files": {
+  "session": [
+   "src/session/sessionController.js",
+   "src/session/useAtprotoSession.jsx",
+   "src/lib/oauthClient.js",
+   "src/session/browserDriver.js",
+   "src/signin/flow.js",
+   "src/signin/hosts.js",
+   "src/signin/identity.js",
+   "src/signin/suggest.js"
+  ],
+  "defense": [
+   "src/defense/harvest.js",
+   "src/defense/scan.js",
+   "src/defense/veto.js",
+   "src/defense/score.js",
+   "src/defense/defenseService.js",
+   "src/defense/useDefense.js",
+   "src/defense/pageModel.js"
+  ],
+  "templates": [
+   "src/posting/library/templateEditorModel.js",
+   "src/posting/templates/editorDrafts.js",
+   "src/posting/templates/postTemplates.js",
+   "src/posting/templates/templateService.js",
+   "src/posting/templates/templateUsage.js",
+   "src/posting/templates/useTemplates.js"
+  ],
+  "theme": [],
+  "archive": [
+   "src/archive/ArchiveContext.jsx",
+   "src/archive/exports.js",
+   "src/archive/postChanges.js",
+   "src/archive/useAnalyticsArchive.js",
+   "src/charts/format.js",
+   "src/lib/analytics.js",
+   "src/lib/analyticsExport.js",
+   "src/lib/analyticsStore.js",
+   "src/lib/analyticsSync.js",
+   "src/lib/followerLog.js",
+   "src/lib/periods.js",
+   "src/lib/syncProgress.js"
+  ],
+  "insights": [
+   "src/reports/models.js",
+   "src/reports/annotations.js",
+   "src/reports/useAnnotations.js",
+   "src/share/shareSpec.js",
+   "src/share/chartImage.js",
+   "src/tools/interactionModel.js",
+   "src/shell/shortcuts.js"
+  ]
+ },
+ "chainA": [
+  {
+   "domain": "session",
+   "target": "VirgaSession",
+   "brief": "Finish the session domain, which a first porter left unfinished when it was cut off by a billing error. Its work is the commit \"WIP: session port, cut off by a billing error (unverified; the resumed agent reviews it)\" (9da0d49), plus two earlier commits that were finished (d7ea7fb: accounts, scopes, session health, the hint; 6b80f74: the Terms and the Privacy Policy). Read 9da0d49 with git show before anything else. It added, unverified:\n- Session/SessionController.swift and SessionController+Actions.swift (src/session/sessionController.js), Session/SessionModel.swift (src/session/useAtprotoSession.jsx), Session/WebAuthenticator.swift, Session/BrowserDriver.swift (src/session/browserDriver.js's interface), Lib/OAuthClient.swift (src/lib/oauthClient.js's messages);\n- SignIn/{Flow,Hosts,Identity,Suggest}.swift (src/signin/*.js) with parity cases session.signin and session.oauth and SignInParityTests.swift.\nThe module map still lists sessionController.js and useAtprotoSession.jsx as pending, and there are no behaviour tests for the controller or the model.\n\nYour job:\n1. Read each WIP file side by side with its web file and fix what is wrong or missing. Keep what is right; don't start over.\n2. Port src/session/sessionController.test.js (970 lines) as Swift behaviour tests of SessionController: every test that applies, against a fake Virga server over MockTransport, an in-memory KeyValueStore and secret store, an injected clock and sleep. Where a web test is about the browser's own OAuth client (which iOS never uses: it signs in only through Virga's server, a long session), say which ones you left out and why. Add tests for SessionModel too (start and restore, sign in and completeSignIn from the callback URL, switching, signing out one account and all, removing an account with and without its data, storageChanged, errors).\n3. useAtprotoSession.jsx calls resetAnalyticsStore (src/lib/analyticsStore.js) when an account's data is deleted. The archive is being ported concurrently by the other chain into VirgaArchive, which depends on VirgaSession, so VirgaSession can't import it: take it as an injected async closure on SessionModel/SessionEnvironment (e.g. `resetArchive: @Sendable (String?) async -> Void` shaped like the web call) with a no-op default, and say in your result how the app should wire it.\n4. Check the signin parity cases cover every branch and the inputs of src/signin/*.test.js, and widen them if not.\n5. Update ios/parity/modules/session.json for every file the WIP touched (status, swift paths, fixtures, honest notes, stamped synced). sessionController.js and useAtprotoSession.jsx must not be left pending.\n\nThe other chain is auditing the theme and porting the archive and the rest of insights in its own worktree; don't touch VirgaCore/Theme, VirgaArchive or VirgaInsights."
+  },
+  {
+   "domain": "defense",
+   "target": "VirgaDefense",
+   "brief": "Port the rest of the Defense engine into VirgaDefense: src/defense/harvest.js, scan.js, veto.js, defenseService.js, useDefense.js, pageModel.js, and publicRelationships in score.js (the rest of score.js is ported; see the notes' 'Wave 2' remarks in ios/porting/notes/defense.md, which say what each new piece should build on: Harvest+Types.swift, Scan+Types.swift, Score's GetProfiles/GetRelationships, Limit, HTTPStatusError).\n- harvest.js reads Constellation (VirgaNetwork has the Constellation client; check notes/network.md for backlinkRows, flattenSources, getBacklinkSources, getBacklinks) and must build the existing Harvest types. Recorded-fetch parity (withFakeFetch in the generator, MockTransport in Swift) for harvestPost, including pagination, maxPages, truncation, failed sources and the `only` filter.\n- scan.js: runScan over injected getProfiles/getRelationships/resolveHandle/curation, every stage reported through ScanStageHandler; ScanError and scanErrorFrom word for word; readPostInput and resolvePost (src/posting/lib/postLink.js is ported in VirgaPosting as PostLink; resolveHandle is VirgaNetwork's port of library/sources.js's network helper).\n- veto.js: followedNow, curationMembers, vetoed and VetoUnreadable, recorded-fetch parity.\n- defenseService.js: every call through VirgaBackend (VirgaNetwork's Virga server client; read notes/network.md). If VirgaBackend lacks a generic request you need, add the smallest one in VirgaNetwork and say so. defenseErrorMessage word for word, held by a fixture.\n- useDefense.js: DefenseAccountModel and DefenseListsModel (@MainActor @Observable) over VirgaSession's SessionModel (read Sources/VirgaSession/Session/SessionModel.swift and SessionController.swift for the API: capabilitiesFor, backendFor, the account rows). The session domain is being finished in this same worktree just before you, so its API is what's committed here.\n- pageModel.js: pure, full parity.\nMake the new pieces the defaults where the notes say a wave-2 port should (publicRelationships as createScorer's/runScan's default). Behaviour tests for the models and for cancellation (the web's AbortSignal is task cancellation).\n\nThe other chain is working on the theme, the archive and insights in its own worktree; stay inside VirgaDefense (and the smallest VirgaNetwork addition if needed)."
+  },
+  {
+   "domain": "templates",
+   "target": "VirgaPosting",
+   "brief": "Port the templates into VirgaPosting: src/posting/templates/postTemplates.js, editorDrafts.js, templateService.js, templateUsage.js, useTemplates.js, and src/posting/library/templateEditorModel.js. Put them in Sources/VirgaPosting/Templates/ (templateEditorModel in Sources/VirgaPosting/Library/).\n- postTemplates.js and templateUsage.js are mostly pure: full parity, with every input of their *.test.js, unicode and emoji, empty and malformed templates, every placeholder and every branch.\n- editorDrafts.js keeps drafts in localStorage: over VirgaCore's KeyValueStore, with the same keys and JSON so a value written by one reads in the other.\n- templateService.js talks to Virga's server and/or the account's repo: recorded-fetch parity for its calls (withFakeFetch in the generator, MockTransport in Swift) and its errors word for word. Use VirgaBackend and VirgaNetwork's XRPC client; read notes/network.md.\n- useTemplates.js becomes TemplatesModel (@MainActor @Observable) over VirgaSession's SessionModel (finished in this worktree earlier in your chain: read Sources/VirgaSession/Session/SessionModel.swift).\n- Reuse VirgaPosting's rich-text and posting-text code (notes/posting-text.md) rather than re-porting any of it.\n\nThe other chain is porting the archive and insights; if a template function needs something from src/lib/analytics*.js or the archive, take it as an injected closure and say so."
+  }
+ ],
+ "chainB": [
+  {
+   "domain": "theme",
+   "target": "VirgaCore",
+   "mapName": "ui-shell",
+   "brief": "Audit only: the theme (design tokens) in VirgaCore/Theme and ios/DESIGN.md. In ios/parity/modules/ui-shell.json, only the four stylesheet entries are yours (src/styles/app.css, base.css, controls.css, theme.css, recorded partial: tokens ported, component styles left to VirgaUI); every other entry in that map is the SwiftUI wave's and out of scope, so leave them pending. Stay inside VirgaCore/Theme, the theme generators and fixtures, ios/DESIGN.md and their tests. The other chain is finishing session, then Defense and templates.",
+   "auditOnly": true,
+   "portNote": "The theme domain (ios/VirgaKit/Sources/VirgaCore/Theme/*, ios/scripts/generate-theme-tokens.mjs, ios/parity/cases/_css.js, _themeKit.js, ui.theme*.js and ios/DESIGN.md) was ported in an earlier wave and never audited. Read ios/porting/notes/theme.md first: it is the porter's summary (API, conventions, known gaps). Its web side is the custom properties and component measures of src/**/*.css, chiefly src/styles/*.css and the stylesheets the generator reads; theme.test.js in the web app is what the web itself checks. Audit: the CSS reader (_css.js) against what browsers do for every construct the stylesheets use (cascade order, specificity, !important, var() and cycles, color-mix in srgb, media queries, every colour syntax), the Swift resolver and value types against the reader, the generated Swift against the generator, the kit constants against the sheets (spot-check a broad sample by hand), and ios/DESIGN.md against the stylesheets and components it describes (every value it states, every mapping to SwiftUI; it is the guide the SwiftUI wave will build from, so a wrong value there becomes a wrong screen). The theme is recorded in ios/parity/modules/ui-shell.json under src/styles/{app,base,controls,theme}.css; check those four entries are honest."
+  },
+  {
+   "domain": "archive",
+   "target": "VirgaArchive",
+   "brief": "Port the archive into VirgaArchive: src/lib/analytics.js, analyticsStore.js, analyticsSync.js, analyticsExport.js, followerLog.js, syncProgress.js, periods.js, src/charts/format.js, and src/archive/{exports,postChanges,useAnalyticsArchive}.js and ArchiveContext.jsx. Folders: Sources/VirgaArchive/Lib/, Charts/, Archive/.\n- analytics.js, periods.js, charts/format.js, followerLog.js, syncProgress.js, postChanges.js, analyticsExport.js and exports.js are (mostly) pure: full parity, with every input of their *.test.js. Bucketing by local day, week and month takes a TimeZone: record cases in several zones with inZone/withTimeZone over ZONES, across DST changes, and with the week and number formats the preferences allow (VirgaCore's Preferences and AppLocale).\n- analyticsStore.js is IndexedDB: port it over VirgaCore's FileStore (read notes/core.md for the protocol), with the same record shapes as JSON so an export from one reads in the other, its schema versions and the one-time upgrade of an older archive, and resetAnalyticsStore. Behaviour tests against an in-memory FileStore.\n- analyticsSync.js is the first build and later syncs: sweeps over VirgaNetwork's XRPC client, PDS listRecords/getRepo (the CAR goes through VirgaRepo), the AppView and Constellation. Recorded-fetch parity (withFakeFetch in the generator, MockTransport in Swift) for at least one first build and one later sync of a small account, with pagination, errors, cancellation (the web's AbortSignal is task cancellation), progress reports and resumption. VirgaDemo's DemoWorld (notes/demo-world.md) holds the harness's accounts, repo CAR and views; VirgaDemo depends on VirgaArchive, so the archive's tests can't import it, but you may write a generator that records the web sync against the harness's world.\n- useAnalyticsArchive.js becomes ArchiveModel (@MainActor @Observable), with every state and action of the hook, its dependencies injected (store, transport or agent, clock, the session's account), behaviour tests over the in-memory store and MockTransport. ArchiveContext.jsx is React context: record it as exempt or partial with a note that VirgaUI passes the model through the SwiftUI environment.\n- The session domain, finished concurrently in the other chain, calls resetAnalyticsStore through an injected closure; make sure VirgaArchive exposes a function the app can hand it, and say its signature in your result.\nStay inside VirgaArchive and its tests; the other chain is in VirgaSession, VirgaDefense and VirgaPosting/Templates."
+  },
+  {
+   "domain": "insights",
+   "target": "VirgaInsights",
+   "brief": "Port the rest of insights into VirgaInsights: src/reports/models.js, annotations.js, useAnnotations.js, src/share/shareSpec.js, share/chartImage.js (its layout maths: the canvas drawing itself is VirgaUI's, through ImageRenderer), src/tools/interactionModel.js, and what is left of src/shell/shortcuts.js if any of it is logic (check the map's note). These need the archive, ported just before you in this worktree: read what the archive porter and auditor committed (VirgaArchive) and build on it.\n- reports/models.js is the reports' numbers: full parity over realistic archives (borrow the archive's fixtures' inputs and the module's *.test.js), in several zones.\n- annotations.js and useAnnotations.js (chart notes and follower milestones): storage over KeyValueStore with the web's keys and JSON; AnnotationsModel (@MainActor @Observable).\n- shareSpec.js and chartImage.js: the share card's spec and layout maths, full parity (every size, theme and chart kind the web offers).\n- interactionModel.js (the Interaction lookup): full parity, recorded-fetch where it reads the network.\nUpdate ios/parity/modules/insights.json. Stay inside VirgaInsights; the other chain is in VirgaSession, VirgaDefense and VirgaPosting/Templates."
+  }
+ ]
+}

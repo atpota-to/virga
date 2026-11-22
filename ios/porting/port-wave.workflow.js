@@ -2,9 +2,11 @@
 // in two parallel chains (two git worktrees), each port followed by an
 // independent audit agent. See ios/porting/README.md for how it was used and
 // how to run it again. Args: { wtA, branchA, wtB, branchB, swift, context,
-// files: { <domain>: [web files] }, chainA: [step], chainB: [step] }, where a
-// step is { domain, target, brief, mapName?, auditOnly?, portNote?,
-// portSummaryPath? }, and `session` is the Claude-Session trailer's URL.
+// files: { <domain>: [web files] }, chainA: [step], chainB: [step] }, or
+// `chains: [{ name, wt, branch, steps }]` for any number of chains, where a
+// step is { domain, target, brief, mapName?, auditOnly?, noAudit?, portNote?,
+// portSummaryPath? } (noAudit: a later step's audit covers it), and `session`
+// is the Claude-Session trailer's URL.
 
 export const meta = {
   name: 'ios-port-wave',
@@ -159,12 +161,20 @@ async function runChain(chain) {
         log(`${chain.name}: the ${step.domain} port did not return; auditing what is there`)
       }
     }
-    const audit = await agent(auditPrompt(chain, step, port || { domain: step.domain, note: 'The porter did not return a summary. Check what was committed (git log) and finish the port as well as auditing it.' }), { label: `audit:${step.domain}`, phase: chain.phase, schema: AUDIT_SCHEMA })
+    const audit = step.noAudit
+      ? null
+      : await agent(auditPrompt(chain, step, port || { domain: step.domain, note: 'The porter did not return a summary. Check what was committed (git log) and finish the port as well as auditing it.' }), { label: `audit:${step.domain}`, phase: chain.phase, schema: AUDIT_SCHEMA })
     earlier.push({ domain: step.domain, api: (audit && audit.apiForDownstream) || (port && port.apiForDownstream) || '(no summary; read the code)', gaps: (audit && audit.remainingGaps) || (port && port.gaps) || [] })
     results.push({ domain: step.domain, port, audit })
-    log(`${chain.name}: ${step.domain} done — ${audit ? audit.findings.length + ' audit findings, ' + audit.swiftTests : 'no audit result'}`)
+    log(`${chain.name}: ${step.domain} done — ${audit ? audit.findings.length + ' audit findings, ' + audit.swiftTests : step.noAudit ? 'no audit (a later step covers it)' : 'no audit result'}`)
   }
   return results
+}
+
+if (args.chains) {
+  const chains = args.chains.map((c) => ({ ...c, phase: c.name }))
+  const results = await parallel(chains.map((c) => () => runChain(c)))
+  return Object.fromEntries(chains.map((c, i) => [c.name, results[i]]))
 }
 
 const A = { name: 'Chain A', phase: 'Chain A', wt: args.wtA, branch: args.branchA, steps: args.chainA }

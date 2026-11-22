@@ -271,21 +271,40 @@ func uncancellableSleep(seconds: Double) async {
 }
 
 @Suite struct FacetDetectionBehaviour {
-  @Test func distinctHandlesResolveInParallel() async {
+  /// One lookup per distinct handle, all at once (the web's Promise.all).
+  /// Each lookup is held until all three are out, so the peak can't depend
+  /// on how quickly a loaded machine starts them; lookups made one at a
+  /// time would wait for the time limit and fail.
+  @Test(.timeLimit(.minutes(1))) func distinctHandlesResolveInParallel() async {
     let inFlight = Locked(0)
     let peak = Locked(0)
+    let asked = Locked(0)
+    let allOut = Locked<(open: Bool, waiting: [CheckedContinuation<Void, Never>])>((false, []))
     let result = await Facets.detectFacets(
       "@one.test @two.test @three.test @one.test",
       DetectFacetsOptions(
         resolveMention: { handle in
+          asked.withLock { $0 += 1 }
           let now = inFlight.withLock { $0 += 1; return $0 }
           peak.withLock { $0 = max($0, now) }
-          try await Task.sleep(for: .milliseconds(40))
+          await withCheckedContinuation { (waiter: CheckedContinuation<Void, Never>) in
+            let ready = allOut.withLock { s -> [CheckedContinuation<Void, Never>]? in
+              if s.open || now >= 3 {
+                s.open = true
+                defer { s.waiting = [] }
+                return s.waiting + [waiter]
+              }
+              s.waiting.append(waiter)
+              return nil
+            }
+            for w in ready ?? [] { w.resume() }
+          }
           inFlight.withLock { $0 -= 1 }
           return "did:plc:\(handle.split(separator: ".")[0])"
         },
         validationCache: MentionValidationCache()))
     #expect(peak.wrappedValue == 3)
+    #expect(asked.wrappedValue == 3)
     #expect(result.facets.map(\.features) == [
       [.mention(did: "did:plc:one")], [.mention(did: "did:plc:two")], [.mention(did: "did:plc:three")],
       [.mention(did: "did:plc:one")],

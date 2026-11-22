@@ -4,7 +4,7 @@ A snapshot of what the agents that ported and audited this domain handed on (Nov
 The code and ios/parity/modules/*.json are the truth; read this for orientation, the API
 map, and the known gaps and deliberate differences.
 
-Status: ported, audited.
+Status: ported, audited. The world in an earlier wave; the demo network on 2026-11-21 (the section at the end).
 Parity cases at port time: 1434, plus 124 added by the audit.
 Tests at the time: Whole package: swift test passes, 534 tests (57+116+1+79+69+77+134+1 across the test binaries), no failures. VirgaDemoTests: 69 tests in 9 suites (62 before; added liveCountsInEveryZone, aWrittenPostsViewInEveryZone, theCachesAcrossWrites and the HarnessParity suite of 4). PARITY_ALLOW_PENDING=1 npx vitest run ios/parity: 75 passed. npx eslint ios: clean. Prettier: clean. The only build warning is SwiftPM's 'found 1 file(s) which are unhandled' for VirgaDemo/README.md, which needs a Package.swift exclude.
 
@@ -144,3 +144,119 @@ TEST SUPPORT
 - low (open) harness/repo.js listCollection, writeRecord, removeRecord: Web bug, confirmed: ARRAYS[collection] also finds Object.prototype keys. listCollection, readRecord and writeRecord for 'toString' or '__proto__' throw 'world[ARRAYS[collection]] is not iterable'; removeRecord throws "Cannot read properties of undefined (reading 'length')". The port reproduces both.
 - low (open) harness/buildCar.js buildRepoCar: Web bug, confirmed: the MST key prefix is counted in UTF-16 code units, not UTF-8 bytes as the spec says, so a CAR with non-ASCII keys decodes to different keys in a reader that follows the spec. The port matches the web byte for byte.
 - low (open) harness/views.js embedView, placeholderImage, recordView, threadView, listView: Web bugs, confirmed in views.js. A truthy images or items value that isn't an array throws '(embed.images || []).map is not a function', and a non-empty array $link throws 'text.charCodeAt is not a function'. recordView, threadView and listView drop the caller's now and read Date.now(). threadView has no cycle check (a self-parent climbs all 80 levels).
+
+## The demo network (2026-11-21): the fake agent, router, server routes and DemoSession
+
+Parity cases at port time: 426, plus 43 added by the audit.
+Tests at the time: All in /home/user/virga/.worktrees/w5-c on ios/w5-c, 4 audit commits: 9a2a5bb, 59625c5, 5834f34, a30c3be. Whole package swift test: 1138 tests in 9 test binaries (194+57+190+99+79+140+77+176+126). Every target passes except VirgaArchiveTests' ArchiveModelBehaviour, which flaked under CPU load (one or two of its 126 tests per full run, a different test each time). That target passed 6/6 solo runs, and none of its sources or tests are touched here. VirgaDemoTests: 140 tests in 24 suites, all passing. FakeXrpcParity, FakeServerParity, FakeNetworkParity and HarnessFlagsParity carry the new cases. Running the new agent cases against the porter's original Swift sources fails, as it should. PARITY_ALLOW_PENDING=1 npx vitest run ios/parity: 124 passed (4 files). npx eslint ios: clean. Prettier: clean on the demo-network generators. Fixtures are all under 1 MB: fakeXrpc 300 KB, fakeNetwork 254 KB, harness 220 KB, fakeServer 110 KB. New parity cases: 4 agent scenarios (drafts, odd-inputs, odd-profiles, default-scope; about 90 steps), 14 forwardedQuery cases, 25 readFlags cases, plus 11 steps in the forward cases (10 in 'full', 1 in 'read-only') and 34 requests in the router's 'reads' replay.
+
+### API for the code that builds on it
+
+All in target VirgaDemo (import VirgaDemo), ios/VirgaKit/Sources/VirgaDemo/Harness/.
+
+START: DemoSession (FakeSession.swift), @MainActor final class:
+- init(options: DemoOptions = DemoOptions(), clock: NetworkClock = .live, timeZone: TimeZone = .gmt, storage: any KeyValueStore = InMemoryKeyValueStore(), tabStorage: any KeyValueStore = InMemoryKeyValueStore(), secrets: any SecretStore = InMemorySecretStore(), randomBytes: (@Sendable (Int) -> [UInt8])? = nil). Mira's follower sweeps are counted in `storage` under FakeXrpc.sweepCountKey, as the web counts them in localStorage.
+- start() async (= model.start()).
+- Properties:
+  - model: SessionModel
+  - environment: SessionEnvironment (backendUrl FakeServer.serverOrigin, transport, DemoAuthenticator, getProfile/resolvePdsUrl/rememberPdsUrl over the demo network)
+  - transport: DemoTransport, harness: DemoHarness, world: DemoWorld, server: DemoServer
+  - didDocuments: PromiseCache<JSONValue>, pdsResolver: PDSResolver
+  - storage, tabStorage, secrets, clock, timeZone
+- archiveEnvironment(files: (any FileStore)?, registry: = AnalyticsStoreRegistry(), locale: String? = nil) -> ArchiveEnvironment. ArchiveModel(agent: session.model.agent, did:, handle:, environment: session.archiveEnvironment(files:)) builds Mira's whole archive (tested end to end).
+- expire(_ handle:) / refuse(_ handle:) -> Bool (window.__harness).
+- VirgaUI wiring for the merge: AppModel.demo (VirgaUI/App/AppModel.swift) still uses its own MockTransport stub.
+  - Replace it with DemoSession(options: .read(<launch string>), storage: stores.keyValue, tabStorage: stores.tab, secrets: stores.secrets).
+  - Use session.environment, session.transport (reporterTransport), and session.world.views.person for fetchProfile.
+  - Launch flags: -VirgaDemoTerms YES = "?terms=ask", -VirgaDemoSignedOut YES = "?signedout".
+
+DemoOptions (struct):
+- Fields: accounts [WorldAccount], signedOut, expired: String?, scope, terms ('agreed'|'ask'|'down'), latency (ms), now: Double?, appview.
+- init(flags:), static read(_ search: String) (a launch string in the web's address form, read by readFlags), var flags: HarnessFlags (mode is always 'backend'), expiredAtStart(_:).
+
+Harness+Flags.swift:
+- struct HarnessFlags: Codable {accounts, mode, signedOut, expired, scope, appview, defenseWrites, moderator, limits: Limits{scheduledPosts, postTimers, conditionalTimers: Double?}, aiLimits: AILimits{adviser, altText, style: Double?}, ai, terms, cronSeconds, latency, now}. Encodes as readFlags' JSON.
+- Harness.readFlags(_ search: String) -> HarnessFlags; Harness.readLimits(_:), Harness.readAiLimits(_:).
+- final class DemoHarness(flags:, now: Double? = nil, clock: = .live, timeZone: = .gmt, sweepCounter: FakeXrpc.SweepCounter? = nil, randomBytes: = nil, tids: TIDClock = .shared):
+  - flags, world, server, clock, worlds, worldOf(_:), grantOf(_:)
+  - regrant(_:defense:) throws
+  - agentFor(_:) throws -> FakeAgent: one per account, each reading its world's grant at every call, as agentFor's `scope: () => world.scope` does.
+  - transport(latency:videoProcessingMs:) -> DemoTransport
+  - install(latency:): sets HTTP.transport and HTTP.clock
+  - expire(_ handle:), refuse(_ handle:)
+
+FakeXrpc.swift / FakeXrpc+Methods.swift:
+- enum FakeXrpc:
+  - Constants: draftLimit, appviewAud, appviewProxy, appviewOnly, repoWrites, publicRepoReads, methods.
+  - scopesFor(_ nsid: String, _ input: JSONValue?, _ opts: JSONValue? = nil) throws -> [String].
+  - mintServiceToken(iss:aud:lxm:exp: JSONValue?) throws, or (iss: String, aud: String, lxm: String?, exp: Double) throws -> String; readServiceToken(_ token: String?) -> JSONValue?.
+  - struct SweepCounter{next: () -> Double}; sweepCountKey; localStorageCounter(_ KeyValueStore?, key:); memoryCounter(start:).
+  - enum Input {.none, .json(JSONValue), .bytes([UInt8])}; struct Answer {success, headers, data}.
+  - Internal: objectPrototypeKeys and objectPrototypeAnswer. An NSID named after a key of Object.prototype is answered as the web's plain methods object answers it.
+- final class FakeAgent(world: DemoWorld, did:, latency: = 0, scope: (@Sendable () -> String?)? = nil, appview: = "ok", sweepCounter: = memoryCounter(), clock: = .live, tids: = .shared):
+  - CHANGED: the default scope is now AppConfig.oauthScope, as createFakeAgent's OAUTH_SCOPE. Pass `scope: { world.world(did)?.scope }` (or world.grantOf) to read the world's grant.
+  - did, proxy, world; withProxy(_ serviceType:, _ aud:) -> FakeAgent.
+  - handle(_ nsid:, _ input: Input = .none, _ opts: JSONValue? = nil) async throws -> Answer; handle(_ nsid:, _ params: JSONValue, _ opts:); xrpcAgent() -> XRPCAgent.
+  - Errors: HarnessRepo.XrpcError(status, error, message), HarnessJSError (the web's TypeErrors, e.g. 'author.startsWith is not a function' for a non-string searchPosts author), CancellationError.
+- struct FakeXrpcFetchHandler: XRPCFetchHandler(agent:).
+  - Queries are read with FakeServer.forwardedQuery; POST bodies are JSON; an uploadBlob sends its bytes and content-type; the atproto-proxy header becomes withProxy.
+- CHANGED in World+Types.swift: WorldDraft.draft is now `JSONValue?`. It is nil, and left out when encoded, after an updateDraft that sent no draft, as the web's undefined.
+
+FakeNetwork.swift:
+- enum FakeNetwork: cards, cardFor(_ href:) throws -> JSONValue.
+- final class DemoRouter(world:, server: DemoServer? = nil, now: @Sendable () -> Double, videoProcessingMs: = 4000): route(_ HTTPRequest) async throws -> HTTPResponse? (nil means a host it doesn't route).
+- final class DemoTransport: HTTPTransport.
+  - init(router:latency:clock:) or (world:server:latency: = 60, clock:, videoProcessingMs:).
+  - router, latency, world, refused: [HTTPRequest].
+  - send waits `latency`, except for proxy and upload-blob calls, which wait the agent's own latency (writes ×4). Outside hosts throw HTTPTransportError.network("harness: no fixture for <host>").
+
+FakeServer.swift / FakeServer+SignIn.swift:
+- enum FakeServer:
+  - serverOrigin ("https://server.harness.invalid"), defaultAiLimits, laterRoutes [(method, path, area)], laterWords(_:).
+  - NEW blueskyAppviewProxy ("did:web:api.bsky.app#bsky_appview").
+  - booleanParams/numericParams/arrayParams/binaryOutput.
+  - forwardedQuery(_ pairs: [(String, String)]) -> JSONValue. It now reproduces the real server's `key in params` bug: a key of Object.prototype gives [null, value]; `__proto__` sets an array prototype, so `reverse` becomes false and length, indexes and Array.prototype names become arrays.
+  - isSafeXrpcMethod(_:), httpStatusForXrpcError(_ status: Int?), bearer(_ header:).
+- struct ServerAnswer {status, body: JSONValue?}; struct TermsAgreement (a snake_case ledger row).
+- final class DemoServer(world:, terms: = "agreed", now:, randomBytes: = system, agents: (@Sendable (String) throws -> FakeAgent)? = nil):
+  - The default agents read their world's grant.
+  - mintToken(_:) -> "vg_<64 hex>", signOutToken(_:keepGrant:) -> (found, grantRevoked), expireAccount(_:), refuseGrant(_:).
+  - handle(method:path:query:headers:body:raw:) async -> ServerAnswer; route(_ HTTPRequest, origin:) async -> HTTPResponse?.
+  - tokens, agreements, log, accountFor(_ input:) -> WorldAccount?.
+  - authorize(_ authUrl:) throws -> String: mints a token, regrants to the requested Defense level, returns `<redirect>#session=…&did=…`. static authorizePath.
+  - CHANGED: /api/oauth/proxy now retries a failed read once through Bluesky's AppView, as proxy.js does. That applies to a GET sent through another X-Atproto-Proxy that failed with no status, a 5xx or the SDK's InvalidResponse (2).
+- struct DemoAuthenticator: WebAuthenticator(server:, clock: = .live, delayMs: = 500).
+
+CONVENTIONS: times are epoch ms Double from the injected clock (no Date.now in logic). Strings compare by code unit. The iOS proxy answers in the real server's envelope, so XRPCAgent over BackendFetchHandler sees XRPCError(status, error: the lexicon name or server code, message), as from a PDS.
+
+TEST SUPPORT:
+- Swift: Tests/VirgaDemoTests/DemoNetworkSupport.swift has DemoNetwork.shrink/answerOf/request/thrown/outcome/toJSON/world(search), and RepeatableBytes (= _demoNetwork.js repeatableRandom).
+- JS side: ios/parity/cases/_demoNetwork.js (worldsFor, shrink, outcome, answerOf, withRepeatableRandom).
+- Agent scenario steps can now name a minted draft with `draftId: n` (put at `draft.id` with `idAt: 'draft'`, else at `id`).
+- A scenario's `defaultScope: true` makes its agent without a scope.
+
+### Known gaps and deliberate differences
+
+- harness/fakeDefense.js and the rest of harness/fakeServer.js are still pending, as the brief scheduled: scheduling, timers, limits, the AI routes, the workers runCron/runSchedule/runTimers, the seeded rows and analyzePost. Those routes check the token and answer 503 UNAVAILABLE with '<area> isn't in the demo's server yet.'. harness.js's cron/stopCron wait on them. The README's table records each harness file (stamps unchanged and still matching: fakeXrpc 4bc064331a95, fakeNetwork c66ed1161cbf, fakeServer 8c31068cdf24, fakeSession 545496123ba3, harness c4768f342f72).
+- Deliberate iOS additions and differences that remain: the iOS proxy forwards a usable grant's call to the account's FakeAgent and answers as proxy.js and uploadBlob.js do (the web fake answers 501). /api/oauth/login, DemoServer.authorize and DemoAuthenticator are additions. A sign-in that names no Defense level grants the scope without Defense, as the real server's scopeFor does, while fakeSession.jsx keeps the grant. mode=browser is read but not applied (iOS has long sessions only). The proxy's refusals follow the web fake's order (token, then grant) rather than the real server's (method header first).
+- One crowd and views index per DemoWorld is shared by the router, every agent and the server, where the web makes one per consumer (see the demo-world notes).
+- VirgaUI's AppModel.demo still runs its own MockTransport stub. Swapping in DemoSession is a VirgaUI change outside this domain; the wiring is in apiForDownstream.
+- Open, low and unreachable from the app: createBookmark/deleteBookmark with a missing or non-string uri (never granted under any harness flag), the key order of an object aud in a service token, inherited-function params read as null, and 'constructor' with primitive input left out of the fixture because of the toJSON wrapper artefact.
+- Pre-existing flaky timing in VirgaArchiveTests ArchiveModelBehaviour (aMountStoppedBeforeItsStoreOpensDoesNothingMore, hearsOfPostsMadeAndDeletedElsewhere) under CPU load. It belongs to the archive's owner.
+
+### The audit
+
+- **medium**, ios/VirgaKit/Sources/VirgaDemo/Harness/FakeServer.swift proxyRoute (mirrors server/oauth/handlers/proxy.js handler); ios/parity/cases/demo-network.fakeServer.js proxyCall: The iOS proxy (/api/oauth/proxy) left out server/oauth/handlers/proxy.js's fallback: a read (GET) sent through an AppView other than Bluesky's that fails there (no status, a 5xx, or InvalidResponse) is asked once more through Bluesky's AppView. The generator's copy of proxy.js (demo-network.fakeServer proxyCall) left it out as well, so the fixture expected a 501 for getDrafts with X-Atproto-Proxy did:web:api.bsky.app (which becomes the bsky_fg proxy). The real server answers that request with 200 and the drafts. Fixed in DemoServer.proxyRoute and in the generator's proxyCall (it now uses ResponseType from @atproto/xrpc). Seven new forward steps go through another AppView: two reads that fall back and succeed, a 501 and a TypeError that are retried and still fail, a 400 that is not retried, and a write that is not retried.
+- **low**, server/oauth/handlers/proxy.js forwardedQuery (Swift: FakeServer.forwardedQuery): FakeServer.forwardedQuery did not reproduce a bug in the real server's forwardedQuery. The real code fills a plain `{}` and tests `key in params`, which also sees inherited keys. A query param named after an Object.prototype key (toString, constructor, valueOf, ...) is forwarded as [<function>, value], which JSON writes as [null, value]. `__proto__=x` replaces the params object's prototype with an array. After that `reverse` reads as false (Array.prototype.reverse is inherited), and length, the array's indexes and Array.prototype method names also become arrays. Fixed: Swift now reproduces all of this, using the list of Array.prototype keys in Node 22. 14 new forwardedQuery cases and 3 forward steps cover it.
+- **low**, harness/fakeXrpc.js createFakeAgent handle / methodsFor: The web agent finds methods with `methods[nsid]` on a plain object, so an NSID named after an Object.prototype key counts as a method. It passes the 501 check, and its scope token rpc:toString?... does not parse, so missingScopes ignores it and the scope check passes too. 'toString' then answers "[object Undefined]", 'constructor' echoes the input, 'isPrototypeOf' answers false for a primitive, and the rest throw V8's TypeErrors. Swift answered 501 MethodNotImplemented for all of these. Fixed: FakeXrpc.objectPrototypeKeys and objectPrototypeAnswer, held by the new 'odd-inputs' scenario (70 steps).
+- **low**, harness/fakeXrpc.js methodsFor 'app.bsky.draft.updateDraft' (Swift: FakeXrpc+Methods.swift, World+Types.swift WorldDraft): updateDraft with no `draft.draft` sets `found.draft = undefined` on the web, so getDrafts afterwards returns the draft without a `draft` key. Swift stored JSON null instead. Fixed: WorldDraft.draft is now `JSONValue?` (nil is left out when encoded, and `.null` is kept). The new 'drafts' scenario holds it, along with the updates and deletes of existing drafts that no fixture covered before.
+- **low**, harness/fakeXrpc.js methodsFor 'app.bsky.feed.searchPosts': searchPosts with a truthy author that isn't a string (an array, from a repeated query param through the proxy, or a number) throws `author.startsWith is not a function` on the web. Swift turned it into a string and returned no posts. Fixed; the TypeError comes back as a 500 through the proxy, as on the web.
+- **low**, harness/fakeXrpc.js methodsFor 'app.bsky.actor.getProfiles': getProfiles with an actor that isn't a string but whose String() starts with "did:" (for example [did]): the web keeps the non-string as the id, no Map holds it, and the actor is skipped. Swift used its text and returned that profile. Fixed and held by the 'odd-profiles' scenario (?defense=on, because getProfiles needs Defense's scope).
+- **low**, harness/fakeXrpc.js createFakeAgent (Swift: FakeAgent.init): An agent made without a scope: createFakeAgent defaults to OAUTH_SCOPE, but FakeAgent defaulted to its world's grant, so over a ?scope=read world it refused writes the web allows. This was a documented deviation in a public default. Fixed: the default is now AppConfig.oauthScope. DemoHarness.agentFor and DemoServer's default agents read their world's grant explicitly, as agentFor does. The new 'default-scope' scenario holds it.
+- **low** (left as it is), server/oauth/handlers/proxy.js forwardedQuery: Web bug, reported here and not fixed in the web; Swift reproduces it. server/oauth/handlers/proxy.js forwardedQuery uses `key in params` on `{}`. Query params named after Object.prototype keys reach the Agent call as [<function>, value]. `__proto__=x` swaps the params object's prototype for an array, which silently turns `reverse` into false and makes `length`, indexes and Array.prototype method names arrays. Using Object.create(null) or Object.hasOwn would fix it. Example: `?__proto__=z&collection=app.bsky.graph.follow` lists with reverse:false.
+- **low** (left as it is), harness/fakeXrpc.js createFakeAgent handle: Web bug, harness only; Swift reproduces it. harness/fakeXrpc.js looks methods up with `methods[nsid]`, so handle('toString') succeeds with "[object Undefined]", handle('constructor', x) echoes x, and the other Object.prototype keys throw TypeErrors where MethodNotImplemented was meant. The scope check doesn't catch them because rpc:<name> is not a parseable scope token.
+- **low** (left as it is), harness/fakeXrpc.js methodsFor 'app.bsky.draft.updateDraft': Web bug, harness only; Swift reproduces it. harness/fakeXrpc.js updateDraft with no draft.draft answers success and wipes the stored draft's body (found.draft = undefined).
+- **low** (left as it is), harness/fakeXrpc.js methodsFor bookmarks: Not fixed, unreachable. createBookmark with no uri or a non-string uri: Swift stores the string "undefined" or "5" where the web stores undefined or the number, and deleteBookmark with no uri removes nothing in Swift where the web removes a bookmark with no uri. No harness flag ever grants rpc:app.bsky.bookmark.createBookmark, deleteBookmark or app.bsky.actor.putPreferences (I checked all four scopes readFlags can produce), so these are refused in every harness world. The porter's web-bug entry for createBookmark only applies with a custom scope.
+- **low** (left as it is), harness/fakeXrpc.js getServiceAuth / mintServiceToken: Not fixed, edge case. Only through a direct FakeAgent.handle call: getServiceAuth with an object `aud` mints a token whose claims JSON keeps JSONValue's key order, not insertion order. Also, 'constructor' with a primitive input answers the primitive, which is what JSON.stringify writes for the wrapper; the fixture leaves those two inputs out because _helpers.js toJSON spreads a String wrapper into indexes. And forwardedQuery writes an inherited function as null, so an agent method that echoes such a param as text reads "null,x" where JS reads the function's source.
+- **low** (left as it is), harness/harness.js createHarness agentFor: Correction to the porter's webBugsNoticed: 'harness.js agentFor passes no sweepCounter, so outside a browser localStorageCounter answers 1 every time' is how it is designed to work, not a bug (in the browser localStorage exists and the count persists). The porter's other five web-bug entries check out against the code and fixtures. createBookmark is only reachable with a custom scope (see above).
+- **low** (left as it is), ios/VirgaKit/Tests/VirgaArchiveTests/ArchiveModelTests.swift: VirgaArchiveTests ArchiveModelBehaviour flakes under CPU load. aMountStoppedBeforeItsStoreOpensDoesNothingMore failed once in one full run and once in five solo runs; in another full run hearsOfPostsMadeAndDeletedElsewhere failed (rev and posts not updated in time). Both depend on timing: the first yields once and races start(). That target passed 6 of 6 solo runs at load average 12, and my diff touches nothing in VirgaArchive, VirgaCore, VirgaNetwork or VirgaSession. Left for the archive's owner.
