@@ -109,9 +109,11 @@ extension ComposerController {
       return
     }
     var duration: Double?
+    var aspectRatio: JSONValue?
     if let ref = file.ref {
       let asset = AVURLAsset(url: URL(fileURLWithPath: ref))
       if let time = try? await asset.load(.duration), time.seconds.isFinite { duration = time.seconds }
+      aspectRatio = await Self.videoAspectRatio(asset)
     }
     if let duration, duration > Double(Video.videoMaxDurationSeconds) {
       let minutes = (Double(Video.videoMaxDurationSeconds) / 60).jsRounded
@@ -124,9 +126,27 @@ extension ComposerController {
       "file": file.json, "mime": .string(file.type), "size": .number(file.size), "alt": "", "status": "idle",
       "duration": duration.map(JSONValue.number) ?? .null,
     ]
+    // `videoSize`'s `{ width: videoWidth, height: videoHeight }`, which the
+    // posted embed carries, so readers draw it in its own shape.
+    if let aspectRatio { video["aspectRatio"] = aspectRatio }
     if let ref = file.ref { video["previewUrl"] = .string(URL(fileURLWithPath: ref).absoluteString) }
     dispatch(.setVideo(index: index, video: ComposerVideo(json: .object(video))))
     startVideoUploads()
+  }
+
+  /// The video's size as it's shown (its first video track, turned as it
+  /// plays), in whole pixels as a video element's videoWidth and
+  /// videoHeight are; nil when it can't be read.
+  static func videoAspectRatio(_ asset: AVURLAsset) async -> JSONValue? {
+    guard let track = try? await asset.loadTracks(withMediaType: .video).first,
+      let natural = try? await track.load(.naturalSize)
+    else { return nil }
+    let transform = (try? await track.load(.preferredTransform)) ?? .identity
+    let shown = CGRect(origin: .zero, size: natural).applying(transform)
+    let width = abs(shown.width).rounded()
+    let height = abs(shown.height).rounded()
+    guard width > 0, height > 0 else { return nil }
+    return ["width": .number(Double(width)), "height": .number(Double(height))]
   }
 
   func patchVideo(_ postId: String, _ file: ComposerFile, _ patch: [String: JSONValue], did: String? = nil) {

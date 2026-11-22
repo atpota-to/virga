@@ -74,17 +74,41 @@ enum ComposerMeasure {
   static let noteLift: CGFloat = 4
   /// A phone's `.composer-options + .when-panel { padding-top: 4px; border-top: 0 }`
   static let whenPanelUnderRows: CGFloat = 4
-  /// `.image-grid { gap: 6px }`, `.image-tile { min-height: 96px; aspect-ratio: 4/3 }`
+  /// `.media-block { gap: 8px }`, `.image-grid { gap: 6px }`, `.image-tile {
+  /// min-height: 96px; aspect-ratio: 4/3 }`, one picture's `16 / 9`, and
+  /// `.image-missing { padding: 8px }`.
+  static let mediaGap: CGFloat = 8
   static let gridGap: CGFloat = 6
   static let tileMinHeight: CGFloat = 96
   static let tileAspect: CGFloat = 4.0 / 3.0
+  static let singleTileAspect: CGFloat = 16.0 / 9.0
+  static let missingPadding: CGFloat = 8
   /// `.image-tile { --picture-scrim: rgb(15 27 51 / 0.72) }`, the one colour
   /// that isn't a token (over a picture).
   static let pictureScrim = ThemeColor(css: "rgb(15 27 51 / 0.72)") ?? .transparent
-  /// `.image-alt { bottom: 8px; left: 8px; min-height: 28px; padding: 0 10px }`
+  /// `.image-alt { bottom: 8px; left: 8px; gap: 5px; padding: 0 10px;
+  /// letter-spacing: 0.02em }`, 36 tall under a finger (`pointer: coarse`),
+  /// its tick 12; `.image-tools { top: 8px; right: 8px; gap: 4px }`,
+  /// `.image-tool` 36 under a finger, its picture 14, 0.4 while it can't run.
   static let altInset: CGFloat = 8
-  static let altHeight: CGFloat = 28
+  static let altHeight: CGFloat = 36
   static let altPadding: CGFloat = 10
+  static let altGap: CGFloat = 5
+  static let altTick: CGFloat = 12
+  static let altTracking: ThemeLength = .em(0.02)
+  static let toolGap: CGFloat = 4
+  static let toolSize: CGFloat = 36
+  static let toolGlyph: CGFloat = 14
+  static let toolOffOpacity: Double = 0.4
+  /// `.video-block { gap: 10px }`, `.video-preview { max-height: 320px }`
+  /// (`--missing` at least 120), `.video-meta { gap: 6px 10px }`,
+  /// `.video-progress { flex: 1 1 120px }`.
+  static let videoGap: CGFloat = 10
+  static let videoMaxHeight: CGFloat = 320
+  static let videoMissingHeight: CGFloat = 120
+  static let videoMetaGap: CGFloat = 10
+  static let videoMetaRowGap: CGFloat = 6
+  static let videoBarMin: CGFloat = 120
   /// `.embed-card { gap: 12px; padding: 12px }`, `.link-thumb { 72 × 72 }`
   static let embedGap: CGFloat = 12
   static let embedPadding: CGFloat = 12
