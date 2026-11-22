@@ -228,9 +228,8 @@ extension Measure {
     public static let historyGlyph: CGFloat = 15
     /// `.queue-dismiss` (`X size={16}`).
     public static let dismissGlyph: CGFloat = 16
-    /// A post row's count glyphs (`size={13}`) and their gap to the number.
+    /// A post row's count glyphs (`size={13}`).
     public static let countGlyph: CGFloat = 13
-    public static let countGap: CGFloat = 3
     /// A table link's arrow (`ExternalLink size={12}`; `.table-link { gap: 5px }`).
     public static let linkGlyph: CGFloat = 12
     public static let linkGap: CGFloat = 5
@@ -252,10 +251,10 @@ extension Measure {
     public static let postMainGap: CGFloat = 4
     /// `.post-text { line-height: 1.4; -webkit-line-clamp: 2 }`
     public static let postTextLineHeight: Double = 1.4
-    /// `.meta > .meta-group { gap: 12px }`, `.post-count { gap: 4px }`, `.post-count.is-dim { opacity: 0.5 }`
+    /// `.meta > .meta-group { gap: 12px }`, `.post-count { gap: 4px }` (the
+    /// tools' rows narrow to no kind, so no count is dimmed).
     public static let countsGap: CGFloat = 12
     public static let countInnerGap: CGFloat = 4
-    public static let dimOpacity: Double = 0.5
   }
 
   public enum Share {
