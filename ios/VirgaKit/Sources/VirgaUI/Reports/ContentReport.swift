@@ -1,4 +1,6 @@
 // Ports src/reports/ContentReport.jsx
+// Ports src/reports/ReportPage.jsx (the content report's place)
+// Ports src/reports/parts.jsx (SyncEmpty, HowCounted, GroupTable)
 //
 // What posts carry and what they typically earn: the figures (posts and
 // threads, a typical post, with pictures or video, media described, with a
