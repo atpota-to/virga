@@ -170,6 +170,7 @@ struct LookupPersonCard: View {
             }
           }
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("lookup-facts")
       }
     }
@@ -416,6 +417,10 @@ struct EngagedPostsView: View {
 
   private func engagedRow(_ index: Int, _ row: EngagedPost) -> some View {
     let kinds = InteractionModel.kindsLine(entries: row.byKind.map { (key: $0.kind, value: Double($0.count)) })
+    var facts: [String] = []
+    if let post = row.post { facts.append(ToolPosts.postWhen(post.at, now: SyncStatus.now())) }
+    if !kinds.isEmpty { facts.append(kinds) }
+    facts = facts.filter { !$0.isEmpty }
     return HStack(alignment: .firstTextBaseline, spacing: Measure.Tools.postRowGap) {
       Text(AppLocale.formatNumber(index + 1))
         .foregroundStyle(theme.muted)
@@ -434,7 +439,7 @@ struct EngagedPostsView: View {
         .buttonStyle(.plain)
         .accessibilityAddTraits(.isLink)
         .accessibilityHint("Open on Bluesky")
-        MetaLine([row.post.map { ToolPosts.postWhen($0.at, now: SyncStatus.now()) }, kinds].compactMap { $0 }.filter { !$0.isEmpty })
+        MetaLine(facts)
       }
     }
     .virgaText(.textBase)

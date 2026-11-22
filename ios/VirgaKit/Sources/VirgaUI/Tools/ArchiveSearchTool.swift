@@ -118,6 +118,7 @@ struct ArchiveSearchBody: View {
           ? nil : "Until your next sync, older posts are searched by their first 200 characters only, and not by tag or site.",
         trailing: AnyView(exportMenu(results))
       )
+      .accessibilityElement(children: .contain)
       .accessibilityIdentifier("archive-results")
       .padding(.bottom, theme.points(ThemeKit.flushHeadSpaceBelow))
       Rectangle().fill(theme.color(ThemeKit.flushHeadRule)).frame(height: theme.points(ThemeKit.flushHeadRule))

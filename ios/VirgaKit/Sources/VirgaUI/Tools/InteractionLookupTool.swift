@@ -514,6 +514,7 @@ struct StartingPoint: View {
     }
     .frame(maxWidth: Measure.Tools.lookupMax, alignment: .leading)
     .wantActors(archive, Array(names))
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("lookup-start")
   }
 

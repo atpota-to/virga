@@ -221,6 +221,7 @@ struct ShareDialogView: View {
       actions
     }
     .task(id: request) { await draw() }
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("share-dialog")
   }
 

@@ -121,7 +121,8 @@ struct IdentityBody: View {
 
   enum History {
     case reading
-    case none
+    /// A did:web, or a directory that couldn't be read.
+    case unread
     case log([PlcHistoryEntry])
   }
 
@@ -159,7 +160,7 @@ struct IdentityBody: View {
     pds = url ?? ""
     let entries = await log
     if Task.isCancelled { return }
-    history = entries.map { .log($0) } ?? .none
+    history = entries.map { History.log($0) } ?? History.unread
   }
 
   /// `String(new Date(created).getFullYear())`.
@@ -238,6 +239,7 @@ struct IdentityBody: View {
         }
       }
     }
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("identity-identifiers")
   }
 
@@ -246,7 +248,7 @@ struct IdentityBody: View {
       switch history {
       case .reading:
         EmptyState("Reading the log…").padding(.top, theme.rowPad)
-      case .none:
+      case .unread:
         EmptyState(did.jsStartsWith("did:web:") ? "A did:web keeps no history." : "The directory couldn’t be reached.")
           .padding(.top, theme.rowPad)
       case .log:
@@ -256,6 +258,7 @@ struct IdentityBody: View {
           })
       }
     }
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("identity-history")
   }
 
