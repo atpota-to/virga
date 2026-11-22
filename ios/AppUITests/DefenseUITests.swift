@@ -99,9 +99,18 @@ final class DefenseUITests: XCTestCase {
       app.swipeDown()
       swipes += 1
     }
+    // As PostingUITests' and PostingPagesUITests' palette steps: straight
+    // after a sheet or a scroll, Search can be in the hierarchy before it can
+    // be pressed and a tap in the animation is dropped (e19856b, on the
+    // iPhone), so wait until it can be, press again if the palette isn't
+    // there, and tap the field before typing in case it hasn't the keyboard.
+    let pressable = expectation(for: NSPredicate(format: "isHittable == true"), evaluatedWith: search)
+    wait(for: [pressable], timeout: 10)
     search.tap()
     let field = element(app, "palette-field")
+    if !field.waitForExistence(timeout: 3), search.isHittable { search.tap() }
     XCTAssertTrue(field.waitForExistence(timeout: 5), "the palette didn't open")
+    field.tap()
     field.typeText(title)
     let option = element(app, "palette-go:\(path)")
     XCTAssertTrue(option.waitForExistence(timeout: 5), "no \(title) in the palette")
