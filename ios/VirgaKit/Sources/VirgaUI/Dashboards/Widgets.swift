@@ -96,6 +96,8 @@ struct WidgetBody: View {
   let archive: ReportArchive
   let period: AnalyticsPeriod
   let title: String?
+  /// The follower chart's view (WIDGET_HEADS): "total" or "new".
+  var view = "total"
 
   private var kind: String { card.options?.kind ?? "all" }
   private var nowMs: Double { archive.nowMs ?? SyncStatus.now() }
@@ -186,11 +188,14 @@ struct WidgetBody: View {
     if archive.followers.isEmpty {
       EmptyState("Your followers haven’t been read yet.")
     } else {
+      let total = view != "new"
       SeriesChart(
-        series: ChartPoint.of(m.cumulative), mode: .line, unit: m.unit, zeroBase: false,
-        ghost: (m.counterGap ?? 0) > 0 ? m.profileCount.map { ChartGhost(v: Double($0)) } : nil,
-        marks: ChartNotesModels.marks(app, archive, m.cumulative, m.unit, milestones: true), height: WidgetParts.height(card.size),
-        accessibilityLabel: "Followers over \(Periods.periodPhrase(period))")
+        series: ChartPoint.of(total ? m.cumulative : m.counts), mode: total ? .line : .bars, unit: m.unit, zeroBase: !total,
+        ghost: total && (m.counterGap ?? 0) > 0 ? m.profileCount.map { ChartGhost(v: Double($0)) } : nil,
+        marks: ChartNotesModels.marks(app, archive, total ? m.cumulative : m.counts, m.unit, milestones: true),
+        height: WidgetParts.height(card.size),
+        accessibilityLabel: total
+          ? "Followers over \(Periods.periodPhrase(period))" : "New followers per \(m.unit.rawValue) over \(Periods.periodPhrase(period))")
     }
   }
 

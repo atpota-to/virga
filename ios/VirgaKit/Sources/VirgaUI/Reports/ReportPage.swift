@@ -155,10 +155,25 @@ struct ReportPage: View {
   @Environment(PreferencesModel.self) private var preferences
   @Environment(ArchiveModel.self) private var archive: ArchiveModel?
   let report: ReportEntry
+  @State private var adding = false
 
   var body: some View {
+    let widget = ReportWidgets.byReport[report.key].flatMap { Catalog.widgets[$0] }
     let header = PageHeader(
-      PageHeaderModel(title: report.label, sub: report.desc, crumbs: [Crumb("Reports", to: "/reports")]), actions: AnyView(PeriodPicker()))
+      PageHeaderModel(title: report.label, sub: report.desc, crumbs: [Crumb("Reports", to: "/reports")]),
+      actions: AnyView(
+        HStack(spacing: Measure.Chart.footGap) {
+          if widget != nil {
+            Button {
+              adding = true
+            } label: {
+              Label("Add to dashboard", systemImage: Glyph.dashboards)
+            }
+            .buttonStyle(.linkAction)
+            .accessibilityIdentifier("add-to-dashboard")
+          }
+          PeriodPicker()
+        }))
     if let archive, ["followers", "posts", "engagement", "content", "blocks", "people", "atmosphere"].contains(report.key) {
       let period = preferences.period()
       let data = ReportArchive(archive)
@@ -172,6 +187,9 @@ struct ReportPage: View {
         case "atmosphere": AtmosphereReportView(archive: data, period: period)
         default: EngagementReportView(archive: data, period: period)
         }
+      }
+      .virgaDialog(isPresented: $adding, title: "Add \(widget?.name ?? report.label) to a dashboard") {
+        if let widget { AddToDashboard(widget: widget) { adding = false } }
       }
     } else {
       UnportedPage(PageHeaderModel(title: report.label, sub: report.desc, crumbs: [Crumb("Reports", to: "/reports")]))
@@ -187,9 +205,11 @@ struct FollowersReportView: View {
   @State private var mode = "cumulative"
 
   var body: some View {
-    let unitPick = mode == "cumulative" ? nil : AnalyticsUnit(mode)
+    let unitPick = mode == "cumulative" || mode == "together" ? nil : AnalyticsUnit(mode)
     let m = ReportModels.followersModel(archive, period, archive.nowMs ?? SyncStatus.now(), unit: unitPick)
-    let cumulative = mode == "cumulative"
+    let log = ReportModels.followerLogModel(archive)
+    let together = mode == "together"
+    let cumulative = mode == "cumulative" || together
     let series = ChartPoint.of(cumulative ? m.cumulative : m.counts)
     let days = period.days.map { $0 != 0 } ?? false
     if archive.followers.isEmpty {
@@ -206,6 +226,9 @@ struct FollowersReportView: View {
             deltaTitle: days ? "\(Periods.periodBefore(period, true)): \(AppLocale.formatNumber(m.compare.previous))" : nil,
             sub: days ? "\(AppLocale.formatNumber(m.compare.previous)) \(Periods.periodBefore(period))" : nil),
           ReportParts.fig("Per day", m.perDay, decimals: true, sub: "Averaged over the window"),
+          FigureItem(
+            label: "Unfollows at the last sync", value: log.tracking ? .number(Double(log.latestLost.count)) : .text("—"),
+            note: AnyView(Text(log.tracking ? "Open the Unfollow tracker" : "Counted from your next sync"))),
         ], label: "Followers in figures")
       ReportCard(
         title: "Growth",
@@ -214,18 +237,40 @@ struct FollowersReportView: View {
           : "New followers per \(ChartFormat.unitNoun(m.unit)), dated by each follow record",
         tools: AnyView(
           Segmented(
-            label: "Growth", options: [SegmentedOption("cumulative", "Total")] + ReportParts.unitOptions(m.units, "New followers"),
+            label: "Growth",
+            options: [
+              SegmentedOption("cumulative", "Total", accessibilityLabel: "Running total over the window"),
+              SegmentedOption("together", "With blocks", accessibilityLabel: "Followers and block reach on one chart"),
+            ] + ReportParts.unitOptions(m.units, "New followers"),
             selection: $mode, size: .small))
       ) {
         SeriesChart(
-          series: series, mode: cumulative ? .line : .bars, unit: m.unit, zeroBase: !cumulative,
-          ghost: cumulative && (m.counterGap ?? 0) > 0 ? m.profileCount.map { ChartGhost(v: Double($0)) } : nil,
+          series: series, seriesLabel: together ? "Followers" : nil,
+          secondary: together ? ChartSecondary(label: "Blocks", series: ChartPoint.of(m.blockCumulative)) : nil,
+          mode: cumulative ? .line : .bars, unit: m.unit, zeroBase: !cumulative,
+          ghost: !together && cumulative && (m.counterGap ?? 0) > 0 ? m.profileCount.map { ChartGhost(v: Double($0)) } : nil,
           marks: ChartNotesModels.marks(app, archive, cumulative ? m.cumulative : m.counts, m.unit, milestones: true), height: 280,
           accessibilityLabel: cumulative
             ? "Followers over \(Periods.periodPhrase(period))" : "New followers per \(m.unit.rawValue) over \(Periods.periodPhrase(period))")
-        ChartTable(series: series, unit: m.unit, valueHead: cumulative ? "Followers" : "New followers")
+        ChartTable(
+          series: series, secondary: together ? ChartPoint.of(m.blockCumulative) : nil, unit: m.unit,
+          valueHead: cumulative ? "Followers" : "New followers", secondaryHead: together ? "Blocks" : nil)
       }
+      FollowerLists(archive: archive, period: period, m: m)
       ChartNotes(did: archive.did)
+      HowCounted(
+        paragraphs: [
+          "Virga walks your follower list and dates each follower by their follow record, so the total is the followers whose accounts exist right now.",
+          "The diamonds on the chart mark the round numbers your count has passed, each on the day the follower who made it arrived. They are counted from the followers you have today, so if people have left since, you reached that number on that day or a little before it. Notes you add below are marked the same way.",
+        ]
+          + ((m.counterGap ?? 0) > 0
+            ? [
+              "Bluesky’s profile counter says \(AppLocale.formatNumber(m.profileCount ?? 0)). It keeps counting deactivated, suspended and deleted accounts, so the \(AppLocale.formatNumber(m.counterGap ?? 0))-account gap is followers who can’t currently be listed. The dashed reach on the chart marks that counter; it is not measured growth."
+            ] : [])
+          + [
+            "The curve dates each follower by their follow record, so accounts that unfollowed are invisible to it. The Unfollow tracker finds them by comparing two syncs."
+              + (m.undated > 0 ? " \(AppLocale.formatNumber(m.undated)) followers carry no readable follow date and sit outside the chart." : "")
+          ])
     }
   }
 }
@@ -315,6 +360,7 @@ struct EngagementReportView: View {
       BarList(
         rows: m.byKind.map { BarListRow(key: $0.kind, label: $0.label, value: Double($0.value)) }, accessibilityLabel: "Engagement by kind")
     }
+    TopPostsCard(archive: archive, posts: m.top, kind: "all")
   }
 }
 #endif

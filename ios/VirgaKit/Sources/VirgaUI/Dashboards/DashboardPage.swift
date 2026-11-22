@@ -277,6 +277,8 @@ struct WidgetCard: View {
   let def: WidgetDef
   let archive: ReportArchive
   let period: AnalyticsPeriod
+  /// WIDGET_HEADS' `views`: the follower chart's Total or New.
+  @State private var view = "total"
 
   var body: some View {
     let title = card.options?.title.flatMap { $0.isEmpty ? nil : $0 }
@@ -285,29 +287,61 @@ struct WidgetCard: View {
         WidgetBody(card: card, def: def, archive: archive, period: period, title: title)
       } else {
         VStack(alignment: .leading, spacing: Measure.Dashboard.headGap) {
-          HStack(alignment: .firstTextBaseline, spacing: theme.space2) {
-            Text(title ?? def.name)
-              .virgaText(
-                size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, tracking: ThemeKit.cardTitleTracking)
-              .foregroundStyle(theme.ink)
-              .accessibilityAddTraits(.isHeader)
-            Spacer(minLength: 0)
-            PostChartButton(type: card.type, name: title ?? def.name, options: card.options, period: period)
-            Button {
-              navigate(def.href)
-            } label: {
-              Image(systemName: Glyph.openReport)
+          VStack(alignment: .leading, spacing: 2) {
+            HStack(alignment: .firstTextBaseline, spacing: theme.space2) {
+              Text(title ?? def.name)
+                .virgaText(
+                  size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, tracking: ThemeKit.cardTitleTracking)
+                .foregroundStyle(theme.ink)
+                .accessibilityAddTraits(.isHeader)
+              Spacer(minLength: 0)
+              if card.type == "follower-growth", !archive.followers.isEmpty {
+                let m = ReportModels.followersModel(archive, period, archive.nowMs ?? SyncStatus.now())
+                Segmented(
+                  label: "Chart",
+                  options: [SegmentedOption("total", "Total"), SegmentedOption("new", "New per \(ChartFormat.unitNoun(m.unit))")],
+                  selection: $view, size: .small)
+              }
+              PostChartButton(type: card.type, name: title ?? def.name, options: card.options, period: period)
+              Button {
+                navigate(def.href)
+              } label: {
+                Image(systemName: Glyph.openReport)
+              }
+              .buttonStyle(.virga(.ghost, size: .small, icon: true))
+              .accessibilityLabel("Open the full \(def.name) report")
             }
-            .buttonStyle(.virga(.ghost, size: .small, icon: true))
-            .accessibilityLabel("Open the full \(def.name) report")
+            if let sub = headSub {
+              Text(sub).virgaText(.textSm).foregroundStyle(theme.muted)
+            }
+            ownLine
           }
-          WidgetBody(card: card, def: def, archive: archive, period: period, title: title)
+          WidgetBody(card: card, def: def, archive: archive, period: period, title: title, view: view)
         }
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("widget-\(card.type)")
+  }
+
+  /// WIDGET_HEADS' `sub`: the lists' count heads the lists you're on.
+  private var headSub: String? {
+    guard card.type == "lists-on", archive.meta.lists != nil else { return nil }
+    let lists = ReportModels.listsModel(archive)
+    guard !lists.isEmpty else { return nil }
+    let mod = lists.filter { $0.purpose == "moderation" }.count
+    return "\(AppLocale.formatNumber(lists.count)) \(lists.count == 1 ? "list" : "lists"), \(AppLocale.formatNumber(mod)) of them moderation lists"
+  }
+
+  /// `OwnLine`: the card's own period and kind, when it keeps them.
+  @ViewBuilder private var ownLine: some View {
+    let own = card.options?.period.flatMap { Periods.presetPeriod($0) }
+    let kind = card.options?.kind.flatMap { WidgetParts.kindNoun[$0] }
+    if own != nil || kind != nil {
+      MetaLine([own.map { Periods.periodWindowWord($0) }, kind.map { "\($0) only" }].compactMap { $0 })
+        .accessibilityHint("This card keeps its own settings")
+    }
   }
 }
 
