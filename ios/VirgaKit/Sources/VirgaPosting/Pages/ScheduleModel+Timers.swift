@@ -146,7 +146,7 @@ extension ScheduleModel {
       capped = head + String(decoding: t.utf16.dropFirst(), as: UTF16.self)
     }
     let last = capped.utf16.last ?? 0
-    return last == 0x2E || last == 0x21 || last == 0x3F ? capped : "\(capped)."
+    return ScheduledPostError.sentenceStops.contains(last) ? capped : "\(capped)."
   }
 
   static let actedVerb: [String: (String, String)] = [
@@ -265,7 +265,9 @@ extension ScheduleModel {
     let u = Array(text.utf16)
     guard u.count == 5, u[2] == 0x3A else { return false }
     func digit(_ c: UInt16) -> Bool { c >= 0x30 && c <= 0x39 }
-    let hourOK = (u[0] == 0x30 || u[0] == 0x31) && digit(u[1]) || u[0] == 0x32 && u[1] >= 0x30 && u[1] <= 0x33
+    let early = (u[0] == 0x30 || u[0] == 0x31) && digit(u[1])
+    let late = u[0] == 0x32 && (0x30...0x33).contains(u[1])
+    let hourOK = early || late
     return hourOK && u[3] >= 0x30 && u[3] <= 0x35 && digit(u[4])
   }
 

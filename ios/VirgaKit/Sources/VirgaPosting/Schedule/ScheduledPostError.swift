@@ -89,6 +89,11 @@ public enum ScheduledPostError {
     friendlyScheduleError(raw.map(JSONValue.string), code.map(JSONValue.string))
   }
 
+  /// `.`, `!` and `?`, which end a sentence a capital follows.
+  static let sentenceStops: Set<UInt16> = [0x2E, 0x21, 0x3F]
+  /// `/[.!?…]$/`.
+  static let sentenceEnds: Set<UInt16> = [0x2E, 0x21, 0x3F, 0x2026]
+
   /// The server's own sentence, made to read as one of Virga's: a capital
   /// and a stop. Every sentence starts upper case, not just the first
   /// (`/(^|[.!?]\s+)([a-z])/g`).
@@ -103,7 +108,7 @@ public enum ScheduledPostError {
     var i = leads ? 1 : 0
     while i < units.count {
       let unit = units[i]
-      if unit == 0x2E || unit == 0x21 || unit == 0x3F {
+      if sentenceStops.contains(unit) {
         var j = i + 1
         while j < units.count, PostingJS.isSpace(units[j]) { j += 1 }
         if j > i + 1, lower(j) {
@@ -116,8 +121,7 @@ public enum ScheduledPostError {
     }
     let capped = String(decoding: units, as: UTF16.self)
     let last = units.last ?? 0
-    let stops: Bool = last == 0x2E || last == 0x21 || last == 0x3F || last == 0x2026
-    return stops ? capped : "\(capped)."
+    return sentenceEnds.contains(last) ? capped : "\(capped)."
   }
 
   /// What to say about a QUOTA_EXCEEDED refusal (whatever its status).

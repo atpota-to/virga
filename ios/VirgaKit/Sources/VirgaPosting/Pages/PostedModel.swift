@@ -202,7 +202,7 @@ public enum PostedModel {
     let afterRepo = units[slash...]
     guard afterRepo.count > middle.count, Array(afterRepo.prefix(middle.count)) == middle else { return nil }
     let rkey = afterRepo.dropFirst(middle.count)
-    guard !rkey.isEmpty, !rkey.contains(where: { $0 == 0x2F || $0 == 0x3F || $0 == 0x23 }) else { return nil }
+    guard !rkey.isEmpty, !rkey.contains(where: { [0x2F, 0x3F, 0x23].contains($0) }) else { return nil }
     return (String(decoding: units[rest.startIndex..<slash], as: UTF16.self), String(decoding: rkey, as: UTF16.self))
   }
 
