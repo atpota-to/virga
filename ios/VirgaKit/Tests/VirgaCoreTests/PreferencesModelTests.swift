@@ -172,6 +172,42 @@ extension ActiveFormats {
       #expect(model.effectiveSky == .night)
     }
 
+    @Test @MainActor func aChangeOfTheDevicesZoneIsFollowed() throws {
+      defer { withFormats {} }
+      // The zones made active are recorded, not set: AppLocale's zone is
+      // the whole process's, and other suites run beside this one.
+      let activated = Locked<[String]>([])
+      let clock = TestClock(noon)  // 12:00 UTC, 21:00 in Tokyo
+      let model = PreferencesModel(
+        store: InMemoryKeyValueStore(), languages: ["en-US"], timeZone: utc, now: clock.now,
+        activateZone: { zone in activated.withLock { $0.append(zone.identifier) } })
+      #expect(activated.wrappedValue == [utc.identifier], "the launch's zone is made the active one")
+      #expect(model.effectiveSky == .day)
+      let formats = model.formats
+      let tokyo = try #require(TimeZone(identifier: "Asia/Tokyo"))
+      model.deviceZoneChanged(tokyo)
+      #expect(model.timeZone == tokyo)
+      #expect(activated.wrappedValue == [utc.identifier, "Asia/Tokyo"])
+      #expect(model.hour == 21, "the sky looks at the clock in the new zone")
+      #expect(model.effectiveSky == .night)
+      #expect(model.formats == formats, "the formats themselves are the same")
+      model.deviceZoneChanged(tokyo)
+      #expect(activated.wrappedValue == [utc.identifier, "Asia/Tokyo"], "the zone in force changes nothing")
+    }
+
+    @Test @MainActor func aPickedSkyKeepsItsHourThroughAChangeOfZone() throws {
+      defer { withFormats {} }
+      let clock = TestClock(noon)
+      let model = PreferencesModel(store: InMemoryKeyValueStore(), languages: ["en-US"], timeZone: utc, now: clock.now, activateZone: { _ in })
+      model.setPref(\.sky, .dawn)
+      let tokyo = try #require(TimeZone(identifier: "Asia/Tokyo"))
+      model.deviceZoneChanged(tokyo)
+      #expect(model.timeZone == tokyo)
+      #expect(model.hour == 12, "not watching the clock")
+      model.setPref(\.sky, .clock)
+      #expect(model.hour == 21, "the clock is read in the zone the device is in now")
+    }
+
     @Test @MainActor func aModelWithNoStoreStillWorks() {
       defer { withFormats {} }
       let model = PreferencesModel(store: nil, languages: [], timeZone: utc, now: { Date(timeIntervalSince1970: 0) })

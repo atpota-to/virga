@@ -16,7 +16,11 @@
 // A Defense scan holds other people's names, so it goes when its account
 // is signed out or forgotten (ScanStore's keepScansFor). The shell is made
 // again when the number and date formats change, so nothing keeps a
-// string written the old way (App.jsx's `<Shell key={formats}>`).
+// string written the old way (App.jsx's `<Shell key={formats}>`), and when
+// the device moves to another time zone: the web's Date and Intl follow
+// the system's zone at once, so the app reads it again when the system
+// says it changed and whenever the app comes back to the front (a flight
+// while it was in the background).
 //
 // On iOS a sign-in comes back into the running app (ASWebAuthenticationSession),
 // not as a new page load on the return path, so "a sign-in that came back
@@ -28,6 +32,7 @@
 
 #if canImport(UIKit)
 import SwiftUI
+import UIKit
 import VirgaCore
 import VirgaDefense
 import VirgaNetwork
@@ -41,6 +46,7 @@ public struct AppRoot: View {
   @Environment(SessionModel.self) private var session
   @Environment(TermsAcceptanceModel.self) private var terms
   @Environment(PreferencesModel.self) private var preferences
+  @Environment(\.scenePhase) private var scenePhase
   /// The composer's host (ComposerContext), above the per-account identity,
   /// so an open composer survives switching accounts.
   @State private var composer = ComposerHost()
@@ -89,6 +95,11 @@ public struct AppRoot: View {
         if openCompose(url) { return }
         finishReturn(url)
       }
+      .task { await followDeviceZone(on: .NSSystemTimeZoneDidChange) }
+      .task { await followDeviceZone(on: UIApplication.significantTimeChangeNotification) }
+      .onChange(of: scenePhase) { _, phase in
+        if phase == .active { lookAtDeviceZone() }
+      }
   }
 
   @ViewBuilder private var content: some View {
@@ -130,9 +141,10 @@ public struct AppRoot: View {
       TermsGateView().id(did).sessionNotices()
     case .accepted:
       ArchiveHost(archive: app.archive(for: did)) {
-        // Drawn again in the new formats when they change.
+        // Drawn again in the new formats, or the device's new zone, when
+        // they change.
         ShellView(store: app.stores.keyValue, did: did)
-          .id(preferences.formats)
+          .id("\(preferences.formats)|\(preferences.timeZone.identifier)")
       }
       .id(did)
       .composerHost(composer)
@@ -164,6 +176,18 @@ public struct AppRoot: View {
       }
     }
     return true
+  }
+
+  /// Each time `name` is posted, the device's zone, read again.
+  private func followDeviceZone(on name: Notification.Name) async {
+    for await _ in NotificationCenter.default.notifications(named: name) { lookAtDeviceZone() }
+  }
+
+  /// The device's zone now (the system's cached one dropped first), made
+  /// the active one if it has changed.
+  private func lookAtDeviceZone() {
+    NSTimeZone.resetSystemTimeZone()
+    preferences.deviceZoneChanged(TimeZone.current)
   }
 
   /// A return to `https://<server>/oauth/return#session=…` that reached the

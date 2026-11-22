@@ -61,7 +61,9 @@ public enum AppLocale {
   public static func uses12Hour() -> Bool { state.wrappedValue.twelveHour }
 
   /// The zone "local time" means: the browser's on the web, the device's on
-  /// iOS once the app sets it (PreferencesModel does). UTC until then.
+  /// iOS once the app sets it (PreferencesModel does, at launch and when the
+  /// device's zone changes). UTC until then. Read it when it is needed,
+  /// never keep it: the device can change zone while the app runs.
   public static func activeTimeZone() -> TimeZone { state.wrappedValue.timeZone }
 
   public static func setActiveTimeZone(_ zone: TimeZone) {
