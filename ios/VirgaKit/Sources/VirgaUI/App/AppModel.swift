@@ -7,8 +7,8 @@
 // its environment, the agreement's model, the open account's profile, the
 // session notices, and the lookups the sign-in makes. VirgaRootView puts
 // each in the environment. The open account's archive (ArchiveProvider's
-// useAnalyticsArchive) is made here too, one per signed-in account, and
-// held by the view around the shell (App/ArchiveHost.swift).
+// useAnalyticsArchive) is made here too, one for each shell, and held by
+// the view around it (App/ArchiveHost.swift).
 //
 // The session's two hooks into the stores are wired here: deleting an
 // account's data deletes its archive's store and its drafts' kept media,
@@ -141,8 +141,6 @@ public final class AppModel {
   @ObservationIgnored let archiveEnvironment: ArchiveEnvironment
   /// The demo's session, held for as long as the app runs on its network.
   @ObservationIgnored let demoSession: DemoSession?
-  /// The open account's archive, while its shell is up.
-  @ObservationIgnored private var openArchive: ArchiveModel?
   @ObservationIgnored private var started = false
 
   init(
@@ -180,29 +178,17 @@ public final class AppModel {
 
   // MARK: The archive
 
-  /// The open account's archive, as ArchiveProvider makes it: the account's
+  /// An account's archive, as ArchiveProvider makes it: the account's
   /// agent and handle (the profile's, or what the account list remembers),
   /// over the app's file store, read through the session's transport and
-  /// clock. The view that holds it starts it and stops it (ArchiveHost).
+  /// clock. Each shell's ArchiveHost makes its own and starts and stops it,
+  /// as each tab of the web mounts its own provider, so one window leaving
+  /// its shell (a legal page, or the window closed) never stops the archive
+  /// another window is showing. They share the account's one store handle.
   ///
   /// Posts made in the app reach it through VirgaPosting's posting events
   /// (`PostingEvents.postsChangedListener`): the composer emits
   /// virga:posts-changed after a send, and the archive adds the posts.
-  /// The open account's archive: the one already made for it, or a new one.
-  public func archive(for did: String) -> ArchiveModel {
-    if let open = openArchive, open.did.jsEquals(did) { return open }
-    let made = makeArchive(did: did)
-    openArchive = made
-    return made
-  }
-
-  /// The account's shell has gone (signed out, or another account opened):
-  /// its archive stops, and the next sign-in makes another.
-  public func closeArchive(_ archive: ArchiveModel) {
-    archive.stop()
-    if openArchive === archive { openArchive = nil }
-  }
-
   func makeArchive(did: String) -> ArchiveModel {
     var environment = archiveEnvironment
     environment.postsChanged = PostingEvents.postsChangedListener()

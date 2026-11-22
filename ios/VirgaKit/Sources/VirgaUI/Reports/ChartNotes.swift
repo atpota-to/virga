@@ -27,6 +27,14 @@ enum ChartNotesModels {
     return made
   }
 
+  /// The account's notes read again from the store, as useAnnotations
+  /// reads them on mount: what a shell opening for the account calls
+  /// (ArchiveHost), so a model kept since an earlier sign-in never shows
+  /// notes deleted since with the account's data.
+  static func reload(_ did: String) {
+    models[did]?.reload()
+  }
+
   /// `useChartMarks(archive, series, unit, { milestones })`.
   static func marks(
     _ app: AppModel, _ archive: ReportArchive, _ series: [SeriesPoint], _ unit: AnalyticsUnit, milestones: Bool = false

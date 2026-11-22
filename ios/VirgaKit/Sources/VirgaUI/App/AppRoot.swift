@@ -125,7 +125,7 @@ public struct AppRoot: View {
     case .needs:
       TermsGateView().id(did).sessionNotices()
     case .accepted:
-      ArchiveHost(archive: app.archive(for: did)) {
+      ArchiveHost(did: did) {
         // Drawn again in the new formats when they change.
         ShellView(store: app.stores.keyValue, did: did)
           .id(preferences.formats)
