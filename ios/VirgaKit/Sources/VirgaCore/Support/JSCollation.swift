@@ -66,25 +66,21 @@ public enum JSCollation {
 
   enum Entry: Sendable {
     case ignorable
-    /// An accent alone: its secondary weight, and its case rank.
-    case mark(UInt32, rank: UInt32)
-    /// A run of other code points: a compatibility form (ﬁ, ½) whose first
-    /// part weighs the case `slot`, or with `accented` a letter like æ, an
-    /// accent after its first part and its parts heavier than every case.
-    case expansion([UInt32], accented: Bool, slot: UInt32?)
+    /// An accent alone: its secondary weight, and its tertiary.
+    case mark(UInt32, t: UInt32)
+    /// A run of other code points (or contractions), each weighing as it
+    /// does, but from part `at` on: part `at` weighs the tertiary `slot`
+    /// (a step heavier than its own when nil) and the parts after it a
+    /// step heavier than their own, as in a compatibility form (ICU weighs
+    /// ﬁ's f after the small f and ｆ and before ⓕ and F, so ﬁ sorts after
+    /// "fI" and before "Fi"). With an `accent`, a letter like æ: that
+    /// accent after its first part, which weighs `slot`, and the rest of
+    /// its parts heavier than every case.
+    case expansion([UInt32], accent: UInt32?, slot: UInt32?, at: Int?)
     /// A base letter's primary weight, the accent that sets it apart from
-    /// the first of its base letters, and its case rank.
-    case weights(p: UInt64, mark: UInt32?, rank: UInt32)
+    /// the first of its base letters, and its tertiary (case and form).
+    case weights(p: UInt64, mark: UInt32?, t: UInt32)
   }
-
-  /// How much heavier the case of an accented expansion's parts is (Æ after AE).
-  static let expansionCase: UInt32 = 0x80
-
-  /// A case rank's tertiary weight. Ranks sit two apart so that the case
-  /// of a compatibility form fits between two of its letter's own: ICU
-  /// weighs ﬁ's parts after the small f and ｆ and before ⓕ and F, so ﬁ
-  /// sorts after "fI" and before "Fi".
-  static func tertiary(_ rank: UInt32) -> UInt32 { 2 * rank + 1 }
 
   /// The primary weight of a table rank: ranks sit 2³² apart, so that the
   /// ideographs (in their order) and the code points weighed by code point
@@ -195,15 +191,23 @@ public enum JSCollation {
   static func parseEntry(_ item: Substring, into table: inout Table) {
     if let eq = item.firstIndex(of: "="), !item[..<eq].contains(":") {
       guard let cp = hex(item[..<eq]) else { return }
+      // `a,b,…`, then `!accent` and `@at:slot`, each when present.
       var rest = item[item.index(after: eq)...]
-      let accented = rest.hasSuffix("!")
-      if accented { rest = rest.dropLast() }
       var slot: UInt32?
-      if let at = rest.firstIndex(of: "@") {
-        slot = hex(rest[rest.index(after: at)...])
-        rest = rest[..<at]
+      var at: Int?
+      if let sign = rest.firstIndex(of: "@") {
+        let place = rest[rest.index(after: sign)...].split(separator: ":", omittingEmptySubsequences: false)
+        at = hex(place[0]).map(Int.init)
+        slot = place.count > 1 ? hex(place[1]) : nil
+        rest = rest[..<sign]
       }
-      table.entries[cp] = .expansion(rest.split(separator: ",").compactMap { hex($0) }, accented: accented, slot: slot)
+      var accent: UInt32?
+      if let bang = rest.firstIndex(of: "!") {
+        accent = hex(rest[rest.index(after: bang)...])
+        rest = rest[..<bang]
+      }
+      let parts = rest.split(separator: ",").compactMap { hex($0) }
+      table.entries[cp] = .expansion(parts, accent: accent, slot: slot, at: at)
       return
     }
     guard let colon = item.firstIndex(of: ":"), let cp = hex(item[..<colon]) else { return }
@@ -218,18 +222,18 @@ public enum JSCollation {
     } else if value.hasPrefix("M") {
       let parts = value.dropFirst().split(separator: ".")
       guard let w = parts.first.flatMap(hex) else { return }
-      let rank = parts.count > 1 ? hex(parts[1]) ?? 0 : 0
-      for k in 0..<count { table.entries[cp + k] = .mark(w + k, rank: rank) }
+      let t = parts.count > 1 ? hex(parts[1]) ?? plainTertiary : plainTertiary
+      for k in 0..<count { table.entries[cp + k] = .mark(w + k, t: t) }
     } else {
       let parts = value.split(separator: ".", omittingEmptySubsequences: false)
-      guard parts.count == 3, let rank = hex(parts[2]) else { return }
+      guard parts.count == 3, let t = hex(parts[2]) else { return }
       let mark = parts[1].isEmpty ? nil : hex(parts[1])
       if parts[0].hasPrefix("~") {
         guard let ideograph = hex(parts[0].dropFirst()), let order = table.implicitOrder(ideograph) else { return }
-        for k in 0..<count { table.entries[cp + k] = .weights(p: implicitPrimary(order), mark: mark, rank: rank) }
+        for k in 0..<count { table.entries[cp + k] = .weights(p: implicitPrimary(order), mark: mark, t: t) }
       } else {
         guard let p = hex(parts[0]) else { return }
-        for k in 0..<count { table.entries[cp + k] = .weights(p: primary(p + k), mark: mark, rank: rank) }
+        for k in 0..<count { table.entries[cp + k] = .weights(p: primary(p + k), mark: mark, t: t) }
       }
     }
   }
@@ -326,35 +330,45 @@ public enum JSCollation {
     }
   }
 
-  /// Appends the elements `cp` weighs: its case rank's own tertiary plus
-  /// `caseBoost`, or `slot` for every element (an expansion's parts).
+  /// Appends the elements `cp` weighs: each its own tertiary plus
+  /// `caseBoost`, or `slot` for every element (an expansion's first part).
   static func append(_ cp: UInt32, to out: inout [Element], caseBoost: UInt32 = 0, slot: UInt32? = nil) {
-    func t(_ rank: UInt32) -> UInt32 { slot ?? tertiary(rank) + caseBoost }
+    func t(_ own: UInt32) -> UInt32 { slot ?? own + caseBoost }
     let table = Self.table
     guard let entry = table.entries[cp] else {
       let p = table.implicitOrder(cp).map(implicitPrimary) ?? unassignedPrimary(cp)
-      out.append(Element(p: p, s: common, t: t(0)))
+      out.append(Element(p: p, s: common, t: t(plainTertiary)))
       return
     }
     switch entry {
     case .ignorable:
       return
-    case .mark(let s, let rank):
-      out.append(Element(p: 0, s: s, t: t(rank)))
-    case .expansion(let parts, let accented, let partSlot):
+    case .mark(let s, let own):
+      out.append(Element(p: 0, s: s, t: t(own)))
+    case .expansion(let parts, let accent, let partSlot, let at):
       for (index, part) in parts.enumerated() {
-        if let partSlot = slot ?? partSlot, !accented {
-          // The first part's case is the one read from the collator; the
-          // rest keep their own (ǅ is D and a small z), a step heavier.
-          if index == 0 { append(part, to: &out, slot: partSlot) } else { append(part, to: &out, caseBoost: caseBoost + 1) }
+        if let accent {
+          if index == 0 {
+            append(part, to: &out, caseBoost: caseBoost, slot: slot ?? partSlot)
+            out.append(Element(p: 0, s: accent, t: t(plainTertiary)))
+          } else {
+            append(part, to: &out, caseBoost: caseBoost + expansionCase, slot: slot)
+          }
+        } else if let at, index >= at {
+          // The case read from the collator, and after it the parts' own
+          // cases a step heavier (ﬃ sorts after ﬀi).
+          if index == at, let partSlot, slot == nil {
+            append(part, to: &out, slot: partSlot)
+          } else {
+            append(part, to: &out, caseBoost: caseBoost + 1, slot: slot)
+          }
         } else {
-          append(part, to: &out, caseBoost: caseBoost + expansionCase, slot: slot)
+          append(part, to: &out, caseBoost: caseBoost, slot: slot)
         }
-        if index == 0 && accented { out.append(Element(p: 0, s: expansionAccent, t: t(0))) }
       }
-    case .weights(let p, let mark, let rank):
-      out.append(Element(p: p, s: common, t: t(rank)))
-      if let mark { out.append(Element(p: 0, s: mark, t: t(0))) }
+    case .weights(let p, let mark, let own):
+      out.append(Element(p: p, s: common, t: t(own)))
+      if let mark { out.append(Element(p: 0, s: mark, t: t(plainTertiary))) }
     }
   }
 
