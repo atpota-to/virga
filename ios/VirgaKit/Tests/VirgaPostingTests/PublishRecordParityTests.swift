@@ -47,8 +47,8 @@ import VirgaTestSupport
   @Test func createRecordIdempotent() async throws {
     let record: JSONValue = ["$type": "app.bsky.feed.post", "text": "hi", "createdAt": "2026-07-24T00:00:00.000Z"]
     for c in try cases(Self.f, "createRecordIdempotent") {
-      let transport = replayTransport(c.output)
-      let timers = ScriptedTimers(c.input["fire"])
+      let transport = CountingTransport(replayTransport(c.output))
+      let timers = ScriptedTimers(c.output["fired"], transport: transport)
       let tids = FixedTIDs()
       let opts = c.input["opts"] ?? [:]
       let rkey: String? = c.input["mint"] == .bool(true) ? nil : "3m5abcdefgh22"
@@ -65,8 +65,8 @@ import VirgaTestSupport
   @Test func publishWithIdempotentRetry() async throws {
     let record: JSONValue = ["$type": "app.bsky.feed.post", "text": "hi", "createdAt": "2026-07-24T00:00:00.000Z"]
     for c in try cases(Self.f, "publishWithIdempotentRetry") {
-      let transport = replayTransport(c.output)
-      let timers = ScriptedTimers(c.input["fire"])
+      let transport = CountingTransport(replayTransport(c.output))
+      let timers = ScriptedTimers(c.output["fired"], transport: transport)
       let agent = PublishFixture.agent(transport)
       let result = await publishOutcome {
         try await PublishRecord.publishWithIdempotentRetry(
@@ -85,8 +85,8 @@ import VirgaTestSupport
   @Test func createPostWithGates() async throws {
     let base: JSONValue = ["$type": "app.bsky.feed.post", "text": "hi", "createdAt": "2026-07-24T00:00:00.000Z"]
     for c in try cases(Self.f, "createPostWithGates") {
-      let transport = replayTransport(c.output)
-      let timers = ScriptedTimers(c.input["fire"])
+      let transport = CountingTransport(replayTransport(c.output))
+      let timers = ScriptedTimers(c.output["fired"], transport: transport)
       let tids = FixedTIDs()
       let result = await publishOutcome {
         try await PublishRecord.createPostWithGates(
@@ -128,7 +128,7 @@ import VirgaTestSupport
       return .json(["success": true, "data": ["uri": "at://late", "cid": "c"]])
     }
     transport.on("GET", .any) { _ in .json(["success": false, "error": "Could not locate record", "code": "RecordNotFound"], status: 400) }
-    let timers = ScriptedTimers([[30000, 0], [30000, 1]])
+    let timers = ScriptedTimers([[30000, 0]])
     let outcome = await publishOutcome {
       try await PublishRecord.createRecordIdempotent(
         PublishFixture.agent(transport), repo: PublishFixture.me, collection: "app.bsky.feed.post", record: [:],

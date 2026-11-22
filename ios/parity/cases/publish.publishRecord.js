@@ -153,19 +153,24 @@ const RULES = [
 /** Writes `fn(agent)` against a scripted PDS, with every exchange recorded. */
 async function exchange({ script = {}, fire = [] }, fn) {
   const server = pds(script);
+  const fired = [];
   resetTids();
   const out = await withFixedDate(NOW, () =>
     recordFetch(
       server.responder,
       () =>
-        withTimers(fire, async () => {
-          const agent = await agentFor(ME);
-          return fn(agent);
-        }),
+        withTimers(
+          fire,
+          async () => {
+            const agent = await agentFor(ME);
+            return fn(agent);
+          },
+          { sent: server.sent, fired },
+        ),
       { now: NOW },
     ),
   );
-  return hangs(out, server);
+  return { ...hangs(out, server), fired };
 }
 
 export default async function cases() {

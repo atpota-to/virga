@@ -124,8 +124,17 @@ export async function withFixedDate(ms, fn) {
   }
 }
 
-/** Inside recordFetch: only the timers `fire` names go off at once. */
-export async function withTimers(fire, fn) {
+/**
+ * Inside recordFetch: only the timers `fire` names go off at once. Each that
+ * does is noted in `fired` as `[ms, n, requests]`, `requests` being how many
+ * requests had been made when it went off (`sent()`), so a replay can hold
+ * it until then.
+ */
+export async function withTimers(
+  fire,
+  fn,
+  { sent = () => 0, fired = [] } = {},
+) {
   const recorded = globalThis.setTimeout;
   const seen = new Map();
   globalThis.setTimeout = (callback, ms, ...args) => {
@@ -136,7 +145,14 @@ export async function withTimers(fire, fn) {
     const n = seen.get(delay) ?? 0;
     seen.set(delay, n + 1);
     if ((fire || []).some(([at, nth]) => at === delay && nth === n)) {
-      return recorded(callback, ms, ...args);
+      return recorded(
+        (...rest) => {
+          fired.push([delay, n, sent()]);
+          callback(...rest);
+        },
+        ms,
+        ...args,
+      );
     }
     recorded(() => {}, ms);
     return REAL_SET_TIMEOUT(callback, ms, ...args);
@@ -222,6 +238,7 @@ export function pds(script = {}) {
     records.set(uri, { uri, cid: recordCid(value), value });
   const turns = { writes: 0, checks: 0, uploads: 0 };
   const hung = new Set();
+  const counter = { seen: 0 };
   let blobs = 0;
 
   const next = (list) => fault((script[list] || [])[turns[list]++]);
@@ -249,6 +266,7 @@ export function pds(script = {}) {
   }
 
   function responder(request, index) {
+    counter.seen += 1;
     const method = methodOf(request);
     const input =
       method === 'com.atproto.repo.uploadBlob' ? undefined : inputOf(request);
@@ -281,6 +299,8 @@ export function pds(script = {}) {
         const hit = records.get(`at://${p.repo}/${p.collection}/${p.rkey}`);
         if (!hit || f?.kind === 'missing')
           return fail(400, 'Could not locate record', 'RecordNotFound');
+        // An answer without its URI (the SDK refuses it; Swift reads no URI).
+        if (f?.kind === 'nouri') return ok({ cid: hit.cid, value: hit.value });
         return ok(hit);
       }
       case 'com.atproto.repo.uploadBlob': {
@@ -310,7 +330,39 @@ export function pds(script = {}) {
     }
   }
 
-  return { responder, records, hung };
+  return { responder, records, hung, sent: () => counter.seen };
+}
+
+/**
+ * The re-encode and decode images.js's prepareImage is given, scripted:
+ * `script.compress` is `{ size }` (a Blob of that many zero bytes), null or
+ * 'throw'; `script.decode` is `{ width, height }`, null or 'throw'. `calls`
+ * records each call with its file as a fixture's marker (no lastModified).
+ */
+export function scriptedImages(script = {}, markFiles) {
+  const calls = [];
+  const settle = (file) =>
+    JSON.parse(
+      JSON.stringify(markFiles(file), (key, val) =>
+        key === 'lastModified' ? undefined : val,
+      ),
+    );
+  return {
+    calls,
+    compress: async (file, options) => {
+      calls.push(['compress', settle(file), options]);
+      const c = script.compress === undefined ? { size: 5 } : script.compress;
+      if (c === 'throw') throw new Error('decoder blew up');
+      if (c === null) return null;
+      return new Blob([new Uint8Array(c.size)]);
+    },
+    decode: async (file) => {
+      calls.push(['decode', settle(file)]);
+      const d = script.decode === undefined ? null : script.decode;
+      if (d === 'throw') throw new Error('cannot decode');
+      return d;
+    },
+  };
 }
 
 /** The recorded exchanges with each hung request's answer marked. */

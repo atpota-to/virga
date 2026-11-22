@@ -13,8 +13,16 @@
       "swift": []
     },
     "src/posting/lib/linkCard.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/LinkCard.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/ComposerFiles.swift"
+      ],
+      "fixtures": [
+        "publish.linkCard"
+      ],
+      "note": "normalizeAssociatedRefs is Embeds.normalizeAssociatedRefs (posting-text ported it for embeds.js), which LinkCard's forwards to. A response's blob type follows Fetch's MIME extraction for the shapes a card image server sends (lists, case, parameters); quoted parameters with escapes are approximated. The web's File objects are ComposerFiles (Lib/ComposerFiles.swift).",
+      "synced": "813a280f31fb"
     },
     "src/posting/lib/publish.js": {
       "status": "pending",

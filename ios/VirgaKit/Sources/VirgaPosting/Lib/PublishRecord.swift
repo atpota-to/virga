@@ -156,59 +156,53 @@ public enum PublishRecord {
   /// PublishTimeoutError(label) once `ms` passes on `clock` first. The work
   /// is not called off when the time is up (a write in flight is reconciled
   /// by the landed-check, not aborted), and the caller's cancellation doesn't
-  /// reach it; the timer is cleared when the work settles first.
+  /// reach it. The timer is cleared when the work settles first, and waited
+  /// for, so its wait is on the clock before this returns, as setTimeout's is.
   static func withTimeout<T: Sendable>(
     _ ms: Double, _ label: String, clock: NetworkClock, _ work: @escaping @Sendable () async throws -> T
   ) async throws -> T {
     let race = TimeoutRace<T>()
-    return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<T, any Error>) in
-      let running = Task {
-        do { race.finish(.success(try await work())) } catch { race.finish(.failure(error)) }
-      }
-      let timer = Task {
-        await clock.sleep(timerMs(ms))
-        if !Task.isCancelled { race.finish(.failure(PublishTimeoutError(label))) }
-      }
-      race.start(continuation, work: running, timer: timer)
+    let timer = Task {
+      await clock.sleep(timerMs(ms))
+      if !Task.isCancelled { race.finish(.failure(PublishTimeoutError(label))) }
     }
+    Task {
+      do { race.finish(.success(try await work())) } catch { race.finish(.failure(error)) }
+    }
+    let result = await race.result()
+    timer.cancel()
+    await timer.value
+    return try result.get()
   }
 
-  /// One race's state: the continuation to resume once, and the timer to
-  /// clear when the race is decided.
+  /// One race: the first outcome to finish, handed to whoever waits.
   final class TimeoutRace<T: Sendable>: Sendable {
     private struct State {
-      var continuation: CheckedContinuation<T, any Error>?
+      var waiter: CheckedContinuation<Result<T, any Error>, Never>?
       var result: Result<T, any Error>?
-      var timer: Task<Void, Never>?
     }
 
     private let state = Locked(State())
 
-    func start(_ continuation: CheckedContinuation<T, any Error>, work: Task<Void, Never>, timer: Task<Void, Never>) {
-      let early: Result<T, any Error>? = state.withLock { state in
-        if let result = state.result { return result }
-        state.continuation = continuation
-        state.timer = timer
-        return nil
-      }
-      if let early {
-        timer.cancel()
-        continuation.resume(with: early)
+    func result() async -> Result<T, any Error> {
+      await withCheckedContinuation { (continuation: CheckedContinuation<Result<T, any Error>, Never>) in
+        let early: Result<T, any Error>? = state.withLock { state in
+          if let result = state.result { return result }
+          state.waiter = continuation
+          return nil
+        }
+        if let early { continuation.resume(returning: early) }
       }
     }
 
     func finish(_ result: Result<T, any Error>) {
-      let (continuation, timer): (CheckedContinuation<T, any Error>?, Task<Void, Never>?) = state.withLock { state in
-        if state.result != nil { return (nil, nil) }
+      let waiter: CheckedContinuation<Result<T, any Error>, Never>? = state.withLock { state in
+        if state.result != nil { return nil }
         state.result = result
-        defer {
-          state.continuation = nil
-          state.timer = nil
-        }
-        return (state.continuation, state.timer)
+        defer { state.waiter = nil }
+        return state.waiter
       }
-      timer?.cancel()
-      continuation?.resume(with: result)
+      waiter?.resume(returning: result)
     }
   }
 
@@ -275,7 +269,8 @@ public enum PublishRecord {
         let data = try await withTimeout(checkTimeoutMs, "Record check timed out", clock: clock) {
           try await getRecord(agent, repo: repo, collection: collection, rkey: rkey)
         }
-        return data["uri"]?.isTruthy == true ? data : nil
+        guard data["uri"]?.isTruthy == true else { return nil }
+        return data
       } catch {
         return nil
       }

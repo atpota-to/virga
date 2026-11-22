@@ -2564,7 +2564,8 @@
             "rev": "3lcommitrev22"
           },
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -2670,7 +2671,8 @@
             "rev": "3lcommitrev22"
           },
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -2738,7 +2740,8 @@
           30000,
           15000
         ],
-        "$throws": "InvalidRequest"
+        "$throws": "InvalidRequest",
+        "fired": []
       }
     },
     {
@@ -2857,7 +2860,8 @@
           30000,
           15000
         ],
-        "$throws": "still down"
+        "$throws": "still down",
+        "fired": []
       }
     },
     {
@@ -2934,7 +2938,8 @@
             "text": "hi",
             "createdAt": "2026-07-24T00:00:00.000Z"
           }
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -3010,7 +3015,8 @@
             "text": "hi",
             "createdAt": "2026-07-24T00:00:00.000Z"
           }
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -3087,7 +3093,14 @@
             "text": "hi",
             "createdAt": "2026-07-24T00:00:00.000Z"
           }
-        }
+        },
+        "fired": [
+          [
+            30000,
+            0,
+            1
+          ]
+        ]
       }
     },
     {
@@ -3190,7 +3203,14 @@
             "rev": "3lcommitrev22"
           },
           "validationStatus": "valid"
-        }
+        },
+        "fired": [
+          [
+            30000,
+            0,
+            1
+          ]
+        ]
       }
     },
     {
@@ -3287,7 +3307,8 @@
             "rev": "3lcommitrev22"
           },
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -3394,7 +3415,8 @@
           30000,
           15000
         ],
-        "$throws": "fetch failed"
+        "$throws": "fetch failed",
+        "fired": []
       }
     },
     {
@@ -3500,7 +3522,14 @@
             "rev": "3lcommitrev22"
           },
           "validationStatus": "valid"
-        }
+        },
+        "fired": [
+          [
+            15000,
+            0,
+            2
+          ]
+        ]
       }
     },
     {
@@ -3600,7 +3629,8 @@
             "rev": "3lcommitrev22"
           },
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -3706,7 +3736,8 @@
             "rev": "3lcommitrev22"
           },
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -3777,7 +3808,8 @@
           30000,
           15000
         ],
-        "$throws": "failed with 503"
+        "$throws": "failed with 503",
+        "fired": []
       }
     },
     {
@@ -3934,7 +3966,8 @@
             "rev": "3lcommitrev22"
           },
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -4107,7 +4140,8 @@
           30000,
           15000
         ],
-        "$throws": "failed with 429"
+        "$throws": "failed with 429",
+        "fired": []
       }
     },
     {
@@ -4122,7 +4156,8 @@
       "output": {
         "exchanges": [],
         "waits": [],
-        "$throws": "undefined"
+        "$throws": "undefined",
+        "fired": []
       }
     },
     {
@@ -4228,7 +4263,14 @@
             "rev": "3lcommitrev22"
           },
           "validationStatus": "valid"
-        }
+        },
+        "fired": [
+          [
+            5,
+            0,
+            1
+          ]
+        ]
       }
     },
     {
@@ -4281,7 +4323,8 @@
             "rev": "3lcommitrev22"
           },
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -4349,7 +4392,8 @@
           30000,
           15000
         ],
-        "$throws": "Missing required scope \"repo"
+        "$throws": "Missing required scope \"repo",
+        "fired": []
       }
     },
     {
@@ -4452,7 +4496,8 @@
             "rev": "3lcommitrev22"
           },
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -4520,7 +4565,8 @@
           30000,
           15000
         ],
-        "$throws": "Sign in again"
+        "$throws": "Sign in again",
+        "fired": []
       }
     },
     {
@@ -4629,7 +4675,8 @@
               "validationStatus": "valid"
             }
           ]
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -4706,7 +4753,8 @@
             "text": "hi",
             "createdAt": "2026-07-24T00:00:00.000Z"
           }
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -4755,7 +4803,8 @@
             "rev": "3lcommitrev22"
           },
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -4800,7 +4849,8 @@
           "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
           "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -4854,7 +4904,8 @@
           "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
           "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -4903,7 +4954,8 @@
           "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
           "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -4951,7 +5003,8 @@
             "rev": "3lcommitrev22"
           },
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -5014,7 +5067,8 @@
             "rev": "3lcommitrev22"
           },
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -5065,7 +5119,8 @@
           "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
           "cid": "bafyreigbcy2vzaskegvpfjhjdviu7tdgdk5mpaxbthjsyc4tbj3vp45x4q",
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -5123,7 +5178,8 @@
             "rev": "3lcommitrev22"
           },
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -5224,7 +5280,8 @@
           "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
           "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -5300,7 +5357,8 @@
             "text": "hi",
             "createdAt": "2026-07-24T00:00:00.000Z"
           }
-        }
+        },
+        "fired": []
       }
     },
     {
@@ -5370,7 +5428,8 @@
           30000,
           15000
         ],
-        "$throws": "applyWrites returned no create result for the post"
+        "$throws": "applyWrites returned no create result for the post",
+        "fired": []
       }
     },
     {
@@ -5416,7 +5475,8 @@
           "uri": "at://did:plc:writer/app.bsky.feed.post/3n24qcgnz222b",
           "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
           "validationStatus": "valid"
-        }
+        },
+        "fired": []
       }
     }
   ]
