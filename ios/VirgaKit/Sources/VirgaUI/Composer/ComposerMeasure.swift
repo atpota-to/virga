@@ -227,6 +227,9 @@ enum ComposerMeasure {
   static let suggestCloseDelay: Double = 0.15
   /// The language suggestions close 120 ms after the field loses focus.
   static let languagesCloseDelay: Double = 0.12
+  /// `.lang-search .suggest-list { position: absolute; top: calc(100% +
+  /// 4px) }`: the language suggestions float 4 under the field.
+  static let languagesListTop: CGFloat = 4
   /// How long after opening the first post takes the caret (Composer.jsx's 40 ms).
   static let focusDelay: Double = 0.04
   /// `.callout-actions { gap: 6px }`

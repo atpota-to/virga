@@ -533,8 +533,11 @@ struct WhenPicker: View {
     } else if let slot {
       let at = ScheduleModel.formatInZone(.number(slot), tz, now: now).replacingOccurrences(of: " ", with: "\u{00A0}")
       let note = taken.status == .error ? Text(" (couldn’t check what’s already queued)").foregroundColor(theme.muted) : Text("")
+      // The time is `<strong>` (600). The whole line's face is set at one
+      // weight by virgaText, which a segment's fontWeight can't change: the
+      // segment takes its own face.
       (Text("Next open time in your queue: ").foregroundColor(theme.ink)
-        + Text(at).fontWeight(.semibold).foregroundColor(theme.ink) + note)
+        + Text(at).font(theme.font(.textSm, weight: VirgaWeight.semibold)).foregroundColor(theme.ink) + note)
         .virgaText(.textSm)
         .fixedSize(horizontal: false, vertical: true)
         .accessibilityIdentifier("when-queue-slot")

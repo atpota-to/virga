@@ -63,6 +63,9 @@ struct PostEditor: View {
     return Library.detectSlashCommand(text, caret)
   }
 
+  /// The open suggestion list's place in the composer's scroll.
+  private var suggestAnchor: String { "composer-suggest-\(postId)" }
+
   var body: some View {
     let text = self.text
     // Until detection catches up, the text is drawn plain: never stale
@@ -80,11 +83,11 @@ struct PostEditor: View {
           .composerAnnounces(note)
       }
       if let mention, mention.range.query.jsEquals(partial?.query ?? "\u{0}") {
-        MentionList(mention: mention) { actor in pick(actor) }
+        MentionList(mention: mention, anchor: suggestAnchor) { actor in pick(actor) }
       }
       if let slash {
         SlashList(
-          controller: controller, slash: slash,
+          controller: controller, slash: slash, anchor: suggestAnchor,
           onOpenLibrary: { controller.openLibrary(postId, range: TextSelection(start: slash.start, end: slash.end)) }
         ) { template in
           controller.applyTemplate(postId, template, range: TextSelection(start: slash.start, end: slash.end))
@@ -304,15 +307,56 @@ struct SuggestStatus: View {
   }
 }
 
+/// Scrolls the composer's body the least it can so a view of it (by its
+/// id) is wholly in view: the sheet's ScrollViewReader, handed down.
+struct ComposerScroller {
+  let reveal: @MainActor (String) -> Void
+}
+
+private struct ComposerScrollerKey: EnvironmentKey {
+  static let defaultValue: ComposerScroller? = nil
+}
+
+extension EnvironmentValues {
+  /// The composer sheet's scroller (ComposerSheet sets it).
+  var composerScroller: ComposerScroller? {
+    get { self[ComposerScrollerKey.self] }
+    set { self[ComposerScrollerKey.self] = newValue }
+  }
+}
+
+/// The web's `.suggest-pop` is in the post's flow under the editor, and the
+/// dialog grows to hold it, so it is on screen as it opens. The sheet's
+/// body scrolls, and its foot and the keyboard can cover what's under the
+/// post: the list is brought into view as it opens, and again as its rows
+/// come in (`key`).
+struct ComposerReveals<Key: Equatable>: ViewModifier {
+  @Environment(\.composerScroller) private var scroller
+  let anchor: String
+  let key: Key
+
+  func body(content: Content) -> some View {
+    content
+      .id(anchor)
+      .onAppear { scroller?.reveal(anchor) }
+      .onChange(of: key) { _, _ in scroller?.reveal(anchor) }
+  }
+}
+
 extension View {
   func suggestPop() -> some View { modifier(SuggestPopStyle()) }
   func suggestRow() -> some View { modifier(SuggestRowStyle()) }
+  func composerReveals<Key: Equatable>(_ anchor: String, when key: Key) -> some View {
+    modifier(ComposerReveals(anchor: anchor, key: key))
+  }
 }
 
 /// `.suggest-pop`: who the mention might be, and its status line.
 struct MentionList: View {
   @Environment(\.virgaTheme) private var theme
   let mention: MentionLookup
+  /// Its place in the composer's scroll.
+  let anchor: String
   let pick: (JSONValue) -> Void
 
   var body: some View {
@@ -332,6 +376,7 @@ struct MentionList: View {
     .suggestPop()
     .accessibilityElement(children: .contain)
     .accessibilityLabel("Accounts to mention")
+    .composerReveals(anchor, when: mention.items.count)
   }
 
   private var status: String {
@@ -371,6 +416,8 @@ struct SlashList: View {
   @Environment(\.virgaTheme) private var theme
   let controller: ComposerController
   let slash: SlashCommand
+  /// Its place in the composer's scroll.
+  let anchor: String
   let onOpenLibrary: () -> Void
   let pick: (PostTemplate) -> Void
 
@@ -408,6 +455,7 @@ struct SlashList: View {
     .accessibilityElement(children: .contain)
     .accessibilityLabel("Templates")
     .accessibilityIdentifier("slash-templates")
+    .composerReveals(anchor, when: matches.count)
   }
 
   private func status(_ templates: [PostTemplate]) -> String {
@@ -423,9 +471,14 @@ struct SlashList: View {
       pick(template)
     } label: {
       HStack(spacing: ComposerMeasure.suggestItemGap) {
-        Text(name).virgaText(.textBase, weight: VirgaWeight.medium).foregroundStyle(theme.ink).lineLimit(1)
-        if !template.shortcut.isEmpty {
-          Text("/\(template.shortcut)").virgaText(.textSm).foregroundStyle(theme.muted).lineLimit(1)
+        // `.suggest-text`: the name over its shortcut, a column at line-height 1.3.
+        VStack(alignment: .leading, spacing: 0) {
+          Text(name).virgaText(.textBase, weight: VirgaWeight.medium, lineHeight: ComposerMeasure.suggestLineHeight)
+            .foregroundStyle(theme.ink).lineLimit(1)
+          if !template.shortcut.isEmpty {
+            Text("/\(template.shortcut)").virgaText(.textSm, lineHeight: ComposerMeasure.suggestLineHeight)
+              .foregroundStyle(theme.muted).lineLimit(1)
+          }
         }
         Spacer(minLength: 0)
       }

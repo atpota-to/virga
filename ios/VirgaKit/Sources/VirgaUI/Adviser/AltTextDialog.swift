@@ -101,7 +101,12 @@ struct AltTextDialog: View {
   private var kindChoice: some View {
     let kinds = AltTextFollowUp.altTextImageKinds
     return VStack(alignment: .leading, spacing: Measure.Adviser.altGroupGap) {
-      (Text("What kind of image is it? ") + Text("Optional").foregroundColor(theme.muted).fontWeight(.regular))
+      // `.alt-optional { font-weight: 400 }`: its own face, as the label's
+      // face (virgaText) is set at the label's weight, which a segment's
+      // fontWeight can't change.
+      (Text("What kind of image is it? ")
+        + Text("Optional").font(theme.font(size: theme.points(ThemeKit.fieldLabelFontSize), weight: VirgaWeight.regular))
+        .foregroundColor(theme.muted))
         .virgaText(size: theme.points(ThemeKit.fieldLabelFontSize), weight: ThemeKit.fieldLabelWeight)
         .foregroundStyle(theme.ink)
       FlowLayout(spacing: Measure.Adviser.altChipsGap, lineSpacing: Measure.Adviser.altChipsGap) {

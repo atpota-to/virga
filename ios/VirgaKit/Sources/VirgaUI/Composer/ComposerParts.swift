@@ -19,6 +19,11 @@ import VirgaSession
 /// Up to three languages: the chosen ones as tokens, and a search field
 /// that suggests more (by name or code). The suggestions open as the field
 /// takes focus, is pressed or is typed in, and close once one is added.
+/// `floating` lays them over whatever follows the field, as the web's
+/// `.lang-search .suggest-list` is, so nothing moves; the picker's container
+/// then draws it over its later siblings (`.zIndex(1)`). Without it they
+/// are in the flow under the field: a Settings row draws its hairline over
+/// what's in it, which would cross a list floating out of it.
 /// `bare` is for a place that already says what this is (a row in Settings):
 /// the label is VoiceOver's alone, not drawn, and there is no hint.
 struct LanguagePicker: View {
@@ -28,6 +33,7 @@ struct LanguagePicker: View {
   var hint: String?
   var disabled = false
   var bare = false
+  var floating = false
   @State private var query = ""
   @State private var open = false
   /// The query is being cleared by an add, not typed: it doesn't reopen the list.
@@ -83,29 +89,43 @@ struct LanguagePicker: View {
         }
         .onSubmit { add(options.first?.code, chosen: chosen) }
         .accessibilityLabel(label)
-      if !options.isEmpty {
-        VStack(alignment: .leading, spacing: 0) {
-          ForEach(options, id: \.code) { option in
-            Button {
-              add(option.code, chosen: chosen)
-            } label: {
-              HStack(spacing: ComposerMeasure.suggestItemGap) {
-                Text(option.name).foregroundStyle(theme.ink)
-                Spacer(minLength: 0)
-                Text(option.code).virgaText(.textSm).foregroundStyle(theme.muted)
-              }
-              .suggestRow()
-            }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier("language-\(option.code)")
+        // `.lang-search .suggest-list`: out of the flow (position:
+        // absolute), 4 under the field and as wide, over what follows.
+        // Its top is set 4 below the field's bottom.
+        .overlay(alignment: .bottom) {
+          if floating && !options.isEmpty {
+            suggestions(options, chosen: chosen)
+              .fixedSize(horizontal: false, vertical: true)
+              .alignmentGuide(.bottom) { d in d[.top] - ComposerMeasure.languagesListTop }
           }
         }
-        .padding(ComposerMeasure.suggestListPadding)
-        .suggestPop()
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel("Languages")
+      if !floating && !options.isEmpty {
+        suggestions(options, chosen: chosen)
       }
     }
+  }
+
+  private func suggestions(_ options: [LanguageChoice], chosen: [String]) -> some View {
+    VStack(alignment: .leading, spacing: 0) {
+      ForEach(options, id: \.code) { option in
+        Button {
+          add(option.code, chosen: chosen)
+        } label: {
+          HStack(spacing: ComposerMeasure.suggestItemGap) {
+            Text(option.name).foregroundStyle(theme.ink)
+            Spacer(minLength: 0)
+            Text(option.code).virgaText(.textSm).foregroundStyle(theme.muted)
+          }
+          .suggestRow()
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("language-\(option.code)")
+      }
+    }
+    .padding(ComposerMeasure.suggestListPadding)
+    .suggestPop()
+    .accessibilityElement(children: .contain)
+    .accessibilityLabel("Languages")
   }
 
   private func add(_ code: String?, chosen: [String]) {

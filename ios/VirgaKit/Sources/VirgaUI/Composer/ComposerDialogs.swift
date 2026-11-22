@@ -54,7 +54,11 @@ struct MetaDialog: View {
     let graphic = lab.jsIncludes(ComposerLanguages.graphicLabel.value)
     DialogFrame(title: "Language and content labels", onClose: onClose) {
       DialogForm {
-        LanguagePicker(value: $l, label: "Written in", hint: "Up to three. Bluesky uses these for people’s language filters.")
+        LanguagePicker(
+          value: $l, label: "Written in", hint: "Up to three. Bluesky uses these for people’s language filters.", floating: true
+        )
+        // Its suggestions float over Adult content (`z-index: 30`).
+        .zIndex(1)
         VStack(alignment: .leading, spacing: 0) {
           FieldLabel("Adult content")
           FieldHint("Label it if it is, so people who’d rather not see it don’t.")

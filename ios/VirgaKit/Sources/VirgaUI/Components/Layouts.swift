@@ -92,13 +92,14 @@ public struct FlowLayout: Layout {
 /// start, `rowGap` below: a wrapping flex row whose first item is
 /// `flex: 1 1 <basis>` and whose second is `flex: none` (a section's
 /// heading and its tools, a page's words and its controls). Beside, the
-/// two share their first text baseline (`align-items: baseline`) or their
-/// tops.
+/// two share their first text baseline (`align-items: baseline`), their
+/// middles (`centred`, `align-items: center`) or their tops.
 struct BesideOrUnder: Layout {
   var minLead: CGFloat
   var columnGap: CGFloat
   var rowGap: CGFloat
   var baseline: Bool
+  var centred = false
 
   struct Plan {
     var beside = true
@@ -135,6 +136,9 @@ struct BesideOrUnder: Layout {
       let leadLine = first.dimensions(in: leadProposal)[VerticalAlignment.firstTextBaseline]
       let trailLine = second.dimensions(in: .unspecified)[VerticalAlignment.firstTextBaseline]
       if leadLine >= trailLine { out.trailY = leadLine - trailLine } else { out.leadY = trailLine - leadLine }
+    } else if centred {
+      let lift = (out.lead.height - out.trail.height) / 2
+      if lift >= 0 { out.trailY = lift } else { out.leadY = -lift }
     }
     out.height = max(out.leadY + out.lead.height, out.trailY + out.trail.height)
     return out
