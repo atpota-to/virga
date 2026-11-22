@@ -25,9 +25,9 @@
 // latency=<ms>, now=<time>, appview=…), and the two kept from before,
 // `-VirgaDemoTerms YES` (terms=ask: the agreement screen first) and
 // `-VirgaDemoSignedOut YES` (signedout: the front page, both accounts
-// remembered). `-VirgaDemoPrefs '<json>'` starts it with those preferences
-// stored (`{"sky":"night","liveSky":true}`), as a browser's localStorage
-// would hold them.
+// remembered). `-VirgaDemoSky <night|day|dawn|dusk|clock>` and
+// `-VirgaDemoLiveSky YES` start it with those preferences stored, as a
+// browser's localStorage would hold them.
 
 #if canImport(UIKit)
 import Foundation
@@ -235,7 +235,7 @@ public final class AppModel {
         search: demoSearch(
           flags: defaults.string(forKey: "VirgaDemoFlags"), askTerms: defaults.bool(forKey: "VirgaDemoTerms"),
           signedOut: defaults.bool(forKey: "VirgaDemoSignedOut")),
-        prefs: defaults.string(forKey: "VirgaDemoPrefs"))
+        prefs: demoPreferences(sky: defaults.string(forKey: "VirgaDemoSky"), liveSky: defaults.bool(forKey: "VirgaDemoLiveSky")))
     }
     return device(flags: flags)
   }()
@@ -260,6 +260,16 @@ public final class AppModel {
       flags: flags, isDemo: false, stores: stores, environment: environment, lookups: .network,
       fetchProfile: { did in try await Atproto.getProfile(did) }, reporterTransport: HTTP.transport,
       archiveEnvironment: ArchiveEnvironment(files: stores.files, transport: environment.transport, clock: environment.clock))
+  }
+
+  /// The preferences the demo's launch arguments ask it to start with, as
+  /// stored, or nil when they ask for none.
+  static func demoPreferences(sky: String?, liveSky: Bool) -> String? {
+    guard sky != nil || liveSky else { return nil }
+    var prefs = Preferences()
+    if let sky, let choice = SkyChoice(rawValue: sky) { prefs.sky = choice }
+    prefs.liveSky = liveSky
+    return prefs.jsonString()
   }
 
   /// The harness's address for the demo's launch arguments: `?` and the
