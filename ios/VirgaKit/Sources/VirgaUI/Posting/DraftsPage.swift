@@ -400,7 +400,8 @@ struct DraftsPage: View {
       let out = try await DraftActions.scheduleDraft(
         view, did: did, settings: settings, agent: agent, scheduledFor: .string(scheduledFor), queued: queued, now: now,
         deps: try await deps(did))
-      let at = out.row["scheduledFor"].flatMap { $0.isTruthy ? $0 : nil } ?? .string(scheduledFor)
+      let given = out.row["scheduledFor"]
+      let at: JSONValue = given?.isTruthy == true ? given ?? .null : .string(scheduledFor)
       toasts?.push(
         queued
           ? "Added to your queue for \(HubModel.whenLabel(at, now: now))."
@@ -563,26 +564,26 @@ struct ScheduleDraftDialog: View {
   @ViewBuilder
   private func actions(tooSoon: Bool) -> some View {
     let cancel = Button("Cancel", action: onClose).buttonStyle(.virga).disabled(busy)
-    let queue = Button(slot.map { "Add to queue · \(HubModel.whenLabel(.string(JSDate.toISOString($0)), now: now))" } ?? "Add to queue") {
+    let queue = Button(slot.map { "Add to queue · \(HubModel.whenLabel(JSDate.toISOString($0).map(JSONValue.string), now: now))" } ?? "Add to queue") {
       go(queued: true)
     }
     .buttonStyle(.virga)
     .disabled(busy || slot == nil || !room.isEmpty)
     .accessibilityIdentifier("schedule-draft-queue")
-    let set = Button(busy ? "Scheduling…" : "Schedule") { go(queued: false) }
+    let confirm = Button(busy ? "Scheduling…" : "Schedule") { go(queued: false) }
       .buttonStyle(.virga(.primary))
       .disabled(busy || tooSoon || !room.isEmpty)
       .accessibilityIdentifier("schedule-draft-confirm")
     if theme.isPhone {
       VStack(spacing: theme.space2) {
-        set.frame(maxWidth: .infinity)
+        confirm.frame(maxWidth: .infinity)
         queue.frame(maxWidth: .infinity)
         cancel.frame(maxWidth: .infinity)
       }
     } else {
       cancel
       queue
-      set
+      confirm
     }
   }
 
@@ -609,7 +610,7 @@ struct ScheduleDraftDialog: View {
   }
 
   private func go(queued: Bool) {
-    let at = queued ? slot.map { JSDate.toISOString($0) } : JSDate.toISOString(when.timeIntervalSince1970 * 1000)
+    let at = queued ? slot.flatMap { JSDate.toISOString($0) } : JSDate.toISOString(when.timeIntervalSince1970 * 1000)
     guard let at else { return }
     busy = true
     error = ""

@@ -360,7 +360,7 @@ struct TimersTimerRow: View {
   let onCancel: () -> Void
 
   var body: some View {
-    let url = TimerService.timerPostUrl(row).flatMap(URL.init(string:))
+    let url = TimerService.timerPostUrl(row).flatMap { URL(string: $0) }
     var meta = [MetaItem(model.when, isKey: model.live)]
     if model.live, let check = row["checkAt"], check.isTruthy {
       meta.append(MetaItem(ScheduleModel.formatInZone(check, nil, now: now)))
@@ -392,12 +392,14 @@ struct TimersTimerRow: View {
       if !model.resolution.isEmpty { HubRowWhy(text: model.resolution) }
       if !model.acted.isEmpty { TimersActed(acted: model.acted) }
     }
-    let button =
-      model.canCancel
-      ? Button(model.cancelLabel, action: onCancel)
-        .buttonStyle(.virga(size: .small))
-        .disabled(busy)
-        .accessibilityIdentifier("timer-cancel") : nil
+    var button: AnyView?
+    if model.canCancel {
+      button = AnyView(
+        Button(model.cancelLabel, action: onCancel)
+          .buttonStyle(.virga(size: .small))
+          .disabled(busy)
+          .accessibilityIdentifier("timer-cancel"))
+    }
     return HubCornerRow(words: words, button: button, menu: nil)
       .opacity(busy ? Measure.Hub.busyOpacity : 1)
       .accessibilityElement(children: .contain)
@@ -459,9 +461,13 @@ struct TimersWaitingRow: View {
         .fixedSize(horizontal: false, vertical: true)
       HubRowWhy(text: "Its timer starts counting when it goes out.")
     }
-    let edit =
-      actions.edit && row["status"] == "pending"
-      ? Button("Edit") { onEdit(row) }.buttonStyle(.virga(size: .small)).accessibilityIdentifier("timer-waiting-edit") : nil
+    var edit: AnyView?
+    if actions.edit && row["status"] == "pending" {
+      edit = AnyView(
+        Button("Edit") { onEdit(row) }
+          .buttonStyle(.virga(size: .small))
+          .accessibilityIdentifier("timer-waiting-edit"))
+    }
     return HubCornerRow(words: words, button: edit, menu: nil)
       .accessibilityElement(children: .contain)
       .accessibilityIdentifier("timer-waiting-row")

@@ -323,7 +323,8 @@ struct PostedPage: View {
         .item(MenuItem("Save as a template", key: "template", systemImage: HubGlyph.template) {
           act(row, "The post couldn’t be read.") { post, _ in
             let from = PostedModel.templateSeedFrom(post.record)
-            let embed = from["embed"].flatMap { $0.isNull ? nil : $0 }
+            let found = from["embed"]
+            let embed: JSONValue? = found == nil || found?.isNull == true ? nil : found
             seed = PostedTemplateSeed(seed: TemplateSeed(text: from["text"]?.stringValue ?? "", embed: embed))
           }
         }))
@@ -381,13 +382,16 @@ struct PostedPage: View {
   private func postAgain(_ post: PostNow) async {
     guard let did else { return }
     let seed = PostedModel.postAgainSeed(post.record)
-    var fetched = PostedImages(files: [], missing: 0)
+    var files: [PostedImageFile] = []
+    var missing = 0
     if !seed.images.isEmpty && !seed.labelled {
       let target = try? await app.session.targetFor(did)
-      fetched = await PostedModel.fetchPostImages(
+      let fetched = await PostedModel.fetchPostImages(
         seed.images, did: did, pdsUrl: target?.pdsUrl, transport: app.archiveEnvironment.transport, files: TemporaryComposerFiles())
+      files = fetched.files
+      missing = fetched.missing
     }
-    let out = PostedModel.postAgainIntent(seed, did: did, files: fetched.files, missing: fetched.missing)
+    let out = PostedModel.postAgainIntent(seed, did: did, files: files, missing: missing)
     guard let intent = out.intent else {
       error = "This post is only pictures or video, and they couldn’t be fetched. Start a new post and add them again."
       return
