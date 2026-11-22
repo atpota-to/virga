@@ -138,9 +138,10 @@ extension Measure {
     public static let phoneDayMenuOutset: CGFloat = 14
     /// `.sched-copy-days > .check { min-height: 36px }`, 44 on touch.
     public static let copyDayHeight: CGFloat = 44
-    /// `.sched-add { gap: 8px }`, `.sched-add-input { width: 128px }`
+    /// `.sched-add { gap: 8px }`. (`.sched-add-input { width: 128px }` has
+    /// no measure: the system's compact time picker draws its pill at its
+    /// own width, and a 128 frame round it only left blank before Add.)
     public static let addGap: CGFloat = 8
-    public static let addInputWidth: CGFloat = 128
     /// `.sched-suggest-actions { gap: 12px 8px }`
     public static let suggestActionsGap: CGFloat = 8
     public static let suggestActionsLineGap: CGFloat = 12
