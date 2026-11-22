@@ -180,15 +180,16 @@ struct PostedPage: View {
     } else {
       HStack(alignment: .center, spacing: Measure.Tools.toolbarColumnGap) {
         // `.list-toolbar > .search { flex: 1 1 240px; max-width: 420px }`:
-        // the search grows to its 420 first; only what is left after that
-        // goes to the Spacer.
+        // the filter keeps its own width (it is laid out first, being
+        // a scroller at any narrower width), and the search takes what is
+        // left of the row, from 240 up to 420.
         SearchField("Search your posts", text: $query)
           .frame(minWidth: Measure.Tools.toolbarSearchMin, maxWidth: Measure.Tools.toolbarSearchMax)
           .layoutPriority(1)
           .accessibilityIdentifier("posted-search")
-        segmented
-        Spacer(minLength: 0)
+        segmented.layoutPriority(2)
       }
+      .frame(maxWidth: .infinity, alignment: .leading)
     }
   }
 

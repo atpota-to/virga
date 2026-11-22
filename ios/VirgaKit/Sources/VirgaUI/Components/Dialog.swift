@@ -196,6 +196,8 @@ struct DialogSheet<Inner: View, Foot: View>: ViewModifier {
   let hasActions: Bool
   var stackActions = false
   var autofocus = false
+  /// Its width on a wider window: `.dialog`'s 520, or the dialog's own.
+  var width: CGFloat = Measure.Dialog.width
   let inner: () -> Inner
   let foot: () -> Foot
 
@@ -204,7 +206,7 @@ struct DialogSheet<Inner: View, Foot: View>: ViewModifier {
       DialogFrame(
         title: title, onClose: { isPresented = false }, hasActions: hasActions, stackActions: stackActions, autofocus: autofocus,
         content: inner, actions: foot)
-        .dialogSheetSizing(phone: theme.isPhone, detents: size == .fit ? [.medium, .large] : [.large])
+        .dialogSheetSizing(phone: theme.isPhone, detents: size == .fit ? [.medium, .large] : [.large], width: width)
         .presentationBackground(theme.surface)
         .presentationCornerRadius(Measure.Dialog.radius)
     }
@@ -259,6 +261,7 @@ extension View {
     isPresented: Binding<Bool>,
     title: String,
     size: DialogSize = .fit,
+    width: CGFloat = Measure.Dialog.width,
     stackActions: Bool = false,
     autofocus: Bool = false,
     @ViewBuilder content: @escaping () -> Content,
@@ -267,7 +270,7 @@ extension View {
     modifier(
       DialogSheet(
         isPresented: isPresented, title: title, size: size, hasActions: true, stackActions: stackActions, autofocus: autofocus,
-        inner: content, foot: actions))
+        width: width, inner: content, foot: actions))
   }
 
   /// A dialog with no foot (its content ends it, as Add an account's does).
@@ -275,13 +278,14 @@ extension View {
     isPresented: Binding<Bool>,
     title: String,
     size: DialogSize = .fit,
+    width: CGFloat = Measure.Dialog.width,
     autofocus: Bool = false,
     @ViewBuilder content: @escaping () -> Content
   ) -> some View {
     modifier(
       DialogSheet(
-        isPresented: isPresented, title: title, size: size, hasActions: false, autofocus: autofocus, inner: content,
-        foot: { EmptyView() }))
+        isPresented: isPresented, title: title, size: size, hasActions: false, autofocus: autofocus, width: width,
+        inner: content, foot: { EmptyView() }))
   }
 }
 

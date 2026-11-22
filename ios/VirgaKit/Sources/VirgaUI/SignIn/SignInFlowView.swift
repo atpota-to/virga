@@ -85,7 +85,8 @@ public struct SignInFlowView: View {
         .modifier(SignInArriving(animation: theme.motion.animation(Measure.SignIn.stepIn), rise: Measure.SignIn.stepRise))
         .id(cardKey)
     }
-    .virgaDialog(isPresented: $howOpen, title: "How signing in works", size: .tall) {
+    // `.dialog.signin-how { width: min(600px, 100vw - 32px) }`.
+    .virgaDialog(isPresented: $howOpen, title: "How signing in works", size: .tall, width: Measure.SignIn.howWidth) {
       HowSigningInWorks(longSession: session.authMode == "backend")
     }
     .task(id: flow.step == .leaving ? flow.leaving?.trip : nil) {

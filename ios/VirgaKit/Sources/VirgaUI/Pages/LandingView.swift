@@ -47,8 +47,14 @@ struct LandingFrame<Bar: View, Main: View, Foot: View>: View {
           .frame(minHeight: theme.points(ThemeKit.landingBarHeight))
           .padding(.top, theme.points(theme.hasSidebar ? ThemeKit.landingBarSpaceAbove : ThemeKit.phoneLandingBarSpaceAbove))
         // Over the foot, so what floats from the main column (the handle's
-        // suggestions) is drawn and pressed above it.
-        main.zIndex(1)
+        // suggestions) is drawn and pressed above it. At its own height:
+        // `.landing-main { flex: 1 }` makes the column's box taller but
+        // stretches nothing in it, so a view that would grow (the identity
+        // bones' row while a name loads) keeps its height and only the
+        // spacer below takes what's to spare.
+        main
+          .fixedSize(horizontal: false, vertical: true)
+          .zIndex(1)
         // `.landing-main { flex: 1 }`: what the screen has to spare goes
         // under the main column, so the foot is at the bottom.
         Spacer(minLength: 0)
