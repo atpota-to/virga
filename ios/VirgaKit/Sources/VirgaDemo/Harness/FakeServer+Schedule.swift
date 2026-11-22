@@ -669,7 +669,10 @@ extension DemoServer {
   /// move would put too close, or nil.
   func strandsDeleteTime(_ payload: JSONValue, _ scheduledFor: JSONValue?) -> JSONValue? {
     guard let deleteAt = payload["selfDestruct"]?["deleteAt"], deleteAt.isTruthy else { return nil }
-    return dateParse(scheduledFor) > dateParse(deleteAt) - Double(FakeServer.minLifespanSeconds) * 1000 ? deleteAt : nil
+    guard dateParse(scheduledFor) > dateParse(deleteAt) - Double(FakeServer.minLifespanSeconds) * 1000 else {
+      return Optional<JSONValue>.none
+    }
+    return deleteAt
   }
 
   // MARK: Routes

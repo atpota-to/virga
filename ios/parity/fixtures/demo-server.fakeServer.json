@@ -5,6 +5,2619 @@
   ],
   "cases": [
     {
+      "id": "partial-and-moves",
+      "fn": "server",
+      "input": {
+        "search": "",
+        "zone": "UTC",
+        "options": {
+          "seed": false
+        },
+        "steps": [
+          {
+            "mint": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/create",
+            "token": 0,
+            "text": "{\"scheduledFor\":\"2026-11-15T00:46:40.000Z\",\"target\":\"bluesky\",\"queued\":false,\"payload\":{\"posts\":[{\"record\":{\"text\":\"first of two\",\"langs\":[\"en\"]}},{\"record\":{\"text\":\"second\"},\"embed\":{\"type\":\"images\",\"images\":[{\"mediaId\":\"bad\"}]}}],\"gates\":{\"threadgate\":null,\"postgate\":null},\"tz\":\"UTC\",\"selfDestruct\":null,\"mediaBytes\":{\"bad\":{\"base64\":\"@@\",\"encoding\":\"image/png\"}}}}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/create",
+            "token": 0,
+            "text": "{\"scheduledFor\":\"2026-11-15T01:46:40.000Z\",\"target\":\"bluesky\",\"queued\":false,\"payload\":{\"posts\":[{\"record\":{\"text\":\"pinned\",\"langs\":[\"en\"]}}],\"gates\":{\"threadgate\":null,\"postgate\":null},\"tz\":\"UTC\",\"selfDestruct\":{\"lifespanSeconds\":600,\"deleteAt\":\"2026-11-15T02:46:40.000Z\",\"effects\":[{\"action\":\"disableQuotes\"}]}}}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/create",
+            "token": 0,
+            "text": "{\"scheduledFor\":\"2026-11-15T00:46:40.000Z\",\"target\":\"bluesky\",\"queued\":false,\"payload\":{\"posts\":[{\"record\":{\"text\":\"too far to arm\",\"langs\":[\"en\"]}}],\"gates\":{\"threadgate\":null,\"postgate\":null},\"tz\":\"UTC\",\"selfDestruct\":{\"lifespanSeconds\":600,\"deleteAt\":\"2026-12-15T23:46:40.000Z\"}}}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/create",
+            "token": 0,
+            "text": "{\"scheduledFor\":\"2026-11-15T00:46:40.000Z\",\"target\":\"bluesky\",\"queued\":false,\"payload\":{\"posts\":[{\"record\":{\"text\":\"missed window\",\"langs\":[\"en\"]}}],\"gates\":{\"threadgate\":null,\"postgate\":null},\"tz\":\"UTC\",\"selfDestruct\":{\"lifespanSeconds\":600,\"deleteAt\":\"2026-11-15T00:52:40.000Z\"},\"repeat\":{\"every\":\"day\",\"tz\":\"UTC\",\"until\":\"2026-11-17\"}}}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/update",
+            "token": 0,
+            "text": "{\"id\":\"00000000-0000-4000-8000-000000000002\",\"scheduledFor\":\"2026-11-15T02:46:40.000Z\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/update",
+            "token": 0,
+            "text": "{\"id\":\"00000000-0000-4000-8000-000000000002\",\"scheduledFor\":\"2026-11-15T02:40:40.000Z\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/update",
+            "token": 0,
+            "text": "{\"id\":\"00000000-0000-4000-8000-000000000002\",\"scheduledFor\":\"2026-11-15T02:16:40.000Z\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/reorder",
+            "token": 0,
+            "text": "{\"moves\":[{\"id\":\"00000000-0000-4000-8000-000000000002\",\"scheduledFor\":\"2026-11-15T03:46:40.000Z\"}]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/reorder",
+            "token": 0,
+            "text": "{\"moves\":[{\"id\":\"00000000-0000-4000-8000-000000000002\",\"scheduledFor\":\"2026-11-15T01:16:40.000Z\"},{\"id\":\"00000000-0000-4000-8000-000000000002\",\"scheduledFor\":\"2026-11-15T01:26:40.000Z\"}]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/reorder",
+            "token": 0,
+            "text": "{\"moves\":\"all\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/reorder",
+            "token": 0,
+            "text": "{\"moves\":[]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/reorder",
+            "token": 0,
+            "text": "{\"moves\":[{\"id\":\"r0\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r1\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r2\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r3\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r4\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r5\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r6\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r7\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r8\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r9\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r10\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r11\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r12\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r13\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r14\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r15\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r16\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r17\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r18\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r19\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r20\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r21\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r22\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r23\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r24\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r25\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r26\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r27\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r28\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r29\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r30\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r31\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r32\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r33\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r34\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r35\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r36\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r37\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r38\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r39\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r40\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r41\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r42\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r43\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r44\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r45\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r46\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r47\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r48\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r49\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"},{\"id\":\"r50\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"}]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/reorder",
+            "token": 0,
+            "text": "{\"moves\":[null]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/reorder",
+            "token": 0,
+            "text": "{\"moves\":[{\"id\":\"00000000-0000-4000-8000-000000000002\",\"scheduledFor\":\"soon\"}]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/reorder",
+            "token": 0,
+            "text": "{\"moves\":[{\"id\":\"nope\",\"scheduledFor\":\"2026-11-15T00:46:40.000Z\"}]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/reorder",
+            "token": 0,
+            "text": "null"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/reorder",
+            "token": 0,
+            "text": "{\"moves\":[{\"id\":\"00000000-0000-4000-8000-000000000004\",\"scheduledFor\":\"2026-11-15T04:46:40.000Z\"},{\"id\":\"00000000-0000-4000-8000-000000000001\",\"scheduledFor\":\"2026-11-15T04:46:40.000Z\"}]}"
+          },
+          {
+            "advance": 3601000
+          },
+          {
+            "cron": true
+          },
+          {
+            "method": "GET",
+            "path": "/api/schedule/list",
+            "token": 0
+          },
+          {
+            "advance": 120000
+          },
+          {
+            "cron": true
+          },
+          {
+            "advance": 240000
+          },
+          {
+            "cron": true
+          },
+          {
+            "advance": 480000
+          },
+          {
+            "cron": true
+          },
+          {
+            "advance": 960000
+          },
+          {
+            "cron": true
+          },
+          {
+            "method": "GET",
+            "path": "/api/schedule/list",
+            "token": 0
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/update",
+            "token": 0,
+            "text": "{\"id\":\"00000000-0000-4000-8000-000000000001\",\"retry\":true}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/update",
+            "token": 0,
+            "text": "{\"id\":\"00000000-0000-4000-8000-000000000001\",\"scheduledFor\":\"2026-11-15T02:16:41.000Z\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/update",
+            "token": 0,
+            "text": "{\"id\":\"00000000-0000-4000-8000-000000000001\",\"scheduledFor\":\"2026-11-15T02:16:41.000Z\",\"target\":\"bluesky\",\"queued\":false,\"payload\":{\"posts\":[{\"record\":{\"text\":\"rewritten\",\"langs\":[\"en\"]}}],\"gates\":{\"threadgate\":null,\"postgate\":null},\"tz\":\"UTC\",\"selfDestruct\":null}}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/update",
+            "token": 0,
+            "text": "{\"id\":\"00000000-0000-4000-8000-000000000001\",\"skip\":true}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/reorder",
+            "token": 0,
+            "text": "{\"moves\":[{\"id\":\"00000000-0000-4000-8000-000000000001\",\"scheduledFor\":\"2026-11-15T02:16:41.000Z\"}]}"
+          },
+          {
+            "method": "GET",
+            "path": "/api/schedule/list",
+            "token": 0
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/update",
+            "token": 0,
+            "text": "{\"id\":\"00000000-0000-4000-8000-000000000003\",\"acknowledgeTimer\":true}"
+          },
+          {
+            "advance": 7200000
+          },
+          {
+            "cron": true
+          },
+          {
+            "method": "GET",
+            "path": "/api/self-destruct/list?history=1",
+            "token": 0
+          },
+          {
+            "advance": 86400000
+          },
+          {
+            "cron": true
+          },
+          {
+            "advance": 86400000
+          },
+          {
+            "cron": true
+          },
+          {
+            "advance": 86400000
+          },
+          {
+            "cron": true
+          },
+          {
+            "method": "GET",
+            "path": "/api/schedule/list",
+            "token": 0
+          },
+          {
+            "method": "POST",
+            "path": "/api/schedule/cancel",
+            "token": 0,
+            "text": "{\"id\":\"00000000-0000-4000-8000-000000000001\"}"
+          },
+          {
+            "method": "GET",
+            "path": "/api/schedule/list",
+            "token": 0
+          }
+        ]
+      },
+      "output": {
+        "steps": [
+          {
+            "token": "vg_0b30557a9fc4e90e33587da2c7ec11365b80a5caef14395e83a8cdf2173c6186"
+          },
+          {
+            "status": 201,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "scheduledFor": "2026-11-15T00:46:40.000Z",
+                "status": "pending",
+                "target": "bluesky",
+                "queued": false,
+                "payload": {
+                  "posts": [
+                    {
+                      "record": {
+                        "text": "first of two",
+                        "langs": [
+                          "en"
+                        ]
+                      }
+                    },
+                    {
+                      "record": {
+                        "text": "second"
+                      },
+                      "embed": {
+                        "type": "images",
+                        "images": [
+                          {
+                            "mediaId": "bad"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "gates": {
+                    "threadgate": null,
+                    "postgate": null
+                  },
+                  "media": {
+                    "bad": {
+                      "storagePath": "00000000-0000-4000-8000-000000000001/bad",
+                      "encoding": "image/png"
+                    }
+                  },
+                  "rkeys": [
+                    "3n2crzcwb22fe",
+                    "3n2crzcwbzcfe"
+                  ],
+                  "tz": "UTC",
+                  "selfDestruct": null
+                },
+                "clientKey": "virga",
+                "createdAt": "2026-11-14T23:46:40.000Z",
+                "seriesId": null,
+                "occurrence": null,
+                "resultUri": null,
+                "attempts": 0,
+                "maxAttempts": 5,
+                "lastError": null,
+                "lastErrorCode": null
+              }
+            }
+          },
+          {
+            "status": 201,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "id": "00000000-0000-4000-8000-000000000002",
+                "scheduledFor": "2026-11-15T01:46:40.000Z",
+                "status": "pending",
+                "target": "bluesky",
+                "queued": false,
+                "payload": {
+                  "posts": [
+                    {
+                      "record": {
+                        "text": "pinned",
+                        "langs": [
+                          "en"
+                        ]
+                      }
+                    }
+                  ],
+                  "gates": {
+                    "threadgate": null,
+                    "postgate": null
+                  },
+                  "media": {},
+                  "rkeys": [
+                    "3n2cvem5k22mn"
+                  ],
+                  "tz": "UTC",
+                  "selfDestruct": {
+                    "lifespanSeconds": 600,
+                    "deleteAt": "2026-11-15T02:46:40.000Z",
+                    "conditions": {
+                      "logic": "any",
+                      "clauses": [],
+                      "sense": "unless",
+                      "onSpare": "keep",
+                      "maxExtensions": 0
+                    },
+                    "effects": [
+                      {
+                        "action": "disableQuotes"
+                      }
+                    ]
+                  }
+                },
+                "clientKey": "virga",
+                "createdAt": "2026-11-14T23:46:40.000Z",
+                "seriesId": null,
+                "occurrence": null,
+                "resultUri": null,
+                "attempts": 0,
+                "maxAttempts": 5,
+                "lastError": null,
+                "lastErrorCode": null
+              }
+            }
+          },
+          {
+            "status": 201,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "id": "00000000-0000-4000-8000-000000000003",
+                "scheduledFor": "2026-11-15T00:46:40.000Z",
+                "status": "pending",
+                "target": "bluesky",
+                "queued": false,
+                "payload": {
+                  "posts": [
+                    {
+                      "record": {
+                        "text": "too far to arm",
+                        "langs": [
+                          "en"
+                        ]
+                      }
+                    }
+                  ],
+                  "gates": {
+                    "threadgate": null,
+                    "postgate": null
+                  },
+                  "media": {},
+                  "rkeys": [
+                    "3n2crzcwb22fl"
+                  ],
+                  "tz": "UTC",
+                  "selfDestruct": {
+                    "lifespanSeconds": 600,
+                    "deleteAt": "2026-12-15T23:46:40.000Z",
+                    "conditions": {
+                      "logic": "any",
+                      "clauses": [],
+                      "sense": "unless",
+                      "onSpare": "keep",
+                      "maxExtensions": 0
+                    },
+                    "effects": [
+                      {
+                        "action": "delete"
+                      }
+                    ]
+                  }
+                },
+                "clientKey": "virga",
+                "createdAt": "2026-11-14T23:46:40.000Z",
+                "seriesId": null,
+                "occurrence": null,
+                "resultUri": null,
+                "attempts": 0,
+                "maxAttempts": 5,
+                "lastError": null,
+                "lastErrorCode": null
+              }
+            }
+          },
+          {
+            "status": 201,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "id": "00000000-0000-4000-8000-000000000004",
+                "scheduledFor": "2026-11-15T00:46:40.000Z",
+                "status": "pending",
+                "target": "bluesky",
+                "queued": false,
+                "payload": {
+                  "posts": [
+                    {
+                      "record": {
+                        "text": "missed window",
+                        "langs": [
+                          "en"
+                        ]
+                      }
+                    }
+                  ],
+                  "gates": {
+                    "threadgate": null,
+                    "postgate": null
+                  },
+                  "media": {},
+                  "rkeys": [
+                    "3n2crzcwb22fs"
+                  ],
+                  "tz": "UTC",
+                  "selfDestruct": {
+                    "lifespanSeconds": 600,
+                    "deleteAt": "2026-11-15T00:52:40.000Z",
+                    "conditions": {
+                      "logic": "any",
+                      "clauses": [],
+                      "sense": "unless",
+                      "onSpare": "keep",
+                      "maxExtensions": 0
+                    },
+                    "effects": [
+                      {
+                        "action": "delete"
+                      }
+                    ]
+                  },
+                  "repeat": {
+                    "every": "day",
+                    "tz": "UTC",
+                    "until": "2026-11-17",
+                    "count": null,
+                    "anchor": {
+                      "date": "2026-11-15",
+                      "time": "00:46",
+                      "occurrence": 1
+                    }
+                  }
+                },
+                "clientKey": "virga",
+                "createdAt": "2026-11-14T23:46:40.000Z",
+                "seriesId": "00000000-0000-4000-8000-000000000005",
+                "occurrence": 1,
+                "resultUri": null,
+                "attempts": 0,
+                "maxAttempts": 5,
+                "lastError": null,
+                "lastErrorCode": null
+              }
+            }
+          },
+          {
+            "status": 409,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "error": "this post's delete time would come before it goes out, or within five minutes of it. pick an earlier slot, or change its lifespan first.",
+              "code": "DELETE_TIME_TOO_EARLY",
+              "deleteAt": "2026-11-15T02:46:40.000Z"
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "id": "00000000-0000-4000-8000-000000000002",
+                "scheduledFor": "2026-11-15T02:40:40.000Z",
+                "status": "pending",
+                "target": "bluesky",
+                "queued": false,
+                "payload": {
+                  "posts": [
+                    {
+                      "record": {
+                        "text": "pinned",
+                        "langs": [
+                          "en"
+                        ]
+                      }
+                    }
+                  ],
+                  "gates": {
+                    "threadgate": null,
+                    "postgate": null
+                  },
+                  "media": {},
+                  "rkeys": [
+                    "3n2cyf62ik2s4"
+                  ],
+                  "tz": "UTC",
+                  "selfDestruct": {
+                    "lifespanSeconds": 600,
+                    "deleteAt": "2026-11-15T02:46:40.000Z",
+                    "conditions": {
+                      "logic": "any",
+                      "clauses": [],
+                      "sense": "unless",
+                      "onSpare": "keep",
+                      "maxExtensions": 0
+                    },
+                    "effects": [
+                      {
+                        "action": "disableQuotes"
+                      }
+                    ]
+                  }
+                },
+                "clientKey": "virga",
+                "createdAt": "2026-11-14T23:46:40.000Z",
+                "seriesId": null,
+                "occurrence": null,
+                "resultUri": null,
+                "attempts": 0,
+                "maxAttempts": 5,
+                "lastError": null,
+                "lastErrorCode": null
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "id": "00000000-0000-4000-8000-000000000002",
+                "scheduledFor": "2026-11-15T02:16:40.000Z",
+                "status": "pending",
+                "target": "bluesky",
+                "queued": false,
+                "payload": {
+                  "posts": [
+                    {
+                      "record": {
+                        "text": "pinned",
+                        "langs": [
+                          "en"
+                        ]
+                      }
+                    }
+                  ],
+                  "gates": {
+                    "threadgate": null,
+                    "postgate": null
+                  },
+                  "media": {},
+                  "rkeys": [
+                    "3n2cx2ar6k25d"
+                  ],
+                  "tz": "UTC",
+                  "selfDestruct": {
+                    "lifespanSeconds": 600,
+                    "deleteAt": "2026-11-15T02:46:40.000Z",
+                    "conditions": {
+                      "logic": "any",
+                      "clauses": [],
+                      "sense": "unless",
+                      "onSpare": "keep",
+                      "maxExtensions": 0
+                    },
+                    "effects": [
+                      {
+                        "action": "disableQuotes"
+                      }
+                    ]
+                  }
+                },
+                "clientKey": "virga",
+                "createdAt": "2026-11-14T23:46:40.000Z",
+                "seriesId": null,
+                "occurrence": null,
+                "resultUri": null,
+                "attempts": 0,
+                "maxAttempts": 5,
+                "lastError": null,
+                "lastErrorCode": null
+              }
+            }
+          },
+          {
+            "status": 409,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "error": "the delete time on one of these posts would come before it goes out in this order, or within five minutes of it. move it earlier, or change its lifespan first. your queue is unchanged.",
+              "code": "DELETE_TIME_TOO_EARLY",
+              "id": "00000000-0000-4000-8000-000000000002",
+              "deleteAt": "2026-11-15T02:46:40.000Z"
+            }
+          },
+          {
+            "status": 400,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "error": "a post appears twice in that reorder.",
+              "code": "BAD_REQUEST"
+            }
+          },
+          {
+            "status": 400,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "error": "a reorder needs a list of posts to move.",
+              "code": "BAD_REQUEST"
+            }
+          },
+          {
+            "status": 400,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "error": "a reorder carries between one and 50 posts.",
+              "code": "BAD_REQUEST"
+            }
+          },
+          {
+            "status": 400,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "error": "a reorder carries between one and 50 posts.",
+              "code": "BAD_REQUEST"
+            }
+          },
+          {
+            "status": 400,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "error": "a post appears twice in that reorder.",
+              "code": "BAD_REQUEST"
+            }
+          },
+          {
+            "status": 400,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "error": "a reorder needs a new time for every post — in the future, and within 90 days.",
+              "code": "BAD_REQUEST"
+            }
+          },
+          {
+            "status": 409,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "error": "one of these posts can no longer be moved — it may already be publishing, or part of it may already be posted. your queue is unchanged.",
+              "code": "NOT_REORDERABLE"
+            }
+          },
+          {
+            "status": 500,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "error": "something went wrong. please try again.",
+              "code": "INTERNAL"
+            }
+          },
+          {
+            "status": 409,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "error": "the delete time on one of these posts would come before it goes out in this order, or within five minutes of it. move it earlier, or change its lifespan first. your queue is unchanged.",
+              "code": "DELETE_TIME_TOO_EARLY",
+              "id": "00000000-0000-4000-8000-000000000004",
+              "deleteAt": "2026-11-15T00:52:40.000Z"
+            }
+          },
+          null,
+          {
+            "published": [
+              [
+                "00000000-0000-4000-8000-000000000003",
+                "published",
+                "TIMER_NOT_ARMED"
+              ],
+              [
+                "00000000-0000-4000-8000-000000000004",
+                "published",
+                null
+              ]
+            ],
+            "settled": [],
+            "listed": 0
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": [
+                {
+                  "id": "00000000-0000-4000-8000-000000000001",
+                  "scheduledFor": "2026-11-15T00:46:40.000Z",
+                  "status": "pending",
+                  "target": "bluesky",
+                  "queued": false,
+                  "payload": {
+                    "posts": [
+                      {
+                        "record": {
+                          "text": "first of two",
+                          "langs": [
+                            "en"
+                          ]
+                        }
+                      },
+                      {
+                        "record": {
+                          "text": "second"
+                        },
+                        "embed": {
+                          "type": "images",
+                          "images": [
+                            {
+                              "mediaId": "bad"
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "gates": {
+                      "threadgate": null,
+                      "postgate": null
+                    },
+                    "media": {
+                      "bad": {
+                        "storagePath": "00000000-0000-4000-8000-000000000001/bad",
+                        "encoding": "image/png"
+                      }
+                    },
+                    "rkeys": [
+                      "3n2crzcwb22fe",
+                      "3n2crzcwbzcfe"
+                    ],
+                    "tz": "UTC",
+                    "selfDestruct": null
+                  },
+                  "clientKey": "virga",
+                  "createdAt": "2026-11-14T23:46:40.000Z",
+                  "seriesId": null,
+                  "occurrence": null,
+                  "partial": true,
+                  "resultUri": null,
+                  "attempts": 1,
+                  "maxAttempts": 5,
+                  "lastError": "Invalid character",
+                  "lastErrorCode": 5
+                },
+                {
+                  "id": "00000000-0000-4000-8000-000000000003",
+                  "scheduledFor": "2026-11-15T00:46:40.000Z",
+                  "status": "published",
+                  "target": "bluesky",
+                  "queued": false,
+                  "payload": {
+                    "posts": [
+                      {
+                        "record": {
+                          "text": "too far to arm",
+                          "langs": [
+                            "en"
+                          ]
+                        }
+                      }
+                    ],
+                    "gates": {
+                      "threadgate": null,
+                      "postgate": null
+                    },
+                    "media": {},
+                    "rkeys": [
+                      "3n2crzcwb22fl"
+                    ],
+                    "tz": "UTC",
+                    "selfDestruct": {
+                      "lifespanSeconds": 600,
+                      "deleteAt": "2026-12-15T23:46:40.000Z",
+                      "conditions": {
+                        "logic": "any",
+                        "clauses": [],
+                        "sense": "unless",
+                        "onSpare": "keep",
+                        "maxExtensions": 0
+                      },
+                      "effects": [
+                        {
+                          "action": "delete"
+                        }
+                      ]
+                    }
+                  },
+                  "clientKey": "virga",
+                  "createdAt": "2026-11-14T23:46:40.000Z",
+                  "seriesId": null,
+                  "occurrence": null,
+                  "partial": true,
+                  "resultUri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2crzcwb22fl",
+                  "attempts": 1,
+                  "maxAttempts": 5,
+                  "lastError": "this post published, but its self-destruct timer could not be set: a delete time can be at most thirty days away. set a timer by hand from the posted page.",
+                  "lastErrorCode": "TIMER_NOT_ARMED"
+                },
+                {
+                  "id": "00000000-0000-4000-8000-000000000002",
+                  "scheduledFor": "2026-11-15T02:16:40.000Z",
+                  "status": "pending",
+                  "target": "bluesky",
+                  "queued": false,
+                  "payload": {
+                    "posts": [
+                      {
+                        "record": {
+                          "text": "pinned",
+                          "langs": [
+                            "en"
+                          ]
+                        }
+                      }
+                    ],
+                    "gates": {
+                      "threadgate": null,
+                      "postgate": null
+                    },
+                    "media": {},
+                    "rkeys": [
+                      "3n2cx2ar6k25d"
+                    ],
+                    "tz": "UTC",
+                    "selfDestruct": {
+                      "lifespanSeconds": 600,
+                      "deleteAt": "2026-11-15T02:46:40.000Z",
+                      "conditions": {
+                        "logic": "any",
+                        "clauses": [],
+                        "sense": "unless",
+                        "onSpare": "keep",
+                        "maxExtensions": 0
+                      },
+                      "effects": [
+                        {
+                          "action": "disableQuotes"
+                        }
+                      ]
+                    }
+                  },
+                  "clientKey": "virga",
+                  "createdAt": "2026-11-14T23:46:40.000Z",
+                  "seriesId": null,
+                  "occurrence": null,
+                  "partial": false,
+                  "resultUri": null,
+                  "attempts": 0,
+                  "maxAttempts": 5,
+                  "lastError": null,
+                  "lastErrorCode": null
+                },
+                {
+                  "id": "00000000-0000-4000-8000-000000000006",
+                  "scheduledFor": "2026-11-16T00:46:00.000Z",
+                  "status": "pending",
+                  "target": "bluesky",
+                  "queued": false,
+                  "payload": {
+                    "posts": [
+                      {
+                        "record": {
+                          "text": "missed window",
+                          "langs": [
+                            "en"
+                          ]
+                        }
+                      }
+                    ],
+                    "gates": {
+                      "threadgate": null,
+                      "postgate": null
+                    },
+                    "media": {},
+                    "rkeys": [
+                      "3n2fch2ack2cz"
+                    ],
+                    "tz": "UTC",
+                    "selfDestruct": {
+                      "lifespanSeconds": 600,
+                      "deleteAt": null,
+                      "conditions": {
+                        "logic": "any",
+                        "clauses": [],
+                        "sense": "unless",
+                        "onSpare": "keep",
+                        "maxExtensions": 0
+                      },
+                      "effects": [
+                        {
+                          "action": "delete"
+                        }
+                      ]
+                    },
+                    "repeat": {
+                      "every": "day",
+                      "tz": "UTC",
+                      "until": "2026-11-17",
+                      "count": null,
+                      "anchor": {
+                        "date": "2026-11-15",
+                        "time": "00:46",
+                        "occurrence": 1
+                      }
+                    }
+                  },
+                  "clientKey": "virga",
+                  "createdAt": "2026-11-15T00:46:41.000Z",
+                  "seriesId": "00000000-0000-4000-8000-000000000005",
+                  "occurrence": 2,
+                  "partial": false,
+                  "resultUri": null,
+                  "attempts": 0,
+                  "maxAttempts": 5,
+                  "lastError": null,
+                  "lastErrorCode": null
+                }
+              ]
+            }
+          },
+          null,
+          {
+            "published": [],
+            "settled": [],
+            "listed": 0
+          },
+          null,
+          {
+            "published": [],
+            "settled": [
+              [
+                "00000000-0000-4000-8000-000000000007",
+                "deleted",
+                "deleted, on time"
+              ]
+            ],
+            "listed": 0
+          },
+          null,
+          {
+            "published": [],
+            "settled": [],
+            "listed": 0
+          },
+          null,
+          {
+            "published": [],
+            "settled": [],
+            "listed": 0
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": [
+                {
+                  "id": "00000000-0000-4000-8000-000000000001",
+                  "scheduledFor": "2026-11-15T00:46:40.000Z",
+                  "status": "failed",
+                  "target": "bluesky",
+                  "queued": false,
+                  "payload": {
+                    "posts": [
+                      {
+                        "record": {
+                          "text": "first of two",
+                          "langs": [
+                            "en"
+                          ]
+                        }
+                      },
+                      {
+                        "record": {
+                          "text": "second"
+                        },
+                        "embed": {
+                          "type": "images",
+                          "images": [
+                            {
+                              "mediaId": "bad"
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "gates": {
+                      "threadgate": null,
+                      "postgate": null
+                    },
+                    "media": {
+                      "bad": {
+                        "storagePath": "00000000-0000-4000-8000-000000000001/bad",
+                        "encoding": "image/png"
+                      }
+                    },
+                    "rkeys": [
+                      "3n2crzcwb22fe",
+                      "3n2crzcwbzcfe"
+                    ],
+                    "tz": "UTC",
+                    "selfDestruct": null
+                  },
+                  "clientKey": "virga",
+                  "createdAt": "2026-11-14T23:46:40.000Z",
+                  "seriesId": null,
+                  "occurrence": null,
+                  "partial": true,
+                  "resultUri": null,
+                  "attempts": 5,
+                  "maxAttempts": 5,
+                  "lastError": "Invalid character",
+                  "lastErrorCode": 5
+                },
+                {
+                  "id": "00000000-0000-4000-8000-000000000003",
+                  "scheduledFor": "2026-11-15T00:46:40.000Z",
+                  "status": "published",
+                  "target": "bluesky",
+                  "queued": false,
+                  "payload": {
+                    "posts": [
+                      {
+                        "record": {
+                          "text": "too far to arm",
+                          "langs": [
+                            "en"
+                          ]
+                        }
+                      }
+                    ],
+                    "gates": {
+                      "threadgate": null,
+                      "postgate": null
+                    },
+                    "media": {},
+                    "rkeys": [
+                      "3n2crzcwb22fl"
+                    ],
+                    "tz": "UTC",
+                    "selfDestruct": {
+                      "lifespanSeconds": 600,
+                      "deleteAt": "2026-12-15T23:46:40.000Z",
+                      "conditions": {
+                        "logic": "any",
+                        "clauses": [],
+                        "sense": "unless",
+                        "onSpare": "keep",
+                        "maxExtensions": 0
+                      },
+                      "effects": [
+                        {
+                          "action": "delete"
+                        }
+                      ]
+                    }
+                  },
+                  "clientKey": "virga",
+                  "createdAt": "2026-11-14T23:46:40.000Z",
+                  "seriesId": null,
+                  "occurrence": null,
+                  "partial": true,
+                  "resultUri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2crzcwb22fl",
+                  "attempts": 1,
+                  "maxAttempts": 5,
+                  "lastError": "this post published, but its self-destruct timer could not be set: a delete time can be at most thirty days away. set a timer by hand from the posted page.",
+                  "lastErrorCode": "TIMER_NOT_ARMED"
+                },
+                {
+                  "id": "00000000-0000-4000-8000-000000000002",
+                  "scheduledFor": "2026-11-15T02:16:40.000Z",
+                  "status": "pending",
+                  "target": "bluesky",
+                  "queued": false,
+                  "payload": {
+                    "posts": [
+                      {
+                        "record": {
+                          "text": "pinned",
+                          "langs": [
+                            "en"
+                          ]
+                        }
+                      }
+                    ],
+                    "gates": {
+                      "threadgate": null,
+                      "postgate": null
+                    },
+                    "media": {},
+                    "rkeys": [
+                      "3n2cx2ar6k25d"
+                    ],
+                    "tz": "UTC",
+                    "selfDestruct": {
+                      "lifespanSeconds": 600,
+                      "deleteAt": "2026-11-15T02:46:40.000Z",
+                      "conditions": {
+                        "logic": "any",
+                        "clauses": [],
+                        "sense": "unless",
+                        "onSpare": "keep",
+                        "maxExtensions": 0
+                      },
+                      "effects": [
+                        {
+                          "action": "disableQuotes"
+                        }
+                      ]
+                    }
+                  },
+                  "clientKey": "virga",
+                  "createdAt": "2026-11-14T23:46:40.000Z",
+                  "seriesId": null,
+                  "occurrence": null,
+                  "partial": false,
+                  "resultUri": null,
+                  "attempts": 0,
+                  "maxAttempts": 5,
+                  "lastError": null,
+                  "lastErrorCode": null
+                },
+                {
+                  "id": "00000000-0000-4000-8000-000000000006",
+                  "scheduledFor": "2026-11-16T00:46:00.000Z",
+                  "status": "pending",
+                  "target": "bluesky",
+                  "queued": false,
+                  "payload": {
+                    "posts": [
+                      {
+                        "record": {
+                          "text": "missed window",
+                          "langs": [
+                            "en"
+                          ]
+                        }
+                      }
+                    ],
+                    "gates": {
+                      "threadgate": null,
+                      "postgate": null
+                    },
+                    "media": {},
+                    "rkeys": [
+                      "3n2fch2ack2cz"
+                    ],
+                    "tz": "UTC",
+                    "selfDestruct": {
+                      "lifespanSeconds": 600,
+                      "deleteAt": null,
+                      "conditions": {
+                        "logic": "any",
+                        "clauses": [],
+                        "sense": "unless",
+                        "onSpare": "keep",
+                        "maxExtensions": 0
+                      },
+                      "effects": [
+                        {
+                          "action": "delete"
+                        }
+                      ]
+                    },
+                    "repeat": {
+                      "every": "day",
+                      "tz": "UTC",
+                      "until": "2026-11-17",
+                      "count": null,
+                      "anchor": {
+                        "date": "2026-11-15",
+                        "time": "00:46",
+                        "occurrence": 1
+                      }
+                    }
+                  },
+                  "clientKey": "virga",
+                  "createdAt": "2026-11-15T00:46:41.000Z",
+                  "seriesId": "00000000-0000-4000-8000-000000000005",
+                  "occurrence": 2,
+                  "partial": false,
+                  "resultUri": null,
+                  "attempts": 0,
+                  "maxAttempts": 5,
+                  "lastError": null,
+                  "lastErrorCode": null
+                }
+              ]
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "scheduledFor": "2026-11-15T00:46:40.000Z",
+                "status": "pending",
+                "target": "bluesky",
+                "queued": false,
+                "payload": {
+                  "posts": [
+                    {
+                      "record": {
+                        "text": "first of two",
+                        "langs": [
+                          "en"
+                        ]
+                      }
+                    },
+                    {
+                      "record": {
+                        "text": "second"
+                      },
+                      "embed": {
+                        "type": "images",
+                        "images": [
+                          {
+                            "mediaId": "bad"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "gates": {
+                    "threadgate": null,
+                    "postgate": null
+                  },
+                  "media": {
+                    "bad": {
+                      "storagePath": "00000000-0000-4000-8000-000000000001/bad",
+                      "encoding": "image/png"
+                    }
+                  },
+                  "rkeys": [
+                    "3n2crzcwb22fe",
+                    "3n2crzcwbzcfe"
+                  ],
+                  "tz": "UTC",
+                  "selfDestruct": null
+                },
+                "clientKey": "virga",
+                "createdAt": "2026-11-14T23:46:40.000Z",
+                "seriesId": null,
+                "occurrence": null,
+                "resultUri": null,
+                "attempts": 0,
+                "maxAttempts": 5,
+                "lastError": "Invalid character",
+                "lastErrorCode": 5
+              }
+            }
+          },
+          {
+            "status": 409,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "error": "part of this thread is already posted. the rest will follow on its own — cancel it here if you would rather finish by hand.",
+              "code": "PARTIALLY_PUBLISHED"
+            }
+          },
+          {
+            "status": 409,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "error": "part of this thread is already posted. the rest will follow on its own — cancel it here if you would rather finish by hand.",
+              "code": "PARTIALLY_PUBLISHED"
+            }
+          },
+          {
+            "status": 409,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "error": "there is nothing to skip here: this post is not repeating, or is already on its way out.",
+              "code": "NOT_SKIPPABLE"
+            }
+          },
+          {
+            "status": 409,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "error": "one of these posts can no longer be moved — it may already be publishing, or part of it may already be posted. your queue is unchanged.",
+              "code": "NOT_REORDERABLE"
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": [
+                {
+                  "id": "00000000-0000-4000-8000-000000000001",
+                  "scheduledFor": "2026-11-15T00:46:40.000Z",
+                  "status": "pending",
+                  "target": "bluesky",
+                  "queued": false,
+                  "payload": {
+                    "posts": [
+                      {
+                        "record": {
+                          "text": "first of two",
+                          "langs": [
+                            "en"
+                          ]
+                        }
+                      },
+                      {
+                        "record": {
+                          "text": "second"
+                        },
+                        "embed": {
+                          "type": "images",
+                          "images": [
+                            {
+                              "mediaId": "bad"
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "gates": {
+                      "threadgate": null,
+                      "postgate": null
+                    },
+                    "media": {
+                      "bad": {
+                        "storagePath": "00000000-0000-4000-8000-000000000001/bad",
+                        "encoding": "image/png"
+                      }
+                    },
+                    "rkeys": [
+                      "3n2crzcwb22fe",
+                      "3n2crzcwbzcfe"
+                    ],
+                    "tz": "UTC",
+                    "selfDestruct": null
+                  },
+                  "clientKey": "virga",
+                  "createdAt": "2026-11-14T23:46:40.000Z",
+                  "seriesId": null,
+                  "occurrence": null,
+                  "partial": true,
+                  "resultUri": null,
+                  "attempts": 0,
+                  "maxAttempts": 5,
+                  "lastError": "Invalid character",
+                  "lastErrorCode": 5
+                },
+                {
+                  "id": "00000000-0000-4000-8000-000000000003",
+                  "scheduledFor": "2026-11-15T00:46:40.000Z",
+                  "status": "published",
+                  "target": "bluesky",
+                  "queued": false,
+                  "payload": {
+                    "posts": [
+                      {
+                        "record": {
+                          "text": "too far to arm",
+                          "langs": [
+                            "en"
+                          ]
+                        }
+                      }
+                    ],
+                    "gates": {
+                      "threadgate": null,
+                      "postgate": null
+                    },
+                    "media": {},
+                    "rkeys": [
+                      "3n2crzcwb22fl"
+                    ],
+                    "tz": "UTC",
+                    "selfDestruct": {
+                      "lifespanSeconds": 600,
+                      "deleteAt": "2026-12-15T23:46:40.000Z",
+                      "conditions": {
+                        "logic": "any",
+                        "clauses": [],
+                        "sense": "unless",
+                        "onSpare": "keep",
+                        "maxExtensions": 0
+                      },
+                      "effects": [
+                        {
+                          "action": "delete"
+                        }
+                      ]
+                    }
+                  },
+                  "clientKey": "virga",
+                  "createdAt": "2026-11-14T23:46:40.000Z",
+                  "seriesId": null,
+                  "occurrence": null,
+                  "partial": true,
+                  "resultUri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2crzcwb22fl",
+                  "attempts": 1,
+                  "maxAttempts": 5,
+                  "lastError": "this post published, but its self-destruct timer could not be set: a delete time can be at most thirty days away. set a timer by hand from the posted page.",
+                  "lastErrorCode": "TIMER_NOT_ARMED"
+                },
+                {
+                  "id": "00000000-0000-4000-8000-000000000002",
+                  "scheduledFor": "2026-11-15T02:16:40.000Z",
+                  "status": "pending",
+                  "target": "bluesky",
+                  "queued": false,
+                  "payload": {
+                    "posts": [
+                      {
+                        "record": {
+                          "text": "pinned",
+                          "langs": [
+                            "en"
+                          ]
+                        }
+                      }
+                    ],
+                    "gates": {
+                      "threadgate": null,
+                      "postgate": null
+                    },
+                    "media": {},
+                    "rkeys": [
+                      "3n2cx2ar6k25d"
+                    ],
+                    "tz": "UTC",
+                    "selfDestruct": {
+                      "lifespanSeconds": 600,
+                      "deleteAt": "2026-11-15T02:46:40.000Z",
+                      "conditions": {
+                        "logic": "any",
+                        "clauses": [],
+                        "sense": "unless",
+                        "onSpare": "keep",
+                        "maxExtensions": 0
+                      },
+                      "effects": [
+                        {
+                          "action": "disableQuotes"
+                        }
+                      ]
+                    }
+                  },
+                  "clientKey": "virga",
+                  "createdAt": "2026-11-14T23:46:40.000Z",
+                  "seriesId": null,
+                  "occurrence": null,
+                  "partial": false,
+                  "resultUri": null,
+                  "attempts": 0,
+                  "maxAttempts": 5,
+                  "lastError": null,
+                  "lastErrorCode": null
+                },
+                {
+                  "id": "00000000-0000-4000-8000-000000000006",
+                  "scheduledFor": "2026-11-16T00:46:00.000Z",
+                  "status": "pending",
+                  "target": "bluesky",
+                  "queued": false,
+                  "payload": {
+                    "posts": [
+                      {
+                        "record": {
+                          "text": "missed window",
+                          "langs": [
+                            "en"
+                          ]
+                        }
+                      }
+                    ],
+                    "gates": {
+                      "threadgate": null,
+                      "postgate": null
+                    },
+                    "media": {},
+                    "rkeys": [
+                      "3n2fch2ack2cz"
+                    ],
+                    "tz": "UTC",
+                    "selfDestruct": {
+                      "lifespanSeconds": 600,
+                      "deleteAt": null,
+                      "conditions": {
+                        "logic": "any",
+                        "clauses": [],
+                        "sense": "unless",
+                        "onSpare": "keep",
+                        "maxExtensions": 0
+                      },
+                      "effects": [
+                        {
+                          "action": "delete"
+                        }
+                      ]
+                    },
+                    "repeat": {
+                      "every": "day",
+                      "tz": "UTC",
+                      "until": "2026-11-17",
+                      "count": null,
+                      "anchor": {
+                        "date": "2026-11-15",
+                        "time": "00:46",
+                        "occurrence": 1
+                      }
+                    }
+                  },
+                  "clientKey": "virga",
+                  "createdAt": "2026-11-15T00:46:41.000Z",
+                  "seriesId": "00000000-0000-4000-8000-000000000005",
+                  "occurrence": 2,
+                  "partial": false,
+                  "resultUri": null,
+                  "attempts": 0,
+                  "maxAttempts": 5,
+                  "lastError": null,
+                  "lastErrorCode": null
+                }
+              ]
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "id": "00000000-0000-4000-8000-000000000003",
+                "scheduledFor": "2026-11-15T00:46:40.000Z",
+                "status": "published",
+                "target": "bluesky",
+                "queued": false,
+                "payload": {
+                  "posts": [
+                    {
+                      "record": {
+                        "text": "too far to arm",
+                        "langs": [
+                          "en"
+                        ]
+                      }
+                    }
+                  ],
+                  "gates": {
+                    "threadgate": null,
+                    "postgate": null
+                  },
+                  "media": {},
+                  "rkeys": [
+                    "3n2crzcwb22fl"
+                  ],
+                  "tz": "UTC",
+                  "selfDestruct": {
+                    "lifespanSeconds": 600,
+                    "deleteAt": "2026-12-15T23:46:40.000Z",
+                    "conditions": {
+                      "logic": "any",
+                      "clauses": [],
+                      "sense": "unless",
+                      "onSpare": "keep",
+                      "maxExtensions": 0
+                    },
+                    "effects": [
+                      {
+                        "action": "delete"
+                      }
+                    ]
+                  }
+                },
+                "clientKey": "virga",
+                "createdAt": "2026-11-14T23:46:40.000Z",
+                "seriesId": null,
+                "occurrence": null,
+                "resultUri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2crzcwb22fl",
+                "attempts": 1,
+                "maxAttempts": 5,
+                "lastError": null,
+                "lastErrorCode": null
+              }
+            }
+          },
+          null,
+          {
+            "published": [
+              [
+                "00000000-0000-4000-8000-000000000002",
+                "published",
+                null
+              ]
+            ],
+            "settled": [],
+            "listed": 0
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": [
+                {
+                  "id": "00000000-0000-4000-8000-000000000008",
+                  "postUri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2cx2ar6k25d",
+                  "collection": "app.bsky.feed.post",
+                  "snippet": "pinned",
+                  "postedAt": "2026-11-15T03:16:41.000Z",
+                  "checkAt": "2026-11-15T03:26:41.000Z",
+                  "status": "armed",
+                  "conditions": {
+                    "logic": "any",
+                    "clauses": [],
+                    "sense": "unless",
+                    "onSpare": "keep",
+                    "maxExtensions": 0
+                  },
+                  "lifespanSeconds": 600,
+                  "extensions": 0,
+                  "effects": [
+                    {
+                      "action": "disableQuotes"
+                    }
+                  ],
+                  "acted": null,
+                  "clientKey": "virga",
+                  "createdAt": "2026-11-15T03:16:41.000Z",
+                  "lastCounts": null,
+                  "resolution": "the delete time had passed by the time this went out, so it runs for its length instead",
+                  "resolvedAt": null,
+                  "attempts": 0,
+                  "maxAttempts": 5,
+                  "lastError": null,
+                  "lastErrorCode": null
+                },
+                {
+                  "id": "00000000-0000-4000-8000-000000000007",
+                  "postUri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2crzcwb22fs",
+                  "collection": "app.bsky.feed.post",
+                  "snippet": "missed window",
+                  "postedAt": "2026-11-15T00:46:41.000Z",
+                  "checkAt": "2026-11-15T00:52:40.000Z",
+                  "status": "deleted",
+                  "conditions": {
+                    "logic": "any",
+                    "clauses": [],
+                    "sense": "unless",
+                    "onSpare": "keep",
+                    "maxExtensions": 0
+                  },
+                  "lifespanSeconds": 600,
+                  "extensions": 0,
+                  "effects": [
+                    {
+                      "action": "delete"
+                    }
+                  ],
+                  "acted": [
+                    {
+                      "action": "delete",
+                      "ok": true,
+                      "detail": "deleted"
+                    }
+                  ],
+                  "clientKey": "virga",
+                  "createdAt": "2026-11-15T00:46:41.000Z",
+                  "lastCounts": {
+                    "likes": 2,
+                    "replies": 0,
+                    "reposts": 0,
+                    "quotes": 0,
+                    "selfReplies": 0
+                  },
+                  "resolution": "deleted, on time",
+                  "resolvedAt": "2026-11-15T00:52:41.000Z",
+                  "attempts": 1,
+                  "maxAttempts": 5,
+                  "lastError": null,
+                  "lastErrorCode": null
+                }
+              ]
+            }
+          },
+          null,
+          {
+            "published": [
+              [
+                "00000000-0000-4000-8000-000000000006",
+                "published",
+                null
+              ]
+            ],
+            "settled": [
+              [
+                "00000000-0000-4000-8000-000000000008",
+                "acted",
+                "on time"
+              ]
+            ],
+            "listed": 0
+          },
+          null,
+          {
+            "published": [
+              [
+                "00000000-0000-4000-8000-000000000009",
+                "published",
+                null
+              ]
+            ],
+            "settled": [
+              [
+                "00000000-0000-4000-8000-00000000000a",
+                "deleted",
+                "deleted, on time"
+              ]
+            ],
+            "listed": 0
+          },
+          null,
+          {
+            "published": [],
+            "settled": [
+              [
+                "00000000-0000-4000-8000-00000000000b",
+                "deleted",
+                "deleted, on time"
+              ]
+            ],
+            "listed": 0
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": [
+                {
+                  "id": "00000000-0000-4000-8000-000000000001",
+                  "scheduledFor": "2026-11-15T00:46:40.000Z",
+                  "status": "pending",
+                  "target": "bluesky",
+                  "queued": false,
+                  "payload": {
+                    "posts": [
+                      {
+                        "record": {
+                          "text": "first of two",
+                          "langs": [
+                            "en"
+                          ]
+                        }
+                      },
+                      {
+                        "record": {
+                          "text": "second"
+                        },
+                        "embed": {
+                          "type": "images",
+                          "images": [
+                            {
+                              "mediaId": "bad"
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "gates": {
+                      "threadgate": null,
+                      "postgate": null
+                    },
+                    "media": {
+                      "bad": {
+                        "storagePath": "00000000-0000-4000-8000-000000000001/bad",
+                        "encoding": "image/png"
+                      }
+                    },
+                    "rkeys": [
+                      "3n2crzcwb22fe",
+                      "3n2crzcwbzcfe"
+                    ],
+                    "tz": "UTC",
+                    "selfDestruct": null
+                  },
+                  "clientKey": "virga",
+                  "createdAt": "2026-11-14T23:46:40.000Z",
+                  "seriesId": null,
+                  "occurrence": null,
+                  "partial": true,
+                  "resultUri": null,
+                  "attempts": 4,
+                  "maxAttempts": 5,
+                  "lastError": "Invalid character",
+                  "lastErrorCode": 5
+                }
+              ]
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "status": "cancelled"
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": []
+            }
+          }
+        ],
+        "end": {
+          "scheduled": {
+            "$part": {
+              "count": 6,
+              "sha256": "40c3cf64bc5bac270b349e6b148be9597fab162a5dfc27052736d8a9344e0295",
+              "samples": [
+                {
+                  "index": 0,
+                  "item": {
+                    "id": "00000000-0000-4000-8000-000000000001",
+                    "user_did": "did:plc:virgaharnessmira2zq4x",
+                    "scheduled_for": "2026-11-15T00:46:40.000Z",
+                    "status": "cancelled",
+                    "target": "bluesky",
+                    "queued": false,
+                    "payload": {
+                      "posts": [
+                        {
+                          "record": {
+                            "text": "first of two",
+                            "langs": [
+                              "en"
+                            ]
+                          }
+                        },
+                        {
+                          "record": {
+                            "text": "second"
+                          },
+                          "embed": {
+                            "type": "images",
+                            "images": [
+                              {
+                                "mediaId": "bad"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "gates": {
+                        "threadgate": null,
+                        "postgate": null
+                      },
+                      "media": {
+                        "bad": {
+                          "storagePath": "00000000-0000-4000-8000-000000000001/bad",
+                          "encoding": "image/png"
+                        }
+                      },
+                      "rkeys": [
+                        "3n2crzcwb22fe",
+                        "3n2crzcwbzcfe"
+                      ],
+                      "tz": "UTC",
+                      "selfDestruct": null
+                    },
+                    "series_id": null,
+                    "occurrence": null,
+                    "progress": [
+                      {
+                        "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2crzcwb22fe",
+                        "cid": "bafyreifkr7nucgimis4mioyjspriv2ifwolq4yor5b4c3vdf43cnfqvicq"
+                      }
+                    ],
+                    "result_uri": null,
+                    "result_cid": null,
+                    "attempts": 4,
+                    "max_attempts": 5,
+                    "next_attempt_at": "2026-11-18T03:32:41.000Z",
+                    "last_error": "Invalid character",
+                    "last_error_code": 5,
+                    "created_at": "2026-11-14T23:46:40.000Z",
+                    "updated_at": "2026-11-18T03:16:41.000Z"
+                  }
+                },
+                {
+                  "index": 1,
+                  "item": {
+                    "id": "00000000-0000-4000-8000-000000000002",
+                    "user_did": "did:plc:virgaharnessmira2zq4x",
+                    "scheduled_for": "2026-11-15T02:16:40.000Z",
+                    "status": "published",
+                    "target": "bluesky",
+                    "queued": false,
+                    "payload": {
+                      "posts": [
+                        {
+                          "record": {
+                            "text": "pinned",
+                            "langs": [
+                              "en"
+                            ]
+                          }
+                        }
+                      ],
+                      "gates": {
+                        "threadgate": null,
+                        "postgate": null
+                      },
+                      "media": {},
+                      "rkeys": [
+                        "3n2cx2ar6k25d"
+                      ],
+                      "tz": "UTC",
+                      "selfDestruct": {
+                        "lifespanSeconds": 600,
+                        "deleteAt": "2026-11-15T02:46:40.000Z",
+                        "conditions": {
+                          "logic": "any",
+                          "clauses": [],
+                          "sense": "unless",
+                          "onSpare": "keep",
+                          "maxExtensions": 0
+                        },
+                        "effects": [
+                          {
+                            "action": "disableQuotes"
+                          }
+                        ]
+                      }
+                    },
+                    "series_id": null,
+                    "occurrence": null,
+                    "progress": [
+                      {
+                        "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2cx2ar6k25d",
+                        "cid": "bafyreiaozz2xiygkum2i4ifsqjj2msi4mqzv5t7kc24xt2clxbzsfc2wku"
+                      }
+                    ],
+                    "result_uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2cx2ar6k25d",
+                    "result_cid": "bafyreiaozz2xiygkum2i4ifsqjj2msi4mqzv5t7kc24xt2clxbzsfc2wku",
+                    "attempts": 1,
+                    "max_attempts": 5,
+                    "next_attempt_at": null,
+                    "last_error": null,
+                    "last_error_code": null,
+                    "created_at": "2026-11-14T23:46:40.000Z",
+                    "updated_at": "2026-11-15T03:16:41.000Z"
+                  }
+                },
+                {
+                  "index": 3,
+                  "item": {
+                    "id": "00000000-0000-4000-8000-000000000004",
+                    "user_did": "did:plc:virgaharnessmira2zq4x",
+                    "scheduled_for": "2026-11-15T00:46:40.000Z",
+                    "status": "published",
+                    "target": "bluesky",
+                    "queued": false,
+                    "payload": {
+                      "posts": [
+                        {
+                          "record": {
+                            "text": "missed window",
+                            "langs": [
+                              "en"
+                            ]
+                          }
+                        }
+                      ],
+                      "gates": {
+                        "threadgate": null,
+                        "postgate": null
+                      },
+                      "media": {},
+                      "rkeys": [
+                        "3n2crzcwb22fs"
+                      ],
+                      "tz": "UTC",
+                      "selfDestruct": {
+                        "lifespanSeconds": 600,
+                        "deleteAt": "2026-11-15T00:52:40.000Z",
+                        "conditions": {
+                          "logic": "any",
+                          "clauses": [],
+                          "sense": "unless",
+                          "onSpare": "keep",
+                          "maxExtensions": 0
+                        },
+                        "effects": [
+                          {
+                            "action": "delete"
+                          }
+                        ]
+                      }
+                    },
+                    "series_id": "00000000-0000-4000-8000-000000000005",
+                    "occurrence": 1,
+                    "progress": [
+                      {
+                        "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2crzcwb22fs",
+                        "cid": "bafyreidg7be4bas3pmboiqjl6224i63ctdwncupfxpy3ait43wdpgeewae"
+                      }
+                    ],
+                    "result_uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2crzcwb22fs",
+                    "result_cid": "bafyreidg7be4bas3pmboiqjl6224i63ctdwncupfxpy3ait43wdpgeewae",
+                    "attempts": 1,
+                    "max_attempts": 5,
+                    "next_attempt_at": null,
+                    "last_error": null,
+                    "last_error_code": null,
+                    "created_at": "2026-11-14T23:46:40.000Z",
+                    "updated_at": "2026-11-15T00:46:41.000Z"
+                  }
+                },
+                {
+                  "index": 5,
+                  "item": {
+                    "id": "00000000-0000-4000-8000-000000000009",
+                    "user_did": "did:plc:virgaharnessmira2zq4x",
+                    "scheduled_for": "2026-11-17T00:46:00.000Z",
+                    "status": "published",
+                    "target": "bluesky",
+                    "queued": false,
+                    "payload": {
+                      "posts": [
+                        {
+                          "record": {
+                            "text": "missed window",
+                            "langs": [
+                              "en"
+                            ]
+                          }
+                        }
+                      ],
+                      "gates": {
+                        "threadgate": null,
+                        "postgate": null
+                      },
+                      "media": {},
+                      "rkeys": [
+                        "3n2hsvxp2k2yk"
+                      ],
+                      "tz": "UTC",
+                      "selfDestruct": {
+                        "lifespanSeconds": 600,
+                        "deleteAt": null,
+                        "conditions": {
+                          "logic": "any",
+                          "clauses": [],
+                          "sense": "unless",
+                          "onSpare": "keep",
+                          "maxExtensions": 0
+                        },
+                        "effects": [
+                          {
+                            "action": "delete"
+                          }
+                        ]
+                      },
+                      "repeat": {
+                        "every": "day",
+                        "tz": "UTC",
+                        "until": "2026-11-17",
+                        "count": null,
+                        "anchor": {
+                          "date": "2026-11-15",
+                          "time": "00:46",
+                          "occurrence": 1
+                        }
+                      }
+                    },
+                    "series_id": "00000000-0000-4000-8000-000000000005",
+                    "occurrence": 3,
+                    "progress": [
+                      {
+                        "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2hsvxp2k2yk",
+                        "cid": "bafyreiaflbl47abmaanr625qray6pgoqocy3cxbwmzkx2n3gaynwzmk564"
+                      }
+                    ],
+                    "result_uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2hsvxp2k2yk",
+                    "result_cid": "bafyreiaflbl47abmaanr625qray6pgoqocy3cxbwmzkx2n3gaynwzmk564",
+                    "attempts": 1,
+                    "max_attempts": 5,
+                    "next_attempt_at": null,
+                    "last_error": null,
+                    "last_error_code": null,
+                    "created_at": "2026-11-16T03:16:41.000Z",
+                    "updated_at": "2026-11-17T03:16:41.000Z"
+                  }
+                }
+              ]
+            }
+          },
+          "timers": [
+            {
+              "id": "00000000-0000-4000-8000-000000000007",
+              "user_did": "did:plc:virgaharnessmira2zq4x",
+              "post_uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2crzcwb22fs",
+              "post_cid": "bafyreidg7be4bas3pmboiqjl6224i63ctdwncupfxpy3ait43wdpgeewae",
+              "collection": "app.bsky.feed.post",
+              "rkey": "3n2crzcwb22fs",
+              "extra_uris": [],
+              "snippet": "missed window",
+              "posted_at": "2026-11-15T00:46:41.000Z",
+              "check_at": "2026-11-15T00:52:40.000Z",
+              "status": "deleted",
+              "conditions": {
+                "logic": "any",
+                "clauses": [],
+                "sense": "unless",
+                "onSpare": "keep",
+                "maxExtensions": 0
+              },
+              "effects": [
+                {
+                  "action": "delete"
+                }
+              ],
+              "acted": [
+                {
+                  "action": "delete",
+                  "ok": true,
+                  "detail": "deleted"
+                }
+              ],
+              "lifespan_seconds": 600,
+              "extensions": 0,
+              "last_counts": {
+                "likes": 2,
+                "replies": 0,
+                "reposts": 0,
+                "quotes": 0,
+                "selfReplies": 0
+              },
+              "resolution": "deleted, on time",
+              "resolved_at": "2026-11-15T00:52:41.000Z",
+              "attempts": 1,
+              "max_attempts": 5,
+              "last_error": null,
+              "last_error_code": null,
+              "created_at": "2026-11-15T00:46:41.000Z"
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000008",
+              "user_did": "did:plc:virgaharnessmira2zq4x",
+              "post_uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2cx2ar6k25d",
+              "post_cid": "bafyreiaozz2xiygkum2i4ifsqjj2msi4mqzv5t7kc24xt2clxbzsfc2wku",
+              "collection": "app.bsky.feed.post",
+              "rkey": "3n2cx2ar6k25d",
+              "extra_uris": [],
+              "snippet": "pinned",
+              "posted_at": "2026-11-15T03:16:41.000Z",
+              "check_at": "2026-11-15T03:26:41.000Z",
+              "status": "acted",
+              "conditions": {
+                "logic": "any",
+                "clauses": [],
+                "sense": "unless",
+                "onSpare": "keep",
+                "maxExtensions": 0
+              },
+              "effects": [
+                {
+                  "action": "disableQuotes"
+                }
+              ],
+              "acted": [
+                {
+                  "action": "disableQuotes",
+                  "ok": true,
+                  "detail": "quoting turned off"
+                }
+              ],
+              "lifespan_seconds": 600,
+              "extensions": 0,
+              "last_counts": {
+                "likes": 60,
+                "replies": 20,
+                "reposts": 12,
+                "quotes": 4,
+                "selfReplies": 0
+              },
+              "resolution": "on time",
+              "resolved_at": "2026-11-16T03:16:41.000Z",
+              "attempts": 1,
+              "max_attempts": 5,
+              "last_error": null,
+              "last_error_code": null,
+              "created_at": "2026-11-15T03:16:41.000Z"
+            },
+            {
+              "id": "00000000-0000-4000-8000-00000000000a",
+              "user_did": "did:plc:virgaharnessmira2zq4x",
+              "post_uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2fch2ack2cz",
+              "post_cid": "bafyreibzbf57qyhlcc3rwjz54dj6wtdhjrfatbcsazz43rsuy2m4w7sko4",
+              "collection": "app.bsky.feed.post",
+              "rkey": "3n2fch2ack2cz",
+              "extra_uris": [],
+              "snippet": "missed window",
+              "posted_at": "2026-11-16T03:16:41.000Z",
+              "check_at": "2026-11-16T03:26:41.000Z",
+              "status": "deleted",
+              "conditions": {
+                "logic": "any",
+                "clauses": [],
+                "sense": "unless",
+                "onSpare": "keep",
+                "maxExtensions": 0
+              },
+              "effects": [
+                {
+                  "action": "delete"
+                }
+              ],
+              "acted": [
+                {
+                  "action": "delete",
+                  "ok": true,
+                  "detail": "deleted"
+                }
+              ],
+              "lifespan_seconds": 600,
+              "extensions": 0,
+              "last_counts": {
+                "likes": 60,
+                "replies": 20,
+                "reposts": 12,
+                "quotes": 4,
+                "selfReplies": 0
+              },
+              "resolution": "deleted, on time",
+              "resolved_at": "2026-11-17T03:16:41.000Z",
+              "attempts": 1,
+              "max_attempts": 5,
+              "last_error": null,
+              "last_error_code": null,
+              "created_at": "2026-11-16T03:16:41.000Z"
+            },
+            {
+              "id": "00000000-0000-4000-8000-00000000000b",
+              "user_did": "did:plc:virgaharnessmira2zq4x",
+              "post_uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2hsvxp2k2yk",
+              "post_cid": "bafyreiaflbl47abmaanr625qray6pgoqocy3cxbwmzkx2n3gaynwzmk564",
+              "collection": "app.bsky.feed.post",
+              "rkey": "3n2hsvxp2k2yk",
+              "extra_uris": [],
+              "snippet": "missed window",
+              "posted_at": "2026-11-17T03:16:41.000Z",
+              "check_at": "2026-11-17T03:26:41.000Z",
+              "status": "deleted",
+              "conditions": {
+                "logic": "any",
+                "clauses": [],
+                "sense": "unless",
+                "onSpare": "keep",
+                "maxExtensions": 0
+              },
+              "effects": [
+                {
+                  "action": "delete"
+                }
+              ],
+              "acted": [
+                {
+                  "action": "delete",
+                  "ok": true,
+                  "detail": "deleted"
+                }
+              ],
+              "lifespan_seconds": 600,
+              "extensions": 0,
+              "last_counts": {
+                "likes": 60,
+                "replies": 20,
+                "reposts": 12,
+                "quotes": 4,
+                "selfReplies": 0
+              },
+              "resolution": "deleted, on time",
+              "resolved_at": "2026-11-18T03:16:41.000Z",
+              "attempts": 1,
+              "max_attempts": 5,
+              "last_error": null,
+              "last_error_code": null,
+              "created_at": "2026-11-17T03:16:41.000Z"
+            }
+          ],
+          "defense": {
+            "lists": [],
+            "kept": [],
+            "plans": [],
+            "decisions": [],
+            "jobs": [],
+            "links": {}
+          },
+          "log": [
+            {
+              "at": "2026-11-14T23:46:40.000Z",
+              "line": "scheduled 00000000-0000-4000-8000-000000000001 for 2026-11-15T00:46:40.000Z"
+            },
+            {
+              "at": "2026-11-14T23:46:40.000Z",
+              "line": "scheduled 00000000-0000-4000-8000-000000000002 for 2026-11-15T01:46:40.000Z"
+            },
+            {
+              "at": "2026-11-14T23:46:40.000Z",
+              "line": "scheduled 00000000-0000-4000-8000-000000000003 for 2026-11-15T00:46:40.000Z"
+            },
+            {
+              "at": "2026-11-14T23:46:40.000Z",
+              "line": "scheduled 00000000-0000-4000-8000-000000000004 for 2026-11-15T00:46:40.000Z"
+            },
+            {
+              "at": "2026-11-14T23:46:40.000Z",
+              "line": "updated 00000000-0000-4000-8000-000000000002"
+            },
+            {
+              "at": "2026-11-14T23:46:40.000Z",
+              "line": "updated 00000000-0000-4000-8000-000000000002"
+            },
+            {
+              "at": "2026-11-15T00:46:41.000Z",
+              "line": "couldn't publish 00000000-0000-4000-8000-000000000001: Invalid character"
+            },
+            {
+              "at": "2026-11-15T00:46:41.000Z",
+              "line": "published 00000000-0000-4000-8000-000000000003 as at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2crzcwb22fl"
+            },
+            {
+              "at": "2026-11-15T00:46:41.000Z",
+              "line": "occurrence 2 of 00000000-0000-4000-8000-000000000005 waits for 2026-11-16T00:46:00.000Z"
+            },
+            {
+              "at": "2026-11-15T00:46:41.000Z",
+              "line": "published 00000000-0000-4000-8000-000000000004 as at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2crzcwb22fs"
+            },
+            {
+              "at": "2026-11-15T00:48:41.000Z",
+              "line": "couldn't publish 00000000-0000-4000-8000-000000000001: Invalid character"
+            },
+            {
+              "at": "2026-11-15T00:52:41.000Z",
+              "line": "couldn't publish 00000000-0000-4000-8000-000000000001: Invalid character"
+            },
+            {
+              "at": "2026-11-15T00:52:41.000Z",
+              "line": "timer 00000000-0000-4000-8000-000000000007 deleted, on time"
+            },
+            {
+              "at": "2026-11-15T01:00:41.000Z",
+              "line": "couldn't publish 00000000-0000-4000-8000-000000000001: Invalid character"
+            },
+            {
+              "at": "2026-11-15T01:16:41.000Z",
+              "line": "couldn't publish 00000000-0000-4000-8000-000000000001: Invalid character"
+            },
+            {
+              "at": "2026-11-15T01:16:41.000Z",
+              "line": "updated 00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "at": "2026-11-15T01:16:41.000Z",
+              "line": "updated 00000000-0000-4000-8000-000000000003"
+            },
+            {
+              "at": "2026-11-15T03:16:41.000Z",
+              "line": "couldn't publish 00000000-0000-4000-8000-000000000001: Invalid character"
+            },
+            {
+              "at": "2026-11-15T03:16:41.000Z",
+              "line": "published 00000000-0000-4000-8000-000000000002 as at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2cx2ar6k25d"
+            },
+            {
+              "at": "2026-11-16T03:16:41.000Z",
+              "line": "couldn't publish 00000000-0000-4000-8000-000000000001: Invalid character"
+            },
+            {
+              "at": "2026-11-16T03:16:41.000Z",
+              "line": "occurrence 3 of 00000000-0000-4000-8000-000000000005 waits for 2026-11-17T00:46:00.000Z"
+            },
+            {
+              "at": "2026-11-16T03:16:41.000Z",
+              "line": "published 00000000-0000-4000-8000-000000000006 as at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2fch2ack2cz"
+            },
+            {
+              "at": "2026-11-16T03:16:41.000Z",
+              "line": "timer 00000000-0000-4000-8000-000000000008 on time"
+            },
+            {
+              "at": "2026-11-17T03:16:41.000Z",
+              "line": "couldn't publish 00000000-0000-4000-8000-000000000001: Invalid character"
+            },
+            {
+              "at": "2026-11-17T03:16:41.000Z",
+              "line": "published 00000000-0000-4000-8000-000000000009 as at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2hsvxp2k2yk"
+            },
+            {
+              "at": "2026-11-17T03:16:41.000Z",
+              "line": "timer 00000000-0000-4000-8000-00000000000a deleted, on time"
+            },
+            {
+              "at": "2026-11-18T03:16:41.000Z",
+              "line": "couldn't publish 00000000-0000-4000-8000-000000000001: Invalid character"
+            },
+            {
+              "at": "2026-11-18T03:16:41.000Z",
+              "line": "timer 00000000-0000-4000-8000-00000000000b deleted, on time"
+            },
+            {
+              "at": "2026-11-18T03:16:41.000Z",
+              "line": "cancelled 00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "worlds": [
+            {
+              "revision": 10,
+              "posts": 1034,
+              "writtenPosts": [
+                {
+                  "rkey": "3n2cx2ar6k25d",
+                  "cid": "bafyreiaozz2xiygkum2i4ifsqjj2msi4mqzv5t7kc24xt2clxbzsfc2wku",
+                  "record": {
+                    "$type": "app.bsky.feed.post",
+                    "text": "pinned",
+                    "createdAt": "2026-11-15T02:16:40.000Z",
+                    "langs": [
+                      "en"
+                    ]
+                  }
+                },
+                {
+                  "rkey": "3n2crzcwb22fl",
+                  "cid": "bafyreib6rx6tinf263pljsqkuvlw7j2dkhd7vwgas4a5pssn5atr2cpjje",
+                  "record": {
+                    "$type": "app.bsky.feed.post",
+                    "text": "too far to arm",
+                    "createdAt": "2026-11-15T00:46:40.000Z",
+                    "langs": [
+                      "en"
+                    ]
+                  }
+                },
+                {
+                  "rkey": "3n2crzcwb22fe",
+                  "cid": "bafyreifkr7nucgimis4mioyjspriv2ifwolq4yor5b4c3vdf43cnfqvicq",
+                  "record": {
+                    "$type": "app.bsky.feed.post",
+                    "text": "first of two",
+                    "createdAt": "2026-11-15T00:46:40.000Z",
+                    "langs": [
+                      "en"
+                    ]
+                  }
+                }
+              ],
+              "written": [
+                [
+                  "net.anisota.feed.template/3mtaep67i224k",
+                  {
+                    "value": {
+                      "$type": "net.anisota.feed.template",
+                      "name": "Thanks for the follow",
+                      "text": "Thanks for the follow, {{their.firstName}}!",
+                      "use": "reply",
+                      "shortcut": "thanks",
+                      "createdAt": "2026-08-16T23:46:40.000Z"
+                    },
+                    "cid": "bafyharness"
+                  }
+                ],
+                [
+                  "net.anisota.feed.template/3musnzlgi224l",
+                  {
+                    "value": {
+                      "$type": "net.anisota.feed.template",
+                      "name": "Event reminder",
+                      "text": "Reminder: {{event}} is on {{day}}. Everyone welcome.",
+                      "use": "post",
+                      "shortcut": "remind",
+                      "variables": [
+                        {
+                          "key": "event",
+                          "label": "What is on"
+                        },
+                        {
+                          "key": "day",
+                          "label": "Which day",
+                          "kind": "choice",
+                          "choices": [
+                            "Saturday",
+                            "Sunday"
+                          ]
+                        }
+                      ],
+                      "createdAt": "2026-09-05T23:46:40.000Z"
+                    },
+                    "cid": "bafyharness"
+                  }
+                ],
+                [
+                  "app.bsky.feed.postgate/3n2cx2ar6k25d",
+                  {
+                    "value": {
+                      "$type": "app.bsky.feed.postgate",
+                      "post": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2cx2ar6k25d",
+                      "createdAt": "2026-11-16T03:16:41.000Z",
+                      "detachedEmbeddingUris": [],
+                      "embeddingRules": [
+                        {
+                          "$type": "app.bsky.feed.postgate#disableRule"
+                        }
+                      ]
+                    },
+                    "cid": "bafyreie5rlcsslmevzlyezrd4k4ecrxwkcrirczva552jnecgdjutmziv4"
+                  }
+                ]
+              ],
+              "removed": [],
+              "blobs": [],
+              "listItems": 131
+            },
+            {
+              "revision": 0,
+              "posts": 9,
+              "writtenPosts": [],
+              "written": [],
+              "removed": [],
+              "blobs": [],
+              "listItems": 0
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "seeded",
       "fn": "server",
       "input": {

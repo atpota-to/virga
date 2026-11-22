@@ -26,11 +26,189 @@ import {
   postUri,
   rootsOf,
   scenarioCases,
+  text,
 } from './_demoServer.js';
 
 export const sources = ['harness/fakeServer.js'];
 
 const SCENARIOS = [
+  {
+    name: 'partial-and-moves',
+    options: { seed: false },
+    steps: [
+      { mint: MIRA },
+      // A thread whose second post's bytes aren't base64: the first goes out, the rest waits.
+      () =>
+        post(
+          '/api/schedule/create',
+          {
+            ...create(['first of two']),
+            payload: {
+              ...create(['x']).payload,
+              posts: [
+                text('first of two'),
+                {
+                  record: { text: 'second' },
+                  embed: { type: 'images', images: [{ mediaId: 'bad' }] },
+                },
+              ],
+              mediaBytes: { bad: { base64: '@@', encoding: 'image/png' } },
+            },
+          },
+          { as: 'thread' },
+        ),
+      // A pinned delete time, and one more than thirty days past its publishing.
+      () =>
+        post(
+          '/api/schedule/create',
+          create(['pinned'], {
+            at: 2 * HOUR,
+            selfDestruct: {
+              lifespanSeconds: 600,
+              deleteAt: later(3 * HOUR),
+              effects: [{ action: 'disableQuotes' }],
+            },
+          }),
+          { as: 'pinned' },
+        ),
+      () =>
+        post(
+          '/api/schedule/create',
+          create(['too far to arm'], {
+            at: HOUR,
+            selfDestruct: { lifespanSeconds: 600, deleteAt: later(31 * DAY) },
+          }),
+        ),
+      () =>
+        post(
+          '/api/schedule/create',
+          create(['missed window'], {
+            at: HOUR,
+            repeat: {
+              every: 'day',
+              tz: 'UTC',
+              until: iso(Date.now() + 3 * DAY).slice(0, 10),
+            },
+            selfDestruct: {
+              lifespanSeconds: 600,
+              deleteAt: later(HOUR + 6 * MINUTE),
+            },
+          }),
+          { as: 'series' },
+        ),
+      (ctx) =>
+        post('/api/schedule/update', {
+          id: ctx.named.pinned.data.id,
+          scheduledFor: later(3 * HOUR),
+        }),
+      (ctx) =>
+        post('/api/schedule/update', {
+          id: ctx.named.pinned.data.id,
+          scheduledFor: later(2 * HOUR + 54 * MINUTE),
+        }),
+      (ctx) =>
+        post('/api/schedule/update', {
+          id: ctx.named.pinned.data.id,
+          scheduledFor: later(2 * HOUR + 30 * MINUTE),
+        }),
+      (ctx) =>
+        post('/api/schedule/reorder', {
+          moves: [
+            { id: ctx.named.pinned.data.id, scheduledFor: later(4 * HOUR) },
+          ],
+        }),
+      (ctx) =>
+        post('/api/schedule/reorder', {
+          moves: [
+            { id: ctx.named.pinned.data.id, scheduledFor: later(90 * MINUTE) },
+            { id: ctx.named.pinned.data.id, scheduledFor: later(100 * MINUTE) },
+          ],
+        }),
+      post('/api/schedule/reorder', { moves: 'all' }),
+      post('/api/schedule/reorder', { moves: [] }),
+      () =>
+        post('/api/schedule/reorder', {
+          moves: Array.from({ length: 51 }, (_, i) => ({
+            id: `r${i}`,
+            scheduledFor: later(HOUR),
+          })),
+        }),
+      () => post('/api/schedule/reorder', { moves: [null] }),
+      (ctx) =>
+        post('/api/schedule/reorder', {
+          moves: [{ id: ctx.named.pinned.data.id, scheduledFor: 'soon' }],
+        }),
+      () =>
+        post('/api/schedule/reorder', {
+          moves: [{ id: 'nope', scheduledFor: later(HOUR) }],
+        }),
+      post('/api/schedule/reorder', null),
+      (ctx) =>
+        post('/api/schedule/reorder', {
+          moves: [
+            { id: ctx.named.series.data.id, scheduledFor: later(5 * HOUR) },
+            { id: ctx.named.thread.data.id, scheduledFor: later(5 * HOUR) },
+          ],
+        }),
+      { advance: HOUR + 1000 },
+      { cron: true },
+      get('/api/schedule/list', { as: 'rows' }),
+      { advance: 2 * MINUTE },
+      { cron: true },
+      { advance: 4 * MINUTE },
+      { cron: true },
+      { advance: 8 * MINUTE },
+      { cron: true },
+      { advance: 16 * MINUTE },
+      { cron: true },
+      get('/api/schedule/list'),
+      (ctx) =>
+        post('/api/schedule/update', {
+          id: ctx.named.thread.data.id,
+          retry: true,
+        }),
+      (ctx) =>
+        post('/api/schedule/update', {
+          id: ctx.named.thread.data.id,
+          scheduledFor: later(HOUR),
+        }),
+      (ctx) =>
+        post('/api/schedule/update', {
+          id: ctx.named.thread.data.id,
+          ...create(['rewritten']),
+        }),
+      (ctx) =>
+        post('/api/schedule/update', {
+          id: ctx.named.thread.data.id,
+          skip: true,
+        }),
+      (ctx) =>
+        post('/api/schedule/reorder', {
+          moves: [{ id: ctx.named.thread.data.id, scheduledFor: later(HOUR) }],
+        }),
+      get('/api/schedule/list'),
+      (ctx) =>
+        post('/api/schedule/update', {
+          id:
+            ctx.named.rows.data.find(
+              (r) => r.lastErrorCode === 'TIMER_NOT_ARMED',
+            )?.id ?? 'none',
+          acknowledgeTimer: true,
+        }),
+      { advance: 2 * HOUR },
+      { cron: true },
+      get('/api/self-destruct/list?history=1'),
+      { advance: DAY },
+      { cron: true },
+      { advance: DAY },
+      { cron: true },
+      { advance: DAY },
+      { cron: true },
+      get('/api/schedule/list'),
+      (ctx) => post('/api/schedule/cancel', { id: ctx.named.thread.data.id }),
+      get('/api/schedule/list'),
+    ],
+  },
   {
     name: 'seeded',
     steps: [
