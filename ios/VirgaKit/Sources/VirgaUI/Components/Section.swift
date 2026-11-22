@@ -82,8 +82,10 @@ public struct SectionHead: View {
       } else {
         titleText
       }
-      subText
-        .padding(.top, theme.points(ThemeKit.cardSubSpaceAbove))
+      if let sub {
+        subLine(sub)
+          .padding(.top, theme.points(ThemeKit.cardSubSpaceAbove))
+      }
       if let trailing, segmented {
         tools(trailing)
           .padding(.top, Measure.Segmented.headSpaceAbove)
@@ -110,12 +112,16 @@ public struct SectionHead: View {
 
   @ViewBuilder private var subText: some View {
     if let sub {
-      Text(sub)
-        .virgaText(size: theme.points(ThemeKit.cardSubFontSize))
-        .foregroundStyle(theme.color(ThemeKit.cardSubInk))
-        .fixedSize(horizontal: false, vertical: true)
-        .frame(maxWidth: theme.measure, alignment: .leading)
+      subLine(sub)
     }
+  }
+
+  private func subLine(_ sub: String) -> some View {
+    Text(sub)
+      .virgaText(size: theme.points(ThemeKit.cardSubFontSize))
+      .foregroundStyle(theme.color(ThemeKit.cardSubInk))
+      .fixedSize(horizontal: false, vertical: true)
+      .frame(maxWidth: theme.measure, alignment: .leading)
   }
 }
 

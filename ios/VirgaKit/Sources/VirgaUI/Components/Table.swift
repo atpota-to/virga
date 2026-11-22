@@ -108,7 +108,7 @@ public struct DataTable: View {
         }
       }
       .gridColumnAlignment(numeric ? .trailing : .leading)
-      .modifier(TableCellReading(label: first ? row.map(rowLabel) : nil, hidden: head || !first, chosen: chosen))
+      .modifier(TableCellReading(label: first ? row.map { rowLabel($0) } : nil, hidden: head || !first, chosen: chosen))
   }
 }
 
