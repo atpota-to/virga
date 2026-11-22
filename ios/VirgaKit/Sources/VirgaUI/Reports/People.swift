@@ -192,7 +192,9 @@ struct PersonRow: View {
   }
 
   /// FollowButton: the kit's small outline, Following the word alone; one
-  /// slot wide above a phone, so the column of them lines up.
+  /// slot wide above a phone, so the column of them lines up. On a phone
+  /// Following is a quiet word flush with the row's end
+  /// (`.follow-button.is-on { padding-inline: 0 }`).
   private func followButton(_ model: ArchiveModel, sets: RelationSets, name: String, phone: Bool) -> some View {
     let on = sets.following.contains { $0.jsEquals(did) }
     let slot: CGFloat? = phone ? nil : max(0, Measure.Dashboard.followMinWidth - 2 * theme.points(ThemeKit.smallButtonPadding.left))
@@ -212,6 +214,8 @@ struct PersonRow: View {
       Text(on ? "Following" : followLabel)
         .fixedSize()
         .frame(minWidth: slot)
+        // Cancels the button body's own padding.
+        .padding(.horizontal, phone && on ? -theme.points(ThemeKit.smallButtonPadding.left) : 0)
     }
     .buttonStyle(.virga(size: .small, isOn: on))
     .disabled(busy || model.sync?.step == "following")
