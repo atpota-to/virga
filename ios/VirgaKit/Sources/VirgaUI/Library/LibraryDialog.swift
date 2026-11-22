@@ -110,6 +110,7 @@ struct LibraryDialog: View {
       lib?.setOpen(false)
       lib?.stop()
     }
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("library-dialog")
   }
 }

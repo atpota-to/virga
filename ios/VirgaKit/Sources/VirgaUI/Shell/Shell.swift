@@ -31,8 +31,8 @@
 // Customize this dashboard puts ?edit=1 in the address and makes the
 // dashboard's page again, which opens it customizing (ShellActions).
 //
-// Not here yet: the composer (New post goes to its address, whose page
-// says it isn't here yet), and the live sky.
+// New post opens the composer in place (ComposerHost), over the page.
+// Not here yet: the live sky.
 
 #if canImport(UIKit)
 import Observation

@@ -124,6 +124,7 @@ struct ComposerBar: View {
     .frame(minHeight: ComposerMeasure.barHeight)
     .padding(ComposerMeasure.bar)
     .background(theme.surface)
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("composer-bar")
   }
 }

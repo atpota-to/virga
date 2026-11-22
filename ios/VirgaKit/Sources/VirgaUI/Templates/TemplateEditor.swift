@@ -211,6 +211,7 @@ struct TemplateEditorForm: View {
       }
     }
     .onDisappear { model?.stop() }
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("template-editor")
   }
 

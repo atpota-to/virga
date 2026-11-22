@@ -83,6 +83,7 @@ struct AltTextDialog: View {
           .fixedSize(horizontal: false, vertical: true)
         }
       }
+      .accessibilityElement(children: .contain)
       .accessibilityIdentifier("alt-dialog")
     } actions: {
       Button("Cancel", action: onClose).buttonStyle(.virga)

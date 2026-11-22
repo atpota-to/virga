@@ -119,11 +119,13 @@ final class VirgaUITests: XCTestCase {
     }
   }
 
-  func testNewPostGoesToPosting() {
+  /// New post opens the composer over the page, as the web's Shell does
+  /// (composer.open({})), rather than going to Posting.
+  func testNewPostOpensTheComposer() {
     let app = launch()
     waitForHome(app)
     element(app, isDesk(app) ? "sidebar-new-post" : "tab-new-post").tap()
-    waitForTitle(app, "Posting")
+    XCTAssertTrue(element(app, "composer-title").waitForExistence(timeout: 15), "the composer didn't open")
   }
 
   func testTheAccountMenuOpens() {

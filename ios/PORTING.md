@@ -156,6 +156,12 @@ means porting the code, not reimagining it.
     `@MainActor` code (static helpers included); unwrap an optional before
     `jsEquals`; give a tuple fallback its labels; import the target a
     type lives in (`PostingRoutes` is VirgaInsights').
+- **An identifier on a container hides its children's.** SwiftUI hands an
+  `.accessibilityIdentifier` set on a stack, a sheet's body or a card down
+  to every element inside it, over their own, so a UI test can't find the
+  Close or the switch within. Put `.accessibilityElement(children:
+  .contain)` just before the container's identifier (the sidebar's, the
+  composer's bar). Compiling doesn't show this; only a UI test does.
 
 ## Tests
 
