@@ -91,6 +91,8 @@ struct DefenseHistoryPage: View {
         "Those not written yet are cancelled now. Those on the list are taken off a batch at a time, by the very record each add wrote. Anyone added another way stays."
       )
       .fixedSize(horizontal: false, vertical: true)
+      // Nor can a swipe close it while it works (`onClose={() => !busy && …}`).
+      .interactiveDismissDisabled(busy)
     } actions: {
       Button("Cancel") { undoing = nil }
         .buttonStyle(.virga(.ghost))

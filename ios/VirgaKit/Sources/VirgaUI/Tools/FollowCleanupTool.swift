@@ -279,7 +279,15 @@ struct FollowCleanupPage: View {
 
   private func checkCard(rows: [CleanupRow], checkedCount: Int) -> some View {
     let fmt = { (n: Int) in AppLocale.formatNumber(n) }
-    return FlowLayout(spacing: Measure.Tools.checkColumnGap, lineSpacing: Measure.Tools.checkRowGap, alignment: .top) {
+    // What the check does at the left, and its controls at the far end,
+    // centred on the heading's line (`--check-lift`); under the words, 14
+    // below them, when they don't fit beside.
+    let titleLine = theme.points(ThemeKit.cardTitleFontSize) * CGFloat(ThemeKit.headingLineHeight)
+    let lift = (titleLine - theme.points(ThemeKit.touchButtonHeight)) / 2
+    return ToolSpreadRow(
+      columnGap: Measure.Tools.checkColumnGap, rowGap: Measure.Tools.checkRowGap, basis: Measure.Tools.checkTextBasis,
+      firstMax: theme.characters(Measure.Tools.checkTextMeasure), lift: lift
+    ) {
       VStack(alignment: .leading, spacing: theme.points(ThemeKit.cardSubSpaceAbove)) {
         Text(checkedCount != 0 ? "Activity checked for \(fmt(checkedCount)) of \(fmt(rows.count)) accounts" : "When did they last post?")
           .virgaText(
@@ -294,7 +302,7 @@ struct FollowCleanupPage: View {
         .foregroundStyle(theme.color(ThemeKit.cardSubInk))
         .fixedSize(horizontal: false, vertical: true)
       }
-      .frame(maxWidth: theme.characters(Measure.Tools.checkTextMeasure), alignment: .leading)
+      .frame(maxWidth: .infinity, alignment: .leading)
       checkActions(rows: rows, checkedCount: checkedCount)
     }
     .accessibilityElement(children: .contain)
@@ -317,7 +325,7 @@ struct FollowCleanupPage: View {
       .frame(minHeight: theme.points(ThemeKit.touchButtonHeight))
     } else {
       HStack(spacing: Measure.Tools.checkActionsGap) {
-        ToolSelect(label: "Quiet after", options: FollowCleanup.quietChoices.map { ($0, "\($0) days") }, selection: $quietDays, large: true)
+        ToolSelect(label: "Quiet after", options: FollowCleanup.quietChoices.map { ($0, "\($0) days") }, selection: $quietDays)
         Button {
           runCheck(rows.map(\.did))
         } label: {
@@ -352,7 +360,9 @@ struct FollowCleanupPage: View {
   @ViewBuilder
   private func tableBar(selectedLive: [String], filtered: [CleanupRow], sets: RelationSets) -> some View {
     let fmt = { (n: Int) in AppLocale.formatNumber(n) }
-    FlowLayout(spacing: Measure.Tools.tableBarColumnGap, lineSpacing: Measure.Tools.tableBarRowGap, alignment: .center) {
+    // How it is sorted at the left and what to do with it at the far end;
+    // once rows are ticked, how many and what to do with them.
+    ToolSpreadRow(columnGap: Measure.Tools.tableBarColumnGap, rowGap: Measure.Tools.tableBarRowGap, centred: true) {
       if let working = progress.working {
         Text("Unfollowing \(fmt(working.done)) of \(fmt(working.total))…")
           .virgaText(.textSm)
@@ -378,7 +388,7 @@ struct FollowCleanupPage: View {
       } else {
         ToolSelect(
           label: "Sort", options: [("quiet", "Quiet longest"), ("interactions", "Fewest interactions"), ("oldest", "Followed longest ago")],
-          selection: $sort)
+          selection: $sort, hidesLabel: theme.isPhone)
         HStack(spacing: theme.gap(ThemeKit.headActionsGap).column) {
           if keep.size > 0 {
             Button {
@@ -410,7 +420,7 @@ struct FollowCleanupPage: View {
   /// "Select all shown", over the rows, on the rule in ink.
   private func selectAll(live: [CleanupRow]) -> some View {
     HStack(spacing: Measure.Tools.rowGap) {
-      ToolCheck(isOn: allBinding(live), label: "Select every account shown", disabled: live.isEmpty)
+      ToolCheck(isOn: allBinding(live), label: "Select every account shown", disabled: live.isEmpty, box: Measure.Tools.stackedCheckBox)
       Text("Select all shown")
         .virgaText(.textSm, weight: VirgaWeight.medium)
         .foregroundStyle(theme.muted)
@@ -461,9 +471,10 @@ struct ToolCheck: View {
   @Binding var isOn: Bool
   let label: String
   var disabled = false
+  /// `input[type='checkbox']`'s 16; a phone's cleanup rows take 20.
+  var box: CGFloat = Measure.Tools.checkBox
 
   var body: some View {
-    let box = Measure.Legal.checkBox
     Button {
       isOn.toggle()
     } label: {
@@ -487,7 +498,8 @@ struct ToolCheck: View {
     .opacity(disabled ? ThemeKit.disabledOpacity : 1)
     .padding(.horizontal, -(Measure.Touch.target - box) / 2)
     .accessibilityLabel(label)
-    .accessibilityAddTraits(isOn ? .isSelected : [])
+    // A tick box, which VoiceOver reads as on or off (a native checkbox).
+    .accessibilityAddTraits(isOn ? [.isToggle, .isSelected] : [.isToggle])
   }
 }
 
@@ -512,7 +524,7 @@ struct CleanupRowView: View {
     let following = follow.isFollowing(archive, row.did, sets: sets)
     let bleed = Measure.Tools.selectedBleed
     return HStack(alignment: .top, spacing: Measure.Tools.rowGap) {
-      ToolCheck(isOn: $selected, label: "Select \(name)", disabled: !following)
+      ToolCheck(isOn: $selected, label: "Select \(name)", disabled: !following, box: Measure.Tools.stackedCheckBox)
       VStack(alignment: .leading, spacing: theme.space1) {
         HStack(alignment: .center, spacing: Measure.Tools.personGap) {
           CleanupPerson(row: row, card: card, name: name, kept: kept, undone: undone)

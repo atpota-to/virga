@@ -252,8 +252,12 @@ struct ScanFormCard: View {
     if !typed.isEmpty && !running { onScan(typed) }
   }
 
+  /// The field's example, as plain words: a string literal would be read as
+  /// Markdown and its address drawn as a link.
+  static let linkPlaceholder = "https://bsky.app/profile/…/post/…"
+
   private var field: some View {
-    let input = TextField("https://bsky.app/profile/…/post/…", text: $text)
+    let input = TextField(Self.linkPlaceholder, text: $text)
       .keyboardType(.URL)
       .textInputAutocapitalization(.never)
       .autocorrectionDisabled()
@@ -262,10 +266,16 @@ struct ScanFormCard: View {
       .virgaField(size: .large)
       .accessibilityLabel("Link to a post")
       .accessibilityIdentifier("defense-link")
-    let go = Button("Scan") { submit() }
-      .buttonStyle(.virga)
-      .disabled(text.jsTrimmed().isEmpty || running)
-      .accessibilityIdentifier("defense-scan-link")
+    // On a phone the button spans the column, under the field
+    // (`.defense-field { flex-direction: column; align-items: stretch }`).
+    let go = Button {
+      submit()
+    } label: {
+      Text("Scan").frame(maxWidth: theme.isPhone ? .infinity : nil)
+    }
+    .buttonStyle(.virga)
+    .disabled(text.jsTrimmed().isEmpty || running)
+    .accessibilityIdentifier("defense-scan-link")
     return Group {
       if theme.isPhone {
         VStack(alignment: .leading, spacing: theme.space3) {

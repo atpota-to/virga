@@ -493,19 +493,46 @@ struct FilterCards: View {
   let choices: [FilterChoice]
   let selection: String
   let onSelect: (String) -> Void
+  /// The row's width, which the counts are sized from.
+  @State private var width: CGFloat = 0
 
   var body: some View {
     let phone = theme.isPhone
-    FiguresLayout(
+    let layout = FiguresLayout(
       columnGap: phone ? Measure.Tools.phoneFilterColumnGap : theme.space6, rowGap: Measure.Tools.filterRowGap,
       minWidth: Measure.Tools.filterMin, phone: phone
-    ) {
+    )
+    let count = countSize(layout, phone: phone)
+    layout {
       ForEach(choices) { choice in
-        FilterCardButton(choice: choice, isOn: choice.key == selection, phone: phone) { onSelect(choice.key) }
+        FilterCardButton(choice: choice, isOn: choice.key == selection, phone: phone, countSize: count) { onSelect(choice.key) }
+      }
+    }
+    .background {
+      GeometryReader { geometry in
+        Color.clear
+          .onAppear { width = geometry.size.width }
+          .onChange(of: geometry.size.width) { _, next in width = next }
       }
     }
     .accessibilityElement(children: .contain)
     .accessibilityLabel(label)
+  }
+
+  /// `.filter-card-count`'s size: `clamp(1.75rem, 20cqi, 2.75rem)` of each
+  /// card; on a phone `clamp(1.75rem, (100cqi - 20px) / 10, 2.75rem)` of the
+  /// row, so every card's is the same.
+  private func countSize(_ layout: FiguresLayout, phone: Bool) -> CGFloat {
+    guard width > 0, !choices.isEmpty else { return Measure.Tools.filterCountMax }
+    let share: CGFloat
+    if phone {
+      share = (width - Measure.Tools.phoneFilterColumnGap) * Measure.Tools.phoneFilterCountShare
+    } else {
+      let columns = layout.columns(width, count: choices.count)
+      let card = (width - layout.columnGap * CGFloat(columns - 1)) / CGFloat(columns)
+      share = card * Measure.Tools.filterCountShare
+    }
+    return Swift.min(Swift.max(share, Measure.Tools.filterCountMin), Measure.Tools.filterCountMax)
   }
 }
 
@@ -514,6 +541,7 @@ struct FilterCardButton: View {
   let choice: FilterChoice
   let isOn: Bool
   let phone: Bool
+  var countSize: CGFloat = Measure.Tools.filterCountMax
   let action: () -> Void
 
   var body: some View {
@@ -524,9 +552,10 @@ struct FilterCardButton: View {
           .foregroundStyle(isOn ? theme.ink : theme.ink2)
           .fixedSize(horizontal: false, vertical: true)
         Text(AppLocale.formatNumber(choice.count))
-          .virgaText(size: Measure.Tools.filterCountMax, weight: VirgaWeight.medium, lineHeight: 1, tracking: Measure.Tools.filterCountTracking)
+          .virgaText(size: countSize, weight: VirgaWeight.medium, lineHeight: 1, tracking: Measure.Tools.filterCountTracking)
           .foregroundStyle(theme.ink)
           .lineLimit(1)
+          // Only a guard: a count too long for its card shrinks rather than cuts.
           .minimumScaleFactor(Measure.Tools.filterCountMin / Measure.Tools.filterCountMax)
         if let hint = choice.hint {
           Text(hint)
@@ -683,20 +712,27 @@ struct ToolMoreFoot: View {
 }
 
 /// `.field-inline`: a select with its words beside it ("Sort  Newest first").
+/// A finger's field is 40 tall with its value at 16 (`@media (pointer:
+/// coarse)`), and as wide as the value it shows.
 struct ToolSelect<Value: Hashable>: View {
   @Environment(\.virgaTheme) private var theme
   let label: String
   let options: [(value: Value, label: String)]
   @Binding var selection: Value
-  /// Beside an md button (the activity check), as tall as it is.
-  var large = false
+  /// Over a list on a phone the value says what it sorts by, so the word
+  /// before it is left to VoiceOver (`.table-bar/.list-toolbar .field-inline
+  /// > span:first-child` at 560 and under).
+  var hidesLabel = false
 
   var body: some View {
     let current = options.first { $0.value == selection }?.label ?? ""
     HStack(spacing: Measure.Tools.inlineFieldGap) {
-      Text(label)
-        .virgaText(.textSm)
-        .foregroundStyle(theme.muted)
+      if !hidesLabel {
+        Text(label)
+          .virgaText(.textSm)
+          .foregroundStyle(theme.muted)
+          .fixedSize()
+      }
       Menu {
         Picker(label, selection: $selection) {
           ForEach(Array(options.enumerated()), id: \.offset) { _, option in
@@ -706,9 +742,10 @@ struct ToolSelect<Value: Hashable>: View {
       } label: {
         HStack(spacing: theme.space2) {
           Text(current)
-            .virgaText(large ? .textBase : .textSm)
+            .virgaText(size: theme.points(ThemeKit.touchInputFontSize))
             .foregroundStyle(theme.ink)
             .lineLimit(1)
+            .fixedSize()
           Image(systemName: "chevron.up.chevron.down")
             .font(.system(size: Measure.Tools.linkGlyph, weight: .medium))
             .foregroundStyle(theme.muted)
@@ -854,6 +891,81 @@ struct ToolSplit: Layout {
       subview.place(at: CGPoint(x: bounds.minX, y: y), proposal: ProposedViewSize(width: bounds.width, height: nil))
       y += height + rowGap
     }
+  }
+}
+
+/// `display: flex; flex-wrap: wrap; justify-content: space-between`: two
+/// things on one line, the first at its start and the second at its far
+/// end, or the second under the first when they don't both fit (the line
+/// over a table, the activity check). `basis` is the first's least width
+/// on a shared line, which it grows from (`flex: 1 1 360px`), `firstMax`
+/// its widest (`max-width: 68ch`); without a basis it keeps its own width.
+/// On a shared line `centred` centres the two on each other, and `lift`
+/// moves the second up from the line's top (`--check-lift`).
+struct ToolSpreadRow: Layout {
+  var columnGap: CGFloat
+  var rowGap: CGFloat
+  var basis: CGFloat? = nil
+  var firstMax: CGFloat? = nil
+  var centred = false
+  var lift: CGFloat = 0
+
+  struct Plan {
+    var oneLine: Bool
+    var first: CGFloat
+    var second: CGSize
+  }
+
+  func plan(_ width: CGFloat, _ subviews: Subviews) -> Plan {
+    let cap = firstMax ?? .infinity
+    let ideal = subviews[0].sizeThatFits(.unspecified).width
+    let second = subviews[1].sizeThatFits(.unspecified)
+    let least = Swift.min(basis ?? ideal, cap)
+    if !width.isFinite { return Plan(oneLine: true, first: Swift.min(ideal, cap), second: second) }
+    if least + columnGap + second.width <= width {
+      let room = width - columnGap - second.width
+      return Plan(oneLine: true, first: basis == nil ? Swift.min(ideal, cap, room) : Swift.min(cap, room), second: second)
+    }
+    return Plan(oneLine: false, first: Swift.min(cap, width), second: second)
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    if subviews.isEmpty { return .zero }
+    let width = proposal.width ?? .infinity
+    if subviews.count == 1 {
+      return subviews[0].sizeThatFits(ProposedViewSize(width: proposal.width, height: nil))
+    }
+    let p = plan(width, subviews)
+    let firstHeight = subviews[0].sizeThatFits(ProposedViewSize(width: p.first, height: nil)).height
+    if p.oneLine {
+      let height = centred ? Swift.max(firstHeight, p.second.height) : Swift.max(firstHeight, p.second.height + lift)
+      return CGSize(width: width.isFinite ? width : p.first + columnGap + p.second.width, height: height)
+    }
+    let secondHeight = subviews[1].sizeThatFits(ProposedViewSize(width: width, height: nil)).height
+    return CGSize(width: width, height: firstHeight + rowGap + secondHeight)
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    if subviews.isEmpty { return }
+    if subviews.count == 1 {
+      subviews[0].place(at: CGPoint(x: bounds.minX, y: bounds.minY), proposal: ProposedViewSize(width: bounds.width, height: nil))
+      return
+    }
+    let p = plan(bounds.width, subviews)
+    let firstHeight = subviews[0].sizeThatFits(ProposedViewSize(width: p.first, height: nil)).height
+    if p.oneLine {
+      let line = Swift.max(firstHeight, p.second.height)
+      let firstY = centred ? (line - firstHeight) / 2 : 0
+      let secondY = centred ? (line - p.second.height) / 2 : lift
+      subviews[0].place(at: CGPoint(x: bounds.minX, y: bounds.minY + firstY), proposal: ProposedViewSize(width: p.first, height: nil))
+      subviews[1].place(
+        at: CGPoint(x: bounds.maxX - p.second.width, y: bounds.minY + secondY),
+        proposal: ProposedViewSize(width: p.second.width, height: p.second.height))
+      return
+    }
+    subviews[0].place(at: CGPoint(x: bounds.minX, y: bounds.minY), proposal: ProposedViewSize(width: p.first, height: nil))
+    subviews[1].place(
+      at: CGPoint(x: bounds.minX, y: bounds.minY + firstHeight + rowGap), proposal: ProposedViewSize(width: bounds.width, height: nil))
   }
 }
 

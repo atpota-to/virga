@@ -49,6 +49,8 @@ extension Measure {
     public static let filterCountMin: CGFloat = 28
     public static let filterCountMax: CGFloat = 44
     public static let filterCountShare: CGFloat = 0.2
+    /// `@media (max-width: 560px) { .filter-card-count { font-size: clamp(1.75rem, (100cqi - 20px) / 10, 2.75rem) } }`
+    public static let phoneFilterCountShare: CGFloat = 0.1
     public static let filterCountTracking: ThemeLength = .em(-0.04)
     /// `.filter-card-hint { line-height: 1.35 }`
     public static let filterHintLineHeight: Double = 1.35
@@ -72,6 +74,10 @@ extension Measure {
     /// A table row's error under its button (`.person-error`; the web runs it on
     /// beside the button, which the table's last column has no room for).
     public static let actionErrorGap: CGFloat = 2
+    /// controls.css `input[type='checkbox'] { width: 16px; height: 16px }`, and
+    /// `@media (max-width: 640px) { .cleanup-table .col-check input { width: 20px; height: 20px } }`
+    public static let checkBox: CGFloat = 16
+    public static let stackedCheckBox: CGFloat = 20
     /// `.col-check { width: 36px }`: the tick box's column, its padding in it.
     public static let checkColumn: CGFloat = 36
     /// `.table-person { gap: 12px }`
@@ -88,6 +94,7 @@ extension Measure {
     public static let checkColumnGap: CGFloat = 32
     public static let checkRowGap: CGFloat = 14
     public static let checkTextMeasure: CGFloat = 68
+    public static let checkTextBasis: CGFloat = 360
     /// `.check-actions, .check-progress { gap: 10px 16px }`, `.check-progress .progress { width: 160px }`
     public static let checkActionsGap: CGFloat = 16
     public static let checkProgressWidth: CGFloat = 160
