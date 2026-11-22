@@ -1,0 +1,3829 @@
+{
+  "name": "demo-server.rules",
+  "sources": [
+    "harness/fakeServer.js"
+  ],
+  "cases": [
+    {
+      "id": "narrow#0",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          "follower"
+        ]
+      },
+      "output": {
+        "allow": [
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          }
+        ]
+      }
+    },
+    {
+      "id": "narrow#1",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          "follower",
+          {
+            "list": "at://did:plc:x/app.bsky.graph.list/moots"
+          }
+        ]
+      },
+      "output": {
+        "allow": [
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://did:plc:x/app.bsky.graph.list/moots"
+          }
+        ]
+      }
+    },
+    {
+      "id": "narrow#2",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          "follower"
+        ],
+        "existing": [
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          }
+        ]
+      },
+      "output": {
+        "skip": true,
+        "ok": false,
+        "detail": "left the reply settings alone; the rule would have opened them up"
+      }
+    },
+    {
+      "id": "narrow#3",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          "follower"
+        ],
+        "existing": [
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#followingRule"
+          }
+        ]
+      },
+      "output": {
+        "allow": [
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          }
+        ]
+      }
+    },
+    {
+      "id": "narrow#4",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          "follower"
+        ],
+        "existing": [
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          }
+        ]
+      },
+      "output": {
+        "skip": true,
+        "ok": true,
+        "detail": "replies were already limited this way"
+      }
+    },
+    {
+      "id": "narrow#5",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          "follower"
+        ],
+        "existing": []
+      },
+      "output": {
+        "skip": true,
+        "ok": true,
+        "detail": "replies were already closed to everyone"
+      }
+    },
+    {
+      "id": "narrow#6",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [],
+        "existing": [
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          }
+        ]
+      },
+      "output": {
+        "allow": []
+      }
+    },
+    {
+      "id": "narrow#7",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          {
+            "list": "at://did:plc:x/app.bsky.graph.list/moots"
+          }
+        ],
+        "existing": [
+          {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://did:plc:x/app.bsky.graph.list/moots"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          }
+        ]
+      },
+      "output": {
+        "allow": [
+          {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://did:plc:x/app.bsky.graph.list/moots"
+          }
+        ]
+      }
+    },
+    {
+      "id": "narrow#8",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          {
+            "list": "at://did:plc:x/app.bsky.graph.list/moots"
+          }
+        ],
+        "existing": [
+          {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://did:plc:x/app.bsky.graph.list/moots2"
+          }
+        ]
+      },
+      "output": {
+        "skip": true,
+        "ok": false,
+        "detail": "left the reply settings alone; the rule would have opened them up"
+      }
+    },
+    {
+      "id": "narrow#9",
+      "fn": "narrowAllow",
+      "input": {},
+      "output": {
+        "allow": []
+      }
+    },
+    {
+      "id": "narrow#10",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": null,
+        "existing": [
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          }
+        ]
+      },
+      "output": {
+        "allow": []
+      }
+    },
+    {
+      "id": "narrow#11",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          "following",
+          "mention"
+        ],
+        "existing": [
+          {
+            "$type": "app.bsky.feed.threadgate#followingRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          }
+        ]
+      },
+      "output": {
+        "allow": [
+          {
+            "$type": "app.bsky.feed.threadgate#followingRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          }
+        ]
+      }
+    },
+    {
+      "id": "narrow#12",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          "following",
+          "mention"
+        ],
+        "existing": [
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#followingRule"
+          }
+        ]
+      },
+      "output": {
+        "skip": true,
+        "ok": true,
+        "detail": "replies were already limited this way"
+      }
+    },
+    {
+      "id": "narrow#13",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          "nobody",
+          7,
+          null,
+          {
+            "list": "http://x"
+          },
+          {
+            "list": 5
+          },
+          [
+            "follower"
+          ]
+        ]
+      },
+      "output": {
+        "allow": []
+      }
+    },
+    {
+      "id": "narrow#14",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          "nobody"
+        ],
+        "existing": [
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          }
+        ]
+      },
+      "output": {
+        "allow": []
+      }
+    },
+    {
+      "id": "narrow#15",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          "toString"
+        ]
+      },
+      "output": {
+        "allow": [
+          {
+            "$type": "app.bsky.feed.threadgate#function toString() { [native code] }"
+          }
+        ]
+      }
+    },
+    {
+      "id": "narrow#16",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          "constructor",
+          "__proto__",
+          "hasOwnProperty"
+        ],
+        "existing": [
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          }
+        ]
+      },
+      "output": {
+        "skip": true,
+        "ok": false,
+        "detail": "left the reply settings alone; the rule would have opened them up"
+      }
+    },
+    {
+      "id": "narrow#17",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          "follower"
+        ],
+        "existing": [
+          null,
+          "x",
+          {
+            "$type": 5
+          },
+          {
+            "$type": ""
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          }
+        ]
+      },
+      "output": {
+        "allow": [
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          }
+        ]
+      }
+    },
+    {
+      "id": "narrow#18",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          "follower"
+        ],
+        "existing": [
+          {
+            "$type": "app.bsky.feed.threadgate#listRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          }
+        ]
+      },
+      "output": {
+        "allow": [
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          }
+        ]
+      }
+    },
+    {
+      "id": "narrow#19",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          {
+            "list": "at://did:plc:x/app.bsky.graph.list/moots"
+          }
+        ],
+        "existing": [
+          {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://did:plc:x/app.bsky.graph.list/moots"
+          }
+        ]
+      },
+      "output": {
+        "skip": true,
+        "ok": true,
+        "detail": "replies were already limited this way"
+      }
+    },
+    {
+      "id": "narrow#20",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          "follower",
+          "follower"
+        ],
+        "existing": [
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          }
+        ]
+      },
+      "output": {
+        "skip": true,
+        "ok": true,
+        "detail": "replies were already limited this way"
+      }
+    },
+    {
+      "id": "narrow#21",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          "follower"
+        ],
+        "existing": {
+          "allow": []
+        }
+      },
+      "output": {
+        "allow": [
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          }
+        ]
+      }
+    },
+    {
+      "id": "narrow#22",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": [
+          "follower"
+        ],
+        "existing": "followerRule"
+      },
+      "output": {
+        "allow": [
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          }
+        ]
+      }
+    },
+    {
+      "id": "narrow#23",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": "follower"
+      },
+      "output": {
+        "$throws": "(wantedEntries || []).map is not a function"
+      }
+    },
+    {
+      "id": "narrow#24",
+      "fn": "narrowAllow",
+      "input": {
+        "wanted": 0,
+        "existing": [
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          }
+        ]
+      },
+      "output": {
+        "allow": []
+      }
+    },
+    {
+      "id": "describe#0",
+      "fn": "describeAllow",
+      "input": {
+        "entries": []
+      },
+      "output": "replies limited to nobody"
+    },
+    {
+      "id": "describe#1",
+      "fn": "describeAllow",
+      "input": {
+        "entries": [
+          "follower"
+        ]
+      },
+      "output": "replies limited to your followers"
+    },
+    {
+      "id": "describe#2",
+      "fn": "describeAllow",
+      "input": {
+        "entries": [
+          "follower",
+          "following"
+        ]
+      },
+      "output": "replies limited to your followers and people you follow"
+    },
+    {
+      "id": "describe#3",
+      "fn": "describeAllow",
+      "input": {
+        "entries": [
+          "follower",
+          "following",
+          "mention"
+        ]
+      },
+      "output": "replies limited to your followers, people you follow and people you mentioned"
+    },
+    {
+      "id": "describe#4",
+      "fn": "describeAllow",
+      "input": {
+        "entries": [
+          {
+            "list": "at://did:plc:x/app.bsky.graph.list/moots"
+          }
+        ]
+      },
+      "output": "replies limited to people in a list you chose"
+    },
+    {
+      "id": "describe#5",
+      "fn": "describeAllow",
+      "input": {
+        "entries": [
+          {
+            "list": "at://did:plc:x/app.bsky.graph.list/moots"
+          },
+          {
+            "list": "at://did:plc:x/app.bsky.graph.list/moots2"
+          },
+          "mention"
+        ]
+      },
+      "output": "replies limited to people you mentioned and people in 2 lists you chose"
+    },
+    {
+      "id": "describe#6",
+      "fn": "describeAllow",
+      "input": {
+        "entries": [
+          "following",
+          {
+            "list": "at://did:plc:x/app.bsky.graph.list/moots"
+          },
+          {
+            "list": "at://did:plc:x/app.bsky.graph.list/moots"
+          },
+          {
+            "list": "at://did:plc:x/app.bsky.graph.list/moots"
+          }
+        ]
+      },
+      "output": "replies limited to people you follow and people in 3 lists you chose"
+    },
+    {
+      "id": "describe#7",
+      "fn": "describeAllow",
+      "input": {
+        "entries": [
+          "nobody",
+          null,
+          5,
+          {
+            "list": ""
+          },
+          {
+            "list": 0
+          }
+        ]
+      },
+      "output": "replies limited to nobody"
+    },
+    {
+      "id": "describe#8",
+      "fn": "describeAllow",
+      "input": {
+        "entries": [
+          "toString"
+        ]
+      },
+      "output": "replies limited to function toString() { [native code] }"
+    },
+    {
+      "id": "describe#9",
+      "fn": "describeAllow",
+      "input": {
+        "entries": [
+          "follower",
+          "constructor",
+          "__proto__"
+        ]
+      },
+      "output": "replies limited to your followers, function Object() { [native code] } and [object Object]"
+    },
+    {
+      "id": "describe#10",
+      "fn": "describeAllow",
+      "input": {},
+      "output": "replies limited to nobody"
+    },
+    {
+      "id": "describe#11",
+      "fn": "describeAllow",
+      "input": {
+        "entries": null
+      },
+      "output": "replies limited to nobody"
+    },
+    {
+      "id": "effects#0",
+      "fn": "parseEffects",
+      "input": {},
+      "output": {
+        "value": [
+          {
+            "action": "delete"
+          }
+        ]
+      }
+    },
+    {
+      "id": "effects#1",
+      "fn": "parseEffects",
+      "input": {
+        "raw": null
+      },
+      "output": {
+        "value": [
+          {
+            "action": "delete"
+          }
+        ]
+      }
+    },
+    {
+      "id": "effects#2",
+      "fn": "parseEffects",
+      "input": {
+        "raw": []
+      },
+      "output": {
+        "value": [
+          {
+            "action": "delete"
+          }
+        ]
+      }
+    },
+    {
+      "id": "effects#3",
+      "fn": "parseEffects",
+      "input": {
+        "raw": "delete"
+      },
+      "output": {
+        "error": "selfDestruct.effects must be a list"
+      }
+    },
+    {
+      "id": "effects#4",
+      "fn": "parseEffects",
+      "input": {
+        "raw": {
+          "action": "delete"
+        }
+      },
+      "output": {
+        "error": "selfDestruct.effects must be a list"
+      }
+    },
+    {
+      "id": "effects#5",
+      "fn": "parseEffects",
+      "input": {
+        "raw": 5
+      },
+      "output": {
+        "error": "selfDestruct.effects must be a list"
+      }
+    },
+    {
+      "id": "effects#6",
+      "fn": "parseEffects",
+      "input": {
+        "raw": [
+          {
+            "action": "delete"
+          }
+        ]
+      },
+      "output": {
+        "value": [
+          {
+            "action": "delete"
+          }
+        ]
+      }
+    },
+    {
+      "id": "effects#7",
+      "fn": "parseEffects",
+      "input": {
+        "raw": [
+          {
+            "action": "disableQuotes"
+          },
+          {
+            "action": "limitReplies"
+          },
+          {
+            "action": "delete"
+          }
+        ]
+      },
+      "output": {
+        "value": [
+          {
+            "action": "limitReplies",
+            "allow": [
+              "follower"
+            ]
+          },
+          {
+            "action": "disableQuotes"
+          },
+          {
+            "action": "delete"
+          }
+        ]
+      }
+    },
+    {
+      "id": "effects#8",
+      "fn": "parseEffects",
+      "input": {
+        "raw": [
+          {
+            "action": "limitReplies",
+            "allow": [
+              "following"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "value": [
+          {
+            "action": "limitReplies",
+            "allow": [
+              "following"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "effects#9",
+      "fn": "parseEffects",
+      "input": {
+        "raw": [
+          {
+            "action": "limitReplies",
+            "allow": [
+              "following"
+            ]
+          },
+          {
+            "action": "limitReplies",
+            "allow": [
+              "mention"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "value": [
+          {
+            "action": "limitReplies",
+            "allow": [
+              "mention"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "effects#10",
+      "fn": "parseEffects",
+      "input": {
+        "raw": [
+          {
+            "action": "limitReplies",
+            "allow": []
+          }
+        ]
+      },
+      "output": {
+        "value": [
+          {
+            "action": "limitReplies",
+            "allow": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "effects#11",
+      "fn": "parseEffects",
+      "input": {
+        "raw": [
+          {
+            "action": "limitReplies",
+            "allow": "following"
+          }
+        ]
+      },
+      "output": {
+        "value": [
+          {
+            "action": "limitReplies",
+            "allow": [
+              "follower"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "effects#12",
+      "fn": "parseEffects",
+      "input": {
+        "raw": [
+          {
+            "action": "limitReplies",
+            "allow": [
+              "a",
+              "follower"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "error": "that reply rule names someone this server cannot read."
+      }
+    },
+    {
+      "id": "effects#13",
+      "fn": "parseEffects",
+      "input": {
+        "raw": [
+          {
+            "action": "limitReplies",
+            "allow": [
+              "follower",
+              "following",
+              "mention",
+              {
+                "list": "at://did:plc:x/app.bsky.graph.list/moots"
+              },
+              {
+                "list": "at://did:plc:x/app.bsky.graph.list/moots2"
+              },
+              {
+                "list": "at://did:plc:x/app.bsky.graph.list/moots3"
+              }
+            ]
+          }
+        ]
+      },
+      "output": {
+        "value": [
+          {
+            "action": "limitReplies",
+            "allow": [
+              "follower",
+              "following",
+              "mention",
+              {
+                "list": "at://did:plc:x/app.bsky.graph.list/moots"
+              },
+              {
+                "list": "at://did:plc:x/app.bsky.graph.list/moots2"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "effects#14",
+      "fn": "parseEffects",
+      "input": {
+        "raw": [
+          {
+            "action": "limitReplies",
+            "allow": [
+              "toString",
+              "valueOf"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "value": [
+          {
+            "action": "limitReplies",
+            "allow": [
+              "toString",
+              "valueOf"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "effects#15",
+      "fn": "parseEffects",
+      "input": {
+        "raw": [
+          {
+            "action": "limitReplies",
+            "allow": [
+              {
+                "list": "at://did:plc:x/app.bsky.graph.list/moots",
+                "extra": true
+              }
+            ]
+          }
+        ]
+      },
+      "output": {
+        "value": [
+          {
+            "action": "limitReplies",
+            "allow": [
+              {
+                "list": "at://did:plc:x/app.bsky.graph.list/moots"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "effects#16",
+      "fn": "parseEffects",
+      "input": {
+        "raw": [
+          {
+            "action": "explode"
+          }
+        ]
+      },
+      "output": {
+        "error": "that rule asks for something this server does not know how to do. update, or set a plain delete timer."
+      }
+    },
+    {
+      "id": "effects#17",
+      "fn": "parseEffects",
+      "input": {
+        "raw": [
+          null
+        ]
+      },
+      "output": {
+        "error": "that rule asks for something this server does not know how to do. update, or set a plain delete timer."
+      }
+    },
+    {
+      "id": "effects#18",
+      "fn": "parseEffects",
+      "input": {
+        "raw": [
+          "delete"
+        ]
+      },
+      "output": {
+        "error": "that rule asks for something this server does not know how to do. update, or set a plain delete timer."
+      }
+    },
+    {
+      "id": "effects#19",
+      "fn": "parseEffects",
+      "input": {
+        "raw": [
+          {
+            "action": "delete"
+          },
+          {
+            "action": "delete"
+          }
+        ]
+      },
+      "output": {
+        "value": [
+          {
+            "action": "delete"
+          }
+        ]
+      }
+    },
+    {
+      "id": "effects#20",
+      "fn": "parseEffects",
+      "input": {
+        "raw": [
+          {
+            "action": "disableQuotes"
+          },
+          {
+            "action": "delete"
+          },
+          {
+            "action": "disableQuotes"
+          }
+        ]
+      },
+      "output": {
+        "value": [
+          {
+            "action": "disableQuotes"
+          },
+          {
+            "action": "delete"
+          }
+        ]
+      }
+    },
+    {
+      "id": "effects#21",
+      "fn": "parseEffects",
+      "input": {
+        "raw": [
+          {
+            "action": "constructor"
+          }
+        ]
+      },
+      "output": {
+        "error": "that rule asks for something this server does not know how to do. update, or set a plain delete timer."
+      }
+    },
+    {
+      "id": "conditions#0",
+      "fn": "parseConditions",
+      "input": {},
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#1",
+      "fn": "parseConditions",
+      "input": {
+        "raw": null
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#2",
+      "fn": "parseConditions",
+      "input": {
+        "raw": "likes"
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#3",
+      "fn": "parseConditions",
+      "input": {
+        "raw": 5
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#4",
+      "fn": "parseConditions",
+      "input": {
+        "raw": []
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#5",
+      "fn": "parseConditions",
+      "input": {
+        "raw": [
+          {
+            "metric": "likes",
+            "op": "gte",
+            "value": 3
+          }
+        ]
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#6",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {}
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#7",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 20
+            }
+          ],
+          "sense": "unless"
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 20
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#8",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gt",
+              "value": 20
+            },
+            {
+              "metric": "replies",
+              "op": "gte",
+              "value": "4"
+            }
+          ],
+          "logic": "all",
+          "sense": "onlyIf"
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "all",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gt",
+              "value": 20
+            },
+            {
+              "metric": "replies",
+              "op": "gte",
+              "value": 4
+            }
+          ],
+          "sense": "onlyIf",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#9",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 1.9
+            }
+          ]
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 1
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#10",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 0.5
+            }
+          ]
+        }
+      },
+      "output": {
+        "error": "a rule needs a number of at least one."
+      }
+    },
+    {
+      "id": "conditions#11",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": -3
+            }
+          ]
+        }
+      },
+      "output": {
+        "error": "a rule needs a number of at least one."
+      }
+    },
+    {
+      "id": "conditions#12",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": "many"
+            }
+          ]
+        }
+      },
+      "output": {
+        "error": "a rule needs a number of at least one."
+      }
+    },
+    {
+      "id": "conditions#13",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": null
+            }
+          ]
+        }
+      },
+      "output": {
+        "error": "a rule needs a number of at least one."
+      }
+    },
+    {
+      "id": "conditions#14",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte"
+            }
+          ]
+        }
+      },
+      "output": {
+        "error": "a rule needs a number of at least one."
+      }
+    },
+    {
+      "id": "conditions#15",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": "Infinity"
+            }
+          ]
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 1000000
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#16",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 5000000
+            }
+          ]
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 1000000
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#17",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": true
+            }
+          ]
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 1
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#18",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": [
+                7
+              ]
+            }
+          ]
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 7
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#19",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "views",
+              "op": "gte",
+              "value": 3
+            }
+          ]
+        }
+      },
+      "output": {
+        "error": "that rule counts something this server does not know."
+      }
+    },
+    {
+      "id": "conditions#20",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            null
+          ]
+        }
+      },
+      "output": {
+        "error": "that rule counts something this server does not know."
+      }
+    },
+    {
+      "id": "conditions#21",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            "likes"
+          ]
+        }
+      },
+      "output": {
+        "error": "that rule counts something this server does not know."
+      }
+    },
+    {
+      "id": "conditions#22",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "replies",
+              "op": "gte",
+              "value": 2,
+              "from": [
+                "did:plc:x"
+              ]
+            }
+          ]
+        }
+      },
+      "output": {
+        "error": "only quotes can be counted from some people."
+      }
+    },
+    {
+      "id": "conditions#23",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "quotes",
+              "op": "gte",
+              "value": 2,
+              "from": [
+                "did:plc:x"
+              ]
+            },
+            {
+              "metric": "quotes",
+              "op": "gte",
+              "value": 3
+            },
+            {
+              "metric": "quotes",
+              "op": "gte",
+              "value": 4
+            }
+          ]
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "quotes",
+              "op": "gte",
+              "value": 2,
+              "from": [
+                "did:plc:x"
+              ]
+            },
+            {
+              "metric": "quotes",
+              "op": "gte",
+              "value": 3
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#24",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "quotes",
+              "op": "gte",
+              "value": 2,
+              "from": ""
+            },
+            {
+              "metric": "quotes",
+              "op": "gte",
+              "value": 3
+            }
+          ]
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "quotes",
+              "op": "gte",
+              "value": 2
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#25",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 3
+            },
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 5
+            }
+          ]
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 3
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#26",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "selfReplies",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "metric": "quotes",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "metric": "reposts",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "metric": "replies",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 1
+            }
+          ]
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "metric": "replies",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "metric": "reposts",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "metric": "quotes",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "metric": "selfReplies",
+              "op": "gte",
+              "value": 1
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#27",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "metric": "replies",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "metric": "reposts",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "metric": "quotes",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "metric": "selfReplies",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "metric": "quotes",
+              "op": "gte",
+              "value": 2,
+              "from": [
+                "a"
+              ]
+            }
+          ]
+        }
+      },
+      "output": {
+        "error": "a rule can have at most five parts."
+      }
+    },
+    {
+      "id": "conditions#28",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "minLikes": 10
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 10
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#29",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "minLikes": 10,
+          "minReplies": "2",
+          "minReposts": 0
+        }
+      },
+      "output": {
+        "error": "a rule needs a number of at least one."
+      }
+    },
+    {
+      "id": "conditions#30",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "minLikes": 10,
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 3
+            }
+          ]
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 3
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#31",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "clauses": "likes",
+          "minReplies": 4
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "replies",
+              "op": "gte",
+              "value": 4
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#32",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "minLikes": null
+        }
+      },
+      "output": {
+        "error": "a rule needs a number of at least one."
+      }
+    },
+    {
+      "id": "conditions#33",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "mode": "all",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 2
+            }
+          ]
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "all",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 2
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#34",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "mode": "all",
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 2
+            }
+          ]
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 2
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#35",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "logic": "ALL",
+          "mode": "every"
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#36",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "onSpare": "extend"
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "extend",
+          "maxExtensions": 1
+        }
+      }
+    },
+    {
+      "id": "conditions#37",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "onSpare": "extend",
+          "maxExtensions": 3
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "extend",
+          "maxExtensions": 3
+        }
+      }
+    },
+    {
+      "id": "conditions#38",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "onSpare": "extend",
+          "maxExtensions": "25"
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "extend",
+          "maxExtensions": 10
+        }
+      }
+    },
+    {
+      "id": "conditions#39",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "onSpare": "extend",
+          "maxExtensions": 0
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "extend",
+          "maxExtensions": 1
+        }
+      }
+    },
+    {
+      "id": "conditions#40",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "onSpare": "extend",
+          "maxExtensions": -4
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "extend",
+          "maxExtensions": 1
+        }
+      }
+    },
+    {
+      "id": "conditions#41",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "onSpare": "extend",
+          "maxExtensions": 2.7
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "extend",
+          "maxExtensions": 2
+        }
+      }
+    },
+    {
+      "id": "conditions#42",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "onSpare": "extend",
+          "maxExtensions": null
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "extend",
+          "maxExtensions": 1
+        }
+      }
+    },
+    {
+      "id": "conditions#43",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "onSpare": "extend",
+          "maxExtensions": "lots"
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "extend",
+          "maxExtensions": 1
+        }
+      }
+    },
+    {
+      "id": "conditions#44",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "onSpare": "keep",
+          "maxExtensions": 3
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "conditions#45",
+      "fn": "parseConditions",
+      "input": {
+        "raw": {
+          "sense": "onlyif"
+        }
+      },
+      "output": {
+        "value": {
+          "logic": "any",
+          "clauses": [],
+          "sense": "unless",
+          "onSpare": "keep",
+          "maxExtensions": 0
+        }
+      }
+    },
+    {
+      "id": "bucket#0",
+      "fn": "timerBucket",
+      "input": {},
+      "output": "plain"
+    },
+    {
+      "id": "bucket#1",
+      "fn": "timerBucket",
+      "input": {
+        "conditions": {},
+        "effects": []
+      },
+      "output": "plain"
+    },
+    {
+      "id": "bucket#2",
+      "fn": "timerBucket",
+      "input": {
+        "conditions": {
+          "clauses": []
+        },
+        "effects": [
+          {
+            "action": "delete"
+          }
+        ]
+      },
+      "output": "plain"
+    },
+    {
+      "id": "bucket#3",
+      "fn": "timerBucket",
+      "input": {
+        "conditions": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 1
+            }
+          ]
+        },
+        "effects": [
+          {
+            "action": "delete"
+          }
+        ]
+      },
+      "output": "conditional"
+    },
+    {
+      "id": "bucket#4",
+      "fn": "timerBucket",
+      "input": {
+        "conditions": null,
+        "effects": [
+          {
+            "action": "limitReplies",
+            "allow": []
+          }
+        ]
+      },
+      "output": "conditional"
+    },
+    {
+      "id": "bucket#5",
+      "fn": "timerBucket",
+      "input": {
+        "conditions": {
+          "clauses": []
+        },
+        "effects": [
+          {
+            "action": "delete"
+          },
+          {
+            "action": "disableQuotes"
+          }
+        ]
+      },
+      "output": "conditional"
+    },
+    {
+      "id": "bucket#6",
+      "fn": "timerBucket",
+      "input": {
+        "effects": [
+          {}
+        ]
+      },
+      "output": "conditional"
+    },
+    {
+      "id": "bucket#7",
+      "fn": "timerBucket",
+      "input": {
+        "effects": null
+      },
+      "output": "plain"
+    },
+    {
+      "id": "bucket#8",
+      "fn": "timerBucket",
+      "input": {
+        "conditions": {
+          "clauses": "x"
+        }
+      },
+      "output": "conditional"
+    },
+    {
+      "id": "bucket#9",
+      "fn": "timerBucket",
+      "input": {
+        "conditions": {
+          "clauses": ""
+        }
+      },
+      "output": "plain"
+    },
+    {
+      "id": "evaluate#0",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 10
+            }
+          ],
+          "sense": "unless"
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": true,
+        "matched": true,
+        "reason": "matched with 12 of 10 likes"
+      }
+    },
+    {
+      "id": "evaluate#1",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 20
+            }
+          ],
+          "sense": "unless"
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": false,
+        "matched": false,
+        "reason": "short of 12 of 20 likes"
+      }
+    },
+    {
+      "id": "evaluate#2",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gt",
+              "value": 12
+            }
+          ],
+          "sense": "unless"
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": false,
+        "matched": false,
+        "reason": "short of 12 of 12 likes"
+      }
+    },
+    {
+      "id": "evaluate#3",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 12
+            }
+          ],
+          "sense": "onlyIf"
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": false,
+        "matched": true,
+        "reason": "matched with 12 of 12 likes"
+      }
+    },
+    {
+      "id": "evaluate#4",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "logic": "all",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 10
+            },
+            {
+              "metric": "replies",
+              "op": "gte",
+              "value": 5
+            }
+          ],
+          "sense": "unless"
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": false,
+        "matched": false,
+        "reason": "short of 12 of 10 likes, 3 of 5 replies"
+      }
+    },
+    {
+      "id": "evaluate#5",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "logic": "all",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 10
+            },
+            {
+              "metric": "replies",
+              "op": "gte",
+              "value": 3
+            }
+          ],
+          "sense": "onlyIf"
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": false,
+        "matched": true,
+        "reason": "matched with 12 of 10 likes, 3 of 3 replies"
+      }
+    },
+    {
+      "id": "evaluate#6",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "reposts",
+              "op": "gte",
+              "value": 1
+            },
+            {
+              "metric": "quotes",
+              "op": "gte",
+              "value": 2
+            },
+            {
+              "metric": "selfReplies",
+              "op": "gte",
+              "value": 2
+            }
+          ]
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": true,
+        "matched": true,
+        "reason": "matched with 0 of 1 reposts, 2 of 2 quotes, 1 of 2 selfReplies"
+      }
+    },
+    {
+      "id": "evaluate#7",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "logic": "all",
+          "clauses": []
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": true,
+        "matched": true,
+        "reason": "matched with "
+      }
+    },
+    {
+      "id": "evaluate#8",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "logic": "any",
+          "clauses": []
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": false,
+        "matched": false,
+        "reason": "short of "
+      }
+    },
+    {
+      "id": "evaluate#9",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "views",
+              "op": "gte",
+              "value": 1
+            }
+          ]
+        },
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "spare": false,
+        "matched": false,
+        "reason": "short of undefined of 1 views"
+      }
+    },
+    {
+      "id": "evaluate#10",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": {
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 1
+            }
+          ]
+        },
+        "counts": {}
+      },
+      "output": {
+        "spare": false,
+        "matched": false,
+        "reason": "short of undefined of 1 likes"
+      }
+    },
+    {
+      "id": "evaluate#11",
+      "fn": "evaluateConditions",
+      "input": {
+        "conditions": null,
+        "counts": {
+          "likes": 12,
+          "replies": 3,
+          "reposts": 0,
+          "quotes": 2,
+          "selfReplies": 1
+        }
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'logic')"
+      }
+    },
+    {
+      "id": "analyze#0",
+      "fn": "analyzePost",
+      "input": {
+        "text": "This is the the worst bus timetable",
+        "goals": {
+          "presets": {
+            "reduceNegativity": true
+          }
+        },
+        "writingChecks": {
+          "typos": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "negative",
+          "score": -0.6
+        },
+        "checks": [
+          {
+            "id": "reduceNegativity",
+            "label": "Reduce negativity",
+            "status": "caution",
+            "note": "This reads as harsher than you asked to be.",
+            "excerpt": "is the the worst bus timetable"
+          }
+        ],
+        "suggestion": "Try saying what you want to happen instead of what went wrong.",
+        "overallStatus": "caution",
+        "writing": {
+          "issues": [
+            {
+              "type": "typo",
+              "found": "the the",
+              "replacement": "the",
+              "note": "The same word twice."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "analyze#1",
+      "fn": "analyzePost",
+      "input": {
+        "text": "hello",
+        "goals": {}
+      },
+      "output": null
+    },
+    {
+      "id": "analyze#2",
+      "fn": "analyzePost",
+      "input": {
+        "text": "I hate this",
+        "goals": {
+          "presets": {
+            "reduceNegativity": true
+          }
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "negative",
+          "score": -0.6
+        },
+        "checks": [
+          {
+            "id": "reduceNegativity",
+            "label": "Reduce negativity",
+            "status": "caution",
+            "note": "This reads as harsher than you asked to be.",
+            "excerpt": null
+          }
+        ],
+        "suggestion": "Try saying what you want to happen instead of what went wrong.",
+        "overallStatus": "caution"
+      }
+    },
+    {
+      "id": "analyze#3",
+      "fn": "analyzePost",
+      "input": {
+        "text": "hello"
+      },
+      "output": null
+    },
+    {
+      "id": "analyze#4",
+      "fn": "analyzePost",
+      "input": {
+        "text": "hello",
+        "goals": null,
+        "writingChecks": null
+      },
+      "output": null
+    },
+    {
+      "id": "analyze#5",
+      "fn": "analyzePost",
+      "input": {
+        "text": "hello",
+        "goals": "loud",
+        "writingChecks": []
+      },
+      "output": null
+    },
+    {
+      "id": "analyze#6",
+      "fn": "analyzePost",
+      "input": {
+        "text": "hello",
+        "writingChecks": {
+          "typos": false,
+          "grammar": 0,
+          "clarity": ""
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "analyze#7",
+      "fn": "analyzePost",
+      "input": {
+        "text": "Thanks for coming, it was lovely",
+        "goals": {
+          "presets": {
+            "reduceNegativity": true
+          }
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "positive",
+          "score": 0.6
+        },
+        "checks": [
+          {
+            "id": "reduceNegativity",
+            "label": "Reduce negativity",
+            "status": "ok",
+            "note": "Nothing harsh here.",
+            "excerpt": null
+          }
+        ],
+        "suggestion": null,
+        "overallStatus": "ok"
+      }
+    },
+    {
+      "id": "analyze#8",
+      "fn": "analyzePost",
+      "input": {
+        "text": "A HATEFUL thing, but I HATE it.",
+        "goals": {
+          "presets": {
+            "reduceNegativity": true
+          }
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "negative",
+          "score": -0.6
+        },
+        "checks": [
+          {
+            "id": "reduceNegativity",
+            "label": "Reduce negativity",
+            "status": "caution",
+            "note": "This reads as harsher than you asked to be.",
+            "excerpt": "thing, but I HATE it."
+          }
+        ],
+        "suggestion": "Try saying what you want to happen instead of what went wrong.",
+        "overallStatus": "caution"
+      }
+    },
+    {
+      "id": "analyze#9",
+      "fn": "analyzePost",
+      "input": {
+        "text": "We waited outside the library for an hour and honestly the whole thing was awful from start to end today.",
+        "goals": {
+          "presets": {
+            "reduceNegativity": true,
+            "lessConfrontational": true
+          }
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "negative",
+          "score": -0.6
+        },
+        "checks": [
+          {
+            "id": "reduceNegativity",
+            "label": "Reduce negativity",
+            "status": "caution",
+            "note": "This reads as harsher than you asked to be.",
+            "excerpt": "whole thing was awful from start to"
+          },
+          {
+            "id": "lessConfrontational",
+            "label": "Less confrontational",
+            "status": "ok",
+            "note": "No digs here.",
+            "excerpt": null
+          }
+        ],
+        "suggestion": "Try saying what you want to happen instead of what went wrong.",
+        "overallStatus": "caution"
+      }
+    },
+    {
+      "id": "analyze#10",
+      "fn": "analyzePost",
+      "input": {
+        "text": "Actually, you people should read it?!",
+        "goals": {
+          "presets": {
+            "lessConfrontational": true
+          }
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [
+          {
+            "id": "lessConfrontational",
+            "label": "Less confrontational",
+            "status": "caution",
+            "note": "This could land as a dig at someone.",
+            "excerpt": "Actually, you people"
+          }
+        ],
+        "suggestion": "Try saying what you want to happen instead of what went wrong.",
+        "overallStatus": "caution"
+      }
+    },
+    {
+      "id": "analyze#11",
+      "fn": "analyzePost",
+      "input": {
+        "text": "imagine thinking that. cope.",
+        "goals": {
+          "presets": {
+            "lessConfrontational": true
+          }
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [
+          {
+            "id": "lessConfrontational",
+            "label": "Less confrontational",
+            "status": "caution",
+            "note": "This could land as a dig at someone.",
+            "excerpt": null
+          }
+        ],
+        "suggestion": "Try saying what you want to happen instead of what went wrong.",
+        "overallStatus": "caution"
+      }
+    },
+    {
+      "id": "analyze#12",
+      "fn": "analyzePost",
+      "input": {
+        "text": "ratio",
+        "goals": {
+          "presets": {
+            "lessConfrontational": true,
+            "reduceNegativity": true
+          }
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [
+          {
+            "id": "reduceNegativity",
+            "label": "Reduce negativity",
+            "status": "ok",
+            "note": "Nothing harsh here.",
+            "excerpt": null
+          },
+          {
+            "id": "lessConfrontational",
+            "label": "Less confrontational",
+            "status": "caution",
+            "note": "This could land as a dig at someone.",
+            "excerpt": null
+          }
+        ],
+        "suggestion": "Try saying what you want to happen instead of what went wrong.",
+        "overallStatus": "caution"
+      }
+    },
+    {
+      "id": "analyze#13",
+      "fn": "analyzePost",
+      "input": {
+        "text": "is it real?!",
+        "goals": {
+          "presets": {
+            "lessConfrontational": true
+          }
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [
+          {
+            "id": "lessConfrontational",
+            "label": "Less confrontational",
+            "status": "caution",
+            "note": "This could land as a dig at someone.",
+            "excerpt": null
+          }
+        ],
+        "suggestion": "Try saying what you want to happen instead of what went wrong.",
+        "overallStatus": "caution"
+      }
+    },
+    {
+      "id": "analyze#14",
+      "fn": "analyzePost",
+      "input": {
+        "text": "factually ratios coping",
+        "goals": {
+          "presets": {
+            "lessConfrontational": true
+          }
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [
+          {
+            "id": "lessConfrontational",
+            "label": "Less confrontational",
+            "status": "ok",
+            "note": "No digs here.",
+            "excerpt": null
+          }
+        ],
+        "suggestion": null,
+        "overallStatus": "ok"
+      }
+    },
+    {
+      "id": "analyze#15",
+      "fn": "analyzePost",
+      "input": {
+        "text": "the ſtupid kelvin Kelvin idiot_ idiot",
+        "goals": {
+          "presets": {
+            "reduceNegativity": true
+          }
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "negative",
+          "score": -0.6
+        },
+        "checks": [
+          {
+            "id": "reduceNegativity",
+            "label": "Reduce negativity",
+            "status": "caution",
+            "note": "This reads as harsher than you asked to be.",
+            "excerpt": "Kelvin idiot_ idiot"
+          }
+        ],
+        "suggestion": "Try saying what you want to happen instead of what went wrong.",
+        "overallStatus": "caution"
+      }
+    },
+    {
+      "id": "analyze#16",
+      "fn": "analyzePost",
+      "input": {
+        "text": "Bus lanes and parking, again.",
+        "goals": {
+          "presets": {
+            "limitTopic": {
+              "enabled": true,
+              "topic": "parking, bikes,, "
+            }
+          }
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [
+          {
+            "id": "limitTopic",
+            "label": "Limit topics",
+            "status": "conflict",
+            "note": "This is about parking, which you wanted to post less about.",
+            "excerpt": null
+          }
+        ],
+        "suggestion": "Try saying what you want to happen instead of what went wrong.",
+        "overallStatus": "conflict"
+      }
+    },
+    {
+      "id": "analyze#17",
+      "fn": "analyzePost",
+      "input": {
+        "text": "All about BIKES today",
+        "goals": {
+          "presets": {
+            "limitTopic": {
+              "enabled": true,
+              "topic": "parking,bikes"
+            }
+          }
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [
+          {
+            "id": "limitTopic",
+            "label": "Limit topics",
+            "status": "conflict",
+            "note": "This is about bikes, which you wanted to post less about.",
+            "excerpt": null
+          }
+        ],
+        "suggestion": "Try saying what you want to happen instead of what went wrong.",
+        "overallStatus": "conflict"
+      }
+    },
+    {
+      "id": "analyze#18",
+      "fn": "analyzePost",
+      "input": {
+        "text": "Nothing here",
+        "goals": {
+          "presets": {
+            "limitTopic": {
+              "enabled": true,
+              "topic": "parking"
+            }
+          }
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [
+          {
+            "id": "limitTopic",
+            "label": "Limit topics",
+            "status": "ok",
+            "note": "None of your topics come up.",
+            "excerpt": null
+          }
+        ],
+        "suggestion": null,
+        "overallStatus": "ok"
+      }
+    },
+    {
+      "id": "analyze#19",
+      "fn": "analyzePost",
+      "input": {
+        "text": "Nothing here",
+        "goals": {
+          "presets": {
+            "limitTopic": {
+              "enabled": false,
+              "topic": "parking"
+            }
+          }
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "analyze#20",
+      "fn": "analyzePost",
+      "input": {
+        "text": "about 5 things",
+        "goals": {
+          "presets": {
+            "limitTopic": {
+              "enabled": true,
+              "topic": 5
+            }
+          }
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [
+          {
+            "id": "limitTopic",
+            "label": "Limit topics",
+            "status": "conflict",
+            "note": "This is about 5, which you wanted to post less about.",
+            "excerpt": null
+          }
+        ],
+        "suggestion": "Try saying what you want to happen instead of what went wrong.",
+        "overallStatus": "conflict"
+      }
+    },
+    {
+      "id": "analyze#21",
+      "fn": "analyzePost",
+      "input": {
+        "text": "about things",
+        "goals": {
+          "presets": {
+            "limitTopic": {
+              "enabled": true,
+              "topic": " , "
+            }
+          }
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "analyze#22",
+      "fn": "analyzePost",
+      "input": {
+        "text": "nothing",
+        "goals": {
+          "presets": {
+            "limitTopic": {
+              "enabled": true
+            }
+          }
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "analyze#23",
+      "fn": "analyzePost",
+      "input": {
+        "text": "nothing",
+        "goals": {
+          "customText": "Be kind"
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [
+          {
+            "id": "custom",
+            "label": "Your goals",
+            "status": "ok",
+            "note": "Nothing here goes against what you wrote.",
+            "excerpt": null
+          }
+        ],
+        "suggestion": null,
+        "overallStatus": "ok"
+      }
+    },
+    {
+      "id": "analyze#24",
+      "fn": "analyzePost",
+      "input": {
+        "text": "nothing",
+        "goals": {
+          "customText": "   "
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "analyze#25",
+      "fn": "analyzePost",
+      "input": {
+        "text": "nothing",
+        "goals": {
+          "customText": 7
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "analyze#26",
+      "fn": "analyzePost",
+      "input": {
+        "text": "the The cat cat",
+        "writingChecks": {
+          "typos": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [],
+        "suggestion": null,
+        "overallStatus": "ok",
+        "writing": {
+          "issues": [
+            {
+              "type": "typo",
+              "found": "the The",
+              "replacement": "the",
+              "note": "The same word twice."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "analyze#27",
+      "fn": "analyzePost",
+      "input": {
+        "text": "the theory holds",
+        "writingChecks": {
+          "typos": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [],
+        "suggestion": null,
+        "overallStatus": "ok",
+        "writing": {
+          "issues": []
+        }
+      }
+    },
+    {
+      "id": "analyze#28",
+      "fn": "analyzePost",
+      "input": {
+        "text": "go  go home",
+        "writingChecks": {
+          "typos": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [],
+        "suggestion": null,
+        "overallStatus": "ok",
+        "writing": {
+          "issues": [
+            {
+              "type": "typo",
+              "found": "go  go",
+              "replacement": "go",
+              "note": "The same word twice."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "analyze#29",
+      "fn": "analyzePost",
+      "input": {
+        "text": "café café",
+        "writingChecks": {
+          "typos": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [],
+        "suggestion": null,
+        "overallStatus": "ok",
+        "writing": {
+          "issues": []
+        }
+      }
+    },
+    {
+      "id": "analyze#30",
+      "fn": "analyzePost",
+      "input": {
+        "text": "K K",
+        "writingChecks": {
+          "typos": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [],
+        "suggestion": null,
+        "overallStatus": "ok",
+        "writing": {
+          "issues": []
+        }
+      }
+    },
+    {
+      "id": "analyze#31",
+      "fn": "analyzePost",
+      "input": {
+        "text": "no doubles here",
+        "writingChecks": {
+          "typos": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [],
+        "suggestion": null,
+        "overallStatus": "ok",
+        "writing": {
+          "issues": []
+        }
+      }
+    },
+    {
+      "id": "analyze#32",
+      "fn": "analyzePost",
+      "input": {
+        "text": "i think so",
+        "writingChecks": {
+          "grammar": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [],
+        "suggestion": null,
+        "overallStatus": "ok",
+        "writing": {
+          "issues": [
+            {
+              "type": "grammar",
+              "found": "i ",
+              "replacement": "I ",
+              "note": "“I” is always a capital."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "analyze#33",
+      "fn": "analyzePost",
+      "input": {
+        "text": "so i'm here",
+        "writingChecks": {
+          "grammar": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [],
+        "suggestion": null,
+        "overallStatus": "ok",
+        "writing": {
+          "issues": [
+            {
+              "type": "grammar",
+              "found": " i'",
+              "replacement": " I'",
+              "note": "“I” is always a capital."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "analyze#34",
+      "fn": "analyzePost",
+      "input": {
+        "text": "what i\tsaid and i said",
+        "writingChecks": {
+          "grammar": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [],
+        "suggestion": null,
+        "overallStatus": "ok",
+        "writing": {
+          "issues": [
+            {
+              "type": "grammar",
+              "found": " i\t",
+              "replacement": " I\t",
+              "note": "“I” is always a capital."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "analyze#35",
+      "fn": "analyzePost",
+      "input": {
+        "text": "hi",
+        "writingChecks": {
+          "grammar": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [],
+        "suggestion": null,
+        "overallStatus": "ok",
+        "writing": {
+          "issues": []
+        }
+      }
+    },
+    {
+      "id": "analyze#36",
+      "fn": "analyzePost",
+      "input": {
+        "text": "I am fine",
+        "writingChecks": {
+          "grammar": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [],
+        "suggestion": null,
+        "overallStatus": "ok",
+        "writing": {
+          "issues": []
+        }
+      }
+    },
+    {
+      "id": "analyze#37",
+      "fn": "analyzePost",
+      "input": {
+        "text": "w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 w30 w31 w32 w33 w34 w35 w36 w37 w38 w39 w40 w41 w42 w43 w44. Short one.",
+        "writingChecks": {
+          "clarity": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [],
+        "suggestion": null,
+        "overallStatus": "ok",
+        "writing": {
+          "issues": [
+            {
+              "type": "clarity",
+              "found": "w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 w25 w26 w27 w28 w29 w30 w31 w32 w33 w34 w35 w36 w37 w38 w39 w40 w41 w42 w43 w44.",
+              "replacement": null,
+              "note": "A long sentence; it may read more easily as two."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "analyze#38",
+      "fn": "analyzePost",
+      "input": {
+        "text": "Short. x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x! And more.",
+        "writingChecks": {
+          "clarity": true,
+          "typos": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [],
+        "suggestion": null,
+        "overallStatus": "ok",
+        "writing": {
+          "issues": [
+            {
+              "type": "typo",
+              "found": "x  x",
+              "replacement": "x",
+              "note": "The same word twice."
+            },
+            {
+              "type": "clarity",
+              "found": "x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x!",
+              "replacement": null,
+              "note": "A long sentence; it may read more easily as two."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "analyze#39",
+      "fn": "analyzePost",
+      "input": {
+        "text": "y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y",
+        "writingChecks": {
+          "clarity": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [],
+        "suggestion": null,
+        "overallStatus": "ok",
+        "writing": {
+          "issues": []
+        }
+      }
+    },
+    {
+      "id": "analyze#40",
+      "fn": "analyzePost",
+      "input": {
+        "text": " y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y",
+        "writingChecks": {
+          "clarity": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [],
+        "suggestion": null,
+        "overallStatus": "ok",
+        "writing": {
+          "issues": [
+            {
+              "type": "clarity",
+              "found": " y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y y",
+              "replacement": null,
+              "note": "A long sentence; it may read more easily as two."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "analyze#41",
+      "fn": "analyzePost",
+      "input": {
+        "text": "One.  Two?\nThree!",
+        "writingChecks": {
+          "clarity": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [],
+        "suggestion": null,
+        "overallStatus": "ok",
+        "writing": {
+          "issues": []
+        }
+      }
+    },
+    {
+      "id": "analyze#42",
+      "fn": "analyzePost",
+      "input": {
+        "text": "This is the the worst. i hate it, you people.",
+        "goals": {
+          "presets": {
+            "reduceNegativity": true,
+            "lessConfrontational": true,
+            "limitTopic": {
+              "enabled": true,
+              "topic": "worst"
+            }
+          },
+          "customText": "calm"
+        },
+        "writingChecks": {
+          "typos": true,
+          "grammar": true,
+          "clarity": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "negative",
+          "score": -0.6
+        },
+        "checks": [
+          {
+            "id": "reduceNegativity",
+            "label": "Reduce negativity",
+            "status": "caution",
+            "note": "This reads as harsher than you asked to be.",
+            "excerpt": "is the the worst. i hate it,"
+          },
+          {
+            "id": "lessConfrontational",
+            "label": "Less confrontational",
+            "status": "caution",
+            "note": "This could land as a dig at someone.",
+            "excerpt": "i hate it, you people."
+          },
+          {
+            "id": "limitTopic",
+            "label": "Limit topics",
+            "status": "conflict",
+            "note": "This is about worst, which you wanted to post less about.",
+            "excerpt": null
+          },
+          {
+            "id": "custom",
+            "label": "Your goals",
+            "status": "ok",
+            "note": "Nothing here goes against what you wrote.",
+            "excerpt": null
+          }
+        ],
+        "suggestion": "Try saying what you want to happen instead of what went wrong.",
+        "overallStatus": "conflict",
+        "writing": {
+          "issues": [
+            {
+              "type": "typo",
+              "found": "the the",
+              "replacement": "the",
+              "note": "The same word twice."
+            },
+            {
+              "type": "grammar",
+              "found": " i ",
+              "replacement": " I ",
+              "note": "“I” is always a capital."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "analyze#43",
+      "fn": "analyzePost",
+      "input": {
+        "text": "emoji 😀 hate 😀",
+        "goals": {
+          "presets": {
+            "reduceNegativity": true
+          }
+        },
+        "writingChecks": {
+          "typos": true
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "negative",
+          "score": -0.6
+        },
+        "checks": [
+          {
+            "id": "reduceNegativity",
+            "label": "Reduce negativity",
+            "status": "caution",
+            "note": "This reads as harsher than you asked to be.",
+            "excerpt": null
+          }
+        ],
+        "suggestion": "Try saying what you want to happen instead of what went wrong.",
+        "overallStatus": "caution",
+        "writing": {
+          "issues": []
+        }
+      }
+    },
+    {
+      "id": "analyze#44",
+      "fn": "analyzePost",
+      "input": {
+        "text": "hello",
+        "goals": [
+          1
+        ],
+        "writingChecks": "typos"
+      },
+      "output": null
+    },
+    {
+      "id": "analyze#45",
+      "fn": "analyzePost",
+      "input": {
+        "text": "hello",
+        "goals": {
+          "presets": "reduceNegativity"
+        },
+        "writingChecks": {
+          "typos": 1
+        }
+      },
+      "output": {
+        "sentiment": {
+          "label": "neutral",
+          "score": 0
+        },
+        "checks": [],
+        "suggestion": null,
+        "overallStatus": "ok",
+        "writing": {
+          "issues": []
+        }
+      }
+    }
+  ]
+}
