@@ -495,9 +495,10 @@ struct SettingsSelect<Value: Hashable>: View {
         }
       }
     } label: {
+      // The chrome is the label's, so the whole field opens the menu.
       SelectFace(text: current)
+        .virgaField()
     }
-    .virgaField()
     .accessibilityLabel(label)
     .accessibilityValue(current)
   }
