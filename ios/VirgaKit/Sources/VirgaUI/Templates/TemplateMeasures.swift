@@ -74,9 +74,10 @@ extension Measure {
     /// `.lib-preview-attach { gap: 2px; padding: 9px 12px }`
     public static let attachCardGap: CGFloat = 2
     public static let attachCardPadding = EdgeInsets(top: 9, leading: 12, bottom: 9, trailing: 12)
-    /// `.lib-bone-card { gap: 8px }`, a bone 10 tall.
+    /// `.lib-bone-card { gap: 8px }`, a bone 10 tall, a title's 12.
     public static let boneGap: CGFloat = 8
     public static let boneHeight: CGFloat = 10
+    public static let titleBoneHeight: CGFloat = 12
 
     // MARK: The Templates page (hub.css)
 

@@ -60,10 +60,9 @@ struct ChoiceGroup: View {
           onChange(allowClear && on ? "" : option)
         } label: {
           Text(option)
-            .multilineTextAlignment(.leading)
-            .fixedSize(horizontal: false, vertical: true)
         }
-        .buttonStyle(ChipStyle(isOn: on))
+        // A long answer wraps inside its chip rather than running out of the column.
+        .buttonStyle(ChipStyle(isOn: on, wraps: true))
         .focused($focused, equals: index)
         .onKeyPress(keys: [.upArrow, .downArrow, .leftArrow, .rightArrow, .home, .end]) { press in
           let n = options.count
@@ -125,12 +124,13 @@ struct TemplatePreviewView: View {
       }
       if let blocked = preview.blocked {
         Text(blocked).virgaText(.textSm).foregroundStyle(theme.warn).fixedSize(horizontal: false, vertical: true)
-          .accessibilityAddTraits(.updatesFrequently)
       }
     }
     .padding(Measure.Templates.previewPadding)
     .frame(maxWidth: .infinity, alignment: .leading)
     .overlay(RoundedRectangle(cornerRadius: Measure.Templates.previewRadius).strokeBorder(theme.line, lineWidth: 1))
+    // `.lib-preview-blocked { role="status" }`: what stops it, read out as it changes.
+    .toolAnnounces(preview.blocked)
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("template-preview")
   }
@@ -203,6 +203,7 @@ struct TemplateQuestions: View {
   @FocusState private var focusedKey: String?
 
   var body: some View {
+    let narrow = theme.windowWidth <= Breakpoint.tablet
     let questions = PostTemplates.templateQuestions(template, context)
     let given = answers ?? PostTemplates.initialAnswers(questions)
     let missing = PostTemplates.missingAnswers(questions, given)
@@ -216,8 +217,11 @@ struct TemplateQuestions: View {
         }
       }
       TemplatePreviewView(preview: shown, label: context?.their != nil ? "Your reply will read" : "Your post will read")
+      // `.lib-questions-actions`: at the end; from 760 down the one thing to
+      // do is the column's width, and in the phone's dialog it is held at
+      // the sheet's foot.
       HStack(spacing: Measure.Templates.questionsActionsGap) {
-        Spacer(minLength: 0)
+        if !narrow { Spacer(minLength: 0) }
         if let onCancel {
           Button(cancelLabel, action: onCancel)
             .buttonStyle(.virga)
@@ -225,18 +229,21 @@ struct TemplateQuestions: View {
         }
         Button(busy ? "Adding…" : submitLabel) { submit(given, missing: missing) }
           .buttonStyle(.virga(.primary))
+          .environment(\.virgaFillsWidth, narrow)
           .disabled(busy || !shown.usable)
           .accessibilityIdentifier("template-questions-use")
       }
+      .modifier(LibraryPinnedActions())
     }
     .onAppear {
-      if autoFocus, let first = questions.first, first.kind != "choice" { focusedKey = first.key }
+      // The first typed question takes the keyboard (`data-autofocus`, and
+      // the library's focus into a template chosen on a phone).
+      guard autoFocus, let first = questions.first(where: { $0.kind != "choice" }) else { return }
+      DispatchQueue.main.async { focusedKey = first.key }
     }
-    .onChange(of: tried) { _, now in
-      guard now, !missing.isEmpty else { return }
-      let words = missing.count == 1 ? "One question still needs an answer." : "\(missing.count) questions still need an answer."
-      UIAccessibility.post(notification: .announcement, argument: words)
-    }
+    // `role="status"`: how many still need an answer, read out again as the
+    // count changes once Use it has been tried.
+    .toolAnnounces(tried && !missing.isEmpty ? Self.stillToAnswer(missing.count) : nil)
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("template-questions")
   }
@@ -253,7 +260,7 @@ struct TemplateQuestions: View {
           set(q.key, v, given)
         }
       } else {
-        TextField("", text: Binding(get: { given[q.key] ?? "" }, set: { set(q.key, $0, given) }))
+        VirgaTextField("", text: Binding(get: { given[q.key] ?? "" }, set: { set(q.key, $0, given) }))
           .textInputAutocapitalization(.sentences)
           .virgaField(invalid: failed)
           .focused($focusedKey, equals: q.key)
@@ -272,6 +279,10 @@ struct TemplateQuestions: View {
         Text("Answer this one first.").virgaText(.textSm).foregroundStyle(theme.danger)
       }
     }
+  }
+
+  static func stillToAnswer(_ count: Int) -> String {
+    count == 1 ? "One question still needs an answer." : "\(count) questions still need an answer."
   }
 
   private func set(_ key: String, _ value: String, _ given: [String: String]) {

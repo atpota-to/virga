@@ -181,7 +181,7 @@ final class ComposerUITests: XCTestCase {
     XCTAssertTrue(element(app, "library-panel").waitForExistence(timeout: 10), "the library didn't open")
     _ = element(app, "library-row").waitForExistence(timeout: 15)
     snapshot("composer-library")
-    element(app, "library-close").tap()
+    element(app, "dialog-close").tap()
     XCTAssertTrue(element(app, "library-panel").waitForNonExistence(timeout: 5))
 
     // A template with blanks: "/remind" opens the library on it, its

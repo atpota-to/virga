@@ -864,20 +864,26 @@ struct TemplateEditorForm: View {
   }
 }
 
-/// `.lib-bone-card`: three bones, pulsing, while recent posts are read.
+/// `.lib-bone-card`: three bones, pulsing, while recent posts are read
+/// (80%, 60% and 70%), or while the library reads a post (a title's 40%,
+/// then 90% and 70%).
 struct TemplateBones: View {
   @Environment(\.virgaTheme) private var theme
+  var shares: [CGFloat] = [0.8, 0.6, 0.7]
+  /// The first bone is a title's, 12 tall (`.lib-bone--title`).
+  var titleFirst = false
   @State private var dim = false
 
   var body: some View {
     VStack(alignment: .leading, spacing: Measure.Templates.boneGap) {
-      ForEach([0.8, 0.6, 0.7], id: \.self) { share in
+      ForEach(Array(shares.enumerated()), id: \.offset) { index, share in
+        let height = titleFirst && index == 0 ? Measure.Templates.titleBoneHeight : Measure.Templates.boneHeight
         GeometryReader { geometry in
           RoundedRectangle(cornerRadius: theme.radiusSm)
             .fill(theme.line)
-            .frame(width: geometry.size.width * share, height: Measure.Templates.boneHeight)
+            .frame(width: geometry.size.width * share, height: height)
         }
-        .frame(height: Measure.Templates.boneHeight)
+        .frame(height: height)
       }
     }
     .padding(Measure.Templates.previewPadding)

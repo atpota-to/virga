@@ -46,7 +46,9 @@ struct LibraryRequest: Equatable {
   var shelf: String?
 }
 
-/// The composer's library dialog (LibraryDialog).
+/// The composer's library dialog (LibraryDialog): the dialog's own head,
+/// then the panel filling the sheet, its list and its chosen item each
+/// scrolling under the search and the shelves.
 struct LibraryDialog: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(AppModel.self) private var app
@@ -54,25 +56,18 @@ struct LibraryDialog: View {
   let request: LibraryRequest
   let onClose: () -> Void
   @State private var lib: LibraryModel?
+  /// The plan chosen, put in once the sheet has gone: what it asks
+  /// ("Replace the link card?") is a sheet of the composer's, which can't
+  /// come up while this one is still going down.
+  @State private var pendingPlan: LibraryPlan?
 
   var body: some View {
     let state = controller.state
     let postIndex = max(0, controller.indexOfPost(request.postId))
+    let narrow = theme.windowWidth <= Breakpoint.tablet
     VStack(spacing: 0) {
-      HStack {
-        Text(Library.libraryName)
-          .virgaText(.textLg, weight: VirgaWeight.semibold, tracking: Measure.Dialog.titleTracking)
-          .foregroundStyle(theme.ink)
-          .accessibilityAddTraits(.isHeader)
-          .accessibilityIdentifier("dialog-title")
-        Spacer(minLength: 0)
-        Button(action: onClose) { Image(systemName: Glyph.close) }
-          .buttonStyle(.virga(.ghost, size: .small, icon: true))
-          .accessibilityLabel("Close")
-          .accessibilityIdentifier("library-close")
-      }
-      .padding(theme.isPhone ? Measure.Dialog.phoneHead : Measure.Dialog.head)
-      ScrollView {
+      DialogHead(title: Library.libraryName, onClose: onClose)
+      Group {
         if let lib {
           LibraryPanel(
             lib: lib, mode: .dialog, state: state.json, postIndex: postIndex, insertion: request.range,
@@ -82,16 +77,13 @@ struct LibraryDialog: View {
             // Not counted here: the composer counts a template's use as it
             // applies the plan.
             let plan = try await lib.planFor(item, answers: answers)
+            pendingPlan = plan
             onClose()
-            let request = self.request
-            Task {
-              await Task.yield()
-              await controller.applyPlan(plan, request.postId, range: request.range)
-            }
           }
-          .padding(theme.isPhone ? Measure.Dialog.phoneBody : Measure.Dialog.body)
         }
       }
+      .padding(narrow ? LibraryMeasure.phoneDialogBody : LibraryMeasure.dialogBody)
+      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
     .background(theme.surface)
     .task {
@@ -109,6 +101,13 @@ struct LibraryDialog: View {
     .onDisappear {
       lib?.setOpen(false)
       lib?.stop()
+      // The dialog has closed and the plan follows (the web's next tick),
+      // now that the composer is the one sheet up.
+      guard let plan = pendingPlan else { return }
+      pendingPlan = nil
+      let request = self.request
+      let controller = self.controller
+      Task { await controller.applyPlan(plan, request.postId, range: request.range) }
     }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("library-dialog")
