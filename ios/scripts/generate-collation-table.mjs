@@ -1,19 +1,24 @@
-// Writes ios/VirgaKit/Sources/VirgaInsights/Support/JSCollationTable.swift:
-// what Node's ICU (the collator `String.prototype.localeCompare` uses with
-// no locale, CLDR root order) knows about each code point, for VirgaInsights'
-// localeCompare port (JSCollation.swift).
+// Writes ios/VirgaKit/Sources/VirgaCore/Support/JSCollationTable.swift:
+// what Node's ICU (the collator `String.prototype.localeCompare` uses, CLDR
+// root order, which every English locale shares) knows about every
+// assigned code point, for VirgaCore's localeCompare port
+// (Support/JSCollation.swift).
 //
-//   node ios/scripts/generate-collation-table.mjs
+//   node ios/scripts/generate-collation-table.mjs [output.swift]
 //
 // Everything is read from Node's own collator, by comparing strings: which
 // code points it ignores, which only carry an accent (a secondary weight),
-// which equal a run of others (æ is a, a mark and e; ½ is 1⁄2), and the
-// order of the rest at each of the three levels (base letter, accent,
-// case). The Swift side compares strings level by level over those weights
-// after canonical decomposition, as the Unicode Collation Algorithm does.
-// ios/parity/cases/insights.collation.js then holds it to localeCompare.
+// which equal a run of others (æ is a, a mark and e; ½ is 1⁄2), which
+// sequences it weighs as one letter (contractions: й, ো, and the Thai and
+// Lao vowels written before their consonant), the order of the rest at
+// each of the three levels (base letter, accent, case), and the order of
+// the ideographs it weighs implicitly (Han in radical-stroke order, then
+// Tangut, Khitan and Nushu). The Swift side compares strings level by level
+// over those weights after canonical decomposition, as the Unicode
+// Collation Algorithm does. ios/parity/cases/core.collation.js then holds it
+// to localeCompare.
 //
-// Run it again when Node's ICU moves to a newer CLDR.
+// Run it again when Node's ICU moves to a newer CLDR or Unicode.
 
 import console from 'node:console';
 import fs from 'node:fs';
@@ -22,57 +27,38 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const OUT = path.join(
-  here,
-  '../VirgaKit/Sources/VirgaInsights/Support/JSCollationTable.swift',
-);
+const OUT = process.argv[2]
+  ? path.resolve(process.argv[2])
+  : path.join(here, '../VirgaKit/Sources/VirgaCore/Support/JSCollationTable.swift');
 
 const full = new Intl.Collator(undefined, { sensitivity: 'variant' });
 const base = new Intl.Collator(undefined, { sensitivity: 'base' });
 const accent = new Intl.Collator(undefined, { sensitivity: 'accent' });
 
-/** The blocks the table covers; anything else is ordered by code point. */
-export const RANGES = [
-  [0x0000, 0x024f], // Latin, Latin-1, Latin Extended-A and -B
-  [0x0250, 0x02ff], // IPA, spacing modifier letters
-  [0x0300, 0x036f], // combining diacritical marks
-  [0x0370, 0x03ff], // Greek
-  [0x0400, 0x052f], // Cyrillic
-  [0x0530, 0x058f], // Armenian
-  [0x0590, 0x05ff], // Hebrew
-  [0x0600, 0x06ff], // Arabic
-  [0x0900, 0x0dff], // Devanagari, Bengali, Gurmukhi, Gujarati, Oriya, Tamil, Telugu, Kannada, Malayalam, Sinhala
-  [0x0e00, 0x0eff], // Thai, Lao
-  [0x1000, 0x109f], // Myanmar
-  [0x10a0, 0x10ff], // Georgian
-  [0x1100, 0x11ff], // Hangul jamo
-  [0x1200, 0x137f], // Ethiopic
-  [0x13a0, 0x13ff], // Cherokee
-  [0x1780, 0x17ff], // Khmer
-  [0x1c90, 0x1cbf], // Georgian Mtavruli
-  [0x1e00, 0x1eff], // Latin Extended Additional
-  [0x1f00, 0x1fff], // Greek Extended
-  [0x2000, 0x2bff], // punctuation, symbols, arrows, shapes, dingbats
-  [0x3000, 0x30ff], // CJK punctuation, kana
-  [0x3130, 0x318f], // Hangul compatibility jamo
-  [0xab70, 0xabbf], // Cherokee small letters
-  [0xfb00, 0xfb4f], // alphabetic presentation forms (ﬁ, ﬀ)
-  [0xfe30, 0xfe4f], // CJK compatibility forms
-  [0xff00, 0xffef], // fullwidth forms
-  [0x10400, 0x1044f], // Deseret
-  [0x104b0, 0x104ff], // Osage
-  [0x1f000, 0x1faff], // emoji and other pictographs
+const PLANES = [
+  [0x0000, 0x3ffff], // the BMP, and the supplementary planes in use
+  [0xe0000, 0xe0fff], // tags and variation selectors
 ];
-
 const isAssigned = (c) => !/\p{Cn}|\p{Cs}|\p{Co}/u.test(c);
+/** Weighed by their place in ICU's own order of ideographs, not a table. */
+const IMPLICIT =
+  /\p{Unified_Ideograph}|(?=\p{Lo})(?:\p{Script=Tangut}|\p{Script=Khitan_Small_Script}|\p{Script=Nushu})/u;
+const hex = (n) => n.toString(16).toUpperCase();
+const cpOf = (c) => c.codePointAt(0);
+const SEP = '\u0001'; // completely ignorable, and it blocks a contraction
 
+// Every assigned code point that canonical decomposition leaves alone,
+// plus the noncharacters ICU weighs (U+FFFE first of all, U+FFFF last).
 const singles = [];
-for (const [from, to] of RANGES) {
+const implicitChars = [];
+const decomposable = [];
+for (const [from, to] of PLANES) {
   for (let cp = from; cp <= to; cp += 1) {
     const c = String.fromCodePoint(cp);
-    // Canonical decompositions are taken apart before the table is read.
-    if (!isAssigned(c) || c.normalize('NFD') !== c) continue;
-    singles.push(c);
+    if (cp !== 0xfffe && cp !== 0xffff && !isAssigned(c)) continue;
+    if (IMPLICIT.test(c)) implicitChars.push(c);
+    else if (c.normalize('NFD') !== c) decomposable.push(c);
+    else singles.push(c);
   }
 }
 
@@ -84,53 +70,62 @@ for (const c of singles) {
   else if (base.compare(`a${c}`, 'a') === 0) accentOnly.push(c);
   else weighed.push(c);
 }
+const accentSet = new Set(accentOnly);
 
 // Canonical decompositions the collator weighs as letters of their own
 // (contractions): й is not и with a breve but the letter after і and ї, أ
-// is not ا with a hamza, and a two-part vowel sign (ো, ொ) is one vowel.
-// Taking these apart would sort "мой" before "моим" and "أحمد" after
-// "احمد". A decomposition is an ordinary one when the collator weighs it as
-// its first code point plus accents, or as that code point and then the
-// weights of the rest (which a string of the first and the heaviest letter
-// outweighs); anything else is a contraction, weighed below like a single
-// code point, and JSCollation.swift puts its decomposition back together
-// after taking text apart.
-const heaviest = weighed.reduce((a, b) => (base.compare(a, b) >= 0 ? a : b));
-const weightless = (c) => ignorable.has(c) || accentOnly.includes(c);
-const contractions = new Set();
-for (const [from, to] of RANGES) {
-  for (let cp = from; cp <= to; cp += 1) {
-    const c = String.fromCodePoint(cp);
-    const d = c.normalize('NFD');
-    if (!isAssigned(c) || d === c) continue;
-    const [first, ...rest] = [...d];
-    const order = base.compare(c, first);
-    const ordinary =
-      order === 0
-        ? rest.every(weightless)
-        : order > 0 && base.compare(c, first + heaviest) < 0;
-    if (!ordinary) contractions.add(c);
-  }
+// is not ا with a hamza, a two-part vowel sign (ো, ொ) is one vowel. Taking
+// these apart would sort "мой" before "моим" and "أحمد" after "احمد". A
+// decomposition is one when its parts weigh differently kept apart (by a
+// completely ignorable code point, which a contraction can't reach
+// across). They are weighed below like single code points, and
+// JSCollation.swift puts their decompositions back together.
+const contractions = new Map();
+for (const c of decomposable) {
+  const d = [...c.normalize('NFD')];
+  if (full.compare(d.join(''), d.join(SEP)) !== 0) contractions.set(c, d);
 }
-weighed.push(...contractions);
-singles.push(...contractions);
-singles.sort((x, y) => x.codePointAt(0) - y.codePointAt(0));
+weighed.push(...contractions.keys());
+singles.push(...contractions.keys());
+singles.sort((x, y) => cpOf(x) - cpOf(y));
+
+// The vowels Thai, Lao, New Tai Lue and Tai Viet write before the
+// consonant they follow in speech (Logical_Order_Exception): the collator
+// weighs the pair as the consonant, then the vowel.
+const swaps = new Map();
+for (const x of singles) {
+  if (!/\p{Logical_Order_Exception}/u.test(x)) continue;
+  const ys = [];
+  for (const y of singles) {
+    if (full.compare(x + y, x + SEP + y) === 0) continue;
+    if (full.compare(x + y, y + SEP + x) !== 0)
+      throw new Error(`${hex(cpOf(x))} ${hex(cpOf(y))}: a contraction that isn't a swap`);
+    ys.push(cpOf(y));
+  }
+  if (ys.length) swaps.set(cpOf(x), ys);
+}
 
 // Accent-only code points (combining marks, mostly): their order is the
-// order of `a` followed by each.
+// order of `a` followed by each. Ones the collator tells apart only by
+// case share an accent and differ in case.
 accentOnly.sort((x, y) => full.compare(`a${x}`, `a${y}`));
 const accentWeight = new Map();
 {
   let rank = 0;
+  let t = 0;
   let prev = null;
   for (const c of accentOnly) {
-    if (prev === null || full.compare(`a${prev}`, `a${c}`) !== 0) rank += 1;
-    accentWeight.set(c, rank);
+    if (prev === null || accent.compare(`a${prev}`, `a${c}`) !== 0) {
+      rank += 1;
+      t = 0;
+    } else if (full.compare(`a${prev}`, `a${c}`) !== 0) t += 1;
+    accentWeight.set(c, { rank, t });
     prev = c;
   }
 }
-const MARK_BASE = 0x21;
-const PSEUDO_BASE = 0x100;
+const markRanks = Math.max(0, ...[...accentWeight.values()].map((w) => w.rank));
+const COMMON = 0x20;
+const MARK_BASE = COMMON + 1;
 
 // Code points that equal a run of others: their compatibility decomposition
 // (½ is 1⁄2, ﬁ is fi), or two ASCII letters at the base level (æ, œ, ß).
@@ -140,7 +135,7 @@ for (const c of weighed) {
   if (contractions.has(c)) continue;
   const k = c.normalize('NFKD');
   if (k !== c && [...k].length > 1) {
-    expansions.set(c, k);
+    if (base.compare(c, k) === 0) expansions.set(c, k);
     continue;
   }
   if (!/\p{L}/u.test(c)) continue;
@@ -151,36 +146,80 @@ for (const c of weighed) {
     for (const y of LETTERS) {
       if (base.compare(c, x + y) === 0) {
         // A capital (Æ) is its capitals (AE).
-        expansions.set(
-          c,
-          c === c.toLowerCase() ? x + y : (x + y).toUpperCase(),
-        );
+        expansions.set(c, c === c.toLowerCase() ? x + y : (x + y).toUpperCase());
         break outer;
       }
     }
   }
 }
 
+// The ideographs in the collator's order: each is its own primary weight.
+implicitChars.sort((x, y) => full.compare(x, y));
+for (let i = 1; i < implicitChars.length; i += 1)
+  if (base.compare(implicitChars[i - 1], implicitChars[i]) === 0)
+    throw new Error(`ideographs ${hex(cpOf(implicitChars[i - 1]))} and ${hex(cpOf(implicitChars[i]))} tie`);
+/** The ideograph `c` weighs the same as at the base level, or null. */
+function implicitBase(c) {
+  let lo = 0;
+  let hi = implicitChars.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    const order = base.compare(implicitChars[mid], c);
+    if (order === 0) return implicitChars[mid];
+    if (order < 0) lo = mid + 1;
+    else hi = mid;
+  }
+  return lo === 0 ? 'before' : lo === implicitChars.length ? 'after' : 'between';
+}
+// Past every ideograph come the code points ICU weighs by code point
+// (unassigned and private use, the last of them U+10FFFD), then a few
+// special ones (U+FFFD, U+FFFF).
+const LAST_IMPLICIT = '\u{10FFFD}';
+
 // The rest, in order at the base level: each group of base-equal code
-// points is one primary weight.
+// points is one primary weight, or an ideograph's.
 const primaries = weighed.filter((c) => !expansions.has(c));
 primaries.sort((x, y) => full.compare(x, y));
 const groups = [];
 for (const c of primaries) {
   const g = groups[groups.length - 1];
-  if (g && base.compare(g[0], c) === 0) g.push(c);
-  else groups.push([c]);
+  if (g && base.compare(g.members[0], c) === 0) g.members.push(c);
+  else groups.push({ members: [c] });
 }
+let explicitRanks = 0;
+const post = [];
+for (const g of groups) {
+  const where = implicitBase(g.members[0]);
+  if (where === 'before') g.p = ++explicitRanks;
+  else if (where === 'after') {
+    if (base.compare(g.members[0], LAST_IMPLICIT) <= 0)
+      throw new Error(`${hex(cpOf(g.members[0]))} sorts among the code points weighed by code point`);
+    post.push(g);
+  } else if (where === 'between')
+    throw new Error(`${hex(cpOf(g.members[0]))} sorts among the ideographs`);
+  else {
+    // A variant of an ideograph (a radical, a compatibility form).
+    g.ideograph = where;
+    g.members.unshift(where);
+    g.members.sort((x, y) => full.compare(x, y));
+    if (g.members[0] !== where) throw new Error(`${hex(cpOf(where))} isn't first among its variants`);
+  }
+}
+const IMPLICIT_RANK = explicitRanks + 1;
+const UNASSIGNED_RANK = explicitRanks + 2;
+post.forEach((g, i) => {
+  g.p = UNASSIGNED_RANK + 1 + i;
+});
 
-/** `{ p, s, t }` per code point: primary rank, secondary, tertiary. */
+/** `{ p | ideograph, mark, t }` per code point: primary, secondary, tertiary. */
 const weights = new Map();
-const marks = [...accentWeight.keys()];
-groups.forEach((group, i) => {
-  const p = i + 1;
+const marks = [...accentWeight.keys()].filter((m) => accentWeight.get(m).t === 0);
+let pseudoMarks = 0;
+for (const g of groups) {
   // Within the group: accent-equal subgroups in order, each code point's
   // case rank within its subgroup.
   const subs = [];
-  for (const c of group) {
+  for (const c of g.members) {
     const s = subs[subs.length - 1];
     if (s && accent.compare(s[0], c) === 0) s.push(c);
     else subs.push([c]);
@@ -194,20 +233,33 @@ groups.forEach((group, i) => {
     let mark = null;
     if (si > 0) {
       const found = marks.find((m) => accent.compare(head + m, sub[0]) === 0);
-      if (found) mark = accentWeight.get(found) + MARK_BASE;
+      if (found) mark = MARK_BASE + accentWeight.get(found).rank;
       else {
         pseudo += 1;
-        mark = PSEUDO_BASE + pseudo;
+        mark = -pseudo; // resolved once every group is counted
       }
     }
     // Code points the collator can't tell apart at all share a rank.
     let t = 0;
     sub.forEach((c, j) => {
       if (j > 0 && full.compare(sub[j - 1], c) !== 0) t += 1;
-      weights.set(c, { p, mark, t });
+      weights.set(c, { p: g.p, ideograph: g.ideograph, mark, t });
     });
   });
-});
+  pseudoMarks = Math.max(pseudoMarks, pseudo);
+}
+const PSEUDO_BASE = MARK_BASE + markRanks + 1;
+for (const w of weights.values()) if (w.mark !== null && w.mark < 0) w.mark = PSEUDO_BASE - 1 - w.mark;
+const EXPANSION_ACCENT = PSEUDO_BASE + pseudoMarks + 1;
+
+// The cases of each base letter and accent, for caseSlot.
+const casesOf = new Map();
+for (const [x, w] of weights) {
+  const key = `${w.p}|${w.ideograph ?? ''}|${w.mark}`;
+  if (!casesOf.has(key)) casesOf.set(key, new Map());
+  const cases = casesOf.get(key);
+  if (!cases.has(w.t)) cases.set(w.t, x);
+}
 
 /**
  * Where the case of an expansion's parts falls among the cases of its first
@@ -224,10 +276,7 @@ function caseSlot(c, run) {
   const [first, ...rest] = [...run];
   const own = weights.get(first);
   if (!own) return null;
-  const cases = new Map();
-  for (const [x, w] of weights)
-    if (w.p === own.p && w.mark === own.mark && !cases.has(w.t))
-      cases.set(w.t, x);
+  const cases = casesOf.get(`${own.p}|${own.ideograph ?? ''}|${own.mark}`);
   let slot = 0;
   for (const t of [...cases.keys()].sort((a, b) => a - b)) {
     const order = full.compare(cases.get(t) + rest.join(''), c);
@@ -237,74 +286,148 @@ function caseSlot(c, run) {
   return slot;
 }
 
-// The primary just before the digits: where symbols the table doesn't
-// cover go, in code point order.
-const digitPrimary = weights.get('0').p;
-
-const lines = [];
-const hex = (n) => n.toString(16).toUpperCase();
+// One entry per code point, in code point order.
+const entries = [];
 for (const c of singles) {
-  const cp = hex(c.codePointAt(0));
-  if (ignorable.has(c)) lines.push(`${cp}:I`);
-  else if (accentWeight.has(c))
-    lines.push(`${cp}:M${hex(accentWeight.get(c) + MARK_BASE)}`);
-  else if (expansions.has(c)) {
+  const cp = cpOf(c);
+  if (ignorable.has(c)) entries.push({ cp, kind: 'I' });
+  else if (accentWeight.has(c)) {
+    const { rank, t } = accentWeight.get(c);
+    entries.push({ cp, kind: 'M', w: MARK_BASE + rank, t });
+  } else if (expansions.has(c)) {
     // `!` when the run differs at the accent level too (æ from ae);
     // otherwise `@` and the case its first part weighs (caseSlot).
     const run = expansions.get(c);
     const accented = accent.compare(c, run) !== 0;
     const slot = accented ? null : caseSlot(c, run);
-    lines.push(
-      `${cp}=${[...run].map((x) => hex(x.codePointAt(0))).join(',')}${accented ? '!' : slot == null ? '' : `@${hex(slot)}`}`,
-    );
+    entries.push({ cp, kind: 'E', run: [...run].map(cpOf), accented, slot });
   } else {
-    const { p, mark, t } = weights.get(c);
-    lines.push(`${cp}:${hex(p)}.${mark == null ? '' : hex(mark)}.${hex(t)}`);
+    const { p, ideograph, mark, t } = weights.get(c);
+    entries.push({ cp, kind: 'W', p, ideograph: ideograph && cpOf(ideograph), mark, t });
   }
 }
 
-const wrapped = [];
-let line = '';
-for (const entry of lines) {
-  if (line.length + entry.length + 1 > 100) {
-    wrapped.push(line);
-    line = '';
+const text = (e) => {
+  switch (e.kind) {
+    case 'I':
+      return 'I';
+    case 'M':
+      return `M${hex(e.w)}${e.t ? `.${hex(e.t)}` : ''}`;
+    case 'E':
+      return `=${e.run.map(hex).join(',')}${e.accented ? '!' : e.slot == null ? '' : `@${hex(e.slot)}`}`;
+    default:
+      return `${e.ideograph ? `~${hex(e.ideograph)}` : hex(e.p)}.${e.mark == null ? '' : hex(e.mark)}.${hex(e.t)}`;
   }
-  line += (line ? ';' : '') + entry;
+};
+/** Whether `b` is `a`'s entry one code point on, as a run continues it. */
+const continues = (a, b) => {
+  if (b.cp !== a.cp + 1 || a.kind !== b.kind) return false;
+  if (a.kind === 'I') return true;
+  if (a.kind === 'M') return b.w === a.w + 1 && b.t === a.t;
+  if (a.kind === 'W')
+    return !a.ideograph && !b.ideograph && b.p === a.p + 1 && b.mark === a.mark && b.t === a.t;
+  return false;
+};
+const lines = [];
+for (let i = 0; i < entries.length; ) {
+  let n = 1;
+  while (i + n < entries.length && continues(entries[i + n - 1], entries[i + n])) n += 1;
+  const e = entries[i];
+  lines.push(`${hex(e.cp)}${e.kind === 'E' ? '' : ':'}${text(e)}${n > 1 ? `*${hex(n)}` : ''}`);
+  i += n;
 }
-if (line) wrapped.push(line);
+
+// The ideographs, in order, as runs of consecutive code points.
+const implicitRuns = [];
+for (let i = 0; i < implicitChars.length; ) {
+  const start = cpOf(implicitChars[i]);
+  let n = 1;
+  while (i + n < implicitChars.length && cpOf(implicitChars[i + n]) === start + n) n += 1;
+  implicitRuns.push(n > 1 ? `${hex(start)}+${hex(n)}` : hex(start));
+  i += n;
+}
+
+const contractionLines = [...contractions].map(
+  ([c, d]) => `${hex(cpOf(c))}=${d.map((x) => hex(cpOf(x))).join(',')}`,
+);
+const swapLines = [...swaps].map(([x, ys]) => {
+  const ranges = [];
+  for (let i = 0; i < ys.length; ) {
+    let n = 1;
+    while (i + n < ys.length && ys[i + n] === ys[i] + n) n += 1;
+    ranges.push(n > 1 ? `${hex(ys[i])}-${hex(ys[i] + n - 1)}` : hex(ys[i]));
+    i += n;
+  }
+  return `${hex(x)}>${ranges.join(',')}`;
+});
+
+const wrap = (items) => {
+  const out = [];
+  let line = '';
+  for (const item of items) {
+    if (line && line.length + item.length + 1 > 100) {
+      out.push(line);
+      line = '';
+    }
+    line += (line ? ';' : '') + item;
+  }
+  if (line) out.push(line);
+  return out.join('\n');
+};
 
 const swift = `// Generated by ios/scripts/generate-collation-table.mjs from Node ${process.version}'s
 // ICU ${process.versions.icu} (Unicode ${process.versions.unicode}): don't edit by hand, run the script.
 //
-// What localeCompare's collator (CLDR root order) knows about each code
-// point in the blocks the script covers, read from the collator itself.
-// Each entry is \`code:I\` (ignored), \`code:Mw\` (an accent only, secondary
-// weight w), \`code=a,b,…\` (that run of code points with another case: a
-// compatibility form like ½ or ﬁ, \`@s\` the case its first part weighs, on
-// the scale where a case rank t weighs 2t + 1; or a letter like æ, \`!\` when
-// it differs in accent too, its parts heavier than every case), or
-// \`code:p.m.t\` (primary rank p; m, when present, the accent that sets it
-// apart from the first of its base letters; t its case rank among the
-// code points with the same base and accent). A code point that decomposes
+// What localeCompare's collator (CLDR root order) knows about every
+// assigned code point, read from the collator itself. In \`tableSource\`,
+// each entry is \`code:I\` (ignored), \`code:Mw\` or \`code:Mw.t\` (an accent
+// only: secondary weight w, case rank t), \`code=a,b,…\` (that run of code
+// points with another case: a compatibility form like ½ or ﬁ, \`@s\` the case
+// its first part weighs, on the scale where a case rank t weighs 2t + 1; or
+// a letter like æ, \`!\` when it differs in accent too, its parts heavier
+// than every case), or \`code:p.m.t\` (primary rank p, or \`~i\` the primary of
+// the ideograph i; m, when present, the accent that sets it apart from the
+// first of its base letters; t its case rank among the code points with
+// the same base and accent). \`*n\` repeats an entry for n code points, the
+// rank or weight one higher each time. A code point that decomposes
 // canonically is listed only when the collator weighs it as a letter of its
-// own (a contraction: й, أ, ো), and JSCollation.swift weighs its
-// decomposition as that letter. Code points listed nowhere are ordered by
-// code point (JSCollation.swift). ${lines.length} entries.
+// own (a contraction: й, أ, ো; \`contractionSource\` has its decomposition),
+// and JSCollation.swift weighs its decomposition as that letter.
+// \`implicitSource\` lists the ideographs in the collator's order (runs of
+// \`start+count\`); \`swapSource\` the vowels written before a consonant that
+// the collator weighs after it, with those consonants. Code points listed
+// nowhere (unassigned, private use) sort after the ideographs in code
+// point order. ${entries.length} code points in ${lines.length} entries; ${implicitChars.length} ideographs.
 
 extension JSCollation {
-  /// The primary rank of '0': symbols the table doesn't cover sort just before it.
-  static let digitPrimary: UInt32 = ${digitPrimary}
-  /// The highest primary rank in the table.
-  static let topPrimary: UInt32 = ${groups.length}
+  /// The primary rank of the ideographs (each its place in their order after it).
+  static let implicitRank: UInt32 = ${IMPLICIT_RANK}
+  /// The primary rank of code points the table doesn't list (by code point after it).
+  static let unassignedRank: UInt32 = ${UNASSIGNED_RANK}
+  /// The secondary weight of a base letter with no accent.
+  static let common: UInt32 = 0x${hex(COMMON)}
+  /// The accent between an expansion's first two parts (æ is not ae), heavier than every other.
+  static let expansionAccent: UInt32 = 0x${hex(EXPANSION_ACCENT)}
 
   static let tableSource = """
-${wrapped.join('\n')}
+${wrap(lines)}
+"""
+
+  static let contractionSource = """
+${wrap(contractionLines)}
+"""
+
+  static let swapSource = """
+${wrap(swapLines)}
+"""
+
+  static let implicitSource = """
+${wrap(implicitRuns)}
 """
 }
 `;
 
 fs.writeFileSync(OUT, swift);
 console.log(
-  `${path.relative(process.cwd(), OUT)}: ${lines.length} entries, ${groups.length} primaries, ${expansions.size} expansions, ${swift.length} bytes`,
+  `${path.relative(process.cwd(), OUT)}: ${entries.length} code points in ${lines.length} entries, ${explicitRanks} primaries (+${post.length} after the ideographs), ${expansions.size} expansions, ${contractions.size} contractions, ${swaps.size} prevowels, ${markRanks} accents (+${pseudoMarks} pseudo), ${implicitChars.length} ideographs in ${implicitRuns.length} runs, ${swift.length} bytes`,
 );
