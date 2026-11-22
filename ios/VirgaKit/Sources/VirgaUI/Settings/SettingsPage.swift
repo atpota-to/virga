@@ -192,6 +192,28 @@ struct SettingsBody<Content: View>: View {
   }
 }
 
+/// What sits in a settings row's control place, which says how far it is
+/// drawn up to centre it on the name's first line (`.settings-row-control`'s
+/// margin-top on a touch screen).
+enum SettingsControlKind {
+  /// A button or a field: 40 tall on a touch screen.
+  case button
+  /// A Segmented: its keys are 44.
+  case segmented
+  /// A switch: 24, centred in its 44-point target.
+  case toggle
+  /// A badge, or a word or two of state: already on the name's line.
+  case state
+  /// Prose in the control's place: read from the top of its column.
+  case prose
+}
+
+extension Measure.Settings {
+  /// `.settings-row:has(> .settings-row-control > :is(.switch, .badge,
+  /// .settings-row-state):only-child) { gap: 2px 24px }`, from 760 down.
+  static let compactColumnGap: CGFloat = 24
+}
+
 /// `.settings-row`: a setting's name and the line about it, and its control.
 struct SettingsRow<Control: View>: View {
   @Environment(\.virgaTheme) private var theme
@@ -200,33 +222,57 @@ struct SettingsRow<Control: View>: View {
   let block: Bool
   /// A switch or a word or two of state: kept on the name's line on a phone.
   let compactControl: Bool
+  let kind: SettingsControlKind
   let control: Control
 
-  init(label: String, hint: AnyView? = nil, block: Bool = false, compactControl: Bool = false, @ViewBuilder control: () -> Control) {
+  /// - Parameter kind: what the control is; a switch where `compactControl`
+  ///   is set, else a button or a field.
+  init(
+    label: String, hint: AnyView? = nil, block: Bool = false, compactControl: Bool = false, kind: SettingsControlKind? = nil,
+    @ViewBuilder control: () -> Control
+  ) {
     self.label = label
     self.hint = hint
     self.block = block
     self.compactControl = compactControl
+    self.kind = kind ?? (compactControl ? .toggle : .button)
     self.control = control()
   }
 
-  init(label: String, hint: String?, block: Bool = false, compactControl: Bool = false, @ViewBuilder control: () -> Control) {
-    self.init(label: label, hint: hint.map { AnyView(Text($0)) }, block: block, compactControl: compactControl, control: control)
+  init(
+    label: String, hint: String?, block: Bool = false, compactControl: Bool = false, kind: SettingsControlKind? = nil,
+    @ViewBuilder control: () -> Control
+  ) {
+    self.init(
+      label: label, hint: hint.map { AnyView(Text($0)) }, block: block, compactControl: compactControl, kind: kind, control: control)
   }
 
   var body: some View {
-    let under = block || (theme.isTablet && !compactControl)
     Group {
-      if under {
+      if block || (theme.isTablet && !compactControl) {
         VStack(alignment: .leading, spacing: Measure.Settings.rowGap) {
           words
           control
+        }
+      } else if theme.isTablet {
+        // A switch or a state stays on the name's line at the right; the
+        // line about it runs under both.
+        VStack(alignment: .leading, spacing: Measure.Settings.rowTextGap) {
+          HStack(alignment: .top, spacing: Measure.Settings.compactColumnGap) {
+            name
+            Spacer(minLength: 0)
+            control.padding(.top, rise)
+          }
+          if let hint {
+            hintView(hint)
+              .frame(maxWidth: theme.measure, alignment: .leading)
+          }
         }
       } else {
         HStack(alignment: .top, spacing: Measure.Settings.rowColumnGap) {
           words
           Spacer(minLength: 0)
-          control
+          control.padding(.top, rise)
         }
       }
     }
@@ -235,16 +281,41 @@ struct SettingsRow<Control: View>: View {
     .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
   }
 
+  /// `--settings-line`: the name's first line, `--text-md` × 1.45.
+  private var nameLine: CGFloat {
+    theme.textMd * CGFloat(Measure.Settings.labelLineHeight)
+  }
+
+  /// The control's margin-top: `(--settings-line − its height) / 2`, which
+  /// draws a control taller than the line up to centre it on the name.
+  private var rise: CGFloat {
+    switch kind {
+    case .button: return (nameLine - theme.points(ThemeKit.touchButtonHeight)) / 2
+    case .segmented: return (nameLine - theme.points(ThemeKit.touchSegmentedKeyHeight)) / 2
+    // The 24-point switch is laid out in its 44-point target, centred.
+    case .toggle: return (nameLine - Measure.Touch.target) / 2
+    case .state, .prose: return 0
+    }
+  }
+
+  private var name: some View {
+    Text(label)
+      .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Settings.labelLineHeight)
+      .foregroundStyle(theme.ink)
+  }
+
+  private func hintView(_ hint: AnyView) -> some View {
+    hint
+      .virgaText(.textSm)
+      .foregroundStyle(theme.muted)
+      .fixedSize(horizontal: false, vertical: true)
+  }
+
   private var words: some View {
     VStack(alignment: .leading, spacing: Measure.Settings.rowTextGap) {
-      Text(label)
-        .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Settings.labelLineHeight)
-        .foregroundStyle(theme.ink)
+      name
       if let hint {
-        hint
-          .virgaText(.textSm)
-          .foregroundStyle(theme.muted)
-          .fixedSize(horizontal: false, vertical: true)
+        hintView(hint)
       }
     }
     .frame(maxWidth: theme.measure, alignment: .leading)
@@ -311,7 +382,8 @@ struct AppearanceSection: View {
       SettingsRow(
         label: "Contrast",
         hint:
-          "High darkens the words and the rules, takes the sky away and thickens the focus ring. Match system follows your device’s own setting."
+          "High darkens the words and the rules, takes the sky away and thickens the focus ring. Match system follows your device’s own setting.",
+        kind: .segmented
       ) {
         Segmented(
           label: "Contrast",
@@ -324,7 +396,7 @@ struct AppearanceSection: View {
         ) { preferences.setPref(\.contrast, $0) }
         .accessibilityIdentifier("contrast")
       }
-      SettingsRow(label: "Density", hint: "Compact fits more on a screen.") {
+      SettingsRow(label: "Density", hint: "Compact fits more on a screen.", kind: .segmented) {
         Segmented(
           label: "Density",
           options: [
@@ -335,7 +407,10 @@ struct AppearanceSection: View {
       }
       // A phone, or a narrow tablet, has no sidebar to fold.
       if chrome != .phone {
-        SettingsRow(label: "Sidebar", hint: "Folded, it’s a rail of icons, which gives the page more room. The button at its top does the same.") {
+        SettingsRow(
+          label: "Sidebar", hint: "Folded, it’s a rail of icons, which gives the page more room. The button at its top does the same.",
+          kind: .segmented
+        ) {
           Segmented(
             label: "Sidebar",
             options: [SegmentedOption(Preferences.Sidebar.expanded, "Open"), SegmentedOption(Preferences.Sidebar.collapsed, "Folded")],
