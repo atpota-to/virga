@@ -366,7 +366,7 @@ public enum JSCollation {
       out.append(Element(p: 0, s: s, t: t(own)))
     case .expansion(let parts, let accent, let from, let cases):
       for (index, part) in parts.enumerated() {
-        if let accent, index > 0 {
+        if accent != nil, index > 0 {
           append(part, to: &out, caseBoost: caseBoost + expansionCase, slot: slot)
           continue
         }
