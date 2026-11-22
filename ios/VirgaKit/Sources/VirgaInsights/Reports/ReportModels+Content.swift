@@ -171,9 +171,9 @@ extension ReportModels {
       func ranked(_ tallies: Tallies) -> [ContentUse] {
         let uses = tallies.order.map { ContentUse(name: tallies.names[$0]!, tally: tallies.tallies[$0]!.closed(all.posts)) }
         return JSSort.sort(uses) { a, b in
-          JSMath.or(
-            Double(b.posts - a.posts), (b.typical ?? -1) - (a.typical ?? -1),
-            Double(JSCollation.localeCompare(a.name, b.name)))
+          // The name only breaks a tie (collation is the slow part).
+          let term = JSMath.or(Double(b.posts - a.posts), (b.typical ?? -1) - (a.typical ?? -1))
+          return term != 0 && !term.isNaN ? term : Double(JSCollation.localeCompare(a.name, b.name))
         }
       }
       func grouped(_ defs: [ContentDef], _ tallies: [String: Tally]) -> [ContentGroup] {
@@ -183,7 +183,7 @@ extension ReportModels {
         }
       }
       let langCounts = JSSort.sort(langOrder.map { LangCount(lang: $0.value, posts: langs[$0]!) }) { a, b in
-        JSMath.or(Double(b.posts - a.posts), Double(JSCollation.localeCompare(a.lang, b.lang)))
+        a.posts != b.posts ? Double(b.posts - a.posts) : Double(JSCollation.localeCompare(a.lang, b.lang))
       }
       alt.pct = alt.items != 0 ? (Double(alt.itemsDescribed) / Double(alt.items)) * 100 : nil
 
@@ -228,9 +228,8 @@ extension ReportModels {
       let order = ["moderation": 0.0, "curation": 1, "reference": 2]
       let rank = { (list: ListInfo) in order.jsValue(list.purpose) ?? 3 }
       return JSSort.sort(lists) { a, b in
-        JSMath.or(
-          rank(a) - rank(b), Double((b.subscribers ?? 0) - (a.subscribers ?? 0)),
-          Double(JSCollation.localeCompare(a.name, b.name)))
+        let term = JSMath.or(rank(a) - rank(b), Double((b.subscribers ?? 0) - (a.subscribers ?? 0)))
+        return term != 0 && !term.isNaN ? term : Double(JSCollation.localeCompare(a.name, b.name))
       }
     }
   }
