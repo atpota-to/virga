@@ -250,6 +250,8 @@ struct WhenPicker: View {
         onChange(JSDate.toISOString(pick.at))
       }
       .buttonStyle(ChipStyle(isOn: on))
+      // ScrollRow's `focus` is the pressed pick's key, found by this id.
+      .id(AnyHashable(pick.key))
       .scrollRowFocus(on)
       .help(ScheduleModel.formatInZone(.number(pick.at), tz, now: now))
       .accessibilityAddTraits(on ? .isSelected : [])
