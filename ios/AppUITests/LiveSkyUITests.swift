@@ -89,7 +89,10 @@ final class LiveSkyUITests: XCTestCase {
   private func tapTheMarkFiveTimes(_ app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
     let mark = element(app, "brand")
     XCTAssertTrue(mark.waitForExistence(timeout: 10), "no mark to tap", file: file, line: line)
-    for _ in 0..<5 { mark.tap() }
+    // One event of five taps. Separate taps each wait for the app to settle,
+    // which with the live sky drawing took 2 seconds on the iPhone (taps at
+    // :31, :33, :34, :35, :35), past SkyTaps' 1.5, so the count began again.
+    mark.tap(withNumberOfTaps: 5, numberOfTouches: 1)
   }
 
   /// The settings page's Appearance, from the account menu.
