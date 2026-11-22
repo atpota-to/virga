@@ -201,7 +201,8 @@ enum SettingsControlKind {
   case button
   /// A Segmented: its keys are 44.
   case segmented
-  /// A switch: its capsule is 24, in the middle of its 44-point target.
+  /// A switch: laid out 40 × 24, as `.switch` is (its 44-point target is
+  /// only its content shape), so it is drawn up by (line − 24) / 2.
   case toggle
   /// A badge, or a word or two of state: already on the name's line.
   case state
@@ -218,13 +219,17 @@ extension Measure.Settings {
 /// `.settings-row`: a setting's name and the line about it, and its control.
 struct SettingsRow<Control: View>: View {
   @Environment(\.virgaTheme) private var theme
-  let label: String
+  /// Nil for a block row with no label: the control alone, as a row.
+  let label: String?
   let hint: AnyView?
   let block: Bool
   /// A switch or a word or two of state: kept on the name's line on a phone.
   let compactControl: Bool
   let kind: SettingsControlKind
   let control: Control
+  /// `<label htmlFor>`: what a press on the name does (it presses the
+  /// control), set with `pressingName(_:)`.
+  private var onPressName: (() -> Void)?
 
   /// - Parameter kind: what the control is; a switch where `compactControl`
   ///   is set, else a button or a field.
@@ -248,11 +253,31 @@ struct SettingsRow<Control: View>: View {
       label: label, hint: hint.map { AnyView(Text($0)) }, block: block, compactControl: compactControl, kind: kind, control: control)
   }
 
+  /// A block row with no label (SettingsParts' `<SettingsRow block>`): the
+  /// control alone, with a row's air and its hairline.
+  init(@ViewBuilder block control: () -> Control) {
+    self.label = nil
+    self.hint = nil
+    self.block = true
+    self.compactControl = false
+    self.kind = .button
+    self.control = control()
+  }
+
+  /// The row whose name presses its control, as a `<label htmlFor>` does
+  /// (a switch's row: `action` flips it). VoiceOver reads the control by
+  /// the same name, so the name itself isn't read twice.
+  func pressingName(_ action: @escaping () -> Void) -> SettingsRow {
+    var row = self
+    row.onPressName = action
+    return row
+  }
+
   var body: some View {
     Group {
       if block || (theme.isTablet && !compactControl) {
         VStack(alignment: .leading, spacing: Measure.Settings.rowGap) {
-          words
+          if label != nil { words }
           control
         }
       } else if theme.isTablet {
@@ -293,29 +318,36 @@ struct SettingsRow<Control: View>: View {
     switch kind {
     case .button: return (nameLine - theme.points(ThemeKit.touchButtonHeight)) / 2
     case .segmented: return (nameLine - theme.points(ThemeKit.touchSegmentedKeyHeight)) / 2
-    case .toggle: return (nameLine - theme.points(ThemeKit.switchHeight)) / 2 - overhang
+    // `.settings-row-control:has(> .switch:only-child)`: the 24-point
+    // capsule centred on the line (the switch is laid out round its
+    // capsule, its 44-point reach only its content shape).
+    case .toggle: return (nameLine - theme.points(ThemeKit.switchHeight)) / 2
     case .state, .prose: return 0
     }
-  }
-
-  /// How far a switch's 44-point target reaches past its 24-point capsule,
-  /// above and below. The row is laid out round the capsule, as the web's
-  /// is, so a phone's line under the name and the switch isn't pushed down.
-  private var overhang: CGFloat {
-    kind == .toggle ? max(0, (Measure.Touch.target - theme.points(ThemeKit.switchHeight)) / 2) : 0
   }
 
   /// The control where the row puts it: drawn up onto the name's line.
   private var placedControl: some View {
     control
       .padding(.top, rise)
-      .padding(.bottom, -overhang)
   }
 
+  @ViewBuilder
   private var name: some View {
-    Text(label)
+    let text = Text(label ?? "")
       .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Settings.labelLineHeight)
       .foregroundStyle(theme.ink)
+    if let onPressName {
+      // A label is as wide as the words' column, and pressing it presses
+      // the control.
+      text
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
+        .onTapGesture { onPressName() }
+        .accessibilityHidden(true)
+    } else {
+      text
+    }
   }
 
   private func hintView(_ hint: AnyView) -> some View {

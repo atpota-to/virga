@@ -139,9 +139,10 @@ struct SignOutWarning: ViewModifier {
 }
 
 /// The warnings for `accounts` whose sign-out would stop work waiting on
-/// Virga's server. Without the posting services to read it through, each
-/// long session reads as one that couldn't be checked, as a failed read
-/// does on the web.
+/// Virga's server, from `model` (usePendingWork over the posting services,
+/// AppModel.pendingWork): nothing for an account with nothing waiting or
+/// not asked about. Without a model, each long session reads as one that
+/// couldn't be checked, as a failed read does on the web.
 struct PendingWorkWarnings: View {
   let accounts: [SessionAccount]
   let model: PendingWorkModel?

@@ -1,4 +1,5 @@
 // Ports src/posting/ui/LifespanDefaults.jsx
+// Ports src/settings/settings.css (the default timer: .settings-rule, .settings-rule-editor, .settings-section .lse-legend)
 //
 // Settings › Posting: the timer new posts start with, for one account.
 // Whether there is one, and its rule (a length, never a set time). The
@@ -20,7 +21,6 @@ import VirgaSession
 /// `LifespanDefaults`: the timer new posts start with, a length, never a set time.
 struct LifespanDefaultsCard: View {
   @Environment(\.virgaTheme) private var theme
-  @Environment(\.navigate) private var navigate
   @Environment(AppModel.self) private var app
   let did: String?
   let model: PostingSettingsModel
@@ -43,22 +43,29 @@ struct LifespanDefaultsCard: View {
         }
         .accessibilityIdentifier("default-timer-on")
       }
+      .pressingName {
+        var next = lifespan
+        next.enabled = !lifespan.enabled
+        save(next)
+      }
       // On, the editor under this row ends with the rule in a sentence, so
       // the row says nothing more; off, the rule waits behind its sentence,
-      // closed, still there to change before turning the timer on.
+      // closed, still there to change before turning the timer on (a
+      // closed `<details>` keeps it, unsaved rows and all).
       if lifespan.enabled {
-        editor(lifespan)
-          .padding(.vertical, theme.rowPadLg)
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+        SettingsRow(block: { editor(lifespan) })
       } else {
-        Disclosure("The rule it will use: \(Self.sentenceClause(rule))") { editor(lifespan) }
-          .padding(.vertical, theme.rowPadLg)
-          .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+        Disclosure("The rule it will use: \(Self.sentenceClause(rule))", settingsRow: true, keepsContent: true) {
+          // `.settings-rule[open] > .settings-rule-editor { margin-top: var(--space-4) }`
+          editor(lifespan)
+            .padding(.top, theme.space4)
+        }
+        .padding(.vertical, theme.rowPadLg)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
       }
       if let error {
-        Callout(tone: .danger) { Text(error) }
-          .padding(.top, Measure.Settings.calloutSpaceAbove)
+        PostingSettingsRefusal(words: error)
       }
       caption
     }
@@ -79,7 +86,9 @@ struct LifespanDefaultsCard: View {
   }
 
   /// The rule's editor (LifespanRuleEditor), always on, a length never a
-  /// set time; what it changes keeps the timer on or off as it is.
+  /// set time; what it changes keeps the timer on or off as it is. Held to
+  /// `.settings-rule-editor { max-width: 640px }`, its parts named like the
+  /// rows around it.
   private func editor(_ lifespan: TimerRule) -> some View {
     var on = lifespan
     on.enabled = true
@@ -91,34 +100,28 @@ struct LifespanDefaultsCard: View {
         save(kept)
       },
       fit: LifespanEditorFit(), limits: limits, did: did, allowExactTime: false, showToggle: false,
-      transport: app.archiveEnvironment.transport)
+      transport: app.archiveEnvironment.transport, settingsLegends: true
+    )
+    .frame(maxWidth: Measure.SettingsPosting.ruleEditorMax, alignment: .leading)
   }
 
   /// `usage ? usage + ' ' : ''`, then what happens without a free timer,
-  /// and the way to the posts on one.
+  /// and the way to the posts on one: a link in ink, underlined, as links
+  /// are (the posting kit's linked words, through the navigator).
   private var caption: some View {
     let usage = ScheduleModel.timerLimitsLine(limits)
-    var words = AttributedString(
+    let lead =
       "\(usage.isEmpty ? "" : "\(usage) ")When the account has no free timer of the kind this rule needs, a new post starts without it, and the composer says why. "
-    )
-    var link = AttributedString("See posts on a timer")
-    link.link = URL(string: "virga-route:timers")
-    words += link
-    words += AttributedString(".")
-    return Text(words)
-      .virgaText(.textSm)
-      .foregroundStyle(theme.muted)
-      .tint(theme.ink)
-      .fixedSize(horizontal: false, vertical: true)
-      .frame(maxWidth: theme.measure, alignment: .leading)
-      .padding(.top, theme.points(ThemeKit.cardCaptionSpaceAbove))
-      .environment(
-        \.openURL,
-        OpenURLAction { _ in
-          navigate(PostingRoutes.postingPageByKey["timers"]?.path ?? PostingRoutes.postingBase)
-          return .handled
-        })
-      .accessibilityIdentifier("default-timer-caption")
+    return ScheduleLinkedText(pieces: [
+      .words(lead), .link("See posts on a timer", to: PostingRoutes.postingPath("timers")), .words("."),
+    ])
+    .virgaText(.textSm)
+    .foregroundStyle(theme.muted)
+    .tint(theme.ink)
+    .fixedSize(horizontal: false, vertical: true)
+    .frame(maxWidth: theme.measure, alignment: .leading)
+    .padding(.top, theme.points(ThemeKit.cardCaptionSpaceAbove))
+    .accessibilityIdentifier("default-timer-caption")
   }
 
   /// `save(next)`: the rule normalized, never pinned to a time.

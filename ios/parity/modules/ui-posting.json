@@ -17,7 +17,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
       ],
-      "note": "Whose settings (every signed-in account, and the open one even when it needs a sign-in, by accountName with its @handle) when there is more than one, then the cards over that account's PostingSettingsModel (usePostingSettings), made again for another account: New posts, and with a long session the Weekly queue, the Default timer (LifespanDefaultsCard, Posting/LifespanDefaults.swift) and the Post adviser (AdviserSettingsCard); without one, NeedsBackend in their place.",
+      "note": "Whose settings (every signed-in account, and the open one even when it needs a sign-in, by accountName with its @handle) when there is more than one, as SettingsSelect (the kit's VirgaSelect, 220 to 320 wide, the whole line from 760 down), then the cards over that account's PostingSettingsModel (usePostingSettings), made again for another account: New posts, and with a long session the Weekly queue, the Default timer (LifespanDefaultsCard, Posting/LifespanDefaults.swift) and the Post adviser (AdviserSettingsCard); without one, NeedsBackend in their place. A refused change in any card is the words-alone danger Callout, read out as the web's role=\"alert\" is, 16 above and 4 below (PostingSettingsRefusal).",
       "synced": "981c47d09ca4"
     },
     "src/posting/composer/Composer.jsx": {
@@ -249,7 +249,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserSettingsCard.swift"
       ],
-      "note": "Post adviser in Settings › Posting, over the account's PostingSettingsModel: NeedsBackend for an account that can't use AI; Use the post adviser (nextPostingAdviserState, the recommended setup the first time), Check before posting, Stop me, Which posts, Read replies with their conversation, Your goals (the two presets, Post less about some topics with its topics, Goals in your own words with its count), Proofread (the three checks, Notes for the proofread, Your writing style with Learn my style or See or change it, which opens StyleDialog), the month's three usage lines, What’s sent, and to whom, and a refused change's message. Which posts is a column of check boxes acting as radios.",
+      "note": "Post adviser in Settings › Posting, over the account's PostingSettingsModel: NeedsBackend for an account that can't use AI; Use the post adviser (nextPostingAdviserState, the recommended setup the first time), Check before posting, Stop me (the Segmented's own medium keys, in a row drawn up for them), Which posts, Read replies with their conversation (the switches' names press them), Your goals (the two presets, Post less about some topics with its topics, VirgaTextField with its muted example, Goals in your own words with its example placeholder and its count), Proofread (the three checks, Notes for the proofread with its example placeholder, Your writing style with Learn my style or See or change it, which opens StyleDialog), the month's three usage lines, What’s sent, and to whom (a Settings disclosure row), and a refused change's message, read out. Which posts is a column of check boxes acting as radios.",
       "synced": "b625e1f7a742"
     },
     "src/posting/ui/AdviserSheet.jsx": {
@@ -274,7 +274,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
       ],
-      "note": "New posts: Languages (the composer's LanguagePicker, which names itself above its tokens), Who can reply and quote (My Bluesky setting or Choose here, with the composer's GatesEditor over the stored gates), Main button (PublishActions' four, normalized), Require alt text, Offer to split long posts and Number the posts of a split thread as switches, each saved as it changes, with a refused change's message under them.",
+      "note": "New posts: Languages (the composer's LanguagePicker, bare: its label VoiceOver's alone, no hint, under the row's own name), Who can reply and quote (My Bluesky setting or Choose here, with the composer's GatesEditor over the stored gates), the two stacked 12 apart and each held to 420 (composer.css's .settings-row-control--stack), Main button (PublishActions' four, normalized, as SettingsSelect), Require alt text, Offer to split long posts and Number the posts of a split thread as switches whose names press them (the label's htmlFor), each saved as it changes, with a refused change's message under them, read out.",
       "synced": "648efd59b070"
     },
     "src/posting/ui/GatesEditor.jsx": {
@@ -289,7 +289,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Posting/LifespanDefaults.swift"
       ],
-      "note": "LifespanDefaultsCard in Settings › Posting: Start new posts with a timer (its hint when off), the rule's editor (LifespanRuleEditor, a length and never a set time, its changes keeping the timer on or off as it is, checked against the account's limits) under the row when on and behind The rule it will use: … when off, saved never pinned to a time, the refusal, and the caption: with a long session the timers in use (getLimits, timerLimitsLine) first, then the rest with See posts on a timer.",
+      "note": "LifespanDefaultsCard in Settings › Posting: Start new posts with a timer (its hint when off; its name presses the switch), the rule's editor (LifespanRuleEditor, a length and never a set time, its changes keeping the timer on or off as it is, checked against the account's limits, held to 640 and its parts named like Settings' rows) as a label-less block row when on, and behind The rule it will use: … when off (a Settings disclosure row: its arrow on the sentence's first line, the sentence pressed through 44 points that reach into the row's air, the editor 16 under it and kept while closed, as a closed <details> keeps its children), saved never pinned to a time, the refusal read out, and the caption: with a long session the timers in use (getLimits, timerLimitsLine) first, then the rest with See posts on a timer, a link in ink and underlined that the navigator follows to postingPath('timers') (ScheduleLinkedText).",
       "synced": "ae76e34b01e2"
     },
     "src/posting/ui/LifespanEditor.jsx": {
@@ -297,7 +297,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Posting/LifespanRuleEditor.swift"
       ],
-      "note": "LifespanRuleEditor over LifespanModel and SelfDestruct: the switch with its line (showToggle), Delete it after or Act on it after (the five shown lengths, Other… with Length and Unit and its hint, and Or a set time on the system's date and time picker within pinBounds, with Clear), What happens then (the effects, Limit replies closed to a reply), Who can still reply (Nobody, the three groups, the writer's curation lists read through PublicAppView, and the most Bluesky takes), Conditions (optional) with Unless or Only if it reaches, a row per condition (what it counts, how it compares, how many, Remove) and Add a condition, Count quotes from, When there’s more than one, If it does or doesn’t (keep, or another window with At most), the rule in a sentence (editorNotes' summary, This post gets no timer. or No timer.) and its notes. The time is read again every thirty seconds. A row added or removed leaves the focus where the system puts it.",
+      "note": "LifespanRuleEditor over LifespanModel and SelfDestruct: the switch with its line (showToggle; the switch named by its label and described by its line, the words pressing it), Delete it after or Act on it after (the five shown lengths, Other… with Length and Unit and its hint, Other… saying it is expanded, and Or a set time: an empty field while there is no pin, pressing it sets the earliest time allowed at the next whole minute, which the system's date and time picker within pinBounds then changes, with Clear), What happens then (the effects, Limit replies closed to a reply, a disabled chip at 50%), Who can still reply (Nobody, the three groups, the writer's curation lists read through PublicAppView, and the most Bluesky takes), Conditions (optional) with Unless or Only if it reaches, a row per condition (what it counts, how it compares, how many with its muted off, Remove let out 14; from 560 down two lines as the web's grid lays them, LifespanPhoneCondition, 16 apart) and Add a condition, Count quotes from (Followers, at least on the field's own ground while it's off, as .lse-op:disabled keeps it), When there’s more than one, If it does or doesn’t (keep, or another window with At most), the rule in a sentence (editorNotes' summary at 0.875rem, This post gets no timer. or No timer.) read out politely as it changes (aria-live), and its notes, the pin and room ones read out as they arrive (role=\"status\"). Each part's legend is 8 over what it names; in Settings (settingsLegends) at --text-md, 500. The selects are VirgaSelect and the fields VirgaTextField; what it counts offers only the metrics no other row holds, where the web shows those disabled. The time is read again every thirty seconds. A row added or removed leaves the focus where the system puts it.",
       "synced": "4088289d3846"
     },
     "src/posting/ui/NeedsBackend.jsx": {
@@ -331,7 +331,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
       ],
-      "note": "Weekly queue: the posting times a week with the week in a line and Edit the week (to Posting › Weekly schedule), the time zone (scheduleParts' TimezoneSelect: this device's first, then every zone the device knows) with the device's zone named when it differs, and Suggest posting times, over VirgaPosting's ScheduleModel (weeklyCount, weekSummary, zoneLabel, moveToZone). TimeZone.knownTimeZoneIdentifiers stands in for Intl.supportedValuesOf('timeZone').",
+      "note": "Weekly queue: the posting times a week with the week in a line and Edit the week (a Link drawn as a button: read as a link, to postingPath('schedule'), Posting › Weekly schedule), the time zone (scheduleParts' TimezoneSelect: this device's first, then every zone the device knows; the whole line from 760 down) with the device's zone named when it differs, and Suggest posting times (its name presses its switch), over VirgaPosting's ScheduleModel (weeklyCount, weekSummary, zoneLabel, moveToZone); a refused change read out. TimeZone.knownTimeZoneIdentifiers stands in for Intl.supportedValuesOf('timeZone').",
       "synced": "a81e7aff21f3"
     },
     "src/posting/ui/SettingsParts.jsx": {
@@ -339,7 +339,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Settings/SettingsPage.swift"
       ],
-      "note": "SettingsCard and SettingsRow are Settings' own SettingsSectionView and SettingsRow (a block row's control on a line of its own; a short control kept on the label's line on a phone).",
+      "note": "SettingsCard and SettingsRow are Settings' own SettingsSectionView and SettingsRow (a block row's control on a line of its own; a short control kept on the label's line on a phone). A label with htmlFor is SettingsRow's pressingName: a press on the name presses its control (a switch's row), the name not read twice. A block row with no label is SettingsRow(block:), the control alone with a row's air and hairline.",
       "synced": "e35a7f8135dc"
     },
     "src/posting/ui/StyleDialog.jsx": {

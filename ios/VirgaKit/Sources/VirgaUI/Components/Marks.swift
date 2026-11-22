@@ -26,14 +26,20 @@ public struct ChipStyle: ButtonStyle {
   /// words from the start (`.lib-answers > .chip { max-width: 100%;
   /// white-space: normal; text-align: left }`), rather than one line.
   public var wraps: Bool
+  /// How faint a disabled chip is: a button's 45% unless its rule says
+  /// otherwise (the timer editor's, `.lse-chips .chip:disabled`, 50%).
+  public var disabledOpacity: Double
 
-  public init(isOn: Bool, wraps: Bool = false) {
+  public init(isOn: Bool, wraps: Bool = false, disabledOpacity: Double = ThemeKit.disabledOpacity) {
     self.isOn = isOn
     self.wraps = wraps
+    self.disabledOpacity = disabledOpacity
   }
 
   public func makeBody(configuration: Configuration) -> some View {
-    ChipBody(label: configuration.label, isOn: isOn, isPressed: configuration.isPressed, wraps: wraps)
+    ChipBody(
+      label: configuration.label, isOn: isOn, isPressed: configuration.isPressed, wraps: wraps,
+      disabledOpacity: disabledOpacity)
   }
 }
 
@@ -44,6 +50,7 @@ struct ChipBody<Label: View>: View {
   let isOn: Bool
   let isPressed: Bool
   var wraps = false
+  var disabledOpacity: Double = ThemeKit.disabledOpacity
 
   var body: some View {
     let fill = isOn ? theme.color(ThemeKit.chipOnFill) : Color.clear
@@ -61,7 +68,7 @@ struct ChipBody<Label: View>: View {
       .overlay(Capsule().strokeBorder(edge, lineWidth: theme.points(ThemeKit.chipBorder)))
       // 40 tall, pressed through 44 (DESIGN.md's Touch).
       .contentShape(Capsule().inset(by: -max(0, (Measure.Touch.target - theme.points(ThemeKit.touchChipHeight)) / 2)))
-      .opacity(isEnabled ? 1 : ThemeKit.disabledOpacity)
+      .opacity(isEnabled ? 1 : disabledOpacity)
       .animation(theme.motion.control, value: isOn)
       .virgaFocusOutline(Capsule())
       .accessibilityAddTraits(isOn ? [.isSelected] : [])

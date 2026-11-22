@@ -15,7 +15,9 @@
 // `countFrom` what a length counts from for a post that's already out.
 // The conditions shown are the rule's clauses and rows added here without a
 // number yet, kept apart so a row doesn't vanish while its number is
-// retyped. The time is read again every thirty seconds.
+// retyped. The time is read again every thirty seconds. In Settings
+// (`settingsLegends`) the parts are named like the rows around them
+// (settings.css's `.settings-section .lse-legend`).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -37,6 +39,9 @@ struct LifespanRuleEditor: View {
   var holds: JSONValue? = nil
   var countFrom = "goesUp"
   var transport: any HTTPTransport = HTTP.transport
+  /// Settings' editor: its parts named at --text-md, 500, as Settings' rows
+  /// are; the dialogs' at --text-sm, 600.
+  var settingsLegends = false
 
   @State private var now = SyncStatus.now()
   @State private var amount = ""
@@ -53,6 +58,19 @@ struct LifespanRuleEditor: View {
   static var shownPresets: [SelfDestruct.LifespanPreset] { SelfDestruct.lifespanPresets.filter { shownLengths.contains($0.seconds) } }
   static func isShownChoice(_ choice: String) -> Bool { Int(choice).map { shownLengths.contains($0) } ?? false }
 
+  /// The selects' choices: the units, the comparisons, At most's counts
+  /// and the quoters' follower counts.
+  static var unitChoices: [SelectChoice<String>] { SelfDestruct.lifespanUnits.map { SelectChoice($0.key, $0.label) } }
+  static var operatorChoices: [SelectChoice<String>] {
+    SelfDestruct.operators.map { (o: SelfDestruct.Operator) -> SelectChoice<String> in SelectChoice(o.key, "\(o.symbol) \(o.label)") }
+  }
+  static var extensionChoices: [SelectChoice<Int>] {
+    LifespanModel.extensionChoices.map { (n: Int) -> SelectChoice<Int> in SelectChoice(n, n == 1 ? "once" : "\(n) times") }
+  }
+  static var followerChoices: [SelectChoice<Int>] {
+    LifespanModel.followerThresholds.map { (n: Int) -> SelectChoice<Int> in SelectChoice(n, "\(AppLocale.formatNumber(n)) followers") }
+  }
+
   var body: some View {
     let rule = SelfDestruct.normalizeTimer(value)
     let choice = LifespanModel.lengthChoice(rule)
@@ -63,20 +81,14 @@ struct LifespanRuleEditor: View {
         length(rule, choice: choice)
         effects(rule)
         conditions(rule)
-        VStack(alignment: .leading, spacing: Measure.Lifespan.summaryGap) {
-          Text(notes.summary.isEmpty ? (showToggle ? "This post gets no timer." : "No timer.") : notes.summary)
-            .virgaText(.textSm, lineHeight: Measure.Lifespan.sentenceLineHeight)
-            .foregroundStyle(notes.summary.isEmpty ? theme.muted : theme.ink2)
-            .fixedSize(horizontal: false, vertical: true)
-          if !notes.thread.isEmpty { FieldHint(notes.thread) }
-        }
-        // One element read as a whole: the identifier goes on that element,
-        // not on a child the combining folds into it.
-        .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(.updatesFrequently)
-        .accessibilityIdentifier("lifespan-sentence")
-        ForEach([notes.fitNote, notes.unavailable, notes.pin, notes.room].filter { !$0.isEmpty }, id: \.self) { note in
+        summary(notes)
+        ForEach([notes.fitNote, notes.unavailable].filter { !$0.isEmpty }, id: \.self) { note in
           Callout(tone: .warn) { Text(note) }
+        }
+        // `role="status"`: read out as it arrives, after what is being said.
+        ForEach([notes.pin, notes.room].filter { !$0.isEmpty }, id: \.self) { note in
+          Callout(tone: .warn) { Text(note) }
+            .modifier(LifespanPoliteStatus(words: note, onAppear: true))
         }
       }
     }
@@ -99,6 +111,27 @@ struct LifespanRuleEditor: View {
   }
 
   private func emit(_ next: TimerRule) { onChange(SelfDestruct.normalizeTimer(next)) }
+
+  /// `.lse-summary`: the rule in a sentence (`.lse-sentence`, 0.875rem),
+  /// and what a thread changes. `aria-live="polite"`: a new sentence is
+  /// read out after what was pressed, not as the editor first appears.
+  private func summary(_ notes: LifespanEditorNotes) -> some View {
+    let off = notes.summary.isEmpty
+    let sentence = off ? (showToggle ? "This post gets no timer." : "No timer.") : notes.summary
+    let said = notes.thread.isEmpty ? sentence : "\(sentence) \(notes.thread)"
+    return VStack(alignment: .leading, spacing: Measure.Lifespan.summaryGap) {
+      Text(sentence)
+        .virgaText(size: theme.points(Measure.Lifespan.sentenceSize), lineHeight: Measure.Lifespan.sentenceLineHeight)
+        .foregroundStyle(off ? theme.muted : theme.ink2)
+        .fixedSize(horizontal: false, vertical: true)
+      if !notes.thread.isEmpty { FieldHint(notes.thread) }
+    }
+    // One element read as a whole: the identifier goes on that element,
+    // not on a child the combining folds into it.
+    .accessibilityElement(children: .combine)
+    .accessibilityIdentifier("lifespan-sentence")
+    .modifier(LifespanPoliteStatus(words: said, onAppear: false))
+  }
 
   private func begin(_ rule: TimerRule, choice: String) {
     guard !started else { return }
@@ -124,18 +157,27 @@ struct LifespanRuleEditor: View {
 
   // MARK: Whether there is one
 
+  /// `.lse-switch-row`: the switch named by its label (`aria-labelledby`)
+  /// and described by its hint (`aria-describedby`), the words pressing it
+  /// too (`<label htmlFor>`), as ScheduleSwitch's do.
   private func toggle(_ rule: TimerRule) -> some View {
-    HStack(alignment: .top, spacing: Measure.Lifespan.switchGap) {
+    let hint =
+      rule.enabled
+      ? "Virga’s server acts on the post at its time, even with this browser closed."
+      : "No timer: the post stays up until you delete it."
+    return HStack(alignment: .top, spacing: Measure.Lifespan.switchGap) {
       Toggle(toggleLabel, isOn: Binding(get: { rule.enabled }, set: { emit(LifespanModel.patchRule(rule, ["enabled": .bool($0)])) }))
         .labelsHidden()
         .toggleStyle(.virgaSwitch)
+        .accessibilityHint(hint)
       VStack(alignment: .leading, spacing: Measure.Lifespan.switchTextGap) {
         Text(toggleLabel).virgaText(.textMd, weight: VirgaWeight.semibold).foregroundStyle(theme.ink)
-        FieldHint(
-          rule.enabled
-            ? "Virga’s server acts on the post at its time, even with this browser closed."
-            : "No timer: the post stays up until you delete it.")
+        FieldHint(hint)
       }
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .contentShape(Rectangle())
+      .onTapGesture { emit(LifespanModel.patchRule(rule, ["enabled": .bool(!rule.enabled)])) }
+      .accessibilityHidden(true)
     }
   }
 
@@ -155,14 +197,15 @@ struct LifespanRuleEditor: View {
             emit(LifespanModel.withLength(rule, p.seconds))
           }
         }
-        chip("Other…", on: otherOpen) { otherOpen = true }
+        // `aria-expanded`: it opens the length's fields under the chips.
+        chip("Other…", on: otherOpen, expanded: otherOpen) { otherOpen = true }
       }
       if otherOpen {
         VStack(alignment: .leading, spacing: Measure.Lifespan.otherGap) {
           VStack(alignment: .leading, spacing: Measure.Lifespan.inlineRowGap) {
             HStack(alignment: .bottom, spacing: Measure.Lifespan.inlineGap) {
               FieldStack("Length") {
-                TextField(
+                VirgaTextField(
                   "",
                   text: Binding(
                     get: { amount },
@@ -177,21 +220,15 @@ struct LifespanRuleEditor: View {
               }
               .frame(maxWidth: Measure.Lifespan.amountWidth)
               FieldStack("Unit") {
-                Picker(
+                VirgaSelect(
                   "Unit",
                   selection: Binding(
                     get: { unit },
                     set: { next in
                       unit = next
                       if let s = SelfDestruct.lifespanFromParts(.string(amount), next) { emit(LifespanModel.withLength(rule, s)) }
-                    })
-                ) {
-                  ForEach(SelfDestruct.lifespanUnits, id: \.key) { u in Text(u.label).tag(u.key) }
-                }
-                .pickerStyle(.menu)
-                .tint(theme.ink)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .virgaField()
+                    }),
+                  options: Self.unitChoices)
               }
               .frame(maxWidth: Measure.Lifespan.unitWidth)
             }
@@ -217,21 +254,44 @@ struct LifespanRuleEditor: View {
     return VStack(alignment: .leading, spacing: Measure.Lifespan.inlineRowGap) {
       FieldLabel("Or a set time")
       HStack(spacing: theme.space3) {
-        DatePicker(
-          "Or a set time",
-          selection: Binding(
-            get: { pinned.map { Date(timeIntervalSince1970: $0 / 1000) } ?? lo },
-            set: { date in emit(LifespanModel.withPin(rule, JSDate.toISOString(date.timeIntervalSince1970 * 1000))) }),
-          in: lo...max(lo, hi)
-        )
-        .labelsHidden()
-        if pinned != nil {
+        if let pinned {
+          DatePicker(
+            "Or a set time",
+            selection: Binding(
+              get: { Date(timeIntervalSince1970: pinned / 1000) },
+              set: { date in emit(LifespanModel.withPin(rule, JSDate.toISOString(date.timeIntervalSince1970 * 1000))) }),
+            in: lo...max(lo, hi)
+          )
+          .labelsHidden()
           Button("Clear") { emit(LifespanModel.withPin(rule, nil as String?)) }
             .buttonStyle(.virga(.ghost, size: .small))
+        } else {
+          unpinnedField(rule, earliest: lo)
         }
       }
       FieldHint("In this device’s time. At least 5 minutes and at most 30 days after it goes up.")
     }
+  }
+
+  /// `toLocalInput(rule.deleteAt)` is '' without a pin: an empty field,
+  /// not a time drawn as if chosen. Pressing it sets the earliest time
+  /// allowed, at the next whole minute (the field's own precision), which
+  /// the system's pickers that take its place then change (a browser's
+  /// empty field opens its own picker instead).
+  private func unpinnedField(_ rule: TimerRule, earliest: Date) -> some View {
+    Button {
+      let minute = (earliest.timeIntervalSince1970 / 60).rounded(.up) * 60
+      emit(LifespanModel.withPin(rule, JSDate.toISOString(minute * 1000)))
+    } label: {
+      Text(verbatim: " ")
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
+    }
+    .buttonStyle(.plain)
+    .virgaField()
+    .frame(maxWidth: Measure.Lifespan.atWidth)
+    .accessibilityLabel("Or a set time")
+    .accessibilityValue("")
   }
 
   // MARK: What it does
@@ -299,7 +359,7 @@ struct LifespanRuleEditor: View {
           options: [SegmentedOption("unless", "Unless it reaches"), SegmentedOption("onlyIf", "Only if it reaches")],
           selection: rule.conditions.sense.rawValue, size: .small
         ) { emit(LifespanModel.withConditions(rule, ["sense": .string($0)])) }
-        VStack(alignment: .leading, spacing: Measure.Lifespan.condsGap) {
+        VStack(alignment: .leading, spacing: theme.isPhone ? Measure.Lifespan.phoneCondsGap : Measure.Lifespan.condsGap) {
           ForEach(rows, id: \.self) { metric in
             conditionRow(rule, metric)
           }
@@ -337,18 +397,16 @@ struct LifespanRuleEditor: View {
             ) { emit(LifespanModel.withConditions(rule, ["onSpare": .string($0)])) }
             if rule.conditions.onSpare == .extend {
               HStack(spacing: Measure.Lifespan.chipsGap) {
-                Text("At most").virgaText(.textSm).foregroundStyle(theme.ink2)
-                Picker(
+                // `.lse-inline-field` sets only the size: the words are ink.
+                Text("At most").virgaText(.textSm).foregroundStyle(theme.ink)
+                VirgaSelect(
                   "At most",
                   selection: Binding(
                     get: { rule.conditions.maxExtensions },
-                    set: { emit(LifespanModel.withConditions(rule, ["maxExtensions": .number(Double($0))])) })
-                ) {
-                  ForEach(LifespanModel.extensionChoices, id: \.self) { n in Text(n == 1 ? "once" : "\(n) times").tag(n) }
-                }
-                .pickerStyle(.menu)
-                .tint(theme.ink)
-                .virgaField()
+                    set: { emit(LifespanModel.withConditions(rule, ["maxExtensions": .number(Double($0))])) }),
+                  options: Self.extensionChoices)
+                // `.lse-inline-field .lse-op { width: auto }`
+                .fixedSize(horizontal: true, vertical: false)
               }
             }
           }
@@ -362,18 +420,15 @@ struct LifespanRuleEditor: View {
     let label = m?.label ?? metric
     let clause = SelfDestruct.clauseFor(rule.conditions, metric)
     let op = clause?.op.rawValue ?? ops[metric] ?? "gte"
-    let metricPicker = Picker(
-      "What it counts", selection: Binding(get: { metric }, set: { changeRowMetric(rule, from: metric, to: $0) })
-    ) {
-      ForEach(SelfDestruct.metrics, id: \.key) { x in
-        Text(x.label).tag(x.key).disabled(x.key != metric && rows.contains(x.key))
-      }
+    // A metric another row holds can't be chosen here (the web's disabled
+    // options), so it isn't offered.
+    let metricChoices: [SelectChoice<String>] = SelfDestruct.metrics.filter { $0.key == metric || !rows.contains($0.key) }.map {
+      SelectChoice($0.key, $0.label)
     }
-    .pickerStyle(.menu)
-    .tint(theme.ink)
-    .frame(maxWidth: .infinity, alignment: .leading)
-    .virgaField()
-    let opPicker = Picker(
+    let metricPicker = VirgaSelect(
+      "What it counts", selection: Binding(get: { metric }, set: { changeRowMetric(rule, from: metric, to: $0) }),
+      options: metricChoices)
+    let opPicker = VirgaSelect(
       "\(label): how to compare",
       selection: Binding(
         get: { op },
@@ -383,14 +438,9 @@ struct LifespanRuleEditor: View {
           } else {
             ops[metric] = next
           }
-        })
-    ) {
-      ForEach(SelfDestruct.operators, id: \.key) { o in Text("\(o.symbol) \(o.label)").tag(o.key) }
-    }
-    .pickerStyle(.menu)
-    .tint(theme.ink)
-    .virgaField()
-    let number = TextField(
+        }),
+      options: Self.operatorChoices)
+    let number = VirgaTextField(
       "off",
       text: Binding(
         get: { clause.map { String($0.value) } ?? "" },
@@ -398,7 +448,6 @@ struct LifespanRuleEditor: View {
     )
     .keyboardType(.numberPad)
     .virgaField()
-    .frame(maxWidth: Measure.Lifespan.valueWidth)
     .accessibilityLabel("\(label): how many")
     let remove = Button {
       removeRow(rule, metric)
@@ -407,21 +456,21 @@ struct LifespanRuleEditor: View {
     }
     .buttonStyle(.virga(.ghost, size: .small, icon: true))
     .accessibilityLabel("Remove the \(label.jsLowercased()) condition")
+    // `.lse-cond-remove { margin-right: -14px }` on a touch screen.
+    .padding(.trailing, -Measure.Lifespan.removeLetOut)
     return Group {
       if theme.isPhone {
-        VStack(alignment: .leading, spacing: Measure.Lifespan.condsGap) {
+        LifespanPhoneCondition(gap: Measure.Lifespan.condsGap) {
           metricPicker
-          HStack(spacing: Measure.Lifespan.condsGap) {
-            opPicker
-            number
-            remove
-          }
+          remove
+          opPicker
+          number
         }
       } else {
         HStack(spacing: Measure.Lifespan.condsGap) {
           metricPicker
           opPicker.frame(maxWidth: Measure.Lifespan.opWidth)
-          number
+          number.frame(maxWidth: Measure.Lifespan.valueWidth)
           remove
         }
       }
@@ -464,17 +513,18 @@ struct LifespanRuleEditor: View {
               set: { emit(LifespanModel.withQuoteFilter(rule, ["followersOver": $0 ? .number(10_000) : .null])) })
           )
           .toggleStyle(.virgaCheck)
-          Picker(
+          VirgaSelect(
             "Followers, at least",
             selection: Binding(
               get: { filter?.followersOver ?? 10_000 },
-              set: { emit(LifespanModel.withQuoteFilter(rule, ["followersOver": .number(Double($0))])) })
-          ) {
-            ForEach(LifespanModel.followerThresholds, id: \.self) { n in Text("\(AppLocale.formatNumber(n)) followers").tag(n) }
-          }
-          .pickerStyle(.menu)
-          .tint(theme.ink)
-          .virgaField()
+              set: { emit(LifespanModel.withQuoteFilter(rule, ["followersOver": .number(Double($0))])) }),
+            options: Self.followerChoices
+          )
+          // `.lse-op:disabled`: off, it keeps the field's own ground, only
+          // its edge and words dimmed, so it reads with the box beside it.
+          .keepingFillWhenDisabled()
+          // `.lse-check-with .lse-op { width: auto }`
+          .fixedSize(horizontal: true, vertical: false)
           .disabled(filter?.followersOver == nil)
         }
       }
@@ -492,15 +542,21 @@ struct LifespanRuleEditor: View {
 
   // MARK: Parts
 
-  /// `.lse-block`: a part of the rule under its name.
+  /// `.lse-block`: a part of the rule under its name. The fieldset's gap
+  /// is its content's, which the legend isn't part of: the legend's 8 below
+  /// is the whole gap to what it names, and what follows is 12 apart.
   private func block<Content: View>(_ legend: String, @ViewBuilder content: () -> Content) -> some View {
-    VStack(alignment: .leading, spacing: Measure.Lifespan.blockGap) {
+    VStack(alignment: .leading, spacing: Measure.Lifespan.legendBelow) {
       Text(legend)
-        .virgaText(.textSm, weight: VirgaWeight.semibold)
+        .virgaText(
+          settingsLegends ? ThemeToken.textMd : ThemeToken.textSm,
+          weight: settingsLegends ? VirgaWeight.medium : VirgaWeight.semibold
+        )
         .foregroundStyle(theme.ink)
-        .padding(.bottom, Measure.Lifespan.legendBelow)
         .accessibilityAddTraits(.isHeader)
-      content()
+      VStack(alignment: .leading, spacing: Measure.Lifespan.blockGap) {
+        content()
+      }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
   }
@@ -515,10 +571,103 @@ struct LifespanRuleEditor: View {
     .accessibilityElement(children: .contain)
   }
 
-  private func chip(_ label: String, on: Bool, action: @escaping () -> Void) -> some View {
-    Button(label, action: action)
-      .buttonStyle(ChipStyle(isOn: on))
+  /// `.lse-chips .chip`: pressed while on (`aria-pressed`), 50% while
+  /// disabled; `expanded` says whether what it opens is open (`aria-expanded`).
+  private func chip(_ label: String, on: Bool, expanded: Bool? = nil, action: @escaping () -> Void) -> some View {
+    // A String, so the value is the words as they are (no literal to infer).
+    let state: String = expanded.map { open in open ? "Expanded" : "Collapsed" } ?? ""
+    return Button(label, action: action)
+      .buttonStyle(ChipStyle(isOn: on, disabledOpacity: Measure.Lifespan.disabledChipOpacity))
       .accessibilityAddTraits(on ? .isSelected : [])
+      .accessibilityValue(state)
+  }
+}
+
+/// `role="status"` and `aria-live="polite"`: words read out when they
+/// change (and, for a status that arrives with them, as it appears),
+/// queued after what VoiceOver is saying rather than cutting it off. An
+/// editor kept out of reach (a closed disclosure's, which disables what it
+/// keeps, as a closed `<details>` hides it) says nothing.
+struct LifespanPoliteStatus: ViewModifier {
+  @Environment(\.isEnabled) private var isEnabled
+  let words: String
+  let onAppear: Bool
+
+  func body(content: Content) -> some View {
+    content
+      .onAppear { if onAppear && isEnabled { Self.post(words) } }
+      .onChange(of: words) { _, next in if isEnabled { Self.post(next) } }
+  }
+
+  @MainActor
+  static func post(_ text: String) {
+    guard !text.isEmpty else { return }
+    let queued = NSAttributedString(string: text, attributes: [.accessibilitySpeechQueueAnnouncement: true])
+    UIAccessibility.post(notification: .announcement, argument: queued)
+  }
+}
+
+/// `.lse-cond` from 560 down: `grid-template-columns: minmax(0, 1fr)
+/// minmax(0, 1fr) auto; gap: 8px`. What it counts takes the first two
+/// columns and its ✕ the third; how it compares the first column of the
+/// second line and the number the other two. The ✕'s column is as wide as
+/// the ✕ less what it's let out by (its trailing padding, already in its
+/// size here). Each is centred in its line. The subviews, in order: what it
+/// counts, the ✕, how it compares, the number.
+struct LifespanPhoneCondition: Layout {
+  var gap: CGFloat
+
+  private struct Lines {
+    var one: CGFloat
+    var metric: CGFloat
+    var number: CGFloat
+    var remove: CGSize
+    var first: CGFloat
+    var second: CGFloat
+    var heights: [CGFloat]
+  }
+
+  private func lines(_ width: CGFloat, _ subviews: Subviews) -> Lines {
+    let remove = subviews[1].sizeThatFits(.unspecified)
+    let last = max(0, remove.width)
+    let one = max(0, (width - last - 2 * gap) / 2)
+    let metric = one * 2 + gap
+    let number = one + gap + last
+    let heights = [
+      subviews[0].sizeThatFits(ProposedViewSize(width: metric, height: nil)).height,
+      remove.height,
+      subviews[2].sizeThatFits(ProposedViewSize(width: one, height: nil)).height,
+      subviews[3].sizeThatFits(ProposedViewSize(width: number, height: nil)).height,
+    ]
+    return Lines(
+      one: one, metric: metric, number: number, remove: remove, first: max(heights[0], heights[1]),
+      second: max(heights[2], heights[3]), heights: heights)
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    guard subviews.count == 4 else { return .zero }
+    let width = proposal.width.flatMap { $0.isFinite ? $0 : nil } ?? Measure.Lifespan.phoneConditionWidth
+    let l = lines(width, subviews)
+    return CGSize(width: width, height: l.first + gap + l.second)
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    guard subviews.count == 4 else { return }
+    let l = lines(bounds.width, subviews)
+    let top = bounds.minY
+    let below = top + l.first + gap
+    subviews[0].place(
+      at: CGPoint(x: bounds.minX, y: top + (l.first - l.heights[0]) / 2), anchor: .topLeading,
+      proposal: ProposedViewSize(width: l.metric, height: l.heights[0]))
+    subviews[1].place(
+      at: CGPoint(x: bounds.minX + l.metric + gap, y: top + (l.first - l.heights[1]) / 2), anchor: .topLeading,
+      proposal: ProposedViewSize(l.remove))
+    subviews[2].place(
+      at: CGPoint(x: bounds.minX, y: below + (l.second - l.heights[2]) / 2), anchor: .topLeading,
+      proposal: ProposedViewSize(width: l.one, height: l.heights[2]))
+    subviews[3].place(
+      at: CGPoint(x: bounds.minX + l.one + gap, y: below + (l.second - l.heights[3]) / 2), anchor: .topLeading,
+      proposal: ProposedViewSize(width: l.number, height: l.heights[3]))
   }
 }
 
@@ -542,14 +691,24 @@ extension Measure {
     /// `.lse-sub { gap: 8px }`, 4 more above it in a block.
     public static let subGap: CGFloat = 8
     public static let subAbove: CGFloat = 4
-    /// `.lse-conds { gap: 8px }`, `.lse-cond { grid-template-columns: … minmax(0, 150px) minmax(0, 96px) auto }`.
+    /// `.lse-conds { gap: 8px }` (16 from 560 down), `.lse-cond { grid-template-columns: … minmax(0, 150px) minmax(0, 96px) auto }`,
+    /// `.lse-cond-remove { margin-right: -14px }` on a touch screen.
     public static let condsGap: CGFloat = 8
+    public static let phoneCondsGap: CGFloat = 16
     public static let opWidth: CGFloat = 150
     public static let valueWidth: CGFloat = 96
+    public static let removeLetOut: CGFloat = 14
+    /// A phone's condition with no width offered (it always is, in the editor's column).
+    public static let phoneConditionWidth: CGFloat = 320
+    /// `.lse-inline--at { grid-template-columns: minmax(0, 260px) … }`: the set time's field.
+    public static let atWidth: CGFloat = 260
+    /// `.lse-chips .chip:disabled { opacity: 0.5 }`
+    public static let disabledChipOpacity: Double = 0.5
     /// `.lse-checks { gap: 8px 18px }`, `.lse-spare { gap: 8px 14px }`.
     public static let checksGap: CGFloat = 18
     public static let spareGap: CGFloat = 14
-    /// `.lse-sentence { line-height: 1.45 }`, `.lse-summary .field-hint { margin-top: 4px }`.
+    /// `.lse-sentence { font-size: 0.875rem; line-height: 1.45 }`, `.lse-summary .field-hint { margin-top: 4px }`.
+    public static let sentenceSize: ThemeLength = .rem(0.875)
     public static let sentenceLineHeight: Double = 1.45
     public static let summaryGap: CGFloat = 4
   }

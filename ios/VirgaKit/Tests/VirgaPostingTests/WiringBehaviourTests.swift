@@ -7,6 +7,7 @@ import Testing
 import VirgaArchive
 import VirgaCore
 import VirgaNetwork
+import VirgaSession
 @testable import VirgaPosting
 
 @Suite struct TimerRequesterWiring {
@@ -59,6 +60,51 @@ import VirgaNetwork
       let read = TimerServiceError(error)
       #expect(read.code == "NETWORK_ERROR")
       #expect(read.status == 0)
+    }
+  }
+}
+
+@Suite struct PendingWorkWiring {
+  static func services() -> PendingWorkServices {
+    .posting(context: TimerServiceContext(availability: TimerAvailabilityState(), events: nil))
+  }
+
+  @Test func countsWhatVirgasServerHoldsForTheAccount() async throws {
+    let mock = MockTransport()
+    mock.on("GET", .urlPrefix("https://virga.example/api/schedule/list"), respond: .json([
+      "success": true,
+      "data": [
+        ["id": "a", "status": "pending"], ["id": "b", "status": "publishing"], ["id": "c", "status": "failed"],
+        ["id": "d", "status": "published", "lastErrorCode": "TIMER_NOT_ARMED"],
+      ],
+    ]))
+    mock.on("GET", .urlPrefix("https://virga.example/api/self-destruct/list"), respond: .json([
+      "data": [["id": "t1", "status": "armed"], ["id": "t2", "status": "checking"], ["id": "t3", "status": "deleted"]],
+      "unavailable": false,
+    ]))
+    let work = try await PendingWork.readPendingWork(TimerRequesterWiring.backend(mock), services: Self.services())
+    #expect(work == PendingWorkCount(posts: 2, timers: 2))
+    let paths = mock.requests.map { $0.url.components(separatedBy: "?")[0] }.sorted()
+    #expect(paths == ["https://virga.example/api/schedule/list", "https://virga.example/api/self-destruct/list"])
+    #expect(PendingWork.hasPendingWork(work))
+  }
+
+  @Test func nothingWaitingIsNothingToSay() async throws {
+    let mock = MockTransport()
+    mock.on("GET", .urlPrefix("https://virga.example/api/schedule/list"), respond: .json(["success": true, "data": []]))
+    mock.on("GET", .urlPrefix("https://virga.example/api/self-destruct/list"), respond: .json(["data": [], "unavailable": false]))
+    let work = try await PendingWork.readPendingWork(TimerRequesterWiring.backend(mock), services: Self.services())
+    #expect(work == PendingWorkCount(posts: 0, timers: 0))
+    #expect(!PendingWork.hasPendingWork(work))
+  }
+
+  @Test func aListThatCantBeReadThrows() async throws {
+    let mock = MockTransport()
+    mock.on("GET", .urlPrefix("https://virga.example/api/schedule/list"), respond: .json(["success": true, "data": []]))
+    mock.on("GET", .urlPrefix("https://virga.example/api/self-destruct/list"), respond: .json(
+      ["success": false, "code": "INTERNAL", "error": "Something went wrong."], status: 500))
+    await #expect(throws: (any Error).self) {
+      _ = try await PendingWork.readPendingWork(TimerRequesterWiring.backend(mock), services: Self.services())
     }
   }
 }

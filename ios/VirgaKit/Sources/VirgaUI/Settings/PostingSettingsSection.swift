@@ -48,20 +48,10 @@ struct PostingSettingsSection: View {
       if choices.count > 1 {
         SettingsSectionView(title: "Whose settings", sub: "Each account keeps its own posting settings, in this browser.") {
           SettingsRow(label: "Account", hint: nil as String?) {
-            Picker(
-              "Account",
-              selection: Binding(get: { did ?? "" }, set: { chosen = $0 })
-            ) {
-              ForEach(choices, id: \.did) { a in
-                let named = Accounts.accountName(a)
-                let handle = a.handle ?? ""
-                Text(!handle.isEmpty && !(a.displayName ?? "").isEmpty ? "\(named) (@\(handle))" : named).tag(a.did)
-              }
+            SettingsSelect(label: "Account", options: choices.map { ($0.did, Self.choiceName($0)) }, selection: did ?? "") {
+              chosen = $0
             }
-            .pickerStyle(.menu)
-            .tint(theme.ink)
-            .frame(minWidth: Measure.Settings.selectMinWidth, maxWidth: Measure.Settings.selectMaxWidth, alignment: .leading)
-            .virgaField()
+            .modifier(PostingSettingsSelectWidth())
             .accessibilityIdentifier("posting-settings-account")
           }
         }
@@ -71,6 +61,54 @@ struct PostingSettingsSection: View {
     }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("posting-settings")
+  }
+
+  /// An account's choice: `accountName(a)`, with ` (@handle)` when it has
+  /// a display name and a handle.
+  static func choiceName(_ a: SessionAccount) -> String {
+    let named = Accounts.accountName(a)
+    let handle = a.handle ?? ""
+    return !handle.isEmpty && !(a.displayName ?? "").isEmpty ? "\(named) (@\(handle))" : named
+  }
+}
+
+/// `.settings-row-control > select.input { flex: 1 1 220px; max-width:
+/// 320px }`, and the whole line from 760 down, where the select sits under
+/// the words.
+struct PostingSettingsSelectWidth: ViewModifier {
+  @Environment(\.virgaTheme) private var theme
+
+  func body(content: Content) -> some View {
+    content.frame(
+      minWidth: theme.isTablet ? nil : Measure.Settings.selectMinWidth,
+      maxWidth: theme.isTablet ? .infinity : Measure.Settings.selectMaxWidth,
+      alignment: .leading)
+  }
+}
+
+/// What a callout says when a change is refused: `role="alert"`, read out
+/// as it appears (the words-alone danger Callout), with the
+/// `.settings-section-body > .callout { margin: 16px 0 4px }` round it.
+struct PostingSettingsRefusal: View {
+  let words: String
+
+  var body: some View {
+    Callout(tone: .danger, words)
+      .padding(.top, Measure.Settings.calloutSpaceAbove)
+      .padding(.bottom, Measure.Settings.calloutSpaceBelow)
+  }
+}
+
+extension Measure {
+  /// Settings › Posting's own measures, from the stylesheets the posting
+  /// section brings to Settings.
+  enum SettingsPosting {
+    /// composer.css `.settings-row-control--stack { gap: 12px }`, its
+    /// `.lang-picker` and `.gates-editor` at most 420 wide.
+    static let stackGap: CGFloat = 12
+    static let stackMax: CGFloat = 420
+    /// settings.css `.settings-rule-editor { max-width: 640px }`.
+    static let ruleEditorMax: CGFloat = 640
   }
 }
 
@@ -129,7 +167,11 @@ struct ComposerDefaultsCard: View {
       SettingsRow(
         label: "Languages", hint: "Bluesky uses these to show your posts to people who read them. Up to three.", block: true
       ) {
-        LanguagePicker(value: Binding(get: { settings.langs }, set: { save(["langs": .array($0.map(JSONValue.string))]) }), label: "Languages")
+        // `bare`: the row names it, so its label is VoiceOver's alone.
+        LanguagePicker(
+          value: Binding(get: { settings.langs }, set: { save(["langs": .array($0.map(JSONValue.string))]) }), label: "Languages", bare: true
+        )
+        .frame(maxWidth: Measure.SettingsPosting.stackMax, alignment: .leading)
       }
       SettingsRow(
         label: "Who can reply and quote",
@@ -138,7 +180,7 @@ struct ComposerDefaultsCard: View {
           : "New posts use the setting you chose in Bluesky. If it can’t be read, anyone can reply and quote.",
         block: true
       ) {
-        VStack(alignment: .leading, spacing: theme.space4) {
+        VStack(alignment: .leading, spacing: Measure.SettingsPosting.stackGap) {
           Segmented(
             label: "Where the reply settings come from",
             options: [SegmentedOption("bluesky", "My Bluesky setting"), SegmentedOption("here", "Choose here")],
@@ -156,29 +198,24 @@ struct ComposerDefaultsCard: View {
               quotes: Binding(
                 get: { gates.quotes },
                 set: { next in save(["gates": ["reply": gates.json["reply"] ?? .null, "quotes": .bool(next)]]) }),
-              transport: transport)
+              transport: transport
+            )
+            .frame(maxWidth: Measure.SettingsPosting.stackMax, alignment: .leading)
           }
         }
       }
       SettingsRow(label: "Main button", hint: "What the composer’s main button does. The others stay in its menu.") {
-        Picker(
-          "Main button",
-          selection: Binding(
-            get: { PublishActions.normalizePublishAction(settings.defaultAction) }, set: { save(["defaultAction": .string($0)]) })
-        ) {
-          ForEach(PublishActions.publishActionOptions, id: \.value) { o in
-            Text(o.label).tag(o.value)
-          }
-        }
-        .pickerStyle(.menu)
-        .tint(theme.ink)
-        .frame(minWidth: Measure.Settings.selectMinWidth, maxWidth: Measure.Settings.selectMaxWidth, alignment: .leading)
-        .virgaField()
+        SettingsSelect(
+          label: "Main button", options: PublishActions.publishActionOptions.map { ($0.value, $0.label) },
+          selection: PublishActions.normalizePublishAction(settings.defaultAction)
+        ) { save(["defaultAction": .string($0)]) }
+        .modifier(PostingSettingsSelectWidth())
         .accessibilityIdentifier("posting-main-button")
       }
       SettingsRow(label: "Require alt text", hint: "Don’t post an image until it has a description.", compactControl: true) {
         SettingsSwitch(label: "Require alt text", isOn: settings.requireAltText) { save(["requireAltText": .bool($0)]) }
       }
+      .pressingName { save(["requireAltText": .bool(!settings.requireAltText)]) }
       SettingsRow(
         label: "Offer to split long posts", hint: "When a post runs past 300 characters, offer to make it a thread.", compactControl: true
       ) {
@@ -186,6 +223,7 @@ struct ComposerDefaultsCard: View {
           save(["showThreadSuggestion": .bool($0)])
         }
       }
+      .pressingName { save(["showThreadSuggestion": .bool(!settings.showThreadSuggestion)]) }
       SettingsRow(
         label: "Number the posts of a split thread",
         hint:
@@ -196,9 +234,9 @@ struct ComposerDefaultsCard: View {
           save(["threadNumbering": .string(on ? "counter" : "off")])
         }
       }
+      .pressingName { save(["threadNumbering": .string(settings.threadNumbering == "counter" ? "off" : "counter")]) }
       if let error {
-        Callout(tone: .danger) { Text(error) }
-          .padding(.top, Measure.Settings.calloutSpaceAbove)
+        PostingSettingsRefusal(words: error)
       }
     }
     .accessibilityElement(children: .contain)
@@ -248,12 +286,15 @@ struct QueueSettingsCard: View {
       title: "Weekly queue", sub: "The times each week that a post added to the queue goes out. Kept in this browser, for this account."
     ) {
       SettingsRow(label: count == 1 ? "1 posting time a week" : "\(count) posting times a week", hint: ScheduleModel.weekSummary(schedule)) {
+        // `<Link className="btn">`: a way to a page, drawn as a button.
         Button {
-          navigate(PostingRoutes.postingPageByKey["schedule"]?.path ?? PostingRoutes.postingBase)
+          navigate(PostingRoutes.postingPath("schedule"))
         } label: {
           Label("Edit the week", systemImage: Glyph.calendarRange)
         }
         .buttonStyle(.virga)
+        .accessibilityRemoveTraits(.isButton)
+        .accessibilityAddTraits(.isLink)
       }
       SettingsRow(
         label: "Time zone",
@@ -261,7 +302,9 @@ struct QueueSettingsCard: View {
           ? "The queue’s times are read on this clock."
           : "The queue’s times are read on this clock. This device is in \(ScheduleModel.zoneLabel(device))."
       ) {
-        TimezoneSelect(value: tz, identifier: "posting-time-zone") {
+        // From 760 down the select fills the line under the words
+        // (`.settings-row-control > select.input { max-width: 100% }`).
+        TimezoneSelect(value: tz, identifier: "posting-time-zone", fill: theme.isTablet) {
           save(["queue": ScheduleModel.moveToZone(schedule, .string($0))])
         }
       }
@@ -272,9 +315,9 @@ struct QueueSettingsCard: View {
       ) {
         SettingsSwitch(label: "Suggest posting times", isOn: model.settings.suggestBestTimes) { save(["suggestBestTimes": .bool($0)]) }
       }
+      .pressingName { save(["suggestBestTimes": .bool(!model.settings.suggestBestTimes)]) }
       if let error {
-        Callout(tone: .danger) { Text(error) }
-          .padding(.top, Measure.Settings.calloutSpaceAbove)
+        PostingSettingsRefusal(words: error)
       }
     }
     .accessibilityElement(children: .contain)
