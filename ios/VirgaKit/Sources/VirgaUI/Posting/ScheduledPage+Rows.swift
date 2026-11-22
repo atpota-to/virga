@@ -463,8 +463,7 @@ struct QueueHandle: View {
   var body: some View {
     Button {
     } label: {
-      Image(systemName: ScheduleGlyph.grip)
-        .virgaGlyph(Measure.Schedule.gripIcon, beside: theme.textMd, upTo: Measure.Schedule.handleWidth)
+      GripVerticalGlyph(size: Measure.Schedule.gripIcon, words: theme.textMd, upTo: Measure.Schedule.handleWidth)
         .foregroundStyle(active ? theme.ink : theme.muted)
         .frame(width: Measure.Schedule.handleWidth, height: Measure.Schedule.handleHeight)
         .background(RoundedRectangle(cornerRadius: theme.radiusSm).fill(active ? theme.tint : Color.clear))
