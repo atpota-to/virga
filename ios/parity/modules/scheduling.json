@@ -9,8 +9,16 @@
       "swift": []
     },
     "src/posting/pages/hubModel.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Pages/HubModel.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/ScheduleJS.swift"
+      ],
+      "fixtures": [
+        "scheduling.hubModel"
+      ],
+      "note": "Pure. Times are read as Date.parse(iso || '') with a time without an offset in timeZone (the device's), and whenLabel's days are that zone's; locale nil is the active one. rowFromPostView builds the archive's PostRow (VirgaArchive's compactPostFromRecord) and lays the view's counts over its JSON.",
+      "synced": "95dc02927907"
     },
     "src/posting/pages/postedModel.js": {
       "status": "pending",
