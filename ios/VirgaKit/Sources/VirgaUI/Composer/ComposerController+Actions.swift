@@ -109,9 +109,11 @@ extension ComposerController {
       return
     }
     var duration: Double?
+    var aspectRatio: JSONValue?
     if let ref = file.ref {
       let asset = AVURLAsset(url: URL(fileURLWithPath: ref))
       if let time = try? await asset.load(.duration), time.seconds.isFinite { duration = time.seconds }
+      aspectRatio = await Self.videoAspectRatio(asset)
     }
     if let duration, duration > Double(Video.videoMaxDurationSeconds) {
       let minutes = (Double(Video.videoMaxDurationSeconds) / 60).jsRounded
@@ -124,9 +126,27 @@ extension ComposerController {
       "file": file.json, "mime": .string(file.type), "size": .number(file.size), "alt": "", "status": "idle",
       "duration": duration.map(JSONValue.number) ?? .null,
     ]
+    // `videoSize`'s `{ width: videoWidth, height: videoHeight }`, which the
+    // posted embed carries, so readers draw it in its own shape.
+    if let aspectRatio { video["aspectRatio"] = aspectRatio }
     if let ref = file.ref { video["previewUrl"] = .string(URL(fileURLWithPath: ref).absoluteString) }
     dispatch(.setVideo(index: index, video: ComposerVideo(json: .object(video))))
     startVideoUploads()
+  }
+
+  /// The video's size as it's shown (its first video track, turned as it
+  /// plays), in whole pixels as a video element's videoWidth and
+  /// videoHeight are; nil when it can't be read.
+  static func videoAspectRatio(_ asset: AVURLAsset) async -> JSONValue? {
+    guard let track = try? await asset.loadTracks(withMediaType: .video).first,
+      let natural = try? await track.load(.naturalSize)
+    else { return nil }
+    let transform = (try? await track.load(.preferredTransform)) ?? .identity
+    let shown = CGRect(origin: .zero, size: natural).applying(transform)
+    let width = abs(shown.width).rounded()
+    let height = abs(shown.height).rounded()
+    guard width > 0, height > 0 else { return nil }
+    return ["width": .number(Double(width)), "height": .number(Double(height))]
   }
 
   func patchVideo(_ postId: String, _ file: ComposerFile, _ patch: [String: JSONValue], did: String? = nil) {
@@ -136,6 +156,20 @@ extension ComposerController {
     var json = video.json.objectValue ?? [:]
     for (key, value) in patch { json[key] = value }
     dispatch(.setVideo(index: index, video: ComposerVideo(json: .object(json))))
+  }
+
+  /// What the web's upload effect hangs on ([open, state.posts,
+  /// state.asDid]): each post's video, its status and its file, and the
+  /// account. ComposerBody runs startVideoUploads whenever it changes while
+  /// the sheet is up, so a video that arrives with a loaded post (a draft, a
+  /// kept post's media, a scheduled post) starts uploading too.
+  var videoUploadKey: String {
+    let posts = state.posts.map { (post: PostDraft) -> String in
+      guard let video = post.video else { return "\(post.id):-" }
+      let file = video.file?.ref ?? video.file?.name ?? ""
+      return "\(post.id):\(video.status):\(file)"
+    }
+    return state.asDid + "|" + posts.joined(separator: ",")
   }
 
   /// A video uploads as soon as it's added, as the account the post goes
@@ -311,7 +345,9 @@ extension ComposerController {
     guard let plan else { return }
     dispatch(plan.action)
     threadUndo = plan.undo
-    focusPostId = focus
+    // The button pressed goes away with the offer, so the caret goes back
+    // to the post (not on a phone, where it would raise the keys).
+    if !narrow { focusPostId = focus }
   }
 
   var undoable: Bool { threadUndo.map { ThreadEdits.undoStands(state.posts, $0) } ?? false }
@@ -321,7 +357,7 @@ extension ComposerController {
     else { return }
     dispatch(action)
     threadUndo = nil
-    focusPostId = undo["made"]?[0]?["id"]?.stringValue
+    if !narrow { focusPostId = undo["made"]?[0]?["id"]?.stringValue }
   }
 
   func split(_ postId: String, numbered: Bool) {
@@ -339,7 +375,8 @@ extension ComposerController {
     var set = model.actions(
       defaultAction: settings.defaultAction, queue: settings.queue.json,
       caps: ComposerCaps(canPost: caps.canPost, canSchedule: caps.canSchedule), signedOut: signedOut,
-      missingMedia: false, postNow: postNow && state.schedule == nil, authMode: session.authMode)
+      missingMedia: !DraftMedia.missingDraftMedia(state.json).isEmpty, postNow: postNow && state.schedule == nil,
+      authMode: session.authMode)
     let replyBlocks: Bool
     switch loads["reply"] {
     case .loading?: replyBlocks = true
@@ -376,6 +413,9 @@ extension ComposerController {
 
   func runAction(_ action: String) {
     guard busy == nil, !adviserReading else { return }  // ADVISER
+    // A tag still being typed is part of what goes out (the web commits it
+    // as the field loses focus to the button).
+    commitTagDraft()
     switch action {
     case PublishActions.post:
       publishTask = Task { await submitPost() }
@@ -390,6 +430,7 @@ extension ComposerController {
 
   /// Sending the primary way from the keyboard (⌘↩).
   func sendFromKeyboard() {
+    commitTagDraft()
     let set = actionSet
     guard !disabled else { return }
     let a = set.actions[set.primary]
@@ -436,6 +477,11 @@ extension ComposerController {
     defer { endBusy(attempt) }
     var late = false
     do {
+      // The same post twice within a couple of minutes is refused before
+      // anything is asked (publish.js's guard, which publish remembers).
+      if Publish.defaultDuplicateGuard.isDuplicate(Publish.publishSignature(s, did)) {
+        throw PublishError("DUPLICATE", "This was just posted. Change something to post it again.")
+      }
       // TIMER: no free timer of its kind is asked about before anything goes
       // (ComposerController+Timer.swift).
       guard let roomed = await askNoFreeTimer(s, fit: fit) else { return }
@@ -478,7 +524,9 @@ extension ComposerController {
         throw error
       }
       late = watch.stop()
-      afterPublished(s, result, late: late)
+      // Awaited: the composer stays busy (and its buttons off) until the
+      // post's source, a scheduled copy or a draft, is settled.
+      await afterPublished(s, result, late: late)
     } catch {
       if late { return }
       let view = ComposerSubmit.publishErrorView(error)
@@ -537,11 +585,12 @@ extension ComposerController {
     }
   }
 
-  func afterPublished(_ s: ComposerState, _ result: ComposerPublishResult, late: Bool) {
+  func afterPublished(_ s: ComposerState, _ result: ComposerPublishResult, late: Bool) async {
     let did = s.asDid
     _ = try? PostingEvents.emitPostsChanged(did, added: result.written)
     let posted = ComposerSubmit.postedToast(account: accountJSON(did), did: did, root: result.root)
-    toasts.push(posted.text, seconds: 9)
+    let link = posted.href.flatMap { URL(string: $0) }.map { ToastLink("View it on Bluesky", url: $0) }
+    toasts.push(posted.text, seconds: 9, link: link)
     for warning in result.warnings {
       if let text = warning["message"]?.stringValue { toasts.push(text, seconds: 7) }
     }
@@ -550,15 +599,11 @@ extension ComposerController {
     // SCHEDULE: a post that came from a scheduled row takes the row off
     // (finishSource's scheduled half); if it can't, the post stays to try again.
     if s.source?.kind == "scheduled" {
-      Task {
-        guard await self.finishScheduledSource(s) else { return }
-        if late && self.changedSince(s) { return }
-        self.resetAfterSend(did)
-      }
-      return
+      guard await finishScheduledSource(s) else { return }
+    } else {
+      // A post that came from a draft: the draft goes (ComposerSubmit's finishSource).
+      await finishDraftSource(s)
     }
-    // A post that came from a draft: the draft goes (ComposerSubmit's finishSource).
-    Task { await finishDraftSource(s) }
     // A post that landed after the composer gave up waiting: only clear
     // what the writer hasn't changed since.
     if late && changedSince(s) { return }
@@ -583,6 +628,7 @@ extension ComposerController {
     scheduling.forget()  // SCHEDULE
     notices = []
     showTags = false
+    tagDraft = ""
     error = nil
     closeSheet()
   }

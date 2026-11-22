@@ -342,7 +342,7 @@ extension ComposerController {
         self.scheduling.whenOpen = loaded.schedule?.mode == "at"
         // A scheduled reply keeps the refs it goes out with and a note of
         // who it answers; the post itself is read again to show it whole.
-        if let reply = loaded.reply, !reply.uri.isEmpty, reply.view == nil {
+        if let reply = loaded.reply, !reply.uri.isEmpty, !(reply.view?.isTruthy ?? false) {
           let ref: JSONValue = ["kind": "post", "uri": .string(reply.uri), "soft": true, "scheduled": true]
           self.replyRefPending = ref
           self.loadReply(ref, token: token)

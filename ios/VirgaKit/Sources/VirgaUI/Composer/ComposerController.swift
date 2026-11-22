@@ -146,26 +146,40 @@ public final class ComposerController {
   var recordLoading: Set<String> = []
   var mediaNote = ""
   var showTags = false
+  /// The tag being typed in the tags field, not yet ended with Return or a
+  /// comma: committed when the field loses focus and before the post is sent.
+  var tagDraft = ""
   var dialog: ComposerDialog?
   var ask: ComposerAsk?
   var threadUndo: JSONValue?
   var activeIndex = 0
+  /// The post whose text has the caret now (`:focus-within`), nil when none.
+  var editingPostId: String?
   var splitDismissed = false
   var postNow = false
   var generation = 0
   var gatesInfo: (did: String, status: String, source: String?, notice: String?)?
   /// The editor that should take the caret, by post id, once it's drawn.
   var focusPostId: String?
+  /// Whether the sheet fills a phone's screen (640 and under), as the sheet
+  /// last drew it: the caret isn't put in a post there unasked, since the
+  /// keyboard would cover what was just opened.
+  @ObservationIgnored var narrow = false
   /// Continue a thread's list: `{ status, items, error }`.
   var continueState: (status: String, items: [JSONValue], error: String) = (status: "idle", items: [], error: "")
   /// What Save as a template starts the editor from.
   var templateSeed: TemplateSeed?
   /// A caret the controller put into a post's text (a split, a mention).
   var pendingCaret: [String: Int] = [:]
+  /// Each post's selection as its editor last had it, in UTF-16 (the
+  /// textarea's selectionStart and selectionEnd, kept after it loses focus).
+  @ObservationIgnored var selections: [String: TextSelection] = [:]
 
   @ObservationIgnored var loadToken = 0
   @ObservationIgnored var attempt = 0
   @ObservationIgnored var seed: JSONValue?
+  /// The load whose template or attachment, once applied, is the seed again.
+  @ObservationIgnored var reseedToken: Int?
   @ObservationIgnored var replyRefPending: JSONValue?
   @ObservationIgnored var dismissedLinks: [String: Set<JSKey>] = [:]
   @ObservationIgnored var askResolve: CheckedContinuation<String?, Never>?
@@ -280,9 +294,11 @@ public final class ComposerController {
 
   func startFromIntent(_ raw: JSONValue) {
     settingsCache = [:]
+    // A removed account's post is forgotten before anything is read off
+    // the screen (the host also runs this as the accounts change).
+    forgetGoneAccounts()
     let plan = ComposerIntent.normalizeIntent(raw, activeDid: activeDid)
     let cur = state
-    forgetGoneAccounts()
 
     // Reopened with nothing new: what was being written is still here.
     if !plan.hasContent && !ComposerModel.isEmptyComposer(cur) {
@@ -453,20 +469,20 @@ public final class ComposerController {
       openDraft(plan, token: token)
       return
     }
-    // A template by its rkey waits for the library's own reading of it; an
-    // attachment (the Library page's Use in a new post) is a plan, put in
-    // the intent's first post once it's on screen.
-    loads["template"] = nil
+    // A template by its rkey (Templates › Use) is read from the account's
+    // templates and applied to the intent's first post, as a "/" shortcut's
+    // is; an attachment (the Library page's Use in a new post) is a plan,
+    // put in the intent's first post once it's on screen. What either puts
+    // in is still the intent's, not the writer's: the seed is taken again.
+    if let templateId = plan.templateId {
+      loadTemplate(templateId, asDid: plan.asDid, token: token)
+    }
     loads["attach"] = nil
     if let attach = plan.attach, let libraryPlan = try? attach.decode(LibraryPlan.self),
       let postId = state.posts.first?.id
     {
-      Task {
-        await self.applyPlan(libraryPlan, postId, range: nil)
-        guard self.loadToken == token else { return }
-        // What the plan put in is still the intent's, not the writer's.
-        self.seed = .object(["texts": .array(self.state.posts.map { .string($0.text) })])
-      }
+      reseedToken = token
+      Task { await self.applyPlan(libraryPlan, postId, range: nil) }
     }
     if let reply = plan.reply {
       replyRefPending = reply.json
@@ -486,6 +502,50 @@ public final class ComposerController {
         }
       }
     }
+  }
+
+  /// The intent's template, by its rkey: the account's templates read, the
+  /// post marked as made from it, and it applied to the first post (its
+  /// questions, if it has any, asked in the library). A template that's
+  /// gone, or templates that can't be read, say so over the post.
+  func loadTemplate(_ templateId: String, asDid: String, token: Int) {
+    let service = templates.service
+    let session = self.session
+    let account = TemplateAccount(did: asDid, agentFor: { did in try await session.templateAgent(for: did) })
+    Task {
+      do {
+        try await service.load(account)
+        let template = service.list(asDid).first { $0.rkey.jsEquals(templateId) }
+        guard self.loadToken == token else { return }
+        guard let template else { throw JSError(message: "That template is gone, or couldn’t be read.") }
+        self.dispatch(.setSource(ComposerSource(json: ["kind": "template", "id": .string(templateId)])))
+        self.loads["template"] = nil
+        // One with questions opens the library over the composer: not until
+        // the composer's own sheet is up, as a sheet can't be presented over
+        // one still coming in.
+        if !PostTemplates.templateQuestions(template, self.templateContext()).isEmpty {
+          try? await Task.sleep(nanoseconds: UInt64(Self.sheetSettleSeconds * 1_000_000_000))
+          guard self.loadToken == token else { return }
+        }
+        guard let postId = self.state.posts.first?.id else { return }
+        self.reseedToken = token
+        self.applyTemplate(postId, template, range: nil)
+      } catch {
+        guard self.loadToken == token else { return }
+        self.loads["template"] = .failed(Self.optionalMessage(error) ?? "Couldn’t read your templates.", soft: false)
+      }
+    }
+  }
+
+  /// How long a sheet takes to come in, before another is put over it.
+  static let sheetSettleSeconds = 0.5
+
+  /// The seed taken again from the posts' words, once what an intent's
+  /// template or attachment put in is on screen.
+  func reseedIfDue() {
+    guard let due = reseedToken, due == loadToken else { return }
+    reseedToken = nil
+    seed = .object(["texts": .array(state.posts.map { .string($0.text) })])
   }
 
   /// `ref.soft`: the state already holds the reply's uri, cid and root.
@@ -522,6 +582,9 @@ public final class ComposerController {
     replyRefPending = nil
     loads["reply"] = nil
     dispatch(.setReply(nil))
+    // A new post again: the account's default reply settings are read again
+    // (the web's gates effect hangs on state.reply).
+    resolveGates()
   }
 
   nonisolated static func message(_ error: any Error) -> String {
@@ -577,7 +640,11 @@ public final class ComposerController {
     startVideoUploads()
   }
 
-  /// An account removed from this device takes its unsent post with it.
+  /// An account removed from this device takes its unsent post with it:
+  /// the composer outlives the switch that follows, so without this it
+  /// would show that post to whoever is signed in next and write it back to
+  /// storage. The host runs it whenever the accounts or the open one change
+  /// (the web's effect on [accounts, activeDid]), the sheet up or not.
   func forgetGoneAccounts() {
     let present = Set(session.accounts.map { JSKey($0.did) })
     for did in seenAccounts where !present.contains(did) { Autosave.forgetSessionDrafts(did.value) }
@@ -588,6 +655,7 @@ public final class ComposerController {
     let home = present.contains(JSKey(activeDid)) ? activeDid : (session.accounts.first?.did ?? "")
     loadToken += 1
     error = nil
+    permissionForced = false
     replyRefPending = nil
     scheduling.row = nil  // SCHEDULE
     scheduling.sourceWarning = ""

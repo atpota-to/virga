@@ -37,8 +37,17 @@ extension ComposerController {
     Task { await applyPlan(plan, postId, range: range) }
   }
 
+  /// `selectionOf(postId)`: the post's selection as its editor last had it
+  /// (kept after it loses focus, as a textarea's is), else the end.
+  func selectionOf(_ postId: String) -> TextSelection {
+    let post = state.posts.first { $0.id.jsEquals(postId) }
+    let length = post?.text.utf16.count ?? 0
+    if let kept = selections[postId], kept.start <= length, kept.end <= length { return kept }
+    return TextSelection(start: length, end: length)
+  }
+
   /// `applyPlan(plan, postId, range)`: the plan's words at the range (or
-  /// the end), then what it attaches.
+  /// the post's selection), then what it attaches.
   func applyPlan(_ plan: LibraryPlan, _ postId: String, range: TextSelection?) async {
     var index = indexOfPost(postId)
     if index < 0 { index = 0 }
@@ -46,11 +55,11 @@ extension ComposerController {
     let post = state.posts[index]
     let id = post.id
     if plan.insertText != nil || range != nil {
-      let end = post.text.utf16.count
-      let r = Library.insertText(post.text, plan.insertText, range ?? TextSelection(start: end, end: end))
+      let r = Library.insertText(post.text, plan.insertText, range ?? selectionOf(id))
       dispatch(.setText(index: index, text: r.text))
       pendingCaret[id] = r.caret
     }
+    reseedIfDue()
     if let rkey = plan.templateRkey { _ = TemplateUsage.recordTemplateUse(rkey, state.asDid, store: store) }
     guard let attach = plan.attach else { return }
     if attach.isLink {

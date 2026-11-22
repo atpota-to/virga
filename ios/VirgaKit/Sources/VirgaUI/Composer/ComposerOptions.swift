@@ -55,6 +55,41 @@ extension ComposerController {
 
   var timerOn: Bool { state.lifespan["enabled"]?.isTruthy ?? false }
 
+  /// Whether the tags field is open (Tags pressed, or tags already set).
+  var tagsOpen: Bool { showTags || !state.tags.isEmpty }
+
+  /// Check this post's title: the month's checks, else what it does.
+  var adviserOptionTitle: String {
+    adviser.usageLine.isEmpty ? "Ask the post adviser what it thinks" : adviser.usageLine
+  }
+
+  /// "Anyone can reply" said under the settings, when the account's default
+  /// is everyone and that came from Bluesky's own setting.
+  var gatesNotice: String? {
+    guard let info = gatesInfo, info.did.jsEquals(asDid), info.source == "everyone", !state.gates.custom,
+      state.reply == nil, let notice = info.notice
+    else { return nil }
+    return notice
+  }
+
+  /// Whether a line sits between the settings and the when panel (the
+  /// timer's note, the reply settings' notice): on a phone the panel's own
+  /// rule shows only then, the rows above already ending on a hairline.
+  var optionsNoteShown: Bool {
+    (!timerNote.isEmpty && !timerOn) || gatesNotice != nil
+  }
+
+  /// The tag being typed, committed (TagsField's commit): on Return, a
+  /// comma, the field losing focus, and before the post is sent.
+  func commitTagDraft() {
+    let text = tagDraft
+    guard !text.jsTrimmed().isEmpty else { return }
+    let tags = state.tags
+    let next = Tags.normalizeTags(tags + text.components(separatedBy: ","))
+    if next.count != tags.count || zip(next, tags).contains(where: { !$0.jsEquals($1) }) { dispatch(.setTags(next)) }
+    tagDraft = ""
+  }
+
   var timerValue: String {
     timerOn ? SelfDestruct.timerChipLabel(state.lifespan, now: now) : "No timer"
   }
@@ -71,29 +106,56 @@ struct ComposerOptions: View {
     let replying = state.reply != nil
     let phone = theme.composerNarrow
     let timerNote = controller.timerNote  // TIMER
-    VStack(alignment: .leading, spacing: phone ? 0 : ComposerMeasure.optionsTop) {
+    VStack(alignment: .leading, spacing: 0) {
       Rectangle().fill(theme.rule).frame(height: 1)
       if phone {
         rows(replying: replying)
       } else {
+        // The row of words, its ⋯ held in the row's top corner however
+        // the words before it wrap (`.composer-more`).
         FlowLayout(spacing: ComposerMeasure.optionsGap, lineSpacing: ComposerMeasure.optionsRowGap) {
           words(replying: replying)
         }
-      }
-      if controller.showTags || !state.tags.isEmpty {
-        TagsField(tags: state.tags, disabled: disabled) { controller.dispatch(.setTags($0)) }
-          .padding(.top, theme.space2)
+        .padding(.top, ComposerMeasure.optionsTop)
+        .padding(.trailing, ComposerMeasure.optionsMoreRoom)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        // The overlay's top is the rule's foot, the top of `.composer-options`'
+        // padding box, which `top: 11px` is measured from.
+        .overlay(alignment: .topTrailing) {
+          MoreMenu(label: "More for this post", entries: moreEntries(replying: replying))
+            .disabled(disabled)
+            .offset(x: ComposerMeasure.moreRight, y: ComposerMeasure.moreTop)
+            .accessibilityIdentifier("option-more")
+        }
+        // Over the note under the row, which a 44-point ⋯ at 11 reaches, as
+        // a positioned `.composer-more` paints over what follows it.
+        .zIndex(1)
+        // The tags field opens after the whole row on a wide screen, inside
+        // the row's padding (the ⋯'s room at the right).
+        if controller.tagsOpen {
+          tagsField(bareLabel: false)
+            .padding(.top, ComposerMeasure.optionsRowGap + ComposerMeasure.tagsFieldTop)
+            .padding(.bottom, ComposerMeasure.tagsFieldBottom)
+            .padding(.trailing, ComposerMeasure.optionsMoreRoom)
+        }
       }
       // TIMER: why the post has no timer, while it has none (timerNote).
       if !timerNote.isEmpty && !controller.timerOn {
-        FieldHint(timerNote).accessibilityIdentifier("composer-timer-note")
+        FieldHint(timerNote)
+          .padding(.top, ComposerMeasure.gap - ComposerMeasure.noteLift)
+          .accessibilityIdentifier("composer-timer-note")
       }
-      if let info = controller.gatesInfo, info.did.jsEquals(controller.asDid), info.source == "everyone", !state.gates.custom,
-        !replying, let notice = info.notice
-      {
-        FieldHint(notice)
+      if let notice = controller.gatesNotice {
+        FieldHint(notice).padding(.top, ComposerMeasure.gap - ComposerMeasure.noteLift)
       }
     }
+  }
+
+  private func tagsField(bareLabel: Bool) -> some View {
+    TagsField(
+      tags: controller.state.tags, draft: Binding(get: { controller.tagDraft }, set: { controller.tagDraft = $0 }),
+      disabled: disabled, bareLabel: bareLabel, onCommit: { controller.commitTagDraft() }
+    ) { controller.dispatch(.setTags($0)) }
   }
 
   // MARK: A wider window: a row of words
@@ -102,12 +164,18 @@ struct ComposerOptions: View {
   private func words(replying: Bool) -> some View {
     let state = controller.state
     let count = state.tags.count
-    word(ComposerGlyph.tags, count > 0 ? "\(count) \(count == 1 ? "tag" : "tags")" : "Tags", id: "option-tags") {
+    word(
+      ComposerGlyph.tags, count > 0 ? "\(count) \(count == 1 ? "tag" : "tags")" : "Tags", pressed: controller.tagsOpen,
+      id: "option-tags"
+    ) {
       controller.showTags.toggle()
     }
+    .accessibilityAddTraits(controller.tagsOpen ? .isSelected : [])
     word(ComposerGlyph.languages, controller.langsValue, id: "option-language") { controller.dialog = .meta }
     if !replying {
       word(ComposerGlyph.replies, controller.gatesShort, id: "option-replies") { controller.dialog = .gates }
+        .help(controller.gatesLine)  // the button's title: where the settings come from
+        .accessibilityHint(controller.gatesLine)
     }
     word(ComposerGlyph.timer, controller.timerValue, id: "option-timer") { controller.dialog = .timer }
       .accessibilityLabel(controller.timerOn ? "Timer: \(controller.timerValue)" : "Timer: none")
@@ -116,10 +184,9 @@ struct ComposerOptions: View {
     // ADVISER: Check this post, the month's checks on the pointer's tip.
     if controller.adviser.enabled {
       word(AdviserGlyph.sparkles, "Check this post", id: "option-adviser") { controller.askAdviser() }
-        .help(controller.adviser.usageLine.isEmpty ? "Ask the post adviser what it thinks" : controller.adviser.usageLine)
-        .accessibilityHint(controller.adviser.usageLine)
+        .help(controller.adviserOptionTitle)
+        .accessibilityHint(controller.adviserOptionTitle)
     }
-    MoreMenu(label: "More for this post", entries: moreEntries(replying: replying))
   }
 
   /// More: Continue a thread (not on a reply), Save as a template, then
@@ -145,19 +212,28 @@ struct ComposerOptions: View {
     return out
   }
 
-  private func word(_ symbol: String, _ text: String, id: String, action: @escaping () -> Void) -> some View {
+  /// `.composer-option` on a wide screen: muted words, ink and 500 while
+  /// what it opens is open (`aria-pressed`).
+  private func word(_ symbol: String, _ text: String, pressed: Bool = false, id: String, action: @escaping () -> Void)
+    -> some View
+  {
     Button(action: action) {
       HStack(spacing: ComposerMeasure.optionGap) {
-        Image(systemName: symbol).font(.system(size: 15))
-        Text(text).virgaText(.textSm, weight: VirgaWeight.medium)
+        Image(systemName: symbol).virgaGlyph(ComposerMeasure.optionIcon, beside: theme.textSm)
+        Text(text)
+          .virgaText(.textSm, weight: pressed ? VirgaWeight.medium : VirgaWeight.regular)
+          .lineLimit(1)
+          .truncationMode(.tail)
       }
-      .foregroundStyle(theme.ink2)
+      .foregroundStyle(pressed ? theme.ink : theme.muted)
       .frame(minHeight: ComposerMeasure.optionHeight)
       .contentShape(Rectangle())
     }
     .buttonStyle(.plain)
     .disabled(disabled)
-    .touchTarget()
+    .opacity(disabled ? ThemeKit.disabledOpacity : 1)
+    // A 32-point line, pressed as 44.
+    .touchReach(horizontal: 0, vertical: (Measure.Touch.target - ComposerMeasure.optionHeight) / 2)
     .accessibilityIdentifier(id)
   }
 
@@ -166,20 +242,32 @@ struct ComposerOptions: View {
   @ViewBuilder
   private func rows(replying: Bool) -> some View {
     row(ComposerGlyph.tags, "Tags", controller.tagsValue, id: "option-tags") { controller.showTags.toggle() }
+      .accessibilityAddTraits(controller.tagsOpen ? .isSelected : [])
+    // The tags field opens right under its own row on a phone, the row
+    // over it saying Tags.
+    if controller.tagsOpen {
+      tagsField(bareLabel: true)
+        .padding(.top, ComposerMeasure.phoneTagsFieldTop)
+        .padding(.bottom, ComposerMeasure.phoneTagsFieldBottom)
+        .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+    }
     row(ComposerGlyph.languages, "Language", controller.langsValue, id: "option-language") { controller.dialog = .meta }
     if !replying {
       row(ComposerGlyph.replies, "Replies", controller.gatesValue, id: "option-replies") { controller.dialog = .gates }
+        .accessibilityHint(controller.gatesLine)
     }
     row(ComposerGlyph.timer, "Timer", controller.timerValue, id: "option-timer") { controller.dialog = .timer }
       .accessibilityLabel(controller.timerOn ? "Timer: \(controller.timerValue)" : "Timer: none")
       .accessibilityHint(controller.timerNote)  // TIMER: the button's title
-    // ADVISER: Check this post, with the month's checks as its value.
+    // ADVISER: Check this post; the month's checks are its title, not its value.
     if controller.adviser.enabled {
-      row(AdviserGlyph.sparkles, "Check this post", controller.adviser.usageLine.isEmpty ? nil : controller.adviser.usageLine, id: "option-adviser") {
-        controller.askAdviser()
-      }
+      row(AdviserGlyph.sparkles, "Check this post", nil, id: "option-adviser") { controller.askAdviser() }
+        .accessibilityHint(controller.adviserOptionTitle)
     }
-    row(ComposerGlyph.more, "More", nil, chevron: ComposerGlyph.chevronDown, id: "option-more") { moreOpen.toggle() }
+    row(ComposerGlyph.more, "More", nil, chevron: ComposerGlyph.chevronDown, turned: moreOpen, id: "option-more") {
+      moreOpen.toggle()
+    }
+    .accessibilityValue(moreOpen ? "Expanded" : "Collapsed")
     if moreOpen {
       if !replying {
         subRow("Continue a thread", danger: false, id: "option-continue") { controller.openContinue() }
@@ -196,37 +284,46 @@ struct ComposerOptions: View {
       action()
     } label: {
       Text(label)
-        .virgaText(.textBase, weight: VirgaWeight.medium)
+        .virgaText(.textBase)
         .foregroundStyle(danger ? theme.danger : theme.ink)
-        .frame(maxWidth: .infinity, minHeight: Measure.Touch.target, alignment: .leading)
-        .padding(.leading, theme.space6)
+        .frame(maxWidth: .infinity, minHeight: ComposerMeasure.phoneOptionHeight, alignment: .leading)
+        .padding(.leading, ComposerMeasure.subRowInset)
         .contentShape(Rectangle())
     }
     .buttonStyle(.plain)
     .disabled(disabled)
+    .opacity(disabled ? ThemeKit.disabledOpacity : 1)
+    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
     .accessibilityLabel(label)
     .accessibilityIdentifier(id)
   }
 
   private func row(
-    _ symbol: String, _ label: String, _ value: String?, chevron: String = ComposerGlyph.chevronRight, id: String,
-    action: @escaping () -> Void
+    _ symbol: String, _ label: String, _ value: String?, chevron: String = ComposerGlyph.chevronRight, turned: Bool = false,
+    id: String, action: @escaping () -> Void
   ) -> some View {
     Button(action: action) {
-      HStack(spacing: theme.space3) {
-        Image(systemName: symbol).font(.system(size: 16)).foregroundStyle(theme.ink2).frame(width: 20)
+      HStack(spacing: ComposerMeasure.phoneOptionGap) {
+        Image(systemName: symbol)
+          .virgaGlyph(ComposerMeasure.optionIcon, beside: theme.textBase)
+          .foregroundStyle(theme.ink2)
         Text(label).virgaText(.textBase, weight: VirgaWeight.medium).foregroundStyle(theme.ink)
         Spacer(minLength: theme.space2)
         if let value {
-          Text(value).virgaText(.textSm).foregroundStyle(theme.muted).lineLimit(1).truncationMode(.tail)
+          Text(value).virgaText(.textBase).foregroundStyle(theme.muted).lineLimit(1).truncationMode(.tail)
         }
-        Image(systemName: chevron).font(.system(size: 13, weight: .semibold)).foregroundStyle(theme.faint)
+        Image(systemName: chevron)
+          .virgaGlyph(ComposerMeasure.optionChevron, beside: theme.textBase)
+          .foregroundStyle(theme.muted)
+          .rotationEffect(.degrees(turned ? 180 : 0))
+          .animation(theme.motion.control, value: turned)
       }
-      .frame(minHeight: Measure.Touch.target)
+      .frame(minHeight: ComposerMeasure.phoneOptionHeight)
       .contentShape(Rectangle())
     }
     .buttonStyle(.plain)
     .disabled(disabled)
+    .opacity(disabled ? ThemeKit.disabledOpacity : 1)
     .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
     .accessibilityElement(children: .combine)
     .accessibilityIdentifier(id)

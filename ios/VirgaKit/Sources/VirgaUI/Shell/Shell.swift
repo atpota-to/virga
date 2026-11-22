@@ -75,10 +75,11 @@ public struct ShellView: View {
   /// The sky beside the sidebar, moved by the page's scroll.
   @State private var deskSky = SkyScroll()
   @State private var actions = ShellActions()
-  /// The composer host's ToastCenter is the app's one (above the account,
-  /// as App.jsx's ToastProvider is), and the host draws it; the shell's own
-  /// is only for a shell with no host round it (a preview).
-  @Environment(ComposerHost.self) private var composer: ComposerHost?
+  /// The app's one ToastCenter is the composer host's (above the account,
+  /// as App.jsx's ToastProvider is), which the host puts in the environment
+  /// and draws; the shell's own is only for a shell with no host round it
+  /// (a preview), and only then does the shell draw one.
+  @Environment(ToastCenter.self) private var hostToasts: ToastCenter?
   @State private var ownToasts = ToastCenter()
 
   /// - Parameters:
@@ -118,12 +119,12 @@ public struct ShellView: View {
       NewDashboardDialog { actions.creatingDashboard = false }
     }
     .overlay {
-      if composer == nil {
+      if hostToasts == nil {
         ToastStack(center: ownToasts).padding(.bottom, desk ? 0 : theme.tabbarH)
       }
     }
     .environment(palette)
-    .environment(composer?.toasts ?? ownToasts)
+    .environment(hostToasts ?? ownToasts)
     .environment(actions)
     .environment(\.showsSyncBanner, (!desk || collapsed) && !firstRun)
     .environment(\.virgaTheme, ShellFigureSize.declared(in: theme, sidebar: desk ? (collapsed ? .rail : .sidebar) : .phone))

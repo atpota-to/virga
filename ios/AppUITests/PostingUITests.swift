@@ -1,8 +1,9 @@
 // Posting › Templates and Settings › Posting in demo mode. Neither waits
 // for the archive, so no build: from the first build's page, the command
 // palette goes to Templates (Mira's two, read from her repo), the editor
-// opens on Event reminder, which asks two questions, and then Settings ›
-// Posting, from its top to the default timer. Each is kept as a
+// opens on Event reminder, which asks two questions, its Use opens the
+// composer on it (the questions in the library's dialog), and then
+// Settings › Posting, from its top to the default timer. Each is kept as a
 // screenshot, on the iPhone and the iPad.
 
 import UIKit
@@ -85,6 +86,25 @@ final class PostingUITests: XCTestCase {
     snapshot("template-editor-questions")
     element(app, "dialog-close").tap()
     XCTAssertTrue(element(app, "template-editor").waitForNonExistence(timeout: 5), "the editor stayed open")
+
+    // Use: the composer opens with the template applied; this one asks its
+    // two questions, in the library's dialog on it.
+    // Straight after the editor's sheet closes, as in go(): wait until Use
+    // can be pressed, and press once more if the composer isn't coming.
+    let use = app.buttons["Use “Event reminder”"].firstMatch
+    XCTAssertTrue(use.waitForExistence(timeout: 5), "no Use for Event reminder")
+    let usable = expectation(for: NSPredicate(format: "isHittable == true"), evaluatedWith: use)
+    wait(for: [usable], timeout: 10)
+    use.tap()
+    let composerTitle = element(app, "composer-title")
+    if !composerTitle.waitForExistence(timeout: 3), use.isHittable { use.tap() }
+    XCTAssertTrue(composerTitle.waitForExistence(timeout: 10), "Use didn't open the composer")
+    XCTAssertTrue(element(app, "template-question-0").waitForExistence(timeout: 15), "Use didn't apply the template")
+    snapshot("posting-template-use")
+    element(app, "library-close").tap()
+    XCTAssertTrue(element(app, "library-panel").waitForNonExistence(timeout: 5), "the library stayed open")
+    element(app, "composer-close").tap()
+    XCTAssertTrue(element(app, "composer-title").waitForNonExistence(timeout: 5), "the composer stayed open")
 
     // Settings › Posting, from the top to the default timer.
     go(app, "/settings/posting", typing: "Posting", title: "Posting")

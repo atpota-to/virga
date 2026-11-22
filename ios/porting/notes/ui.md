@@ -174,9 +174,12 @@ COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
   `.virgaFocusOutline` (put on the Button or Menu itself, or inside a ButtonStyle's body: it
   binds its own FocusState and also reads `isFocused`).
 - Toasts: `ToastCenter` and `ToastStack`. The app has one center, `ComposerHost.toasts`
-  (App.jsx's ToastProvider, above the account): `.composerHost(_:)` draws it and ShellView puts
-  it in the shell's environment, so every page's toasts and the composer's share one column, at
-  most three, and outlive a switch of account.
+  (App.jsx's ToastProvider, above the account): `.composerHost(_:)` puts it in the environment of
+  everything under it and draws it, so every page's toasts and the composer's share one column, at
+  most three, and outlive a switch of account; ShellView draws its own only with no host round it
+  (a preview). `push(_:danger:seconds:link:)`: a `ToastLink(label, url:)` follows the words, 600
+  and underlined, the one thing in the stack that takes a press (the posted toast's View it on
+  Bluesky).
 
 SHELL (Shell/)
 - From 900 wide: Virga's own layout, an HStack of the sidebar (272, or the 72 rail when
@@ -362,7 +365,8 @@ TEMPLATES AND POSTING (Templates/, Posting/, Settings/PostingSettingsSection.swi
   `Disclosure(settingsRow: true)`, the default timer's rule kept while closed (`keepsContent`).
 - `Measure.Templates` (Templates/TemplateMeasures.swift) names library.css's and hub.css's measures.
 - PostingUITests (`testTemplatesAndPostingSettings`, no archive build): `posting-templates`,
-  `template-editor`, `template-editor-questions`, `settings-posting`, `settings-posting-timer`.
+  `template-editor`, `template-editor-questions`, `posting-template-use` (Use on Event reminder: the
+  composer, its questions in the library), `settings-posting`, `settings-posting-timer`.
 
 ADVISER (Adviser/, Composer/ComposerController+Adviser.swift, Posting/)
 - The views are over VirgaPosting/Adviser's logic, unchanged: `AdviserGateModel` (the composer's
@@ -393,8 +397,8 @@ ADVISER (Adviser/, Composer/ComposerController+Adviser.swift, Posting/)
 - In the composer (marked `ADVISER` in ComposerController, +Actions, ComposerSheet and
   ComposerOptions): `submitPost(skipAdviser:)` runs `adviserGate` first (`check(s, mode: gate)`,
   the busy line in the status, then "Getting it ready"; Save as draft from the sheet saves the
-  draft, Publish anyway goes on); Check this post in the tools (`option-adviser`, with its usage
-  line) is `askAdviser()`; while a read runs the post is held still (`adviserReading` disables
+  draft, Publish anyway goes on); Check this post in the settings (`option-adviser`, its usage line
+  its hint, as the web's title) is `askAdviser()`, and Keep editing puts the caret back; while a read runs the post is held still (`adviserReading` disables
   the editors and the actions) and the busy line sits over it.
 - `NeedsBackendNotice(did:)` is NeedsBackend.jsx (`needs-backend`: Reconnect lengthens the
   session, Sign back in asks for reauth); `PostPreviewCard(view:record:uri:compact:)` is
@@ -720,7 +724,46 @@ COMPOSER (Composer/)
   bytes as temporary files, `ref` the path. VirgaPosting has a protocol of that name, so nothing in
   VirgaUI may be called ComposerFiles.
 - The phone's composer (640 and under) sends from `ComposerBar` at the top; the foot keeps the
-  tools (760 and under), why the button is off, Save as draft and Schedule.
+  tools (760 and under, the medium size with 20-point pictures, on the dialog's edge), why the
+  button is off (on a phone a line of its own over the rest, only when it has to be read), Save as
+  draft and Schedule (`ComposerAlso`, each saying why it's off). No rule over the foot.
+- The send button (`PublishButton`) is one ink pill: `PublishHalfStyle` for the main half and
+  `PublishCaret` for the caret's Menu label, with a seam between; a half that can't run fades its
+  words, both off dim the pill as one.
+- Intents: a `templateId` (Templates › Use) is `loadTemplate` (TemplateService.load over the
+  session's agent, setSource, applyTemplate; `loads["template"]`'s failure a warn callout over the
+  post); `reseedToken`/`reseedIfDue()` take the seed again once a template's or an attachment's
+  words are on screen. `forgetGoneAccounts()` runs from the host on every change of the accounts
+  or the open one, and first in `startFromIntent`.
+- Sending: `commitTagDraft()` (the tags field's word, `tagDraft`) first; the duplicate guard
+  (`Publish.defaultDuplicateGuard`) before anything is asked; `afterPublished` is awaited, so busy
+  holds until the scheduled copy or the draft is settled. ComposerBody's `onChange` on
+  `videoUploadKey` starts any idle video's upload while the sheet is up.
+- Focus and the caret: `focusPostId` takes the first post 40 ms after the sheet appears or a
+  state loads, on a wide screen only (`controller.narrow`, set by the sheet); splits and their undo
+  refocus off a phone; `refocusAfterAdviser()`. `editingPostId` is the post with the caret (its
+  line in the focus ring's colour), `selections[postId]` each editor's last selection
+  (`selectionOf`, where the library inserts). The error is scrolled into view
+  (`ComposerStatus.errorAnchor`).
+- Read out: `ComposerAnnounce.post` and `.composerAnnounces(text)` for what the web marks
+  role="status" or aria-live; role="alert" callouts pass `Callout(alert:)`. `ComposerCalloutLine`
+  is a callout's words with its buttons at the right.
+- Layouts: `ComposerImageGridLayout` (the image grid by count), `ComposerAspectBox` (a video at its
+  own shape up to 320), `ComposerVideoPreview` (one AVPlayer per file). Posts shown small are
+  `PostPreviewCard(compact: true)`; `ComposerPostPreview` is left only for Library/LibraryPanel's
+  detail, until it draws LibraryPanel.jsx's `<PostPreview view />`. `.suggestPop()`/`.suggestRow()`
+  are `.suggest-pop` and `.suggest-item`, for the mention, "/" and language lists.
+- Posting as: one line; its list a popover (`presentationCompactAdaptation(.popover)`), closed by a
+  press outside it. ComposerUITests closes it on the system's dismiss region
+  (`PopoverDismissRegion`, pressed low down, clear of the popover), else on `post-as` again, and
+  waits for `post-as-list` to go.
+- The wide row's ⋯ (`option-more`) is an overlay on the row from the rule's foot, offset
+  (7, 11) as `.composer-more`'s `right: -7px; top: 11px` are; the tags field under the row keeps
+  the row's 40 of room at the right. The send button's seam is the caret's own left edge, inside
+  its 40.
+- Deliberate differences: the editor's selection is ink, as its caret is (a text view's selection
+  follows its tint; the web's is the accent at 28%); Posting as's popover has the system's arrow; a
+  phone's Save as draft and Schedule are the kit's 40, pressed through 44.
 
 LIBRARY (Library/)
 - `LibraryPanel(lib:mode:state:postIndex:insertion:initialShelf:focusTemplate:verb:transport:onNewTemplate:onUse:)`
@@ -806,8 +849,7 @@ LIVE SKY (Sky/, and VirgaCore/Hillside/ for everything that isn't drawing)
 ## Known gaps and deliberate differences
 
 - Left for later steps: dragging cards; of posting, what the composer's entry (Composer.jsx) lists as
-  not yet (the duplicate guard, drag and drop, the posted toast's View it on Bluesky); "Keep it when
-  space runs low" (iOS has nothing to ask).
+  not yet (drag and drop); "Keep it when space runs low" (iOS has nothing to ask).
 - Copy is the web's word for word, including words that only fit a browser ("This
   browser's region", "Forget X on this browser", "Saving the repo to this browser"). Worth
   raising on the web side rather than changing on one side.

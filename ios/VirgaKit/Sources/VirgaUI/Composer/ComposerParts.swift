@@ -16,9 +16,10 @@ import VirgaPosting
 import VirgaSession
 
 /// Up to three languages: the chosen ones as tokens, and a search field
-/// that suggests more (by name or code). `bare` is for a place that already
-/// says what this is (a row in Settings): the label is VoiceOver's alone,
-/// not drawn, and there is no hint.
+/// that suggests more (by name or code). The suggestions open as the field
+/// takes focus, is pressed or is typed in, and close once one is added.
+/// `bare` is for a place that already says what this is (a row in Settings):
+/// the label is VoiceOver's alone, not drawn, and there is no hint.
 struct LanguagePicker: View {
   @Environment(\.virgaTheme) private var theme
   @Binding var value: [String]
@@ -27,6 +28,9 @@ struct LanguagePicker: View {
   var disabled = false
   var bare = false
   @State private var query = ""
+  @State private var open = false
+  /// The query is being cleared by an add, not typed: it doesn't reopen the list.
+  @State private var clearing = false
   @FocusState private var focused: Bool
 
   static let max = 3
@@ -35,7 +39,7 @@ struct LanguagePicker: View {
     let chosen = Array(value.prefix(Self.max))
     let full = chosen.count >= Self.max
     let options =
-      focused && !full
+      open && focused && !full
       ? ComposerLanguages.searchLanguages(
         .string(query), chosen: chosen, preferred: Locale.preferredLanguages, limit: 6) : []
     VStack(alignment: .leading, spacing: theme.space2) {
@@ -52,12 +56,30 @@ struct LanguagePicker: View {
           }
         }
       }
-      TextField(full ? "Three languages is the most a post can have" : "Add a language", text: $query)
+      VirgaTextField(full ? "Three languages is the most a post can have" : "Add a language", text: $query)
         .virgaField()
         .focused($focused)
         .disabled(disabled || full)
         .autocorrectionDisabled()
         .textInputAutocapitalization(.never)
+        .simultaneousGesture(TapGesture().onEnded { open = true })
+        .onChange(of: focused) { _, now in
+          if now {
+            open = true
+          } else {
+            Task { @MainActor in
+              try? await Task.sleep(nanoseconds: UInt64(ComposerMeasure.languagesCloseDelay * 1_000_000_000))
+              if !focused { open = false }
+            }
+          }
+        }
+        .onChange(of: query) { _, _ in
+          if clearing {
+            clearing = false
+          } else {
+            open = true
+          }
+        }
         .onSubmit { add(options.first?.code, chosen: chosen) }
         .accessibilityLabel(label)
       if !options.isEmpty {
@@ -66,21 +88,19 @@ struct LanguagePicker: View {
             Button {
               add(option.code, chosen: chosen)
             } label: {
-              HStack {
+              HStack(spacing: ComposerMeasure.suggestItemGap) {
                 Text(option.name).foregroundStyle(theme.ink)
                 Spacer(minLength: 0)
                 Text(option.code).virgaText(.textSm).foregroundStyle(theme.muted)
               }
-              .padding(.horizontal, theme.space3)
-              .frame(minHeight: Measure.Touch.target)
-              .contentShape(Rectangle())
+              .suggestRow()
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier("language-\(option.code)")
           }
         }
-        .background(theme.surface, in: RoundedRectangle(cornerRadius: theme.radiusLg))
-        .overlay(RoundedRectangle(cornerRadius: theme.radiusLg).strokeBorder(theme.line))
+        .padding(ComposerMeasure.suggestListPadding)
+        .suggestPop()
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Languages")
       }
@@ -90,24 +110,33 @@ struct LanguagePicker: View {
   private func add(_ code: String?, chosen: [String]) {
     guard let code, !chosen.jsIncludes(code), chosen.count < Self.max else { return }
     value = chosen + [code]
+    if !query.isEmpty { clearing = true }
     query = ""
+    open = false
   }
 }
 
 /// The post's tags: words Bluesky files the post under without showing
 /// them in the text. A comma or Return between them; a leading "#" is
-/// dropped, repeats are merged, at most eight.
+/// dropped, repeats are merged, at most eight. The word being typed is the
+/// composer's (`draft`), so it is committed when the field loses focus and
+/// before the post goes out (`onCommit`), as the web's blur and ⌘↩ do.
 struct TagsField: View {
   @Environment(\.virgaTheme) private var theme
   let tags: [String]
+  @Binding var draft: String
   let disabled: Bool
+  /// A phone's: the row right over it already says Tags, so the name is
+  /// kept for VoiceOver only.
+  var bareLabel = false
+  let onCommit: () -> Void
   let onChange: ([String]) -> Void
-  @State private var draft = ""
+  @FocusState private var focused: Bool
 
   var body: some View {
     let full = tags.count >= Tags.maxTags
-    VStack(alignment: .leading, spacing: theme.space2) {
-      FieldLabel("Tags")
+    VStack(alignment: .leading, spacing: theme.points(ThemeKit.fieldGap)) {
+      if !bareLabel { FieldLabel("Tags").accessibilityHidden(true) }
       FieldHint("Not shown in the post, but Bluesky files it under them. Separate them with commas; up to \(Tags.maxTags).")
       TokenRow {
         ForEach(tags, id: \.self) { tag in
@@ -116,34 +145,33 @@ struct TagsField: View {
           }
         }
       }
-      TextField(
-        full ? "That’s the most a post can have" : tags.isEmpty ? "gardening, repair" : "Another tag", text: $draft
-      )
-      .virgaField()
-      .disabled(disabled || full)
-      .autocorrectionDisabled()
-      .textInputAutocapitalization(.never)
-      .submitLabel(.done)
-      .onSubmit { if !draft.jsTrimmed().isEmpty { commit(draft) } }
-      .onChange(of: draft) { _, next in
-        if next.contains(",") { commit(next) }
-      }
-      .accessibilityLabel("Tags")
-      .accessibilityIdentifier("tags-input")
+      VirgaTextField(full ? "That’s the most a post can have" : tags.isEmpty ? "gardening, repair" : "Another tag", text: $draft)
+        .virgaField()
+        .focused($focused)
+        .disabled(disabled || full)
+        .autocorrectionDisabled()
+        .textInputAutocapitalization(.never)
+        .submitLabel(.done)
+        .onSubmit { if !draft.jsTrimmed().isEmpty { onCommit() } }
+        .onChange(of: draft) { _, next in
+          if next.contains(",") { onCommit() }
+        }
+        .onChange(of: focused) { _, now in
+          if !now && !draft.jsTrimmed().isEmpty { onCommit() }
+        }
+        .accessibilityLabel("Tags")
+        .accessibilityIdentifier("tags-input")
     }
-  }
-
-  private func commit(_ text: String) {
-    let next = Tags.normalizeTags(tags + text.components(separatedBy: ","))
-    if next.count != tags.count || zip(next, tags).contains(where: { !$0.jsEquals($1) }) { onChange(next) }
-    draft = ""
   }
 }
 
 /// "Posting as": which account the post goes out from, chosen from every
-/// account on this device without switching the app to it. A signed-out
-/// account can't be picked; it offers Sign back in. A scheduled post stays
-/// with the account that scheduled it (`locked`).
+/// account on this device without switching the app to it. One line: the
+/// picture, "Posting as", the name and the handle; with more than one
+/// account it is a button with a caret, and its list floats over the post
+/// (a popover, closed by a press outside it). A signed-out account can't be
+/// picked; it offers Sign back in. A scheduled post stays with the account
+/// that scheduled it (`locked`).
 struct PostAsPicker: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(SessionModel.self) private var session
@@ -158,7 +186,7 @@ struct PostAsPicker: View {
   var body: some View {
     let accounts = session.accounts
     let current = accounts.first { $0.did.jsEquals(asDid) }
-    VStack(alignment: .leading, spacing: theme.space2) {
+    VStack(alignment: .leading, spacing: ComposerMeasure.postAsNoteGap) {
       if accounts.count <= 1 || locked {
         byline(current)
         if locked && !lockedReason.isEmpty { FieldHint(lockedReason) }
@@ -168,16 +196,24 @@ struct PostAsPicker: View {
         } label: {
           HStack(spacing: ComposerMeasure.postAsGap) {
             byline(current)
-            Image(systemName: ComposerGlyph.chevronDown).font(.system(size: 13, weight: .semibold))
+            Image(systemName: ComposerGlyph.chevronDown)
+              .virgaGlyph(ComposerMeasure.optionChevron, beside: theme.textSm)
               .foregroundStyle(theme.muted)
           }
           .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .disabled(disabled)
+        // A 32-point line, pressed as 44.
+        .touchReach(horizontal: 0, vertical: (Measure.Touch.target - ComposerMeasure.postAsHeight) / 2)
         .accessibilityLabel(buttonLabel(current))
+        .accessibilityValue(open ? "Expanded" : "Collapsed")
         .accessibilityIdentifier("post-as")
-        if open { list(accounts) }
+        .popover(isPresented: $open, arrowEdge: .top) {
+          list(accounts)
+            .presentationCompactAdaptation(.popover)
+            .presentationBackground(theme.surface)
+        }
       }
     }
     .task(id: open) { if open { await check(accounts) } }
@@ -193,17 +229,19 @@ struct PostAsPicker: View {
     let name = current.map { Accounts.accountName($0) } ?? asDid
     let handle = current?.handle.map { "@\($0)" } ?? ""
     return HStack(spacing: ComposerMeasure.postAsGap) {
-      Avatar(src: current?.avatar, name: name, size: .small)
-      VStack(alignment: .leading, spacing: 0) {
-        Text("Posting as").virgaText(.textXs).foregroundStyle(theme.muted)
-        HStack(spacing: theme.space1) {
-          Text(name).virgaText(.textSm, weight: VirgaWeight.semibold).foregroundStyle(theme.ink)
-          if !handle.isEmpty && name != handle {
-            Text(handle).virgaText(.textSm).foregroundStyle(theme.muted).lineLimit(1)
-          }
+      Avatar(src: current?.avatar, name: name, size: .small, side: ComposerMeasure.postAsAvatar)
+      HStack(alignment: .firstTextBaseline, spacing: ComposerMeasure.postAsTextGap) {
+        Text("Posting as").virgaText(.textSm).foregroundStyle(theme.muted).fixedSize()
+        Text(name).virgaText(.textSm, weight: VirgaWeight.semibold).foregroundStyle(theme.ink)
+          .lineLimit(1).truncationMode(.tail)
+        if !handle.isEmpty && name != handle {
+          Text(handle).virgaText(.textSm).foregroundStyle(theme.muted)
+            .lineLimit(1).truncationMode(.tail)
+            .layoutPriority(-1)
         }
       }
     }
+    .frame(minHeight: ComposerMeasure.postAsHeight)
   }
 
   /// Opening checks the other accounts' sessions, so a dead one shows as
@@ -215,19 +253,22 @@ struct PostAsPicker: View {
     }
   }
 
+  /// `.post-as-list`: the hint, then a row per account, on the radius with
+  /// no rules between, 6 in from the edge.
   private func list(_ accounts: [SessionAccount]) -> some View {
     VStack(alignment: .leading, spacing: 0) {
       Text("The post, its draft or its schedule goes to the account you choose. The rest of Virga stays as it is.")
-        .virgaText(.textSm)
+        .virgaText(.textSm, lineHeight: ComposerMeasure.postAsHintLineHeight)
         .foregroundStyle(theme.muted)
-        .padding(theme.space3)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(ComposerMeasure.postAsHintPadding)
       ForEach(accounts, id: \.did) { account in
         row(account)
-        Rectangle().fill(theme.line).frame(height: 1)
       }
     }
-    .background(theme.surface, in: RoundedRectangle(cornerRadius: theme.radiusLg))
-    .overlay(RoundedRectangle(cornerRadius: theme.radiusLg).strokeBorder(theme.line))
+    .padding(ComposerMeasure.postAsListPadding)
+    .frame(width: min(ComposerMeasure.postAsListWidth, theme.windowWidth - ComposerMeasure.postAsListMargin))
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("post-as-list")
   }
 
@@ -242,21 +283,27 @@ struct PostAsPicker: View {
     } else if account.status == .unknown || checked[account.did] == .unknown {
       meta += " · couldn’t check"
     }
-    return HStack(spacing: theme.space2) {
+    return HStack(spacing: ComposerMeasure.postAsRowGap) {
       Button {
         open = false
         if !selected { onChange(account.did) }
       } label: {
-        HStack(spacing: theme.space2) {
-          Avatar(src: account.avatar, name: label, size: .small)
+        HStack(spacing: ComposerMeasure.suggestItemGap) {
+          Avatar(src: account.avatar, name: label, size: .small, side: ComposerMeasure.postAsAvatar)
           VStack(alignment: .leading, spacing: 0) {
-            Text(label).virgaText(.textBase, weight: VirgaWeight.medium).foregroundStyle(theme.ink)
-            Text(meta).virgaText(.textSm).foregroundStyle(theme.muted)
+            Text(label).virgaText(.textSm, weight: VirgaWeight.semibold, lineHeight: ComposerMeasure.suggestLineHeight)
+              .foregroundStyle(out ? theme.muted : theme.ink).lineLimit(1)
+            Text(meta).virgaText(.textSm, lineHeight: ComposerMeasure.suggestLineHeight)
+              .foregroundStyle(theme.muted).lineLimit(1)
           }
           Spacer(minLength: 0)
-          if selected { Image(systemName: ComposerGlyph.check).foregroundStyle(theme.ink) }
+          if selected {
+            Image(systemName: ComposerGlyph.check).virgaGlyph(ComposerMeasure.optionIcon).foregroundStyle(theme.ink)
+          }
         }
-        .contentShape(Rectangle())
+        .padding(ComposerMeasure.suggestItemPadding)
+        .frame(minHeight: ComposerMeasure.postAsRowHeight)
+        .contentShape(RoundedRectangle(cornerRadius: theme.radius))
       }
       .buttonStyle(.plain)
       .disabled(out)
@@ -268,11 +315,10 @@ struct PostAsPicker: View {
           Label("Sign back in", systemImage: ComposerGlyph.signIn)
         }
         .buttonStyle(.virga(size: .small))
+        .fixedSize()
         .accessibilityLabel("Sign back in as \(label)")
       }
     }
-    .padding(.horizontal, theme.space3)
-    .frame(minHeight: Measure.Touch.target)
   }
 }
 
@@ -311,15 +357,29 @@ struct PublishButton: View {
     let p = model.actions[primary]
     let listed = Self.order.filter { $0 != primary && !also.contains($0) }
     let caretOff = listed.allSatisfy { model.actions[$0].disabled }
-    HStack(spacing: 1) {
+    // Nothing here can run: the two halves dim as one button, as any other
+    // button that can't be pressed does.
+    let allOff = (busy || p.disabled) && (busy || caretOff)
+    let height = theme.points(ThemeKit.touchButtonHeight)
+    let radius = height / 2
+    // One ink pill: the main half's right corners square where the caret
+    // follows it, a seam between them.
+    HStack(spacing: 0) {
       Button {
         onAction(primary)
       } label: {
         Label(busy ? "Working…" : ComposerActions.actionLabel(primary, state, short: true), systemImage: Self.icon(primary))
-          .frame(minWidth: ComposerMeasure.publishMinWidth)
       }
-      .buttonStyle(.virga(.primary))
+      .buttonStyle(
+        PublishHalfStyle(
+          shape: UnevenRoundedRectangle(
+            topLeadingRadius: radius, bottomLeadingRadius: radius, bottomTrailingRadius: listed.isEmpty ? radius : 0,
+            topTrailingRadius: listed.isEmpty ? radius : 0),
+          leading: theme.points(ThemeKit.buttonPadding.left),
+          trailing: listed.isEmpty ? theme.points(ThemeKit.buttonPadding.right) : ComposerMeasure.publishMainTrailing,
+          minWidth: theme.composerNarrow ? 0 : ComposerMeasure.publishMinWidth, fadesWhenOff: !allOff))
       .disabled(busy || p.disabled)
+      .help(p.disabled ? (p.reason ?? "") : "")
       .accessibilityHint(p.disabled ? (p.reason ?? "") : "")
       .accessibilityIdentifier("publish")
       .keyboardShortcut(.return, modifiers: .command)
@@ -332,21 +392,19 @@ struct PublishButton: View {
             Text(footnote)
           }
         } label: {
-          let side = theme.points(ThemeKit.touchButtonHeight)
-          Image(systemName: ComposerGlyph.chevronDown)
-            .font(.system(size: 15, weight: .semibold))
-            .foregroundStyle(theme.onBtn)
-            .frame(width: side, height: side)
-            .background(theme.btn, in: Circle())
-            .contentShape(Circle())
+          PublishCaret(
+            shape: UnevenRoundedRectangle(
+              topLeadingRadius: 0, bottomLeadingRadius: 0, bottomTrailingRadius: radius, topTrailingRadius: radius),
+            fadesWhenOff: !allOff)
         }
         .menuOrder(.fixed)
         .disabled(busy || caretOff)
-        .opacity(busy || caretOff ? 0.45 : 1)
         .accessibilityLabel("More ways to send it")
         .accessibilityIdentifier("publish-more")
       }
     }
+    .opacity(allOff ? ThemeKit.disabledOpacity : 1)
+    .fixedSize()
   }
 
   @ViewBuilder
@@ -360,6 +418,83 @@ struct PublishButton: View {
       if let hint { Text(hint) }
     }
     .disabled(a.disabled)
+  }
+}
+
+/// One half of the send button: the primary's ink (pressed, its hover's),
+/// its words in --on-btn. A half that can't run while the other can keeps
+/// the ink and fades only its words (`.publish-main:disabled`), so the two
+/// stay one button; when neither can, the pill dims as one instead.
+struct PublishHalfStyle: ButtonStyle {
+  let shape: UnevenRoundedRectangle
+  let leading: CGFloat
+  let trailing: CGFloat
+  let minWidth: CGFloat
+  let fadesWhenOff: Bool
+
+  func makeBody(configuration: Configuration) -> some View {
+    PublishHalfBody(
+      label: configuration.label, isPressed: configuration.isPressed, shape: shape, leading: leading, trailing: trailing,
+      minWidth: minWidth, fadesWhenOff: fadesWhenOff)
+  }
+}
+
+struct PublishHalfBody<Label: View>: View {
+  @Environment(\.virgaTheme) private var theme
+  @Environment(\.isEnabled) private var isEnabled
+  let label: Label
+  let isPressed: Bool
+  let shape: UnevenRoundedRectangle
+  let leading: CGFloat
+  let trailing: CGFloat
+  let minWidth: CGFloat
+  let fadesWhenOff: Bool
+
+  var body: some View {
+    let ink = theme.color(ThemeKit.primaryButtonInk)
+    let height = theme.points(ThemeKit.touchButtonHeight)
+    label
+      .labelStyle(InlineLabelStyle(gap: theme.points(ThemeKit.buttonGap)))
+      .virgaText(size: theme.points(ThemeKit.buttonFontSize), weight: ThemeKit.primaryButtonWeight, lineHeight: Measure.Lines.button)
+      .lineLimit(1)
+      .fixedSize(horizontal: true, vertical: false)
+      .foregroundStyle(!isEnabled && fadesWhenOff ? ink.opacity(ComposerMeasure.publishOffInk) : ink)
+      .padding(.leading, leading)
+      .padding(.trailing, trailing)
+      .frame(minWidth: minWidth, minHeight: height)
+      .background(shape.fill(theme.color(isPressed ? ThemeKit.primaryButtonHoverFill : ThemeKit.primaryButtonFill)))
+      .contentShape(Rectangle().inset(by: -(Measure.Touch.target - height) / 2))
+      .animation(theme.motion.control, value: isPressed)
+      .virgaFocusOutline(Capsule())
+  }
+}
+
+/// The send button's caret: 40 wide, its chevron a little left of centre
+/// (`.publish-caret { width: 40px; padding: 0 4px 0 0 }`), the seam its own
+/// left edge (`border-left: 1px solid color-mix(on-btn 28%)`), inside the 40,
+/// and not faded with the chevron.
+struct PublishCaret: View {
+  @Environment(\.virgaTheme) private var theme
+  @Environment(\.isEnabled) private var isEnabled
+  let shape: UnevenRoundedRectangle
+  let fadesWhenOff: Bool
+
+  var body: some View {
+    let ink = theme.color(ThemeKit.primaryButtonInk)
+    let height = theme.points(ThemeKit.touchButtonHeight)
+    Image(systemName: ComposerGlyph.chevronDown)
+      .virgaGlyph(ComposerMeasure.publishGlyph, weight: .semibold, beside: theme.points(ThemeKit.buttonFontSize))
+      .foregroundStyle(!isEnabled && fadesWhenOff ? ink.opacity(ComposerMeasure.publishOffInk) : ink)
+      .padding(.trailing, ComposerMeasure.publishCaretInset)
+      .padding(.leading, ComposerMeasure.publishSeam)
+      .frame(width: ComposerMeasure.publishCaretWidth, height: height)
+      .background(shape.fill(theme.color(ThemeKit.primaryButtonFill)))
+      .overlay(alignment: .leading) {
+        Rectangle()
+          .fill(ink.opacity(ComposerMeasure.publishSeamInk))
+          .frame(width: ComposerMeasure.publishSeam)
+      }
+      .contentShape(Rectangle())
   }
 }
 #endif

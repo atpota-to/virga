@@ -57,6 +57,7 @@ extension ComposerController {
     }
     switch decision {
     case .edit:
+      refocusAfterAdviser()
       return nil
     case .draft:
       endBusy(attempt)
@@ -84,9 +85,17 @@ extension ComposerController {
       switch decision {
       case .publish: publishTask = Task { await submitPost(skipAdviser: true) }
       case .draft: runAction(PublishActions.draft)
-      case .edit: break
+      case .edit: refocusAfterAdviser()
       }
     }
+  }
+
+  /// Back from the adviser to keep editing: the button that started the
+  /// check was off while it ran, so the caret goes back to the post.
+  func refocusAfterAdviser() {
+    let index = min(activeIndex, state.posts.count - 1)
+    guard index >= 0 else { return }
+    focusPostId = state.posts[index].id
   }
 }
 #endif

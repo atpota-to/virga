@@ -172,7 +172,16 @@ final class ComposerUITests: XCTestCase {
     postAs.tap()
     XCTAssertTrue(element(app, "post-as-list").waitForExistence(timeout: 5))
     snapshot("composer-post-as")
-    postAs.tap()
+    // The list is a popover, closed by a press outside it: on the system's
+    // dismiss region when it's there (low down, clear of the popover under
+    // Posting as), else on Posting as again.
+    let outside = app.otherElements["PopoverDismissRegion"]
+    if outside.exists {
+      outside.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.95)).tap()
+    } else {
+      postAs.tap()
+    }
+    XCTAssertTrue(element(app, "post-as-list").waitForNonExistence(timeout: 5), "the accounts' list stayed open")
 
     // The library, from the post's tools.
     let openLibrary = element(app, "open-library")
