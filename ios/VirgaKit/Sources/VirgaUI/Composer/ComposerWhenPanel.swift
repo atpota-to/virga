@@ -118,13 +118,22 @@ struct ComposerWhenPanel: View {
 
 /// `.link-button`: a thing to press that reads as words, in ink with a line under it.
 struct WordsButtonStyle: ButtonStyle {
-  @Environment(\.virgaTheme) private var theme
-
   func makeBody(configuration: Configuration) -> some View {
-    configuration.label
+    WordsButtonBody(label: configuration.label)
+  }
+}
+
+struct WordsButtonBody<Label: View>: View {
+  @Environment(\.virgaTheme) private var theme
+  @Environment(\.isEnabled) private var isEnabled
+  let label: Label
+
+  var body: some View {
+    label
       .virgaText(.textSm, weight: VirgaWeight.medium)
       .foregroundStyle(theme.ink)
       .underline()
+      .opacity(isEnabled ? 1 : ThemeKit.disabledOpacity)
       .touchTarget()
   }
 }
