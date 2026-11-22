@@ -66,9 +66,7 @@ struct DashboardsSection: View {
         SettingsText("Kept in this browser, like your archive. Another browser starts with the three starting dashboards.")
       }
     }
-    .virgaDialog(
-      isPresented: Binding(get: { renaming != nil }, set: { if !$0 { renaming = nil } }), title: "Rename dashboard"
-    ) {
+    .dashboardDialog(isPresented: Binding(get: { renaming != nil }, set: { if !$0 { renaming = nil } })) {
       if let renaming {
         RenameDashboard(dashboard: renaming) { self.renaming = nil }
       }
@@ -88,7 +86,7 @@ struct DashboardsSection: View {
         .buttonStyle(.virga(.danger))
         .accessibilityIdentifier("dash-confirm")
     }
-    .virgaDialog(isPresented: $creating, title: "New dashboard") {
+    .dashboardDialog(isPresented: $creating) {
       NewDashboardDialog { creating = false }
     }
   }
@@ -147,10 +145,13 @@ struct DashListRow: View {
         Button {
           navigate("/dashboard/\(dashboard.id)")
         } label: {
+          // Pressed through 44 points, though its line is about 22.
           Text(dashboard.name)
             .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Settings.dashNameLineHeight)
             .foregroundStyle(theme.ink)
             .lineLimit(1)
+            .touchReach(
+              horizontal: 0, vertical: max(0, (Measure.Touch.target - theme.textMd * CGFloat(Measure.Settings.dashNameLineHeight)) / 2))
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(.isLink)

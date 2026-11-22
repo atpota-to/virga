@@ -218,9 +218,10 @@ struct FollowCleanupPage: View {
           }
         }
         if shown.isEmpty {
-          EmptyState(
+          ToolEmptyLine(
             filter == "quiet" && checkedCount == 0
-              ? "Check activity to find the accounts that went quiet." : "Nobody here. Your follows are in good shape.")
+              ? "Check activity to find the accounts that went quiet." : "Nobody here. Your follows are in good shape.",
+            padded: false)
         }
         ToolMoreFoot(shown: shown.count, total: filtered.count, page: FollowCleanup.page) { limit += FollowCleanup.page }
         ToolCaption(
@@ -279,11 +280,20 @@ struct FollowCleanupPage: View {
 
   private func checkCard(rows: [CleanupRow], checkedCount: Int) -> some View {
     let fmt = { (n: Int) in AppLocale.formatNumber(n) }
-    return FlowLayout(spacing: Measure.Tools.checkColumnGap, lineSpacing: Measure.Tools.checkRowGap, alignment: .top) {
+    // What the check does at the left, and its controls at the far end,
+    // centred on the heading's line (`--check-lift`); under the words, 14
+    // below them, when they don't fit beside.
+    let titleLine = theme.points(ThemeKit.cardTitleFontSize) * CGFloat(ThemeKit.headingLineHeight)
+    let lift = (titleLine - theme.points(ThemeKit.touchButtonHeight)) / 2
+    return ToolSpreadRow(
+      columnGap: Measure.Tools.checkColumnGap, rowGap: Measure.Tools.checkRowGap, basis: Measure.Tools.checkTextBasis,
+      firstMax: theme.characters(Measure.Tools.checkTextMeasure), lift: lift
+    ) {
       VStack(alignment: .leading, spacing: theme.points(ThemeKit.cardSubSpaceAbove)) {
         Text(checkedCount != 0 ? "Activity checked for \(fmt(checkedCount)) of \(fmt(rows.count)) accounts" : "When did they last post?")
           .virgaText(
-            size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, tracking: ThemeKit.cardTitleTracking)
+            size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, lineHeight: ThemeKit.headingLineHeight,
+            tracking: ThemeKit.cardTitleTracking)
           .foregroundStyle(theme.ink)
           .fixedSize(horizontal: false, vertical: true)
           .accessibilityAddTraits(.isHeader)
@@ -294,17 +304,19 @@ struct FollowCleanupPage: View {
         .foregroundStyle(theme.color(ThemeKit.cardSubInk))
         .fixedSize(horizontal: false, vertical: true)
       }
-      .frame(maxWidth: theme.characters(Measure.Tools.checkTextMeasure), alignment: .leading)
+      .frame(maxWidth: .infinity, alignment: .leading)
       checkActions(rows: rows, checkedCount: checkedCount)
     }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("cleanup-check")
   }
 
+  /// `.check-actions`, `.check-progress`: side by side, wrapping where a
+  /// narrow phone has no room for both (the select is as wide as its value).
   @ViewBuilder
   private func checkActions(rows: [CleanupRow], checkedCount: Int) -> some View {
     if let checking = progress.checking {
-      HStack(spacing: Measure.Tools.checkActionsGap) {
+      FlowLayout(spacing: Measure.Tools.checkActionsGap, lineSpacing: Measure.Tools.checkActionsRowGap, alignment: .center) {
         Text("\(AppLocale.formatNumber(checking.done)) of \(AppLocale.formatNumber(checking.total))")
           .virgaText(.textBase)
           .foregroundStyle(theme.muted)
@@ -316,8 +328,8 @@ struct FollowCleanupPage: View {
       }
       .frame(minHeight: theme.points(ThemeKit.touchButtonHeight))
     } else {
-      HStack(spacing: Measure.Tools.checkActionsGap) {
-        ToolSelect(label: "Quiet after", options: FollowCleanup.quietChoices.map { ($0, "\($0) days") }, selection: $quietDays, large: true)
+      FlowLayout(spacing: Measure.Tools.checkActionsGap, lineSpacing: Measure.Tools.checkActionsRowGap, alignment: .center) {
+        ToolSelect(label: "Quiet after", options: FollowCleanup.quietChoices.map { ($0, "\($0) days") }, selection: $quietDays)
         Button {
           runCheck(rows.map(\.did))
         } label: {
@@ -352,11 +364,14 @@ struct FollowCleanupPage: View {
   @ViewBuilder
   private func tableBar(selectedLive: [String], filtered: [CleanupRow], sets: RelationSets) -> some View {
     let fmt = { (n: Int) in AppLocale.formatNumber(n) }
-    FlowLayout(spacing: Measure.Tools.tableBarColumnGap, lineSpacing: Measure.Tools.tableBarRowGap, alignment: .center) {
+    // How it is sorted at the left and what to do with it at the far end;
+    // once rows are ticked, how many and what to do with them.
+    ToolSpreadRow(columnGap: Measure.Tools.tableBarColumnGap, rowGap: Measure.Tools.tableBarRowGap, centred: true) {
       if let working = progress.working {
         Text("Unfollowing \(fmt(working.done)) of \(fmt(working.total))…")
           .virgaText(.textSm)
           .foregroundStyle(theme.muted)
+          .toolAnnounces("Unfollowing \(fmt(working.done)) of \(fmt(working.total))…", onAppear: true)
       } else if !selectedLive.isEmpty {
         Text("\(fmt(selectedLive.count)) selected")
           .virgaText(.textBase, weight: VirgaWeight.semibold)
@@ -378,8 +393,8 @@ struct FollowCleanupPage: View {
       } else {
         ToolSelect(
           label: "Sort", options: [("quiet", "Quiet longest"), ("interactions", "Fewest interactions"), ("oldest", "Followed longest ago")],
-          selection: $sort)
-        HStack(spacing: theme.space4) {
+          selection: $sort, hidesLabel: theme.isPhone)
+        HStack(spacing: theme.gap(ThemeKit.headActionsGap).column) {
           if keep.size > 0 {
             Button {
               showKept.toggle()
@@ -410,7 +425,7 @@ struct FollowCleanupPage: View {
   /// "Select all shown", over the rows, on the rule in ink.
   private func selectAll(live: [CleanupRow]) -> some View {
     HStack(spacing: Measure.Tools.rowGap) {
-      ToolCheck(isOn: allBinding(live), label: "Select every account shown", disabled: live.isEmpty)
+      ToolCheck(isOn: allBinding(live), label: "Select every account shown", disabled: live.isEmpty, box: Measure.Tools.stackedCheckBox)
       Text("Select all shown")
         .virgaText(.textSm, weight: VirgaWeight.medium)
         .foregroundStyle(theme.muted)
@@ -461,9 +476,10 @@ struct ToolCheck: View {
   @Binding var isOn: Bool
   let label: String
   var disabled = false
+  /// `input[type='checkbox']`'s 16; a phone's cleanup rows take 20.
+  var box: CGFloat = Measure.Tools.checkBox
 
   var body: some View {
-    let box = Measure.Legal.checkBox
     Button {
       isOn.toggle()
     } label: {
@@ -487,7 +503,8 @@ struct ToolCheck: View {
     .opacity(disabled ? ThemeKit.disabledOpacity : 1)
     .padding(.horizontal, -(Measure.Touch.target - box) / 2)
     .accessibilityLabel(label)
-    .accessibilityAddTraits(isOn ? .isSelected : [])
+    // A tick box, which VoiceOver reads as on or off (a native checkbox).
+    .accessibilityAddTraits(isOn ? [.isToggle, .isSelected] : [.isToggle])
   }
 }
 
@@ -512,7 +529,7 @@ struct CleanupRowView: View {
     let following = follow.isFollowing(archive, row.did, sets: sets)
     let bleed = Measure.Tools.selectedBleed
     return HStack(alignment: .top, spacing: Measure.Tools.rowGap) {
-      ToolCheck(isOn: $selected, label: "Select \(name)", disabled: !following)
+      ToolCheck(isOn: $selected, label: "Select \(name)", disabled: !following, box: Measure.Tools.stackedCheckBox)
       VStack(alignment: .leading, spacing: theme.space1) {
         HStack(alignment: .center, spacing: Measure.Tools.personGap) {
           CleanupPerson(row: row, card: card, name: name, kept: kept, undone: undone)
@@ -522,6 +539,7 @@ struct CleanupRowView: View {
         facts
         if let error = follow.error(row.did) {
           Text(error).virgaText(.textSm).foregroundStyle(theme.danger).fixedSize(horizontal: false, vertical: true)
+            .toolAnnounces(error, onAppear: true)
         }
       }
     }
@@ -651,10 +669,11 @@ struct CleanupActivity: View {
   }
 }
 
-/// The table as a table, from 641 wide: a tick box, the account (taking
-/// what the other columns leave, its words ending in an ellipsis), whether
-/// they follow you, when they were last active, the interactions, when you
-/// followed them, and the row's button.
+/// The table as a table, from 641 wide: a tick box, the account (36% of the
+/// table, its words ending in an ellipsis, `.cleanup-table td.col-main {
+/// width: 36%; max-width: 0 }`), whether they follow you, when they were
+/// last active, the interactions and when you followed them (sharing what
+/// is left), and the row's button.
 struct CleanupTable: View {
   @Environment(\.virgaTheme) private var theme
   let rows: [CleanupRow]
@@ -669,28 +688,39 @@ struct CleanupTable: View {
   let allSelected: Binding<Bool>
   let anyLive: Bool
   let onUnfollowed: (String) -> Void
+  /// The table's width, which the account's column is a share of.
+  @State private var width: CGFloat = 0
 
   var body: some View {
     let anySelected = rows.contains { isSelected($0.did) }
     let bleed = Measure.Tools.selectedBleed
+    let account: CGFloat? = width > 0 ? width * Measure.Tools.cleanupAccountShare : nil
     Grid(alignment: .leading, horizontalSpacing: 0, verticalSpacing: 0) {
       GridRow {
         ToolCheck(isOn: allSelected, label: "Select every account shown", disabled: !anyLive)
           .frame(width: Measure.Tools.checkColumn, alignment: .leading)
           .padding(.bottom, theme.points(ThemeKit.tableHeadSpaceBelow))
-        head("Account", flexible: true)
-        head("Follows you")
-        head("Last active")
-        head("Interactions", numeric: true)
-        head("Followed")
+        head("Account", flexible: account == nil)
+          .frame(width: account, alignment: .leading)
+        head("Follows you", flexible: account != nil)
+        head("Last active", flexible: account != nil)
+        head("Interactions", numeric: true, flexible: account != nil)
+        head("Followed", flexible: account != nil)
         Color.clear.frame(width: 0, height: 0)
           .gridColumnAlignment(.trailing)
           .accessibilityHidden(true)
       }
       Rectangle().fill(theme.color(ThemeKit.tableHeadRule)).frame(height: 1).gridCellUnsizedAxes(.horizontal)
       ForEach(rows, id: \.did) { row in
-        line(row, anySelected: anySelected)
+        line(row, anySelected: anySelected, account: account)
         Rectangle().fill(theme.color(ThemeKit.tableRowRule)).frame(height: 1).gridCellUnsizedAxes(.horizontal)
+      }
+    }
+    .background {
+      GeometryReader { geometry in
+        Color.clear
+          .onAppear { width = geometry.size.width }
+          .onChange(of: geometry.size.width) { _, next in width = next }
       }
     }
     // A ticked row is tinted from side to side, let out past the table's
@@ -721,7 +751,7 @@ struct CleanupTable: View {
   }
 
   @ViewBuilder
-  private func line(_ row: CleanupRow, anySelected: Bool) -> some View {
+  private func line(_ row: CleanupRow, anySelected: Bool, account: CGFloat?) -> some View {
     let card = ToolPeople.cardFor(archive, row.did, sets: sets)
     let name = ToolPeople.displayName(card, row.did)
     let following = follow.isFollowing(archive, row.did, sets: sets)
@@ -739,6 +769,7 @@ struct CleanupTable: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, pad)
         .padding(.vertical, theme.rowPad)
+        .frame(width: account, alignment: .leading)
       Group {
         if row.followsYou { Text("Yes").foregroundStyle(ink) } else { Text("No").foregroundStyle(theme.muted) }
       }
@@ -757,12 +788,13 @@ struct CleanupTable: View {
         .foregroundStyle(ink)
         .lineLimit(1)
         .padding(.horizontal, pad)
-      VStack(alignment: .trailing, spacing: 2) {
+      VStack(alignment: .trailing, spacing: Measure.Tools.actionErrorGap) {
         CleanupAction(
           row: row, archive: archive, follow: follow, name: name, following: following, hidden: anySelected,
           onUnfollowed: { onUnfollowed(row.did) })
         if let error = follow.error(row.did) {
           Text(error).virgaText(.textSm).foregroundStyle(theme.danger).fixedSize(horizontal: false, vertical: true)
+            .toolAnnounces(error, onAppear: true)
         }
       }
       .padding(.leading, pad)

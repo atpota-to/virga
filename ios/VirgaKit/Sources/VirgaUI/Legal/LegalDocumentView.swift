@@ -160,7 +160,8 @@ enum LegalInline {
   static func piece(_ value: String, theme: VirgaTheme, size: CGFloat, style: Style) -> AttributedString {
     var piece = AttributedString(value)
     if style.code {
-      piece.font = theme.codeFont(around: size)
+      // `.legal-text code { font-size: 0.9em }`, its own rule over base.css's 0.92.
+      piece.font = Font.system(size: theme.scaled(size * Measure.Legal.codeEm), design: .monospaced)
     } else {
       let font = theme.font(size: size, weight: style.strong ? VirgaWeight.semibold : VirgaWeight.regular)
       piece.font = style.em ? font.italic() : font
@@ -213,7 +214,9 @@ struct LegalBlockView: View {
     switch level {
     case 1:
       Text(words)
-        .virgaText(size: theme.points(Measure.Legal.h1Size), weight: VirgaWeight.semibold, tracking: Measure.Legal.h1Tracking)
+        .virgaText(
+          size: theme.points(Measure.Legal.h1Size), weight: VirgaWeight.semibold, lineHeight: Measure.Legal.h1LineHeight,
+          tracking: Measure.Legal.h1Tracking)
         .foregroundStyle(theme.ink)
         .fixedSize(horizontal: false, vertical: true)
         .padding(.bottom, Measure.Legal.h1SpaceBelow)
@@ -237,7 +240,8 @@ struct LegalBlockView: View {
       .id(id)
     default:
       Text(words)
-        .virgaText(.textMd, weight: VirgaWeight.semibold)
+        // An h3: the heading's 1.25 between its lines (base.css).
+        .virgaText(.textMd, weight: VirgaWeight.semibold, lineHeight: ThemeKit.headingLineHeight)
         .foregroundStyle(theme.ink)
         .fixedSize(horizontal: false, vertical: true)
         .padding(.top, Measure.Legal.h3SpaceAbove)
@@ -374,15 +378,19 @@ struct LegalContents: View {
             Button {
               scrollTo(entry.id)
             } label: {
-              HStack(alignment: .firstTextBaseline, spacing: 0) {
+              // The list's own markers: right-aligned against the 1.8em
+              // indent, with the marker's space after them, in the text's
+              // --ink-2; the link in ink, its line in --line-2.
+              HStack(alignment: .firstTextBaseline, spacing: theme.textBase * Measure.Legal.markerGapEm) {
                 Text("\(index + 1).")
-                  .frame(width: theme.textBase * Measure.Legal.contentsIndentEm, alignment: .leading)
-                Text(entry.text).underline()
+                  .foregroundStyle(theme.ink2)
+                  .frame(width: theme.textBase * (Measure.Legal.contentsIndentEm - Measure.Legal.markerGapEm), alignment: .trailing)
+                Text(entry.text).underline(color: theme.line2)
+                  .foregroundStyle(theme.ink)
                   .multilineTextAlignment(.leading)
                   .fixedSize(horizontal: false, vertical: true)
               }
               .virgaText(.textBase, lineHeight: Measure.Legal.contentsLineHeight)
-              .foregroundStyle(theme.ink)
               .padding(.vertical, Measure.Legal.contentsLinkPadding)
               .contentShape(Rectangle())
             }
@@ -400,5 +408,11 @@ struct LegalContents: View {
     .accessibilityElement(children: .contain)
     .accessibilityLabel("Contents")
   }
+}
+extension Measure.Legal {
+  /// `.legal-text code { font-size: 0.9em }`
+  static let codeEm: CGFloat = 0.9
+  /// A list marker's trailing space ("1. "), about a quarter of an em.
+  static let markerGapEm: CGFloat = 0.25
 }
 #endif

@@ -1,11 +1,16 @@
 // Ports src/reports/ReportPage.jsx (the blocks, people and atmosphere reports)
 //
-// Blocks: the figures, block reach (the total, by path stacked, with
-// followers, or new blocks per bucket) with its table. People: who engages
-// with you and who you engage with, twelve more at a time, each a person
-// with their counts by kind and Follow. Atmosphere: the figures, records
-// written per bucket with its table, and by collection (the first sixteen,
-// Show all). Each with How this is counted, word for word.
+// Blocks: the figures (Through lists with the way to the Lists tool), block
+// reach (the total, by path stacked, with followers, or new blocks per
+// bucket) with its table and the report's actions. People: who engages with
+// you and who you engage with, side by side where there is room, each under
+// a rule in ink, twelve more at a time ("Show 12 more", "12 of 64" at the
+// right), each a person with their counts by kind and Follow (someone
+// followed from Not following keeps their row until the filter changes),
+// and the caption under the first. Atmosphere: the figures, records written per
+// bucket with its table and the report's actions, and by collection (the
+// first sixteen, Show all on a line of its own under the bars). Each with
+// How this is counted, word for word.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -16,6 +21,8 @@ import VirgaInsights
 struct BlocksReportView: View {
   let archive: ReportArchive
   let period: AnalyticsPeriod
+  var actions: AnyView? = nil
+  var more: AnyView? = nil
   @State private var mode = "cumulative"
 
   var body: some View {
@@ -37,7 +44,8 @@ struct BlocksReportView: View {
         [
           ReportParts.fig("Blocked by", Double(m.total), sub: "People, counted once"),
           ReportParts.fig("Directly", Double(m.directTotal)),
-          ReportParts.fig("Through lists", Double(m.listTotal)),
+          ReportParts.fig(
+            "Through lists", text: ChartFormat.fmtFigure(Double(m.listTotal)), note: AnyView(NoteLink(text: "See the lists", to: "/tools/lists"))),
           ReportParts.fig(
             days ? "New in \(Periods.periodPhrase(period))" : "All time", Double(m.received), delta: days ? .some(m.compare.pct) : nil,
             deltaTitle: days ? "\(Periods.periodBefore(period, true)): \(AppLocale.formatNumber(m.compare.previous))" : nil),
@@ -48,11 +56,11 @@ struct BlocksReportView: View {
         sub: nil,
         tools: AnyView(
           Segmented(
-            label: "Chart",
+            label: ReportParts.modeLabel,
             options: [
-              SegmentedOption("cumulative", "Total", accessibilityLabel: "Running total over the window"),
-              SegmentedOption("stacked", "By path", accessibilityLabel: "Direct blocks and moderation lists, stacked"),
-              SegmentedOption("together", "With followers", accessibilityLabel: "Block reach and followers on one chart"),
+              SegmentedOption("cumulative", "Total", hint: "Running total over the window"),
+              SegmentedOption("stacked", "By path", hint: "Direct blocks and moderation lists, stacked"),
+              SegmentedOption("together", "With followers", hint: "Block reach and followers on one chart"),
             ] + ReportParts.unitOptions(m.units, "New blocks"), selection: $mode, size: .small))
       ) {
         SeriesChart(
@@ -61,7 +69,11 @@ struct BlocksReportView: View {
           height: 280, accessibilityLabel: "Blocks over \(Periods.periodPhrase(period))")
         ChartTable(
           series: ChartPoint.of(series), secondary: secondary?.series, trend: cumulative ? nil : ChartPoint.of(m.trend), unit: m.unit,
-          valueHead: together ? "Followers" : stacked ? "Direct" : cumulative ? "Block reach" : "New blocks", secondaryHead: secondary?.label)
+          valueHead: together ? "Followers" : stacked ? "Direct" : cumulative ? "Block reach" : "New blocks", secondaryHead: secondary?.label,
+          trailing: more
+        ) {
+          if let actions { actions }
+        }
       }
       HowCounted(paragraphs: [
         "Reconstructed from current app.bsky.graph.block records and the moderation lists that currently contain you. List reach follows each list’s current app.bsky.graph.listblock subscribers, and a list block begins at the later of the membership and the subscription.",
@@ -83,13 +95,19 @@ struct PeopleReportView: View {
   /// Whom to show: "all", "not" (not followed) or "following".
   var relation = "all"
   @State private var limits = (inbound: PeopleReportView.page, outbound: PeopleReportView.page)
+  /// Someone followed from "Not following" keeps their row until the
+  /// filter changes, now reading Following, rather than vanishing.
+  @State private var kept: (relation: String, dids: Set<JSKey>) = ("all", [])
   static let page = 12
 
   var body: some View {
     let m = ReportModels.peopleModel(archive, period, archive.nowMs ?? SyncStatus.now(), kind: kind)
     let sets = ReportModels.relationSets(archive)
     let follows = { (did: String) in sets.following.contains { $0.jsEquals(did) } }
-    let keep = { (r: TopActor) in relation == "not" ? !follows(r.did) : relation == "following" ? follows(r.did) : true }
+    let keptDids: Set<JSKey> = kept.relation == relation ? kept.dids : []
+    let keep = { (r: TopActor) in
+      keptDids.contains(JSKey(r.did)) || (relation == "not" ? !follows(r.did) : relation == "following" ? follows(r.did) : true)
+    }
     let inRanked = m.inbound.filter(keep)
     let outRanked = m.outbound.filter(keep)
     let inTop = Array(inRanked.prefix(limits.inbound))
@@ -101,24 +119,24 @@ struct PeopleReportView: View {
     if let oldest = m.inOldest, days, oldest > m.inT0 {
       caption.append("Notifications reach back to \(Time.formatDateShort(oldest)) so far, so earlier events in this window are outside them.")
     }
-    return Group {
-      ReportCard(title: "They engage with you", sub: nil, tools: nil) {
-        list(
-          inTop, inRanked, side: 0,
-          empty: relation == "not" && !m.inbound.isEmpty
-            ? "You already follow everyone who engaged with you in this window." : "Nobody has engaged with you in this window yet.")
-        if !caption.isEmpty {
-          Text(caption.joined(separator: " ")).virgaText(.textSm).foregroundStyle(theme.muted).fixedSize(horizontal: false, vertical: true)
-        }
-      }
-      ReportCard(title: "You engage with them", sub: nil, tools: nil) {
-        if kind == "mention" {
-          EmptyState("Mentions are counted inbound only.")
-        } else {
+    // One stack, so the names are asked for once.
+    return VStack(alignment: .leading, spacing: theme.sectionGap) {
+      ReportSplit {
+        ReportCard(title: "They engage with you", sub: nil, tools: nil, flush: true, caption: caption.isEmpty ? nil : caption.joined(separator: " ")) {
           list(
-            outTop, outRanked, side: 1,
-            empty: relation == "not" && !m.outbound.isEmpty
-              ? "You already follow everyone you engaged with in this window." : "You haven’t engaged with anyone in this window.")
+            inTop, inRanked, side: 0,
+            empty: relation == "not" && !m.inbound.isEmpty
+              ? "You already follow everyone who engaged with you in this window." : "Nobody has engaged with you in this window yet.")
+        }
+        ReportCard(title: "You engage with them", sub: nil, tools: nil, flush: true) {
+          if kind == "mention" {
+            EmptyState("Mentions are counted inbound only.")
+          } else {
+            list(
+              outTop, outRanked, side: 1,
+              empty: relation == "not" && !m.outbound.isEmpty
+                ? "You already follow everyone you engaged with in this window." : "You haven’t engaged with anyone in this window.")
+          }
         }
       }
       HowCounted(paragraphs: [
@@ -138,23 +156,28 @@ struct PeopleReportView: View {
     if rows.isEmpty {
       EmptyState(empty)
     } else {
-      VStack(alignment: .leading, spacing: 0) {
+      PersonList {
         ForEach(rows, id: \.did) { r in
           let detail = InteractionModel.kindsLine(r.byKind, byCount: true)
-          PersonRow(archive: archive, did: r.did, meta: detail, value: AppLocale.formatNumber(r.total), follow: true)
+          PersonRow(
+            archive: archive, did: r.did, meta: detail, value: AppLocale.formatNumber(r.total), follow: true,
+            onFollowed: { did in
+              kept = (relation, (kept.relation == relation ? kept.dids : []).union([JSKey(did)]))
+            })
         }
       }
+      .accessibilityElement(children: .contain)
       .accessibilityIdentifier("people-\(side == 0 ? "in" : "out")")
     }
+    // Under each list the same foot: Show 12 more, then "12 of 64" at the right.
     if ranked.count > rows.count {
-      HStack(spacing: theme.space3) {
+      // The ghost button's words start at the column's edge (`.card-foot >
+      // .btn--ghost:first-child`).
+      SectionFoot(count: "\(AppLocale.formatNumber(rows.count)) of \(AppLocale.formatNumber(ranked.count))", letOut: .small) {
         Button("Show \(min(Self.page, ranked.count - rows.count)) more") {
           if side == 0 { limits.inbound += Self.page } else { limits.outbound += Self.page }
         }
         .buttonStyle(.virga(.ghost, size: .small))
-        Text("\(AppLocale.formatNumber(rows.count)) of \(AppLocale.formatNumber(ranked.count))")
-          .virgaText(.textSm)
-          .foregroundStyle(theme.muted)
       }
     }
   }
@@ -164,13 +187,15 @@ struct AtmosphereReportView: View {
   @Environment(\.virgaTheme) private var theme
   let archive: ReportArchive
   let period: AnalyticsPeriod
+  var actions: AnyView? = nil
+  var more: AnyView? = nil
   @State private var unitPick: String?
-  @State private var more = false
+  @State private var all = false
 
   var body: some View {
     if let m = ReportModels.atmosphereModel(archive, period, archive.nowMs ?? SyncStatus.now(), unit: unitPick.map { AnalyticsUnit($0) }) {
       let days = period.days.map { $0 != 0 } ?? false
-      let shown = more ? m.ranked : Array(m.ranked.prefix(16))
+      let shown = all ? m.ranked : Array(m.ranked.prefix(16))
       FiguresView(
         [
           ReportParts.fig(days ? "Records in \(Periods.periodPhrase(period))" : "Records, all time", Double(m.total)),
@@ -181,14 +206,16 @@ struct AtmosphereReportView: View {
       ReportCard(
         title: "Records written per \(ChartFormat.unitNoun(m.unit))", sub: "Every app, every collection",
         tools: AnyView(
-          Segmented(label: "Records per", options: ReportParts.unitOptions(m.units, "Records"), selection: m.unit.rawValue, size: .small) {
+          Segmented(label: ReportParts.modeLabel, options: ReportParts.unitOptions(m.units, "Records"), selection: m.unit.rawValue, size: .small) {
             unitPick = $0
           })
       ) {
         SeriesChart(
           series: ChartPoint.of(m.series), trend: ChartPoint.of(m.trend), mode: .bars, unit: m.unit, height: 260,
           accessibilityLabel: "Records written to the repo per \(m.unit.rawValue) over \(Periods.periodPhrase(period))")
-        ChartTable(series: ChartPoint.of(m.series), trend: ChartPoint.of(m.trend), unit: m.unit, valueHead: "Records")
+        ChartTable(series: ChartPoint.of(m.series), trend: ChartPoint.of(m.trend), unit: m.unit, valueHead: "Records", trailing: more) {
+          if let actions { actions }
+        }
       }
       ReportCard(title: "By collection", sub: "Which apps write to your repo, and how much", tools: nil) {
         if shown.isEmpty {
@@ -198,9 +225,17 @@ struct AtmosphereReportView: View {
             rows: shown.map { BarListRow(key: $0.collection, label: $0.collection, value: Double($0.count), title: $0.collection, code: true) },
             accessibilityLabel: "Records by collection")
         }
+        // A bar list's line under it, as Content's have: every bar is one
+        // more thing to do with the chart, not a list's "Show N more".
         if m.ranked.count > 16 {
-          Button(more ? "Show fewer" : "Show all \(m.ranked.count) collections") { more.toggle() }
-            .buttonStyle(.linkAction(isOpen: more))
+          Button {
+            all.toggle()
+          } label: {
+            Label(all ? "Show fewer" : "Show all \(m.ranked.count) collections", systemImage: all ? Glyph.chevronUp : Glyph.chevronDown)
+          }
+          .buttonStyle(.linkAction)
+          .modifier(ChartFootAction())
+          .padding(.top, theme.points(ThemeKit.chartFootSpaceAbove))
         }
       }
       HowCounted(paragraphs: [

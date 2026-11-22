@@ -18,6 +18,7 @@
 
 #if canImport(UIKit)
 import SwiftUI
+import UIKit
 import VirgaCore
 
 /// One action in a menu: `{ key, label, hint, icon, tone, onSelect }`.
@@ -85,6 +86,7 @@ struct MenuContent: View {
 }
 
 struct MenuItemButton: View {
+  @Environment(\.virgaTheme) private var theme
   let item: MenuItem
 
   var body: some View {
@@ -95,9 +97,21 @@ struct MenuItemButton: View {
       // the hint under it, and an Image as its icon.
       Text(item.label)
       if let hint = item.hint { Text(hint) }
-      if let image = item.systemImage { Image(systemName: image) }
+      if let image = item.systemImage { icon(image) }
     }
     .accessibilityIdentifier(item.accessibilityIdentifier ?? "menu-\(item.key)")
+  }
+
+  /// `.menu-item-icon { color: var(--ink-2) }`, and a danger item's icon in
+  /// its words' red. A native menu draws a plain image in the window's tint
+  /// (the accent), so the glyph comes already coloured: in --ink-2, or in
+  /// the system's red that a destructive item's words take.
+  private func icon(_ name: String) -> Image {
+    let colour = item.destructive ? UIColor.systemRed : UIColor(theme.ink2)
+    if let symbol = UIImage(systemName: name)?.withTintColor(colour, renderingMode: .alwaysOriginal) {
+      return Image(uiImage: symbol)
+    }
+    return Image(systemName: name)
   }
 }
 
@@ -145,8 +159,9 @@ public struct MoreMenu: View {
     Menu {
       MenuContent(entries: entries)
     } label: {
+      // Grown with Dynamic Type, kept inside its 44-point circle.
       Image(systemName: Glyph.more)
-        .font(.system(size: theme.points(ThemeKit.menuItemIconSize), weight: .medium))
+        .virgaGlyph(theme.points(ThemeKit.menuItemIconSize), weight: .medium, upTo: side / 2)
         .foregroundStyle(theme.color(ThemeKit.ghostButtonInk))
         .frame(width: side, height: side)
         .contentShape(Circle())

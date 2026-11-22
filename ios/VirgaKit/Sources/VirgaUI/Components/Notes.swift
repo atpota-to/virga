@@ -3,7 +3,11 @@
 //   Callout      something to know before going on, with a rule down its
 //                side (2 points of --line-2); a warning or a failure has
 //                its colour for the rule and the words, and its wash, since
-//                it has to be found.
+//                it has to be found. A failure of words alone,
+//                `Callout(tone: .danger, words)`, is the web's
+//                `role="alert"`: VoiceOver reads it out when it appears
+//                and when its words change. One built round its own
+//                content leaves that to its caller (`alert:`).
 //   EmptyState   one sentence, and at most one way to change that, a quiet
 //                button. No heading and no ink.
 //   NoteText     prose about a setting: muted, small, held to the measure.
@@ -25,11 +29,16 @@ public struct Callout<Content: View>: View {
   @Environment(\.virgaTheme) private var theme
   private let tone: CalloutTone
   private let systemImage: String?
+  private let alert: String?
   private let content: Content
 
-  public init(tone: CalloutTone = .plain, systemImage: String? = nil, @ViewBuilder content: () -> Content) {
+  /// - Parameter alert: words to read out as the web's `role="alert"`
+  ///   does, when the callout appears and when they change (nil reads
+  ///   nothing: the caller announces it, or it isn't an alert).
+  public init(tone: CalloutTone = .plain, systemImage: String? = nil, alert: String? = nil, @ViewBuilder content: () -> Content) {
     self.tone = tone
     self.systemImage = systemImage
+    self.alert = alert
     self.content = content()
   }
 
@@ -61,7 +70,8 @@ public struct Callout<Content: View>: View {
     return HStack(alignment: .top, spacing: theme.points(ThemeKit.calloutGap)) {
       if let systemImage {
         Image(systemName: systemImage)
-          .font(.system(size: Measure.Section.calloutIcon))
+          .virgaGlyph(Measure.Section.calloutIcon, beside: theme.textSm)
+          .padding(.top, Measure.Section.calloutIconSpaceAbove)
           .accessibilityHidden(true)
       }
       content
@@ -78,11 +88,38 @@ public struct Callout<Content: View>: View {
       Rectangle().fill(edge).frame(width: edgeWidth)
     }
     .frame(maxWidth: theme.measure, alignment: .leading)
+    .modifier(CalloutAlert(words: alert))
+  }
+}
+
+extension Callout where Content == Text {
+  /// A callout of words alone. A danger one is `role="alert"`: its words
+  /// are read out when it appears and whenever they change.
+  public init(tone: CalloutTone = .plain, systemImage: String? = nil, _ words: String) {
+    self.init(tone: tone, systemImage: systemImage, alert: tone == .danger ? words : nil) { Text(words) }
+  }
+}
+
+/// `role="alert"`: the words posted to VoiceOver when the callout appears
+/// and again when they change.
+struct CalloutAlert: ViewModifier {
+  let words: String?
+
+  func body(content: Content) -> some View {
+    content
+      .onAppear { post(words) }
+      .onChange(of: words) { _, next in post(next) }
+  }
+
+  private func post(_ text: String?) {
+    guard let text, !text.isEmpty else { return }
+    UIAccessibility.post(notification: .announcement, argument: text)
   }
 }
 
 public struct EmptyState: View {
   @Environment(\.virgaTheme) private var theme
+  @Environment(\.virgaUnderRuledHead) private var underRuledHead
   private let sentence: String
   private let actionTitle: String?
   private let action: (() -> Void)?
@@ -105,6 +142,21 @@ public struct EmptyState: View {
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
+    // `.card--flush > .card-head ~ .empty-block { padding-top: var(--space-4) }`:
+    // under a ruled heading it keeps the air a first row would have.
+    .padding(.top, underRuledHead ? theme.space4 : 0)
+  }
+}
+
+private struct UnderRuledHeadKey: EnvironmentKey {
+  static let defaultValue = false
+}
+
+extension EnvironmentValues {
+  /// Set on a flush section's content, under the rule its heading ends in.
+  var virgaUnderRuledHead: Bool {
+    get { self[UnderRuledHeadKey.self] }
+    set { self[UnderRuledHeadKey.self] = newValue }
   }
 }
 
@@ -164,10 +216,12 @@ public struct ProgressLine: View {
           // `progress-slide`: from one of its widths left of the track to
           // three to the right of it.
           let share = width * Self.indeterminateShare
+          // Under Reduce Motion the web's animation runs 0.01ms once and ends
+          // untransformed: a still 35% at the track's start.
           Capsule()
             .fill(fill)
             .frame(width: share)
-            .offset(x: sliding ? share * 3 : -share)
+            .offset(x: theme.motion.reduced ? 0 : (sliding ? share * 3 : -share))
             .onAppear {
               guard let animation = theme.motion.indeterminate else { return }
               withAnimation(animation) { sliding = true }
@@ -195,13 +249,14 @@ public struct Disclosure<Content: View>: View {
   }
 
   public var body: some View {
-    VStack(alignment: .leading, spacing: theme.space3) {
+    // `<details>` sets no gap between its summary and what it opens.
+    VStack(alignment: .leading, spacing: 0) {
       Button {
         withAnimation(theme.motion.chevron) { open.toggle() }
       } label: {
-        HStack(spacing: theme.space2) {
+        HStack(spacing: Measure.Disclosure.gap) {
           Image(systemName: Glyph.chevronRight)
-            .font(.system(size: Measure.Disclosure.chevron, weight: .semibold))
+            .virgaGlyph(Measure.Disclosure.chevron, weight: .semibold, beside: theme.textSm)
             .rotationEffect(.degrees(open ? 90 : 0))
           Text(summary)
             .virgaText(.textSm, weight: VirgaWeight.medium)
@@ -213,6 +268,8 @@ public struct Disclosure<Content: View>: View {
       }
       .buttonStyle(.plain)
       .virgaFocusOutline(RoundedRectangle(cornerRadius: theme.radiusSm))
+      // A summary is read with its state, as a browser reads <details>.
+      .accessibilityValue(open ? "Expanded" : "Collapsed")
       if open {
         content
       }

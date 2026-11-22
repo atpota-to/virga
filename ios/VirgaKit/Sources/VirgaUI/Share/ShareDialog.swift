@@ -5,23 +5,23 @@
 // from the chart's own numbers, ready to go into a post or to save.
 // Nothing is posted from here. The picture is drawn as the dialog opens
 // (ShareImage), under the sky that is on screen and in its colours; the
-// description under it is ShareSpec's, to change. Save the picture puts it
-// in Photos (asking first, add-only). Write a post with it hands the
-// picture, its description and a first line to the composer when one is
-// set in the environment (`shareComposer`); until the composer is in the
-// app, it offers the picture and the first line through the system's
-// share sheet (ShareLink), as virga-chart.png. A phone's dialog has its two
-// buttons one under the other, Write a post with it first.
+// description under it is ShareSpec's, to change (its hint, not the field,
+// says when it runs past 1,800). Save the picture puts it in Photos
+// (asking first, add-only). Write a post with it hands the picture, its
+// description and a first line to the composer the app sets in the
+// environment (`shareComposer`, ComposerHost's) once this dialog has gone,
+// so the composer's sheet can rise; where none is set (a preview), it
+// offers the picture and the first line through the system's share sheet
+// (ShareLink), as virga-chart.png. A phone's dialog has its two buttons one
+// under the other, Write a post with it first.
 //
 // THE HOOK, for the dashboards and the reports:
 //
 //   // A card's ghost icon by its title (`Post <name> as a picture`):
 //   PostChartButton(type: card.type, name: title ?? def.name, options: card.options, period: period)
 //
-//   // A report's link action under its chart ("Post this chart"):
-//   PostChartLink(type: widget.type, name: widget.name, kind: kind, period: period)
-//
-//   // Or from anything else (a ⋯ menu's "Post this chart as a picture"):
+//   // Or from anything else (a report's "Post this chart" under its chart,
+//   // a ⋯ menu's "Post this chart as a picture"):
 //   @State var share: ShareRequest?
 //   … .shareDialog($share, period: period)
 //   share = ShareRequest(type: widget.type, kind: kind)
@@ -93,8 +93,8 @@ private struct ShareComposerKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-  /// The composer "Write a post with it" opens; nil until the composer is
-  /// in the app, when the picture goes out through the share sheet.
+  /// The composer "Write a post with it" opens (ComposerHost sets it); nil,
+  /// in a preview, and the picture goes out through the share sheet.
   public var shareComposer: ShareComposer? {
     get { self[ShareComposerKey.self] }
     set { self[ShareComposerKey.self] = newValue }
@@ -113,16 +113,35 @@ struct SharePicture: Transferable {
 
 struct ShareDialogModifier: ViewModifier {
   @Environment(\.virgaTheme) private var theme
+  @Environment(\.shareComposer) private var composer
   @Binding var request: ShareRequest?
   let period: AnalyticsPeriod
+  /// What Write a post with it handed on, opened in the composer once this
+  /// sheet is gone (one sheet at a time).
+  @State private var handoff: ShareDraft?
 
   func body(content: Content) -> some View {
-    content.sheet(item: $request) { shown in
-      ShareDialogView(request: shown, period: shown.period ?? period) { request = nil }
-        .presentationDetents([.large])
-        .presentationBackground(theme.surface)
-        .presentationCornerRadius(Measure.Dialog.radius)
+    content.sheet(item: $request, onDismiss: openComposer) { shown in
+      ShareDialogView(request: shown, period: shown.period ?? period, onWrite: writer()) { request = nil }
+      .presentationDetents([.large])
+      .presentationBackground(theme.surface)
+      .presentationCornerRadius(Measure.Dialog.radius)
     }
+  }
+
+  /// Write a post with it: keep the draft and close, where there is a composer.
+  private func writer() -> ((ShareDraft) -> Void)? {
+    guard composer != nil else { return nil }
+    return { draft in
+      handoff = draft
+      request = nil
+    }
+  }
+
+  private func openComposer() {
+    guard let draft = handoff else { return }
+    handoff = nil
+    if let composer { composer(draft) }
   }
 }
 
@@ -165,45 +184,17 @@ public struct PostChartButton: View {
   }
 }
 
-/// A report's way to its chart's picture: "Post this chart", a link action.
-public struct PostChartLink: View {
-  @State private var request: ShareRequest?
-  private let type: String
-  private let name: String
-  private let kind: String?
-  private let period: AnalyticsPeriod
-
-  public init(type: String, name: String, kind: String? = nil, period: AnalyticsPeriod) {
-    self.type = type
-    self.name = name
-    self.kind = kind
-    self.period = period
-  }
-
-  public var body: some View {
-    if ShareSpec.canShare(type) {
-      Button {
-        request = ShareRequest(type: type, kind: kind)
-      } label: {
-        Label("Post this chart", systemImage: ToolGlyph.picture)
-      }
-      .buttonStyle(.linkAction)
-      .accessibilityHint("\(name), as a picture with its description")
-      .accessibilityIdentifier("post-chart-\(type)")
-      .shareDialog($request, period: period)
-    }
-  }
-}
-
 /// The dialog itself.
 struct ShareDialogView: View {
   @Environment(\.virgaTheme) private var theme
-  @Environment(\.shareComposer) private var composer
   @Environment(AppModel.self) private var app
   @Environment(ArchiveModel.self) private var archive: ArchiveModel?
   @Environment(ToastCenter.self) private var toasts: ToastCenter?
   let request: ShareRequest
   let period: AnalyticsPeriod
+  /// Write a post with it: the draft for the composer (nil where there is
+  /// none, and the share sheet stands in).
+  let onWrite: ((ShareDraft) -> Void)?
   let onClose: () -> Void
 
   @State private var spec: ShareSpecification?
@@ -234,7 +225,7 @@ struct ShareDialogView: View {
         preview
         FieldStack("Description (alt text)") {
           TextEditor(text: $alt)
-            .virgaTextArea(invalid: alt.utf16.count > ShareSpec.altTextMax)
+            .virgaTextArea()
             .frame(minHeight: Measure.Share.altMinHeight)
             .accessibilityLabel("Description (alt text)")
             .accessibilityIdentifier("share-alt")
@@ -300,13 +291,12 @@ struct ShareDialogView: View {
 
   @ViewBuilder
   private var write: some View {
-    if let composer, let picture, let png, let spec, let archive {
+    if let onWrite, let picture, let png, let spec, let archive {
       Button {
-        composer(
+        onWrite(
           ShareDraft(
             asDid: archive.did, text: ShareSpec.sharePostText(spec, period), image: picture, png: png, filename: ShareImage.filename,
             alt: alt.jsTrimmed()))
-        onClose()
       } label: {
         Label("Write a post with it", systemImage: Glyph.newPost)
       }

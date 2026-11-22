@@ -150,7 +150,11 @@ public struct ToastStack: View {
             RoundedRectangle(cornerRadius: theme.radiusLg).fill(toast.danger ? Measure.Toast.dangerFill.color : theme.btn)
           )
           .virgaShadow(theme.shadow(theme.tokens.shadowLg))
-          .transition(.opacity)
+          // `toast-in`: in from 6 points down as it fades in.
+          .transition(
+            AnyTransition.asymmetric(
+              insertion: AnyTransition.opacity.combined(with: AnyTransition.offset(y: Measure.Toast.rise)),
+              removal: AnyTransition.opacity))
       }
     }
     .padding(theme.hasSidebar ? Measure.Toast.inset : Measure.Toast.phoneInset)
@@ -159,6 +163,11 @@ public struct ToastStack: View {
     .animation(theme.motion.sheet, value: center.toasts)
     .accessibilityElement(children: .contain)
   }
+}
+
+extension Measure.Toast {
+  /// `@keyframes toast-in { from { opacity: 0; transform: translateY(6px) } }`
+  static let rise: CGFloat = 6
 }
 
 #Preview("Brand") {

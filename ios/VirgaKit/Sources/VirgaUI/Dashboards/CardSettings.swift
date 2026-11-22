@@ -3,8 +3,10 @@
 // A card's own settings, for the ones it takes: its title (at most 60;
 // empty keeps the report's name), its own period (it then stays put when
 // the period at the top changes), one kind of engagement, and how many rows
-// a list shows; Use the defaults clears them. Saved through the dashboards'
-// setWidgetOptions, which cleans them as the web does.
+// a list shows; Use the defaults clears them. Each choice is a field (the
+// web's select), the title focused as it opens, and Cancel and Save are the
+// dialog's foot. Saved through the dashboards' setWidgetOptions, which
+// cleans them as the web does.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -26,47 +28,54 @@ struct CardSettings: View {
 
   var body: some View {
     let takes = def.options ?? []
-    DialogForm {
-      if takes.contains("title") {
-        FieldStack("Title") {
-          TextField(def.name, text: $title)
-            .virgaField()
-            .onChange(of: title) { _, next in if next.count > Layouts.cardTitleMax { title = String(next.prefix(Layouts.cardTitleMax)) } }
-            .accessibilityIdentifier("card-title")
-          FieldHint("Leave it empty to keep “\(def.name)”.")
+    DialogFrame(title: "\(def.name) settings", onClose: done, autofocus: takes.contains("title")) {
+      DialogForm {
+        if takes.contains("title") {
+          FieldStack("Title") {
+            VirgaTextField(def.name, text: $title)
+              .virgaField()
+              .dialogAutofocus()
+              .submitLabel(.done)
+              .onSubmit { save(draft) }
+              .onChange(of: title) { _, next in if next.count > Layouts.cardTitleMax { title = String(next.prefix(Layouts.cardTitleMax)) } }
+              .accessibilityIdentifier("card-title")
+            FieldHint("Leave it empty to keep “\(def.name)”.")
+          }
+        }
+        if takes.contains("period") {
+          FieldStack("Period") {
+            picker("Period", $period, [("", "The dashboard’s period")] + Analytics.analyticsPeriods.map { ($0.key, Periods.periodWindowWord($0)) })
+            FieldHint("A card with its own period stays put when the period at the top changes, and says which it is.")
+          }
+        }
+        if takes.contains("kind") {
+          FieldStack("Engagement counted") {
+            picker(
+              "Engagement counted", $kind,
+              [("", "Likes, reposts, replies and quotes")] + Layouts.cardKinds.map { ($0, "\(WidgetParts.kindNoun[$0] ?? $0) only") })
+          }
+        }
+        if takes.contains("rows") {
+          FieldStack("Rows") {
+            picker("Rows", $rows, [("", "What fits the card’s size")] + Layouts.cardRows.map { ("\($0)", "\($0)") })
+          }
+        }
+        // A reset is a link action, under the fields it clears, so the foot
+        // keeps to Cancel and Save.
+        if card.options.map({ $0.jsonValue != .object([:]) }) ?? false {
+          Button {
+            save(.object([:]))
+          } label: {
+            Label("Use the defaults", systemImage: Glyph.rebuild)
+          }
+          .buttonStyle(.linkAction)
         }
       }
-      if takes.contains("period") {
-        FieldStack("Period") {
-          picker($period, [("", "The dashboard’s period")] + Analytics.analyticsPeriods.map { ($0.key, Periods.periodWindowWord($0)) })
-          FieldHint("A card with its own period stays put when the period at the top changes, and says which it is.")
-        }
-      }
-      if takes.contains("kind") {
-        FieldStack("Engagement counted") {
-          picker($kind, [("", "Likes, reposts, replies and quotes")] + Layouts.cardKinds.map { ($0, "\(WidgetParts.kindNoun[$0] ?? $0) only") })
-        }
-      }
-      if takes.contains("rows") {
-        FieldStack("Rows") {
-          picker($rows, [("", "What fits the card’s size")] + Layouts.cardRows.map { ("\($0)", "\($0)") })
-        }
-      }
-      if card.options.map({ $0.jsonValue != .object([:]) }) ?? false {
-        Button {
-          save(.object([:]))
-        } label: {
-          Label("Use the defaults", systemImage: Glyph.rebuild)
-        }
-        .buttonStyle(.linkAction)
-      }
-      HStack(spacing: Measure.Dialog.actionsGap) {
-        Spacer(minLength: 0)
-        Button("Cancel", action: done).buttonStyle(.virga)
-        Button("Save") { save(draft) }
-          .buttonStyle(.virga(.primary))
-          .accessibilityIdentifier("card-settings-save")
-      }
+    } actions: {
+      Button("Cancel", action: done).buttonStyle(.virga)
+      Button("Save") { save(draft) }
+        .buttonStyle(.virga(.primary))
+        .accessibilityIdentifier("card-settings-save")
     }
     .onAppear {
       title = card.options?.title ?? ""
@@ -90,15 +99,10 @@ struct CardSettings: View {
     done()
   }
 
-  private func picker(_ value: Binding<String>, _ choices: [(String, String)]) -> some View {
-    Picker("", selection: value) {
-      ForEach(choices, id: \.0) { choice in
-        Text(choice.1).tag(choice.0)
-      }
-    }
-    .pickerStyle(.menu)
-    .labelsHidden()
-    .tint(theme.ink)
+  /// `<select class="input">`: the kit's VirgaSelect, the whole width.
+  private func picker(_ label: String, _ value: Binding<String>, _ choices: [(String, String)]) -> some View {
+    let options: [SelectChoice<String>] = choices.map { SelectChoice($0.0, $0.1) }
+    return VirgaSelect(label, selection: value, options: options)
   }
 }
 #endif

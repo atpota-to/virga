@@ -11,8 +11,10 @@
 // sits in says what it is. A custom ToggleStyle can't see `.labelsHidden()`,
 // so the style itself leaves the label out.
 //
-// VirgaCheckStyle: a checkbox with its words beside it (`.check`), the box
-// in the accent when ticked.
+// VirgaCheckStyle: a checkbox with its words beside it (`.check`: a 16-point
+// box, 8 from its words, centred on them), the box in the accent when
+// ticked. The terms page's is bigger, 12 from its words and level with
+// their first line (`.terms-check`): `.virgaTermsCheck`.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -65,7 +67,8 @@ struct SwitchBody: View {
       }
       .frame(width: width, height: height)
       .animation(theme.motion.knob, value: on)
-      .touchTarget()
+      // Laid out 40 × 24, as `.switch` is; pressed through 44 each way.
+      .contentShape(Rectangle().inset(by: -max(0, (Measure.Touch.target - height) / 2)))
     }
     .buttonStyle(.plain)
     .virgaFocusOutline(Capsule())
@@ -78,40 +81,44 @@ struct SwitchBody: View {
 }
 
 public struct VirgaCheckStyle: ToggleStyle {
-  public init() {}
+  /// The terms page's (`.terms-check`), not the kit's (`.check`).
+  var terms: Bool
+
+  public init() {
+    self.terms = false
+  }
+
+  init(terms: Bool) {
+    self.terms = terms
+  }
 
   public func makeBody(configuration: Configuration) -> some View {
-    CheckBody(configuration: configuration)
+    CheckBody(configuration: configuration, terms: terms)
   }
 }
 
 extension ToggleStyle where Self == VirgaCheckStyle {
+  /// `.check`: a 16-point box, 8 from its words, centred on them.
   public static var virgaCheck: VirgaCheckStyle { VirgaCheckStyle() }
+  /// `.terms-check`: an 18-point box, 12 from its words, 1 down from the
+  /// top of their first line.
+  public static var virgaTermsCheck: VirgaCheckStyle { VirgaCheckStyle(terms: true) }
 }
 
 struct CheckBody: View {
   @Environment(\.virgaTheme) private var theme
   let configuration: ToggleStyleConfiguration
+  let terms: Bool
 
   var body: some View {
-    let box = Measure.Legal.checkBox
+    let box = terms ? Measure.Legal.checkBox : theme.points(ThemeKit.checkboxSize)
+    let gap = terms ? Measure.Legal.checkGap : theme.points(ThemeKit.checkGap)
     Button {
       configuration.isOn.toggle()
     } label: {
-      HStack(alignment: .top, spacing: Measure.Legal.checkGap) {
-        ZStack {
-          RoundedRectangle(cornerRadius: theme.radiusSm / 2)
-            .fill(configuration.isOn ? theme.accent : theme.surface)
-          RoundedRectangle(cornerRadius: theme.radiusSm / 2)
-            .strokeBorder(configuration.isOn ? theme.accent : theme.line2, lineWidth: 1)
-          if configuration.isOn {
-            Image(systemName: Glyph.check)
-              .font(.system(size: box * 0.6, weight: .bold))
-              .foregroundStyle(theme.onAccent)
-          }
-        }
-        .frame(width: box, height: box)
-        .padding(.top, Measure.Legal.checkSpaceAbove)
+      HStack(alignment: terms ? .top : .center, spacing: gap) {
+        CheckBox(isOn: configuration.isOn, side: box)
+          .padding(.top, terms ? Measure.Legal.checkSpaceAbove : 0)
         configuration.label
           .frame(maxWidth: .infinity, alignment: .leading)
       }
@@ -123,6 +130,31 @@ struct CheckBody: View {
     .accessibilityRepresentation {
       Toggle(isOn: configuration.$isOn) { configuration.label }
     }
+  }
+}
+
+/// The browser's checkbox (`input[type='checkbox']` with `accent-color`),
+/// drawn: `side` square, a 1-point edge in --line-2, filled with the accent
+/// and ticked in --on-accent when on.
+struct CheckBox: View {
+  @Environment(\.virgaTheme) private var theme
+  let isOn: Bool
+  let side: CGFloat
+
+  var body: some View {
+    let shape = RoundedRectangle(cornerRadius: Measure.Check.radius)
+    ZStack {
+      shape
+        .fill(isOn ? theme.accent : theme.surface)
+      shape
+        .strokeBorder(isOn ? theme.accent : theme.line2, lineWidth: Measure.Check.edge)
+      if isOn {
+        Image(systemName: Glyph.check)
+          .font(.system(size: side * Measure.Check.tickShare, weight: .bold))
+          .foregroundStyle(theme.onAccent)
+      }
+    }
+    .frame(width: side, height: side)
   }
 }
 

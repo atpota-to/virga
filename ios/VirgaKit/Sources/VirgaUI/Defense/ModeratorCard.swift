@@ -47,9 +47,9 @@ struct ModeratorCard: View {
     ) {
       if !link.isPresent {
         if let error {
-          Callout(tone: .danger) { Text(error) }
+          Callout(tone: .danger, error)
         } else {
-          EmptyState("Reading…")
+          ToolEmptyLine("Reading…")
         }
       } else if let handle {
         if linked {
@@ -72,7 +72,7 @@ struct ModeratorCard: View {
         Callout { Text("Virga’s moderator isn’t set up on this server yet.") }
       }
       if link.isPresent, let error {
-        Callout(tone: .danger) { Text(error) }
+        Callout(tone: .danger, error)
           .padding(.top, theme.space4)
       }
     }
@@ -95,11 +95,13 @@ struct ModeratorCard: View {
     words += AttributedString(" from this account; “help” lists what it does.")
     let chosen = link?["listId"].map(\.jsString) ?? ""
     let value = all.contains { DefenseListRows.id($0).jsEquals(chosen) } ? chosen : ""
+    let choices: [SelectChoice<String>] =
+      [SelectChoice("", "Ask me which")] + all.map { SelectChoice(DefenseListRows.id($0), DefenseListRows.name($0)) }
     return VStack(alignment: .leading, spacing: theme.space3) {
       Text(words).virgaText(.textBase).foregroundStyle(theme.ink2).tint(theme.ink).fixedSize(horizontal: false, vertical: true)
       if all.count > 1 {
         FieldStack("“block @someone” adds to") {
-          Picker(
+          VirgaSelect(
             "“block @someone” adds to",
             selection: Binding(
               get: { value },
@@ -108,17 +110,9 @@ struct ModeratorCard: View {
                   _ = try await DefenseService.chooseLinkList(lists.requester, next.isEmpty ? nil : .string(next))
                   await load()
                 }
-              })
-          ) {
-            Text("Ask me which").tag("")
-            ForEach(Array(all.enumerated()), id: \.offset) { _, l in
-              Text(DefenseListRows.name(l)).tag(DefenseListRows.id(l))
-            }
-          }
-          .pickerStyle(.menu)
-          .tint(theme.ink)
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .virgaField()
+              }),
+            options: choices
+          )
           .disabled(busy)
         }
         .frame(maxWidth: Measure.Defense.moderatorField, alignment: .leading)
@@ -134,9 +128,12 @@ struct ModeratorCard: View {
     send += AttributedString(" in a DM, from this account, within fifteen minutes:")
     return VStack(alignment: .leading, spacing: theme.space3) {
       Text(send).virgaText(.textBase).foregroundStyle(theme.ink2).tint(theme.ink).fixedSize(horizontal: false, vertical: true)
+      // 1.125rem, which grows with Dynamic Type as a rem does with the
+      // browser's text size; its tracking an em of that.
+      let codeSize = theme.scaled(Measure.Defense.codeSize)
       Text("link \(code)")
-        .font(.system(size: Measure.Defense.codeSize, design: .monospaced))
-        .tracking(Measure.Defense.codeSize * Measure.Defense.codeTracking)
+        .font(.system(size: codeSize, design: .monospaced))
+        .tracking(codeSize * Measure.Defense.codeTracking)
         .foregroundStyle(theme.ink)
         .textSelection(.enabled)
         .padding(.vertical, Measure.Defense.codePaddingV)
@@ -147,6 +144,11 @@ struct ModeratorCard: View {
     }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("defense-moderator-code")
+    // `role="status"`: the code to send is read out when it arrives, with
+    // the rest of what the region says.
+    .toolAnnounces(
+      "Send this to @\(handle) in a DM, from this account, within fifteen minutes:\nlink \(code)\nIt works only from this account, and only once. This page notices when it lands.",
+      onAppear: true)
   }
 
   /// `load()`: the link as the server has it.

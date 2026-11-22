@@ -21,8 +21,9 @@ struct ToolHeader {
     PageHeaderModel(title: tool.name, sub: sub ?? tool.desc, access: [tool.access], crumbs: [Crumb("Tools", to: "/tools")])
   }
 
-  static func header(_ tool: ToolEntry, sub: String? = nil, actions: AnyView? = nil) -> PageHeader {
-    PageHeader(model(tool, sub: sub), actions: actions)
+  /// `period`: the period picker, which PageHeader puts first on a phone.
+  static func header(_ tool: ToolEntry, sub: String? = nil, period: AnyView? = nil, actions: AnyView? = nil) -> PageHeader {
+    PageHeader(model(tool, sub: sub), period: period, actions: actions)
   }
 }
 
@@ -108,7 +109,8 @@ struct ToolsSectionView: View {
       VStack(alignment: .leading, spacing: Measure.Tools.sectionHeadGap) {
         Text(section.title)
           .virgaText(
-            size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, tracking: ThemeKit.cardTitleTracking)
+            size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, lineHeight: ThemeKit.headingLineHeight,
+            tracking: ThemeKit.cardTitleTracking)
           .foregroundStyle(theme.ink)
           .accessibilityAddTraits(.isHeader)
         Text(section.desc)
@@ -193,8 +195,9 @@ struct ToolRow: View {
     return FlowLayout(spacing: 0, lineSpacing: 0, alignment: .center) {
       AccessLine([tool.access], prefix: planned ? "Not built yet." : nil)
       if !planned, let stat, !stat.isEmpty {
+        // The access item's 5-point gap and the dot's own 1: 6 after the word.
         Text("·")
-          .padding(.leading, theme.points(ThemeKit.metaDotMargin.left))
+          .padding(.leading, theme.points(ThemeKit.metaItemGap) + theme.points(ThemeKit.metaDotMargin.left))
           .padding(.trailing, theme.points(ThemeKit.metaDotMargin.right))
           .accessibilityHidden(true)
         Text(stat)

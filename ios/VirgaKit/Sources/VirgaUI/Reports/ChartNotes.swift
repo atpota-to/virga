@@ -6,7 +6,8 @@
 // dashed rule with a diamond, named in the readout and listed under the
 // chart; the follower charts mark the follower milestones by themselves.
 // One AnnotationsModel per account (ChartNotesModels), so a note added on
-// one report shows on every chart at once.
+// one report shows on every chart at once. Return in What happened adds
+// the note, as the web's form does.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -53,15 +54,20 @@ struct ChartNotes: View {
       if notes.list.isEmpty {
         EmptyState("No notes yet. Follower milestones are marked on the follower charts by themselves.")
       } else {
+        // `.chart-notes-list`: 18 under the form, on a rule in ink; each row
+        // at least 46 tall, its day in a column of 108 (84 at 760 and under).
         VStack(alignment: .leading, spacing: 0) {
           ForEach(notes.list.reversed(), id: \.id) { note in
-            HStack(spacing: theme.space3) {
+            HStack(spacing: Measure.Reports.notesGap) {
               Text(Time.formatDateShort(Periods.dayStartMs(note.day)))
-                .virgaText(.textSm)
+                .virgaText(.textBase)
                 .foregroundStyle(theme.muted)
+                .lineLimit(1)
+                .frame(width: theme.isTablet ? Measure.Reports.narrowNotesDay : Measure.Reports.notesDay, alignment: .leading)
               Text(note.label)
                 .virgaText(.textBase)
                 .foregroundStyle(theme.ink)
+                .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
               Button {
                 notes.remove(note.id)
@@ -71,10 +77,13 @@ struct ChartNotes: View {
               .buttonStyle(.virga(.ghost, size: .small, icon: true))
               .accessibilityLabel("Remove the note “\(note.label)”")
             }
-            .padding(.vertical, theme.rowPad)
+            .frame(minHeight: Measure.Reports.notesRowMinHeight)
             .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
           }
         }
+        .overlay(alignment: .top) { Rectangle().fill(theme.rule).frame(height: 1) }
+        .padding(.top, Measure.Reports.notesListSpaceAbove)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("chart-notes-list")
       }
     }
@@ -85,8 +94,11 @@ struct ChartNotes: View {
     DayField(label: "Day", day: $day, earliest: nil, latest: today)
     VStack(alignment: .leading, spacing: theme.space2) {
       FieldLabel("What happened")
-      TextField("Changed my handle, a post went round, a week away…", text: $label)
+      VirgaTextField("Changed my handle, a post went round, a week away…", text: $label)
         .virgaField()
+        // The fields are a form: Return adds the note, as Add note does.
+        .submitLabel(.done)
+        .onSubmit(addNote)
         .onChange(of: label) { _, next in
           if next.count > Annotations.annotationLabelMax { label = String(next.prefix(Annotations.annotationLabelMax)) }
         }
@@ -94,11 +106,17 @@ struct ChartNotes: View {
     }
   }
 
+  /// The form's submit: add the note when it is ready, and clear the words.
+  private func addNote() {
+    let ready = !label.jsTrimmed().isEmpty && Periods.dayStartMs(day).isFinite
+    guard ready else { return }
+    ChartNotesModels.model(did, store: app.stores.keyValue).add(day, label)
+    label = ""
+  }
+
   private func add(_ notes: AnnotationsModel, _ ready: Bool) -> some View {
     Button {
-      guard ready else { return }
-      notes.add(day, label)
-      label = ""
+      addNote()
     } label: {
       Label("Add note", systemImage: Glyph.plus)
     }

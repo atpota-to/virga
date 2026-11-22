@@ -152,7 +152,8 @@ struct SettingsSectionView<Content: View>: View {
           HStack(alignment: .firstTextBaseline, spacing: theme.space4) {
             Text(title)
               .virgaText(
-                size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, tracking: ThemeKit.cardTitleTracking)
+                size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, lineHeight: ThemeKit.headingLineHeight,
+                tracking: ThemeKit.cardTitleTracking)
               .foregroundStyle(theme.ink)
               .accessibilityAddTraits(.isHeader)
             Spacer(minLength: 0)
@@ -192,6 +193,28 @@ struct SettingsBody<Content: View>: View {
   }
 }
 
+/// What sits in a settings row's control place, which says how far it is
+/// drawn up to centre it on the name's first line (`.settings-row-control`'s
+/// margin-top on a touch screen).
+enum SettingsControlKind {
+  /// A button or a field: 40 tall on a touch screen.
+  case button
+  /// A Segmented: its keys are 44.
+  case segmented
+  /// A switch: its capsule is 24, in the middle of its 44-point target.
+  case toggle
+  /// A badge, or a word or two of state: already on the name's line.
+  case state
+  /// Prose in the control's place: read from the top of its column.
+  case prose
+}
+
+extension Measure.Settings {
+  /// `.settings-row:has(> .settings-row-control > :is(.switch, .badge,
+  /// .settings-row-state):only-child) { gap: 2px 24px }`, from 760 down.
+  static let compactColumnGap: CGFloat = 24
+}
+
 /// `.settings-row`: a setting's name and the line about it, and its control.
 struct SettingsRow<Control: View>: View {
   @Environment(\.virgaTheme) private var theme
@@ -200,33 +223,57 @@ struct SettingsRow<Control: View>: View {
   let block: Bool
   /// A switch or a word or two of state: kept on the name's line on a phone.
   let compactControl: Bool
+  let kind: SettingsControlKind
   let control: Control
 
-  init(label: String, hint: AnyView? = nil, block: Bool = false, compactControl: Bool = false, @ViewBuilder control: () -> Control) {
+  /// - Parameter kind: what the control is; a switch where `compactControl`
+  ///   is set, else a button or a field.
+  init(
+    label: String, hint: AnyView? = nil, block: Bool = false, compactControl: Bool = false, kind: SettingsControlKind? = nil,
+    @ViewBuilder control: () -> Control
+  ) {
     self.label = label
     self.hint = hint
     self.block = block
     self.compactControl = compactControl
+    self.kind = kind ?? (compactControl ? .toggle : .button)
     self.control = control()
   }
 
-  init(label: String, hint: String?, block: Bool = false, compactControl: Bool = false, @ViewBuilder control: () -> Control) {
-    self.init(label: label, hint: hint.map { AnyView(Text($0)) }, block: block, compactControl: compactControl, control: control)
+  init(
+    label: String, hint: String?, block: Bool = false, compactControl: Bool = false, kind: SettingsControlKind? = nil,
+    @ViewBuilder control: () -> Control
+  ) {
+    self.init(
+      label: label, hint: hint.map { AnyView(Text($0)) }, block: block, compactControl: compactControl, kind: kind, control: control)
   }
 
   var body: some View {
-    let under = block || (theme.isTablet && !compactControl)
     Group {
-      if under {
+      if block || (theme.isTablet && !compactControl) {
         VStack(alignment: .leading, spacing: Measure.Settings.rowGap) {
           words
           control
+        }
+      } else if theme.isTablet {
+        // A switch or a state stays on the name's line at the right; the
+        // line about it runs under both.
+        VStack(alignment: .leading, spacing: Measure.Settings.rowTextGap) {
+          HStack(alignment: .top, spacing: Measure.Settings.compactColumnGap) {
+            name
+            Spacer(minLength: 0)
+            placedControl
+          }
+          if let hint {
+            hintView(hint)
+              .frame(maxWidth: theme.measure, alignment: .leading)
+          }
         }
       } else {
         HStack(alignment: .top, spacing: Measure.Settings.rowColumnGap) {
           words
           Spacer(minLength: 0)
-          control
+          placedControl
         }
       }
     }
@@ -235,16 +282,54 @@ struct SettingsRow<Control: View>: View {
     .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
   }
 
+  /// `--settings-line`: the name's first line, `--text-md` × 1.45.
+  private var nameLine: CGFloat {
+    theme.textMd * CGFloat(Measure.Settings.labelLineHeight)
+  }
+
+  /// The control's margin-top: `(--settings-line − its height) / 2`, which
+  /// draws a control taller than the line up to centre it on the name.
+  private var rise: CGFloat {
+    switch kind {
+    case .button: return (nameLine - theme.points(ThemeKit.touchButtonHeight)) / 2
+    case .segmented: return (nameLine - theme.points(ThemeKit.touchSegmentedKeyHeight)) / 2
+    case .toggle: return (nameLine - theme.points(ThemeKit.switchHeight)) / 2 - overhang
+    case .state, .prose: return 0
+    }
+  }
+
+  /// How far a switch's 44-point target reaches past its 24-point capsule,
+  /// above and below. The row is laid out round the capsule, as the web's
+  /// is, so a phone's line under the name and the switch isn't pushed down.
+  private var overhang: CGFloat {
+    kind == .toggle ? max(0, (Measure.Touch.target - theme.points(ThemeKit.switchHeight)) / 2) : 0
+  }
+
+  /// The control where the row puts it: drawn up onto the name's line.
+  private var placedControl: some View {
+    control
+      .padding(.top, rise)
+      .padding(.bottom, -overhang)
+  }
+
+  private var name: some View {
+    Text(label)
+      .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Settings.labelLineHeight)
+      .foregroundStyle(theme.ink)
+  }
+
+  private func hintView(_ hint: AnyView) -> some View {
+    hint
+      .virgaText(.textSm)
+      .foregroundStyle(theme.muted)
+      .fixedSize(horizontal: false, vertical: true)
+  }
+
   private var words: some View {
     VStack(alignment: .leading, spacing: Measure.Settings.rowTextGap) {
-      Text(label)
-        .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Settings.labelLineHeight)
-        .foregroundStyle(theme.ink)
+      name
       if let hint {
-        hint
-          .virgaText(.textSm)
-          .foregroundStyle(theme.muted)
-          .fixedSize(horizontal: false, vertical: true)
+        hintView(hint)
       }
     }
     .frame(maxWidth: theme.measure, alignment: .leading)
@@ -311,7 +396,8 @@ struct AppearanceSection: View {
       SettingsRow(
         label: "Contrast",
         hint:
-          "High darkens the words and the rules, takes the sky away and thickens the focus ring. Match system follows your device’s own setting."
+          "High darkens the words and the rules, takes the sky away and thickens the focus ring. Match system follows your device’s own setting.",
+        kind: .segmented
       ) {
         Segmented(
           label: "Contrast",
@@ -324,7 +410,7 @@ struct AppearanceSection: View {
         ) { preferences.setPref(\.contrast, $0) }
         .accessibilityIdentifier("contrast")
       }
-      SettingsRow(label: "Density", hint: "Compact fits more on a screen.") {
+      SettingsRow(label: "Density", hint: "Compact fits more on a screen.", kind: .segmented) {
         Segmented(
           label: "Density",
           options: [
@@ -335,7 +421,10 @@ struct AppearanceSection: View {
       }
       // A phone, or a narrow tablet, has no sidebar to fold.
       if chrome != .phone {
-        SettingsRow(label: "Sidebar", hint: "Folded, it’s a rail of icons, which gives the page more room. The button at its top does the same.") {
+        SettingsRow(
+          label: "Sidebar", hint: "Folded, it’s a rail of icons, which gives the page more room. The button at its top does the same.",
+          kind: .segmented
+        ) {
           Segmented(
             label: "Sidebar",
             options: [SegmentedOption(Preferences.Sidebar.expanded, "Open"), SegmentedOption(Preferences.Sidebar.collapsed, "Folded")],
@@ -371,6 +460,18 @@ struct AppearanceSection: View {
     let sample = AppLocale.localeSample(active)
     let regionStart = Self.weekStartNames[AppLocale.regionWeekStart(active)] ?? ""
     let system = AppLocale.systemLocale(Locale.preferredLanguages)
+    let regions: [(Preferences.LocaleChoice, String)] = AppLocale.localeChoices.compactMap { (tag: String) -> (Preferences.LocaleChoice, String)? in
+      guard let choice = Preferences.LocaleChoice(rawValue: tag) else { return nil }
+      return (choice, "\(Self.regionName(tag)): \(AppLocale.localeSample(tag))")
+    }
+    let localeOptions: [(Preferences.LocaleChoice, String)] =
+      [(Preferences.LocaleChoice.system, "This browser’s region (\(Self.regionName(system)))")] + regions
+    let weekOptions: [(Preferences.WeekStart, String)] = [
+      (Preferences.WeekStart.system, "Week starts as in this region (\(regionStart))"),
+      (Preferences.WeekStart.monday, "Week starts Monday"),
+      (Preferences.WeekStart.sunday, "Week starts Sunday"),
+      (Preferences.WeekStart.saturday, "Week starts Saturday"),
+    ]
     return SettingsRow(
       label: "Numbers and dates",
       hint: AnyView(
@@ -380,50 +481,129 @@ struct AppearanceSection: View {
         }),
       block: true
     ) {
-      FlowLayout(spacing: Measure.Settings.controlGap, lineSpacing: Measure.Settings.controlGap) {
-        Picker(
-          "Number and date format",
-          selection: Binding(get: { preferences.prefs.locale }, set: { preferences.setPref(\.locale, $0) })
-        ) {
-          Text("This browser’s region (\(Self.regionName(system)))").tag(Preferences.LocaleChoice.system)
-          ForEach(AppLocale.localeChoices, id: \.self) { tag in
-            if let choice = Preferences.LocaleChoice(rawValue: tag) {
-              Text("\(Self.regionName(tag)): \(AppLocale.localeSample(tag))").tag(choice)
-            }
-          }
+      SettingsSelects(
+        basis: Measure.Settings.selectMinWidth, maxWidth: theme.isTablet ? .infinity : Measure.Settings.selectMaxWidth,
+        spacing: Measure.Settings.controlGap
+      ) {
+        SettingsSelect(label: "Number and date format", options: localeOptions, selection: preferences.prefs.locale) {
+          preferences.setPref(\.locale, $0)
         }
-        .pickerStyle(.menu)
-        .virgaField()
-        .frame(maxWidth: Measure.Settings.selectMaxWidth)
-        Picker(
-          "Week starts on",
-          selection: Binding(get: { preferences.prefs.weekStart }, set: { preferences.setPref(\.weekStart, $0) })
-        ) {
-          Text("Week starts as in this region (\(regionStart))").tag(Preferences.WeekStart.system)
-          Text("Week starts Monday").tag(Preferences.WeekStart.monday)
-          Text("Week starts Sunday").tag(Preferences.WeekStart.sunday)
-          Text("Week starts Saturday").tag(Preferences.WeekStart.saturday)
+        SettingsSelect(label: "Week starts on", options: weekOptions, selection: preferences.prefs.weekStart) {
+          preferences.setPref(\.weekStart, $0)
         }
-        .pickerStyle(.menu)
-        .virgaField()
-        .frame(maxWidth: Measure.Settings.selectMaxWidth)
       }
     }
   }
 }
 
+/// `.settings-row-control > select.input`: the kit's VirgaSelect (the chosen
+/// option's words in ink on one line, the chevron at its right, in the
+/// field's chrome, the whole field opening the system's menu with the
+/// chosen one ticked), over a preference and its setter.
+struct SettingsSelect<Value: Hashable>: View {
+  let label: String
+  let options: [(Value, String)]
+  let selection: Value
+  let onChange: (Value) -> Void
+
+  var body: some View {
+    let choices: [SelectChoice<Value>] = options.map { SelectChoice($0.0, $0.1) }
+    VirgaSelect(label, selection: Binding(get: { selection }, set: { onChange($0) }), options: choices)
+  }
+}
+
+/// The selects of a row, as `flex: 1 1 220px; max-width: 320px` lays them
+/// out in a wrapping row 8 apart: as many to a line as fit at 220, each
+/// taking an even share of its line up to 320 (the whole line from 760
+/// down), from the left.
+struct SettingsSelects: Layout {
+  var basis: CGFloat
+  var maxWidth: CGFloat
+  var spacing: CGFloat
+
+  private func lines(_ count: Int, width: CGFloat) -> [[Int]] {
+    var out: [[Int]] = []
+    var line: [Int] = []
+    var used: CGFloat = 0
+    for index in 0..<count {
+      let extra = line.isEmpty ? basis : spacing + basis
+      if !line.isEmpty && used + extra > width {
+        out.append(line)
+        line = [index]
+        used = basis
+      } else {
+        line.append(index)
+        used += extra
+      }
+    }
+    if !line.isEmpty { out.append(line) }
+    return out
+  }
+
+  private func share(_ count: Int, width: CGFloat) -> CGFloat {
+    let even = (width - spacing * CGFloat(max(0, count - 1))) / CGFloat(max(1, count))
+    return max(0, min(even, maxWidth))
+  }
+
+  private func available(_ proposal: ProposedViewSize, _ count: Int) -> CGFloat {
+    if let proposed = proposal.width, proposed.isFinite { return proposed }
+    return basis * CGFloat(count) + spacing * CGFloat(max(0, count - 1))
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    let across = available(proposal, subviews.count)
+    var height: CGFloat = 0
+    var widest: CGFloat = 0
+    for (row, line) in lines(subviews.count, width: across).enumerated() {
+      let each = share(line.count, width: across)
+      let tallest = line.map { subviews[$0].sizeThatFits(ProposedViewSize(width: each, height: nil)).height }.max() ?? 0
+      height += tallest + (row > 0 ? spacing : 0)
+      widest = max(widest, each * CGFloat(line.count) + spacing * CGFloat(max(0, line.count - 1)))
+    }
+    return CGSize(width: widest, height: height)
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    var y = bounds.minY
+    for line in lines(subviews.count, width: bounds.width) {
+      let each = share(line.count, width: bounds.width)
+      let tallest = line.map { subviews[$0].sizeThatFits(ProposedViewSize(width: each, height: nil)).height }.max() ?? 0
+      var x = bounds.minX
+      for index in line {
+        subviews[index].place(at: CGPoint(x: x, y: y), anchor: .topLeading, proposal: ProposedViewSize(width: each, height: tallest))
+        x += each + spacing
+      }
+      y += tallest + spacing
+    }
+  }
+}
+
 /// The sky's tiles: the wash each paints, with the picture of its hour on
-/// it; the chosen one ringed in the accent. A radio group.
+/// it; the chosen one ringed in the accent. A radio group: the arrows, Home
+/// and End on a hardware keyboard move and choose (radioKeys.js).
 struct SkyChoices: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(PreferencesModel.self) private var preferences
+  @FocusState private var focused: Int?
 
   var body: some View {
-    let columns = theme.isPhone ? 3 : max(1, Int((min(theme.windowWidth, Measure.Settings.skyMaxWidth) + Measure.Settings.skyColumnGap) / (Measure.Settings.skyMinWidth + Measure.Settings.skyColumnGap)))
-    let grid = Array(repeating: GridItem(.flexible(), spacing: Measure.Settings.skyColumnGap, alignment: .top), count: min(columns, 5))
-    LazyVGrid(columns: grid, alignment: .leading, spacing: Measure.Settings.skyRowGap) {
-      ForEach(Sky.skyChoices, id: \.self) { choice in
-        SkyTile(choice: choice, chosen: preferences.prefs.sky == choice) { preferences.setPref(\.sky, choice) }
+    let choices = Sky.skyChoices
+    let chosen = choices.firstIndex(of: preferences.prefs.sky) ?? -1
+    ChoiceGrid(
+      minWidth: Measure.Settings.skyMinWidth, maxWidth: Measure.Settings.skyMaxWidth, spacing: Measure.Settings.skyColumnGap,
+      rowSpacing: Measure.Settings.skyRowGap, columns: theme.isPhone ? Measure.Settings.phoneChoiceColumns : nil
+    ) {
+      ForEach(Array(choices.enumerated()), id: \.offset) { index, choice in
+        SkyTile(choice: choice, chosen: index == chosen, place: RadioKeyPress.place(index, of: choices.count)) {
+          preferences.setPref(\.sky, choice)
+        }
+        .focused($focused, equals: index)
+        .onKeyPress(keys: RadioKeyPress.keys) { press in
+          guard let target = RadioKeys.radioKeyTarget(RadioKeyPress.name(press.key), chosen, choices.count) else { return .ignored }
+          preferences.setPref(\.sky, choices[target])
+          focused = target
+          return .handled
+        }
       }
     }
     .frame(maxWidth: Measure.Settings.skyMaxWidth, alignment: .leading)
@@ -437,6 +617,8 @@ struct SkyTile: View {
   @Environment(PreferencesModel.self) private var preferences
   let choice: SkyChoice
   let chosen: Bool
+  /// "2 of 5": its place in the group, for VoiceOver.
+  let place: String
   let action: () -> Void
 
   var body: some View {
@@ -450,6 +632,8 @@ struct SkyTile: View {
     let shape = RoundedRectangle(cornerRadius: Measure.Settings.skySwatchRadius)
     let name = AppearanceSection.skyNames[choice] ?? choice.rawValue
     let now = AppearanceSection.skyNames[SkyChoice(rawValue: preferences.effectiveSky.rawValue) ?? .day] ?? ""
+    // What the clock comes to at the moment, under its tile, and in its name.
+    let nowLine: String? = choice == .clock && chosen ? (preferences.systemDark ? "Night, as your device asks" : "\(now) now") : nil
     return Button(action: action) {
       VStack(alignment: .leading, spacing: Measure.Settings.skyChoiceGap) {
         ZStack {
@@ -471,8 +655,8 @@ struct SkyTile: View {
           Text(name)
             .virgaText(.textBase, weight: chosen ? VirgaWeight.semibold : VirgaWeight.medium, lineHeight: Measure.Settings.skyLineHeight)
             .foregroundStyle(theme.ink)
-          if choice == .clock && chosen {
-            Text(preferences.systemDark ? "Night, as your device asks" : "\(now) now")
+          if let nowLine {
+            Text(nowLine)
               .virgaText(.textSm, lineHeight: Measure.Settings.skyLineHeight)
               .foregroundStyle(theme.muted)
           }
@@ -482,24 +666,39 @@ struct SkyTile: View {
     }
     .buttonStyle(.plain)
     .virgaFocusOutline(shape)
-    .accessibilityLabel(name)
+    .accessibilityLabel(nowLine.map { "\(name), \($0)" } ?? name)
+    .accessibilityValue(place)
     .accessibilityAddTraits(chosen ? [.isSelected] : [])
     .accessibilityIdentifier("sky-\(choice.rawValue)")
   }
 }
 
 /// The accents: each a disc of its own colour in the page's own sky and
-/// contrast (ThemeTokens.swatch), the chosen one ringed. A radio group.
+/// contrast (ThemeTokens.swatch), the chosen one ringed. A radio group, as
+/// the sky's is.
 struct AccentChoices: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(PreferencesModel.self) private var preferences
+  @FocusState private var focused: Int?
 
   var body: some View {
-    let columns = theme.isPhone ? 3 : max(1, Int((min(theme.windowWidth, Measure.Settings.accentMaxWidth) + Measure.Settings.accentGap) / (Measure.Settings.accentMinWidth + Measure.Settings.accentGap)))
-    let grid = Array(repeating: GridItem(.flexible(), spacing: Measure.Settings.accentGap, alignment: .leading), count: min(columns, 6))
-    LazyVGrid(columns: grid, alignment: .leading, spacing: Measure.Settings.accentGap) {
-      ForEach(Preferences.accentChoices, id: \.self) { accent in
-        AccentChoice(accent: accent, chosen: preferences.prefs.accent == accent) { preferences.setPref(\.accent, accent) }
+    let choices = Preferences.accentChoices
+    let chosen = choices.firstIndex(of: preferences.prefs.accent) ?? -1
+    ChoiceGrid(
+      minWidth: Measure.Settings.accentMinWidth, maxWidth: Measure.Settings.accentMaxWidth, spacing: Measure.Settings.accentGap,
+      rowSpacing: Measure.Settings.accentGap, columns: theme.isPhone ? Measure.Settings.phoneChoiceColumns : nil
+    ) {
+      ForEach(Array(choices.enumerated()), id: \.offset) { index, accent in
+        AccentChoice(accent: accent, chosen: index == chosen, place: RadioKeyPress.place(index, of: choices.count)) {
+          preferences.setPref(\.accent, accent)
+        }
+        .focused($focused, equals: index)
+        .onKeyPress(keys: RadioKeyPress.keys) { press in
+          guard let target = RadioKeys.radioKeyTarget(RadioKeyPress.name(press.key), chosen, choices.count) else { return .ignored }
+          preferences.setPref(\.accent, choices[target])
+          focused = target
+          return .handled
+        }
       }
     }
     .frame(maxWidth: Measure.Settings.accentMaxWidth, alignment: .leading)
@@ -512,6 +711,8 @@ struct AccentChoice: View {
   @Environment(\.virgaTheme) private var theme
   let accent: Preferences.Accent
   let chosen: Bool
+  /// "2 of 6": its place in the group, for VoiceOver.
+  let place: String
   let action: () -> Void
 
   var body: some View {
@@ -544,8 +745,95 @@ struct AccentChoice: View {
     .buttonStyle(.plain)
     .virgaFocusOutline(Capsule())
     .accessibilityLabel(name)
+    .accessibilityValue(place)
     .accessibilityAddTraits(chosen ? [.isSelected] : [])
     .accessibilityIdentifier("accent-\(accent.rawValue)")
+  }
+}
+
+extension Measure.Settings {
+  /// `.sky-choices`, `.accent-choices { grid-template-columns: repeat(3,
+  /// minmax(0, 1fr)) }` from 560 down.
+  static let phoneChoiceColumns = 3
+}
+
+/// A radio group's keys on a hardware keyboard, by the names radioKeys.js
+/// reads (`event.key`).
+enum RadioKeyPress {
+  static let keys: Set<KeyEquivalent> = [.upArrow, .downArrow, .leftArrow, .rightArrow, .home, .end]
+
+  static func name(_ key: KeyEquivalent) -> String {
+    switch key {
+    case .upArrow: return "ArrowUp"
+    case .downArrow: return "ArrowDown"
+    case .leftArrow: return "ArrowLeft"
+    case .rightArrow: return "ArrowRight"
+    case .home: return "Home"
+    case .end: return "End"
+    default: return ""
+    }
+  }
+
+  /// "2 of 5".
+  static func place(_ index: Int, of count: Int) -> String {
+    "\(index + 1) of \(count)"
+  }
+}
+
+/// `grid-template-columns: repeat(auto-fill, minmax(min, 1fr))` over the
+/// grid's own width, held to `maxWidth`: as many columns as fit at `min`,
+/// sharing the width evenly; or `columns` of them (a phone's three). Each
+/// choice sits at the top of its row.
+struct ChoiceGrid: Layout {
+  var minWidth: CGFloat
+  var maxWidth: CGFloat
+  var spacing: CGFloat
+  var rowSpacing: CGFloat
+  var columns: Int?
+
+  private func gridWidth(_ proposal: ProposedViewSize) -> CGFloat {
+    if let proposed = proposal.width, proposed.isFinite { return min(proposed, maxWidth) }
+    return maxWidth
+  }
+
+  private func columnCount(_ across: CGFloat) -> Int {
+    if let columns { return max(1, columns) }
+    return max(1, Int(((across + spacing) / (minWidth + spacing)).rounded(.down)))
+  }
+
+  private func cellWidth(_ across: CGFloat, _ n: Int) -> CGFloat {
+    max(0, (across - spacing * CGFloat(n - 1)) / CGFloat(n))
+  }
+
+  private func rowHeights(_ subviews: Subviews, _ n: Int, _ side: CGFloat) -> [CGFloat] {
+    stride(from: 0, to: subviews.count, by: n).map { start -> CGFloat in
+      let end = min(start + n, subviews.count)
+      return (start..<end).map { subviews[$0].sizeThatFits(ProposedViewSize(width: side, height: nil)).height }.max() ?? 0
+    }
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    let across = gridWidth(proposal)
+    let n = columnCount(across)
+    let heights = rowHeights(subviews, n, cellWidth(across, n))
+    let tall = heights.reduce(0, +) + rowSpacing * CGFloat(max(0, heights.count - 1))
+    return CGSize(width: across, height: tall)
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    let across = min(bounds.width, maxWidth)
+    let n = columnCount(across)
+    let side = cellWidth(across, n)
+    var y = bounds.minY
+    for (row, height) in rowHeights(subviews, n, side).enumerated() {
+      for column in 0..<n {
+        let index = row * n + column
+        guard index < subviews.count else { break }
+        let x = bounds.minX + CGFloat(column) * (side + spacing)
+        subviews[index].place(at: CGPoint(x: x, y: y), anchor: .topLeading, proposal: ProposedViewSize(width: side, height: nil))
+      }
+      y += height + rowSpacing
+    }
   }
 }
 

@@ -21,18 +21,28 @@ public enum FocusPlacement: Sendable {
 
 struct FocusOutline<S: InsettableShape>: ViewModifier {
   @Environment(\.virgaTheme) private var theme
+  /// True inside a focusable control (a ButtonStyle's body, where the
+  /// modifier sits in the button's own label).
   @Environment(\.isFocused) private var isFocused
+  /// True when the control this is put on has focus: the modifier is
+  /// usually put on the Button or Menu itself, whose own focus the
+  /// environment above can't see (it reads the nearest focusable ancestor).
+  @FocusState private var focused: Bool
   let shape: S
   let placement: FocusPlacement
 
   func body(content: Content) -> some View {
     let width = theme.isHighContrast ? theme.points(ThemeKit.highContrastFocusOutlineWidth) : theme.points(ThemeKit.focusOutline)
     let offset = theme.points(ThemeKit.focusOutlineOffset)
-    let reach = placement == .outside ? offset + width : -offset
+    // CSS's outline starts `outline-offset` past the edge (inside for the
+    // negative one) and runs `width` outwards from there: 2 to 4 outside,
+    // or from 2 inside out to the edge (to 1 past it at high contrast's 3).
+    let reach = (placement == .outside ? offset : -offset) + width
     content
+      .focused($focused)
       .focusEffectDisabled()
       .overlay {
-        if isFocused {
+        if focused || isFocused {
           shape
             .inset(by: -reach)
             .strokeBorder(theme.color(ThemeKit.focusOutline), lineWidth: width)

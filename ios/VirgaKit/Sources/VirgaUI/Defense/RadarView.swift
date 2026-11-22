@@ -268,20 +268,24 @@ struct RadarCallout: View {
     let x = side * CGFloat(0.5 + point.x * reach)
     let top = side * min(0.78, max(0.02, CGFloat(0.5 + point.y * reach) - 0.04))
     let right = point.x < 0.12
-    VStack(alignment: .leading, spacing: Measure.Defense.calloutGap) {
-      Text(description.title)
-        .virgaText(.textSm, weight: VirgaWeight.semibold, lineHeight: Measure.Defense.calloutLineHeight)
-        .foregroundStyle(theme.ink)
-      ForEach(Array(description.lines.enumerated()), id: \.offset) { _, line in
-        Text(line)
+    // `width: max-content; max-width: min(260px, 60%)`: as wide as its
+    // words, up to the cap (the box's, its padding inside it).
+    let cap = min(Measure.Defense.calloutMax, side * Measure.Defense.calloutShare) - 2 * Measure.Defense.calloutPaddingH
+    RadarCalloutWidth(cap: cap) {
+      VStack(alignment: .leading, spacing: Measure.Defense.calloutGap) {
+        Text(description.title)
+          .virgaText(.textSm, weight: VirgaWeight.semibold, lineHeight: Measure.Defense.calloutLineHeight)
+          .foregroundStyle(theme.ink)
+        ForEach(Array(description.lines.enumerated()), id: \.offset) { _, line in
+          Text(line)
+        }
       }
+      .virgaText(.textSm, lineHeight: Measure.Defense.calloutLineHeight)
+      .foregroundStyle(theme.ink2)
+      .fixedSize(horizontal: false, vertical: true)
     }
-    .virgaText(.textSm, lineHeight: Measure.Defense.calloutLineHeight)
-    .foregroundStyle(theme.ink2)
-    .fixedSize(horizontal: false, vertical: true)
     .padding(.vertical, Measure.Defense.calloutPaddingV)
     .padding(.horizontal, Measure.Defense.calloutPaddingH)
-    .frame(maxWidth: min(Measure.Defense.calloutMax, side * Measure.Defense.calloutShare), alignment: .leading)
     .background(RoundedRectangle(cornerRadius: theme.radius).fill(theme.surface))
     .overlay(RoundedRectangle(cornerRadius: theme.radius).strokeBorder(theme.line, lineWidth: 1))
     .virgaShadow(theme.shadow(theme.tokens.shadow(.shadowMd) ?? []))
@@ -293,13 +297,80 @@ struct RadarCallout: View {
   }
 }
 
+/// One child as wide as its words up to `cap`, its lines wrapping there.
+struct RadarCalloutWidth: Layout {
+  var cap: CGFloat
+
+  private func width(_ subviews: Subviews) -> CGFloat {
+    guard let child = subviews.first else { return 0 }
+    return min(child.sizeThatFits(.unspecified).width, max(0, cap))
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    guard let child = subviews.first else { return .zero }
+    let w = width(subviews)
+    return CGSize(width: w, height: child.sizeThatFits(ProposedViewSize(width: w, height: nil)).height)
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    subviews.first?.place(at: bounds.origin, proposal: ProposedViewSize(width: bounds.width, height: nil))
+  }
+}
+
+/// `.radar-legend { flex-wrap: wrap; justify-content: center }`: the keys
+/// in lines, each line centred.
+struct RadarLegendFlow: Layout {
+  var spacing: CGFloat
+  var lineSpacing: CGFloat
+
+  private func lines(_ sizes: [CGSize], width: CGFloat) -> [(indices: [Int], width: CGFloat, height: CGFloat)] {
+    var out: [(indices: [Int], width: CGFloat, height: CGFloat)] = []
+    var current: (indices: [Int], width: CGFloat, height: CGFloat) = ([], 0, 0)
+    for (index, size) in sizes.enumerated() {
+      let extra = current.indices.isEmpty ? size.width : spacing + size.width
+      if !current.indices.isEmpty && current.width + extra > width {
+        out.append(current)
+        current = ([index], size.width, size.height)
+      } else {
+        current.indices.append(index)
+        current.width += extra
+        current.height = max(current.height, size.height)
+      }
+    }
+    if !current.indices.isEmpty { out.append(current) }
+    return out
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
+    let width = proposal.width ?? .infinity
+    let rows = lines(sizes, width: width)
+    let height = rows.map(\.height).reduce(0, +) + lineSpacing * CGFloat(max(0, rows.count - 1))
+    return CGSize(width: proposal.width ?? (rows.map(\.width).max() ?? 0), height: height)
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
+    var y = bounds.minY
+    for line in lines(sizes, width: bounds.width) {
+      var x = bounds.minX + (bounds.width - line.width) / 2
+      for index in line.indices {
+        let size = sizes[index]
+        subviews[index].place(at: CGPoint(x: x, y: y + (line.height - size.height) / 2), proposal: ProposedViewSize(size))
+        x += size.width + spacing
+      }
+      y += line.height + lineSpacing
+    }
+  }
+}
+
 /// `Legend`: what each mark means, with how many there are of each.
 struct RadarLegend: View {
   @Environment(\.virgaTheme) private var theme
   let byBand: [Band: Int]
 
   var body: some View {
-    FlowLayout(spacing: Measure.Defense.legendColumnGap, lineSpacing: Measure.Defense.legendRowGap, alignment: .center) {
+    RadarLegendFlow(spacing: Measure.Defense.legendColumnGap, lineSpacing: Measure.Defense.legendRowGap) {
       ForEach(Score.bands, id: \.self) { band in
         HStack(spacing: Measure.Defense.legendItemGap) {
           BandMark(band: band)

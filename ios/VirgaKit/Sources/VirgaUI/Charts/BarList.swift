@@ -6,7 +6,9 @@
 // is the list's own: 136 for words (200 when the labels are NSIDs, set a
 // step smaller), the bar at least 96 (60), so every list of words on a page
 // starts its bars on one line; at most 640 wide. A label that is cut short
-// says the whole of it to VoiceOver.
+// says the whole of it to VoiceOver, with the row's value; the row's title
+// (its tooltip on the web) is the hint. In high contrast the track has an
+// edge in --line-soft (theme.css).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -80,6 +82,12 @@ public struct BarList: View {
                   .fill(theme.chart1)
                   .frame(width: geometry.size.width * CGFloat(top != 0 ? Swift.min(1, Swift.max(0, row.value / top)) : 0))
               }
+              // High contrast outlines the track, so an empty one still shows.
+              .overlay {
+                if theme.isHighContrast, let edge = ThemeKit.highContrastBarTrackEdge.first {
+                  Capsule().strokeBorder(theme.color(edge.color ?? .variable(.lineSoft)), lineWidth: theme.points(edge.spread ?? .px(1)))
+                }
+              }
             }
             .frame(minWidth: nsids ? Measure.Chart.barTrackCode : Measure.Chart.barTrack, maxWidth: .infinity)
             .frame(height: Measure.Chart.barTrackHeight)
@@ -90,8 +98,11 @@ public struct BarList: View {
               .lineLimit(1)
               .gridColumnAlignment(.trailing)
           }
+          // Read as the web's row is: its label, then its value; the title
+          // is the row's tooltip, so it is the hint.
           .accessibilityElement(children: .ignore)
-          .accessibilityLabel("\(row.title ?? row.label), \(row.display ?? format(row.value))")
+          .accessibilityLabel("\(row.label), \(row.display ?? format(row.value))")
+          .accessibilityHint(row.title.flatMap { $0.jsEquals(row.label) ? nil : $0 } ?? "")
         }
       }
       .frame(maxWidth: Measure.Chart.barListMax, alignment: .leading)

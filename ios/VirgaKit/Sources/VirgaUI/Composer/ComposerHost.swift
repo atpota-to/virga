@@ -87,6 +87,16 @@ struct ComposerHostModifier: ViewModifier {
   func body(content: Content) -> some View {
     content
       .environment(host)
+      // Post this chart's Write a post with it: the picture as a file and
+      // its description as its alt, as the web's composer.open({ images }).
+      .environment(\.shareComposer, ShareComposer { draft in
+        guard let file = TemporaryComposerFiles.write(draft.png, mime: "image/png", name: draft.filename) else { return }
+        host.open(
+          .object([
+            "asDid": .string(draft.asDid), "text": .string(draft.text),
+            "images": .array([.object(["file": file.json, "alt": .string(draft.alt)])]),
+          ]))
+      })
       .overlay {
         ToastStack(center: host.toasts).padding(.bottom, theme.hasSidebar ? 0 : theme.tabbarH)
       }

@@ -33,6 +33,9 @@ extension Measure {
     public static let neverInset: CGFloat = 26
     /// `.defense-band-tick { gap: 2px 10px }`
     public static let tickGap: CGFloat = 10
+    public static let tickLineGap: CGFloat = 2
+    /// `@media (max-width: 560px) { .defense-band { grid-template-columns: 1fr; gap: 2px } }`
+    public static let phoneBandGap: CGFloat = 2
     /// `.defense-list-main { gap: 3px }`, `.defense-list-name { gap: 6px }`
     public static let listMainGap: CGFloat = 3
     public static let listNameGap: CGFloat = 6

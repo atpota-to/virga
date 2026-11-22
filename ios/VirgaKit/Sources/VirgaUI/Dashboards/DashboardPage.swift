@@ -4,31 +4,64 @@
 //
 // A dashboard: its cards on a twelve-column grid (CardGrid), answering for
 // the period in the header unless a card keeps one of its own. On the page
-// a card has no edge: a figure under a rule, a chart or a list under its
-// title. From 860 wide down a third and two thirds take the whole row (a
-// figure a third wide goes to half); from 620 down every card does, and
-// figures go two to a row.
+// a card has no edge: a figure under a rule, a chart under its title, a
+// list under its title on a rule in ink. From 860 wide down a third and two
+// thirds take the whole row (a figure a third wide goes to half); from 620
+// down every card does, and figures go two to a row. A card 440 wide or
+// less puts its chart's modes under its title.
 //
 // The header: the dashboard's name with its ⋯ (Rename, Duplicate, New
 // dashboard, Reset or Clear, Delete), the period's line, Customize and the
-// period picker. Customize is the web's keyboard and phone path at every
-// width: each card is a line to move up or down, its size to pick, and
-// Remove; reports come in from the library, in a dialog (search, a kind,
-// each report's Add). Changes save as they're made, and a toast says what
-// was added, removed or reset. Arriving with ?edit=1 (a dashboard just made
-// empty) opens it for customizing.
+// period picker (on a phone the picker first, Customize at the row's end).
+// Customize is the web's keyboard and phone path at every width: each card
+// is a line to move up or down, with its name, its number or how many rows
+// it shows, and a chevron; pressing the name opens the line to its size on
+// a wide screen, its settings and Remove. Reports come in from the library,
+// in a dialog (a count of them, a search and the kinds held over the list,
+// each report's Add, and which are on this dashboard already). Changes save
+// as they're made, and a toast says what was added, removed or reset.
+// Arriving with ?edit=1 (a dashboard just made empty) opens it for
+// customizing, and the flag leaves the address.
 //
 // A card's own settings (its title, period, kind of engagement and rows)
-// open from its line (CardSettings.swift).
-//
-// Not here yet: dragging cards and reports about (the up and down
-// controls are the way), and Post this chart (the share dialog, next).
+// open from its line (CardSettings.swift). Its chart cards carry Post this
+// chart (PostChartButton). Not here: dragging cards and reports about (the
+// up and down controls are the way).
 
 #if canImport(UIKit)
 import SwiftUI
 import VirgaArchive
 import VirgaCore
 import VirgaInsights
+
+/// A dialog whose own view draws its frame (DialogFrame), so its foot can
+/// hold the buttons that act on what is typed in it; presented as
+/// `virgaDialog` presents one.
+struct DashboardDialog<Inner: View>: ViewModifier {
+  @Environment(\.virgaTheme) private var theme
+  @Binding var isPresented: Bool
+  var size: DialogSize = .fit
+  @ViewBuilder let inner: () -> Inner
+
+  func body(content: Content) -> some View {
+    content.sheet(isPresented: $isPresented) {
+      inner()
+        .presentationDetents(size == .fit ? [.medium, .large] : [.large])
+        .presentationBackground(theme.surface)
+        .presentationCornerRadius(Measure.Dialog.radius)
+    }
+  }
+}
+
+extension View {
+  /// A dialog drawn by `inner` itself (RenameDashboard, NewDashboardDialog,
+  /// CardSettings, AddToDashboard, the report library) over this view.
+  func dashboardDialog<Inner: View>(
+    isPresented: Binding<Bool>, size: DialogSize = .fit, @ViewBuilder inner: @escaping () -> Inner
+  ) -> some View {
+    modifier(DashboardDialog(isPresented: isPresented, size: size, inner: inner))
+  }
+}
 
 /// `.dash-grid`: cards placed by their share of twelve columns, wrapping.
 struct CardGrid: Layout {
@@ -119,7 +152,7 @@ struct DashboardPage: View {
           title: dashboard.name,
           sub: editing ? "Press a card to move, resize or remove it. Changes save as you go." : Periods.periodLine(period, nowMs),
           crumbs: [Crumb("Dashboards")]),
-        titleTools: AnyView(titleTools), actions: AnyView(headerActions))
+        titleTools: AnyView(titleTools), period: editing ? nil : AnyView(PeriodPicker()), actions: AnyView(headerActions))
     ) {
       if editing {
         Button {
@@ -129,7 +162,11 @@ struct DashboardPage: View {
         }
         .buttonStyle(.virga)
         .accessibilityIdentifier("library-open")
-        if dashboard.widgets.isEmpty { empty } else { ArrangeList(dashboard: dashboard, toasts: toasts) }
+        if dashboard.widgets.isEmpty {
+          empty
+        } else {
+          ArrangeList(dashboard: dashboard, archive: report, period: period, toasts: toasts)
+        }
       } else if dashboard.widgets.isEmpty {
         empty
       } else if let report {
@@ -147,10 +184,15 @@ struct DashboardPage: View {
       }
     }
     .onAppear {
-      // ?edit=1 (a dashboard just made empty) opens it for customizing.
-      if navigator.search.contains("edit=1") { editing = true }
+      // ?edit=1 (a dashboard just made empty) opens it for customizing; the
+      // flag then leaves the address (the web's replaceState), so the next
+      // dashboard opened doesn't open customizing too.
+      if JSURI.searchParam(navigator.search, "edit") == "1" {
+        editing = true
+        ReportQuery.replace(navigator, "edit", nil)
+      }
     }
-    .virgaDialog(isPresented: binding(.rename), title: "Rename dashboard") {
+    .dashboardDialog(isPresented: binding(.rename)) {
       RenameDashboard(dashboard: dashboard) { dialog = nil }
     }
     .virgaDialog(isPresented: binding(.delete), title: "Delete \(dashboard.name)?") {
@@ -167,11 +209,11 @@ struct DashboardPage: View {
       }
       .buttonStyle(.virga(.danger))
     }
-    .virgaDialog(isPresented: binding(.new), title: "New dashboard") {
+    .dashboardDialog(isPresented: binding(.new)) {
       NewDashboardDialog { dialog = nil }
     }
-    .virgaDialog(isPresented: binding(.library), title: "Report library", size: .tall) {
-      ReportLibrary(dashboard: dashboard, toasts: toasts)
+    .dashboardDialog(isPresented: binding(.library), size: .tall) {
+      ReportLibrary(dashboard: dashboard, toasts: toasts) { dialog = nil }
     }
   }
 
@@ -255,22 +297,27 @@ struct DashboardPage: View {
       .accessibilityAddTraits(.isSelected)
       .accessibilityIdentifier("customize-done")
     } else {
-      HStack(spacing: theme.space4) {
-        Button {
-          editing = true
-        } label: {
-          Label("Customize", systemImage: Glyph.customize)
-        }
-        .buttonStyle(.linkAction)
-        .accessibilityIdentifier("customize")
-        PeriodPicker()
-      }
+      // The period goes to the header apart (its `period:`), which puts it
+      // first on a phone and this at the row's far end, and 32 before it
+      // from 561 up.
+      customize
     }
+  }
+
+  private var customize: some View {
+    Button {
+      editing = true
+    } label: {
+      Label("Customize", systemImage: Glyph.customize)
+    }
+    .buttonStyle(.linkAction)
+    .accessibilityIdentifier("customize")
   }
 }
 
 /// A card on the grid: a figure as it is; anything else under its title,
-/// with the way to its full report.
+/// with the way to its full report. A list (a card that takes rows) has a
+/// rule in ink under its heading, the top of its first row.
 struct WidgetCard: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(\.navigate) private var navigate
@@ -280,6 +327,8 @@ struct WidgetCard: View {
   let period: AnalyticsPeriod
   /// WIDGET_HEADS' `views`: the follower chart's Total or New.
   @State private var view = "total"
+  /// The card's own width (`@container widget`).
+  @State private var width: CGFloat?
 
   var body: some View {
     let title = card.options?.title.flatMap { $0.isEmpty ? nil : $0 }
@@ -287,43 +336,85 @@ struct WidgetCard: View {
       if def.kind == "stat" {
         WidgetBody(card: card, def: def, archive: archive, period: period, title: title)
       } else {
-        VStack(alignment: .leading, spacing: Measure.Dashboard.headGap) {
-          VStack(alignment: .leading, spacing: 2) {
-            HStack(alignment: .firstTextBaseline, spacing: theme.space2) {
-              Text(title ?? def.name)
-                .virgaText(
-                  size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, tracking: ThemeKit.cardTitleTracking)
-                .foregroundStyle(theme.ink)
-                .accessibilityAddTraits(.isHeader)
-              Spacer(minLength: 0)
-              if card.type == "follower-growth", !archive.followers.isEmpty {
-                let m = ReportModels.followersModel(archive, period, archive.nowMs ?? SyncStatus.now())
-                Segmented(
-                  label: "Chart",
-                  options: [SegmentedOption("total", "Total"), SegmentedOption("new", "New per \(ChartFormat.unitNoun(m.unit))")],
-                  selection: $view, size: .small)
-              }
-              PostChartButton(type: card.type, name: title ?? def.name, options: card.options, period: period)
-              Button {
-                navigate(def.href)
-              } label: {
-                Image(systemName: Glyph.openReport)
-              }
-              .buttonStyle(.virga(.ghost, size: .small, icon: true))
-              .accessibilityLabel("Open the full \(def.name) report")
-            }
-            if let sub = headSub {
-              Text(sub).virgaText(.textSm).foregroundStyle(theme.muted)
-            }
-            ownLine
+        let list = def.options?.contains("rows") == true
+        VStack(alignment: .leading, spacing: 0) {
+          head(title: title)
+            // A list's head is 12 over its rule; any other card's is the kit's 16.
+            .padding(.bottom, list ? Measure.Dashboard.listHeadSpaceBelow : theme.points(ThemeKit.cardHeadSpaceBelow))
+          if list {
+            Rectangle().fill(theme.rule).frame(height: 1)
           }
           WidgetBody(card: card, def: def, archive: archive, period: period, title: title, view: view)
         }
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
+    .background(
+      GeometryReader { geometry in
+        Color.clear
+          .onAppear { width = geometry.size.width }
+          .onChange(of: geometry.size.width) { _, next in width = next }
+      }
+    )
+    .environment(\.widgetWidth, width)
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("widget-\(card.type)")
+  }
+
+  /// The heading: the title (and its lines), the chart's modes, and the
+  /// tools; in a card 440 wide or less the modes go under the titles.
+  private func head(title: String?) -> some View {
+    let chartModes = modes
+    let under = chartModes != nil && (width ?? .infinity) <= Measure.Dashboard.headModesAt
+    return VStack(alignment: .leading, spacing: 0) {
+      HStack(alignment: .firstTextBaseline, spacing: theme.space2) {
+        VStack(alignment: .leading, spacing: 2) {
+          // An h2: the heading's 1.25 between its lines (base.css).
+          Text(title ?? def.name)
+            .virgaText(
+              size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, lineHeight: ThemeKit.headingLineHeight,
+              tracking: ThemeKit.cardTitleTracking)
+            .foregroundStyle(theme.ink)
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityAddTraits(.isHeader)
+          ownLine
+          if let sub = headSub {
+            Text(sub).virgaText(.textSm).foregroundStyle(theme.muted)
+          }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        if !under, let chartModes { chartModes }
+        tools(title: title)
+      }
+      if under, let chartModes {
+        chartModes.padding(.top, Measure.Dashboard.headModesSpaceAbove)
+      }
+    }
+  }
+
+  /// The follower chart's Total and New, a small Segmented.
+  private var modes: AnyView? {
+    guard card.type == "follower-growth", !archive.followers.isEmpty else { return nil }
+    let m = ReportModels.followersModel(archive, period, archive.nowMs ?? SyncStatus.now())
+    return AnyView(
+      Segmented(
+        label: "Chart",
+        options: [SegmentedOption("total", "Total"), SegmentedOption("new", "New per \(ChartFormat.unitNoun(m.unit))")],
+        selection: $view, size: .small))
+  }
+
+  /// Post as a picture and the way to the full report.
+  private func tools(title: String?) -> some View {
+    HStack(spacing: 0) {
+      PostChartButton(type: card.type, name: title ?? def.name, options: card.options, period: period)
+      Button {
+        navigate(def.href)
+      } label: {
+        Image(systemName: Glyph.openReport)
+      }
+      .buttonStyle(.virga(.ghost, size: .small, icon: true))
+      .accessibilityLabel("Open the full \(def.name) report")
+    }
   }
 
   /// WIDGET_HEADS' `sub`: the lists' count heads the lists you're on.
@@ -335,97 +426,180 @@ struct WidgetCard: View {
     return "\(AppLocale.formatNumber(lists.count)) \(lists.count == 1 ? "list" : "lists"), \(AppLocale.formatNumber(mod)) of them moderation lists"
   }
 
-  /// `OwnLine`: the card's own period and kind, when it keeps them.
+  /// `OwnLine`: the card's own period and kind, when it keeps them, each
+  /// with the web's title as its hint.
   @ViewBuilder private var ownLine: some View {
     let own = card.options?.period.flatMap { Periods.presetPeriod($0) }
     let kind = card.options?.kind.flatMap { WidgetParts.kindNoun[$0] }
     if own != nil || kind != nil {
-      MetaLine([own.map { Periods.periodWindowWord($0) }, kind.map { "\($0) only" }].compactMap { $0 })
-        .accessibilityHint("This card keeps its own settings")
+      FlowLayout(spacing: 0, lineSpacing: 0) {
+        if let own {
+          MetaPiece(isLast: kind == nil) { Text(Periods.periodWindowWord(own)) }
+            .accessibilityHint("This card keeps its own period")
+        }
+        if let kind {
+          MetaPiece(isLast: true) { Text("\(kind) only") }
+            .accessibilityHint("This card counts one kind of engagement")
+        }
+      }
     }
   }
 }
 
-/// Customize: each card a line to move up or down, its size, and Remove.
+/// Customize: each card a line to move up or down, its name, its number or
+/// how many rows it shows, and a chevron; pressing the name opens it to its
+/// size on a wide screen, its settings and Remove.
 struct ArrangeList: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(ShellDashboards.self) private var dashboards
   let dashboard: Dashboard
+  let archive: ReportArchive?
+  let period: AnalyticsPeriod
   let toasts: ToastCenter?
+  @State private var chosen: String?
   @State private var settingsFor: String?
 
   var body: some View {
     let widgets = dashboard.widgets
     VStack(alignment: .leading, spacing: 0) {
       ForEach(Array(widgets.enumerated()), id: \.element.id) { index, card in
-        let def = Catalog.widgets[card.type]
-        let name = card.options?.title.flatMap { $0.isEmpty ? nil : $0 } ?? def?.name ?? card.type
-        VStack(alignment: .leading, spacing: theme.space2) {
-          HStack(spacing: theme.space2) {
-            Button {
-              dashboards.moveWidget(dashboard.id, card.id, to: index - 1)
-            } label: {
-              Image(systemName: Glyph.moveUp)
-            }
-            .buttonStyle(.virga(.ghost, icon: true))
-            .disabled(index == 0)
-            .accessibilityLabel("Move \(name) up")
-            Button {
-              dashboards.moveWidget(dashboard.id, card.id, to: index + 1)
-            } label: {
-              Image(systemName: Glyph.moveDown)
-            }
-            .buttonStyle(.virga(.ghost, icon: true))
-            .disabled(index == widgets.count - 1)
-            .accessibilityLabel("Move \(name) down")
-            Text(name)
-              .virgaText(.textMd, weight: VirgaWeight.medium)
-              .foregroundStyle(theme.ink)
-              .lineLimit(1)
-            Spacer(minLength: 0)
-            if let def, !(def.options ?? []).isEmpty {
-              Button("Settings") { settingsFor = card.id }
-                .buttonStyle(.linkAction)
-                .accessibilityLabel("Settings for \(name)")
-                .accessibilityIdentifier("card-settings-\(card.type)")
-            }
-            Button("Remove") {
-              dashboards.removeWidget(dashboard.id, card.id)
-              toasts?.push("\(def?.name ?? name) removed.")
-            }
-            .buttonStyle(.linkAction)
-            .accessibilityLabel("Remove \(name)")
-          }
-          if let def, def.sizes.count > 1 {
-            Segmented(
-              label: "Size of \(name)",
-              options: def.sizes.map { key in
-                SegmentedOption(key, Layouts.sizes[key]?.label ?? key, accessibilityLabel: Layouts.sizes[key]?.name)
-              },
-              selection: card.size, size: .small
-            ) { size in
-              dashboards.resizeWidget(dashboard.id, card.id, size)
-            }
-          }
+        if let def = Catalog.widgets[card.type] {
+          row(card, def: def, index: index, count: widgets.count)
         }
-        .padding(.vertical, theme.space3)
-        .frame(minHeight: Measure.Dashboard.arrangeRowHeight, alignment: .leading)
-        .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
-        .accessibilityElement(children: .contain)
-        .accessibilityIdentifier("arrange-\(card.type)")
       }
     }
     .overlay(alignment: .top) { Rectangle().fill(theme.rule).frame(height: 1) }
     .accessibilityElement(children: .contain)
     .accessibilityLabel("The reports on \(dashboard.name), in order")
-    .virgaDialog(
-      isPresented: Binding(get: { settingsFor != nil }, set: { if !$0 { settingsFor = nil } }),
-      title: settingsCard.flatMap { Catalog.widgets[$0.type] }.map { "\($0.name) settings" } ?? "Card settings"
-    ) {
+    .dashboardDialog(isPresented: Binding(get: { settingsFor != nil }, set: { if !$0 { settingsFor = nil } })) {
       if let card = settingsCard, let def = Catalog.widgets[card.type] {
         CardSettings(dashboardId: dashboard.id, card: card, def: def) { settingsFor = nil }
       }
     }
+  }
+
+  private func row(_ card: DashboardCard, def: WidgetDef, index: Int, count: Int) -> some View {
+    let name = card.options?.title.flatMap { $0.isEmpty ? nil : $0 } ?? def.name
+    let open = chosen.map { $0.jsEquals(card.id) } ?? false
+    return VStack(alignment: .leading, spacing: 0) {
+      HStack(spacing: 0) {
+        Button {
+          dashboards.moveWidget(dashboard.id, card.id, to: index - 1)
+        } label: {
+          Image(systemName: Glyph.moveUp)
+        }
+        .buttonStyle(.virga(.ghost, icon: true))
+        .disabled(index == 0)
+        .accessibilityLabel("Move \(name) up")
+        .padding(.leading, -Measure.Dashboard.arrangeArrowBleed)
+        Button {
+          dashboards.moveWidget(dashboard.id, card.id, to: index + 1)
+        } label: {
+          Image(systemName: Glyph.moveDown)
+        }
+        .buttonStyle(.virga(.ghost, icon: true))
+        .disabled(index == count - 1)
+        .accessibilityLabel("Move \(name) down")
+        // The name opens the line; its reach runs to the line's end, over
+        // the number and the chevron.
+        Button {
+          chosen = open ? nil : card.id
+        } label: {
+          HStack(spacing: 0) {
+            Text(name)
+              .virgaText(.textMd, weight: open ? VirgaWeight.semibold : VirgaWeight.medium)
+              .foregroundStyle(theme.ink)
+              .lineLimit(1)
+              .truncationMode(.tail)
+              .frame(maxWidth: .infinity, alignment: .leading)
+            value(card, def: def)
+              .padding(.leading, Measure.Dashboard.arrangeValueSpaceBefore)
+            Image(systemName: Glyph.chevronDown)
+              .font(.system(size: Measure.Dashboard.arrangeChevron))
+              .foregroundStyle(theme.muted)
+              .rotationEffect(.degrees(open ? 180 : 0))
+              .animation(theme.motion.knob, value: open)
+              .padding(.leading, Measure.Dashboard.arrangeChevronSpaceBefore)
+              .accessibilityHidden(true)
+          }
+          .frame(maxHeight: .infinity)
+          .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .padding(.leading, Measure.Dashboard.arrangeNameSpaceBefore)
+        .accessibilityValue(open ? "Open" : "Closed")
+        .accessibilityIdentifier("arrange-open-\(card.type)")
+      }
+      .frame(minHeight: Measure.Dashboard.arrangeLineHeight)
+      if open {
+        detail(card, def: def, name: name)
+      }
+    }
+    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+    .accessibilityElement(children: .contain)
+    .accessibilityIdentifier("arrange-\(card.type)")
+  }
+
+  /// `.arrange-value`: a figure's own number, or how many rows a list shows.
+  @ViewBuilder
+  private func value(_ card: DashboardCard, def: WidgetDef) -> some View {
+    if def.kind == "stat", let archive {
+      WidgetBody(card: card, def: def, archive: archive, period: DashboardPage.period(of: card, else: period, nowMs: 0), title: nil)
+        .environment(\.statValueOnly, true)
+        .allowsHitTesting(false)
+    } else if def.options?.contains("rows") == true {
+      Text("\(AppLocale.formatNumber(WidgetParts.rowsShown(card.type, card.size, card.options?.rows))) rows")
+        .virgaText(.textSm)
+        .foregroundStyle(theme.muted)
+        .lineLimit(1)
+        .fixedSize()
+    }
+  }
+
+  private func detail(_ card: DashboardCard, def: WidgetDef, name: String) -> some View {
+    VStack(alignment: .leading, spacing: Measure.Dashboard.arrangeDetailGap) {
+      if def.sizes.count > 1 {
+        VStack(alignment: .leading, spacing: Measure.Dashboard.arrangeSizeGap) {
+          Text("Size on a wide screen. On a phone every card is full width.")
+            .virgaText(.textSm)
+            .foregroundStyle(theme.muted)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: theme.measure, alignment: .leading)
+          Segmented(
+            label: "Size of \(name) on a wide screen",
+            options: def.sizes.map { key in
+              SegmentedOption(key, Layouts.sizes[key]?.label ?? key, accessibilityLabel: Layouts.sizes[key]?.name)
+            },
+            selection: card.size, size: .small
+          ) { size in
+            dashboards.resizeWidget(dashboard.id, card.id, size)
+          }
+        }
+      }
+      FlowLayout(spacing: Measure.Dashboard.arrangeToolsGap, lineSpacing: Measure.Dashboard.arrangeToolsLineGap) {
+        if !(def.options ?? []).isEmpty {
+          Button {
+            settingsFor = card.id
+          } label: {
+            Label("Settings", systemImage: Glyph.settings)
+          }
+          .buttonStyle(.linkAction)
+          .accessibilityLabel("Settings for \(name)")
+          .accessibilityIdentifier("card-settings-\(card.type)")
+        }
+        Button {
+          chosen = nil
+          dashboards.removeWidget(dashboard.id, card.id)
+          toasts?.push("\(def.name) removed.")
+        } label: {
+          Label("Remove", systemImage: Glyph.close)
+        }
+        .buttonStyle(.linkAction)
+        .accessibilityLabel("Remove \(name)")
+      }
+    }
+    .padding(.top, Measure.Dashboard.arrangeDetailSpaceAbove)
+    .padding(.bottom, Measure.Dashboard.arrangeDetailSpaceBelow)
   }
 
   private var settingsCard: DashboardCard? {
@@ -433,12 +607,17 @@ struct ArrangeList: View {
   }
 }
 
-/// The report library: a search, a kind, and each report with its Add.
+/// The report library, in a dialog: how many reports and how many are on
+/// this dashboard, a search and a kind held over the list, which scrolls
+/// under them on a rule in ink; each report with its glyph, its name (and
+/// "Figure"), what it shows, whether it is on this dashboard already, and
+/// its Add.
 struct ReportLibrary: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(ShellDashboards.self) private var dashboards
   let dashboard: Dashboard
   let toasts: ToastCenter?
+  let onClose: () -> Void
   @State private var query = ""
   @State private var category = "all"
 
@@ -448,57 +627,119 @@ struct ReportLibrary: View {
       (category == "all" || w.category.jsEquals(category))
         && (wanted.isEmpty || Commands.fold("\(w.name) \(w.desc)").contains(wanted))
     }
-    VStack(alignment: .leading, spacing: theme.space4) {
-      SearchField("Search reports", text: $query)
-      Segmented(
-        label: "Kind of report",
-        options: [SegmentedOption("all", "All")] + Catalog.categories.map { SegmentedOption($0.key, $0.label) },
-        selection: $category, size: .small)
-      VStack(alignment: .leading, spacing: 0) {
-        ForEach(shown, id: \.type) { w in
-          HStack(alignment: .top, spacing: theme.space3) {
-            Image(systemName: w.sfSymbol)
-              .font(.system(size: Measure.Dashboard.statIcon))
-              .foregroundStyle(theme.muted)
-              .padding(.top, 3)
-            VStack(alignment: .leading, spacing: 2) {
-              HStack(spacing: theme.space2) {
-                Text(w.name).virgaText(.textBase, weight: VirgaWeight.medium).foregroundStyle(theme.ink)
-                if w.kind == "stat" {
-                  Text("Figure").virgaText(.textXs).foregroundStyle(theme.muted)
-                }
-              }
-              Text(w.desc)
-                .virgaText(.textSm)
-                .foregroundStyle(theme.muted)
-                .fixedSize(horizontal: false, vertical: true)
-            }
-            Spacer(minLength: 0)
-            Button {
-              dashboards.addWidget(dashboard.id, w.type)
-              toasts?.push("\(w.name) added to \(dashboard.name).")
-            } label: {
-              Image(systemName: Glyph.plus)
-            }
-            .buttonStyle(.virga(size: .small, icon: true))
-            .accessibilityLabel("Add \(w.name)")
-            .accessibilityIdentifier("library-add-\(w.type)")
+    let phone = theme.isPhone
+    VStack(alignment: .leading, spacing: 0) {
+      DialogHead(title: "Report library", onClose: onClose)
+      VStack(alignment: .leading, spacing: Measure.Dashboard.libraryGap) {
+        Text(
+          "\(AppLocale.formatNumber(Catalog.widgetList.count)) reports, \(AppLocale.formatNumber(dashboard.widgets.count)) of them on this dashboard. Press a report’s plus to add it."
+        )
+        .virgaText(.textSm)
+        .foregroundStyle(theme.muted)
+        .fixedSize(horizontal: false, vertical: true)
+        SearchField("Search reports", text: $query)
+        Segmented(
+          label: "Kind of report",
+          options: [SegmentedOption("all", "All")] + Catalog.categories.map { SegmentedOption($0.key, $0.label) },
+          selection: $category, size: .small)
+      }
+      .padding(.horizontal, phone ? Measure.Dialog.phoneBody.leading : Measure.Dialog.body.leading)
+      .padding(.top, phone ? Measure.Dialog.phoneBody.top : Measure.Dialog.body.top)
+      .padding(.bottom, Measure.Dashboard.libraryGap)
+      ScrollView {
+        VStack(alignment: .leading, spacing: 0) {
+          ForEach(shown, id: \.type) { w in
+            item(w, on: dashboard.widgets.filter { $0.type.jsEquals(w.type) }.count)
           }
-          .padding(.vertical, theme.space3)
-          .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+          if shown.isEmpty {
+            Text("No report matches “\(query)”.")
+              .virgaText(.textBase)
+              .foregroundStyle(theme.muted)
+              .padding(.vertical, theme.rowPad)
+          }
         }
-        if shown.isEmpty {
-          Text("No report matches “\(query)”.")
-            .virgaText(.textBase)
-            .foregroundStyle(theme.muted)
-            .padding(.vertical, theme.space4)
+        .overlay(alignment: .top) { Rectangle().fill(theme.rule).frame(height: 1) }
+        .padding(.horizontal, phone ? Measure.Dialog.phoneBody.leading : Measure.Dialog.body.leading)
+        .padding(.bottom, phone ? Measure.Dialog.phoneBody.bottom : Measure.Dialog.body.bottom)
+      }
+      .scrollBounceBehavior(.basedOnSize)
+    }
+    .background(theme.surface)
+    .accessibilityElement(children: .contain)
+    .accessibilityIdentifier("report-library")
+  }
+
+  private func item(_ w: WidgetDef, on n: Int) -> some View {
+    HStack(alignment: .top, spacing: Measure.Dashboard.libraryItemGap) {
+      Image(systemName: w.sfSymbol)
+        .font(.system(size: Measure.Dashboard.libraryIcon))
+        .foregroundStyle(theme.ink2)
+        .frame(width: Measure.Dashboard.libraryIcon, height: Measure.Dashboard.libraryIconBox)
+        .accessibilityHidden(true)
+      VStack(alignment: .leading, spacing: Measure.Dashboard.libraryTextGap) {
+        HStack(alignment: .firstTextBaseline, spacing: Measure.Dashboard.libraryNameGap) {
+          Text(w.name).virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Dashboard.libraryLineHeight).foregroundStyle(theme.ink)
+          if w.kind == "stat" {
+            Text("Figure").virgaText(.textSm).foregroundStyle(theme.muted)
+          }
+        }
+        Text(w.desc)
+          .virgaText(.textSm, lineHeight: Measure.Dashboard.libraryLineHeight)
+          .foregroundStyle(theme.muted)
+          .fixedSize(horizontal: false, vertical: true)
+        if n > 0 {
+          HStack(spacing: Measure.Dashboard.libraryOnGap) {
+            Image(systemName: Glyph.check).font(.system(size: Measure.Dashboard.libraryOnIcon))
+            Text("On this dashboard\(n > 1 ? " ×\(n)" : "")")
+          }
+          .virgaText(.textSm, weight: VirgaWeight.medium)
+          .foregroundStyle(theme.ink2)
         }
       }
+      .frame(maxWidth: .infinity, alignment: .leading)
+      Button {
+        dashboards.addWidget(dashboard.id, w.type)
+        toasts?.push("\(w.name) added to \(dashboard.name).")
+      } label: {
+        Image(systemName: Glyph.plus)
+      }
+      .buttonStyle(.virga(size: .small, icon: true))
+      .accessibilityLabel("Add \(w.name)")
+      .accessibilityIdentifier("library-add-\(w.type)")
     }
+    .padding(.vertical, theme.rowPad)
+    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
   }
 }
 
-/// `RenameDialog`: the name, at most 60, saved as it is (trimmed).
+/// A dialog's head (DialogFrame's): its title and Close, for a dialog that
+/// lays out its own body (the library, whose list scrolls under its search).
+struct DialogHead: View {
+  @Environment(\.virgaTheme) private var theme
+  let title: String
+  let onClose: () -> Void
+
+  var body: some View {
+    HStack(alignment: .center, spacing: theme.space3) {
+      Text(title)
+        .virgaText(.textLg, weight: VirgaWeight.semibold, lineHeight: ThemeKit.headingLineHeight, tracking: Measure.Dialog.titleTracking)
+        .foregroundStyle(theme.ink)
+        .accessibilityAddTraits(.isHeader)
+        .accessibilityIdentifier("dialog-title")
+      Spacer(minLength: 0)
+      Button(action: onClose) {
+        Image(systemName: Glyph.close)
+      }
+      .buttonStyle(.virga(.ghost, size: .small, icon: true))
+      .accessibilityLabel("Close")
+      .accessibilityIdentifier("dialog-close")
+    }
+    .padding(theme.isPhone ? Measure.Dialog.phoneHead : Measure.Dialog.head)
+  }
+}
+
+/// `RenameDialog`: the name, at most 60, saved as it is (trimmed); a name
+/// that is only spaces isn't saved, and the dialog stays.
 struct RenameDashboard: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(ShellDashboards.self) private var dashboards
@@ -507,29 +748,35 @@ struct RenameDashboard: View {
   @State private var value = ""
 
   var body: some View {
-    DialogForm {
-      FieldStack("Name") {
-        TextField("", text: $value)
-          .virgaField()
-          .onChange(of: value) { _, next in if next.count > 60 { value = String(next.prefix(60)) } }
-          .onSubmit(save)
+    DialogFrame(title: "Rename dashboard", onClose: done, autofocus: true) {
+      DialogForm {
+        FieldStack("Name") {
+          VirgaTextField("", text: $value)
+            .virgaField()
+            .dialogAutofocus()
+            .submitLabel(.done)
+            .onChange(of: value) { _, next in if next.count > 60 { value = String(next.prefix(60)) } }
+            .onSubmit(save)
+        }
       }
-      HStack(spacing: Measure.Dialog.actionsGap) {
-        Spacer(minLength: 0)
-        Button("Cancel", action: done).buttonStyle(.virga)
-        Button("Save", action: save).buttonStyle(.virga(.primary))
-      }
+    } actions: {
+      Button("Cancel", action: done).buttonStyle(.virga)
+      Button("Save", action: save).buttonStyle(.virga(.primary))
     }
-    .onAppear { value = dashboard.name }
+    .onAppear {
+      value = dashboard.name
+    }
   }
 
   private func save() {
+    guard !value.jsTrimmed().isEmpty else { return }
     dashboards.renameDashboard(dashboard.id, value)
     done()
   }
 }
 
-/// `NewDashboardDialog`: a name, and what it starts with (nothing, or a template).
+/// `NewDashboardDialog`: a name, and what it starts with (nothing, or a
+/// template); Return in the name creates it, as the web's form does.
 struct NewDashboardDialog: View {
   @Environment(\.navigate) private var navigate
   @Environment(ShellDashboards.self) private var dashboards
@@ -538,26 +785,29 @@ struct NewDashboardDialog: View {
   @State private var template = ""
 
   var body: some View {
-    DialogForm {
-      FieldStack("Name") {
-        TextField("Weekly check-in", text: $name)
-          .virgaField()
-          .onChange(of: name) { _, next in if next.count > 60 { name = String(next.prefix(60)) } }
-      }
-      VStack(alignment: .leading, spacing: 0) {
-        FieldLabel("Start from")
-        ChoiceRow("Empty", description: "Start blank and add reports from the library.", isOn: choosing(""))
-        ForEach(Layouts.templateKeys, id: \.self) { key in
-          if let t = Layouts.templates[key] {
-            ChoiceRow(t.name, description: "\(t.widgets.count) reports to start from.", isOn: choosing(key))
+    DialogFrame(title: "New dashboard", onClose: done, autofocus: true) {
+      DialogForm {
+        FieldStack("Name") {
+          VirgaTextField("Weekly check-in", text: $name)
+            .virgaField()
+            .dialogAutofocus()
+            .submitLabel(.done)
+            .onChange(of: name) { _, next in if next.count > 60 { name = String(next.prefix(60)) } }
+            .onSubmit(create)
+        }
+        VStack(alignment: .leading, spacing: 0) {
+          FieldLabel("Start from")
+          ChoiceRow("Empty", description: "Start blank and add reports from the library.", isOn: choosing(""))
+          ForEach(Layouts.templateKeys, id: \.self) { key in
+            if let t = Layouts.templates[key] {
+              ChoiceRow(t.name, description: "\(t.widgets.count) reports to start from.", isOn: choosing(key))
+            }
           }
         }
       }
-      HStack(spacing: Measure.Dialog.actionsGap) {
-        Spacer(minLength: 0)
-        Button("Cancel", action: done).buttonStyle(.virga)
-        Button("Create", action: create).buttonStyle(.virga(.primary))
-      }
+    } actions: {
+      Button("Cancel", action: done).buttonStyle(.virga)
+      Button("Create", action: create).buttonStyle(.virga(.primary))
     }
   }
 

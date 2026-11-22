@@ -146,19 +146,19 @@ struct IdentityBody: View {
       historySection(did, events)
       repoSection
     }
-    .task(id: did) { await read(did) }
+    // The server and the log land on their own, each as it arrives.
+    .task(id: did) { await readPds(did) }
+    .task(id: did) { await readHistory(did) }
   }
 
-  private func read(_ did: String) async {
-    let transport = network.transport
-    let clock = network.clock
-    let cache = network.didDocuments
-    async let found: String? = try? await Atproto.resolvePds(did, transport: transport, clock: clock, cache: cache)
-    async let log = Atproto.getPlcHistory(did, transport: transport)
-    let url = await found
+  private func readPds(_ did: String) async {
+    let url: String? = try? await Atproto.resolvePds(did, transport: network.transport, clock: network.clock, cache: network.didDocuments)
     if Task.isCancelled { return }
     pds = url ?? ""
-    let entries = await log
+  }
+
+  private func readHistory(_ did: String) async {
+    let entries = await Atproto.getPlcHistory(did, transport: network.transport)
     if Task.isCancelled { return }
     history = entries.map { History.log($0) } ?? History.unread
   }
@@ -205,7 +205,7 @@ struct IdentityBody: View {
           Text(did)
             .font(theme.codeFont(around: theme.textSm))
             .lineLimit(1)
-            .truncationMode(.middle)
+            .truncationMode(.tail)
             .textSelection(.enabled)
           ToolCopyButton(text: did, label: "the DID")
         }
@@ -247,10 +247,9 @@ struct IdentityBody: View {
     VirgaSection(title: "Handle and server history", sub: "From the PLC directory’s log of this DID", flush: true) {
       switch history {
       case .reading:
-        EmptyState("Reading the log…").padding(.top, theme.rowPad)
+        ToolEmptyLine("Reading the log…")
       case .unread:
-        EmptyState(did.utf16.starts(with: "did:web:".utf16) ? "A did:web keeps no history." : "The directory couldn’t be reached.")
-          .padding(.top, theme.rowPad)
+        ToolEmptyLine(did.utf16.starts(with: "did:web:".utf16) ? "A did:web keeps no history." : "The directory couldn’t be reached.")
       case .log:
         TimelineList(
           steps: events.enumerated().map { i, e in
@@ -297,11 +296,11 @@ struct ToolCopyButton: View {
       UIPasteboard.general.string = text
       done = true
       Task {
-        try? await Task.sleep(nanoseconds: 1_500_000_000)
+        try? await Task.sleep(nanoseconds: UInt64(Measure.Tools.copiedFor * 1_000_000_000))
         done = false
       }
     } label: {
-      Image(systemName: done ? Glyph.check : ToolGlyph.copy).font(.system(size: 16))
+      Image(systemName: done ? Glyph.check : ToolGlyph.copy).font(.system(size: Measure.Tools.copyGlyph))
     }
     .buttonStyle(.virga(.ghost, size: .small, icon: true))
     .accessibilityLabel(done ? "Copied" : "Copy \(label)")

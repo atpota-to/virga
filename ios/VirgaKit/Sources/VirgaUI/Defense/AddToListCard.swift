@@ -65,7 +65,7 @@ struct DefenseWhyNotView: View {
           .buttonStyle(.virga)
           .disabled(busy)
         if let error = DefenseWords.error(asking) {
-          Callout(tone: .danger) { Text(error) }
+          Callout(tone: .danger, error)
         }
       }
     }
@@ -151,8 +151,11 @@ struct AddToListCard: View {
     }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("defense-add")
-    .virgaDialog(isPresented: $confirming, title: confirmTitle(p)) {
+    // `onClose={() => !busy && setConfirming(false)}`: neither ✕ nor a swipe
+    // closes it while the approval runs.
+    .virgaDialog(isPresented: Binding(get: { confirming }, set: { if $0 || !busy { confirming = $0 } }), title: confirmTitle(p)) {
       confirmWords(p)
+        .interactiveDismissDisabled(busy)
     } actions: {
       Button("Cancel") { confirming = false }
         .buttonStyle(.virga(.ghost))
@@ -194,23 +197,18 @@ struct AddToListCard: View {
       }
       VStack(alignment: .leading, spacing: theme.space4) {
         FieldStack("To") {
-          Picker("To", selection: Binding(get: { p.making ? "new" : DefenseListRows.id(p.chosen) }, set: { listId = $0 })) {
-            ForEach(Array(p.available.enumerated()), id: \.offset) { _, l in
-              Text("\(DefenseListRows.name(l)) (\(DefenseListRows.purpose(l) == "mute" ? "mute" : "block"))").tag(DefenseListRows.id(l))
-            }
-            Text("A new list…").tag("new")
-          }
-          .pickerStyle(.menu)
-          .tint(theme.ink)
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .virgaField()
+          VirgaSelect(
+            "To", selection: Binding(get: { p.making ? "new" : DefenseListRows.id(p.chosen) }, set: { listId = $0 }),
+            options: Self.listChoices(p.available))
         }
         if p.making {
-          DefenseNewListFields(name: $newName, purpose: $newPurpose, nameLabel: "Its name")
+          DefenseNewListFields(name: $newName, purpose: $newPurpose, nameLabel: "Its name") { submit(p) }
         }
         FieldStack("Why, in your words (optional)") {
-          TextField("The quote pile-on, 18 November", text: $note)
+          VirgaTextField("The quote pile-on, 18 November", text: $note)
             .virgaField()
+            .submitLabel(.go)
+            .onSubmit { submit(p) }
             .onChange(of: note) { _, next in if next.utf16.count > Plan.noteMax { note = next.jsSlice(0, Plan.noteMax) } }
             .accessibilityLabel("Why, in your words (optional)")
           FieldHint("Kept with each of them, so “why is this person on my list” has an answer.")
@@ -220,22 +218,41 @@ struct AddToListCard: View {
         Callout(tone: .warn) { Text("That’s more than \(fmt(Plan.planMax)), the most one plan holds. Tick fewer bands.") }
       }
       FlowLayout(spacing: theme.space3, lineSpacing: theme.space3, alignment: .center) {
-        Button(n > 0 ? "Add \(fmt(n))…" : "Nobody ticked") {
-          error = nil
-          if n > 0 && (!p.making || !newName.jsTrimmed().isEmpty) { confirming = true }
-        }
+        Button(n > 0 ? "Add \(fmt(n))…" : "Nobody ticked") { submit(p) }
         .buttonStyle(.virga)
-        .disabled(n == 0 || n > Plan.planMax || (p.making && newName.jsTrimmed().isEmpty) || busy)
+        .disabled(!canAdd(p))
         .accessibilityIdentifier("defense-add-go")
         if n > 0 {
           MetaLine(["\(Plan.estimateWords(n)) at Virga’s pace"])
         }
       }
       if let error {
-        Callout(tone: .danger) { Text(error) }
+        Callout(tone: .danger, error)
       }
     }
     .frame(maxWidth: Measure.Defense.columnMax, alignment: .leading)
+  }
+
+  /// To's choices: each list with what it does, then A new list….
+  private static func listChoices(_ available: [JSONValue]) -> [SelectChoice<String>] {
+    let lists = available.map { l -> SelectChoice<String> in
+      let does = DefenseListRows.purpose(l) == "mute" ? "mute" : "block"
+      return SelectChoice(DefenseListRows.id(l), "\(DefenseListRows.name(l)) (\(does))")
+    }
+    return lists + [SelectChoice("new", "A new list…")]
+  }
+
+  /// Whether Add can be pressed.
+  private func canAdd(_ p: Plan_) -> Bool {
+    let n = p.adding.count
+    return !(n == 0 || n > Plan.planMax || (p.making && newName.jsTrimmed().isEmpty) || busy)
+  }
+
+  /// The form's submit (Add, or Return in one of its fields): the confirm.
+  private func submit(_ p: Plan_) {
+    guard canAdd(p) else { return }
+    error = nil
+    if !p.adding.isEmpty && (!p.making || !newName.jsTrimmed().isEmpty) { confirming = true }
   }
 
   /// A band to tick: the box, its mark and name, how many, and what it
@@ -251,16 +268,18 @@ struct AddToListCard: View {
         ToolCheck(isOn: .constant(on), label: BandWords.bandWord[band] ?? "", disabled: disabled)
           .allowsHitTesting(false)
           .accessibilityHidden(true)
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: Measure.Defense.tickLineGap) {
           HStack(spacing: Measure.Defense.tickGap) {
             BandMark(band: band)
             Text(BandWords.bandWord[band] ?? "").virgaText(.textBase, weight: VirgaWeight.medium).foregroundStyle(ink)
             Spacer(minLength: 0)
-            Text(AppLocale.fmtInt(Double(count))).virgaText(.textBase).foregroundStyle(disabled ? theme.faint : theme.ink2)
+            // The count and the meaning keep their own colours; only the
+            // name fades (`.defense-band-tick:has(input:disabled)`).
+            Text(AppLocale.fmtInt(Double(count))).virgaText(.textBase).foregroundStyle(theme.ink2)
           }
           Text(BandWords.bandMeans[band] ?? "")
             .virgaText(.textSm)
-            .foregroundStyle(disabled ? theme.faint : theme.muted)
+            .foregroundStyle(theme.muted)
             .fixedSize(horizontal: false, vertical: true)
             .multilineTextAlignment(.leading)
         }
@@ -275,7 +294,7 @@ struct AddToListCard: View {
     .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
     .accessibilityLabel("\(BandWords.bandWord[band] ?? ""), \(AppLocale.fmtInt(Double(count)))")
     .accessibilityHint(BandWords.bandMeans[band] ?? "")
-    .accessibilityAddTraits(on ? .isSelected : [])
+    .accessibilityAddTraits(on ? [.isToggle, .isSelected] : [.isToggle])
     .accessibilityIdentifier("defense-tick-\(band.rawValue)")
   }
 
@@ -295,7 +314,18 @@ struct AddToListCard: View {
         .foregroundStyle(theme.ink)
         .fixedSize(horizontal: false, vertical: true)
       FlowLayout(spacing: theme.space5, lineSpacing: theme.space2, alignment: .firstTextBaseline) {
-        MoreLink("Follow it on Lists", to: "/defense/lists")
+        // A plain link: ink, underlined, in the line's own size.
+        Button {
+          navigate("/defense/lists")
+        } label: {
+          Text("Follow it on Lists")
+            .virgaText(.textBase)
+            .underline(true)
+            .foregroundStyle(theme.ink)
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(.isLink)
+        .touchReach(horizontal: Measure.LinkAction.reachSides, vertical: Measure.LinkAction.reachAbove)
         Button("Add more from this post") { self.done = nil }
           .buttonStyle(.linkAction)
       }
@@ -303,6 +333,8 @@ struct AddToListCard: View {
     .frame(maxWidth: theme.measure, alignment: .leading)
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("defense-done")
+    // `.defense-done` is `role="status"`: what the approval came to is read out.
+    .toolAnnounces(head + kept + already, onAppear: true)
   }
 
   // MARK: Confirming
@@ -378,24 +410,21 @@ struct DefenseNewListFields: View {
   @Binding var name: String
   @Binding var purpose: String
   let nameLabel: String
+  /// Return in the name: the form's submit.
+  var onSubmit: () -> Void = {}
 
   var body: some View {
     let nameField = FieldStack(nameLabel) {
-      TextField("Pile-ons", text: $name)
+      VirgaTextField("Pile-ons", text: $name)
         .virgaField()
+        .submitLabel(.go)
+        .onSubmit(onSubmit)
         .onChange(of: name) { _, next in if next.utf16.count > 64 { name = next.jsSlice(0, 64) } }
         .accessibilityLabel(nameLabel)
         .accessibilityIdentifier("defense-list-name")
     }
     let forField = FieldStack("For") {
-      Picker("For", selection: $purpose) {
-        Text("Blocking").tag("block")
-        Text("Muting").tag("mute")
-      }
-      .pickerStyle(.menu)
-      .tint(theme.ink)
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .virgaField()
+      VirgaSelect("For", selection: $purpose, options: [SelectChoice("block", "Blocking"), SelectChoice("mute", "Muting")])
     }
     Group {
       if theme.isPhone {

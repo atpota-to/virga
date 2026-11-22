@@ -82,7 +82,16 @@ THEME (Theme/)
   `VirgaTheme+Tokens.swift`); `theme.points(ThemeKit.x)`, `theme.color(ThemeKit.x)`,
   `theme.insets(box)`, `theme.shadow(...)`.
 - Type: `theme.font(.textBase, weight:)`, `.virgaText(.textSm, weight:, lineHeight:,
-  tracking:)`, `theme.measure`, `theme.characters(n)`. Instrument Sans is bundled
+  tracking:, lineBox:)`, `theme.measure`, `theme.characters(n)`. A text's line height is
+  the body's 1.45 between lines unless it says otherwise: a heading passes
+  `ThemeKit.headingLineHeight` (1.25), a button or a segmented key `Measure.Lines` (1). SwiftUI
+  adds it between lines only, so a single line keeps the face's own 1.22; `lineBox: true` adds
+  the half-leading above and below too, for a line whose box lays it out (a link action, a more
+  link, a meta line, a table's cell). A line-height under 1.22 (the page title's 1.1, a figure's
+  1) is `.padding(.vertical, theme.overflowingLeading(size:lineHeight:weight:))`, the glyphs
+  reaching past the box. A glyph beside words is `.virgaGlyph(size, beside: wordsSize)`, grown
+  with Dynamic Type as they are; `theme.font(points:)` is a face at points already scaled.
+  Instrument Sans is bundled
   (Resources/Fonts, OFL) and registered from `Bundle.module`; the font is built from a
   CoreText descriptor with the wght axis (400/500/600) and tabular figures, scaled by
   UIFontMetrics; the system font if registration fails.
@@ -99,36 +108,77 @@ THEME (Theme/)
 COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
 - Buttons: `.buttonStyle(.virga(.primary, size: .large, icon:, isOn:, destructive:))` for the
   quiet, primary, ghost and danger tiers in small, medium and large (danger keeps the deep
-  red at night); `.linkAction`; `MoreLink(_, to:)`. The kit's sizes are `KitSize`.
-- `Segmented(label:options:selection:size:)` (scrolls with faded edges, keys held at their
-  bold width), `ChipStyle`, `TokenView`/`TokenRow`, `Badge`, `MetaLine`/`MetaPiece`,
-  `StateDot`, `Avatar`, `AccessLine`.
+  red at night; a button keeps its words, `fixedSize`); `.linkAction` (its own 1-point line
+  at a 3-point offset, 2 while open or pressed; a Label's title is underlined, not its icon);
+  `MoreLink(_, to:)`. The kit's sizes are `KitSize`.
+- `Segmented(label:options:selection:size:)` (scrolls with faded edges, the pressed key
+  brought clear of the fade only when it is under it, keys held at their bold width; an
+  option's web `title` is `SegmentedOption(hint:)`, and `minWidth:` a key's least width, as a
+  kind filter's glyph-only keys have, 32 at 760 and under), `ChipStyle`, `TokenView`/`TokenRow`,
+  `Badge`, `MetaLine`/`MetaPiece` (the dot 6 after its word), `StateDot`, `Avatar`,
+  `AccessLine`.
 - `.toggleStyle(.virgaSwitch)` draws the capsule and its knob and no words, as the web's
   `.switch` (its label is VoiceOver's name for it, the web's aria-label; the row beside it
   says what it is, as `SettingsSwitch`'s and the timer editor's rows do: a ToggleStyle
   can't see `.labelsHidden()`, so it once drew its label beside it, "Require alt text"
-  twice); `.virgaCheck` draws its words beside the box. `.virgaField(invalid:size:)`,
-  `.virgaTextArea()`, `FieldStack`, `FieldHint(_, isOver:)`, `SearchField`.
+  twice); `.virgaCheck` draws its words beside the box (16, 8 from them, centred), and
+  `.virgaTermsCheck` is the terms page's (18, 12, top). `.virgaField(invalid:size:)` round
+  `VirgaTextField(prompt, text:)` (a TextField whose placeholder is --muted; a plain
+  `TextField(prompt, text:)` gets the system's pale grey), `.virgaTextArea()` round a
+  TextEditor (its padding less the editor's own insets) or `.virgaTextArea(editor: false)`
+  round a `TextField(axis: .vertical)`, which has none, `FieldStack`,
+  `FieldHint(_, isOver:)`, `SearchField`, `VirgaSelect(label, selection:, options:
+  [SelectChoice])` for select.input (a Picker in virgaField draws its value in the accent,
+  centred, on two lines).
 - Menus: `MoreMenu`/`VirgaMenu` over `[MenuEntry]` (`.item(MenuItem(...))`, `.separator`),
-  a native Menu.
-- `.virgaDialog(isPresented:title:size:) { } actions: { }` (a sheet), `InfoTip`,
-  `FollowerCountTip`, `Callout(tone:)`, `EmptyState`, `NoteText`, `ProgressLine(value:)`,
+  a native Menu; each item's icon comes coloured (--ink-2, or the system red of a destructive
+  item's words), since a native menu tints a plain image with the window's accent.
+- `.virgaDialog(isPresented:title:size:stackActions:autofocus:) { } actions: { }` (a sheet;
+  `stackActions` puts a phone's buttons one under the other, the last given first;
+  `autofocus: true` focuses, when it opens, the field marked `.dialogAutofocus()`, the web's
+  `[data-autofocus]`: the focus state is the dialog's, inside the sheet, since a caller's
+  `@FocusState` outside the sheet doesn't reach a field inside it), `DialogFrame` (the same),
+  `ChoiceRow(_, description:, isOn:, kind: .radio | .check)` (rows share one hairline),
+  `InfoTip` (laid out 20 × 16, pressed through 44), `FollowerCountTip`, `Callout(tone:)` (a failure
+  of words alone, `Callout(tone: .danger, words)`, is role="alert": read out as it appears and
+  as its words change; built round its own content it takes `alert:` words, or leaves it to the caller),
+  `EmptyState` (16 under a flush section's rule), `NoteText`, `ProgressLine(value:)`,
   `Disclosure`.
-- Data: `FiguresView([FigureItem])`, `DeltaView(pct:)` (ChartFormat.deltaText),
-  `DataTable(columns:rows:selected:)`.
+- Data: `FiguresView([FigureItem])` (a line of cells shares its label, number and note rows;
+  `FigureItem(unit:)` puts a unit after the number, small and muted, reports.css's `.fig-unit`),
+  `FigureNote(delta:deltaTitle:words:)` (a note's change, faint dot and words as one line;
+  `FigureNote(deltaText:parts:)` a dashboard card's, its words in parts, a dot after each but the last),
+  `DeltaView(pct:)` (ChartFormat.deltaText), `DataTable(columns:rows:selected:part:chart:)` (a row
+  is one VoiceOver element; `part:` .head or .rows for a held head, `chart:` the
+  `.an-tableview .table` look), `TableScroll(maxHeight:) { DataTable }` (a chart's table: at least
+  the column or 28rem, at its start) or `TableScroll(maxHeight:head:) { rows }` (its head held
+  over the rows as they scroll).
 - Page structure: `PageHeader(PageHeaderModel(title:sub:access:crumbs:), titleTools:,
-  actions:, extra:)`, `VirgaPage`, `PageColumn`, `VirgaSection(title:sub:trailing:flush:
-  caption:)`, `SectionFoot`, `VirgaRow(roomy:time:) { } actions: { }`, `RowWords`.
-- Helpers: `FlowLayout`, `ScrollRow`, `.touchReach`, `.touchTarget`, `.virgaFocusOutline`.
-- Toasts: `ToastCenter` (in the shell's environment) and `ToastStack`.
+  period:, actions:, extra:)` (pass the period picker as `period:` and the rest as `actions:`:
+  a phone puts the period first and the rest at the far end; a lone primary action sits beside
+  the title), `VirgaPage` (a tap on the page itself, off its controls, ends editing, as a
+  field's blur), `PageColumn`, `VirgaSection(title:sub:trailing:flush:caption:)` (a
+  small Segmented as `trailing` says so, and goes under the line on a phone), `SectionFoot(count:
+  letOut:)` (`letOut:` the size of a ghost button that starts it), `VirgaRow(roomy:time:) { }
+  actions: { }`, `RowWords`.
+- Helpers: `FlowLayout`, `ScrollRow` (`.scrollRowFocus(_:)` marks the item to bring into
+  view), `BesideOrUnder` (a wrapping flex row of two), `.touchReach`, `.touchTarget`,
+  `.virgaFocusOutline` (put on the Button or Menu itself, or inside a ButtonStyle's body: it
+  binds its own FocusState and also reads `isFocused`).
+- Toasts: `ToastCenter` and `ToastStack`. The app has one center, `ComposerHost.toasts`
+  (App.jsx's ToastProvider, above the account): `.composerHost(_:)` draws it and ShellView puts
+  it in the shell's environment, so every page's toasts and the composer's share one column, at
+  most three, and outlive a switch of account.
 
 SHELL (Shell/)
 - From 900 wide: Virga's own layout, an HStack of the sidebar (272, or the 72 rail when
   folded; no ground, on the sky) and the page, held to `--shell-max` and centred; no
   NavigationSplitView (iOS 26 gives its sidebar a floating panel). Below 900: a
   NavigationStack, the app bar drawn in the page's content on a top-level page
-  (`AppBarRow`, the navigation bar hidden), the system's back button on inner pages, and
-  Virga's own TabBar in `.safeAreaInset`.
+  (`AppBarRow`, the navigation bar hidden), and on inner pages `AppBarBack` (‹ and the
+  page above, parentOf's label, in the bar's leading place: iOS 26's own back button is a
+  bare chevron) with the system's button hidden and its edge swipe kept by
+  `SwipeBackKeeper`; Virga's own TabBar in `.safeAreaInset`.
 - `ShellNavigator`: `path`/`search`/`hash`, `navigate()` on Router.hrefFor, `route` from
   ShellRoutes.parseRoute, `title()`. From any view: `@Environment(\.navigate) var navigate;
   navigate("/reports/followers")`. On a phone the stack path is the parentOf chain.
@@ -141,16 +191,30 @@ SHELL (Shell/)
   built), `SyncStatus.swift` (the sidebar's sync card, the phone's strip, Sync now in the
   account menu), the period picker and its custom range (`PeriodPicker`, `usePeriod` as
   PreferencesModel extensions), and the command palette (Search in the app bar and the
-  sidebar, ⌘K; recent commands under `virga:palette-recent`).
+  sidebar, ⌘K; recent commands under `virga:palette-recent`). A sync that fails is read out
+  once by ShellView, in the words of the page's role="alert" line.
+- Settings rows: `SettingsRow(label:hint:block:compactControl:kind:)`, where `kind`
+  (`SettingsControlKind`: `.button`, `.segmented`, `.toggle`, `.state`, `.prose`; a switch
+  by default where `compactControl` is set, else a button) says how far the control is
+  drawn up to centre it on the name's first line, as settings.css does on a touch screen.
+  A select is `SettingsSelect` (the kit's VirgaSelect over a preference), laid out by
+  `SettingsSelects`; the sky's and the accent's grids are `ChoiceGrid` (auto-fill columns
+  from the grid's own width), radio groups on a hardware keyboard.
 
 CHARTS (Charts/), in Swift Charts over bucket indices
 - `SeriesChart(series: [ChartPoint], seriesLabel:, secondary: ChartSecondary?, stacked:, trend:,
   mode: .bars|.line, unit:, zeroBase:, ghost: ChartGhost?, format:, marks: [SeriesMark]?, height:,
   accessibilityLabel:)`; `ChartPoint.of(...)` takes SeriesPoint, TrendPoint or RatePoint arrays.
   A press is the hover (`chartXSelection`), with the readout on its own ground.
-- `ChartTable(series:secondary:trend:unit:valueHead:secondaryHead:format:) { actions }` and
-  `ShowAsTable`: the line under every chart and its table. `BarList(rows: [BarListRow])`,
-  `Heatmap(rows:columns:summary:)`, `Sparkline(values:)`.
+- `ChartTable(series:secondary:trend:unit:valueHead:secondaryHead:format:trailing:) { actions }` and
+  `ShowAsTable(actions:trailing:table:)`: the line under every chart (44 points a line, `trailing` a
+  phone's ⋯ at its end) and its table, `ChartTableView(columns:rows:)` (the kit's TableScroll with
+  its head held over the rows: two DataTables, head and rows, that each hold every cell, the
+  other's at no height). `BarList(rows: [BarListRow])`,
+  `Heatmap(rows:columns:summary:)`, `Sparkline(values:height:)`.
+- More of charts.css', dashboards.css' and reports.css' measures are in Reports/InsightMeasures.swift
+  (extensions of Measure.Chart, .Dashboard and .Reports), which Theme/Measures.swift no longer
+  repeats.
 
 DASHBOARDS AND REPORTS (Dashboards/, Reports/)
 - `ShellDashboards` is DashboardsContext's provider now: every action over Layouts, written back
@@ -160,10 +224,24 @@ DASHBOARDS AND REPORTS (Dashboards/, Reports/)
   `WidgetBody` draws the ported cards (four figures, six charts, Best time); the rest show their
   title and `Unported.card` (posting cards: `Unported.postingCard`).
 - `ReportsIndex`, `ReportPage(report:)`: every report (Followers, Posts, Engagement, Content,
-  Blocks, People, Atmosphere), with `PersonRow` and `PostRowView` (Reports/People.swift);
-  `ChartNotes` and `ChartNotesModels.marks` (one AnnotationsModel per account) put the notes
-  and the follower milestones on the charts; every dashboard card (`MoreWidget`), and the card
-  settings dialog (`CardSettings`) from Customize.
+  Blocks, People, Atmosphere), with `PersonRow`, `PersonList` (measures a list for its rows' meta
+  line) and `PostRowView` (Reports/People.swift); `ChartNotes` and `ChartNotesModels.marks` (one
+  AnnotationsModel per account) put the notes and the follower milestones on the charts; every
+  dashboard card (`MoreWidget`), and the card settings dialog (`CardSettings`) from Customize.
+- A report's actions (`ReportActionWords`, or the ⋯ on a phone) are passed to its report view as
+  `actions:`/`more:` and end up on its lead ChartTable's line; Export is `ReportExport.file` through
+  `.toolExporter`, Post this chart `.shareDialog`. The engagement report's direction is
+  `?direction=given` (`ReportQuery.replace`, the web's replaceState; DashboardPage drops `?edit=1`
+  the same way). `ReportCard`'s small Segmented goes under the title on a phone (the kit's
+  SectionHead does it); `ReportSplit` is `.report-split` over the tools' ToolSplit;
+  `ReportParts.fig` (a number, or `text:` words, each taking `unit:`; `note:` for a note that is
+  markup) draws its change and words as the kit's `FigureNote`. A report's header passes the
+  period picker as PageHeader's `period:`, as the dashboard's does.
+- Dialogs whose foot acts on what is typed in them draw their own `DialogFrame` and are presented
+  with `.dashboardDialog(isPresented:size:)`: RenameDashboard, NewDashboardDialog (also from
+  Settings › Dashboards and the shell), CardSettings, AddToDashboard, and the report library (its
+  own `DialogHead`, the search held over the list). A card's width is `\.widgetWidth` (the web's
+  `@container widget`), and `\.statValueOnly` draws a figure down to its number.
 
 TOOLS (Tools/)
 - `RoutedPage` sends `/tools` to `ToolsIndex` and `/tools/<key>` to `ToolPage(toolKey:)`, which
@@ -178,26 +256,38 @@ TOOLS (Tools/)
   reports' `PersonRow`/`PostRowView`: `ToolPeople` (cardFor, displayName, profileUrl),
   `.wantActors(archive, dids)` (useWantActors), `FollowWriter` and `ToolFollowButton` (a
   follow per row, busy and its error), `ToolPersonRow`, `ToolPostRow`/`ToolPostMeta`,
-  `ToolStatement`, `FilterCards`/`FilterChoice` (figures that are the filter), `KVList`,
-  `TimelineList`, `ToolMoreFoot` ("Show 30 more"), `ToolSelect`, `ToolSplit`, `ToolCaption`,
-  and `.toolExporter($file)` with `archive.exportRows(name, rows)` for Export.
-- From 641 wide Follow cleanup and Lists are tables (`CleanupTable`, `ListsTable`, a Grid
-  whose first column takes what the rest leave); narrower, rows as the web's phone sets
-  them. `Measure.Tools` (ToolMeasures.swift) names tools.css's measures.
+  `ToolStatement`, `FilterCards`/`FilterChoice` (figures that are the filter, their counts
+  sized from the row as the web's clamp()s are), `KVList` (it measures itself, and its
+  rows choose their layout by its width, as the `.kv` container query does),
+  `TimelineList`, `ToolMoreFoot` ("Show 30 more"), `ToolSelect` (`hidesLabel` over a list
+  on a phone), `ToolSplit` (`shares`, and `mins` for a `minmax(300px, 1fr)` column),
+  `ToolSpreadRow` (flex-wrap with space-between: the line over a table, the activity
+  check), `ToolEmptyLine` (a bare `.empty`, 24 above and below), `ToolCaption`,
+  `.toolAnnounces(text, onAppear:)` (what the web marks `role="status"` or `role="alert"`,
+  posted to VoiceOver), and `.toolExporter($file)` with `archive.exportRows(name, rows)`
+  for Export. A person row's meta (`ToolPersonMeta`) is one line ending in an ellipsis that
+  drops "follows you" under 600 and the handle under 480 when the row has a fact, by the
+  list's width.
+- From 641 wide Follow cleanup and Lists are tables (`CleanupTable`, `ListsTable`, a Grid;
+  the cleanup table's account is 36% of its width, as `.cleanup-table td.col-main` is, the
+  other columns sharing the rest, and the lists table's name takes what the rest leave);
+  narrower, rows as the web's phone sets them. `Measure.Tools` (ToolMeasures.swift) names
+  tools.css's measures.
 
 SHARING (Share/)
 - The hook, for a card or a report: `PostChartButton(type:name:options:period:)` (a card's
-  ghost icon), `PostChartLink(type:name:kind:period:)` (a report's link action), or
-  `@State var share: ShareRequest?` with `.shareDialog($share, period:)`. Each draws nothing
-  for a type ShareSpec can't picture.
+  ghost icon), or `@State var share: ShareRequest?` with `.shareDialog($share, period:)` (a
+  report's Post this chart and its ⋯). Each draws nothing for a type ShareSpec can't picture.
 - The picture is `ShareImage.render(spec, theme:)`: VirgaInsights' ShareSpec drawn by
   ChartImage onto `GraphicsShareCanvas` (its `ShareCanvas` over a SwiftUI GraphicsContext)
   in an ImageRenderer at scale 1, 1200 × 675, under the sky on screen.
 - Write a post with it calls `@Environment(\.shareComposer)` (a `ShareComposer` taking a
-  `ShareDraft`: whose post, its first line, the PNG and its description) once the composer
-  sets it; until then the picture and the first line go out through ShareLink as
-  virga-chart.png. Save the picture asks Photos for add-only access
-  (NSPhotoLibraryAddUsageDescription in project.yml) and says how it went in a toast.
+  `ShareDraft`: whose post, its first line, the PNG and its description) once the dialog's sheet
+  has gone; ComposerHost's modifier sets it, writing the PNG as a temporary file and opening the
+  composer with `images: [{ file, alt }]`. Where nothing sets it (a preview) the picture and the
+  first line go out through ShareLink as virga-chart.png. Save the picture asks Photos for
+  add-only access (NSPhotoLibraryAddUsageDescription in project.yml) and says how it went in a
+  toast.
 
 DEFENSE (Defense/)
 - `RoutedPage` sends `/defense/<page>` to `DefensePage(pageKey:)` (scan, lists, history)
@@ -478,10 +568,44 @@ APP (App/, Pages/, Legal/, SignIn/, Accounts/, Settings/, Platform/)
 - `AppModel` builds the stores and models once per process; `AppModel.archive(for:)` makes
   one ArchiveModel per signed-in account, and `ArchiveHost` (ArchiveProvider's role)
   starts and stops it; pages read `@Environment(ArchiveModel.self)`. The session's
-  `resetAnalyticsStore` and `deleteDatabase` go to VirgaArchive's AnalyticsStore.
+  `resetAnalyticsStore` and `deleteDatabase` go to VirgaArchive's AnalyticsStore. The
+  archive's handle is `AppModel.archiveHandle(for:)`: the profile's once ProfileModel's
+  `did` is that account's (a view drawn right after a switch still sees the last
+  profile), else the remembered row's; ArchiveHost sets `archive.handle` again when the
+  fresh read arrives, as the web hook takes it on every render.
 - `AppRoot` ports App.jsx's states; `onOpenURL` and universal links go to
-  `completeSignIn(callbackURL:)`. `SystemWebAuthenticator` is ASWebAuthenticationSession
-  with the `.https(host:path:)` callback.
+  `completeSignIn(callbackURL:)`. It keeps Defense's scans only for the accounts signed in
+  (`ScanStore.keepScansFor`), and makes the shell again when the number and date formats change
+  (`ShellView.id(preferences.formats)`, App.jsx's `<Shell key={formats}>`). `SystemWebAuthenticator` is ASWebAuthenticationSession
+  with the `.https(host:path:)` callback. "Signing you in…" while `session.returning`
+  (a sign-in that came back is being finished). An account the agreement model hasn't
+  been told of yet (the first pass after a switch or an Add an account) is decided
+  in AppRoot's `termsStatus(for:)` from its stored note, as useTermsAcceptance decides
+  in the same render, so no shell or archive is made for it on the last account's answer.
+  A compose link kept while signed out lives in `stores.tab` (sessionStorage), and
+  `\.signInComposing` puts the front page's callout up.
+- A sign-in called off on the system's sheet (`SignInTrip.calledOff`: code CANCELLED,
+  AbortError, the flow's tripFailureNotice rule) shows no notice anywhere: the account
+  menu's Reconnect, Settings, the session notices' hand-off, Sign in again and Sign in.
+- The sign-in flow: VoiceOver gets the web's live regions as announcements (Looking you
+  up, Found, the notices, Still here, the session notices, the agreement's failure) and
+  focus where the web puts it (the way on while an account is looked up and found; the
+  field as Add an account opens). The handle field is named by its label (the TextField's
+  title, the placeholder its prompt) with the field's notice as its hint. On the front page
+  its suggestions float over what follows it (`zIndex` at every level of the column down to
+  LandingFrame's main), and on a phone the page brings the field's label to the top when
+  they come up (`SignInScrolling`, a ScrollViewReader round LandingView, put on by AppRoot).
+  "Continue anyway" and "Still here? Open <host>" are links in their sentences
+  (`SignInInlineLink`, `virga-signin:`). Going again cancels and awaits the trip under way;
+  closing Add an account calls the trip off, but not once the sign-in has come back
+  (`session.returning`): "Signing you in…" takes the page down then, and cancelling would
+  cancel the account's opening reads with it. A card, the account arriving and the
+  leaving title rise or fade in with `SignInArriving` (0.28 s and 0.32 s on --ease,
+  `Measure.SignIn.stepIn`/`identityIn`), the card they replace going at once.
+- LegalDialog's "Open as a page" is `LegalPageCover`, a full-screen cover over the dialog
+  (the web's new tab), whose Back to Virga closes it; links to either document change it
+  in place. The front page's foot and a legal page's are `LandingFootLayout` (wrapping,
+  on first baselines, spread to the ends), their links 44 to press.
 - Landing, SignInReturn, TermsGate, LegalPage/LegalDialog/LegalDocument, SignInFlowView,
   AccountMenu, AccountsSettings, SessionNotices, SettingsPage (Account, Appearance,
   Permissions, Data and sync with exports through `.fileExporter`, Dashboards, About).
@@ -577,16 +701,17 @@ LIVE SKY (Sky/, and VirgaCore/Hillside/ for everything that isn't drawing)
 
 ## Known gaps and deliberate differences
 
-- Left for later steps: dragging cards, a card's settings dialog, the dashboard cards and reports not listed
-  above, ChartNotes and the charts' notes and milestones; of posting, what the composer's entry
-  (Composer.jsx) lists as not yet (the duplicate guard, drag and drop, the posted toast's View it on Bluesky);
-  "Keep it when space runs low" (iOS has nothing to ask).
+- Left for later steps: dragging cards; the dashboard's posting cards (StatScheduled, StatTimers,
+  PostingNext, PostingDrafts), which can now read scheduleService and hubModel; of posting, what the
+  composer's entry (Composer.jsx) lists as not yet (the duplicate guard, drag and drop, the posted toast's
+  View it on Bluesky); the pending-work warnings before a sign-out (AppModel.pendingWork, until the
+  schedule and timer services are wired to it); "Keep it when space runs low" (iOS has nothing to ask).
 - Copy is the web's word for word, including words that only fit a browser ("This
   browser's region", "Forget X on this browser", "Saving the repo to this browser"). Worth
   raising on the web side rather than changing on one side.
 - New copy the web has no counterpart for: "This page isn't in the iOS app yet.", "This
   section isn't in the iOS app yet.", "This card isn't in the iOS app yet." and "This card
-  needs the composer, which isn't in the iOS app yet."; the share dialog's toasts after
+  needs the posting pages, which aren’t in the iOS app yet."; the share dialog's toasts after
   Save the picture ("Saved to Photos." and "The picture couldn’t be saved.") and Photos'
   permission line ("Virga saves a chart's picture to your photos when you ask it to."),
   since the web downloads the file instead.
@@ -596,7 +721,17 @@ LIVE SKY (Sky/, and VirgaCore/Hillside/ for everything that isn't drawing)
   five rows).
 - Every window shares one session, so the web's "another tab switched accounts" notice
   has no case; TermsGate's Reload can't fetch newer documents (they are bundled).
-- Until the composer is in the app, Post this chart's Write a post with it is the system's
-  share sheet. New post (the sidebar's, the tab bar's round button) opens the composer in
-  place, over the page it was pressed on, as Shell.jsx's does; VirgaUITests'
-  `testNewPostOpensTheComposer` checks it opens and that Close shuts it.
+- Post this chart's Write a post with it opens the composer with the picture and its
+  description, once the share sheet has gone (one sheet at a time). New post (the sidebar's,
+  the tab bar's round button) opens the composer in place, over the page it was pressed on, as
+  Shell.jsx's does; VirgaUITests' `testNewPostOpensTheComposer` checks it opens and that Close
+  shuts it. The palette's New post opens it the same way, once the palette's sheet has gone.
+  The n shortcut isn't there: a SwiftUI shortcut without a modifier can't tell that a field has
+  the focus or that another sheet is up, as useNewPostShortcut does, and a key command for a bare
+  letter risks taking the letter from every field.
+- Customize is the web's phone path at every width (each card a line, opened by its name to its
+  size, Settings and Remove); the wide screen's grid with the chosen card's floating tools and
+  the library beside it isn't drawn. VirgaUITests opens the first line (`arrange-open-<type>`)
+  before it presses `card-settings-<type>`.
+- The sidebar's fold button is the system's one sidebar glyph, open and folded, where the
+  web draws PanelLeftClose and PanelLeftOpen.

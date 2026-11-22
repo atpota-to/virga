@@ -73,7 +73,9 @@ public struct TermsGateView: View {
               .foregroundStyle(theme.ink)
               .fixedSize(horizontal: false, vertical: true)
           }
-          .toggleStyle(.virgaCheck)
+          .toggleStyle(.virgaTermsCheck)
+          // The nudge is the box's description while it shows.
+          .accessibilityHint(checkHint)
           .accessibilityFocused($checkFocused)
           .accessibilityIdentifier("terms-check")
           .onChange(of: agreed) { _, now in if now { nudge = false } }
@@ -104,6 +106,11 @@ public struct TermsGateView: View {
       try? await Task.sleep(nanoseconds: UInt64(Self.nameWaitMs * 1_000_000))
       if !Task.isCancelled { waited = true }
     }
+  }
+
+  /// The box's description: the nudge, while it shows.
+  private var checkHint: String {
+    nudge && !agreed ? "Tick the box to say you agree, then carry on." : ""
   }
 
   /// The sentence with the two documents in it, each opening in a dialog.
@@ -147,7 +154,10 @@ public struct TermsGateView: View {
       do {
         try await terms.accept()
       } catch {
-        failure = Acceptance.acceptFailure(error)
+        let failed = Acceptance.acceptFailure(error)
+        failure = failed
+        // role="alert": read out as it comes up.
+        AccessibilityNotification.Announcement(failed.text).post()
       }
       busy = false
     }

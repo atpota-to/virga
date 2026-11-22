@@ -240,7 +240,11 @@ struct SyncBanner: View {
     }
   }
 
-  private func strip<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+  /// `.sync-banner`: at most the column and its margins wide, centred, with
+  /// what runs along its foot (the progress) held to that width.
+  private func strip<Content: View, Foot: View>(
+    @ViewBuilder _ content: () -> Content, @ViewBuilder foot: () -> Foot
+  ) -> some View {
     HStack(spacing: Measure.Sync.bannerGap) {
       content()
     }
@@ -248,6 +252,7 @@ struct SyncBanner: View {
     .padding(.horizontal, theme.pagePad)
     .frame(minHeight: Measure.Sync.bannerHeight)
     .frame(maxWidth: theme.contentMax + theme.pagePad * 2)
+    .overlay(alignment: .bottom) { foot() }
     .frame(maxWidth: .infinity)
   }
 
@@ -271,8 +276,9 @@ struct SyncBanner: View {
         .buttonStyle(.linkAction)
         .accessibilityLabel("Cancel the sync")
         .accessibilityIdentifier("sync-cancel")
-    }
-    .overlay(alignment: .bottom) {
+    } foot: {
+      // Under the column's words beside the rail; the strip's whole width
+      // under 900.
       ProgressLine(value: SyncStatus.overallFraction(sync), height: Measure.Sync.bannerProgress)
         .padding(.horizontal, theme.hasSidebar ? theme.pagePad : 0)
         .accessibilityHidden(true)
@@ -288,11 +294,19 @@ struct SyncBanner: View {
         .virgaText(.textSm, weight: VirgaWeight.medium)
         .lineLimit(1)
         .frame(maxWidth: .infinity, alignment: .leading)
-      Button("See what failed") { navigate("/settings/data") }
-        .buttonStyle(.plain)
-        .virgaText(.textSm, weight: VirgaWeight.medium)
-        .underline()
-        .accessibilityAddTraits(.isLink)
+      Button {
+        navigate("/settings/data")
+      } label: {
+        // Pressed through 44 points, though its line is about 19.
+        Text("See what failed")
+          .virgaText(.textSm, weight: VirgaWeight.medium)
+          .underline()
+          .touchReach(horizontal: 0, vertical: max(0, (Measure.Touch.target - theme.textSm * CGFloat(ThemeKit.bodyLineHeight)) / 2))
+      }
+      .buttonStyle(.plain)
+      .accessibilityAddTraits(.isLink)
+    } foot: {
+      EmptyView()
     }
     .foregroundStyle(theme.warn)
     .padding(.bottom, Measure.Sync.bannerSpaceBelow)

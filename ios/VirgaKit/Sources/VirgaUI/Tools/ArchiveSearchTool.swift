@@ -19,7 +19,7 @@ struct ArchiveSearchTool: View {
   let tool: ToolEntry
 
   var body: some View {
-    VirgaPage(header: ToolHeader.header(tool, actions: AnyView(PeriodPicker()))) {
+    VirgaPage(header: ToolHeader.header(tool, period: AnyView(PeriodPicker()))) {
       if let archive {
         ArchiveSearchBody(archive: archive)
           .id(archive.did)
@@ -109,21 +109,24 @@ struct ArchiveSearchBody: View {
     let shown = Array(results.prefix(limit))
     let count = AppLocale.formatNumber(results.count)
     let now = SyncStatus.now()
+    let found: String = "\(count) \(results.count == 1 ? "post" : "posts") in \(Periods.periodPhrase(period))\(q.isEmpty ? "" : " matching “\(query.jsTrimmed())”")"
     VStack(alignment: .leading, spacing: 0) {
       toolbar
         .padding(.bottom, theme.space4)
       SectionHead(
-        "\(count) \(results.count == 1 ? "post" : "posts") in \(Periods.periodPhrase(period))\(q.isEmpty ? "" : " matching “\(query.jsTrimmed())”")",
+        found,
         sub: ReportModels.contentReady(ReportArchive(archive))
           ? nil : "Until your next sync, older posts are searched by their first 200 characters only, and not by tag or site.",
         trailing: AnyView(exportMenu(results))
       )
       .accessibilityElement(children: .contain)
       .accessibilityIdentifier("archive-results")
+      // The heading is `role="status"`: how many a search finds is read out.
+      .toolAnnounces(found)
       .padding(.bottom, theme.points(ThemeKit.flushHeadSpaceBelow))
       Rectangle().fill(theme.color(ThemeKit.flushHeadRule)).frame(height: theme.points(ThemeKit.flushHeadRule))
       if shown.isEmpty {
-        EmptyState("Nothing matches.").padding(.top, theme.rowPad)
+        ToolEmptyLine("Nothing matches.")
       } else {
         LazyVStack(alignment: .leading, spacing: 0) {
           ForEach(shown, id: \.uri) { post in
@@ -138,26 +141,43 @@ struct ArchiveSearchBody: View {
     .onChange(of: query) { _, _ in limit = ArchiveSearch.page }
   }
 
+  /// `.list-toolbar`: the search, the kinds and the sort. On a phone the
+  /// search takes the first line, and the kinds (scrolling if they must)
+  /// share the second with the sort, whose word is left to VoiceOver.
+  @ViewBuilder
   private var toolbar: some View {
-    let phone = theme.isPhone
-    return FlowLayout(
-      spacing: phone ? Measure.Tools.phoneToolbarColumnGap : Measure.Tools.toolbarColumnGap, lineSpacing: Measure.Tools.toolbarRowGap,
-      alignment: .center
-    ) {
-      SearchField("Search words, #tags or sites", text: $query)
-        .textInputAutocapitalization(.never)
-        .autocorrectionDisabled()
-        .accessibilityLabel("Search your posts")
-        .frame(
-          width: phone ? theme.windowWidth - theme.pagePad * 2 : nil,
-          alignment: .leading
-        )
-        .frame(minWidth: phone ? nil : Measure.Tools.toolbarSearchMin, maxWidth: phone ? nil : Measure.Tools.toolbarSearchMax)
-      Segmented(label: "Kind of post", options: ArchiveSearch.kinds, selection: kind, size: .small) { k in
-        kind = k
-        limit = ArchiveSearch.page
+    if theme.isPhone {
+      VStack(alignment: .leading, spacing: Measure.Tools.toolbarRowGap) {
+        searchField
+          .frame(maxWidth: .infinity, alignment: .leading)
+        HStack(alignment: .center, spacing: Measure.Tools.phoneToolbarColumnGap) {
+          kinds
+            .frame(maxWidth: .infinity, alignment: .leading)
+          ToolSelect(label: "Sort", options: ArchiveSearch.sorts, selection: $sort, hidesLabel: true)
+            .fixedSize()
+        }
       }
-      ToolSelect(label: "Sort", options: ArchiveSearch.sorts, selection: $sort)
+    } else {
+      FlowLayout(spacing: Measure.Tools.toolbarColumnGap, lineSpacing: Measure.Tools.toolbarRowGap, alignment: .center) {
+        searchField
+          .frame(minWidth: Measure.Tools.toolbarSearchMin, maxWidth: Measure.Tools.toolbarSearchMax)
+        kinds
+        ToolSelect(label: "Sort", options: ArchiveSearch.sorts, selection: $sort)
+      }
+    }
+  }
+
+  private var searchField: some View {
+    SearchField("Search words, #tags or sites", text: $query)
+      .textInputAutocapitalization(.never)
+      .autocorrectionDisabled()
+      .accessibilityLabel("Search your posts")
+  }
+
+  private var kinds: some View {
+    Segmented(label: "Kind of post", options: ArchiveSearch.kinds, selection: kind, size: .small) { k in
+      kind = k
+      limit = ArchiveSearch.page
     }
   }
 
