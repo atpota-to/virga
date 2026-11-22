@@ -49,7 +49,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Dashboards/DashboardPage.swift"
       ],
-      "note": "The header (the name with its ⋯: Rename, Duplicate, New dashboard, Reset or Clear with its toast, Delete with its dialog; the period's line; Customize and the period picker; Done), the twelve-column grid with dashboards.css's narrowing (CardGrid), the cards under their titles with the way to the full report, the empty state, ?edit=1, and Customize as the web's phone and keyboard path at every width (each card a line to move up or down, its size, Remove, with toasts) with the library in a dialog (search, kind, Add). Not yet: dragging cards and reports, the card settings dialog (stored settings are read: a card's title and its own period), the chosen card's floating tools, and Post this chart (ShareDialog).",
+      "note": "The header (the name with its ⋯: Rename, Duplicate, New dashboard, Reset or Clear with its toast, Delete with its dialog; the period's line; Customize and the period picker; Done), the twelve-column grid with dashboards.css's narrowing (CardGrid), the cards under their titles with the way to the full report, the empty state, ?edit=1, and Customize as the web's phone and keyboard path at every width (each card a line to move up or down, its size, Remove, with toasts) with the library in a dialog (search, kind, Add). The card settings dialog (title, period, kind of engagement, rows, Use the defaults) opens from a card's line in Customize. Not yet: dragging cards and reports, the chosen card's floating tools, OwnLine (the words under a card's title for its own period and kind), and Post this chart (ShareDialog).",
       "synced": "55c8f98f100f"
     },
     "src/dashboards/DashboardsContext.jsx": {
@@ -69,19 +69,21 @@
       "synced": "3b7c85e8d37d"
     },
     "src/dashboards/widgets/content.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Dashboards/MoreWidgets.swift"
       ],
-      "note": "Its cards are in the library and on the grid with their titles; their bodies (a typical post, media described, formats, length, tags, sites) say they aren't in the app yet.",
+      "note": "A typical post, media described, formats (with its standout sentence) and length, tags and sites, each with its foot and the line for an archive the next sync must read first.",
       "synced": "d8886917b04c"
     },
     "src/dashboards/widgets/index.jsx": {
       "status": "partial",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Dashboards/MoreWidgets.swift"
       ],
-      "note": "The followers, new followers, engagement and posts figures; follower growth (with the ghost to the profile's count), new followers, engagement over time, engagement rate, posting cadence and Best time (its sentence, heatmap and foot), over ReportModels. Not yet: the other figures (unfollows, per post, given, blocked by), the lists (top posts, engagers, follow-back, newest followers, unfollows, lists, repo collections), engagement by type and given, blocks over time and repo activity, the charts' notes and milestones (useChartMarks), and WIDGET_HEADS; each card not ported shows its title and says so.",
+      "note": "Every card: the figures (followers, new followers, unfollows, engagement, per post, given, posts, blocked by), the charts (follower growth with the ghost and the milestones, new followers, engagement over time, rate, by type and given, posting cadence, Best time, blocks over time, repo activity) with the notes marked, and the lists (top posts, top engagers, you engage with, follow-back, newest followers, unfollows, the lists you're on, records by collection) with Follow and the names filled in. Not yet: WIDGET_HEADS (a list's count and the follower chart's Total and New modes in the card's heading).",
       "synced": "6a863f721549"
     },
     "src/dashboards/widgets/parts.jsx": {

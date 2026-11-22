@@ -18,10 +18,11 @@
 // was added, removed or reset. Arriving with ?edit=1 (a dashboard just made
 // empty) opens it for customizing.
 //
+// A card's own settings (its title, period, kind of engagement and rows)
+// open from its line (CardSettings.swift).
+//
 // Not here yet: dragging cards and reports about (the up and down
-// controls are the way), a card's own settings (its title, period, kind of
-// engagement and rows: the dialog isn't ported, though a stored card's
-// settings are read), and Post this chart (the share dialog, next).
+// controls are the way), and Post this chart (the share dialog, next).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -315,6 +316,7 @@ struct ArrangeList: View {
   @Environment(ShellDashboards.self) private var dashboards
   let dashboard: Dashboard
   let toasts: ToastCenter?
+  @State private var settingsFor: String?
 
   var body: some View {
     let widgets = dashboard.widgets
@@ -345,6 +347,12 @@ struct ArrangeList: View {
               .foregroundStyle(theme.ink)
               .lineLimit(1)
             Spacer(minLength: 0)
+            if let def, !(def.options ?? []).isEmpty {
+              Button("Settings") { settingsFor = card.id }
+                .buttonStyle(.linkAction)
+                .accessibilityLabel("Settings for \(name)")
+                .accessibilityIdentifier("card-settings-\(card.type)")
+            }
             Button("Remove") {
               dashboards.removeWidget(dashboard.id, card.id)
               toasts?.push("\(def?.name ?? name) removed.")
@@ -374,6 +382,18 @@ struct ArrangeList: View {
     .overlay(alignment: .top) { Rectangle().fill(theme.rule).frame(height: 1) }
     .accessibilityElement(children: .contain)
     .accessibilityLabel("The reports on \(dashboard.name), in order")
+    .virgaDialog(
+      isPresented: Binding(get: { settingsFor != nil }, set: { if !$0 { settingsFor = nil } }),
+      title: settingsCard.flatMap { Catalog.widgets[$0.type] }.map { "\($0.name) settings" } ?? "Card settings"
+    ) {
+      if let card = settingsCard, let def = Catalog.widgets[card.type] {
+        CardSettings(dashboardId: dashboard.id, card: card, def: def) { settingsFor = nil }
+      }
+    }
+  }
+
+  private var settingsCard: DashboardCard? {
+    settingsFor.flatMap { id in dashboard.widgets.first { $0.id.jsEquals(id) } }
   }
 }
 

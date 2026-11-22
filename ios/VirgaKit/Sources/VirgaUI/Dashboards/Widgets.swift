@@ -13,12 +13,11 @@
 // before, and a note in parts). The charts are SeriesChart at the height
 // for their size, and Best time is its sentence, the heatmap and its foot.
 //
-// Here now: the followers, new followers, engagement and posts figures;
+// Here: the followers, new followers, engagement and posts figures;
 // follower growth, new followers, engagement over time, engagement rate,
-// posting cadence and Best time. The other cards (the lists, the content
-// and people cards, the repo's, Blocked by) show their title and say they
-// aren't in the app yet; the posting cards (scheduled posts, timers, what
-// goes out next, drafts) say they need the composer, which isn't either.
+// posting cadence and Best time; every other card is MoreWidget's
+// (MoreWidgets.swift). The posting cards (scheduled posts, timers, what
+// goes out next, drafts) say they need the composer, which isn't ported.
 // The chart cards carry the notes, and the follower cards the milestones
 // (ChartNotesModels.marks, useChartMarks).
 
@@ -41,6 +40,9 @@ enum WidgetParts {
   static let height: [String: CGFloat] = ["xs": 140, "s": 150, "m": 180, "l": 220, "xl": 240]
 
   static func height(_ size: String) -> CGFloat { height[size] ?? 180 }
+
+  /// `KIND_ICON`.
+  static let kindGlyph: [String: String] = ["like": Glyph.heart, "repost": Glyph.repost, "reply": Glyph.reply, "quote": Glyph.quote]
 
   /// `KIND_NOUN`, and the word for every kind.
   static let kindNoun: [String: String] = ["like": "Likes", "repost": "Reposts", "reply": "Replies", "quote": "Quotes"]
@@ -111,13 +113,7 @@ struct WidgetBody: View {
     case "posting-cadence": postingCadence
     case "best-time": bestTime
     default:
-      if def.kind == "stat" {
-        Stat(icon: def.sfSymbol, label: title ?? def.name, to: def.href, window: nil, value: "—", delta: nil, sub: nil, spark: nil)
-      }
-      Text(def.category == "posting" ? Unported.postingCard : Unported.card)
-        .virgaText(.textSm)
-        .foregroundStyle(theme.muted)
-        .fixedSize(horizontal: false, vertical: true)
+      MoreWidget(card: card, def: def, archive: archive, period: period, title: title)
     }
   }
 
