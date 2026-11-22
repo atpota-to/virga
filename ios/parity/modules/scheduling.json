@@ -73,7 +73,7 @@
       "fixtures": [
         "scheduling.queueReorder"
       ],
-      "note": "Times without an offset are read in timeZone (the device's). queueTimerConflict and planQueueReorder take now: for the pin's words, which the web says against Date.now() (one clock with the plan's now, as the app calls it).",
+      "note": "Times without an offset are read in timeZone (the device's). queueTimerConflict and planQueueReorder take now: for the pin's words, which the web says against Date.now() (one clock with the plan's now, as the app calls it). planQueueReorder throws the web's TypeError for a null row. Not reproduced (corrupt input only): the standalone queueTimerConflict reads a null row as one without an id, and pendingMoves an assignment that isn't a list as none, where the web throws.",
       "synced": "e2508fdcb9c0"
     },
     "src/posting/schedule/queueSuggestions.js": {
@@ -84,7 +84,7 @@
       "fixtures": [
         "scheduling.queueSuggestions"
       ],
-      "note": "scheduleFromSuggestions takes the device zone as localZone. Not reproduced (corrupt input only): a cell day of 'length' or an inherited array method, which the web takes for a day key, and suggestions that are numbers or strings.",
+      "note": "scheduleFromSuggestions takes the device zone as localZone. A day whose times have no includes (a number, an object) throws the web's TypeError; the typed overloads read it as empty. Not reproduced (corrupt input only): a cell day of 'length' or an inherited array method, which the web takes for a day key.",
       "synced": "08c5c2a6bc55"
     },
     "src/posting/schedule/scheduleSerialize.js": {

@@ -6,7 +6,8 @@
 // Inputs from queueSuggestions.test.js, plus cells the web reads by property
 // key ('1', [1], -0), columns and blocks through Number(), hours off the
 // clock, repeats, loose weeks (no slots, an array, unsorted and non-string
-// times, a substring match on a string day) and the device's zone where the
+// times, a substring match on a string day, days whose times have no
+// `includes`, suggestions without a time) and the device's zone where the
 // week names none.
 
 import {
@@ -106,6 +107,12 @@ const weeks = [
   [1, 2],
   'week',
   { timezone: '', slots: { sun: ['12:00'] }, extra: true },
+  // Days whose times have no `includes`: the web throws a TypeError, or
+  // reads a falsy day as none.
+  { slots: { mon: 5 } },
+  { slots: { mon: { a: 1 } } },
+  { slots: { mon: true } },
+  { slots: { mon: false, tue: 0 } },
 ];
 
 const pickSets = [
@@ -125,6 +132,10 @@ const pickSets = [
   [{ time: '10:00' }],
   [null],
   [{ dayKey: '0', time: '10:00' }],
+  // Times left out: one `undefined` a day, sorted last.
+  [{ dayKey: 'mon' }, { dayKey: 'mon' }],
+  [{ dayKey: 'mon' }, { dayKey: 'mon', time: '08:00' }, { dayKey: 'mon' }],
+  [5, 'ab'],
 ];
 
 const missingInputs = [];
@@ -139,6 +150,7 @@ missingInputs.push({ schedule: WEEK, suggestions: 'mon' });
 missingInputs.push({ schedule: WEEK, suggestions: { 0: PICKS[0] } });
 mergeInputs.push({ schedule: WEEK, suggestions: 5 });
 mergeInputs.push({ schedule: WEEK, suggestions: { 0: PICKS[0] } });
+mergeInputs.push({ schedule: WEEK, suggestions: 'ab' });
 
 const ZONES = ['UTC', 'America/Chicago', 'Asia/Kolkata', 'Pacific/Chatham'];
 

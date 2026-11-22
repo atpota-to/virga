@@ -12090,7 +12090,7 @@
       "id": "groupByZonedDay#7",
       "fn": "groupByZonedDay",
       "input": {
-        "tz": "America/New_York",
+        "tz": "UTC",
         "locale": "en-US",
         "rows": [
           {
@@ -12273,8 +12273,7 @@
               }
             }
           }
-        ],
-        "zone": "UTC"
+        ]
       },
       "output": [
         {
@@ -12511,7 +12510,7 @@
       "id": "groupByZonedDay#8",
       "fn": "groupByZonedDay",
       "input": {
-        "tz": "America/New_York",
+        "tz": "UTC",
         "locale": "en-US",
         "rows": [
           {
@@ -12695,12 +12694,12 @@
             }
           }
         ],
-        "zone": "Asia/Tokyo"
+        "zone": null
       },
       "output": [
         {
-          "key": "overdue",
-          "label": "Overdue",
+          "key": "unknown",
+          "label": "No time",
           "rows": [
             {
               "id": "past",
@@ -12721,13 +12720,7 @@
                   "postgate": null
                 }
               }
-            }
-          ]
-        },
-        {
-          "key": "2026-11-13",
-          "label": "Tomorrow",
-          "rows": [
+            },
             {
               "id": "a",
               "scheduledFor": "2026-11-12T23:30:00Z",
@@ -12767,13 +12760,7 @@
                   "postgate": null
                 }
               }
-            }
-          ]
-        },
-        {
-          "key": "2026-11-25",
-          "label": "Wednesday, November 25",
-          "rows": [
+            },
             {
               "id": "c",
               "scheduledFor": "2026-11-25T09:00:00Z",
@@ -12793,13 +12780,7 @@
                   "postgate": null
                 }
               }
-            }
-          ]
-        },
-        {
-          "key": "2026-11-16",
-          "label": "Monday",
-          "rows": [
+            },
             {
               "id": "d",
               "scheduledFor": "2026-11-16T09:00:00Z",
@@ -12819,13 +12800,7 @@
                   "postgate": null
                 }
               }
-            }
-          ]
-        },
-        {
-          "key": "2026-11-19",
-          "label": "Thursday, November 19",
-          "rows": [
+            },
             {
               "id": "e",
               "scheduledFor": "2026-11-18T23:00:00Z",
@@ -12845,13 +12820,7 @@
                   "postgate": null
                 }
               }
-            }
-          ]
-        },
-        {
-          "key": "unknown",
-          "label": "No time",
-          "rows": [
+            },
             {
               "id": "bad",
               "scheduledFor": "whenever",
@@ -12871,13 +12840,7 @@
                   "postgate": null
                 }
               }
-            }
-          ]
-        },
-        {
-          "key": "2026-11-19",
-          "label": "Thursday, November 19",
-          "rows": [
+            },
             {
               "id": "f",
               "scheduledFor": "2026-11-19T05:00:00Z",
@@ -13110,7 +13073,7 @@
             }
           }
         ],
-        "zone": "America/New_York"
+        "zone": "UTC"
       },
       "output": [
         {
@@ -13531,6 +13494,842 @@
             }
           }
         ],
+        "zone": "Asia/Tokyo"
+      },
+      "output": [
+        {
+          "key": "overdue",
+          "label": "Overdue",
+          "rows": [
+            {
+              "id": "past",
+              "scheduledFor": "2026-11-12T11:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post past"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-13",
+          "label": "Tomorrow",
+          "rows": [
+            {
+              "id": "a",
+              "scheduledFor": "2026-11-12T23:30:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post a"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "b",
+              "scheduledFor": "2026-11-13T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post b"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-25",
+          "label": "Wednesday, November 25",
+          "rows": [
+            {
+              "id": "c",
+              "scheduledFor": "2026-11-25T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post c"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-16",
+          "label": "Monday",
+          "rows": [
+            {
+              "id": "d",
+              "scheduledFor": "2026-11-16T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post d"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-19",
+          "label": "Thursday, November 19",
+          "rows": [
+            {
+              "id": "e",
+              "scheduledFor": "2026-11-18T23:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post e"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "unknown",
+          "label": "No time",
+          "rows": [
+            {
+              "id": "bad",
+              "scheduledFor": "whenever",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post bad"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-19",
+          "label": "Thursday, November 19",
+          "rows": [
+            {
+              "id": "f",
+              "scheduledFor": "2026-11-19T05:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post f"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "g",
+              "scheduledFor": "2026-11-19T06:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post g"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "groupByZonedDay#11",
+      "fn": "groupByZonedDay",
+      "input": {
+        "tz": "America/New_York",
+        "locale": "en-US",
+        "rows": [
+          {
+            "id": "past",
+            "scheduledFor": "2026-11-12T11:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post past"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "a",
+            "scheduledFor": "2026-11-12T23:30:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post a"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "b",
+            "scheduledFor": "2026-11-13T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post b"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "c",
+            "scheduledFor": "2026-11-25T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post c"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "d",
+            "scheduledFor": "2026-11-16T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post d"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "e",
+            "scheduledFor": "2026-11-18T23:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post e"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "bad",
+            "scheduledFor": "whenever",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post bad"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "f",
+            "scheduledFor": "2026-11-19T05:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post f"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "g",
+            "scheduledFor": "2026-11-19T06:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post g"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          }
+        ],
+        "zone": "America/New_York"
+      },
+      "output": [
+        {
+          "key": "overdue",
+          "label": "Overdue",
+          "rows": [
+            {
+              "id": "past",
+              "scheduledFor": "2026-11-12T11:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post past"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-12",
+          "label": "Today",
+          "rows": [
+            {
+              "id": "a",
+              "scheduledFor": "2026-11-12T23:30:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post a"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-13",
+          "label": "Tomorrow",
+          "rows": [
+            {
+              "id": "b",
+              "scheduledFor": "2026-11-13T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post b"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-25",
+          "label": "Wednesday, November 25",
+          "rows": [
+            {
+              "id": "c",
+              "scheduledFor": "2026-11-25T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post c"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-16",
+          "label": "Monday",
+          "rows": [
+            {
+              "id": "d",
+              "scheduledFor": "2026-11-16T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post d"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-18",
+          "label": "Wednesday",
+          "rows": [
+            {
+              "id": "e",
+              "scheduledFor": "2026-11-18T23:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post e"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "unknown",
+          "label": "No time",
+          "rows": [
+            {
+              "id": "bad",
+              "scheduledFor": "whenever",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post bad"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-19",
+          "label": "Thursday, November 19",
+          "rows": [
+            {
+              "id": "f",
+              "scheduledFor": "2026-11-19T05:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post f"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "g",
+              "scheduledFor": "2026-11-19T06:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post g"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "groupByZonedDay#12",
+      "fn": "groupByZonedDay",
+      "input": {
+        "tz": "America/New_York",
+        "locale": "en-US",
+        "rows": [
+          {
+            "id": "past",
+            "scheduledFor": "2026-11-12T11:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post past"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "a",
+            "scheduledFor": "2026-11-12T23:30:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post a"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "b",
+            "scheduledFor": "2026-11-13T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post b"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "c",
+            "scheduledFor": "2026-11-25T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post c"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "d",
+            "scheduledFor": "2026-11-16T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post d"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "e",
+            "scheduledFor": "2026-11-18T23:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post e"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "bad",
+            "scheduledFor": "whenever",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post bad"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "f",
+            "scheduledFor": "2026-11-19T05:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post f"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "g",
+            "scheduledFor": "2026-11-19T06:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post g"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          }
+        ],
         "zone": "Pacific/Chatham"
       },
       "output": [
@@ -13759,7 +14558,7 @@
       ]
     },
     {
-      "id": "groupByZonedDay#11",
+      "id": "groupByZonedDay#13",
       "fn": "groupByZonedDay",
       "input": {
         "tz": "America/New_York",
@@ -14138,7 +14937,7 @@
       ]
     },
     {
-      "id": "groupByZonedDay#12",
+      "id": "groupByZonedDay#14",
       "fn": "groupByZonedDay",
       "input": {
         "tz": "America/New_York",
@@ -14326,6 +15125,4028 @@
           }
         ],
         "zone": "Not/AZone"
+      },
+      "output": [
+        {
+          "key": "unknown",
+          "label": "No time",
+          "rows": [
+            {
+              "id": "past",
+              "scheduledFor": "2026-11-12T11:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post past"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "a",
+              "scheduledFor": "2026-11-12T23:30:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post a"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "b",
+              "scheduledFor": "2026-11-13T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post b"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "c",
+              "scheduledFor": "2026-11-25T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post c"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "d",
+              "scheduledFor": "2026-11-16T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post d"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "e",
+              "scheduledFor": "2026-11-18T23:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post e"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "bad",
+              "scheduledFor": "whenever",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post bad"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "f",
+              "scheduledFor": "2026-11-19T05:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post f"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "g",
+              "scheduledFor": "2026-11-19T06:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post g"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "groupByZonedDay#15",
+      "fn": "groupByZonedDay",
+      "input": {
+        "tz": "America/New_York",
+        "locale": "en-US",
+        "rows": [
+          {
+            "id": "past",
+            "scheduledFor": "2026-11-12T11:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post past"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "a",
+            "scheduledFor": "2026-11-12T23:30:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post a"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "b",
+            "scheduledFor": "2026-11-13T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post b"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "c",
+            "scheduledFor": "2026-11-25T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post c"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "d",
+            "scheduledFor": "2026-11-16T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post d"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "e",
+            "scheduledFor": "2026-11-18T23:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post e"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "bad",
+            "scheduledFor": "whenever",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post bad"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "f",
+            "scheduledFor": "2026-11-19T05:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post f"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "g",
+            "scheduledFor": "2026-11-19T06:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post g"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          }
+        ]
+      },
+      "output": [
+        {
+          "key": "overdue",
+          "label": "Overdue",
+          "rows": [
+            {
+              "id": "past",
+              "scheduledFor": "2026-11-12T11:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post past"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-12",
+          "label": "Today",
+          "rows": [
+            {
+              "id": "a",
+              "scheduledFor": "2026-11-12T23:30:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post a"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-13",
+          "label": "Tomorrow",
+          "rows": [
+            {
+              "id": "b",
+              "scheduledFor": "2026-11-13T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post b"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-25",
+          "label": "Wednesday, November 25",
+          "rows": [
+            {
+              "id": "c",
+              "scheduledFor": "2026-11-25T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post c"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-16",
+          "label": "Monday",
+          "rows": [
+            {
+              "id": "d",
+              "scheduledFor": "2026-11-16T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post d"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-18",
+          "label": "Wednesday",
+          "rows": [
+            {
+              "id": "e",
+              "scheduledFor": "2026-11-18T23:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post e"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "unknown",
+          "label": "No time",
+          "rows": [
+            {
+              "id": "bad",
+              "scheduledFor": "whenever",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post bad"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-19",
+          "label": "Thursday, November 19",
+          "rows": [
+            {
+              "id": "f",
+              "scheduledFor": "2026-11-19T05:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post f"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "g",
+              "scheduledFor": "2026-11-19T06:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post g"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "groupByZonedDay#16",
+      "fn": "groupByZonedDay",
+      "input": {
+        "tz": "America/New_York",
+        "locale": "en-US",
+        "rows": [
+          {
+            "id": "past",
+            "scheduledFor": "2026-11-12T11:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post past"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "a",
+            "scheduledFor": "2026-11-12T23:30:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post a"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "b",
+            "scheduledFor": "2026-11-13T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post b"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "c",
+            "scheduledFor": "2026-11-25T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post c"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "d",
+            "scheduledFor": "2026-11-16T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post d"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "e",
+            "scheduledFor": "2026-11-18T23:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post e"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "bad",
+            "scheduledFor": "whenever",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post bad"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "f",
+            "scheduledFor": "2026-11-19T05:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post f"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "g",
+            "scheduledFor": "2026-11-19T06:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post g"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          }
+        ],
+        "zone": null
+      },
+      "output": [
+        {
+          "key": "unknown",
+          "label": "No time",
+          "rows": [
+            {
+              "id": "past",
+              "scheduledFor": "2026-11-12T11:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post past"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "a",
+              "scheduledFor": "2026-11-12T23:30:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post a"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "b",
+              "scheduledFor": "2026-11-13T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post b"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "c",
+              "scheduledFor": "2026-11-25T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post c"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "d",
+              "scheduledFor": "2026-11-16T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post d"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "e",
+              "scheduledFor": "2026-11-18T23:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post e"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "bad",
+              "scheduledFor": "whenever",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post bad"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "f",
+              "scheduledFor": "2026-11-19T05:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post f"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "g",
+              "scheduledFor": "2026-11-19T06:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post g"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "groupByZonedDay#17",
+      "fn": "groupByZonedDay",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "locale": "en-US",
+        "rows": [
+          {
+            "id": "past",
+            "scheduledFor": "2026-11-12T11:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post past"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "a",
+            "scheduledFor": "2026-11-12T23:30:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post a"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "b",
+            "scheduledFor": "2026-11-13T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post b"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "c",
+            "scheduledFor": "2026-11-25T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post c"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "d",
+            "scheduledFor": "2026-11-16T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post d"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "e",
+            "scheduledFor": "2026-11-18T23:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post e"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "bad",
+            "scheduledFor": "whenever",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post bad"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "f",
+            "scheduledFor": "2026-11-19T05:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post f"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "g",
+            "scheduledFor": "2026-11-19T06:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post g"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          }
+        ],
+        "zone": "UTC"
+      },
+      "output": [
+        {
+          "key": "overdue",
+          "label": "Overdue",
+          "rows": [
+            {
+              "id": "past",
+              "scheduledFor": "2026-11-12T11:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post past"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-12",
+          "label": "Today",
+          "rows": [
+            {
+              "id": "a",
+              "scheduledFor": "2026-11-12T23:30:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post a"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-13",
+          "label": "Tomorrow",
+          "rows": [
+            {
+              "id": "b",
+              "scheduledFor": "2026-11-13T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post b"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-25",
+          "label": "Wednesday, November 25",
+          "rows": [
+            {
+              "id": "c",
+              "scheduledFor": "2026-11-25T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post c"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-16",
+          "label": "Monday",
+          "rows": [
+            {
+              "id": "d",
+              "scheduledFor": "2026-11-16T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post d"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-18",
+          "label": "Wednesday",
+          "rows": [
+            {
+              "id": "e",
+              "scheduledFor": "2026-11-18T23:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post e"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "unknown",
+          "label": "No time",
+          "rows": [
+            {
+              "id": "bad",
+              "scheduledFor": "whenever",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post bad"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-19",
+          "label": "Thursday, November 19",
+          "rows": [
+            {
+              "id": "f",
+              "scheduledFor": "2026-11-19T05:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post f"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "g",
+              "scheduledFor": "2026-11-19T06:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post g"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "groupByZonedDay#18",
+      "fn": "groupByZonedDay",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "locale": "en-US",
+        "rows": [
+          {
+            "id": "past",
+            "scheduledFor": "2026-11-12T11:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post past"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "a",
+            "scheduledFor": "2026-11-12T23:30:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post a"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "b",
+            "scheduledFor": "2026-11-13T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post b"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "c",
+            "scheduledFor": "2026-11-25T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post c"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "d",
+            "scheduledFor": "2026-11-16T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post d"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "e",
+            "scheduledFor": "2026-11-18T23:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post e"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "bad",
+            "scheduledFor": "whenever",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post bad"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "f",
+            "scheduledFor": "2026-11-19T05:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post f"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "g",
+            "scheduledFor": "2026-11-19T06:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post g"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          }
+        ],
+        "zone": "Asia/Tokyo"
+      },
+      "output": [
+        {
+          "key": "overdue",
+          "label": "Overdue",
+          "rows": [
+            {
+              "id": "past",
+              "scheduledFor": "2026-11-12T11:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post past"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-13",
+          "label": "Tomorrow",
+          "rows": [
+            {
+              "id": "a",
+              "scheduledFor": "2026-11-12T23:30:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post a"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "b",
+              "scheduledFor": "2026-11-13T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post b"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-25",
+          "label": "Wednesday, November 25",
+          "rows": [
+            {
+              "id": "c",
+              "scheduledFor": "2026-11-25T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post c"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-16",
+          "label": "Monday",
+          "rows": [
+            {
+              "id": "d",
+              "scheduledFor": "2026-11-16T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post d"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-19",
+          "label": "Thursday, November 19",
+          "rows": [
+            {
+              "id": "e",
+              "scheduledFor": "2026-11-18T23:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post e"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "unknown",
+          "label": "No time",
+          "rows": [
+            {
+              "id": "bad",
+              "scheduledFor": "whenever",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post bad"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-19",
+          "label": "Thursday, November 19",
+          "rows": [
+            {
+              "id": "f",
+              "scheduledFor": "2026-11-19T05:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post f"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "g",
+              "scheduledFor": "2026-11-19T06:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post g"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "groupByZonedDay#19",
+      "fn": "groupByZonedDay",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "locale": "en-US",
+        "rows": [
+          {
+            "id": "past",
+            "scheduledFor": "2026-11-12T11:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post past"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "a",
+            "scheduledFor": "2026-11-12T23:30:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post a"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "b",
+            "scheduledFor": "2026-11-13T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post b"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "c",
+            "scheduledFor": "2026-11-25T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post c"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "d",
+            "scheduledFor": "2026-11-16T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post d"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "e",
+            "scheduledFor": "2026-11-18T23:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post e"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "bad",
+            "scheduledFor": "whenever",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post bad"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "f",
+            "scheduledFor": "2026-11-19T05:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post f"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "g",
+            "scheduledFor": "2026-11-19T06:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post g"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          }
+        ],
+        "zone": "America/New_York"
+      },
+      "output": [
+        {
+          "key": "overdue",
+          "label": "Overdue",
+          "rows": [
+            {
+              "id": "past",
+              "scheduledFor": "2026-11-12T11:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post past"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-12",
+          "label": "Today",
+          "rows": [
+            {
+              "id": "a",
+              "scheduledFor": "2026-11-12T23:30:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post a"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-13",
+          "label": "Tomorrow",
+          "rows": [
+            {
+              "id": "b",
+              "scheduledFor": "2026-11-13T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post b"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-25",
+          "label": "Wednesday, November 25",
+          "rows": [
+            {
+              "id": "c",
+              "scheduledFor": "2026-11-25T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post c"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-16",
+          "label": "Monday",
+          "rows": [
+            {
+              "id": "d",
+              "scheduledFor": "2026-11-16T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post d"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-18",
+          "label": "Wednesday",
+          "rows": [
+            {
+              "id": "e",
+              "scheduledFor": "2026-11-18T23:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post e"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "unknown",
+          "label": "No time",
+          "rows": [
+            {
+              "id": "bad",
+              "scheduledFor": "whenever",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post bad"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-19",
+          "label": "Thursday, November 19",
+          "rows": [
+            {
+              "id": "f",
+              "scheduledFor": "2026-11-19T05:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post f"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "g",
+              "scheduledFor": "2026-11-19T06:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post g"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "groupByZonedDay#20",
+      "fn": "groupByZonedDay",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "locale": "en-US",
+        "rows": [
+          {
+            "id": "past",
+            "scheduledFor": "2026-11-12T11:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post past"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "a",
+            "scheduledFor": "2026-11-12T23:30:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post a"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "b",
+            "scheduledFor": "2026-11-13T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post b"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "c",
+            "scheduledFor": "2026-11-25T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post c"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "d",
+            "scheduledFor": "2026-11-16T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post d"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "e",
+            "scheduledFor": "2026-11-18T23:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post e"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "bad",
+            "scheduledFor": "whenever",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post bad"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "f",
+            "scheduledFor": "2026-11-19T05:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post f"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "g",
+            "scheduledFor": "2026-11-19T06:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post g"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          }
+        ],
+        "zone": "Pacific/Chatham"
+      },
+      "output": [
+        {
+          "key": "overdue",
+          "label": "Overdue",
+          "rows": [
+            {
+              "id": "past",
+              "scheduledFor": "2026-11-12T11:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post past"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-13",
+          "label": "Today",
+          "rows": [
+            {
+              "id": "a",
+              "scheduledFor": "2026-11-12T23:30:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post a"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "b",
+              "scheduledFor": "2026-11-13T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post b"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-25",
+          "label": "Wednesday, November 25",
+          "rows": [
+            {
+              "id": "c",
+              "scheduledFor": "2026-11-25T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post c"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-16",
+          "label": "Monday",
+          "rows": [
+            {
+              "id": "d",
+              "scheduledFor": "2026-11-16T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post d"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-19",
+          "label": "Thursday",
+          "rows": [
+            {
+              "id": "e",
+              "scheduledFor": "2026-11-18T23:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post e"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "unknown",
+          "label": "No time",
+          "rows": [
+            {
+              "id": "bad",
+              "scheduledFor": "whenever",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post bad"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-19",
+          "label": "Thursday",
+          "rows": [
+            {
+              "id": "f",
+              "scheduledFor": "2026-11-19T05:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post f"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "g",
+              "scheduledFor": "2026-11-19T06:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post g"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "groupByZonedDay#21",
+      "fn": "groupByZonedDay",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "locale": "en-US",
+        "rows": [
+          {
+            "id": "past",
+            "scheduledFor": "2026-11-12T11:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post past"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "a",
+            "scheduledFor": "2026-11-12T23:30:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post a"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "b",
+            "scheduledFor": "2026-11-13T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post b"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "c",
+            "scheduledFor": "2026-11-25T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post c"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "d",
+            "scheduledFor": "2026-11-16T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post d"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "e",
+            "scheduledFor": "2026-11-18T23:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post e"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "bad",
+            "scheduledFor": "whenever",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post bad"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "f",
+            "scheduledFor": "2026-11-19T05:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post f"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "g",
+            "scheduledFor": "2026-11-19T06:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post g"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          }
+        ],
+        "zone": ""
+      },
+      "output": [
+        {
+          "key": "unknown",
+          "label": "No time",
+          "rows": [
+            {
+              "id": "past",
+              "scheduledFor": "2026-11-12T11:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post past"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "a",
+              "scheduledFor": "2026-11-12T23:30:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post a"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "b",
+              "scheduledFor": "2026-11-13T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post b"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "c",
+              "scheduledFor": "2026-11-25T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post c"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "d",
+              "scheduledFor": "2026-11-16T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post d"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "e",
+              "scheduledFor": "2026-11-18T23:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post e"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "bad",
+              "scheduledFor": "whenever",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post bad"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "f",
+              "scheduledFor": "2026-11-19T05:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post f"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "g",
+              "scheduledFor": "2026-11-19T06:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post g"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "groupByZonedDay#22",
+      "fn": "groupByZonedDay",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "locale": "en-US",
+        "rows": [
+          {
+            "id": "past",
+            "scheduledFor": "2026-11-12T11:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post past"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "a",
+            "scheduledFor": "2026-11-12T23:30:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post a"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "b",
+            "scheduledFor": "2026-11-13T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post b"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "c",
+            "scheduledFor": "2026-11-25T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post c"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "d",
+            "scheduledFor": "2026-11-16T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post d"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "e",
+            "scheduledFor": "2026-11-18T23:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post e"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "bad",
+            "scheduledFor": "whenever",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post bad"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "f",
+            "scheduledFor": "2026-11-19T05:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post f"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "g",
+            "scheduledFor": "2026-11-19T06:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post g"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          }
+        ],
+        "zone": "Not/AZone"
+      },
+      "output": [
+        {
+          "key": "unknown",
+          "label": "No time",
+          "rows": [
+            {
+              "id": "past",
+              "scheduledFor": "2026-11-12T11:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post past"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "a",
+              "scheduledFor": "2026-11-12T23:30:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post a"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "b",
+              "scheduledFor": "2026-11-13T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post b"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "c",
+              "scheduledFor": "2026-11-25T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post c"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "d",
+              "scheduledFor": "2026-11-16T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post d"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "e",
+              "scheduledFor": "2026-11-18T23:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post e"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "bad",
+              "scheduledFor": "whenever",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post bad"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "f",
+              "scheduledFor": "2026-11-19T05:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post f"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "g",
+              "scheduledFor": "2026-11-19T06:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post g"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "groupByZonedDay#23",
+      "fn": "groupByZonedDay",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "locale": "en-US",
+        "rows": [
+          {
+            "id": "past",
+            "scheduledFor": "2026-11-12T11:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post past"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "a",
+            "scheduledFor": "2026-11-12T23:30:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post a"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "b",
+            "scheduledFor": "2026-11-13T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post b"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "c",
+            "scheduledFor": "2026-11-25T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post c"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "d",
+            "scheduledFor": "2026-11-16T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post d"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "e",
+            "scheduledFor": "2026-11-18T23:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post e"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "bad",
+            "scheduledFor": "whenever",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post bad"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "f",
+            "scheduledFor": "2026-11-19T05:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post f"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "g",
+            "scheduledFor": "2026-11-19T06:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post g"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          }
+        ]
+      },
+      "output": [
+        {
+          "key": "overdue",
+          "label": "Overdue",
+          "rows": [
+            {
+              "id": "past",
+              "scheduledFor": "2026-11-12T11:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post past"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-13",
+          "label": "Today",
+          "rows": [
+            {
+              "id": "a",
+              "scheduledFor": "2026-11-12T23:30:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post a"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "b",
+              "scheduledFor": "2026-11-13T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post b"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-25",
+          "label": "Wednesday, November 25",
+          "rows": [
+            {
+              "id": "c",
+              "scheduledFor": "2026-11-25T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post c"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-16",
+          "label": "Monday",
+          "rows": [
+            {
+              "id": "d",
+              "scheduledFor": "2026-11-16T09:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post d"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-19",
+          "label": "Thursday",
+          "rows": [
+            {
+              "id": "e",
+              "scheduledFor": "2026-11-18T23:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post e"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "unknown",
+          "label": "No time",
+          "rows": [
+            {
+              "id": "bad",
+              "scheduledFor": "whenever",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post bad"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "key": "2026-11-19",
+          "label": "Thursday",
+          "rows": [
+            {
+              "id": "f",
+              "scheduledFor": "2026-11-19T05:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post f"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            },
+            {
+              "id": "g",
+              "scheduledFor": "2026-11-19T06:00:00Z",
+              "status": "pending",
+              "queued": true,
+              "clientKey": "virga",
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Post g"
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "groupByZonedDay#24",
+      "fn": "groupByZonedDay",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "locale": "en-US",
+        "rows": [
+          {
+            "id": "past",
+            "scheduledFor": "2026-11-12T11:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post past"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "a",
+            "scheduledFor": "2026-11-12T23:30:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post a"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "b",
+            "scheduledFor": "2026-11-13T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post b"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "c",
+            "scheduledFor": "2026-11-25T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post c"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "d",
+            "scheduledFor": "2026-11-16T09:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post d"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "e",
+            "scheduledFor": "2026-11-18T23:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post e"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "bad",
+            "scheduledFor": "whenever",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post bad"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "f",
+            "scheduledFor": "2026-11-19T05:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post f"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          },
+          {
+            "id": "g",
+            "scheduledFor": "2026-11-19T06:00:00Z",
+            "status": "pending",
+            "queued": true,
+            "clientKey": "virga",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "Post g"
+                  }
+                }
+              ],
+              "gates": {
+                "threadgate": null,
+                "postgate": null
+              }
+            }
+          }
+        ],
+        "zone": null
       },
       "output": [
         {

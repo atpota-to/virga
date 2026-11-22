@@ -1159,8 +1159,11 @@ export default async function cases() {
         'Pacific/Chatham',
         '',
         'Not/AZone',
+        // No zone is the device's (Intl's default); null is no zone at all.
+        undefined,
+        null,
       ].map((zone) => ({ rows: GROUP_ROWS, zone })),
-      ['UTC', 'America/New_York'],
+      ['UTC', 'America/New_York', 'Pacific/Chatham'],
     ),
     (i) => M.groupByZonedDay(i.rows, i.zone, NOW),
   );

@@ -8,6 +8,12 @@
 // in `timeZone` (the device's; nil for the active one). The web words a
 // pinned delete time against Date.now() (scheduledRowTimerProblem); the
 // port takes that clock as `now`, the same instant the plan packs from.
+//
+// A null row in a plan's rows throws the web's TypeError (queueTimerConflict
+// reads every row's id). Not reproduced (corrupt input only): the
+// standalone queueTimerConflict reads a null row as one without an id, and
+// pendingMoves reads an assignment that isn't a list as none, where the web
+// throws.
 
 import Foundation
 import VirgaCore
@@ -63,6 +69,14 @@ public struct QueueTimerConflict: Codable, Hashable, Sendable {
     try container.encode(message, forKey: .message)
     try container.encode(problem, forKey: .problem)
   }
+}
+
+/// What the web throws reading a row that isn't one.
+public struct QueueReorderError: Error, LocalizedError, ScheduleErrorObject, Hashable, Sendable {
+  public var message: String
+  public init(_ message: String) { self.message = message }
+  public var errorDescription: String? { message }
+  public var errorObject: JSONValue { ["name": "TypeError", "message": .string(message)] }
 }
 
 /// Everything a drag needs: `{ assignment, moves, conflict }`.
@@ -195,6 +209,10 @@ public enum QueueReorder {
     for i in split.movable.indices where !ordered.contains(i) { ordered.append(i) }
     let assignment = try PostingQueue.recomputeQueueAssignment(
       schedule, ordered.map { split.movable[$0] }, now: now, occupied: split.occupied, localZone: timeZone)
+    // queueTimerConflict's `Object.fromEntries(rows.map((r) => [r.id, r]))`.
+    if (rows ?? []).contains(where: \.isNull) {
+      throw QueueReorderError("Cannot read properties of null (reading 'id')")
+    }
     return QueueReorderPlan(
       assignment: assignment,
       moves: pendingMoves(assignment, timeZone: timeZone),

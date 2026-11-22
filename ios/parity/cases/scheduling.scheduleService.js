@@ -192,6 +192,13 @@ const flows = [
   ['listScheduled', 'offline', {}, ['offline']],
   ['listScheduled', 'not-json', {}, [{ status: 200, text: '<html>' }]],
   ['listScheduled', 'data-not-a-list', {}, [ok({ id: 'a' })]],
+  // A row that is a list spreads into its indices.
+  [
+    'listScheduled',
+    'a-list-row',
+    {},
+    [ok([['a', { status: 'pending' }], { id: 'b', status: 'pending' }])],
+  ],
   ['listScheduled', 'bare-body', {}, [json([ROW])]],
   ['listScheduled', 'no-requester', {}, [], { requester: 'none' }],
   ...['America/New_York', 'Asia/Kolkata', 'Pacific/Chatham'].map((tz) => [
@@ -492,6 +499,27 @@ const flows = [
       refused(404),
       { status: 502, text: 'bad gateway' },
       { status: 502, text: 'bad gateway' },
+    ],
+  ],
+  // Ids that are objects: a failed move's id is its own (the same
+  // reference), and no other move's.
+  [
+    'reorderScheduled',
+    'fallback-object-ids',
+    {
+      moves: [
+        { id: { k: 1 }, scheduledFor: '2026-11-14T09:00:00Z' },
+        { id: { k: 1 }, scheduledFor: '2026-11-15T09:00:00Z' },
+        { id: 'c', scheduledFor: '2026-11-16T09:00:00Z' },
+        { id: 'c', scheduledFor: '2026-11-17T09:00:00Z' },
+      ],
+    },
+    [
+      refused(404),
+      refused(409, 'NOT_RESCHEDULABLE'),
+      ok({}),
+      refused(409, 'NOT_RESCHEDULABLE'),
+      ok({}),
     ],
   ],
   ['reorderScheduled', 'past-the-limit', { moves: many }, [ok({})]],

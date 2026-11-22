@@ -350,13 +350,14 @@ public enum ScheduleModel {
     slotLabel(hhmm.map(JSONValue.string), locale: locale)
   }
 
-  /// Rows grouped by the day they go out, in the queue's zone, in the
-  /// rows' order. Labels say Today, Tomorrow, a weekday this week, else the
-  /// date; a time already past is Overdue.
+  /// Rows grouped by the day they go out, in the queue's zone (`tz`; nil is
+  /// this device's, as Intl reads an undefined zone), in the rows' order.
+  /// Labels say Today, Tomorrow, a weekday this week, else the date; a time
+  /// already past is Overdue.
   public static func groupByZonedDay(
     _ rows: [JSONValue]? = [], _ tz: String?, now: Double, locale: String? = nil, timeZone: TimeZone? = nil
   ) -> [ZonedDayGroup] {
-    let zoneName: JSONValue? = tz.map(JSONValue.string)
+    let zoneName: JSONValue = .string(tz ?? PostingQueue.intlName(timeZone ?? AppLocale.activeTimeZone()))
     let today = PostingQueue.zonedWallTime(.number(now), zoneName, timeZone: timeZone)
     func dayIndex(_ date: String) -> Double {
       (JSDate.parse("\(date)T00:00:00Z", timeZone: TimeZone(identifier: "UTC")!) / 86_400_000).jsRounded

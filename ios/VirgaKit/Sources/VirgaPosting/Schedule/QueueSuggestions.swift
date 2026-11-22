@@ -9,11 +9,13 @@
 // Schedules are loose JSON, as the composer's are (`{ timezone, slots }`).
 // A best-times cell and a suggestion are read as the web reads the objects:
 // `DAY_KEYS[cell.day]` by property key ('1' and [1] name Tuesday), the
-// column and block through Number(). Not reproduced (corrupt input only):
-// `cell.day` 'length' (the array's own length, 7) and the inherited array
-// methods ('map'), which the web takes for a day key; suggestions that
-// aren't objects (the web reads `undefined` members off a number, or
-// iterates a string's characters).
+// column and block through Number(). A day whose times are neither a list
+// nor a string throws the web's TypeError (`….includes is not a function`),
+// and a suggestion without a time adds one `undefined` (null in JSON), which
+// sorts last and isn't added twice. The typed overloads read such a day as
+// empty instead of throwing. Not reproduced (corrupt input only): `cell.day`
+// 'length' (the array's own length, 7) and the inherited array methods
+// ('map'), which the web takes for a day key.
 
 import Foundation
 import VirgaCore
@@ -88,13 +90,23 @@ public enum QueueSuggestions {
   }
 
   /// `(list || []).includes(value)` for an array or a string (a substring).
-  static func includes(_ list: JSONValue?, _ value: JSONValue?) -> Bool {
+  /// `holdsUndefined` says whether the array holds an `undefined` this call
+  /// put there (JSON has none, so it is null in `items`). Any other truthy
+  /// value has no `includes`: `strict` throws V8's TypeError, naming the
+  /// receiver as the web's source does (`receiver`); otherwise it holds
+  /// nothing.
+  static func includes(
+    _ list: JSONValue?, _ value: JSONValue?, holdsUndefined: Bool = false, strict: Bool = false,
+    receiver: String = "list"
+  ) throws -> Bool {
     switch list {
     case .array(let items)?:
-      guard let value else { return false }
+      guard let value else { return holdsUndefined }
       return items.contains { ComposerJS.sameValueZero($0, value) }
     case .string(let text)?:
       return text.jsIndexOf(value.map(\.jsString) ?? "undefined") >= 0
+    case let other? where strict && other.isTruthy:
+      throw QueueSuggestionsError("\(receiver).includes is not a function")
     default:
       return false
     }
@@ -137,45 +149,65 @@ public enum QueueSuggestions {
     }
     return try items.filter { s in
       let held = slot(slots, try member(s, "dayKey"))
-      return !includes(ComposerJS.or(held, nil), try member(s, "time"))
+      return !(try includes(
+        ComposerJS.or(held, nil), try member(s, "time"), strict: true, receiver: "(slots[s.dayKey] || [])"))
     }
   }
 
+  /// missingSuggestions for typed suggestions; a day whose times aren't a
+  /// list or a string reads as holding none.
   public static func missingSuggestions(_ schedule: JSONValue?, _ suggestions: [QueueSuggestion]) -> [QueueSuggestion] {
     let slots = slotsOf(schedule)
-    return suggestions.filter { !includes(ComposerJS.or(slot(slots, .string($0.dayKey)), nil), .string($0.time)) }
+    return suggestions.filter {
+      !((try? includes(ComposerJS.or(slot(slots, .string($0.dayKey)), nil), .string($0.time))) ?? false)
+    }
   }
 
   /// The week with the suggested times added; nothing already there moves.
   public static func mergeSuggestionsIntoSchedule(_ schedule: JSONValue?, _ suggestions: JSONValue? = []) throws
     -> JSONValue
   {
+    try merge(schedule, suggestions, strict: true)
+  }
+
+  /// mergeSuggestionsIntoSchedule for typed suggestions; a day whose times
+  /// aren't a list or a string is replaced by the suggested ones.
+  public static func mergeSuggestionsIntoSchedule(_ schedule: JSONValue?, _ suggestions: [QueueSuggestion]) -> JSONValue {
+    (try? merge(schedule, .array(suggestions.map(\.json)), strict: false)) ?? [:]
+  }
+
+  static func merge(_ schedule: JSONValue?, _ suggestions: JSONValue?, strict: Bool) throws -> JSONValue {
     let base: JSONValue = TimerJS.isObject(schedule) ? schedule! : [:]
     var slots = ComposerJS.spread(ComposerJS.or(base["slots"], [:]))
+    // The days this call gave an `undefined` time (a suggestion without
+    // one): null in JSON, last in the day's sort, and found by
+    // `includes(undefined)`.
+    var holdsUndefined = Set<JSKey>()
     for s in try iterate(suggestions, "suggestions") {
-      let key = (try member(s, "dayKey")).map(\.jsString) ?? "undefined"
+      let key = canonicalKey(slots, (try member(s, "dayKey")).map(\.jsString) ?? "undefined")
       let time = try member(s, "time")
       let existing = ComposerJS.or(slots.jsValue(key), nil)
-      if !includes(existing, time) {
+      let undefinedHeld = holdsUndefined.contains(JSKey(key))
+      if try !includes(existing, time, holdsUndefined: undefinedHeld, strict: strict, receiver: "existing") {
         var items: [JSONValue]
         switch existing {
-        case .array(let list)?: items = list
+        case .array(let list)?: items = undefinedHeld ? list.dropLast() : list
         case .string(let text)?: items = text.unicodeScalars.map { .string(String($0)) }
         default: items = []
         }
         // `sort()` puts undefined after everything else.
-        let sorted = time.map { PostingQueue.defaultSorted(items + [$0]) } ?? PostingQueue.defaultSorted(items) + [.null]
-        slots[canonicalKey(slots, key)] = .array(sorted)
+        var sorted = PostingQueue.defaultSorted(time.map { items + [$0] } ?? items)
+        if time == nil || undefinedHeld {
+          sorted.append(.null)
+          holdsUndefined.insert(JSKey(key))
+        }
+        slots[key] = .array(sorted)
       }
     }
     var out = ComposerJS.spread(base)
     out["timezone"] = .string(base["timezone"]?.stringValue ?? "")
     out["slots"] = .object(slots)
     return .object(out)
-  }
-
-  public static func mergeSuggestionsIntoSchedule(_ schedule: JSONValue?, _ suggestions: [QueueSuggestion]) -> JSONValue {
-    (try? mergeSuggestionsIntoSchedule(schedule, .array(suggestions.map(\.json)))) ?? [:]
   }
 
   /// The key a member is already held under, when one matches `key` by

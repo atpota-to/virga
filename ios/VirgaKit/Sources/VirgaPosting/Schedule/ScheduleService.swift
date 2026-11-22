@@ -133,9 +133,12 @@ public enum ScheduleService {
     return ms.isFinite ? JSDate.toISOString(ms).map(JSONValue.string) : value
   }
 
+  /// `{ ...row, scheduledFor: toIso(row.scheduledFor) }` for an object (an
+  /// array spreads into its indices, and has no scheduledFor), else the row.
   static func normalizeRow(_ row: JSONValue?, _ zone: TimeZone?) -> JSONValue {
-    guard let row, case .object(var members) = row else { return row ?? .null }
-    members["scheduledFor"] = toIso(members["scheduledFor"], zone)
+    guard let row, TimerJS.isObject(row) else { return row ?? .null }
+    var members = ComposerJS.spread(row)
+    members["scheduledFor"] = toIso(row["scheduledFor"], zone)
     return .object(members)
   }
 
@@ -369,16 +372,21 @@ public enum ScheduleService {
     }
 
     var failed: [ReorderResult.Failure] = []
+    // Which moves failed, by place: the web's `f.id === m.id` is true for
+    // the move's own id even when it is an object (the same reference).
+    var failedAt: [Int] = []
     var refusal: (any Error)?
-    for move in body {
+    for (i, move) in body.enumerated() {
       if Task.isCancelled {
         failed.append(.init(id: move.id, error: CancellationError()))
+        failedAt.append(i)
         continue
       }
       do {
         _ = try await req.request("\(base)/update", method: "POST", query: nil, body: json(move), timeoutMs: 30_000)
       } catch {
         failed.append(.init(id: move.id, error: error))
+        failedAt.append(i)
         let object = ScheduledPostError.errorObject(error)
         if refusal == nil && (ComposerJS.truthy(object["code"]) || ComposerJS.truthy(object["detail"])) {
           refusal = error
@@ -387,7 +395,9 @@ public enum ScheduleService {
     }
     let moved = body.count - failed.count
     if moved > 0 {
-      let ids = body.filter { m in !failed.contains { ComposerJS.strictEquals($0.id, m.id) } }.map(\.id)
+      let ids = body.indices.filter { m in
+        !failedAt.contains { f in f == m || ComposerJS.strictEquals(body[f].id, body[m].id) }
+      }.map { body[$0].id }
       announce(req, ["change": "reordered", "ids": .array(ids)], target)
     }
     return ReorderResult(moved: Double(moved), fallback: true, failed: failed, refusal: refusal)

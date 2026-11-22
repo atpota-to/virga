@@ -421,6 +421,57 @@
       }
     },
     {
+      "id": "a-list-row",
+      "fn": "listScheduled",
+      "input": {
+        "tz": "UTC",
+        "requester": "backend"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/schedule/list",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":[[\"a\",{\"status\":\"pending\"}],{\"id\":\"b\",\"status\":\"pending\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "rows": [
+              {
+                "0": "a",
+                "1": {
+                  "status": "pending"
+                }
+              },
+              {
+                "id": "b",
+                "status": "pending"
+              }
+            ],
+            "timerNotes": []
+          },
+          "heard": []
+        }
+      }
+    },
+    {
       "id": "bare-body",
       "fn": "listScheduled",
       "input": {
@@ -4469,6 +4520,258 @@
             "refusal": null
           },
           "heard": []
+        }
+      }
+    },
+    {
+      "id": "fallback-object-ids",
+      "fn": "reorderScheduled",
+      "input": {
+        "moves": [
+          {
+            "id": {
+              "k": 1
+            },
+            "scheduledFor": "2026-11-14T09:00:00Z"
+          },
+          {
+            "id": {
+              "k": 1
+            },
+            "scheduledFor": "2026-11-15T09:00:00Z"
+          },
+          {
+            "id": "c",
+            "scheduledFor": "2026-11-16T09:00:00Z"
+          },
+          {
+            "id": "c",
+            "scheduledFor": "2026-11-17T09:00:00Z"
+          }
+        ],
+        "tz": "UTC",
+        "requester": "backend"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/schedule/reorder",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "moves": [
+                    {
+                      "id": {
+                        "k": 1
+                      },
+                      "scheduledFor": "2026-11-14T09:00:00.000Z"
+                    },
+                    {
+                      "id": {
+                        "k": 1
+                      },
+                      "scheduledFor": "2026-11-15T09:00:00.000Z"
+                    },
+                    {
+                      "id": "c",
+                      "scheduledFor": "2026-11-16T09:00:00.000Z"
+                    },
+                    {
+                      "id": "c",
+                      "scheduledFor": "2026-11-17T09:00:00.000Z"
+                    }
+                  ]
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"no\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/schedule/update",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "id": {
+                    "k": 1
+                  },
+                  "scheduledFor": "2026-11-14T09:00:00.000Z"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 409,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"no\",\"code\":\"NOT_RESCHEDULABLE\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/schedule/update",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "id": {
+                    "k": 1
+                  },
+                  "scheduledFor": "2026-11-15T09:00:00.000Z"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/schedule/update",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "id": "c",
+                  "scheduledFor": "2026-11-16T09:00:00.000Z"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 409,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"no\",\"code\":\"NOT_RESCHEDULABLE\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/schedule/update",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "id": "c",
+                  "scheduledFor": "2026-11-17T09:00:00.000Z"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "moved": 2,
+            "fallback": true,
+            "failed": [
+              {
+                "id": {
+                  "k": 1
+                },
+                "error": {
+                  "name": "Error",
+                  "message": "no",
+                  "code": "NOT_RESCHEDULABLE",
+                  "status": 409,
+                  "detail": "no",
+                  "payload": {
+                    "success": false,
+                    "error": "no",
+                    "code": "NOT_RESCHEDULABLE"
+                  }
+                }
+              },
+              {
+                "id": "c",
+                "error": {
+                  "name": "Error",
+                  "message": "no",
+                  "code": "NOT_RESCHEDULABLE",
+                  "status": 409,
+                  "detail": "no",
+                  "payload": {
+                    "success": false,
+                    "error": "no",
+                    "code": "NOT_RESCHEDULABLE"
+                  }
+                }
+              }
+            ],
+            "refusal": {
+              "name": "Error",
+              "message": "no",
+              "code": "NOT_RESCHEDULABLE",
+              "status": 409,
+              "detail": "no",
+              "payload": {
+                "success": false,
+                "error": "no",
+                "code": "NOT_RESCHEDULABLE"
+              }
+            }
+          },
+          "heard": [
+            {
+              "did": "did:plc:writer",
+              "change": "reordered",
+              "ids": [
+                {
+                  "k": 1
+                }
+              ]
+            }
+          ]
         }
       }
     },

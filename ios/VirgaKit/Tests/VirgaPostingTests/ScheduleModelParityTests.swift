@@ -86,9 +86,10 @@ enum ScheduleModelFixture {
       check(.string(ScheduleModel.slotLabel(c.input["hhmm"], locale: runtime)), c)
     }
     for c in try cases(Self.f, "groupByZonedDay") {
+      // An absent zone is the device's; null is a name Intl refuses.
+      let zone = c.input["zone"].map { $0.isNull ? "null" : $0.jsString }
       let groups = ScheduleModel.groupByZonedDay(
-        c.input["rows"]?.arrayValue, c.input["zone"]?.stringValue, now: F.now, locale: F.locale(c),
-        timeZone: Self.zone(c))
+        c.input["rows"]?.arrayValue, zone, now: F.now, locale: F.locale(c), timeZone: Self.zone(c))
       check(.array(groups.map(\.json)), c, strictNulls: true)
     }
   }

@@ -437,6 +437,19 @@ const planSets = [
     orderedIds: ['C', 'B'],
   },
   { schedule: null, now: NOV, rows: RETRY_ROWS, orderedIds: ['C', 'B'] },
+  // A null row: the split skips it, but naming the rows by id throws.
+  {
+    schedule: WEEKDAYS5,
+    now: NOV,
+    rows: [null, ...RETRY_ROWS],
+    orderedIds: ['C', 'B'],
+  },
+  {
+    schedule: { timezone: 'Not/AZone', slots: WEEKDAYS5.slots },
+    now: NOV,
+    rows: [null, ...RETRY_ROWS],
+    orderedIds: ['C', 'B'],
+  },
   {
     schedule: { slots: WEEKDAYS5.slots },
     now: NOV,

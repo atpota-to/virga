@@ -10728,6 +10728,178 @@
       "input": {
         "tz": "UTC",
         "schedule": {
+          "timezone": "UTC",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "tue": [
+              "09:00"
+            ],
+            "wed": [
+              "09:00"
+            ],
+            "thu": [
+              "09:00"
+            ],
+            "fri": [
+              "09:00"
+            ]
+          }
+        },
+        "now": 1794823200000,
+        "rows": [
+          null,
+          {
+            "id": "A",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-16T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post A"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "B",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-17T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post B"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "C",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-18T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post C"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "orderedIds": [
+          "C",
+          "B"
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'id')"
+      }
+    },
+    {
+      "id": "planQueueReorder#15",
+      "fn": "planQueueReorder",
+      "input": {
+        "tz": "UTC",
+        "schedule": {
+          "timezone": "Not/AZone",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "tue": [
+              "09:00"
+            ],
+            "wed": [
+              "09:00"
+            ],
+            "thu": [
+              "09:00"
+            ],
+            "fri": [
+              "09:00"
+            ]
+          }
+        },
+        "now": 1794823200000,
+        "rows": [
+          null,
+          {
+            "id": "A",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-16T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post A"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "B",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-17T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post B"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "C",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-18T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post C"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "orderedIds": [
+          "C",
+          "B"
+        ]
+      },
+      "output": {
+        "$throws": "Invalid time zone specified: Not/AZone"
+      }
+    },
+    {
+      "id": "planQueueReorder#16",
+      "fn": "planQueueReorder",
+      "input": {
+        "tz": "UTC",
+        "schedule": {
           "slots": {
             "mon": [
               "09:00"
@@ -10829,7 +11001,7 @@
       }
     },
     {
-      "id": "planQueueReorder#15",
+      "id": "planQueueReorder#17",
       "fn": "planQueueReorder",
       "input": {
         "tz": "UTC",
@@ -10914,7 +11086,7 @@
       }
     },
     {
-      "id": "planQueueReorder#16",
+      "id": "planQueueReorder#18",
       "fn": "planQueueReorder",
       "input": {
         "tz": "UTC",
@@ -11045,7 +11217,7 @@
       }
     },
     {
-      "id": "planQueueReorder#17",
+      "id": "planQueueReorder#19",
       "fn": "planQueueReorder",
       "input": {
         "tz": "UTC",
@@ -11154,7 +11326,7 @@
       }
     },
     {
-      "id": "planQueueReorder#18",
+      "id": "planQueueReorder#20",
       "fn": "planQueueReorder",
       "input": {
         "tz": "UTC",
@@ -11546,7 +11718,7 @@
       }
     },
     {
-      "id": "planQueueReorder#19",
+      "id": "planQueueReorder#21",
       "fn": "planQueueReorder",
       "input": {
         "tz": "UTC",
@@ -11627,7 +11799,7 @@
       }
     },
     {
-      "id": "planQueueReorder#20",
+      "id": "planQueueReorder#22",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -11731,7 +11903,7 @@
       }
     },
     {
-      "id": "planQueueReorder#21",
+      "id": "planQueueReorder#23",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -11836,7 +12008,7 @@
       }
     },
     {
-      "id": "planQueueReorder#22",
+      "id": "planQueueReorder#24",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -11940,7 +12112,7 @@
       }
     },
     {
-      "id": "planQueueReorder#23",
+      "id": "planQueueReorder#25",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -12047,7 +12219,7 @@
       }
     },
     {
-      "id": "planQueueReorder#24",
+      "id": "planQueueReorder#26",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -12155,7 +12327,7 @@
       }
     },
     {
-      "id": "planQueueReorder#25",
+      "id": "planQueueReorder#27",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -12268,7 +12440,7 @@
       }
     },
     {
-      "id": "planQueueReorder#26",
+      "id": "planQueueReorder#28",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -12363,7 +12535,7 @@
       }
     },
     {
-      "id": "planQueueReorder#27",
+      "id": "planQueueReorder#29",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -12458,7 +12630,7 @@
       }
     },
     {
-      "id": "planQueueReorder#28",
+      "id": "planQueueReorder#30",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -12565,7 +12737,7 @@
       }
     },
     {
-      "id": "planQueueReorder#29",
+      "id": "planQueueReorder#31",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -12656,7 +12828,7 @@
       }
     },
     {
-      "id": "planQueueReorder#30",
+      "id": "planQueueReorder#32",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -12768,7 +12940,7 @@
       }
     },
     {
-      "id": "planQueueReorder#31",
+      "id": "planQueueReorder#33",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -12850,7 +13022,7 @@
       }
     },
     {
-      "id": "planQueueReorder#32",
+      "id": "planQueueReorder#34",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -12929,7 +13101,179 @@
       }
     },
     {
-      "id": "planQueueReorder#33",
+      "id": "planQueueReorder#35",
+      "fn": "planQueueReorder",
+      "input": {
+        "tz": "America/New_York",
+        "schedule": {
+          "timezone": "UTC",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "tue": [
+              "09:00"
+            ],
+            "wed": [
+              "09:00"
+            ],
+            "thu": [
+              "09:00"
+            ],
+            "fri": [
+              "09:00"
+            ]
+          }
+        },
+        "now": 1794823200000,
+        "rows": [
+          null,
+          {
+            "id": "A",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-16T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post A"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "B",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-17T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post B"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "C",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-18T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post C"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "orderedIds": [
+          "C",
+          "B"
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'id')"
+      }
+    },
+    {
+      "id": "planQueueReorder#36",
+      "fn": "planQueueReorder",
+      "input": {
+        "tz": "America/New_York",
+        "schedule": {
+          "timezone": "Not/AZone",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "tue": [
+              "09:00"
+            ],
+            "wed": [
+              "09:00"
+            ],
+            "thu": [
+              "09:00"
+            ],
+            "fri": [
+              "09:00"
+            ]
+          }
+        },
+        "now": 1794823200000,
+        "rows": [
+          null,
+          {
+            "id": "A",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-16T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post A"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "B",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-17T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post B"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "C",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-18T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post C"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "orderedIds": [
+          "C",
+          "B"
+        ]
+      },
+      "output": {
+        "$throws": "Invalid time zone specified: Not/AZone"
+      }
+    },
+    {
+      "id": "planQueueReorder#37",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -13035,7 +13379,7 @@
       }
     },
     {
-      "id": "planQueueReorder#34",
+      "id": "planQueueReorder#38",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -13120,7 +13464,7 @@
       }
     },
     {
-      "id": "planQueueReorder#35",
+      "id": "planQueueReorder#39",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -13251,7 +13595,7 @@
       }
     },
     {
-      "id": "planQueueReorder#36",
+      "id": "planQueueReorder#40",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -13360,7 +13704,7 @@
       }
     },
     {
-      "id": "planQueueReorder#37",
+      "id": "planQueueReorder#41",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -13752,7 +14096,7 @@
       }
     },
     {
-      "id": "planQueueReorder#38",
+      "id": "planQueueReorder#42",
       "fn": "planQueueReorder",
       "input": {
         "tz": "America/New_York",
@@ -13833,7 +14177,7 @@
       }
     },
     {
-      "id": "planQueueReorder#39",
+      "id": "planQueueReorder#43",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -13937,7 +14281,7 @@
       }
     },
     {
-      "id": "planQueueReorder#40",
+      "id": "planQueueReorder#44",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -14042,7 +14386,7 @@
       }
     },
     {
-      "id": "planQueueReorder#41",
+      "id": "planQueueReorder#45",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -14146,7 +14490,7 @@
       }
     },
     {
-      "id": "planQueueReorder#42",
+      "id": "planQueueReorder#46",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -14253,7 +14597,7 @@
       }
     },
     {
-      "id": "planQueueReorder#43",
+      "id": "planQueueReorder#47",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -14361,7 +14705,7 @@
       }
     },
     {
-      "id": "planQueueReorder#44",
+      "id": "planQueueReorder#48",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -14474,7 +14818,7 @@
       }
     },
     {
-      "id": "planQueueReorder#45",
+      "id": "planQueueReorder#49",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -14569,7 +14913,7 @@
       }
     },
     {
-      "id": "planQueueReorder#46",
+      "id": "planQueueReorder#50",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -14664,7 +15008,7 @@
       }
     },
     {
-      "id": "planQueueReorder#47",
+      "id": "planQueueReorder#51",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -14771,7 +15115,7 @@
       }
     },
     {
-      "id": "planQueueReorder#48",
+      "id": "planQueueReorder#52",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -14862,7 +15206,7 @@
       }
     },
     {
-      "id": "planQueueReorder#49",
+      "id": "planQueueReorder#53",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -14974,7 +15318,7 @@
       }
     },
     {
-      "id": "planQueueReorder#50",
+      "id": "planQueueReorder#54",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -15056,7 +15400,7 @@
       }
     },
     {
-      "id": "planQueueReorder#51",
+      "id": "planQueueReorder#55",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -15135,7 +15479,179 @@
       }
     },
     {
-      "id": "planQueueReorder#52",
+      "id": "planQueueReorder#56",
+      "fn": "planQueueReorder",
+      "input": {
+        "tz": "Asia/Kolkata",
+        "schedule": {
+          "timezone": "UTC",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "tue": [
+              "09:00"
+            ],
+            "wed": [
+              "09:00"
+            ],
+            "thu": [
+              "09:00"
+            ],
+            "fri": [
+              "09:00"
+            ]
+          }
+        },
+        "now": 1794823200000,
+        "rows": [
+          null,
+          {
+            "id": "A",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-16T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post A"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "B",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-17T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post B"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "C",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-18T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post C"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "orderedIds": [
+          "C",
+          "B"
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'id')"
+      }
+    },
+    {
+      "id": "planQueueReorder#57",
+      "fn": "planQueueReorder",
+      "input": {
+        "tz": "Asia/Kolkata",
+        "schedule": {
+          "timezone": "Not/AZone",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "tue": [
+              "09:00"
+            ],
+            "wed": [
+              "09:00"
+            ],
+            "thu": [
+              "09:00"
+            ],
+            "fri": [
+              "09:00"
+            ]
+          }
+        },
+        "now": 1794823200000,
+        "rows": [
+          null,
+          {
+            "id": "A",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-16T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post A"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "B",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-17T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post B"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "C",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-18T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post C"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "orderedIds": [
+          "C",
+          "B"
+        ]
+      },
+      "output": {
+        "$throws": "Invalid time zone specified: Not/AZone"
+      }
+    },
+    {
+      "id": "planQueueReorder#58",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -15241,7 +15757,7 @@
       }
     },
     {
-      "id": "planQueueReorder#53",
+      "id": "planQueueReorder#59",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -15326,7 +15842,7 @@
       }
     },
     {
-      "id": "planQueueReorder#54",
+      "id": "planQueueReorder#60",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -15457,7 +15973,7 @@
       }
     },
     {
-      "id": "planQueueReorder#55",
+      "id": "planQueueReorder#61",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -15566,7 +16082,7 @@
       }
     },
     {
-      "id": "planQueueReorder#56",
+      "id": "planQueueReorder#62",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -15958,7 +16474,7 @@
       }
     },
     {
-      "id": "planQueueReorder#57",
+      "id": "planQueueReorder#63",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Asia/Kolkata",
@@ -16039,7 +16555,7 @@
       }
     },
     {
-      "id": "planQueueReorder#58",
+      "id": "planQueueReorder#64",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -16143,7 +16659,7 @@
       }
     },
     {
-      "id": "planQueueReorder#59",
+      "id": "planQueueReorder#65",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -16248,7 +16764,7 @@
       }
     },
     {
-      "id": "planQueueReorder#60",
+      "id": "planQueueReorder#66",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -16352,7 +16868,7 @@
       }
     },
     {
-      "id": "planQueueReorder#61",
+      "id": "planQueueReorder#67",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -16459,7 +16975,7 @@
       }
     },
     {
-      "id": "planQueueReorder#62",
+      "id": "planQueueReorder#68",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -16567,7 +17083,7 @@
       }
     },
     {
-      "id": "planQueueReorder#63",
+      "id": "planQueueReorder#69",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -16680,7 +17196,7 @@
       }
     },
     {
-      "id": "planQueueReorder#64",
+      "id": "planQueueReorder#70",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -16775,7 +17291,7 @@
       }
     },
     {
-      "id": "planQueueReorder#65",
+      "id": "planQueueReorder#71",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -16870,7 +17386,7 @@
       }
     },
     {
-      "id": "planQueueReorder#66",
+      "id": "planQueueReorder#72",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -16977,7 +17493,7 @@
       }
     },
     {
-      "id": "planQueueReorder#67",
+      "id": "planQueueReorder#73",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -17068,7 +17584,7 @@
       }
     },
     {
-      "id": "planQueueReorder#68",
+      "id": "planQueueReorder#74",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -17180,7 +17696,7 @@
       }
     },
     {
-      "id": "planQueueReorder#69",
+      "id": "planQueueReorder#75",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -17262,7 +17778,7 @@
       }
     },
     {
-      "id": "planQueueReorder#70",
+      "id": "planQueueReorder#76",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -17341,7 +17857,179 @@
       }
     },
     {
-      "id": "planQueueReorder#71",
+      "id": "planQueueReorder#77",
+      "fn": "planQueueReorder",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "schedule": {
+          "timezone": "UTC",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "tue": [
+              "09:00"
+            ],
+            "wed": [
+              "09:00"
+            ],
+            "thu": [
+              "09:00"
+            ],
+            "fri": [
+              "09:00"
+            ]
+          }
+        },
+        "now": 1794823200000,
+        "rows": [
+          null,
+          {
+            "id": "A",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-16T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post A"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "B",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-17T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post B"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "C",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-18T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post C"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "orderedIds": [
+          "C",
+          "B"
+        ]
+      },
+      "output": {
+        "$throws": "Cannot read properties of null (reading 'id')"
+      }
+    },
+    {
+      "id": "planQueueReorder#78",
+      "fn": "planQueueReorder",
+      "input": {
+        "tz": "Pacific/Chatham",
+        "schedule": {
+          "timezone": "Not/AZone",
+          "slots": {
+            "mon": [
+              "09:00"
+            ],
+            "tue": [
+              "09:00"
+            ],
+            "wed": [
+              "09:00"
+            ],
+            "thu": [
+              "09:00"
+            ],
+            "fri": [
+              "09:00"
+            ]
+          }
+        },
+        "now": 1794823200000,
+        "rows": [
+          null,
+          {
+            "id": "A",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-16T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post A"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "B",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-17T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post B"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "C",
+            "queued": true,
+            "status": "pending",
+            "clientKey": "virga",
+            "scheduledFor": "2026-11-18T09:00:00+00:00",
+            "payload": {
+              "posts": [
+                {
+                  "record": {
+                    "text": "post C"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "orderedIds": [
+          "C",
+          "B"
+        ]
+      },
+      "output": {
+        "$throws": "Invalid time zone specified: Not/AZone"
+      }
+    },
+    {
+      "id": "planQueueReorder#79",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -17447,7 +18135,7 @@
       }
     },
     {
-      "id": "planQueueReorder#72",
+      "id": "planQueueReorder#80",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -17532,7 +18220,7 @@
       }
     },
     {
-      "id": "planQueueReorder#73",
+      "id": "planQueueReorder#81",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -17663,7 +18351,7 @@
       }
     },
     {
-      "id": "planQueueReorder#74",
+      "id": "planQueueReorder#82",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -17772,7 +18460,7 @@
       }
     },
     {
-      "id": "planQueueReorder#75",
+      "id": "planQueueReorder#83",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
@@ -18164,7 +18852,7 @@
       }
     },
     {
-      "id": "planQueueReorder#76",
+      "id": "planQueueReorder#84",
       "fn": "planQueueReorder",
       "input": {
         "tz": "Pacific/Chatham",
