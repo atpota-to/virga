@@ -87,15 +87,57 @@ import VirgaTestSupport
     #expect(card?["url"] == "https://e.com/x")
   }
 
+  /// `(await new Response(bytes, { headers: { 'content-type': header } }).blob()).type`,
+  /// as Node 22's fetch gave it for each header.
   @Test func blobTypesAsNodeReadsThem() {
     let cases: [(String?, String)] = [
       ("image/png", "image/png"), ("IMAGE/PNG", "image/png"), ("image/png; charset=binary", "image/png;charset=binary"),
       ("image/png;Charset=\"UTF-8\"", "image/png;charset=utf-8"), ("text/html, image/png", "image/png"),
       ("image/png, text/html", "text/html"), ("*/*", ""), ("image", ""), ("image/png; q", "image/png"),
-      (" image/webp ", "image/webp"), (nil, ""),
+      (" image/webp ", "image/webp"), (nil, ""), ("", ""),
+      ("image/png;charset=\"a\\\"b\"", "image/png;charset=\"a\\\"b\""),
+      ("image/png;charset=\"a\\\\b\"", "image/png;charset=\"a\\\\b\""), ("image/png, */*", "image/png"),
+      ("image/png;charset=a, image/png", "image/png;charset=a"),
+      ("image/png;charset=a, image/png;x=1", "image/png;x=1;charset=a"),
+      ("image/png;charset=a, image/jpeg", "image/jpeg"), ("image/png ; q=1", "image/png;q=1"),
+      ("image/png;=x", "image/png"), ("image/png;a=", "image/png"), ("image/png;a=\"", "image/png;a=\"\""),
+      ("image/png;a=\"b\"c", "image/png;a=b"), ("image/png;a=b;A=c", "image/png;a=b"),
+      ("IMAGE/PNG;CHARSET=X", "image/png;charset=x"), ("image/png;a=b c", "image/png;a=\"b c\""),
+      ("image/png;a=b\t", "image/png;a=b"), ("image/png,", "image/png"), (",image/png", "image/png"),
+      ("image/png;;b=1", "image/png;b=1"), ("image /png", ""), ("image/ png", ""), ("image/png;a", "image/png"),
+      ("image/webp;a=\"x;y\"", "image/webp;a=\"x;y\""), ("image/png;charset=\",\",image/gif", "image/gif"),
+      ("image/png;a=\"x,y\"", "image/png;a=\"x,y\""), ("image/png`", ""), ("image/png;a=`", "image/png;a=\"`\""),
+      ("image/png;a`=1", "image/png"), ("image/png;a=b\\c", "image/png;a=\"b\\\\c\""),
+      ("image/png;a=\"b\\", "image/png;a=\"b\\\\\""), ("image/png;a=\"\u{e9}\"", ""), ("image/png;\u{e9}=1", "image/png"),
+      ("image/png;a=\"b\",image/gif;x=\"1,2\"", "image/gif;x=\"1,2\""),
+      ("image/png;charset=a, image/png;charset=b", "image/png;charset=b"),
+      ("image/png;charset=A, IMAGE/PNG", "image/png;charset=a"),
+      ("text/plain;charset=a, image/png, image/png", "image/png"),
+      ("image/png;charset=a, */*, image/png", "image/png;charset=a"), ("image/png;a=\"b\"   ;c=d", "image/png;a=b;c=d"),
+      ("image/png;a=b;charset=", "image/png;a=b"), ("image/png;charset=\"\", image/png", "image/png;charset=\"\""),
     ]
     for (header, expected) in cases {
       #expect(LinkCard.blobType(header) == expected, "\(header ?? "nil")")
     }
+  }
+
+  /// linkCard.js's `if (signal?.aborted) throw err`: a caller's deadline that
+  /// runs out while the page's image is fetched is thrown; the image service
+  /// failing within the card service's own ten seconds reads as no image.
+  @Test func uploadCardThumbThrowsTheCallersDeadline() async throws {
+    let transport = MockTransport()
+    transport.on("GET", .urlPrefix("https://img.example/"), respond: .timeout)
+    let media = PublishMedia(
+      files: InMemoryComposerFiles(), encoder: PublishEncoder(nil), transport: transport,
+      clock: ScriptedTimers(nil).clock)
+    let target = PublishTarget(did: PublishFixture.me, agent: PublishFixture.agent(transport))
+    let card: JSONValue = ["url": "https://e.com", "thumb": "https://img.example/x.png"]
+    await #expect(throws: HTTPTransportError.self) {
+      _ = try await LinkCard.uploadCardThumb(target, card, media: media, deadlineMs: 3000)
+    }
+    #expect(try await LinkCard.uploadCardThumb(target, card, media: media, deadlineMs: 20000) == nil)
+    #expect(try await LinkCard.uploadCardThumb(target, card, media: media) == nil)
+    let fetched = transport.requests.map(\.timeoutMs)
+    #expect(fetched == [3000, 10000, 10000])
   }
 }

@@ -35,7 +35,7 @@
       "fixtures": [
         "publish.linkCard"
       ],
-      "note": "normalizeAssociatedRefs is Embeds.normalizeAssociatedRefs (posting-text ported it for embeds.js), which LinkCard's forwards to. A response's blob type follows Fetch's MIME extraction for the shapes a card image server sends (lists, case, parameters); quoted parameters with escapes are approximated. The web's File objects are ComposerFiles (Lib/ComposerFiles.swift).",
+      "note": "normalizeAssociatedRefs is Embeds.normalizeAssociatedRefs (posting-text ported it for embeds.js), which LinkCard's forwards to. A response's blob type is Node's fetch's: the Content-Type split, parsed and serialized as Fetch and MIME Sniffing say (charsets carried over, quoted strings and their escapes, undici's token code points without the backtick), then lower-cased as the Blob constructor does. A caller's AbortSignal is `deadlineMs` (the sooner of it and the card service's ten seconds bounds the request) plus the task's cancellation; in uploadCardThumb the deadline bounds the image's fetch, and the upload keeps its own. The web's File objects are ComposerFiles (Lib/ComposerFiles.swift).",
       "synced": "813a280f31fb"
     },
     "src/posting/lib/publish.js": {

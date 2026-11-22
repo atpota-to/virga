@@ -312,16 +312,47 @@ export default async function cases() {
   all.push(
     ...(await each(
       'loadDraftMedia',
-      Object.keys(PREVIEWS).map((preview) => ({
-        $id: `preview-${preview}`,
-        preview,
-        seed: seeded,
-      })),
-      ({ preview, seed }) =>
+      [
+        ...Object.keys(PREVIEWS).map((preview) => ({
+          $id: `preview-${preview}`,
+          preview,
+          seed: seeded,
+        })),
+        // An entry whose file has no size: `size: entry.size ?? entry.file.size`
+        // is undefined, and the item's own size goes with it.
+        {
+          $id: 'sizes-unknown',
+          preview: 'none',
+          seed: [
+            { ref: 'virga-media:nosize', file: { name: 'q.jpg', type: '' } },
+            {
+              ref: 'virga-media:nullsize',
+              file: { name: 'n.jpg', size: null },
+              size: null,
+            },
+          ],
+          state: state([
+            {
+              id: 'p1',
+              images: [
+                {
+                  id: 'q',
+                  localRef: 'virga-media:nosize',
+                  size: 12,
+                  mime: 'image/png',
+                },
+                { id: 'n', localRef: 'virga-media:nullsize', size: 13 },
+              ],
+              video: { localRef: 'virga-media:nosize', size: 7, alt: 'v' },
+            },
+          ]),
+        },
+      ],
+      ({ preview, seed, state: given }) =>
         onStore({
           seed,
           run: (media) =>
-            m.loadDraftMedia(ALICE, reopened, {
+            m.loadDraftMedia(ALICE, given || reopened, {
               media,
               makePreviewUrl: PREVIEWS[preview],
             }),

@@ -1,0 +1,1914 @@
+{
+  "name": "scheduling.scheduledPostError",
+  "sources": [
+    "src/posting/schedule/scheduledPostError.js"
+  ],
+  "cases": [
+    {
+      "id": "friendlyScheduleError#1",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": null
+      },
+      "output": "This one didn’t go out."
+    },
+    {
+      "id": "friendlyScheduleError#2",
+      "fn": "friendlyScheduleError",
+      "input": {},
+      "output": "This one didn’t go out."
+    },
+    {
+      "id": "friendlyScheduleError#3",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": ""
+      },
+      "output": "This one didn’t go out."
+    },
+    {
+      "id": "friendlyScheduleError#4",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "ECONNRESET"
+      },
+      "output": "This one didn’t go out."
+    },
+    {
+      "id": "friendlyScheduleError#5",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "InvalidRequest: upstream said no"
+      },
+      "output": "Bluesky refused the post."
+    },
+    {
+      "id": "friendlyScheduleError#6",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "RateLimitExceeded: too many requests"
+      },
+      "output": "Bluesky was rate limiting this account."
+    },
+    {
+      "id": "friendlyScheduleError#7",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "media download failed: Object not found"
+      },
+      "output": "The images for this post are missing. Edit it and add them again."
+    },
+    {
+      "id": "friendlyScheduleError#8",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "Your account session was unavailable at publish time — retrying."
+      },
+      "output": "Virga’s server couldn’t act as this account: its session had ended. Sign in again, then retry."
+    },
+    {
+      "id": "friendlyScheduleError#9",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "the images for this scheduled post are missing. edit it and re-attach them."
+      },
+      "output": "The images for this post are missing. Edit it and add them again."
+    },
+    {
+      "id": "friendlyScheduleError#10",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "media upload failed: The resource was not found"
+      },
+      "output": "The images for this post are missing. Edit it and add them again."
+    },
+    {
+      "id": "friendlyScheduleError#11",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "missing bytes for media \"p0-img1\""
+      },
+      "output": "The images for this post are missing. Edit it and add them again."
+    },
+    {
+      "id": "friendlyScheduleError#12",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "MEDIA_MISSING"
+      },
+      "output": "The images for this post are missing. Edit it and add them again."
+    },
+    {
+      "id": "friendlyScheduleError#13",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "the publisher ran out of time before this post could be written."
+      },
+      "output": "Virga’s server ran out of time before it could post this."
+    },
+    {
+      "id": "friendlyScheduleError#14",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "couldn't reach your account session. reconnect your account if this keeps happening."
+      },
+      "output": "Virga’s server couldn’t act as this account: its session had ended. Sign in again, then retry."
+    },
+    {
+      "id": "friendlyScheduleError#15",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "InvalidRequest: Record/rkey must be a valid TID"
+      },
+      "output": "Bluesky refused the post."
+    },
+    {
+      "id": "friendlyScheduleError#16",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "InvalidRequest: image file size too large"
+      },
+      "output": "Bluesky refused the post."
+    },
+    {
+      "id": "friendlyScheduleError#17",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "SESSION_UNAVAILABLE"
+      },
+      "output": "Virga’s server couldn’t act as this account: its session had ended. Sign in again, then retry."
+    },
+    {
+      "id": "friendlyScheduleError#18",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "rate limit reached"
+      },
+      "output": "Bluesky was rate limiting this account."
+    },
+    {
+      "id": "friendlyScheduleError#19",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "PostgrestError: duplicate key value violates unique constraint \"scheduled_posts_pkey\""
+      },
+      "output": "This one didn’t go out."
+    },
+    {
+      "id": "friendlyScheduleError#20",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "Upstream PDS failed"
+      },
+      "output": "Bluesky refused the post."
+    },
+    {
+      "id": "friendlyScheduleError#21",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "OBJECT NOT FOUND"
+      },
+      "output": "The images for this post are missing. Edit it and add them again."
+    },
+    {
+      "id": "friendlyScheduleError#22",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "Ran Out Of Time"
+      },
+      "output": "Virga’s server ran out of time before it could post this."
+    },
+    {
+      "id": "friendlyScheduleError#23",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "RE-ATTACH"
+      },
+      "output": "The images for this post are missing. Edit it and add them again."
+    },
+    {
+      "id": "friendlyScheduleError#24",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "İmages for this scheduled post"
+      },
+      "output": "This one didn’t go out."
+    },
+    {
+      "id": "friendlyScheduleError#25",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "The Kelvin session"
+      },
+      "output": "Virga’s server couldn’t act as this account: its session had ended. Sign in again, then retry."
+    },
+    {
+      "id": "friendlyScheduleError#26",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": 404
+      },
+      "output": "This one didn’t go out."
+    },
+    {
+      "id": "friendlyScheduleError#27",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": true
+      },
+      "output": "This one didn’t go out."
+    },
+    {
+      "id": "friendlyScheduleError#28",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": [
+          "media",
+          "gone"
+        ]
+      },
+      "output": "The images for this post are missing. Edit it and add them again."
+    },
+    {
+      "id": "friendlyScheduleError#29",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": {
+          "message": "session"
+        }
+      },
+      "output": "This one didn’t go out."
+    },
+    {
+      "id": "friendlyScheduleError#30",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "",
+        "code": "MEDIA_MISSING"
+      },
+      "output": "The images for this post are missing. Edit it and add them again."
+    },
+    {
+      "id": "friendlyScheduleError#31",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "",
+        "code": "SESSION_UNAVAILABLE"
+      },
+      "output": "Virga’s server couldn’t act as this account: its session had ended. Sign in again, then retry."
+    },
+    {
+      "id": "friendlyScheduleError#32",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "",
+        "code": "TIMED_OUT"
+      },
+      "output": "Virga’s server ran out of time before it could post this."
+    },
+    {
+      "id": "friendlyScheduleError#33",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "",
+        "code": "RATE_LIMITED"
+      },
+      "output": "Bluesky was rate limiting this account."
+    },
+    {
+      "id": "friendlyScheduleError#34",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "",
+        "code": "REFUSED"
+      },
+      "output": "Bluesky refused the post."
+    },
+    {
+      "id": "friendlyScheduleError#35",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "",
+        "code": "REPLY_TARGET_GONE"
+      },
+      "output": "The post this replies to is gone, so the reply wasn’t posted."
+    },
+    {
+      "id": "friendlyScheduleError#36",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "",
+        "code": "REPLY_TARGET_UNCHECKED"
+      },
+      "output": "Virga’s server couldn’t check that the post this replies to is still there, so it held the reply back. Retry sends it if the post is still up."
+    },
+    {
+      "id": "friendlyScheduleError#37",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "",
+        "code": "TIMER_NOT_ARMED"
+      },
+      "output": "This posted, but its timer couldn’t be set. It stays up unless you delete it."
+    },
+    {
+      "id": "friendlyScheduleError#38",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "",
+        "code": "UNKNOWN"
+      },
+      "output": "This one didn’t go out."
+    },
+    {
+      "id": "friendlyScheduleError#39",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "",
+        "code": "BLOB_TOO_BIG"
+      },
+      "output": "This one didn’t go out."
+    },
+    {
+      "id": "friendlyScheduleError#40",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "InvalidRequest: upstream said no",
+        "code": "MEDIA_MISSING"
+      },
+      "output": "The images for this post are missing. Edit it and add them again."
+    },
+    {
+      "id": "friendlyScheduleError#41",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "InvalidRequest: upstream said no",
+        "code": "SESSION_UNAVAILABLE"
+      },
+      "output": "Virga’s server couldn’t act as this account: its session had ended. Sign in again, then retry."
+    },
+    {
+      "id": "friendlyScheduleError#42",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "InvalidRequest: upstream said no",
+        "code": "TIMED_OUT"
+      },
+      "output": "Virga’s server ran out of time before it could post this."
+    },
+    {
+      "id": "friendlyScheduleError#43",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "InvalidRequest: upstream said no",
+        "code": "RATE_LIMITED"
+      },
+      "output": "Bluesky was rate limiting this account."
+    },
+    {
+      "id": "friendlyScheduleError#44",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "InvalidRequest: upstream said no",
+        "code": "REFUSED"
+      },
+      "output": "Bluesky refused the post."
+    },
+    {
+      "id": "friendlyScheduleError#45",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "InvalidRequest: upstream said no",
+        "code": "REPLY_TARGET_GONE"
+      },
+      "output": "The post this replies to is gone, so the reply wasn’t posted."
+    },
+    {
+      "id": "friendlyScheduleError#46",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "InvalidRequest: upstream said no",
+        "code": "REPLY_TARGET_UNCHECKED"
+      },
+      "output": "Virga’s server couldn’t check that the post this replies to is still there, so it held the reply back. Retry sends it if the post is still up."
+    },
+    {
+      "id": "friendlyScheduleError#47",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "InvalidRequest: upstream said no",
+        "code": "TIMER_NOT_ARMED"
+      },
+      "output": "This posted, but its timer couldn’t be set. It stays up unless you delete it."
+    },
+    {
+      "id": "friendlyScheduleError#48",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "InvalidRequest: upstream said no",
+        "code": "UNKNOWN"
+      },
+      "output": "Bluesky refused the post."
+    },
+    {
+      "id": "friendlyScheduleError#49",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "InvalidRequest: upstream said no",
+        "code": "BLOB_TOO_BIG"
+      },
+      "output": "Bluesky refused the post."
+    },
+    {
+      "id": "friendlyScheduleError#50",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "RateLimitExceeded: too many requests",
+        "code": "UNKNOWN"
+      },
+      "output": "Bluesky was rate limiting this account."
+    },
+    {
+      "id": "friendlyScheduleError#51",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "ECONNRESET",
+        "code": "UNKNOWN"
+      },
+      "output": "This one didn’t go out."
+    },
+    {
+      "id": "friendlyScheduleError#52",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "media download failed: Object not found",
+        "code": "BLOB_TOO_BIG"
+      },
+      "output": "The images for this post are missing. Edit it and add them again."
+    },
+    {
+      "id": "friendlyScheduleError#53",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "",
+        "code": "media_missing"
+      },
+      "output": "The images for this post are missing. Edit it and add them again."
+    },
+    {
+      "id": "friendlyScheduleError#54",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "",
+        "code": "  timed_out  "
+      },
+      "output": "Virga’s server ran out of time before it could post this."
+    },
+    {
+      "id": "friendlyScheduleError#55",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "",
+        "code": "Rate_Limited"
+      },
+      "output": "Bluesky was rate limiting this account."
+    },
+    {
+      "id": "friendlyScheduleError#56",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "",
+        "code": "ſession_unavailable"
+      },
+      "output": "Virga’s server couldn’t act as this account: its session had ended. Sign in again, then retry."
+    },
+    {
+      "id": "friendlyScheduleError#57",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "",
+        "code": "refuſed"
+      },
+      "output": "Bluesky refused the post."
+    },
+    {
+      "id": "friendlyScheduleError#58",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "",
+        "code": "tımed_out"
+      },
+      "output": "Virga’s server ran out of time before it could post this."
+    },
+    {
+      "id": "friendlyScheduleError#59",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "",
+        "code": "ﬁ"
+      },
+      "output": "This one didn’t go out."
+    },
+    {
+      "id": "friendlyScheduleError#60",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "whatever the server wrote",
+        "code": "REPLY_TARGET_GONE"
+      },
+      "output": "The post this replies to is gone, so the reply wasn’t posted."
+    },
+    {
+      "id": "friendlyScheduleError#61",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "session",
+        "code": null
+      },
+      "output": "Virga’s server couldn’t act as this account: its session had ended. Sign in again, then retry."
+    },
+    {
+      "id": "friendlyScheduleError#62",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "session",
+        "code": 0
+      },
+      "output": "Virga’s server couldn’t act as this account: its session had ended. Sign in again, then retry."
+    },
+    {
+      "id": "friendlyScheduleError#63",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "rate limit",
+        "code": [
+          "REFUSED"
+        ]
+      },
+      "output": "Bluesky refused the post."
+    },
+    {
+      "id": "friendlyScheduleError#64",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "rate limit",
+        "code": 7
+      },
+      "output": "Bluesky was rate limiting this account."
+    },
+    {
+      "id": "friendlyScheduleError#65",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "x",
+        "code": "constructor"
+      },
+      "output": "This one didn’t go out."
+    },
+    {
+      "id": "friendlyScheduleError#66",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "x",
+        "code": "__proto__"
+      },
+      "output": "This one didn’t go out."
+    },
+    {
+      "id": "friendlyScheduleError#67",
+      "fn": "friendlyScheduleError",
+      "input": {
+        "raw": "x",
+        "code": "toString"
+      },
+      "output": "This one didn’t go out."
+    },
+    {
+      "id": "quotaMessage#1",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {
+          "feature": "scheduledPosts",
+          "limit": 3
+        }
+      },
+      "output": "This account can keep 3 scheduled posts at a time, and they’re all in use."
+    },
+    {
+      "id": "quotaMessage#2",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {
+          "feature": "scheduledPosts",
+          "limit": 1
+        }
+      },
+      "output": "This account can keep 1 scheduled post at a time, and it’s in use."
+    },
+    {
+      "id": "quotaMessage#3",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {
+          "feature": "scheduledPosts",
+          "limit": "2"
+        }
+      },
+      "output": "This account can keep 2 scheduled posts at a time, and they’re all in use."
+    },
+    {
+      "id": "quotaMessage#4",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {
+          "feature": "scheduledPosts",
+          "limit": 0
+        }
+      },
+      "output": "This account’s scheduled posts are all in use."
+    },
+    {
+      "id": "quotaMessage#5",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {
+          "feature": "scheduledPosts",
+          "limit": -1
+        }
+      },
+      "output": "This account’s scheduled posts are all in use."
+    },
+    {
+      "id": "quotaMessage#6",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {
+          "feature": "scheduledPosts",
+          "limit": 2.5
+        }
+      },
+      "output": "This account can keep 2.5 scheduled posts at a time, and they’re all in use."
+    },
+    {
+      "id": "quotaMessage#7",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {
+          "feature": "scheduledPosts",
+          "limit": "many"
+        }
+      },
+      "output": "This account’s scheduled posts are all in use."
+    },
+    {
+      "id": "quotaMessage#8",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {
+          "feature": "scheduledPosts",
+          "limit": null
+        }
+      },
+      "output": "This account’s scheduled posts are all in use."
+    },
+    {
+      "id": "quotaMessage#9",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {
+          "feature": "scheduledPosts",
+          "limit": [
+            4
+          ]
+        }
+      },
+      "output": "This account can keep 4 scheduled posts at a time, and they’re all in use."
+    },
+    {
+      "id": "quotaMessage#10",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {
+          "feature": "scheduledPosts"
+        }
+      },
+      "output": "This account’s scheduled posts are all in use."
+    },
+    {
+      "id": "quotaMessage#11",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {
+          "feature": "scheduledPosts",
+          "limit": 1e+21
+        }
+      },
+      "output": "This account can keep 1e+21 scheduled posts at a time, and they’re all in use."
+    },
+    {
+      "id": "quotaMessage#12",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {
+          "feature": "postTimers",
+          "limit": 1
+        }
+      },
+      "output": "This account can keep one plain timer at a time, counting scheduled posts, and it’s in use."
+    },
+    {
+      "id": "quotaMessage#13",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {
+          "feature": "postTimers",
+          "limit": 3
+        }
+      },
+      "output": "This account can keep 3 plain timers at a time, counting scheduled posts, and all of them are in use."
+    },
+    {
+      "id": "quotaMessage#14",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {
+          "feature": "conditionalTimers",
+          "limit": 1
+        }
+      },
+      "output": "This account can keep one conditional timer at a time, counting scheduled posts, and it’s in use."
+    },
+    {
+      "id": "quotaMessage#15",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {
+          "feature": "conditionalTimers",
+          "limit": "5"
+        }
+      },
+      "output": "This account can keep 5 conditional timers at a time, counting scheduled posts, and all of them are in use."
+    },
+    {
+      "id": "quotaMessage#16",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {
+          "feature": "conditionalTimers"
+        }
+      },
+      "output": "This account can keep one conditional timer at a time, counting scheduled posts, and it’s in use."
+    },
+    {
+      "id": "quotaMessage#17",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {
+          "feature": "other",
+          "limit": 3
+        }
+      },
+      "output": "This account has as many posts scheduled and on timers as Virga’s server holds. Let some go out, or cancel a few."
+    },
+    {
+      "id": "quotaMessage#18",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": {}
+      },
+      "output": "This account has as many posts scheduled and on timers as Virga’s server holds. Let some go out, or cancel a few."
+    },
+    {
+      "id": "quotaMessage#19",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": null
+      },
+      "output": "This account has as many posts scheduled and on timers as Virga’s server holds. Let some go out, or cancel a few."
+    },
+    {
+      "id": "quotaMessage#20",
+      "fn": "quotaMessage",
+      "input": {},
+      "output": "This account has as many posts scheduled and on timers as Virga’s server holds. Let some go out, or cancel a few."
+    },
+    {
+      "id": "quotaMessage#21",
+      "fn": "quotaMessage",
+      "input": {
+        "payload": "scheduledPosts"
+      },
+      "output": "This account has as many posts scheduled and on timers as Virga’s server holds. Let some go out, or cancel a few."
+    },
+    {
+      "id": "scheduleErrorMessage#1",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": null
+      },
+      "output": ""
+    },
+    {
+      "id": "scheduleErrorMessage#2",
+      "fn": "scheduleErrorMessage",
+      "input": {},
+      "output": ""
+    },
+    {
+      "id": "scheduleErrorMessage#3",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "scheduleErrorMessage#4",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "scheduleErrorMessage#5",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 402,
+          "code": "QUOTA_EXCEEDED",
+          "payload": {
+            "feature": "scheduledPosts",
+            "limit": 3
+          }
+        }
+      },
+      "output": "This account can keep 3 scheduled posts at a time, and they’re all in use."
+    },
+    {
+      "id": "scheduleErrorMessage#6",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "QUOTA_EXCEEDED",
+          "payload": {
+            "feature": "conditionalTimers",
+            "limit": 1
+          }
+        }
+      },
+      "output": "This account can keep one conditional timer at a time, counting scheduled posts, and it’s in use."
+    },
+    {
+      "id": "scheduleErrorMessage#7",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "QUOTA_EXCEEDED",
+          "payload": {}
+        }
+      },
+      "output": "This account has as many posts scheduled and on timers as Virga’s server holds. Let some go out, or cancel a few."
+    },
+    {
+      "id": "scheduleErrorMessage#8",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "QUOTA_EXCEEDED",
+          "feature": "scheduledPosts",
+          "limit": 2
+        }
+      },
+      "output": "This account can keep 2 scheduled posts at a time, and they’re all in use."
+    },
+    {
+      "id": "scheduleErrorMessage#9",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "QUOTA_EXCEEDED",
+          "payload": null,
+          "feature": "postTimers",
+          "limit": 4
+        }
+      },
+      "output": "This account can keep 4 plain timers at a time, counting scheduled posts, and all of them are in use."
+    },
+    {
+      "id": "scheduleErrorMessage#10",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "code": "TIMER_PROBLEM",
+          "message": "Pick a later delete time."
+        }
+      },
+      "output": "Pick a later delete time."
+    },
+    {
+      "id": "scheduleErrorMessage#11",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "code": "LIFESPAN",
+          "message": "Pick a later delete time."
+        }
+      },
+      "output": "Pick a later delete time."
+    },
+    {
+      "id": "scheduleErrorMessage#12",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "code": "LIFESPAN"
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "scheduleErrorMessage#13",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "code": "LIFESPAN",
+          "message": 42
+        }
+      },
+      "output": "42"
+    },
+    {
+      "id": "scheduleErrorMessage#14",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "code": "REPEAT_INVALID",
+          "message": "The date it ends on is before it first goes out."
+        }
+      },
+      "output": "The date it ends on is before it first goes out."
+    },
+    {
+      "id": "scheduleErrorMessage#15",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "MEDIA_MISSING",
+          "detail": "part of this thread posted, but the images for the rest were cleared after 30 days. cancel it here and finish the thread by hand."
+        }
+      },
+      "output": "Part of this thread posted, but the images for the rest were cleared after 30 days. Cancel it here and finish the thread by hand."
+    },
+    {
+      "id": "scheduleErrorMessage#16",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "MEDIA_MISSING"
+        }
+      },
+      "output": "The images for this post were cleared after 30 days. Edit it and add them again."
+    },
+    {
+      "id": "scheduleErrorMessage#17",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "MEDIA_MISSING",
+          "detail": ""
+        }
+      },
+      "output": "The images for this post were cleared after 30 days. Edit it and add them again."
+    },
+    {
+      "id": "scheduleErrorMessage#18",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "MEDIA_MISSING",
+          "detail": "gone!   and so? yes… done"
+        }
+      },
+      "output": "Gone!   And so? Yes… done."
+    },
+    {
+      "id": "scheduleErrorMessage#19",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "MEDIA_MISSING",
+          "detail": 12
+        }
+      },
+      "output": "12."
+    },
+    {
+      "id": "scheduleErrorMessage#20",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 401
+        }
+      },
+      "output": "This account needs to sign in again before it can do that."
+    },
+    {
+      "id": "scheduleErrorMessage#21",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 401,
+          "code": "NOT_YOUR_CLIENT"
+        }
+      },
+      "output": "This post was scheduled in another app. Open it there to change it."
+    },
+    {
+      "id": "scheduleErrorMessage#22",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 413
+        }
+      },
+      "output": "That was too large to send. Use fewer or smaller images."
+    },
+    {
+      "id": "scheduleErrorMessage#23",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 500
+        }
+      },
+      "output": "Virga’s server couldn’t do that just now. Try again."
+    },
+    {
+      "id": "scheduleErrorMessage#24",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 502,
+          "message": "Virga’s server answered 502"
+        }
+      },
+      "output": "Virga’s server couldn’t do that just now. Try again."
+    },
+    {
+      "id": "scheduleErrorMessage#25",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": "503"
+        }
+      },
+      "output": "Virga’s server couldn’t do that just now. Try again."
+    },
+    {
+      "id": "scheduleErrorMessage#26",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 499,
+          "detail": "nope"
+        }
+      },
+      "output": "Nope."
+    },
+    {
+      "id": "scheduleErrorMessage#27",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 400,
+          "detail": "a thread can have at most 25 posts"
+        }
+      },
+      "output": "A thread can have at most 25 posts."
+    },
+    {
+      "id": "scheduleErrorMessage#28",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 400,
+          "detail": "first.second sentence! third? fourth"
+        }
+      },
+      "output": "First.second sentence! Third? Fourth."
+    },
+    {
+      "id": "scheduleErrorMessage#29",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 400,
+          "detail": "  leading and trailing space  "
+        }
+      },
+      "output": "Leading and trailing space."
+    },
+    {
+      "id": "scheduleErrorMessage#30",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 400,
+          "detail": "ends with an ellipsis…"
+        }
+      },
+      "output": "Ends with an ellipsis…"
+    },
+    {
+      "id": "scheduleErrorMessage#31",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 400,
+          "detail": "a.b c. d!\te? f.\ng"
+        }
+      },
+      "output": "A.b c. D!\tE? F.\nG."
+    },
+    {
+      "id": "scheduleErrorMessage#32",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 400,
+          "detail": ".. x"
+        }
+      },
+      "output": ".. X."
+    },
+    {
+      "id": "scheduleErrorMessage#33",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 400,
+          "detail": "éclair first. ünder. b"
+        }
+      },
+      "output": "éclair first. ünder. B."
+    },
+    {
+      "id": "scheduleErrorMessage#34",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 400,
+          "detail": "Already Capital. lower after"
+        }
+      },
+      "output": "Already Capital. Lower after."
+    },
+    {
+      "id": "scheduleErrorMessage#35",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 400,
+          "message": "only a message"
+        }
+      },
+      "output": "That didn’t work. Try again."
+    },
+    {
+      "id": "scheduleErrorMessage#36",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "message": "only a message"
+        }
+      },
+      "output": "Only a message."
+    },
+    {
+      "id": "scheduleErrorMessage#37",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "message": "two sentences. here"
+        }
+      },
+      "output": "Two sentences. Here."
+    },
+    {
+      "id": "scheduleErrorMessage#38",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "message": "had a status",
+          "status": 0
+        }
+      },
+      "output": "Had a status."
+    },
+    {
+      "id": "scheduleErrorMessage#39",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "message": ""
+        }
+      },
+      "output": "That didn’t work. Try again."
+    },
+    {
+      "id": "scheduleErrorMessage#40",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {}
+      },
+      "output": "That didn’t work. Try again."
+    },
+    {
+      "id": "scheduleErrorMessage#41",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409
+        }
+      },
+      "output": "That didn’t work. Try again."
+    },
+    {
+      "id": "scheduleErrorMessage#42",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 404
+        }
+      },
+      "output": "That didn’t work. Try again."
+    },
+    {
+      "id": "scheduleErrorMessage#43",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "code": "UNKNOWN_CODE",
+          "status": 409
+        }
+      },
+      "output": "That didn’t work. Try again."
+    },
+    {
+      "id": "scheduleErrorMessage#44",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "code": "UNKNOWN_CODE",
+          "status": 409,
+          "detail": "the server said so"
+        }
+      },
+      "output": "The server said so."
+    },
+    {
+      "id": "scheduleErrorMessage#45",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "code": [
+            "TIMEOUT"
+          ]
+        }
+      },
+      "output": "Virga’s server didn’t answer in time. Try again."
+    },
+    {
+      "id": "scheduleErrorMessage#46",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "code": 5,
+          "message": "numbered"
+        }
+      },
+      "output": "Numbered."
+    },
+    {
+      "id": "scheduleErrorMessage#47",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "code": null,
+          "message": "nulled"
+        }
+      },
+      "output": "Nulled."
+    },
+    {
+      "id": "scheduleErrorMessage#48",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "NEEDS_BACKEND",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "Scheduling needs this account signed in through Virga’s server. Reconnect it for a longer session."
+    },
+    {
+      "id": "scheduleErrorMessage#49",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "QUEUE_REPLY",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "A reply can’t wait in the queue. Schedule it for a set time instead."
+    },
+    {
+      "id": "scheduleErrorMessage#50",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "REPLY_UNRESOLVED",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "The post you’re replying to couldn’t be read. Try again, or take the reply off."
+    },
+    {
+      "id": "scheduleErrorMessage#51",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "REPEAT_REPLY",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "A reply can’t repeat: it would answer the same post again each time."
+    },
+    {
+      "id": "scheduleErrorMessage#52",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "QUEUE_REPEAT",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "A post in the queue can’t repeat. Schedule it for a set time instead."
+    },
+    {
+      "id": "scheduleErrorMessage#53",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "NOT_SKIPPABLE",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "There’s nothing to skip: this post isn’t repeating, or is already on its way out."
+    },
+    {
+      "id": "scheduleErrorMessage#54",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "NOT_REPEATING",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "This post isn’t repeating, or is already on its way out, so there’s nothing to stop."
+    },
+    {
+      "id": "scheduleErrorMessage#55",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "SCHEDULE_VIDEO",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "Posts with video can’t be scheduled. Post it now instead."
+    },
+    {
+      "id": "scheduleErrorMessage#56",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "MEDIA_TOO_LARGE",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "That’s more image than can be sent ahead. Use fewer or smaller images, or post it now."
+    },
+    {
+      "id": "scheduleErrorMessage#57",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "IMAGE_TOO_LARGE",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "One of the images is over Bluesky’s size limit. Add it again so it can be shrunk."
+    },
+    {
+      "id": "scheduleErrorMessage#58",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "IMAGE_MISSING",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "An image needs to be added again before this can be scheduled."
+    },
+    {
+      "id": "scheduleErrorMessage#59",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "TOO_MANY_IMAGES",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "A post can have up to 4 images."
+    },
+    {
+      "id": "scheduleErrorMessage#60",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "RECORD_UNRESOLVED",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "The attached post or feed couldn’t be found. Remove it or try again."
+    },
+    {
+      "id": "scheduleErrorMessage#61",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "SCHEDULE_INVALID",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "Choose a time to post it."
+    },
+    {
+      "id": "scheduleErrorMessage#62",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "SCHEDULE_PAST",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "Choose a time at least a minute from now."
+    },
+    {
+      "id": "scheduleErrorMessage#63",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "SCHEDULE_TOO_FAR",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "Posts can be scheduled up to 90 days ahead."
+    },
+    {
+      "id": "scheduleErrorMessage#64",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "EMPTY",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "Write something first."
+    },
+    {
+      "id": "scheduleErrorMessage#65",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "RATE_LIMITED",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "That’s a lot of posts at once. Wait a moment and try again."
+    },
+    {
+      "id": "scheduleErrorMessage#66",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "NOT_RESCHEDULABLE",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "This post is already on its way out, or has gone, so it can’t be changed."
+    },
+    {
+      "id": "scheduleErrorMessage#67",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "PARTIALLY_PUBLISHED",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "Part of this thread is already out, so it can’t be changed. Retry it to post the rest, or cancel it."
+    },
+    {
+      "id": "scheduleErrorMessage#68",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "NOT_CANCELLABLE",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "This post is already on its way out, so it can no longer be cancelled."
+    },
+    {
+      "id": "scheduleErrorMessage#69",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "NOT_RETRIABLE",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "Only a post that didn’t go out can be retried."
+    },
+    {
+      "id": "scheduleErrorMessage#70",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "NOT_ACKNOWLEDGEABLE",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "That note was already cleared."
+    },
+    {
+      "id": "scheduleErrorMessage#71",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "NOT_REORDERABLE",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "One of these posts is already on its way out, so the new order wasn’t saved."
+    },
+    {
+      "id": "scheduleErrorMessage#72",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "DELETE_TIME_TOO_EARLY",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "This post’s delete time would come before it goes out, or within five minutes of it. Pick an earlier slot, or change its lifespan first."
+    },
+    {
+      "id": "scheduleErrorMessage#73",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "NOT_REARMABLE",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "This post’s timer is being checked right now, so it wasn’t changed. Try again in a minute."
+    },
+    {
+      "id": "scheduleErrorMessage#74",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "NOT_YOUR_CLIENT",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "This post was scheduled in another app. Open it there to change it."
+    },
+    {
+      "id": "scheduleErrorMessage#75",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "UNAVAILABLE",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "Scheduling isn’t available on Virga’s server right now."
+    },
+    {
+      "id": "scheduleErrorMessage#76",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "VIRGA_CLIENT_UNAVAILABLE",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "Virga’s server isn’t taking sign-ins right now. Try again later."
+    },
+    {
+      "id": "scheduleErrorMessage#77",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "TIMEOUT",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "Virga’s server didn’t answer in time. Try again."
+    },
+    {
+      "id": "scheduleErrorMessage#78",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "NETWORK_ERROR",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "Couldn’t reach Virga’s server. Check the connection and try again."
+    },
+    {
+      "id": "scheduleErrorMessage#79",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "INTERNAL",
+          "detail": "x",
+          "message": "y"
+        }
+      },
+      "output": "Virga’s server couldn’t do that just now. Try again."
+    },
+    {
+      "id": "scheduleErrorMessage#80",
+      "fn": "scheduleErrorMessage",
+      "input": {
+        "err": {
+          "code": "timeout"
+        }
+      },
+      "output": "That didn’t work. Try again."
+    },
+    {
+      "id": "reorderRefusal#1",
+      "fn": "reorderRefusal",
+      "input": {
+        "err": null
+      },
+      "output": null
+    },
+    {
+      "id": "reorderRefusal#2",
+      "fn": "reorderRefusal",
+      "input": {},
+      "output": null
+    },
+    {
+      "id": "reorderRefusal#3",
+      "fn": "reorderRefusal",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "DELETE_TIME_TOO_EARLY",
+          "detail": "the delete time on \"x\" would come before…"
+        }
+      },
+      "output": "One of these posts would go out after its delete time in this order, or within five minutes of it. Move it earlier, or change its lifespan first. Your queue is unchanged."
+    },
+    {
+      "id": "reorderRefusal#4",
+      "fn": "reorderRefusal",
+      "input": {
+        "err": {
+          "status": 409,
+          "code": "NOT_REORDERABLE"
+        }
+      },
+      "output": "One of these posts is already on its way out, so the new order wasn’t saved."
+    },
+    {
+      "id": "reorderRefusal#5",
+      "fn": "reorderRefusal",
+      "input": {
+        "err": {
+          "status": 400,
+          "code": "NOT_REORDERABLE"
+        }
+      },
+      "output": "One of these posts is already on its way out, so the new order wasn’t saved."
+    },
+    {
+      "id": "reorderRefusal#6",
+      "fn": "reorderRefusal",
+      "input": {
+        "err": {
+          "status": 409
+        }
+      },
+      "output": "One of these posts is already on its way out, so the new order wasn’t saved."
+    },
+    {
+      "id": "reorderRefusal#7",
+      "fn": "reorderRefusal",
+      "input": {
+        "err": {
+          "status": "409"
+        }
+      },
+      "output": "That didn’t work. Try again."
+    },
+    {
+      "id": "reorderRefusal#8",
+      "fn": "reorderRefusal",
+      "input": {
+        "err": {
+          "status": 404,
+          "code": "UNAVAILABLE"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "reorderRefusal#9",
+      "fn": "reorderRefusal",
+      "input": {
+        "err": {
+          "status": 405
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "reorderRefusal#10",
+      "fn": "reorderRefusal",
+      "input": {
+        "err": {
+          "reorderUnsupported": true
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "reorderRefusal#11",
+      "fn": "reorderRefusal",
+      "input": {
+        "err": {
+          "reorderUnsupported": "yes",
+          "status": 409
+        }
+      },
+      "output": "One of these posts is already on its way out, so the new order wasn’t saved."
+    },
+    {
+      "id": "reorderRefusal#12",
+      "fn": "reorderRefusal",
+      "input": {
+        "err": {
+          "status": 500
+        }
+      },
+      "output": "Virga’s server couldn’t do that just now. Try again."
+    },
+    {
+      "id": "reorderRefusal#13",
+      "fn": "reorderRefusal",
+      "input": {
+        "err": {
+          "status": 0,
+          "code": "NETWORK_ERROR"
+        }
+      },
+      "output": "Couldn’t reach Virga’s server. Check the connection and try again."
+    },
+    {
+      "id": "reorderRefusal#14",
+      "fn": "reorderRefusal",
+      "input": {
+        "err": {
+          "status": 400,
+          "detail": "too many moves"
+        }
+      },
+      "output": "Too many moves."
+    },
+    {
+      "id": "reorderRefusal#15",
+      "fn": "reorderRefusal",
+      "input": {
+        "err": {
+          "message": ""
+        }
+      },
+      "output": "That didn’t work. Try again."
+    },
+    {
+      "id": "reorderRefusal#16",
+      "fn": "reorderRefusal",
+      "input": {
+        "err": {}
+      },
+      "output": "That didn’t work. Try again."
+    },
+    {
+      "id": "reorderRefusal#17",
+      "fn": "reorderRefusal",
+      "input": {
+        "err": {
+          "code": "QUOTA_EXCEEDED",
+          "payload": {
+            "feature": "scheduledPosts",
+            "limit": 1
+          }
+        }
+      },
+      "output": "This account can keep 1 scheduled post at a time, and it’s in use."
+    }
+  ]
+}

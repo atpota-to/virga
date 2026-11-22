@@ -125,7 +125,10 @@ public enum LinkCard {
   /// the thumbnail limit. A blob already uploaded as this account is reused.
   /// Nil when there is no image or it couldn't be fetched or uploaded: the
   /// card goes out without one rather than holding the post back. Throws
-  /// only when the caller called it off.
+  /// only when the caller called it off: cancelled, or its `deadlineMs` (no
+  /// later than the card service's ten seconds) ran out while the page's
+  /// image was fetched. (The web's signal reaches the upload too; here the
+  /// deadline bounds the fetch and the upload keeps its own.)
   public static func uploadCardThumb(
     _ target: PublishTarget, _ card: JSONValue?, media: PublishMedia, deadlineMs: Double? = nil
   ) async throws -> JSONValue? {
@@ -150,64 +153,203 @@ public enum LinkCard {
         agent: target.agent, data: data, encoding: file.type.isEmpty ? "image/jpeg" : file.type)
       return (try? JSONValue(encoding: blob)) ?? .null
     } catch {
-      if Task.isCancelled { throw error }
+      // `if (signal?.aborted) throw err`.
+      if callerAborted(error, deadlineMs: deadlineMs) { throw error }
       return nil
     }
   }
 
   // MARK: A response's blob type
+  //
+  // `(await res.blob()).type` as Node's fetch (undici) gives it: the
+  // Content-Type's values split at the commas outside quoted strings
+  // (Fetch's "getting, decoding, and splitting"), each parsed as WHATWG MIME
+  // Sniffing parses a MIME type, the last that parses and isn't `*/*` taken,
+  // with the charset of an earlier value of the same essence carried over
+  // (Fetch's "extract a MIME type"), serialized, and lower-cased as the Blob
+  // constructor does ('' for a type outside printable ASCII). In code units,
+  // as the web's strings are. Undici's HTTP token code points leave out the
+  // backtick the spec lists, and so does this.
 
-  static let tokenUnits = Set("!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".utf16)
+  /// A parsed MIME type: its essence (`type/subtype`, lower-cased) and its
+  /// parameters in the order first given.
+  struct MimeType {
+    var essence: [UInt16]
+    var parameters: [(name: [UInt16], value: [UInt16])]
 
-  static func isToken(_ s: Substring) -> Bool { !s.isEmpty && s.utf16.allSatisfy(tokenUnits.contains) }
-
-  /// `(await res.blob()).type`: the Content-Type parsed as the Fetch
-  /// standard extracts a MIME type (the last parsable value of the list),
-  /// serialized, and lower-cased as the Blob constructor does ('' for none,
-  /// or for a type outside printable ASCII).
-  static func blobType(_ contentType: String?) -> String {
-    guard let contentType else { return "" }
-    var found: String?
-    for piece in contentType.split(separator: ",", omittingEmptySubsequences: false) {
-      if let parsed = parseMime(piece) { found = parsed }
-    }
-    guard let found else { return "" }
-    if found.unicodeScalars.contains(where: { $0.value < 0x20 || $0.value > 0x7E }) { return "" }
-    return found.lowercased()
+    func parameter(_ name: [UInt16]) -> [UInt16]? { parameters.first { $0.name == name }?.value }
   }
 
-  /// A MIME type serialized (`type/subtype;name=value`), or nil when it
-  /// doesn't parse or is `*/*`.
-  static func parseMime(_ raw: Substring) -> String? {
-    let text = raw.trimmingCharacters(in: CharacterSet(charactersIn: " \t\r\n"))
-    guard let slash = text.firstIndex(of: "/") else { return nil }
-    let type = text[..<slash]
-    let rest = text[text.index(after: slash)...]
-    let parts = rest.split(separator: ";", omittingEmptySubsequences: false)
-    let subtype = (parts.first ?? "").trimmingCharacters(in: CharacterSet(charactersIn: " \t\r\n"))
-    guard isToken(type), isToken(Substring(subtype)) else { return nil }
-    let essence = "\(type)/\(subtype)".lowercased()
-    if essence == "*/*" { return nil }
-    var params: [(String, String)] = []
-    for param in parts.dropFirst() {
-      let trimmed = param.drop(while: { $0 == " " || $0 == "\t" || $0 == "\r" || $0 == "\n" })
-      guard let eq = trimmed.firstIndex(of: "=") else { continue }
-      let name = trimmed[..<eq].lowercased()
-      var value = String(trimmed[trimmed.index(after: eq)...])
-      if value.hasPrefix("\"") {
-        value = String(value.dropFirst().prefix(while: { $0 != "\"" }))
+  static let tokenUnits = Set("!#$%&'*+-.^_|~0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".utf16)
+  static let charsetName = Array("charset".utf16)
+  static let anyType = Array("*/*".utf16)
+
+  static func isToken(_ units: [UInt16]) -> Bool { !units.isEmpty && units.allSatisfy(tokenUnits.contains) }
+
+  /// HTTP whitespace: LF, CR, tab, space.
+  static func isHTTPWhitespace(_ unit: UInt16) -> Bool { unit == 0x0A || unit == 0x0D || unit == 0x09 || unit == 0x20 }
+
+  /// An HTTP quoted-string token code point: tab, U+0020–U+007E, U+0080–U+00FF.
+  static func isQuotedStringToken(_ unit: UInt16) -> Bool {
+    unit == 0x09 || (0x20...0x7E).contains(unit) || (0x80...0xFF).contains(unit)
+  }
+
+  static func asciiLowercased(_ units: [UInt16]) -> [UInt16] { units.map { (0x41...0x5A).contains($0) ? $0 + 0x20 : $0 } }
+
+  static func trimmed(_ units: [UInt16], leading: Bool = true, _ drop: (UInt16) -> Bool) -> [UInt16] {
+    var slice = units[...]
+    if leading { while let first = slice.first, drop(first) { slice = slice.dropFirst() } }
+    while let last = slice.last, drop(last) { slice = slice.dropLast() }
+    return Array(slice)
+  }
+
+  static func blobType(_ contentType: String?) -> String {
+    guard let contentType, let mime = extractMimeType(Array(contentType.utf16)) else { return "" }
+    let serialized = serializeMimeType(mime)
+    if serialized.contains(where: { $0 < 0x20 || $0 > 0x7E }) { return "" }
+    return String(decoding: asciiLowercased(serialized), as: UTF16.self)
+  }
+
+  /// Fetch's "extract a MIME type" from a Content-Type value, or nil for failure.
+  static func extractMimeType(_ value: [UInt16]) -> MimeType? {
+    var charset: [UInt16]?
+    var essence: [UInt16]?
+    var found: MimeType?
+    for piece in splitHeaderValue(value) {
+      guard var mime = parseMimeType(piece), mime.essence != anyType else { continue }
+      if mime.essence != essence {
+        charset = mime.parameter(charsetName)
+        essence = mime.essence
+      } else if mime.parameter(charsetName) == nil, let charset {
+        mime.parameters.append((charsetName, charset))
+      }
+      found = mime
+    }
+    return found
+  }
+
+  /// Fetch's "getting, decoding, and splitting": the value split at commas
+  /// outside quoted strings, each piece without its leading and trailing tabs
+  /// and spaces.
+  static func splitHeaderValue(_ input: [UInt16]) -> [[UInt16]] {
+    var values: [[UInt16]] = []
+    var position = 0
+    var piece: [UInt16] = []
+    while position < input.count {
+      while position < input.count, input[position] != 0x22, input[position] != 0x2C {
+        piece.append(input[position])
+        position += 1
+      }
+      if position < input.count {
+        if input[position] == 0x22 {
+          piece += collectQuotedString(input, &position, extractValue: false)
+          if position < input.count { continue }
+        } else {
+          position += 1
+        }
+      }
+      values.append(trimmed(piece) { $0 == 0x09 || $0 == 0x20 })
+      piece = []
+    }
+    return values
+  }
+
+  /// Fetch's "collect an HTTP quoted string" from the quote at `position`:
+  /// the value with its escapes undone, or (not `extractValue`) the quoted
+  /// string as it was written.
+  static func collectQuotedString(_ input: [UInt16], _ position: inout Int, extractValue: Bool) -> [UInt16] {
+    let start = position
+    var value: [UInt16] = []
+    position += 1
+    while true {
+      while position < input.count, input[position] != 0x22, input[position] != 0x5C {
+        value.append(input[position])
+        position += 1
+      }
+      if position >= input.count { break }
+      let quoteOrBackslash = input[position]
+      position += 1
+      if quoteOrBackslash == 0x5C {
+        if position >= input.count {
+          value.append(0x5C)
+          break
+        }
+        value.append(input[position])
+        position += 1
       } else {
-        value = value.trimmingCharacters(in: CharacterSet(charactersIn: " \t\r\n"))
+        break
+      }
+    }
+    return extractValue ? value : Array(input[start..<position])
+  }
+
+  /// WHATWG MIME Sniffing's "parse a MIME type", or nil for failure.
+  static func parseMimeType(_ raw: [UInt16]) -> MimeType? {
+    let input = trimmed(raw, isHTTPWhitespace)
+    var position = 0
+    var type: [UInt16] = []
+    while position < input.count, input[position] != 0x2F {
+      type.append(input[position])
+      position += 1
+    }
+    guard isToken(type) else { return nil }
+    position += 1
+    var subtype: [UInt16] = []
+    while position < input.count, input[position] != 0x3B {
+      subtype.append(input[position])
+      position += 1
+    }
+    subtype = trimmed(subtype, leading: false, isHTTPWhitespace)
+    guard isToken(subtype) else { return nil }
+    var mime = MimeType(essence: asciiLowercased(type) + [0x2F] + asciiLowercased(subtype), parameters: [])
+    while position < input.count {
+      position += 1
+      while position < input.count, isHTTPWhitespace(input[position]) { position += 1 }
+      var name: [UInt16] = []
+      while position < input.count, input[position] != 0x3B, input[position] != 0x3D {
+        name.append(input[position])
+        position += 1
+      }
+      name = asciiLowercased(name)
+      if position < input.count {
+        if input[position] == 0x3B { continue }
+        position += 1
+      }
+      var value: [UInt16] = []
+      if position < input.count, input[position] == 0x22 {
+        value = collectQuotedString(input, &position, extractValue: true)
+        while position < input.count, input[position] != 0x3B { position += 1 }
+      } else {
+        while position < input.count, input[position] != 0x3B {
+          value.append(input[position])
+          position += 1
+        }
+        value = trimmed(value, leading: false, isHTTPWhitespace)
         if value.isEmpty { continue }
       }
-      guard isToken(Substring(name)), !params.contains(where: { $0.0 == name }) else { continue }
-      params.append((name, value))
+      if isToken(name), value.allSatisfy(isQuotedStringToken), mime.parameter(name) == nil {
+        mime.parameters.append((name, value))
+      }
     }
-    var out = essence
-    for (name, value) in params {
-      let quoted = isToken(Substring(value)) && !value.isEmpty
-        ? value : "\"\(value.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\""))\""
-      out += ";\(name)=\(quoted)"
+    return mime
+  }
+
+  /// WHATWG MIME Sniffing's "serialize a MIME type": a value that isn't a
+  /// token (or is empty) quoted, its quotes and backslashes escaped.
+  static func serializeMimeType(_ mime: MimeType) -> [UInt16] {
+    var out = mime.essence
+    for (name, value) in mime.parameters {
+      out += [0x3B] + name + [0x3D]
+      if isToken(value) {
+        out += value
+      } else {
+        out.append(0x22)
+        for unit in value {
+          if unit == 0x22 || unit == 0x5C { out.append(0x5C) }
+          out.append(unit)
+        }
+        out.append(0x22)
+      }
     }
     return out
   }

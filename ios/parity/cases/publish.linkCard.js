@@ -275,6 +275,41 @@ export default async function cases() {
       answer: image(),
       deadlineMs: 3000,
     },
+    // The file's type is the response's as Node's fetch extracts it (a
+    // MIME type parsed, serialized, lower-cased by the Blob), which the
+    // re-encoder's call shows.
+    ...[
+      ['quoted-charset', 'image/png; charset="UTF-8"'],
+      ['escaped-quote', 'image/png;charset="a\\"b"'],
+      ['escaped-backslash', 'image/png;charset="a\\\\b"'],
+      ['trailing-backslash', 'image/png;a="b\\'],
+      ['list-last-wins', 'text/html, image/png'],
+      ['list-last-not-image', 'image/png, text/html'],
+      ['list-any-skipped', 'image/png, */*'],
+      ['charset-carried', 'image/png;charset=a, image/png;x=1'],
+      ['charset-carried-past-any', 'image/png;charset=A, */*, IMAGE/PNG'],
+      ['charset-not-carried', 'image/png;charset=a, image/gif'],
+      ['charset-own-wins', 'image/png;charset=a, image/png;charset=b'],
+      ['semicolon-quoted', 'image/webp;a="x;y"'],
+      ['comma-quoted', 'image/png;a="x,y"'],
+      ['comma-quoted-list', 'image/png;charset=",",image/gif'],
+      ['after-the-quote', 'image/png;a="b"c ;d=e'],
+      ['unquoted-space', 'image/png;a=b c'],
+      ['empty-quoted', 'image/png;a="'],
+      ['empty-value', 'image/png;a=;b=1'],
+      ['empty-name', 'image/png;=x;;y=2'],
+      ['repeated-name', 'image/png;a=b;A=c'],
+      ['backtick-value', 'image/png;a=`'],
+      ['backtick-name', 'image/png;a`=1'],
+      ['backtick-type', 'image/png`'],
+      ['latin-1-value', 'image/png;a="é"'],
+      ['space-in-type', 'image /png'],
+      ['upper-case-everything', 'IMAGE/SVG+XML;CHARSET=X;Q="Y Z"'],
+    ].map(([$id, contentType]) => ({
+      $id: `type-${$id}`,
+      imageUrl: 'https://img.example/x',
+      answer: image(4, contentType),
+    })),
   ];
   all.push(
     ...(await each(

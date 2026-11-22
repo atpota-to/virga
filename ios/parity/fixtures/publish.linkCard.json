@@ -1964,6 +1964,1982 @@
       }
     },
     {
+      "id": "type-quoted-charset",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png; charset=\"UTF-8\""
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png; charset=\"UTF-8\""
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png;charset=utf-8",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-escaped-quote",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;charset=\"a\\\"b\""
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;charset=\"a\\\"b\""
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png;charset=\"a\\\"b\"",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-escaped-backslash",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;charset=\"a\\\\b\""
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;charset=\"a\\\\b\""
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png;charset=\"a\\\\b\"",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-trailing-backslash",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;a=\"b\\"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;a=\"b\\"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png;a=\"b\\\\\"",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-list-last-wins",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "text/html, image/png"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/html, image/png"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-list-last-not-image",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png, text/html"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png, text/html"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/jpeg",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-list-any-skipped",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png, */*"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png, */*"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-charset-carried",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;charset=a, image/png;x=1"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;charset=a, image/png;x=1"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png;x=1;charset=a",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-charset-carried-past-any",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;charset=A, */*, IMAGE/PNG"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;charset=A, */*, IMAGE/PNG"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png;charset=a",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-charset-not-carried",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;charset=a, image/gif"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;charset=a, image/gif"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/gif",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-charset-own-wins",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;charset=a, image/png;charset=b"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;charset=a, image/png;charset=b"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png;charset=b",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-semicolon-quoted",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/webp;a=\"x;y\""
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/webp;a=\"x;y\""
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/webp;a=\"x;y\"",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-comma-quoted",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;a=\"x,y\""
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;a=\"x,y\""
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png;a=\"x,y\"",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-comma-quoted-list",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;charset=\",\",image/gif"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;charset=\",\",image/gif"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/gif",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-after-the-quote",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;a=\"b\"c ;d=e"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;a=\"b\"c ;d=e"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png;a=b;d=e",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-unquoted-space",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;a=b c"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;a=b c"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png;a=\"b c\"",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-empty-quoted",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;a=\""
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;a=\""
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png;a=\"\"",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-empty-value",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;a=;b=1"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;a=;b=1"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png;b=1",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-empty-name",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;=x;;y=2"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;=x;;y=2"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png;y=2",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-repeated-name",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;a=b;A=c"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;a=b;A=c"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png;a=b",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-backtick-value",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;a=`"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;a=`"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png;a=\"`\"",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-backtick-name",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;a`=1"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;a`=1"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/png",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-backtick-type",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png`"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png`"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/jpeg",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-latin-1-value",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image/png;a=\"é\""
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png;a=\"é\""
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/jpeg",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-space-in-type",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "image /png"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image /png"
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/jpeg",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "type-upper-case-everything",
+      "fn": "fetchCardThumbnail",
+      "input": {
+        "imageUrl": "https://img.example/x",
+        "answer": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "contentType": "IMAGE/SVG+XML;CHARSET=X;Q=\"Y Z\""
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://img.example/x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 10000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "IMAGE/SVG+XML;CHARSET=X;Q=\"Y Z\""
+              },
+              "body": {
+                "$bytes": "AAAAAA=="
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$file": true,
+          "name": "thumbnail.jpg",
+          "type": "image/jpeg",
+          "size": 5
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "thumbnail",
+              "type": "image/svg+xml;charset=x;q=\"y z\"",
+              "size": 4
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "thumbnail.jpg",
+              "type": "image/jpeg",
+              "size": 5
+            }
+          ]
+        ]
+      }
+    },
+    {
       "id": "reused",
       "fn": "uploadCardThumb",
       "input": {

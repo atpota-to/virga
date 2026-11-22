@@ -792,6 +792,21 @@ export default async function cases() {
       script: { video: { upload: 'limit' } },
     },
     {
+      $id: 'video-not-a-file',
+      state: state([
+        post('p1', { text: 'b', video: { file: { name: 'v.mp4' } } }),
+      ]),
+    },
+    {
+      $id: 'image-not-a-file',
+      state: state([
+        post('p1', {
+          text: 'b',
+          images: [img('i', { file: { name: 'a.jpg', size: 2 } })],
+        }),
+      ]),
+    },
+    {
       $id: 'video-bytes-gone',
       state: state([
         post('p1', { text: 'b', video: { blob: VIDEO_BLOB, blobDid: OTHER } }),

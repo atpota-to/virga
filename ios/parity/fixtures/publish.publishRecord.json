@@ -199,6 +199,111 @@
       "output": false
     },
     {
+      "id": "code-array",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": [
+            "ECONNRESET"
+          ]
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-array-later",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": [
+            "x",
+            "ECONNRESET"
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "code-object",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": {}
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "code-zero-cause",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": 0,
+          "cause": {
+            "code": "EPIPE"
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "cause-code-array",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "cause": {
+            "code": [
+              "EPIPE",
+              "x"
+            ]
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-code-429",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "statusCode": 429
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-string-503",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": "503",
+          "message": "x"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-fraction",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": 503.5
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "cause-string-message",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "",
+          "cause": "fetch failed"
+        }
+      },
+      "output": false
+    },
+    {
       "id": "cause-code",
       "fn": "isTransientNetworkError",
       "input": {
@@ -1009,6 +1114,111 @@
       "input": {
         "err": {
           "code": ""
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "code-array",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": [
+            "ECONNRESET"
+          ]
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-array-later",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": [
+            "x",
+            "ECONNRESET"
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "code-object",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": {}
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "code-zero-cause",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": 0,
+          "cause": {
+            "code": "EPIPE"
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "cause-code-array",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "cause": {
+            "code": [
+              "EPIPE",
+              "x"
+            ]
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-code-429",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "statusCode": 429
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-string-503",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": "503",
+          "message": "x"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-fraction",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": 503.5
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "cause-string-message",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "",
+          "cause": "fetch failed"
         }
       },
       "output": false

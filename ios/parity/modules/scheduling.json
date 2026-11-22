@@ -5,44 +5,121 @@
   "summary": "Scheduled posts and the queue: serializing, the service, the calendar and reordering, and the posting pages' models.",
   "files": {
     "src/posting/pages/draftActions.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Pages/DraftActions.swift"
+      ],
+      "fixtures": [
+        "scheduling.draftActions"
+      ],
+      "note": "prepareDraft, postDraftNow and scheduleDraft take their I/O as DraftActionDeps<Target> (live(...) wires Drafts.openDraft, PostingSettingsStore.resolveDefaultGates through the agent's gates, the timer limits from ScheduleService.getLimits, Publish.publish, Drafts.deleteDraft, ScheduleSerialize, ScheduleService.createScheduled and the timer service, as DraftsPage.jsx does). The agent is the account's XRPCAgent?. blobImageLoader reads the PDS through transport and makes its file through ComposerFiles. Not reproduced: draftPostBlock on a row without text (summarizeDraft always gives one) reads it as empty, where the web throws reading text.trim().",
+      "synced": "cde9ebd3f92b"
     },
     "src/posting/pages/hubModel.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Pages/HubModel.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/ScheduleJS.swift"
+      ],
+      "fixtures": [
+        "scheduling.hubModel"
+      ],
+      "note": "Pure. Times are read as Date.parse(iso || '') with a time without an offset in timeZone (the device's), and whenLabel's days are that zone's; locale nil is the active one. rowFromPostView builds the archive's PostRow (VirgaArchive's compactPostFromRecord) and lays the view's counts over its JSON.",
+      "synced": "95dc02927907"
     },
     "src/posting/pages/postedModel.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Pages/PostedModel.swift"
+      ],
+      "fixtures": [
+        "scheduling.postedModel"
+      ],
+      "note": "The account's agent is its XRPCAgent (through Virga's server); the public AppView (PublicAppView.getPosts, VirgaNetwork's) and the PDS's getBlob go through transport, the web's fetch. fetchPostImages makes its files through ComposerFiles; a picture's type is the response's as Node's fetch reads it (LinkCard.blobType). postAgainIntent takes the typed PostAgainSeed (init(json:) reads the web's object).",
+      "synced": "626b752a5f6b"
     },
     "src/posting/pages/scheduleModel.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Pages/ScheduleModel.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Pages/ScheduleModel+Timers.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Pages/ScheduleModel+Picker.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/ScheduleJS.swift"
+      ],
+      "fixtures": [
+        "scheduling.scheduleModel"
+      ],
+      "note": "Pure; every clock is a now: (epoch ms) and the device's zone a timeZone:, including the sentences the web says against Date.now() (rowFacts, timerRowModel). slotLabel formats in locale (nil: the active one) where the web uses the browser's own (toLocaleTimeString(undefined)). postScheduledNow takes its deps as PostScheduledNowDeps<Target> (live(...) wires VirgaBackend, reconstructFromScheduled, Publish.publish, the events bus and TimerService.armAfterPublish as the Scheduled page does). Not reproduced (corrupt input only): a day's slots that aren't a list, which the web throws spreading or sorting.",
+      "synced": "93930a5d238c"
     },
     "src/posting/schedule/queueCalendar.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/QueueCalendar.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/ScheduleJS.swift"
+      ],
+      "fixtures": [
+        "scheduling.queueCalendar"
+      ],
+      "note": "The device's days are timeZone's (nil: the active zone); instants are epoch ms, Dates in the web. A row that is null throws as the web's does; rows that aren't a list read as none.",
+      "synced": "aa65f1cc00a9"
     },
     "src/posting/schedule/queueReorder.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/QueueReorder.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/ScheduleJS.swift"
+      ],
+      "fixtures": [
+        "scheduling.queueReorder"
+      ],
+      "note": "Times without an offset are read in timeZone (the device's). queueTimerConflict and planQueueReorder take now: for the pin's words, which the web says against Date.now() (one clock with the plan's now, as the app calls it). planQueueReorder throws the web's TypeError for a null row. Not reproduced (corrupt input only): the standalone queueTimerConflict reads a null row as one without an id, and pendingMoves an assignment that isn't a list as none, where the web throws.",
+      "synced": "e2508fdcb9c0"
     },
     "src/posting/schedule/queueSuggestions.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/QueueSuggestions.swift"
+      ],
+      "fixtures": [
+        "scheduling.queueSuggestions"
+      ],
+      "note": "scheduleFromSuggestions takes the device zone as localZone. A day whose times have no includes (a number, an object) throws the web's TypeError; the typed overloads read it as empty. Not reproduced (corrupt input only): a cell day of 'length' or an inherited array method, which the web takes for a day key.",
+      "synced": "08c5c2a6bc55"
     },
     "src/posting/schedule/scheduleSerialize.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/ScheduleSerialize.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/ScheduleSerialize+Reconstruct.swift"
+      ],
+      "fixtures": [
+        "scheduling.scheduleSerialize"
+      ],
+      "note": "Files are ComposerFiles' (options.media: PublishMedia, whose encoder re-encodes a card's own image on its clock); reconstructFromScheduled is async because each stored image becomes a file through ComposerFiles.makeFile. URL.createObjectURL is makePreviewUrl (none by default; VirgaUI passes its own). The web's signal is the task's cancellation. warnings sit beside the body (ScheduleBody.warnings), never in its json. atob is Node's forgiving-base64 with its words. blobToBase64(_ bytes: Data) -> String is public for the adviser.",
+      "synced": "64bb535f74e7"
     },
     "src/posting/schedule/scheduleService.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/ScheduleService.swift"
+      ],
+      "fixtures": [
+        "scheduling.scheduleService"
+      ],
+      "note": "The requester is ScheduleRequester (the web's req.request(path, { method, query, body, timeoutMs })); VirgaBackend conforms here. A call's AbortSignal is the task's cancellation: a reorder's row-by-row fallback fails the moves left with CancellationError once the task is cancelled (the web's signal.reason). Times without an offset are read in timeZone; events go to target (PostingEventBus.shared by default).",
+      "synced": "da1f97763b09"
     },
     "src/posting/schedule/scheduledPostError.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/ScheduledPostError.swift"
+      ],
+      "fixtures": [
+        "scheduling.scheduledPostError"
+      ],
+      "note": "An error is read as the web's object of members (code, status, detail, payload, message); the any-Error overloads make one first (ScheduledPostError.errorObject: BackendError keeps detail and payload). Not reproduced: a code naming an inherited member ('constructor') finds it in BY_THROWN_CODE on the web.",
+      "synced": "14cb0c23c5b8"
     }
   }
 }

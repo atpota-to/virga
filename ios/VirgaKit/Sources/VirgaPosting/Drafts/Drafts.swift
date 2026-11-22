@@ -27,11 +27,12 @@
 import Foundation
 import VirgaCore
 import VirgaNetwork
+import VirgaSession
 
 /// A drafts call that couldn't be made, in the web's words: `code`
 /// DRAFT_TOO_LONG (with `postIndex`) or DRAFT_LIMIT (with the refusal as
 /// `cause`), or none.
-public struct DraftsError: Error, LocalizedError, Sendable, CustomStringConvertible {
+public struct DraftsError: Error, LocalizedError, JSErrorConvertible, Sendable, CustomStringConvertible {
   public var message: String
   public var code: String?
   public var postIndex: Int?
@@ -46,6 +47,8 @@ public struct DraftsError: Error, LocalizedError, Sendable, CustomStringConverti
 
   public var errorDescription: String? { message }
   public var description: String { message }
+  /// The web's `new Error(message)` with `code` set on it (when it has one).
+  public var jsFields: JSErrorFields { JSErrorFields(message: message, code: code.map(JSONValue.string)) }
 }
 
 /// One page of drafts: `{ drafts, cursor }`.
@@ -206,7 +209,9 @@ public enum Drafts {
       return true
     }
     // (The SDK's DraftLimitReachedError is an XRPCError whose `error` says so.)
-    return str(error["message"]).contains("DraftLimitReached")
+    // `/DraftLimitReached/.test(...)`, by code unit: Swift's `contains`
+    // compares Characters, and misses the name before a combining mark.
+    return str(error["message"]).jsIndexOf("DraftLimitReached") >= 0
   }
 
   public static func isDraftLimitError(_ error: (any Error)?) -> Bool {

@@ -172,17 +172,17 @@
       "fn": "isDraftLimitError",
       "input": {
         "error": {
-          "message": "draftlimitreached"
+          "message": "DraftLimitReached́ (combining mark after)"
         }
       },
-      "output": false
+      "output": true
     },
     {
       "id": "isDraftLimitError#5",
       "fn": "isDraftLimitError",
       "input": {
         "error": {
-          "message": "offline"
+          "message": "Draft​LimitReached"
         }
       },
       "output": false
@@ -192,13 +192,53 @@
       "fn": "isDraftLimitError",
       "input": {
         "error": {
-          "message": 5
+          "message": "draftlimitreached"
         }
       },
       "output": false
     },
     {
       "id": "isDraftLimitError#7",
+      "fn": "isDraftLimitError",
+      "input": {
+        "error": {
+          "error": "DraftLimitReached́"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isDraftLimitError#8",
+      "fn": "isDraftLimitError",
+      "input": {
+        "error": {
+          "code": "DraftLimitReache"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isDraftLimitError#9",
+      "fn": "isDraftLimitError",
+      "input": {
+        "error": {
+          "message": "offline"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isDraftLimitError#10",
+      "fn": "isDraftLimitError",
+      "input": {
+        "error": {
+          "message": 5
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isDraftLimitError#11",
       "fn": "isDraftLimitError",
       "input": {
         "error": {
@@ -209,7 +249,7 @@
       "output": false
     },
     {
-      "id": "isDraftLimitError#8",
+      "id": "isDraftLimitError#12",
       "fn": "isDraftLimitError",
       "input": {
         "error": null
@@ -217,7 +257,7 @@
       "output": false
     },
     {
-      "id": "isDraftLimitError#9",
+      "id": "isDraftLimitError#13",
       "fn": "isDraftLimitError",
       "input": {
         "error": {}
@@ -225,7 +265,7 @@
       "output": false
     },
     {
-      "id": "isDraftLimitError#10",
+      "id": "isDraftLimitError#14",
       "fn": "isDraftLimitError",
       "input": {
         "error": "DraftLimitReached"
