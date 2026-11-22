@@ -55,7 +55,6 @@ const ZONES = ['UTC', 'America/New_York', 'Pacific/Chatham'];
 /** The lookup's own tests' archives, built in `zone` (they name local days). */
 function testArchives(zone) {
   return under({ zone }, () => {
-    const NOW = new Date(2026, 10, 14, 12).getTime();
     const at = (year, month, day, hour = 12) =>
       new Date(year, month - 1, day, hour).toISOString();
     let n = 0;
