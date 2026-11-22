@@ -144,61 +144,95 @@ struct AccountSettingsRow: View {
     let state = working ?? (current ? nil : label)
     // The name is the handle when there's no display name; it isn't said twice.
     let handle = (account.displayName?.isEmpty == false) && (account.handle?.isEmpty == false) ? account.handle : nil
-    HStack(alignment: .top, spacing: Measure.Accounts.rowGap) {
+    // The web's grid, 'avatar name actions' / 'avatar meta meta': the
+    // picture centred beside both lines, the actions on the name's line,
+    // and the line under the name running on beneath them, so a phone
+    // keeps the row's width for it.
+    HStack(alignment: .center, spacing: Measure.Accounts.rowGap) {
       Avatar(src: account.avatar, name: name, size: .large)
       VStack(alignment: .leading, spacing: Measure.Accounts.rowLineGap) {
-        HStack(spacing: Measure.Accounts.nameGap) {
-          Text(name)
-            .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Accounts.nameLineHeight)
-            .foregroundStyle(theme.ink)
-            .fixedSize(horizontal: false, vertical: true)
-          if current, let label {
-            HStack(spacing: Measure.Accounts.currentGap) {
-              StateDot(.current)
-              Text(label).virgaText(.textSm).foregroundStyle(theme.muted)
-            }
-          }
-        }
-        FlowLayout(spacing: 0, lineSpacing: 0) {
-          if let state {
-            MetaPiece(isLast: false) {
-              if needsSignIn && working == nil {
-                Badge(state)
-              } else {
-                Text(state)
+        HStack(alignment: .top, spacing: Measure.Accounts.rowGap) {
+          HStack(spacing: Measure.Accounts.nameGap) {
+            Text(name)
+              .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Accounts.nameLineHeight)
+              .foregroundStyle(theme.ink)
+              .fixedSize(horizontal: false, vertical: true)
+            if current, let label {
+              HStack(spacing: Measure.Accounts.currentGap) {
+                StateDot(.current)
+                Text(label).virgaText(.textSm).foregroundStyle(theme.muted)
               }
             }
           }
-          if let handle {
-            MetaPiece(isLast: false) {
-              Button {
-                if let profileURL { openURL(profileURL) }
-              } label: {
-                HStack(spacing: theme.points(ThemeKit.metaItemGap)) {
-                  Text("@\(handle)")
-                  Image(systemName: Glyph.externalLink).font(.system(size: Measure.Accounts.handleIcon))
-                }
-              }
-              .buttonStyle(.plain)
-              .accessibilityHint("Open on Bluesky")
-            }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          HStack(spacing: theme.points(ThemeKit.rowActionsGap)) {
+            action(name: name)
+            MoreMenu(label: "More for \(name)", entries: entries)
           }
-          MetaPiece(isLast: true) {
-            Text(AccountCopy.modeLabel(account.mode))
-          }
+          // Centred on the name's line, reaching past it above by the
+          // difference and 3 below it.
+          .padding(.top, -Measure.Section.rowActionsLift)
+          .padding(.bottom, -Measure.Accounts.actionsReachBelow)
         }
+        meta(state: state, needsSignIn: needsSignIn, working: working, handle: handle)
       }
-      .frame(maxWidth: .infinity, alignment: .leading)
-      HStack(spacing: theme.points(ThemeKit.rowActionsGap)) {
-        action(name: name)
-        MoreMenu(label: "More for \(name)", entries: entries)
-      }
-      .padding(.top, -Measure.Section.rowActionsLift)
     }
     .padding(.vertical, theme.rowPadLg)
     .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("account-row-\(account.did)")
+  }
+
+  /// What there is to know about the sign-in: a state if it has one, the
+  /// handle (the way to its profile) and how it is signed in. On a phone how
+  /// it is signed in takes a line of its own, with no dot before it.
+  @ViewBuilder
+  private func meta(state: String?, needsSignIn: Bool, working: String?, handle: String?) -> some View {
+    let ownLine = theme.isPhone && (state != nil || handle != nil)
+    VStack(alignment: .leading, spacing: 0) {
+      FlowLayout(spacing: 0, lineSpacing: 0) {
+        if let state {
+          MetaPiece(isLast: ownLine && handle == nil) {
+            if needsSignIn && working == nil {
+              Badge(state)
+            } else {
+              Text(state)
+            }
+          }
+        }
+        if let handle {
+          MetaPiece(isLast: ownLine) {
+            handleLink(handle)
+          }
+        }
+        if !ownLine {
+          MetaPiece(isLast: true) {
+            Text(AccountCopy.modeLabel(account.mode))
+          }
+        }
+      }
+      if ownLine {
+        MetaPiece(isLast: true) {
+          Text(AccountCopy.modeLabel(account.mode))
+        }
+      }
+    }
+  }
+
+  /// `.accounts-row-handle`: the way to its profile, pressed by a finger
+  /// reaching past its line into the words above and below it.
+  private func handleLink(_ handle: String) -> some View {
+    Button {
+      if let profileURL { openURL(profileURL) }
+    } label: {
+      HStack(spacing: theme.points(ThemeKit.metaItemGap)) {
+        Text("@\(handle)")
+        Image(systemName: Glyph.externalLink).font(.system(size: Measure.Accounts.handleIcon))
+      }
+      .touchReach(horizontal: Measure.Accounts.handleReachSides, vertical: Measure.Accounts.handleReachAbove)
+    }
+    .buttonStyle(.plain)
+    .accessibilityHint("Open on Bluesky")
   }
 
   @ViewBuilder
@@ -346,5 +380,12 @@ public struct PostingPermissionNotice: View {
     Button("Sign in again") { AccountCopy.requestReauth(did, immediate: true) }
       .buttonStyle(.virga(size: .small))
   }
+}
+extension Measure.Accounts {
+  /// `.accounts-row > .row-actions { margin-block: -6px -3px }` under a finger.
+  static let actionsReachBelow: CGFloat = 3
+  /// `.accounts-row-handle::after { inset: -12px -6px }` under a finger.
+  static let handleReachAbove: CGFloat = 12
+  static let handleReachSides: CGFloat = 6
 }
 #endif

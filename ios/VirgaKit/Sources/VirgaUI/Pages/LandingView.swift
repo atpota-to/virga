@@ -35,8 +35,10 @@ struct LandingFrame<Bar: View, Main: View, Foot: View>: View {
       bar
         .frame(minHeight: theme.points(ThemeKit.landingBarHeight))
         .padding(.top, theme.points(theme.hasSidebar ? ThemeKit.landingBarSpaceAbove : ThemeKit.phoneLandingBarSpaceAbove))
-      main
-      FlowLayout(spacing: Measure.Landing.footColumnGap, lineSpacing: Measure.Landing.footGap, alignment: .top) {
+      // Over the foot, so what floats from the main column (the handle's
+      // suggestions) is drawn and pressed above it.
+      main.zIndex(1)
+      LandingFootLayout(spacing: Measure.Landing.footColumnGap, lineSpacing: Measure.Landing.footGap) {
         foot
       }
       .virgaText(.textSm)
@@ -59,6 +61,96 @@ extension LandingFrame where Foot == EmptyView {
   }
 }
 
+/// `.landing-foot`: its pieces in a row that wraps (8 between lines, 32
+/// between pieces), on their first baselines, spread to the row's ends
+/// (`justify-content: space-between`), so the links sit at the far right
+/// when they share the line with the words.
+struct LandingFootLayout: Layout {
+  var spacing: CGFloat
+  var lineSpacing: CGFloat
+
+  private struct Line {
+    var indices: [Int] = []
+    var width: CGFloat = 0
+  }
+
+  private func lines(_ sizes: [CGSize], maxWidth: CGFloat) -> [Line] {
+    var out: [Line] = []
+    var line = Line()
+    for (index, size) in sizes.enumerated() {
+      let extra = line.indices.isEmpty ? size.width : spacing + size.width
+      if !line.indices.isEmpty && line.width + extra > maxWidth {
+        out.append(line)
+        line = Line(indices: [index], width: size.width)
+      } else {
+        line.indices.append(index)
+        line.width += extra
+      }
+    }
+    if !line.indices.isEmpty { out.append(line) }
+    return out
+  }
+
+  /// Each piece's top within its line, on the line's first baseline, and
+  /// the line's height.
+  private func tops(_ line: Line, sizes: [CGSize], subviews: Subviews) -> (tops: [CGFloat], height: CGFloat) {
+    let baselines = line.indices.map { index in
+      subviews[index].dimensions(in: ProposedViewSize(sizes[index]))[VerticalAlignment.firstTextBaseline]
+    }
+    let baseline = baselines.max() ?? 0
+    let tops = baselines.map { baseline - $0 }
+    var height: CGFloat = 0
+    for (n, index) in line.indices.enumerated() { height = max(height, tops[n] + sizes[index].height) }
+    return (tops, height)
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    let maxWidth = proposal.width ?? .infinity
+    let sizes = subviews.map { $0.sizeThatFits(ProposedViewSize(width: maxWidth, height: nil)) }
+    let rows = lines(sizes, maxWidth: maxWidth)
+    var height: CGFloat = 0
+    for (n, row) in rows.enumerated() {
+      height += tops(row, sizes: sizes, subviews: subviews).height + (n > 0 ? lineSpacing : 0)
+    }
+    let widest = rows.map(\.width).max() ?? 0
+    return CGSize(width: proposal.width ?? widest, height: height)
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    let sizes = subviews.map { $0.sizeThatFits(ProposedViewSize(width: bounds.width, height: nil)) }
+    var y = bounds.minY
+    for row in lines(sizes, maxWidth: bounds.width) {
+      let placed = tops(row, sizes: sizes, subviews: subviews)
+      // What the row has to spare goes between its pieces.
+      let spare = max(0, bounds.width - row.width)
+      let between = row.indices.count > 1 ? spacing + spare / CGFloat(row.indices.count - 1) : spacing
+      var x = bounds.minX
+      for (n, index) in row.indices.enumerated() {
+        let size = sizes[index]
+        subviews[index].place(at: CGPoint(x: x, y: y + placed.tops[n]), proposal: ProposedViewSize(size))
+        x += size.width + between
+      }
+      y += placed.height + lineSpacing
+    }
+  }
+}
+
+extension View {
+  /// `.landing-foot-links a { min-height: 44px }` under a finger.
+  func footTarget() -> some View {
+    frame(minHeight: Measure.Touch.target).contentShape(Rectangle())
+  }
+}
+
+extension Measure.Landing {
+  /// `.landing-hero { padding-bottom: clamp(48px, 8svh, 88px) }`; 48 under 900.
+  static let heroSpaceBelow = Clamp(min: 48, share: 0.08, max: 88)
+  static let phoneHeroSpaceBelow: CGFloat = 48
+  /// `.landing-points { gap: 32px clamp(32px, 4vw, 56px) }`, a point at least 240 wide.
+  static let pointsColumnGap = Clamp(min: 32, share: 0.04, max: 56)
+  static let pointMinWidth: CGFloat = 240
+}
+
 /// A link to a page inside the app, as words in a sentence.
 func pageLink(_ words: String, to href: String) -> AttributedString {
   var link = AttributedString(words)
@@ -79,8 +171,10 @@ public struct LandingView: View {
         Brand()
           .accessibilityAddTraits(.isHeader)
       } main: {
-        VStack(alignment: .leading, spacing: theme.hasSidebar ? Measure.Landing.heroGap : Measure.Landing.phoneHeroGap) {
+        VStack(alignment: .leading, spacing: 0) {
           hero
+            .padding(.bottom, heroSpaceBelow)
+            .zIndex(1)
           points
         }
         .padding(.top, theme.hasSidebar ? mainSpaceAbove : Measure.Landing.phoneMainSpaceAbove)
@@ -94,8 +188,8 @@ public struct LandingView: View {
         .fixedSize(horizontal: false, vertical: true)
         .frame(maxWidth: theme.characters(Measure.Landing.footMeasure, size: theme.textSm), alignment: .leading)
         HStack(spacing: Measure.Legal.navGap) {
-          Button("Terms") { navigate(LegalVersion.termsPath) }.buttonStyle(.plain).underline()
-          Button("Privacy") { navigate(LegalVersion.privacyPath) }.buttonStyle(.plain).underline()
+          Button("Terms") { navigate(LegalVersion.termsPath) }.buttonStyle(.plain).underline().footTarget()
+          Button("Privacy") { navigate(LegalVersion.privacyPath) }.buttonStyle(.plain).underline().footTarget()
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Legal")
@@ -109,16 +203,22 @@ public struct LandingView: View {
     Measure.Landing.mainSpaceAbove.of(theme.windowHeight)
   }
 
+  /// `.landing-hero { padding-bottom: clamp(48px, 8svh, 88px) }`, 48 under 900:
+  /// the space before the points.
+  private var heroSpaceBelow: CGFloat {
+    theme.hasSidebar ? Measure.Landing.heroSpaceBelow.of(theme.windowHeight) : Measure.Landing.phoneHeroSpaceBelow
+  }
+
   @ViewBuilder private var hero: some View {
     if theme.hasSidebar {
       HStack(alignment: .top, spacing: Measure.Landing.heroColumnGap.of(theme.windowWidth)) {
-        copy.frame(maxWidth: Measure.Landing.copyMaxWidth, alignment: .leading)
+        copy.frame(maxWidth: Measure.Landing.copyMaxWidth, alignment: .leading).zIndex(1)
         LandingSketch(wide: true)
           .padding(.top, Measure.Landing.sketchSpaceAbove)
       }
     } else {
       VStack(alignment: .leading, spacing: Measure.Landing.phoneHeroGap) {
-        copy.frame(maxWidth: Measure.Landing.phoneCopyMaxWidth, alignment: .leading)
+        copy.frame(maxWidth: Measure.Landing.phoneCopyMaxWidth, alignment: .leading).zIndex(1)
         LandingSketch(wide: false).frame(maxWidth: Measure.Landing.phoneCopyMaxWidth)
       }
     }
@@ -147,6 +247,7 @@ public struct LandingView: View {
       .frame(maxWidth: theme.points(ThemeKit.landingLedeMaxWidth, inTextOf: theme.isPhone ? theme.textMd : theme.textLg), alignment: .leading)
       SignInFlowView(variant: .page, remembered: true)
         .padding(.top, Measure.Landing.flowSpaceAbove)
+        .zIndex(1)
       Text(
         AttributedString(
           "You sign in on your own account’s host, not here, and Virga never sees your password. Before your account opens, Virga asks you to agree to its "
@@ -176,17 +277,18 @@ public struct LandingView: View {
         "Your archive lives in this browser, and you can export it whenever you like. It’s never sent anywhere, not even to Virga’s server."
       ),
     ]
-    let columns = theme.windowWidth >= Measure.Landing.pointsRow ? 3 : 1
-    return Grid(alignment: .topLeading, horizontalSpacing: Measure.Landing.pointsGap, verticalSpacing: Measure.Landing.pointsGap) {
-      if columns == 3 {
+    // `repeat(auto-fit, minmax(min(240px, 100%), 1fr))`, three from 720.
+    let gap = Measure.Landing.pointsColumnGap.of(theme.windowWidth)
+    let column = min(theme.windowWidth - theme.pagePad * 2, theme.points(ThemeKit.landingMaxWidth))
+    let fit = Int(((column + gap) / (Measure.Landing.pointMinWidth + gap)).rounded(.down))
+    let columns = theme.windowWidth >= Measure.Landing.pointsRow ? 3 : max(1, min(3, fit))
+    let rows = stride(from: 0, to: items.count, by: columns).map { Array(items[$0..<min($0 + columns, items.count)]) }
+    return Grid(alignment: .topLeading, horizontalSpacing: gap, verticalSpacing: Measure.Landing.pointsGap) {
+      ForEach(0..<rows.count, id: \.self) { r in
         GridRow {
-          ForEach(items, id: \.1) { item in
+          ForEach(rows[r], id: \.1) { item in
             LandingPoint(systemImage: item.0, title: item.1, text: item.2)
           }
-        }
-      } else {
-        ForEach(items, id: \.1) { item in
-          GridRow { LandingPoint(systemImage: item.0, title: item.1, text: item.2) }
         }
       }
     }
@@ -203,8 +305,10 @@ struct LandingPoint: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: Measure.Landing.pointGap) {
+      // An 18 × 18 box whatever the symbol's own height, so the titles line up.
       Image(systemName: systemImage)
         .font(.system(size: Measure.Landing.pointIcon))
+        .frame(width: Measure.Landing.pointIcon, height: Measure.Landing.pointIcon)
         .foregroundStyle(theme.ink)
         .padding(.bottom, Measure.Landing.pointIconSpaceBelow)
         .accessibilityHidden(true)

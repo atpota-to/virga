@@ -11,10 +11,13 @@
 // LegalDialog is the same document in a dialog, for reading without leaving
 // the screen that asks about it (the agreement screen, Settings › About). A
 // link from one document to the other changes which is shown, in place, and
-// goes to the section it names.
+// goes to the section it names; VoiceOver is taken to its title. "Open as a
+// page" is the web's new tab: the page over the screen the dialog is on
+// (LegalPageCover), which stays as it was under it.
 
 #if canImport(UIKit)
 import SwiftUI
+import UIKit
 import VirgaCore
 import VirgaSession
 
@@ -23,9 +26,29 @@ public struct LegalPageView: View {
   @Environment(\.navigate) private var navigate
   @Environment(ShellNavigator.self) private var navigator
   private let docKey: String
+  /// The section to open at: the address's hash, unless given.
+  private let hash: String?
+  /// Closes the page where it was opened over the app (a dialog's "Open as a
+  /// page"); nil when the page is the app's address, and "Back to Virga"
+  /// goes to the front.
+  private let onBack: (() -> Void)?
 
   public init(docKey: String) {
+    self.init(docKey: docKey, hash: nil, onBack: nil)
+  }
+
+  init(docKey: String, hash: String?, onBack: (() -> Void)?) {
     self.docKey = docKey
+    self.hash = hash
+    self.onBack = onBack
+  }
+
+  private func back() {
+    if let onBack {
+      onBack()
+    } else {
+      navigate("/")
+    }
   }
 
   public var body: some View {
@@ -34,7 +57,7 @@ public struct LegalPageView: View {
       ScrollView {
         LandingFrame {
           HStack(alignment: .center) {
-            Button { navigate("/") } label: { Brand() }
+            Button { back() } label: { Brand() }
               .buttonStyle(.plain)
               .accessibilityLabel("\(AppConfig.appName), to the front page")
             Spacer(minLength: theme.space3)
@@ -59,14 +82,16 @@ public struct LegalPageView: View {
           .padding(.top, mainSpaceAbove)
           .padding(.bottom, theme.isTablet ? Measure.Legal.tabletSpaceBelow : Measure.Legal.mainSpaceBelow)
         } foot: {
-          Button("Back to \(AppConfig.appName)") { navigate("/") }
+          Button("Back to \(AppConfig.appName)") { back() }
             .buttonStyle(.plain)
             .underline()
+            .footTarget()
           HStack(spacing: Measure.Legal.navGap) {
             ForEach(LegalDocuments.all, id: \.key) { entry in
               Button(entry.title) { navigate(entry.path) }
                 .buttonStyle(.plain)
                 .underline()
+                .footTarget()
             }
           }
           .accessibilityElement(children: .contain)
@@ -75,7 +100,7 @@ public struct LegalPageView: View {
       }
       .background(PageGround().ignoresSafeArea())
       .onAppear {
-        let hash = navigator.hash
+        let hash = self.hash ?? navigator.hash
         guard hash.count > 1 else { return }
         let raw = String(hash.dropFirst())
         let id = (try? JSURI.decodeURIComponent(raw)) ?? raw
@@ -124,9 +149,10 @@ struct LegalNavLink: View {
 /// A legal document in a dialog. `docKey` is "terms", "privacy" or nil (closed).
 struct LegalDialog: ViewModifier {
   @Environment(\.virgaTheme) private var theme
-  @Environment(\.navigate) private var navigate
   @Binding var docKey: String?
   @State private var shown: (key: String, anchor: String?)?
+  /// The document opened as a page, over the dialog.
+  @State private var asPage: String?
 
   func body(content: Content) -> some View {
     content.sheet(
@@ -150,9 +176,7 @@ struct LegalDialog: ViewModifier {
       DialogFrame(title: document?.title ?? "", onClose: { docKey = nil }, hasActions: false) {
         VStack(alignment: .leading, spacing: 0) {
           Button {
-            let path = entry?.path ?? "/"
-            docKey = nil
-            navigate(path)
+            asPage = entry?.key ?? key
           } label: {
             HStack(spacing: Measure.Legal.dialogLinkGap) {
               Text("Open as a page").underline()
@@ -170,7 +194,11 @@ struct LegalDialog: ViewModifier {
               scrollTo: { id in withAnimation(theme.motion.sheet) { proxy.scrollTo(id, anchor: .top) } },
               onOpenDocument: { next, anchor in
                 shown = (next, anchor)
-                DispatchQueue.main.async { proxy.scrollTo(anchor ?? "top", anchor: .top) }
+                DispatchQueue.main.async {
+                  proxy.scrollTo(anchor ?? "top", anchor: .top)
+                  // The new document, by its title (the dialog's first element).
+                  UIAccessibility.post(notification: .screenChanged, argument: nil)
+                }
               })
           }
         }
@@ -179,7 +207,43 @@ struct LegalDialog: ViewModifier {
       } actions: {
         EmptyView()
       }
+      .fullScreenCover(isPresented: Binding(get: { asPage != nil }, set: { if !$0 { asPage = nil } })) {
+        LegalPageCover(docKey: asPage ?? key) { asPage = nil }
+      }
     }
+  }
+}
+
+/// A legal document opened as a page from its dialog (the web's new tab):
+/// over the screen the dialog was opened from, which stays as it was under
+/// it. Back to Virga and the mark close it; a link to either document shows
+/// that one here, at the section it names; any other link closes it and
+/// goes there.
+struct LegalPageCover: View {
+  @Environment(\.navigate) private var navigate
+  @State private var shown: (key: String, hash: String)
+  private let onClose: () -> Void
+
+  init(docKey: String, onClose: @escaping () -> Void) {
+    _shown = State(initialValue: (docKey, ""))
+    self.onClose = onClose
+  }
+
+  var body: some View {
+    let outside = navigate
+    let close = onClose
+    LegalPageView(docKey: shown.key, hash: shown.hash, onBack: onClose)
+      .id("\(shown.key)\(shown.hash)")
+      .environment(\.navigate, NavigateAction { href in
+        let cut = href.jsIndexOf("#")
+        let path = cut == -1 ? href : href.jsSlice(0, cut)
+        if let key = LegalDocuments.documentFor(path) {
+          shown = (key, cut == -1 ? "" : href.jsSlice(cut))
+        } else {
+          close()
+          outside(href)
+        }
+      })
   }
 }
 

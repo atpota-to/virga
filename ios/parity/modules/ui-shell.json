@@ -11,7 +11,7 @@
         "ios/VirgaKit/Sources/VirgaUI/App/AppModel.swift",
         "ios/VirgaKit/Sources/VirgaUI/App/ArchiveHost.swift"
       ],
-      "note": "The app's states (the legal pages, restoring, a sign-in that came back without a session, the agreement screen and its checking line, the front page, the shell, remade per account), useProfile, and the archive's provider (ArchiveHost, one ArchiveModel per signed-in account, its store in the app's file store; deleting an account's data deletes its archive and starts every store handle afresh). Not yet: the composer's provider and a compose link kept from before a sign-in (pendingCompose.js, VirgaPosting's), the dashboards' provider (the shell reads the stored dashboards itself, ShellDashboards.swift), keepScansFor (Defense), and drawing the shell again when the formats change. On iOS a sign-in comes back into the running app, so a failed one is the session's error on whatever page is up.",
+      "note": "The app's states (the legal pages, restoring with \"Signing you in…\" while a sign-in that came back is finished, a sign-in that came back without a session, the agreement screen and its checking line, the front page, the shell, remade per account), useProfile, and the providers above and below the per-account identity: the composer's (ComposerHost, held by AppRoot; Composer/ComposerHost.swift, ComposerContext.jsx's entry), the archive's (ArchiveHost, one ArchiveModel per signed-in account, its store in the app's file store, its handle the profile's once the profile is that account's, else the remembered one's; deleting an account's data deletes its archive and starts every store handle afresh) and the dashboards' (ShellDashboards, made by ShellView per account). A compose link opened while signed out is kept in the tab store for after the sign-in (PendingCompose) and the front page says so. An account switched to in place is decided for the agreement afresh in the same pass, from its stored note, so nothing of it is drawn on the last account's answer. Not yet: keepScansFor (Defense) and drawing the shell again when the formats change. On iOS a sign-in comes back into the running app, so a failed one is the session's error on whatever page is up.",
       "synced": "cb6343e81939"
     },
     "src/accounts/AccountMenu.jsx": {
@@ -204,7 +204,8 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Legal/LegalPageView.swift"
       ],
-      "synced": "a8ca52842713"
+      "synced": "a8ca52842713",
+      "note": "All of it. Open as a page is the web's new tab: the page over the screen the dialog is on (LegalPageCover), which stays as it was; Back to Virga closes it. After a link to the other document VoiceOver goes to the dialog's title."
     },
     "src/legal/LegalDocument.jsx": {
       "status": "ported",
@@ -251,7 +252,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Pages/LandingView.swift"
       ],
-      "note": "All of it but the live sky and the five taps on the mark (src/hillside), and the compose link's callout (composing), which waits for pendingCompose.js.",
+      "note": "All of it but the live sky and the five taps on the mark (src/hillside).",
       "synced": "a34c5deb6fb9"
     },
     "src/pages/SignInReturn.jsx": {
@@ -460,7 +461,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/SignIn/HandleField.swift"
       ],
-      "note": "All of it, a combobox on a hardware keyboard as on the web: ↑ and ↓ open the suggestions on the first or the last, then move through them round through the field itself (SignInSuggest.moveActive); the marked one on --hover with 2 points of ink at its edge, the pointer's only shaded; Return takes the marked one (or, with none marked, submits as the field always does); Escape puts the list away (the dialog it may be in stays) and Tab leaves it closed. The marked one is read as the field's value. A press picks one.",
+      "note": "All of it, a combobox on a hardware keyboard as on the web: ↑ and ↓ open the suggestions on the first or the last, then move through them round through the field itself (SignInSuggest.moveActive); the marked one on --hover with 2 points of ink at its edge, the pointer's only shaded; Return takes the marked one (or, with none marked, submits as the field always does); Escape puts the list away (the dialog it may be in stays) and Tab leaves it closed. The marked one is read out as it is marked (aria-activedescendant). The field is named by its label and a notice about what was typed is its hint. On the front page the list floats over what follows the field, and on a phone the page brings the field to its top when suggestions come up, so the list has room above the keyboard. A press picks one.",
       "synced": "1a818727b82b"
     },
     "src/signin/HowSigningInWorks.jsx": {
@@ -476,7 +477,8 @@
         "ios/VirgaKit/Sources/VirgaUI/SignIn/SignInFlowView.swift",
         "ios/VirgaKit/Sources/VirgaUI/SignIn/WebAuthenticationSession.swift"
       ],
-      "synced": "6271897a4e36"
+      "synced": "6271897a4e36",
+      "note": "All of it. VoiceOver hears the live regions' words as announcements (\"Looking you up…\", \"Found {name}, {meta}.\", a notice as it comes up, \"Still here?\"), and focus goes where the web sends it (the field, the way on while the account is looked up and found, else the card's title). The compose link's callout shows while one waits for the sign-in (AppRoot's \\.signInComposing). On iOS the trip is ASWebAuthenticationSession: going again calls the one under way off and waits for it first, and closing Add an account calls the trip off with its sheet."
     },
     "src/signin/parts.jsx": {
       "status": "ported",

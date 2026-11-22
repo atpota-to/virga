@@ -294,10 +294,40 @@ APP (App/, Pages/, Legal/, SignIn/, Accounts/, Settings/, Platform/)
 - `AppModel` builds the stores and models once per process; `AppModel.archive(for:)` makes
   one ArchiveModel per signed-in account, and `ArchiveHost` (ArchiveProvider's role)
   starts and stops it; pages read `@Environment(ArchiveModel.self)`. The session's
-  `resetAnalyticsStore` and `deleteDatabase` go to VirgaArchive's AnalyticsStore.
+  `resetAnalyticsStore` and `deleteDatabase` go to VirgaArchive's AnalyticsStore. The
+  archive's handle is `AppModel.archiveHandle(for:)`: the profile's once ProfileModel's
+  `did` is that account's (a view drawn right after a switch still sees the last
+  profile), else the remembered row's; ArchiveHost sets `archive.handle` again when the
+  fresh read arrives, as the web hook takes it on every render.
 - `AppRoot` ports App.jsx's states; `onOpenURL` and universal links go to
   `completeSignIn(callbackURL:)`. `SystemWebAuthenticator` is ASWebAuthenticationSession
-  with the `.https(host:path:)` callback.
+  with the `.https(host:path:)` callback. "Signing you in…" while `session.returning`
+  (a sign-in that came back is being finished). An account the agreement model hasn't
+  been told of yet (the first pass after a switch or an Add an account) is decided
+  in AppRoot's `termsStatus(for:)` from its stored note, as useTermsAcceptance decides
+  in the same render, so no shell or archive is made for it on the last account's answer.
+  A compose link kept while signed out lives in `stores.tab` (sessionStorage), and
+  `\.signInComposing` puts the front page's callout up.
+- A sign-in called off on the system's sheet (`SignInTrip.calledOff`: code CANCELLED,
+  AbortError, the flow's tripFailureNotice rule) shows no notice anywhere: the account
+  menu's Reconnect, Settings, the session notices' hand-off, Sign in again and Sign in.
+- The sign-in flow: VoiceOver gets the web's live regions as announcements (Looking you
+  up, Found, the notices, Still here, the session notices, the agreement's failure) and
+  focus where the web puts it (the way on while an account is looked up and found; the
+  field as Add an account opens). The handle field is named by its label (the TextField's
+  title, the placeholder its prompt) with the field's notice as its hint. On the front page
+  its suggestions float over what follows it (`zIndex` at every level of the column down to
+  LandingFrame's main), and on a phone the page brings the field's label to the top when
+  they come up (`SignInScrolling`, a ScrollViewReader round LandingView, put on by AppRoot).
+  "Continue anyway" and "Still here? Open <host>" are links in their sentences
+  (`SignInInlineLink`, `virga-signin:`). Going again cancels and awaits the trip under way;
+  closing Add an account calls the trip off. A card, the account arriving and the
+  leaving title rise or fade in with `SignInArriving` (0.28 s and 0.32 s on --ease,
+  `Measure.SignIn.stepIn`/`identityIn`), the card they replace going at once.
+- LegalDialog's "Open as a page" is `LegalPageCover`, a full-screen cover over the dialog
+  (the web's new tab), whose Back to Virga closes it; links to either document change it
+  in place. The front page's foot and a legal page's are `LandingFootLayout` (wrapping,
+  on first baselines, spread to the ends), their links 44 to press.
 - Landing, SignInReturn, TermsGate, LegalPage/LegalDialog/LegalDocument, SignInFlowView,
   AccountMenu, AccountsSettings, SessionNotices, SettingsPage (Account, Appearance,
   Permissions, Data and sync with exports through `.fileExporter`, Dashboards, About).
