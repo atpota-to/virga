@@ -140,8 +140,6 @@ struct ComposerHostModifier: ViewModifier {
   private func start() {
     if host.controller == nil {
       let transport = app.archiveEnvironment.transport
-      // Mentions are resolved as a post goes out, through the session's network.
-      Mentions.useNetwork(transport: transport)
       host.controller = ComposerController(
         session: session, store: app.stores.keyValue, transport: transport,
         publisher: host.publisher ?? PostingPublisher(transport: transport, clock: app.archiveEnvironment.clock),

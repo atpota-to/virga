@@ -168,6 +168,10 @@ public final class AppModel {
     // The templates' cache, in the app's own store (templateService.js's
     // localStorage), for every TemplatesModel the screens make.
     TemplateService.shared = TemplateService(store: stores.keyValue)
+    // Mentions are resolved as a post goes out, through the session's
+    // network (the web's global fetch), from the first send on: Drafts' and
+    // Scheduled posts' Post now and Schedule as well as the composer's.
+    Mentions.useNetwork(transport: archiveEnvironment.transport)
   }
 
   /// The session's start, once for the process.
