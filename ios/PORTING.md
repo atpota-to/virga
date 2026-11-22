@@ -170,6 +170,17 @@ means porting the code, not reimagining it.
     identifier up among elements of any type taps the group's middle,
     which can be the next item. Look a button up as a button:
     `app.buttons.matching(identifier: "palette-open").firstMatch`.
+  - **A ViewThatFits holding live controls twice** (a hang, not the
+    compiler). The composer's when panel had its head as a ViewThatFits
+    whose two candidates each held "Post now instead"; turning the panel
+    off for a send, the first change inside it, never finished and held
+    the main thread for good (run 74; found by elimination, not a sample).
+    Lay out "beside, else under" with one layout that holds each view
+    once (`BesideOrUnder`, `FlowLayout`), not a ViewThatFits of copies.
+  - **A segment's weight in a concatenated Text.** `.virgaText` sets the
+    bundled face as one `Font(UIFont)` at one weight, so a segment's own
+    `.fontWeight` is lost under it: give the segment its own
+    `.font(theme.font(…, weight:))`.
 
 ## Tests
 

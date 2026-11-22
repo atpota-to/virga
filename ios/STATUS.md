@@ -16,9 +16,11 @@ Every Swift test passes on Linux and on an iOS Simulator (CI's `iOS app`
 job, which also builds the app and runs its UI tests on an iPhone and an
 iPad and keeps their screenshots). Two independent audits of the SwiftUI
 layer against the web found 189 differences in the stable parts and 187
-in the posting screens; all were fixed and merged by 2026-11-22. The
-posting fixes were pushed at 8f429f5 and hadn't yet been through CI's
-compiler when this was written, so expect a round of compile fixes there.
+in the posting screens; all were fixed and merged by 2026-11-22. CI run 79
+(cc3083d) was green on every job, the UI tests on both devices included.
+A side-by-side review of that run's screenshots against the web harness
+then found 51 more differences (notes/ui.md, "The screenshot review"),
+fixed on the merges after cc3083d; their first compile is CI's next run.
 
 ## Done
 
@@ -59,7 +61,7 @@ The order follows the dependencies between the web modules.
 6. ~~**The SwiftUI layer, continued**~~ Built and audited on 2026-11-22 (VirgaUI; `ios/DESIGN.md` is the guide, CI's `iOS app` job the compiler, its screenshots the eyes). Dashboards, reports, sharing a chart, the tools, Defense and the radar, the composer with everything it sends, the posting pages with scheduling and timers, Settings › Posting, and the live sky in Metal are all in. Both audits (189 and 187 confirmed differences) are fixed. What is knowingly not done, with the reasons in each file's module map entry and in notes/ui.md:
    - dragging dashboard cards (Customize uses the web's phone and keyboard path, up and down, at every width), and the wide screen's grid of chosen cards with the library beside it;
    - "Keep it when space runs low" (iOS asks nothing like the browser's storage prompt).
-7. **Final review** (still to do): an adversarial review of every domain against the web code, a completeness check, a pass over `npm run parity:drift`, and a look through the screenshots of every screen on both devices once CI is green on the posting fixes.
+7. **Final review** (still to do): an adversarial review of every domain against the web code, a completeness check, a pass over `npm run parity:drift`, and a look through the screenshots of every screen on both devices (done once on 2026-11-22: 51 differences fixed; worth doing again after the next green run).
 
 ## Things a future session should know
 

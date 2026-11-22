@@ -137,7 +137,9 @@ COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
 - Menus: `MoreMenu`/`VirgaMenu` over `[MenuEntry]` (`.item(MenuItem(...))`, `.separator`),
   a native Menu; each item's icon comes coloured (--ink-2, or the system red of a destructive
   item's words), since a native menu tints a plain image with the window's accent.
-- `.virgaDialog(isPresented:title:size:stackActions:autofocus:) { } actions: { }` (a sheet;
+- `.virgaDialog(isPresented:title:size:width:stackActions:autofocus:) { } actions: { }` (a sheet
+  at its detents on a phone; wider, on iOS 18, the web's modal: `width` wide, 520 by default,
+  and as tall as its content, through `.dialogSheetSizing`;
   `stackActions` puts a phone's buttons one under the other, the last given first;
   `autofocus: true` focuses, when it opens, the field marked `.dialogAutofocus()`, the web's
   `[data-autofocus]`: the focus state is the dialog's, inside the sheet, since a caller's
@@ -847,6 +849,45 @@ LIVE SKY (Sky/, and VirgaCore/Hillside/ for everything that isn't drawing)
   for the page to be idle when it starts covered; WebGL's context loss has no Metal counterpart; on a
   phone's front page of a part the strip over the status bar is clear at rest over the live sky and
   comes in as the page scrolls (`LiveSky.stripFade`), as the web has no status bar.
+
+## The screenshot review against the web harness (2026-11-22)
+
+CI run 77's screenshots (121 on the iPhone, 135 on the iPad) were set beside the web harness at
+the same sizes (440x956 and 1032x1376), area by area; 51 differences held up under a second
+reader, and the fixes went in on the visual-fix merges after cc3083d. What changed:
+
+- Sheets on a wider window (iOS 18) are sized as the web's modals: `.dialogSheetSizing` drops
+  the detents and fits the sheet to its content at the dialog's width (520; 600 for How signing
+  in works; 640 for the timer dialog, the adviser, alt text and the template editor; the
+  library 980 by 720), held inside the window (`100vw - 32`, `100svh - 48`). The composer is 640
+  wide and as tall as its post. Its toasts are the window's one stack beside it; on a phone the
+  sheet draws its own over the post area. Pressing Posting as ends the post's editing first, so
+  the list stays under the byline. On iOS 17 a wider window keeps the detents.
+- The phone's back link reports its whole width to the navigation bar (it was cut to one
+  letter during a push); the tab bar's gaps are the web's 4 with the space between; the front
+  page's title is set a line every 1.02em (LandingTitleLines); the front page holds the sky
+  over the status bar, and its foot sits at the screen's foot.
+- Posting: menu hints in --muted; Posted's search beside the filter; template rows, the weekly
+  schedule's add row and the row actions at the web's measures; the six-dot grip drawn
+  (`GripVerticalGlyph`: no SF Symbol has it); MessageSquareLock is `lock.square`.
+- The composer: the "@" and "/" lists bring themselves into view (`ComposerReveals`); the
+  language suggestions float over Adult content in the composer's dialog (not yet in Settings,
+  whose row hairline is drawn over its content); the queue line's time is semibold.
+- Defense: a chart's and a held table's columns are at least their words' width and share
+  the rest (`TableGridWidth`), so the head lines up with the rows; the scan's actions beside
+  Who engaged in full; the moderator's link underlined; the radar's legend within the radar.
+- Dashboards, reports and tools: the dashboard's gutter narrows below 1180 as the web's
+  `clamp(24px, 4cqi, …)`; a card 400 wide or less drops the way to your history; a face's letter
+  comes from the display name, else the handle (`Avatar.named`); bar labels fill before the bar
+  grows; a phone card's tools sit over the title's line; a tool's statement balances its lines
+  (`BalancedLines`); the lookup's account head wraps as `.lookup-person-top` does.
+
+Still open from the review: the demo's people show the plain letter disc where the harness
+draws its SVG initials (AsyncImage can't decode a `data:image/svg+xml` avatar; real avatars are
+JPEGs, so only the demo shows it); a tablet card head's `margin-top: -5px` on its tools; wrapped
+page titles under 1.22 line height (Text's lineSpacing can't go below the face's own); Posted's
+menu hints, which may need the test to wait for the menu before its screenshot. None of this
+is checked by a compile yet beyond `swiftc -parse`: CI's next run is the first.
 
 ## Known gaps and deliberate differences
 
