@@ -182,9 +182,12 @@ DEFENSE (Defense/)
   models with the session's transport and agent. `Measure.Defense` names defense.css's
   measures.
 - In the demo: `-VirgaDefense on` (and `-VirgaDefenseModerator on`) turn the build's flags on
-  (`AppModel.demoFlags`), and `-VirgaDemoFlags "defense=on"` has the demo grant the
-  permission; Virga's server's `/api/defense/*` answered 503 in the demo when this was
-  written, so the lists and history show their failure there.
+  (`AppModel.demoFlags`), and `-VirgaDemoFlags "defense=on"` (the scan) or `"defense=lists"`
+  (the lists' permission too) has the demo grant it. The demo's server answers every Defense
+  route (VirgaDemo's DemoDefense), and `AppModel.demo` starts its workers
+  (`DemoSession.startCron()`, every `cron=` seconds, 20 by default), so a plan's adds and
+  removes are written as on the real server and a link code lands ten seconds after it is
+  made. DefenseUITests runs with `defense=lists&cron=2`.
 
 SHELL, ROUND 6
 - `ShellActions` (in the shell's environment): `creatingDashboard` opens the shell's

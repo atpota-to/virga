@@ -162,6 +162,7 @@ struct AddToListCard: View {
       }
       .buttonStyle(.virga(.primary))
       .disabled(busy)
+      .accessibilityIdentifier("defense-add-confirm")
     }
   }
 
@@ -301,6 +302,7 @@ struct AddToListCard: View {
     }
     .frame(maxWidth: theme.measure, alignment: .leading)
     .accessibilityElement(children: .contain)
+    .accessibilityIdentifier("defense-done")
   }
 
   // MARK: Confirming

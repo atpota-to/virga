@@ -1,9 +1,14 @@
-// Defense in demo mode, turned on for the build (`-VirgaDefense on`) and
-// granted by the harness (`-VirgaDemoFlags "defense=on"`), once the first
-// build has read Mira's whole archive: the page before a scan, a scan of
-// one of Mira's posts finished with its radar and its table, the Lists
-// page and the History page (whatever state the demo's server lets them
-// reach). Each is kept as a screenshot, on the iPhone and the iPad.
+// Defense in demo mode, turned on for the build (`-VirgaDefense on`, and
+// its moderator with `-VirgaDefenseModerator on`) and granted by the
+// harness with the lists' permission (`-VirgaDemoFlags "defense=lists"`),
+// the demo server's workers running every two seconds (`cron=2`), once the
+// first build has read Mira's whole archive: the page before a scan, a
+// scan of one of Mira's posts finished with its radar and its table, Add
+// to a list through to done (a new list made from the scan), the Lists
+// page with that list and the moderator's link code (and the link once it
+// lands), and the History page after the worker has written the adds, then
+// with an approval undone. Each is kept as a screenshot, on the iPhone and
+// the iPad.
 
 import UIKit
 import XCTest
@@ -17,7 +22,9 @@ final class DefenseUITests: XCTestCase {
 
   private func launch() -> XCUIApplication {
     let app = XCUIApplication()
-    app.launchArguments += ["-VirgaDemo", "YES", "-VirgaDefense", "on", "-VirgaDemoFlags", "latency=0&defense=on"]
+    app.launchArguments += [
+      "-VirgaDemo", "YES", "-VirgaDefense", "on", "-VirgaDefenseModerator", "on", "-VirgaDemoFlags", "latency=0&defense=lists&cron=2",
+    ]
     app.launch()
     return app
   }
@@ -123,16 +130,88 @@ final class DefenseUITests: XCTestCase {
       snapshot("defense-near")
     }
     let add = element(app, "defense-add")
-    if add.exists {
-      scrollTo(app, add)
-      snapshot("defense-add-to-list")
-    }
+    XCTAssertTrue(add.waitForExistence(timeout: 10), "no Add to a list under the scan")
+    scrollTo(app, add)
+    snapshot("defense-add-to-list")
+    let added = addToANewList(app)
 
-    // The Lists page and the History page, whatever the demo's server says.
+    // The Lists page: the list the scan made (written by the worker by
+    // now), and the moderator's link code, then the link once it lands.
     openFromPalette(app, "/defense/lists", "Lists")
+    if added { XCTAssertTrue(element(app, "defense-list-row").waitForExistence(timeout: 15), "the list made from the scan isn't on Lists") }
     snapshot("defense-lists")
+    linkTheModerator(app)
+
+    // History: the approval and everyone on it, once the worker has run;
+    // then the approval undone.
     openFromPalette(app, "/defense/history", "History")
     _ = app.staticTexts.matching(NSPredicate(format: "label == %@", "Reading the history…")).firstMatch.waitForNonExistence(timeout: 15)
     snapshot("defense-history")
+    let undo = element(app, "defense-plan-undo")
+    if added, undo.waitForExistence(timeout: 10) {
+      undo.tap()
+      let confirm = element(app, "defense-undo-confirm")
+      XCTAssertTrue(confirm.waitForExistence(timeout: 5), "no Take off in the undo dialog")
+      snapshot("defense-history-undo")
+      confirm.tap()
+      XCTAssertTrue(confirm.waitForNonExistence(timeout: 15), "the undo dialog stayed")
+      // The removes are written by the next run, and the page reads the
+      // history again every fifteen seconds while anything waits.
+      let undone = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "undone")).firstMatch
+      _ = undone.waitForExistence(timeout: 40)
+      snapshot("defense-history-undone")
+    }
+  }
+
+  /// Add to a list, under the scan: a new list named Pile-ons, with the
+  /// bands ticked that have anyone in them if Unknown has nobody, through
+  /// the confirm dialog to the done line. Whether anything was added.
+  private func addToANewList(_ app: XCUIApplication) -> Bool {
+    // No form when the scan can't add anyone (its why is in the last screenshot).
+    let go = element(app, "defense-add-go")
+    guard go.waitForExistence(timeout: 5) else { return false }
+    for band in ["NOTABLE", "PERIPHERAL", "CONNECTED"] where !go.isEnabled || go.label == "Nobody ticked" {
+      let tick = element(app, "defense-tick-\(band)")
+      if tick.exists && tick.isEnabled {
+        scrollTo(app, tick)
+        tick.tap()
+      }
+    }
+    let name = element(app, "defense-list-name")
+    if name.exists {
+      scrollTo(app, name)
+      name.tap()
+      name.typeText("Pile-ons")
+    }
+    scrollTo(app, go)
+    guard go.isEnabled else { return false }
+    go.tap()
+    let confirm = element(app, "defense-add-confirm")
+    XCTAssertTrue(confirm.waitForExistence(timeout: 5), "no confirm dialog for the adds")
+    snapshot("defense-add-confirm")
+    confirm.tap()
+    let done = element(app, "defense-done")
+    XCTAssertTrue(done.waitForExistence(timeout: 15), "the adds weren't approved")
+    scrollTo(app, done)
+    snapshot("defense-add-done")
+    // Two runs of the worker, so the list holds them before Lists is read.
+    Thread.sleep(forTimeInterval: 5)
+    return true
+  }
+
+  /// The moderator's card on Lists: Link the moderator, its code (which
+  /// lands ten seconds later in the demo), then the link.
+  private func linkTheModerator(_ app: XCUIApplication) {
+    let link = element(app, "defense-moderator-link")
+    guard link.waitForExistence(timeout: 10) else { return }
+    scrollTo(app, link)
+    link.tap()
+    let code = element(app, "defense-moderator-code")
+    XCTAssertTrue(code.waitForExistence(timeout: 5), "no link code")
+    scrollTo(app, code)
+    snapshot("defense-moderator-code")
+    if element(app, "defense-moderator-linked").waitForExistence(timeout: 30) {
+      snapshot("defense-moderator-linked")
+    }
   }
 }

@@ -276,6 +276,10 @@ public final class AppModel {
     let demo = DemoSession(
       options: DemoOptions.read(search), timeZone: .current, storage: stores.keyValue, tabStorage: stores.tab,
       secrets: stores.secrets)
+    // The demo server's workers (scheduled posts, timers, Defense's list
+    // writes), every `?cron=` seconds (20 unless the flags say), as the web
+    // harness's install() starts them.
+    demo.startCron()
     var environment = demo.environment
     environment.resetAnalyticsStore = resetArchiveStores
     environment.deleteDatabase = deleteDatabase(files: stores.files)

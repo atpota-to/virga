@@ -66,6 +66,7 @@ struct ModeratorCard: View {
           .buttonStyle(.virga)
           .disabled(busy)
           .padding(.top, theme.space5)
+          .accessibilityIdentifier("defense-moderator-link")
         }
       } else {
         Callout { Text("Virga’s moderator isn’t set up on this server yet.") }
@@ -123,6 +124,8 @@ struct ModeratorCard: View {
         .frame(maxWidth: Measure.Defense.moderatorField, alignment: .leading)
       }
     }
+    .accessibilityElement(children: .contain)
+    .accessibilityIdentifier("defense-moderator-linked")
   }
 
   private func codeView(_ handle: String, code: String) -> some View {
@@ -143,6 +146,7 @@ struct ModeratorCard: View {
       MetaLine(["It works only from this account, and only once. This page notices when it lands."])
     }
     .accessibilityElement(children: .contain)
+    .accessibilityIdentifier("defense-moderator-code")
   }
 
   /// `load()`: the link as the server has it.
