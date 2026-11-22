@@ -142,8 +142,14 @@
       "synced": "687b1614c445"
     },
     "src/dashboards/dashboards.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Dashboards/DashboardPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift"
+      ],
+      "note": "The grid's twelve columns and gaps with the container rules (860 and 620), the card's spans, the figure (.stat), the arrange list and the library. Not yet: the customizing grid's dashed outlines, handles and floating tools, the drop marks, and the library beside the grid.",
+      "synced": "c7dcc1d90849"
     },
     "src/defense/defense.css": {
       "status": "pending",

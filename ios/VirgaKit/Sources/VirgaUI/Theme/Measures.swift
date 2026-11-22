@@ -6,6 +6,7 @@
 // Ports src/settings/settings.css (its measures)
 // Ports src/shell/commandPalette.css (its measures)
 // Ports src/charts/charts.css (its measures)
+// Ports src/dashboards/dashboards.css (its measures)
 //
 // The measures of the stylesheets ThemeKit doesn't read yet (ThemeKit holds
 // theme.css, base.css, controls.css and app.css; ios/parity/cases/
@@ -188,6 +189,36 @@ public enum Measure {
     public static let narrowStepsAt: CGFloat = 479
     public static let stepGap: CGFloat = 6
     public static let tick: CGFloat = 13
+  }
+
+  /// dashboards.css.
+  public enum Dashboard {
+    /// `.stat { gap: 8px; padding-top: 16px; border-top: 2px }`, its head
+    /// 8 apart, the label's glyph 14 and 6 from its words, the number's
+    /// line 16 from the trend (`.stat-value { letter-spacing: -0.04em }`).
+    public static let statGap: CGFloat = 8
+    public static let statPaddingTop: CGFloat = 16
+    public static let statHeadGap: CGFloat = 8
+    public static let statLabelGap: CGFloat = 6
+    public static let statIcon: CGFloat = 14
+    public static let statLineGap: CGFloat = 16
+    public static let statTracking: ThemeLength = .em(-0.04)
+    public static let noteGap: CGFloat = 6
+    public static let sparkMinWidth: CGFloat = 48
+    public static let sparkMaxWidth: CGFloat = 120
+    /// A card's head: its title, the way to the full report, 12 above its body.
+    public static let headGap: CGFloat = 12
+    /// Customize: the dashed outline (1, dashes 4 3), a line of the arrange
+    /// list at least 56 tall.
+    public static let editDash: [CGFloat] = [4, 3]
+    public static let arrangeRowHeight: CGFloat = 56
+    /// The grid's column gap on a phone (`.dash-grid { column-gap: 20px }`).
+    public static let phoneColumnGap: CGFloat = 20
+    /// Where the grid narrows (`@container dash`): from 860 down a third
+    /// and two thirds take the row; from 620 down every card does, and
+    /// figures go two to a row.
+    public static let narrow: CGFloat = 860
+    public static let phone: CGFloat = 620
   }
 
   /// charts.css and SeriesChart.jsx's own measures.

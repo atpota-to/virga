@@ -100,7 +100,8 @@ public struct RoutedPage: View {
     switch route.section {
     case .dashboard:
       if let dashboard {
-        UnportedPage(PageHeaderModel(title: dashboard.name, crumbs: [Crumb("Dashboards")]))
+        DashboardPage(dashboard: dashboard)
+          .id(dashboard.id)
       } else {
         // An address that names no dashboard goes to the first (Shell).
         PageLoading("")

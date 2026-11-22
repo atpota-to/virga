@@ -45,32 +45,60 @@
       "synced": "1ac1f49dceea"
     },
     "src/dashboards/DashboardPage.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Dashboards/DashboardPage.swift"
+      ],
+      "note": "The header (the name with its ⋯: Rename, Duplicate, New dashboard, Reset or Clear with its toast, Delete with its dialog; the period's line; Customize and the period picker; Done), the twelve-column grid with dashboards.css's narrowing (CardGrid), the cards under their titles with the way to the full report, the empty state, ?edit=1, and Customize as the web's phone and keyboard path at every width (each card a line to move up or down, its size, Remove, with toasts) with the library in a dialog (search, kind, Add). Not yet: dragging cards and reports, the card settings dialog (stored settings are read: a card's title and its own period), the chosen card's floating tools, and Post this chart (ShareDialog).",
+      "synced": "55c8f98f100f"
     },
     "src/dashboards/DashboardsContext.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/ShellDashboards.swift"
+      ],
+      "note": "ShellDashboards is the provider: the layout read once per account under virga:dashboards:<did> through Layouts.sanitizeLayout (the three starting dashboards when nothing is stored), and every action (add, duplicate, rename, delete, move and reset a dashboard, reset all, add, remove, resize and move a card, a card's options) applied with VirgaInsights' Layouts and written back at once as DashboardLayout's JSON; a refused write keeps the change for the run. The web's replaceDashboard has no caller here yet.",
+      "synced": "354256b3c4f5"
     },
     "src/dashboards/NewDashboardDialog.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Dashboards/DashboardPage.swift"
+      ],
+      "note": "The name (at most 60) and Start from (Empty, or a template with its count), Create; an empty dashboard opens for customizing (?edit=1).",
+      "synced": "3b7c85e8d37d"
     },
     "src/dashboards/widgets/content.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift"
+      ],
+      "note": "Its cards are in the library and on the grid with their titles; their bodies (a typical post, media described, formats, length, tags, sites) say they aren't in the app yet.",
+      "synced": "d8886917b04c"
     },
     "src/dashboards/widgets/index.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift"
+      ],
+      "note": "The followers, new followers, engagement and posts figures; follower growth (with the ghost to the profile's count), new followers, engagement over time, engagement rate, posting cadence and Best time (its sentence, heatmap and foot), over ReportModels. Not yet: the other figures (unfollows, per post, given, blocked by), the lists (top posts, engagers, follow-back, newest followers, unfollows, lists, repo collections), engagement by type and given, blocks over time and repo activity, the charts' notes and milestones (useChartMarks), and WIDGET_HEADS; each card not ported shows its title and says so.",
+      "synced": "6a863f721549"
     },
     "src/dashboards/widgets/parts.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift"
+      ],
+      "note": "ROWS and HEIGHT (WidgetParts), and Stat: the label (a link to its report) with its glyph, the window, the number at --figure-size, the trend beside it on a card wider than a quarter, and the note line in parts.",
+      "synced": "ae9b483b20c9"
     },
     "src/dashboards/widgets/posting.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift"
+      ],
+      "note": "Its cards (scheduled, timers, going out next, latest drafts) are in the library and on the grid with their titles, and say they need the composer, which isn't in the app yet.",
+      "synced": "d108e840532d"
     },
     "src/people/people.jsx": {
       "status": "pending",

@@ -65,6 +65,15 @@ public enum Glyph {
   /// A remembered account, in a menu: an account's picture can't be a
   /// native menu item's image, so every account row carries this one.
   public static let account = "person.crop.circle"
+  /// The dashboard's: Plus, Pencil, Copy, SlidersHorizontal, ArrowUpRight,
+  /// ArrowUp, ArrowDown.
+  public static let plus = Icons.sfSymbol(lucide: "Plus")
+  public static let rename = "pencil"
+  public static let duplicate = "doc.on.doc"
+  public static let customize = Icons.sfSymbol(lucide: "SlidersHorizontal")
+  public static let openReport = "arrow.up.right"
+  public static let moveUp = "arrow.up"
+  public static let moveDown = "arrow.down"
   /// Table2: "Show as table".
   public static let table = "tablecells"
   /// Download and RotateCcw: Settings › Data's exports and Rebuild posts.
