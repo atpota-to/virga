@@ -22,7 +22,7 @@ import VirgaTestSupport
   static func scenario(_ c: ParityCase) async -> [JSONValue] {
     let clock = Locked(DemoNetwork.now)
     let server = DemoServer(
-      world: DemoNetwork.world(), terms: c["terms"].stringValue ?? "agreed", now: { clock.wrappedValue },
+      world: DemoNetwork.world(), terms: c["terms"].stringValue ?? "agreed", seed: false, now: { clock.wrappedValue },
       randomBytes: RepeatableBytes().generator)
     var tokens: [String] = []
     var out: [JSONValue] = []

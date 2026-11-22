@@ -17,7 +17,8 @@
 //
 // The flags that apply (DemoOptions, read as harness.js reads the address):
 // accounts=1, signedout, expired=<handle>, scope=read, defense=on|lists,
-// terms=ask|down, latency, now, and appview. `mode` doesn't: the iOS app
+// terms=ask|down, latency, now, appview, and the server's: defensewrites,
+// moderator, limits, ailimits, ai and cron. `mode` doesn't: the iOS app
 // has long sessions only, as it signs in only through Virga's server.
 //
 // What the web's provider did itself and the real SessionController now
@@ -31,8 +32,8 @@ import VirgaCore
 import VirgaNetwork
 import VirgaSession
 
-/// The harness flags the iOS demo reads (`readFlags`'s, less the ones for
-/// the server's later routes and the browser-session mode).
+/// The harness flags the iOS demo reads (`readFlags`'s, less the
+/// browser-session mode).
 public struct DemoOptions: Sendable, Hashable {
   /// Mira and Field Lab (`?accounts=1`: Mira alone).
   public var accounts: [WorldAccount]
@@ -53,6 +54,18 @@ public struct DemoOptions: Sendable, Hashable {
   /// 'ok', 'failopen' or 'flaky': whether the signed-in getProfiles counts
   /// known followers.
   public var appview: String
+  /// Whether Virga's server writes Defense's lists (`?defensewrites=off`: no).
+  public var defenseWrites: Bool
+  /// 'on', 'off' (Virga's moderator isn't set up) or 'linked' (every account starts linked).
+  public var moderator: String
+  /// The per-feature limits on scheduled posts and timers (`?limits=`).
+  public var limits: HarnessFlags.Limits
+  /// The monthly AI allowances (`?ailimits=`).
+  public var aiLimits: HarnessFlags.AILimits
+  /// 'ok', 'slow' or 'down': the adviser and alt text.
+  public var ai: String
+  /// How often (seconds) the server's workers run once started; 0 never.
+  public var cronSeconds: Double
 
   public init(
     accounts: [WorldAccount] = [World.me, World.lab],
@@ -62,7 +75,13 @@ public struct DemoOptions: Sendable, Hashable {
     terms: String = "agreed",
     latency: Double = 60,
     now: Double? = nil,
-    appview: String = "ok"
+    appview: String = "ok",
+    defenseWrites: Bool = true,
+    moderator: String = "on",
+    limits: HarnessFlags.Limits = HarnessFlags.Limits(),
+    aiLimits: HarnessFlags.AILimits = FakeServer.defaultAiLimits,
+    ai: String = "ok",
+    cronSeconds: Double = 20
   ) {
     self.accounts = accounts
     self.signedOut = signedOut
@@ -72,13 +91,21 @@ public struct DemoOptions: Sendable, Hashable {
     self.latency = latency
     self.now = now
     self.appview = appview
+    self.defenseWrites = defenseWrites
+    self.moderator = moderator
+    self.limits = limits
+    self.aiLimits = aiLimits
+    self.ai = ai
+    self.cronSeconds = cronSeconds
   }
 
   /// The options `flags` carry.
   public init(flags: HarnessFlags) {
     self.init(
       accounts: flags.accounts, signedOut: flags.signedOut, expired: flags.expired, scope: flags.scope, terms: flags.terms,
-      latency: flags.latency, now: flags.now, appview: flags.appview)
+      latency: flags.latency, now: flags.now, appview: flags.appview, defenseWrites: flags.defenseWrites,
+      moderator: flags.moderator, limits: flags.limits, aiLimits: flags.aiLimits, ai: flags.ai,
+      cronSeconds: flags.cronSeconds)
   }
 
   /// A launch argument in the web's address form (`?accounts=1&terms=ask`),
@@ -87,8 +114,7 @@ public struct DemoOptions: Sendable, Hashable {
     DemoOptions(flags: Harness.readFlags(search))
   }
 
-  /// The flags for the harness: these options, with the server's other
-  /// flags at their defaults and long sessions.
+  /// The flags for the harness: these options, with long sessions.
   public var flags: HarnessFlags {
     var flags = Harness.readFlags("")
     flags.accounts = accounts
@@ -99,6 +125,12 @@ public struct DemoOptions: Sendable, Hashable {
     flags.latency = latency
     flags.now = now
     flags.appview = appview
+    flags.defenseWrites = defenseWrites
+    flags.moderator = moderator
+    flags.limits = limits
+    flags.aiLimits = aiLimits
+    flags.ai = ai
+    flags.cronSeconds = cronSeconds
     return flags
   }
 
@@ -226,6 +258,18 @@ public final class DemoSession {
       files: files, registry: registry, transport: transport, clock: clock, didDocuments: didDocuments, timeZone: timeZone,
       locale: locale)
   }
+
+  /// `window.__harness.cron()`: one run of the server's workers now.
+  @discardableResult
+  public func cron() async -> DemoServer.CronRun { await harness.cron() }
+
+  /// The server's workers every `?cron=` seconds on this session's clock,
+  /// as the web harness's install() starts them; the app's demo mode calls
+  /// it once the session is up (tests leave it off and call `cron()`).
+  public func startCron() { harness.startCron() }
+
+  /// `window.__harness.stopCron()`.
+  public func stopCron() { harness.stopCron() }
 
   /// `window.__harness.expire(handle)`.
   @discardableResult

@@ -254,10 +254,8 @@ func backendError(_ body: () async throws -> Void) async -> BackendError? {
     let s = ServerSetup()
     let token = s.server.mintToken(World.me.did)
     let res = try await s.fetch("/api/limits/status", headers: ["Authorization": "Bearer \(token)"])
-    // The limits come with the scheduling port: until then, a plain 503.
-    #expect(res.status == 503)
-    let later: JSONValue = ["success": false, "error": "scheduling isn't in the demo's server yet.", "code": "UNAVAILABLE"]
-    #expect(try res.json() == later)
+    #expect(res.status == 200)
+    #expect(try res.json()["policy"] == "flat")
     #expect(try await s.fetch("/api/nothing-here").status == 404)
     // The router answers its own origin only.
     #expect(await s.server.route(HTTPRequest(url: "http://127.0.0.1:5701/api/limits/status")) == nil)
@@ -281,17 +279,7 @@ func backendError(_ body: () async throws -> Void) async -> BackendError? {
     #expect(s.transport.refused.map(\.url) == ["https://example.com/somewhere"])
   }
 
-  @Test func answersEachLaterRouteWithA503InItsOwnWordsOnceTheTokenHolds() async throws {
-    let s = ServerSetup()
-    let token = s.server.mintToken(World.me.did)
-    for route in FakeServer.laterRoutes {
-      let res = try await s.fetch(route.path, method: route.method, headers: ["Authorization": "Bearer \(token)"])
-      #expect(res.status == 503, "\(route.path)")
-      #expect(try res.json()["error"] == .string(FakeServer.laterWords(route.area)), "\(route.path)")
-      let ghost = try await s.fetch(route.path, method: route.method)
-      #expect(ghost.status == 401, "\(route.path)")
-    }
-  }
+
 }
 
 @Suite struct TheAddressFlags {

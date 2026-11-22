@@ -17,6 +17,11 @@ enum JSBase64 {
     HarnessJSError(name: "InvalidCharacterError", message: "Invalid character")
   }
 
+  /// What Node's `atob` throws for a text whose length can't be base64's.
+  static func notEncoded() -> HarnessJSError {
+    HarnessJSError(name: "InvalidCharacterError", message: "The string to be decoded is not correctly encoded.")
+  }
+
   /// `btoa(text)`: refuses a code unit past U+00FF.
   static func btoa(_ text: String) throws -> String {
     var bytes: [UInt8] = []
@@ -60,14 +65,32 @@ enum JSBase64 {
   }
 
   /// `atob(text)`: the bytes, which the web holds as a string of Latin-1
-  /// characters.
+  /// characters. Refuses as Node's does: a character outside the alphabet
+  /// (or a misplaced `=`) first, then a length base64 can't have.
   static func atob(_ text: String) throws -> [UInt8] {
-    var units = text.utf16.filter { ![0x09, 0x0A, 0x0C, 0x0D, 0x20].contains($0) }
-    if units.count % 4 == 0 {
-      if units.last == 0x3D { units.removeLast() }
-      if units.last == 0x3D { units.removeLast() }
+    let whitespace: [UInt16] = [0x09, 0x0A, 0x0C, 0x0D, 0x20]
+    var counted = 0
+    var equals = 0
+    for unit in text.utf16 where !whitespace.contains(unit) {
+      if unit == 0x3D {
+        counted += 1
+        equals += 1
+        if equals > 2 { throw invalid() }
+      } else if value(unit) != nil {
+        counted += 1
+        if equals > 0 { throw invalid() }
+      } else {
+        throw invalid()
+      }
     }
-    if units.count % 4 == 1 { throw invalid() }
+    var remainder = counted % 4
+    if remainder == 0 {
+      remainder = (counted - equals) % 4
+    } else if equals > 0 {
+      throw invalid()
+    }
+    if remainder == 1 { throw notEncoded() }
+    let units = text.utf16.filter { !whitespace.contains($0) && $0 != 0x3D }
     var out: [UInt8] = []
     var buffer: UInt32 = 0
     var bits = 0

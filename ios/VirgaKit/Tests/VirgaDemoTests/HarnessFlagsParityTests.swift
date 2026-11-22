@@ -34,12 +34,15 @@ import VirgaTestSupport
       #expect(options.latency == flags.latency, "\(search)")
       #expect(options.now == flags.now, "\(search)")
       #expect(options.appview == flags.appview, "\(search)")
-      // Long sessions only, and the server's other flags at their defaults.
+      // The server's flags too, and long sessions only.
       let back = options.flags
       #expect(back.mode == "backend", "\(search)")
-      #expect(back.limits == Harness.readFlags("").limits, "\(search)")
-      #expect(back.ai == "ok", "\(search)")
-      #expect(back.moderator == "on", "\(search)")
+      #expect(back.limits == flags.limits, "\(search)")
+      #expect(back.aiLimits == flags.aiLimits, "\(search)")
+      #expect(back.ai == flags.ai, "\(search)")
+      #expect(back.moderator == flags.moderator, "\(search)")
+      #expect(back.defenseWrites == flags.defenseWrites, "\(search)")
+      #expect(back.cronSeconds == flags.cronSeconds, "\(search)")
     }
   }
 }
