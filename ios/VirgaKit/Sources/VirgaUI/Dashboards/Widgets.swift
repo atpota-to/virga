@@ -373,36 +373,18 @@ struct Stat: View {
   }
 
   /// `.stat-note`: the change and the words about it as one line of text,
-  /// a faint dot after the change and after each part but the last.
+  /// a faint dot after the change and after each part but the last (the
+  /// kit's FigureNote, in parts).
   @ViewBuilder private var note: some View {
     if let subView {
       FlowLayout(spacing: 0, lineSpacing: 0) {
-        if delta != nil { words(parts: [], dotAfter: true) }
+        if let delta { FigureNote(deltaText: delta.text, deltaTitle: delta.hint, parts: [], followed: true) }
         subView
       }
-      .accessibilityHint(delta?.hint ?? "")
     } else {
-      words(parts: sub.map { $0.components(separatedBy: " · ") } ?? [], dotAfter: false)
+      FigureNote(deltaText: delta?.text, deltaTitle: delta?.hint, parts: sub.map { $0.components(separatedBy: " · ") } ?? [])
         .fixedSize(horizontal: false, vertical: true)
-        .accessibilityHint(delta?.hint ?? "")
     }
-  }
-
-  /// The delta and the parts, a faint dot (the font's no-break spaces for
-  /// the web's 4 and 6 round it) after each but the last.
-  private func words(parts: [String], dotAfter: Bool) -> Text {
-    let dot = Text("\u{00A0}·\u{00A0}").foregroundStyle(theme.faint)
-    var pieces: [Text] = []
-    if let delta {
-      pieces.append(Text(delta.text).font(theme.font(ThemeKit.deltaFontSize, weight: ThemeKit.deltaWeight)).foregroundStyle(theme.ink))
-    }
-    pieces += parts.map { Text($0) }
-    var out = Text("")
-    for (i, piece) in pieces.enumerated() {
-      out = out + piece
-      if i < pieces.count - 1 || dotAfter { out = out + dot }
-    }
-    return out
   }
 }
 #endif

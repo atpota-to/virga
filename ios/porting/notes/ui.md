@@ -142,7 +142,8 @@ COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
   `Disclosure`.
 - Data: `FiguresView([FigureItem])` (a line of cells shares its label, number and note rows;
   `FigureItem(unit:)` puts a unit after the number, small and muted, reports.css's `.fig-unit`),
-  `FigureNote(delta:deltaTitle:words:)` (a note's change, faint dot and words as one line),
+  `FigureNote(delta:deltaTitle:words:)` (a note's change, faint dot and words as one line;
+  `FigureNote(deltaText:parts:)` a dashboard card's, its words in parts, a dot after each but the last),
   `DeltaView(pct:)` (ChartFormat.deltaText), `DataTable(columns:rows:selected:part:chart:)` (a row
   is one VoiceOver element; `part:` .head or .rows for a held head, `chart:` the
   `.an-tableview .table` look), `TableScroll(maxHeight:) { DataTable }` (a chart's table: at least

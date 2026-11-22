@@ -91,7 +91,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift"
       ],
-      "note": "ROWS, HEIGHT, MORE_ROWS, rowsFor and rowsShown (WidgetParts), and Stat: the label (a link to its report) with its glyph, the window (left out on a card 250 wide or less), the number at --figure-size, the trend beside it on a card 300 wide or more (40 tall, up to 46% of the line, its gaps left out), and the note as one line of text, a faint dot after the change and after each part but the last; a figure drawn down to its number for Customize's line (`statValueOnly`).",
+      "note": "ROWS, HEIGHT, MORE_ROWS, rowsFor and rowsShown (WidgetParts), and Stat: the label (a link to its report) with its glyph, the window (left out on a card 250 wide or less), the number at --figure-size, the trend beside it on a card 300 wide or more (40 tall, up to 46% of the line, its gaps left out), and the note as one line of text, a faint dot after the change and after each part but the last (the kit's FigureNote, in parts); a figure drawn down to its number for Customize's line (`statValueOnly`).",
       "synced": "ae9b483b20c9"
     },
     "src/dashboards/widgets/posting.jsx": {

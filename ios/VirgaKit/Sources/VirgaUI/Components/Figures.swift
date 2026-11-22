@@ -243,18 +243,35 @@ struct FigureNotePart: View {
 /// words wrap one at a time after the change. The dot belongs to the change
 /// (4 after it, 6 before the words), so a wrapped note never starts with it.
 /// `delta`: nil for no change shown, `.some(nil)` for "new".
+///
+/// A dashboard card's note (dashboards.css's `.stat-note`) has its words in
+/// parts ("2.3 a day · 48% replies"), each drawn with the same dot after it
+/// but the last: `FigureNote(deltaText:parts:)`. The words take the size
+/// and the line height of the text round the note.
 public struct FigureNote: View {
   @Environment(\.virgaTheme) private var theme
-  private let delta: Double??
+  private let deltaText: String?
   private let deltaTitle: String?
-  private let words: String?
+  private let parts: [String]
+  private let followed: Bool
 
   /// - Parameters:
   ///   - deltaTitle: what the change is against, read by VoiceOver as a hint.
   public init(delta: Double??, deltaTitle: String? = nil, words: String? = nil) {
-    self.delta = delta
+    self.deltaText = delta.map { ChartFormat.deltaText($0) }
     self.deltaTitle = deltaTitle
-    self.words = words
+    self.parts = words.map { [$0] } ?? []
+    self.followed = false
+  }
+
+  /// A change already in words ("+8.4%", "+12"), and the words in parts.
+  /// - Parameter followed: something drawn after the note on its line (a
+  ///   part that is more than words), so the last piece takes a dot too.
+  public init(deltaText: String?, deltaTitle: String? = nil, parts: [String], followed: Bool = false) {
+    self.deltaText = deltaText
+    self.deltaTitle = deltaTitle
+    self.parts = parts
+    self.followed = followed
   }
 
   public var body: some View {
@@ -264,22 +281,27 @@ public struct FigureNote: View {
 
   private var line: Text {
     let size = theme.points(ThemeKit.figureNoteFontSize)
+    var pieces: [Text] = []
+    if let deltaText {
+      pieces.append(
+        Text(deltaText)
+          .font(theme.font(size: theme.points(ThemeKit.deltaFontSize), weight: ThemeKit.deltaWeight))
+          .foregroundStyle(theme.ink))
+    }
+    for part in parts {
+      pieces.append(Text(part).foregroundStyle(theme.muted))
+    }
     var out = Text("")
-    if let delta {
-      out = Text(ChartFormat.deltaText(delta))
-        .font(theme.font(size: theme.points(ThemeKit.deltaFontSize), weight: ThemeKit.deltaWeight))
-        .foregroundStyle(theme.ink)
-      if words != nil {
-        // `.delta:not(:last-child)::after { content: '·'; margin: 0 6px 0 4px;
-        // color: var(--faint); font-weight: 400 }`
-        let dot = Text("·").font(theme.font(size: theme.points(ThemeKit.deltaFontSize))).foregroundStyle(theme.faint)
+    for (index, piece) in pieces.enumerated() {
+      out = out + piece
+      if index < pieces.count - 1 || followed {
+        // `.delta:not(:last-child)::after, .stat-sub:not(:last-child)::after
+        // { content: '·'; margin: 0 6px 0 4px; color: var(--faint);
+        // font-weight: 400 }`
         out = out + space(Measure.Figures.noteDotBefore, size: size)
-        out = out + dot
+        out = out + Text("·").font(theme.font(size: size)).foregroundStyle(theme.faint)
         out = out + space(Measure.Figures.noteDotAfter, size: size)
       }
-    }
-    if let words {
-      out = out + Text(words).foregroundStyle(theme.muted)
     }
     return out
   }
