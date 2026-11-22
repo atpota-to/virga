@@ -1,4 +1,5 @@
 // Ports src/posting/ui/LifespanDefaults.jsx
+// Ports src/settings/settings.css (the default timer: .settings-rule, .settings-rule-editor, .settings-section .lse-legend)
 //
 // Settings › Posting: the timer new posts start with, for one account.
 // Whether there is one, and its rule (a length, never a set time). The

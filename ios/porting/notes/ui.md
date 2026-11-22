@@ -114,7 +114,8 @@ COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
 - `Segmented(label:options:selection:size:)` (scrolls with faded edges, the pressed key
   brought clear of the fade only when it is under it, keys held at their bold width; an
   option's web `title` is `SegmentedOption(hint:)`, and `minWidth:` a key's least width, as a
-  kind filter's glyph-only keys have, 32 at 760 and under), `ChipStyle`, `TokenView`/`TokenRow`,
+  kind filter's glyph-only keys have, 32 at 760 and under), `ChipStyle(isOn:disabledOpacity:)`
+  (a button's 45% while disabled unless its rule says otherwise), `TokenView`/`TokenRow`,
   `Badge`, `MetaLine`/`MetaPiece` (the dot 6 after its word), `StateDot`, `Avatar`,
   `AccessLine`.
 - `.toggleStyle(.virgaSwitch)` draws the capsule and its knob and no words, as the web's
@@ -143,7 +144,10 @@ COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
   of words alone, `Callout(tone: .danger, words)`, is role="alert": read out as it appears and
   as its words change; built round its own content it takes `alert:` words, or leaves it to the caller),
   `EmptyState` (16 under a flush section's rule), `NoteText`, `ProgressLine(value:)`,
-  `Disclosure`.
+  `Disclosure(_, settingsRow:, keepsContent:)` (its arrow drawn, not read; `settingsRow` a
+  disclosure that is a row of its own in Settings: the arrow on the sentence's first line,
+  the sentence pressed through 44 points that reach into the row's air; `keepsContent` keeps
+  what it opens in place, hidden and out of reach, while closed, as a closed `<details>` does).
 - Data: `FiguresView([FigureItem])` (a line of cells shares its label, number and note rows;
   `FigureItem(unit:)` puts a unit after the number, small and muted, reports.css's `.fig-unit`),
   `FigureNote(delta:deltaTitle:words:)` (a note's change, faint dot and words as one line;
@@ -196,7 +200,11 @@ SHELL (Shell/)
 - Settings rows: `SettingsRow(label:hint:block:compactControl:kind:)`, where `kind`
   (`SettingsControlKind`: `.button`, `.segmented`, `.toggle`, `.state`, `.prose`; a switch
   by default where `compactControl` is set, else a button) says how far the control is
-  drawn up to centre it on the name's first line, as settings.css does on a touch screen.
+  drawn up to centre it on the name's first line, as settings.css does on a touch screen
+  (a switch by its 24-point capsule: it is laid out 40 × 24, its 44-point reach only its
+  content shape). `.pressingName { … }` is a `<label htmlFor>`: a press on the name presses
+  the control (pass the switch's flip), and the name isn't read twice. `SettingsRow(block:)
+  { … }` is a block row with no label, the control alone with a row's air and hairline.
   A select is `SettingsSelect` (the kit's VirgaSelect over a preference), laid out by
   `SettingsSelects`; the sky's and the accent's grids are `ChoiceGrid` (auto-fill columns
   from the grid's own width), radio groups on a hardware keyboard.
@@ -324,11 +332,18 @@ TEMPLATES AND POSTING (Templates/, Posting/, Settings/PostingSettingsSection.swi
   `.postingConfirm(isPresented:title:onConfirm:message:)` (hubParts' ConfirmDialog) and
   `PostingWords.countPhrase`. Use opens the composer through `ComposerHost`.
 - Settings › Posting is `PostingSettingsSection` over `PostingSettingsModel`, with the composer's
-  `LanguagePicker` and `GatesEditor`; its weekly queue reads VirgaPosting's `ScheduleModel` (the
-  week's count and summary, the zone's name, moveToZone) and draws scheduleParts' `TimezoneSelect`. The
-  Post adviser's card is `AdviserSettingsCard` when the account can use the server (else
-  `NeedsBackendNotice`), and the Default timer's editor is `LifespanRuleEditor` (no exact time,
-  no toggle of its own; the switch above it, `default-timer-on`, keeps `enabled`).
+  `LanguagePicker` (`bare: true`: the row names it) and `GatesEditor`, stacked 12 apart and held to
+  420 (`Measure.SettingsPosting`); Account and Main button are `SettingsSelect`s
+  (`PostingSettingsSelectWidth`: 220 to 320, the whole line from 760 down); each switch row's name
+  presses its switch (`pressingName`); a refused change is `PostingSettingsRefusal` (the words-alone
+  danger Callout, read out, 16 above and 4 below). Its weekly queue reads VirgaPosting's
+  `ScheduleModel` (the week's count and summary, the zone's name, moveToZone) and draws scheduleParts'
+  `TimezoneSelect` (`fill` from 760 down); Edit the week is read as a link. The Post adviser's card is
+  `AdviserSettingsCard` when the account can use the server (else `NeedsBackendNotice`), its text
+  areas with their example placeholders over the TextEditor, and the Default timer's editor is
+  `LifespanRuleEditor` (no exact time, no toggle of its own, `settingsLegends: true`, held to 640; the
+  switch above it, `default-timer-on`, keeps `enabled`). Both cards' disclosures are
+  `Disclosure(settingsRow: true)`, the default timer's rule kept while closed (`keepsContent`).
 - `Measure.Templates` (Templates/TemplateMeasures.swift) names library.css's and hub.css's measures.
 - PostingUITests (`testTemplatesAndPostingSettings`, no archive build): `posting-templates`,
   `template-editor`, `template-editor-questions`, `settings-posting`, `settings-posting-timer`.
@@ -482,7 +497,15 @@ THE POSTING PAGES (Posting/: HubPage, DraftsPage, PostedPage, TimersPage, TimerD
   closed.
 - `LifespanDefaultsCard(did:model:)` (Posting/LifespanDefaults.swift, from Settings › Posting) reads
   getLimits with a long session, so its editor checks the free timers and its caption starts with
-  timerLimitsLine.
+  timerLimitsLine; the caption's See posts on a timer is `ScheduleLinkedText` (underlined, through the
+  navigator to `postingPath("timers")`).
+- `LifespanRuleEditor`'s parts: a legend 8 over what it names (`settingsLegends` draws it at
+  --text-md, 500, as Settings' rows); the sentence at 0.875rem, posted to VoiceOver as a queued
+  announcement when it changes (`LifespanPoliteStatus`, the web's aria-live="polite"), and the pin
+  and room notes as they arrive (role="status"); from 560 down a condition is
+  `LifespanPhoneCondition`, the web's two-line grid; Or a set time without a pin is an empty field,
+  whose press sets the earliest allowed time at the next whole minute for the system's pickers to
+  change.
 - The Timers page's question is `TimersCancelDialog`: TimersPage.jsx's words over SCHEDULING's
   `.scheduleActionDialog` (Keep it, the action in ink, the busy label, a refusal's words kept; its
   identifiers `schedule-dialog`, `-keep`, `-confirm`, `-error`). A dialog's quoted post on every
@@ -609,6 +632,11 @@ APP (App/, Pages/, Legal/, SignIn/, Accounts/, Settings/, Platform/)
 - Landing, SignInReturn, TermsGate, LegalPage/LegalDialog/LegalDocument, SignInFlowView,
   AccountMenu, AccountsSettings, SessionNotices, SettingsPage (Account, Appearance,
   Permissions, Data and sync with exports through `.fileExporter`, Dashboards, About).
+- The pending-work warnings before a long session's sign-out, Sign out of all and Remove …
+  from this browser read through `AppModel.pendingWork`: `PendingWorkServices.posting()`
+  (VirgaPosting/Wiring.swift), scheduleService's listScheduled and timerService's listTimers
+  over the account's VirgaBackend, so the dialogs say what is scheduled or on a timer (in the
+  demo, the demo server's rows).
 - `Platform/AppStores.swift`: UserDefaults in `<bundle>.localStorage`, DiskFileStore in
   `Application Support/Virga`, KeychainSecretStore under `<bundle>.session`; tests in
   ios/VirgaKit/Tests/VirgaUITests (run by package-test on the simulator).
@@ -704,8 +732,7 @@ LIVE SKY (Sky/, and VirgaCore/Hillside/ for everything that isn't drawing)
 - Left for later steps: dragging cards; the dashboard's posting cards (StatScheduled, StatTimers,
   PostingNext, PostingDrafts), which can now read scheduleService and hubModel; of posting, what the
   composer's entry (Composer.jsx) lists as not yet (the duplicate guard, drag and drop, the posted toast's
-  View it on Bluesky); the pending-work warnings before a sign-out (AppModel.pendingWork, until the
-  schedule and timer services are wired to it); "Keep it when space runs low" (iOS has nothing to ask).
+  View it on Bluesky); "Keep it when space runs low" (iOS has nothing to ask).
 - Copy is the web's word for word, including words that only fit a browser ("This
   browser's region", "Forget X on this browser", "Saving the repo to this browser"). Worth
   raising on the web side rather than changing on one side.

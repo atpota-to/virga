@@ -262,11 +262,13 @@ struct LifespanRuleEditor: View {
 
   /// `toLocalInput(rule.deleteAt)` is '' without a pin: an empty field,
   /// not a time drawn as if chosen. Pressing it sets the earliest time
-  /// allowed, which the system's pickers that take its place then change
-  /// (a browser's empty field opens its own picker instead).
+  /// allowed, at the next whole minute (the field's own precision), which
+  /// the system's pickers that take its place then change (a browser's
+  /// empty field opens its own picker instead).
   private func unpinnedField(_ rule: TimerRule, earliest: Date) -> some View {
     Button {
-      emit(LifespanModel.withPin(rule, JSDate.toISOString(earliest.timeIntervalSince1970 * 1000)))
+      let minute = (earliest.timeIntervalSince1970 / 60).rounded(.up) * 60
+      emit(LifespanModel.withPin(rule, JSDate.toISOString(minute * 1000)))
     } label: {
       Text(verbatim: " ")
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -620,7 +622,7 @@ struct LifespanPhoneCondition: Layout {
 
   func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
     guard subviews.count == 4 else { return .zero }
-    let width = proposal.width ?? Measure.Lifespan.phoneConditionWidth
+    let width = proposal.width.flatMap { $0.isFinite ? $0 : nil } ?? Measure.Lifespan.phoneConditionWidth
     let l = lines(width, subviews)
     return CGSize(width: width, height: l.first + gap + l.second)
   }
