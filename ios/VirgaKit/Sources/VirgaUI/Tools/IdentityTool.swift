@@ -198,7 +198,7 @@ struct IdentityBody: View {
   }
 
   private func identifiers(_ did: String) -> some View {
-    let docUrl = did.jsStartsWith("did:plc:") ? "\(AppConfig.plcDirectory)/\(did)" : Atproto.didWebDocumentUrl(did)
+    let docUrl = did.utf16.starts(with: "did:plc:".utf16) ? "\(AppConfig.plcDirectory)/\(did)" : Atproto.didWebDocumentUrl(did)
     return VirgaSection(title: "Identifiers", flush: true) {
       KVList {
         KVRow("DID") {
@@ -249,7 +249,7 @@ struct IdentityBody: View {
       case .reading:
         EmptyState("Reading the log…").padding(.top, theme.rowPad)
       case .unread:
-        EmptyState(did.jsStartsWith("did:web:") ? "A did:web keeps no history." : "The directory couldn’t be reached.")
+        EmptyState(did.utf16.starts(with: "did:web:".utf16) ? "A did:web keeps no history." : "The directory couldn’t be reached.")
           .padding(.top, theme.rowPad)
       case .log:
         TimelineList(
