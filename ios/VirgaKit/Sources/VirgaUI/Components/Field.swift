@@ -8,10 +8,14 @@
 // element declaring both again as `.input[aria-invalid='true']` does. A
 // text area is the same, at least 2.5 controls tall. Search has its glass
 // inside the left edge. A count against a limit turns danger and bold past
-// it (FieldHint's `isOver`).
+// it (FieldHint's `isOver`). A placeholder is --muted (`.input::placeholder`),
+// which only a TextField built with its prompt can say: VirgaTextField and
+// SearchField are. A select (`select.input`) is VirgaSelect: its value in
+// ink at the field's start, on one line, a chevron in --ink-2 at its end.
 //
-//   TextField("you.bsky.social", text: $handle).virgaField()
+//   VirgaTextField("you.bsky.social", text: $handle).virgaField()
 //   TextEditor(text: $text).virgaTextArea()
+//   VirgaSelect("Week starts on", selection: $start, options: [SelectChoice(.monday, "Week starts Monday"), …])
 
 #if canImport(UIKit)
 import SwiftUI
@@ -43,7 +47,15 @@ struct FieldChrome: ViewModifier {
     }
     let radius = theme.points(ThemeKit.inputRadius)
     let shape = RoundedRectangle(cornerRadius: radius)
-    let padding = textArea ? theme.insets(ThemeKit.textAreaPadding) : theme.insets(size == .large ? ThemeKit.largeInputPadding : ThemeKit.inputPadding)
+    var padding = textArea ? theme.insets(ThemeKit.textAreaPadding) : theme.insets(size == .large ? ThemeKit.largeInputPadding : ThemeKit.inputPadding)
+    if textArea {
+      // A TextEditor keeps its text view's own insets inside it; the field
+      // gives only the rest, so the words start where the web's do.
+      let own = Measure.Field.textEditorInset
+      padding = EdgeInsets(
+        top: max(0, padding.top - own.top), leading: max(0, padding.leading - own.leading),
+        bottom: max(0, padding.bottom - own.bottom), trailing: max(0, padding.trailing - own.trailing))
+    }
     let height = textArea
       ? theme.points(ThemeKit.textAreaMinHeight)
       : theme.points(size == .large ? ThemeKit.largeInputHeight : ThemeKit.touchInputHeight)
@@ -101,7 +113,8 @@ struct FocusRing: View {
 }
 
 extension View {
-  /// The kit's field round a TextField (or a SecureField, or a Picker).
+  /// The kit's field round a TextField or a SecureField (a select is
+  /// VirgaSelect, whose value a Picker would draw in the accent, centred).
   public func virgaField(invalid: Bool = false, size: FieldSize = .medium) -> some View {
     modifier(FieldChrome(invalid: invalid, size: size, leading: nil, textArea: false))
   }
@@ -173,6 +186,27 @@ public struct FieldHint: View {
   }
 }
 
+/// A TextField whose placeholder is --muted (`.input::placeholder { color:
+/// var(--muted); opacity: 1 }`), not the system's pale grey. Put the field
+/// round it as for any TextField: `VirgaTextField("Name", text: $name).virgaField()`.
+public struct VirgaTextField: View {
+  @Environment(\.virgaTheme) private var theme
+  private let prompt: String
+  @Binding private var text: String
+  private let axis: Axis
+
+  /// - Parameter axis: `.vertical` for words that may run onto more lines.
+  public init(_ prompt: String, text: Binding<String>, axis: Axis = .horizontal) {
+    self.prompt = prompt
+    self._text = text
+    self.axis = axis
+  }
+
+  public var body: some View {
+    TextField(prompt, text: $text, prompt: Text(prompt).foregroundStyle(theme.muted), axis: axis)
+  }
+}
+
 /// `.search`: a field with its glass inside the left edge.
 public struct SearchField: View {
   @Environment(\.virgaTheme) private var theme
@@ -186,15 +220,93 @@ public struct SearchField: View {
 
   public var body: some View {
     ZStack(alignment: .leading) {
-      TextField(prompt, text: $text)
+      VirgaTextField(prompt, text: $text)
         .virgaField(leading: theme.points(ThemeKit.searchInputLeading))
       Image(systemName: Glyph.search)
-        .font(.system(size: Measure.Field.searchIcon))
+        .virgaGlyph(Measure.Field.searchIcon, beside: theme.points(ThemeKit.touchInputFontSize))
         .foregroundStyle(theme.muted)
         .padding(.leading, theme.points(ThemeKit.searchIconInset))
         .allowsHitTesting(false)
         .accessibilityHidden(true)
     }
+  }
+}
+
+/// One of a select's choices: its value and its words.
+public struct SelectChoice<Value: Hashable>: Identifiable {
+  public var value: Value
+  public var label: String
+
+  public var id: Value { value }
+
+  public init(_ value: Value, _ label: String) {
+    self.value = value
+    self.label = label
+  }
+}
+
+/// `select.input`: the field with the chosen value's words in ink at its
+/// start, on one line, and a chevron in --ink-2 at its end (the web's
+/// 5-point one, 11 in from the edge). A press opens the choices as the
+/// system's menu, the chosen one ticked.
+public struct VirgaSelect<Value: Hashable>: View {
+  @Environment(\.virgaTheme) private var theme
+  private let label: String
+  @Binding private var selection: Value
+  private let options: [SelectChoice<Value>]
+  private let size: FieldSize
+  private let invalid: Bool
+
+  /// - Parameter label: the select's name, for VoiceOver (its field label).
+  public init(
+    _ label: String, selection: Binding<Value>, options: [SelectChoice<Value>], size: FieldSize = .medium, invalid: Bool = false
+  ) {
+    self.label = label
+    self._selection = selection
+    self.options = options
+    self.size = size
+    self.invalid = invalid
+  }
+
+  public var body: some View {
+    let current = options.first { $0.value == selection }?.label ?? ""
+    Menu {
+      Picker(label, selection: $selection) {
+        ForEach(options) { option in
+          Text(option.label).tag(option.value)
+        }
+      }
+      .pickerStyle(.inline)
+      .labelsHidden()
+    } label: {
+      SelectFace(current: current)
+        .virgaField(invalid: invalid, size: size)
+    }
+    .menuOrder(.fixed)
+    .accessibilityLabel(label)
+    .accessibilityValue(current)
+  }
+}
+
+/// What a select shows: its value, then the chevron at the end.
+struct SelectFace: View {
+  @Environment(\.virgaTheme) private var theme
+  let current: String
+
+  var body: some View {
+    HStack(spacing: 0) {
+      Text(current)
+        .lineLimit(1)
+        .foregroundStyle(theme.ink)
+      Spacer(minLength: Measure.Field.selectChevronGap)
+      Image(systemName: Glyph.chevronDown)
+        .virgaGlyph(Measure.Field.selectChevron, weight: .semibold)
+        .foregroundStyle(theme.ink2)
+        .padding(.trailing, Measure.Field.selectChevronInset - theme.points(ThemeKit.inputPadding.right))
+        .accessibilityHidden(true)
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .contentShape(Rectangle())
   }
 }
 
@@ -204,7 +316,10 @@ public struct SearchField: View {
       FieldStack("Name") {
         TextField("", text: .constant("Growth")).virgaField()
       }
-      TextField("you.bsky.social", text: .constant("")).virgaField(invalid: true, size: .large)
+      VirgaTextField("you.bsky.social", text: .constant("")).virgaField(invalid: true, size: .large)
+      VirgaSelect(
+        "Week starts on", selection: .constant(1),
+        options: [SelectChoice(0, "Week starts as in this region (Sunday)"), SelectChoice(1, "Week starts Monday")])
       SearchField("Search", text: .constant(""))
       TextEditor(text: .constant("A text area")).virgaTextArea()
       FieldHint("280 of 300")

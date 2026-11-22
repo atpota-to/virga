@@ -109,12 +109,33 @@ public enum Measure {
   public enum Field {
     /// `.search > svg { width: 16px }`
     public static let searchIcon: CGFloat = 16
+    /// `select.input { padding-right: 30px }` with its chevron, two 5px
+    /// halves drawn 11 to 21 in from the right edge: the system's chevron at
+    /// about that size, 11 in, and room for it before the words stop.
+    public static let selectChevron: CGFloat = 9
+    public static let selectChevronInset: CGFloat = 11
+    public static let selectChevronGap: CGFloat = 9
+    /// What a TextEditor's own text view keeps inside it (UITextView's
+    /// textContainerInset, 8 above and below, and lineFragmentPadding, 5 at
+    /// the sides), which a text area's padding is drawn less of.
+    public static let textEditorInset = EdgeInsets(top: 8, leading: 5, bottom: 8, trailing: 5)
   }
 
   public enum Disclosure {
     /// `.disclosure > summary::before`: a 6px chevron of 1.5px strokes,
     /// drawn as the system's chevron at about its height.
     public static let chevron: CGFloat = 8
+    /// `.disclosure > summary { gap: 8px }`
+    public static let gap: CGFloat = 8
+  }
+
+  /// The browser's own checkbox (`input[type='checkbox']` with
+  /// `accent-color`), drawn: corners of 3, a 1-point edge in --line-2, the
+  /// tick at 60% of the box.
+  public enum Check {
+    public static let radius: CGFloat = 3
+    public static let edge: CGFloat = 1
+    public static let tickShare: CGFloat = 0.6
   }
 
   public enum Switch {
@@ -143,8 +164,14 @@ public enum Measure {
     public static let selectedRowBleed: CGFloat = 10
     /// `.callout svg { width: 16px; margin-top: 2px }`
     public static let calloutIcon: CGFloat = 16
+    public static let calloutIconSpaceAbove: CGFloat = 2
     /// `.info-tip-pop { top: calc(100% + 6px) }`, an info tip's glyph 13.
     public static let infoTipIcon: CGFloat = 13
+    /// `.info-tip-pop { line-height: 1.45 }`
+    public static let infoTipLineHeight: Double = 1.45
+    /// The touch block's `.info-tip-button { margin: -8px -6px }`: the 32
+    /// button laid out 6 narrower at each side and 8 shorter at each end.
+    public static let infoTipLetOut = CGSize(width: 6, height: 8)
   }
 
   // MARK: shell.css

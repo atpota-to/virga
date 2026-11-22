@@ -11,9 +11,10 @@ import VirgaInsights
 public enum Glyph {
   /// X
   public static let close = "xmark"
-  /// ChevronRight, ChevronLeft
+  /// ChevronRight, ChevronLeft, ChevronDown (a select's)
   public static let chevronRight = "chevron.right"
   public static let chevronLeft = "chevron.left"
+  public static let chevronDown = "chevron.down"
   /// ExternalLink
   public static let externalLink = "arrow.up.right.square"
   /// LogOut, LogIn
