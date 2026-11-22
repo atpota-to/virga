@@ -165,7 +165,7 @@ struct FollowersReportView: View {
 
   var body: some View {
     let unitPick = mode == "cumulative" ? nil : AnalyticsUnit(mode)
-    let m = ReportModels.followersModel(archive, period, archive.nowMs, unit: unitPick)
+    let m = ReportModels.followersModel(archive, period, archive.nowMs ?? SyncStatus.now(), unit: unitPick)
     let cumulative = mode == "cumulative"
     let series = ChartPoint.of(cumulative ? m.cumulative : m.counts)
     let days = period.days.map { $0 != 0 } ?? false
@@ -211,7 +211,7 @@ struct PostsReportView: View {
   @State private var unitPick: String?
 
   var body: some View {
-    let m = ReportModels.postsModel(archive, period, archive.nowMs, unit: unitPick.map { AnalyticsUnit($0) })
+    let m = ReportModels.postsModel(archive, period, archive.nowMs ?? SyncStatus.now(), unit: unitPick.map { AnalyticsUnit($0) })
     let days = period.days.map { $0 != 0 } ?? false
     let pct = { (n: Int) -> Double in m.count != 0 ? (Double(n) / Double(m.count) * 100).jsRounded : 0 }
     if archive.posts.isEmpty {
@@ -259,7 +259,7 @@ struct EngagementReportView: View {
   @State private var unitPick: String?
 
   var body: some View {
-    let m = ReportModels.engagementModel(archive, period, archive.nowMs, unit: unitPick.map { AnalyticsUnit($0) })
+    let m = ReportModels.engagementModel(archive, period, archive.nowMs ?? SyncStatus.now(), unit: unitPick.map { AnalyticsUnit($0) })
     let days = period.days.map { $0 != 0 } ?? false
     FiguresView(
       [

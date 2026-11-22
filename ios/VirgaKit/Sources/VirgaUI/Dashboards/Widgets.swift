@@ -94,7 +94,7 @@ struct WidgetBody: View {
   let title: String?
 
   private var kind: String { card.options?.kind ?? "all" }
-  private var nowMs: Double { archive.nowMs }
+  private var nowMs: Double { archive.nowMs ?? SyncStatus.now() }
 
   var body: some View {
     switch card.type {
