@@ -263,7 +263,7 @@ struct QueueCalendarView: View {
   }
 
   var body: some View {
-    let device = TimeZone(identifier: ScheduleText.deviceZone) ?? AppLocale.activeTimeZone()
+    let device = AppLocale.activeTimeZone()
     let model = try? QueueCalendar.buildCalendarDays(schedule, occupancy ? rows : [], 7, now: now)
     let days = model?.days ?? []
     let grid = Self.calendarRows(days, zone: device)
