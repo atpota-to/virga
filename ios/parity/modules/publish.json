@@ -21,8 +21,14 @@
       "swift": []
     },
     "src/posting/lib/publishRecord.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/PublishRecord.swift"
+      ],
+      "fixtures": [
+        "publish.publishRecord"
+      ],
+      "synced": "2d7171ef9946"
     }
   }
 }
