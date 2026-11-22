@@ -83,6 +83,9 @@ wash; night is the dark theme. Settings keeps one or follows the clock
 and the navigation bar take `--sky-top` (`Sky.skyColor`), so the system's
 chrome runs into the wash; make the navigation bar's background clear over
 the sky. High contrast has no sky: the wash is the flat ground, white or black.
+The live sky (Settings › Appearance, or five taps on the mark) is the 3D
+scene's sky and clouds drawn over the wash's top, in a band as tall as the
+wash, moved with it (`LiveSky`, VirgaUI/Sky); never in high contrast.
 
 **Ink does the work, sparingly.** Words are `--ink`, `--ink-2` (a label) and
 `--muted` (meta, captions); `--faint` is for marks, never words. The thing to

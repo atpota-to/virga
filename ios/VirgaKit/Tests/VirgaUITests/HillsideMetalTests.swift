@@ -120,3 +120,22 @@ final class HillsideMetalTests: XCTestCase {
   }
 }
 #endif
+
+#if canImport(UIKit)
+/// The demo's -VirgaDemoSky and -VirgaDemoLiveSky, stored as the web's
+/// preferences are, for the live sky's UI tests.
+@MainActor
+final class LiveSkyDemoPreferencesTests: XCTestCase {
+  func testNoArgumentsStoreNothing() {
+    XCTAssertNil(AppModel.demoPreferences(sky: nil, liveSky: false))
+  }
+
+  func testTheSkyAndTheLiveSkyAreStored() throws {
+    let json = try XCTUnwrap(AppModel.demoPreferences(sky: "night", liveSky: true))
+    let prefs = Preferences.readPreferences(raw: json)
+    XCTAssertEqual(prefs.sky, .night)
+    XCTAssertTrue(prefs.liveSky)
+    XCTAssertEqual(Preferences.readPreferences(raw: AppModel.demoPreferences(sky: "noon", liveSky: true)).sky, .clock)
+  }
+}
+#endif
