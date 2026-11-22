@@ -173,6 +173,8 @@ public struct RoutedPage: View {
         NeedsBackendNotice(did: did)
       }
       .id(did ?? "")
+    } else if pageKey == "hub" {
+      HubPage(session: app.session, did: did).id(did ?? "")
     } else if pageKey == "templates" {
       TemplatesPage(session: app.session, did: app.session.did, id: id)
         .id(app.session.did ?? "")
