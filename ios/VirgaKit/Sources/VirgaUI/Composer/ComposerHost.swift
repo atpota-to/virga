@@ -1,5 +1,6 @@
 // Ports src/posting/composer/ComposerContext.jsx
 // Ports src/shell/Shell.jsx (OpenComposer: /posting/compose and /intent/compose)
+// Ports src/App.jsx (the ComposerProvider above the per-account key)
 //
 // The composer's host, held above the per-account identity (AppRoot), so
 // an open composer, and what's written in it, survives switching accounts.
@@ -14,6 +15,11 @@
 // sheet: on a phone the whole height, with the send button in a bar at
 // the top; on a wider window the composer's 640-point dialog. The scene going
 // to the background flushes the autosave.
+//
+// Its ToastCenter is the app's one (App.jsx's ToastProvider, above the
+// account): the host puts it in the environment of everything under it and
+// draws it, so every page's toasts and the composer's share one column, at
+// most three, and outlive a switch of account.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -79,6 +85,7 @@ public final class ComposerHost {
 /// The host's sheet, its toasts and its autosave flush, over `content`.
 struct ComposerHostModifier: ViewModifier {
   @Environment(\.virgaTheme) private var theme
+  @Environment(\.horizontalSizeClass) private var sizeClass
   @Environment(\.scenePhase) private var scenePhase
   @Environment(AppModel.self) private var app
   @Environment(SessionModel.self) private var session
@@ -97,8 +104,11 @@ struct ComposerHostModifier: ViewModifier {
             "images": .array([.object(["file": file.json, "alt": .string(draft.alt)])]),
           ]))
       })
+      .environment(host.toasts)
       .overlay {
-        ToastStack(center: host.toasts).padding(.bottom, theme.hasSidebar ? 0 : theme.tabbarH)
+        // Over a phone's tab bar; the shell's sidebar needs a regular width
+        // as well, as ShellView's does.
+        ToastStack(center: host.toasts).padding(.bottom, theme.hasSidebar && sizeClass != .compact ? 0 : theme.tabbarH)
       }
       .sheet(isPresented: sheetBinding) {
         if let controller = host.controller {

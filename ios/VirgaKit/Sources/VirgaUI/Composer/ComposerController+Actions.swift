@@ -563,7 +563,8 @@ extension ComposerController {
     let did = s.asDid
     _ = try? PostingEvents.emitPostsChanged(did, added: result.written)
     let posted = ComposerSubmit.postedToast(account: accountJSON(did), did: did, root: result.root)
-    toasts.push(posted.text, seconds: 9)
+    let link = posted.href.flatMap { URL(string: $0) }.map { ToastLink("View it on Bluesky", url: $0) }
+    toasts.push(posted.text, seconds: 9, link: link)
     for warning in result.warnings {
       if let text = warning["message"]?.stringValue { toasts.push(text, seconds: 7) }
     }

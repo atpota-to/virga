@@ -98,6 +98,18 @@ public struct PageLoading: View {
 
 // MARK: - Toasts
 
+/// A link at the end of a toast's words (the post that just went out, "View
+/// it on Bluesky"): the toast's one thing to press.
+public struct ToastLink: Equatable, Sendable {
+  public var label: String
+  public var url: URL
+
+  public init(_ label: String, url: URL) {
+    self.label = label
+    self.url = url
+  }
+}
+
 /// `ToastProvider`: at most three at once, each gone after a few seconds.
 @MainActor
 @Observable
@@ -106,6 +118,7 @@ public final class ToastCenter {
     public var id: Int
     public var text: String
     public var danger: Bool
+    public var link: ToastLink?
   }
 
   public private(set) var toasts: [Toast] = []
@@ -113,13 +126,14 @@ public final class ToastCenter {
 
   public init() {}
 
-  /// `toast(text, { tone })`.
-  public func push(_ text: String, danger: Bool = false, seconds: Double = Measure.Toast.seconds) {
+  /// `toast(text, { tone })`; `link` follows the words, as the web's toast
+  /// can carry a link of its own.
+  public func push(_ text: String, danger: Bool = false, seconds: Double = Measure.Toast.seconds, link: ToastLink? = nil) {
     next += 1
-    let toast = Toast(id: next, text: text, danger: danger)
+    let toast = Toast(id: next, text: text, danger: danger, link: link)
     toasts = Array(toasts.suffix(2)) + [toast]
-    // role="status" aria-live="polite": VoiceOver reads it out.
-    UIAccessibility.post(notification: .announcement, argument: text)
+    // role="status" aria-live="polite": VoiceOver reads it out, its link's words too.
+    UIAccessibility.post(notification: .announcement, argument: link.map { "\(text) \($0.label)" } ?? text)
     let id = toast.id
     Task { @MainActor [weak self] in
       try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
@@ -141,15 +155,19 @@ public struct ToastStack: View {
   public var body: some View {
     VStack(alignment: theme.hasSidebar ? .trailing : .center, spacing: Measure.Toast.gap) {
       ForEach(center.toasts) { toast in
-        Text(toast.text)
+        let ink = toast.danger ? Measure.Toast.dangerInk.color : theme.onBtn
+        ToastWords(toast: toast)
           .virgaText(.textBase)
-          .foregroundStyle(toast.danger ? Measure.Toast.dangerInk.color : theme.onBtn)
+          .foregroundStyle(ink)
+          .tint(ink)
           .padding(Measure.Toast.padding)
           .frame(maxWidth: theme.hasSidebar ? Measure.Toast.maxWidth : .infinity, alignment: .leading)
           .background(
             RoundedRectangle(cornerRadius: theme.radiusLg).fill(toast.danger ? Measure.Toast.dangerFill.color : theme.btn)
           )
           .virgaShadow(theme.shadow(theme.tokens.shadowLg))
+          // The stack never blocks the page; a toast's link still takes a press.
+          .allowsHitTesting(toast.link != nil)
           // `toast-in`: in from 6 points down as it fades in.
           .transition(
             AnyTransition.asymmetric(
@@ -159,15 +177,41 @@ public struct ToastStack: View {
     }
     .padding(theme.hasSidebar ? Measure.Toast.inset : Measure.Toast.phoneInset)
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: theme.hasSidebar ? .bottomTrailing : .bottom)
-    .allowsHitTesting(false)
     .animation(theme.motion.sheet, value: center.toasts)
     .accessibilityElement(children: .contain)
+  }
+}
+
+/// A toast's words, and its link after them: `.toast a { color: inherit;
+/// font-weight: 600 }`, underlined as a link is.
+struct ToastWords: View {
+  @Environment(\.virgaTheme) private var theme
+  let toast: ToastCenter.Toast
+
+  var body: some View {
+    if let link = toast.link {
+      Text(attributed(link))
+    } else {
+      Text(toast.text)
+    }
+  }
+
+  private func attributed(_ link: ToastLink) -> AttributedString {
+    var words = AttributedString("\(toast.text) ")
+    var linked = AttributedString(link.label)
+    linked.link = link.url
+    linked.underlineStyle = Text.LineStyle.single
+    linked.font = theme.font(.textBase, weight: Measure.Toast.linkWeight)
+    words.append(linked)
+    return words
   }
 }
 
 extension Measure.Toast {
   /// `@keyframes toast-in { from { opacity: 0; transform: translateY(6px) } }`
   static let rise: CGFloat = 6
+  /// `.toast a { font-weight: 600 }`
+  static let linkWeight = VirgaWeight.semibold
 }
 
 #Preview("Brand") {
