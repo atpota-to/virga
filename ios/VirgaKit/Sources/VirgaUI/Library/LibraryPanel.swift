@@ -536,7 +536,9 @@ struct LibraryPanel: View {
       HStack(alignment: .center, spacing: 0) {
         if !listHint.isEmpty { hint.fixedSize() }
         Spacer(minLength: LibraryMeasure.headColumnGap)
-        listControl
+        // Offered its whole width before the Spacer, so the order's keys
+        // don't scroll while there's room.
+        listControl.layoutPriority(1)
       }
       VStack(alignment: .leading, spacing: LibraryMeasure.headRowGap) {
         if !listHint.isEmpty { hint.fixedSize(horizontal: false, vertical: true) }

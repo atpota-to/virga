@@ -94,6 +94,8 @@ struct AdviserReadSheet: View {
           }
           VStack(alignment: .trailing, spacing: Measure.Dialog.actionsGap) { choices(actions) }
         }
+        // Offered the whole foot before the dialog's Spacer takes the rest.
+        .layoutPriority(1)
       }
     }
   }
