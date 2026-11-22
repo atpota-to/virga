@@ -1,4 +1,5 @@
 // Ports src/styles/controls.css (.table, .table-scroll)
+// Ports src/charts/charts.css (.an-tableview .table, .an-tableview-scroll)
 //
 // A table (every chart's Show as table): no sides, its first and last
 // columns on the section's own edges; an ink rule under the head (muted,

@@ -1,12 +1,15 @@
-// Ports src/styles/controls.css (.card, .card-head, .card-title, .card-sub, .card--flush, .card-caption, .card-foot, .row-actions, .list-toolbar)
+// Ports src/styles/controls.css (.card, .card-head, .card-title, .card-sub, .card--flush, .card-caption, .card-foot, .row-actions)
 //
 // A section (`.card`, though it has no box) is a heading and what is under
 // it. The heading is a title (--text-md, 600) with an optional line under it
 // (--muted, small, held to --measure), and at the right at most one thing (a
 // more link, one or two link actions, a small Segmented, a few icon tools),
-// 16 points to what follows. On a phone the thing at the right stays on the
+// 16 points to what follows; the title and its line share a column, the
+// thing at the right going under them only when that column would be
+// narrower than 16rem. On a phone the thing at the right stays on the
 // title's line and the line under the title runs the full width beneath
-// both. A section that is a list or a table (`flush`) has a rule in ink
+// both; a small Segmented goes on a row of its own under that line. A
+// section that is a list or a table (`flush`) has a rule in ink
 // under its heading, which is the top of its first row. A caption sits 12
 // under it; under a list, its foot ("Show 10 more" first, "12 of 64" at the
 // right).
