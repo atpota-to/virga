@@ -214,11 +214,12 @@
       "synced": "35d71f3a93a7"
     },
     "src/posting/ui/AltTextDialog.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AltTextDialog.swift",
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerDialogs.swift"
       ],
-      "note": "The writer's part: the image, its description and the count. Describing and revising it for the writer needs the adviser's AI service (aiService.js, altTextModel.js, altTextFollowUp.js), not ported; the web shows no Generate button without a server requester either. ALT_TEXT_MAX_GRAPHEMES is written here until altTextModel.js's port.",
+      "note": "With a requester that can use AI (the posting account's backendFor, canUseAi), AltTextDialog: the image, What kind of image is it? (optional) and Describe it for me before a first description, the description with its count (altTextCount, · too long), Undo of the last answer, the busy line (Describing the image…, revisingLine…), the monthly limit and the failures, Revise it (rankQuickNotes' notes, It’s a…, the note, Revise), the usage line and what describing sends, and Cancel and Save (⌘↩). Over AIService.generateAltTextForFile with the composer's prepared file, AltTextModel and AltTextFollowUp. Without a requester, the composer's own DescribeDialog (the writer's part).",
       "synced": "238c2db53cce"
     },
     "src/posting/ui/ComposerDefaults.jsx": {

@@ -409,12 +409,19 @@ struct ComposerDialogView: View {
       if let post = controller.state.posts.first(where: { $0.id.jsEquals(postId) }),
         let image = post.images.first(where: { $0.id.jsEquals(imageId) })
       {
-        DescribeDialog.altText(
-          image: image,
-          onSave: { alt in
-            let index = controller.indexOfPost(postId)
-            if index >= 0 { controller.dispatch(.updateImage(index: index, id: imageId, patch: ["alt": .string(alt)])) }
-          }, onClose: close)
+        let save = { (alt: String) in
+          let index = controller.indexOfPost(postId)
+          if index >= 0 { controller.dispatch(.updateImage(index: index, id: imageId, patch: ["alt": .string(alt)])) }
+        }
+        // ADVISER: with a requester that can use AI, the dialog that can
+        // describe and revise (Adviser/AltTextDialog.swift).
+        if controller.caps.canUseAi, let requester = controller.session.backendFor(controller.asDid) {
+          AltTextDialog(
+            image: image, requester: requester, did: controller.asDid, context: post.text, store: controller.store,
+            onSave: save, onClose: close)
+        } else {
+          DescribeDialog.altText(image: image, onSave: save, onClose: close)
+        }
       }
     case .videoAlt(let postId):
       let post = controller.state.posts.first { $0.id.jsEquals(postId) }
