@@ -1,20 +1,24 @@
 # Where the iOS port stands, and what's left
 
-Last updated 2026-11-21. Run `node ios/parity/sync.mjs status` for the live
+Last updated 2026-11-22. Run `node ios/parity/sync.mjs status` for the live
 count; ios/parity/modules/*.json say file by file.
 
 ## In one paragraph
 
-The foundation is in and green everywhere it can be checked. The harness that
-ties the iOS app to the web app works: fixtures written by the web code, a map
-of every web file, a drift report, and three CI jobs. On top of it, 67 of the
-web app's 306 source files are ported and held to the web code's own output
-(about 34,500 parity cases), and 13 more are partly ported. Every Swift test
-passes on Linux and on an iOS Simulator (CI's `iOS app` job), and the app
-target builds, launches and passes its own tests. What remains is most of
-the posting side, the archive, and all the SwiftUI screens. The only red check
-on the pull request, `Parity with the web app`, is the module map refusing
-226 web files still marked `pending`. That is by design, and it goes green
+The logic is most of the way there and the SwiftUI layer has begun. 120 of
+the web app's 306 source files are ported and held to the web code's own
+output (about 51,500 parity cases in 127 fixtures), and 32 more are partly
+ported. Every Swift test passes on Linux and on an iOS Simulator (CI's
+`iOS app` job, which also builds the app and runs its UI tests on an iPhone
+and an iPad and keeps their screenshots). What remains of the logic is the
+posting side (the composer, publishing and drafts, scheduling, the adviser,
+the library) and the rest of the demo's server. The SwiftUI layer has its
+foundation (the theme, the controls, the shell for a phone and for an iPad,
+sign-in, the agreement and legal pages, accounts, settings, the first build
+and the sync's places, the command palette); the dashboards, reports,
+tools, posting and Defense screens are still to come. The only red check on
+the pull request, `Parity with the web app`, is the module map refusing the
+154 web files still marked `pending`. That is by design, and it goes green
 when the port is complete.
 
 ## Done
@@ -22,51 +26,44 @@ when the port is complete.
 | Domain | Swift target | State | Notes |
 | --- | --- | --- | --- |
 | core | VirgaCore | ported, audited | locale and exact Intl-style formatting, JS dates (V8's parser), URIs, JSON.parse, preferences, the sky, routes' paths, lexicon models for every record and view, identifiers, storage protocols, design tokens |
+| theme | VirgaCore/Theme | ported, audited | the tokens from the CSS and a resolver, the kit's measures; `ios/DESIGN.md` for the screens, corrected by the audit |
 | network | VirgaNetwork | ported, audited | HTTP, XRPC, signed-in calls through Virga's server, `VirgaBackend`, the API surface registry, Constellation, PLC, PDS resolution, blobs |
 | repo | VirgaRepo | ported, audited | SHA-256, CIDs, DAG-CBOR, CAR files, MST walking, record CIDs |
+| session | VirgaSession | ported, audited | accounts, scopes, health, the Terms and their agreement, sign-in a step at a time, the session controller and SessionModel (useAtprotoSession) |
+| archive | VirgaArchive | ported, audited | the store over FileStore, the first build and later syncs, the analytics, periods, chart formats, follower log, sync progress, exports, ArchiveModel (useAnalyticsArchive) |
 | posting-text | VirgaPosting | ported, audited | facets, links, mentions, hashtags, thread splitting, gates, embeds, compose intents, the posting events bus (mentions' default fetch still to be wired) |
 | timers | VirgaPosting | ported, audited | the timer rule model and every sentence in five locales and seven zones, the lifespan editor's model; the server calls wait behind `TimerRequester` |
-| insights (tables) | VirgaInsights | ported, audited | routes, the dashboard catalog and layouts, registries, settings sections, the command palette, lucide → SF Symbol mapping |
+| templates | VirgaPosting | ported, audited | postTemplates, templateUsage, editorDrafts, templateService, TemplatesModel (useTemplates), the template editor's model |
+| insights | VirgaInsights | ported, audited | routes, the dashboard catalog and layouts, registries, settings sections, the command palette's commands, lucide → SF Symbol mapping; the reports' models, chart notes and follower milestones, the share card's spec and drawing, the Interaction lookup's model |
 | defense | VirgaDefense | ported, audited | bands, scoring, canary candidates, the radar's layout, the moderator's commands, plans, history, limits; harvest, scan, veto, the service calls, the page model, DefenseAccountModel and DefenseListsModel |
-| session | VirgaSession | ported, audited | accounts, scopes, health, the Terms and their agreement, sign-in a step at a time, the session controller and SessionModel (useAtprotoSession); the app still has to hand it a WebAuthenticator, the archive's reset and a FileStore delete (notes/session.md) |
-| theme | VirgaCore/Theme | ported, audited | the tokens from the CSS and a resolver, the kit's measures; `ios/DESIGN.md` for the screens, corrected by the audit |
-| archive | VirgaArchive | ported, audited | the store over FileStore, the first build and later syncs, the analytics, periods, chart formats, follower log, sync progress, exports, ArchiveModel (useAnalyticsArchive) |
-| demo world | VirgaDemo | ported, audited | the web harness's made-up accounts, crowd, repo, views, CAR builder and card images, for previews, demo mode and UI tests |
+| demo world | VirgaDemo | ported, audited | the web harness's made-up accounts, crowd, repo, views, CAR builder and card images; the fake agent, the network router, the fake server's session, terms and proxy routes, and DemoSession, so demo mode runs the app's real session and archive |
+| the SwiftUI foundation | VirgaUI | built, checked by CI (not yet audited) | the theme in SwiftUI with Instrument Sans, the controls, the phone's shell (app bar, tab bar) and the iPad's (Virga's own sidebar on the sky), the app's states, sign-in through ASWebAuthenticationSession, the agreement and legal pages, accounts and settings, the archive in the app (first build, sync status, Settings > Data with exports), the period picker, the command palette, the app's stores (UserDefaults, Application Support, the Keychain), demo mode, UI tests with screenshots |
 
 Per-domain notes (API, gaps, deliberate differences): `ios/porting/notes/`.
 
 ## Left to do, in order
 
-Each step is a port and then an independent audit (see ios/porting/README.md).
+Each logic step is a port and then an independent audit (see
+ios/porting/README.md); the briefs are in `ios/porting/port-wave.workflow.js`.
 The order follows the dependencies between the web modules.
 
-1. ~~**Finish what was cut off.**~~ Done on 2026-11-21: session finished and
-   audited, theme audited.
-
-   The briefs are in `ios/porting/port-wave.workflow.js`; the last arguments
-   used are described in ios/porting/README.md.
-2. ~~**Archive**~~ Done on 2026-11-21 (notes/archive.md).
-3. **Composer** (VirgaPosting):
+1. **Tidy-ups the 2026-11-21 merges left:**
+   - Two ports of JavaScript's `localeCompare` grew apart in parallel: VirgaInsights' `Support/JSCollation.swift` (a table-driven ICU root, audited hard) and VirgaPosting's `Support/LocaleCompare.swift` (Foundation's ICU with a trailing tab). Move one into VirgaCore, with the `sensitivity: 'base'` mode templates need, and have both domains' fixtures pass on it.
+   - Add VirgaRepo to VirgaInsights' dependencies so ReportArchive can offer `atmosphere` (notes/insights.md).
+   - Wire DemoSession into VirgaUI's demo mode in place of its stub transport (notes/demo-world.md, the last section, says how), so the UI tests and screenshots show a built archive.
+2. **Composer** (VirgaPosting):
    - Port `composerModel.js`, `src/posting/composer/*.js`, `autosave.js`, `settings.js`, `adviser/setup.js`, `pendingCompose.js`, `postingQueue.js`, `publishActions.js`, `repeat.js`, `images.js` and `video.js`.
-   - Also wire the seams earlier waves left: `VirgaBackend` → timers' `TimerRequester`, and Mentions' default fetch → VirgaNetwork.
-4. ~~**Rest of Defense**~~ Done on 2026-11-21 (notes/defense.md, its last section).
-5. **Templates**: `src/posting/templates/*.js`, `library/templateEditorModel.js`.
-6. **Rest of insights** (needs the archive): `reports/models.js`, `annotations.js`, `useAnnotations.js`, `share/shareSpec.js`, `share/chartImage.js` (layout maths), `tools/interactionModel.js`.
-7. **Publishing and drafts** (needs the composer): `publish.js`, `publishRecord.js`, `linkCard.js`, `drafts/*.js`.
-8. **Scheduling, adviser, library** (need 3, 5 and 7): `src/posting/schedule/*` (the rest), `pages/scheduleModel.js`, `hubModel.js`, `postedModel.js`, `draftActions.js`; `src/posting/adviser/*`, `ui/postPreview.js`, `ui/backendAccess.js`; `src/posting/library/*`.
-9. **The rest of VirgaDemo**:
-   - Port `fakeXrpc.js`, `fakeNetwork.js`, `fakeServer.js` and `fakeDefense.js` behind `MockTransport`, so the whole app runs in demo mode.
-   - Port `fakeSession.jsx`, so the UI tests can drive it.
-10. **The SwiftUI layer** (VirgaUI, wave 4; 136 `.jsx` and stylesheet files). Build it in this order:
-    - The theme in SwiftUI, the components, the shell (tab bar on a phone, sidebar on an iPad), sign-in with `ASWebAuthenticationSession`, the agreement screen, the legal pages, accounts, settings.
-    - Then dashboards and reports with Swift Charts, sharing a chart with `ImageRenderer`, tools.
-    - Then the composer and posting pages.
-    - Then Defense and the radar.
-
-    `ios/DESIGN.md` is the guide. SwiftUI can't be compiled on Linux, so this
-    wave is checked by CI's `iOS app` job, and its UI tests run against the
-    demo world.
-11. **Final review**: an adversarial review of every domain against the web code, a completeness check, and a pass over `npm run parity:drift`. Then the module map has no `pending` left and `Parity with the web app` goes green.
+   - Also wire the seams earlier waves left: `VirgaBackend` → timers' `TimerRequester`, Mentions' default fetch → VirgaNetwork, and ArchiveEnvironment.postsChanged → the posting events bus.
+3. **Publishing and drafts** (needs the composer): `publish.js`, `publishRecord.js`, `linkCard.js`, `drafts/*.js`.
+4. **Scheduling, adviser, library** (need 2 and 3): `src/posting/schedule/*` (the rest), `pages/scheduleModel.js`, `hubModel.js`, `postedModel.js`, `draftActions.js`; `src/posting/adviser/*`, `ui/postPreview.js`, `ui/backendAccess.js`; `src/posting/library/*` (it builds on the templates).
+5. **The rest of VirgaDemo**: the rest of `fakeServer.js` (scheduling, timers, limits, the AI routes, the workers, the seeded rows) and `fakeDefense.js`, so every part of the app runs in demo mode.
+6. **The SwiftUI layer, continued** (VirgaUI; `ios/DESIGN.md` is the guide, CI's `iOS app` job the compiler, its screenshots the eyes):
+   - Dashboards and reports with Swift Charts, sharing a chart with `ImageRenderer` (drawShareImage over a ShareCanvas), the tools.
+   - Then the composer and the posting pages, once 2 to 4 are in.
+   - Then Defense and the radar.
+   - The live sky (src/hillside/*, three.js on the web) last, if at all: the wash stands in for it.
+   - An audit of the whole layer against the web's components and DESIGN.md.
+7. **Final review**: an adversarial review of every domain against the web code, a completeness check, and a pass over `npm run parity:drift`. Then the module map has no `pending` left and `Parity with the web app` goes green.
 
 ## Things a future session should know
 
@@ -89,8 +86,8 @@ The order follows the dependencies between the web modules.
   up.
 - **Fixtures** live in the repository (about 22 MB). Keep new ones under
   about 1 MB each.
-- **Bugs.** `ios/porting/WEB-BUGS.md` lists 56 bugs in the web app the
-  porters found and reproduced rather than fixed. Eight are visible to people.
+- **Bugs.** `ios/porting/WEB-BUGS.md` lists 72 bugs in the web app the
+  porters found and reproduced rather than fixed. Eleven are visible to people.
 - **Harness limits.** The fixture writer's `toJSON` in
   `ios/parity/cases/_helpers.js` keeps a `__proto__` key since 2026-11-21
   (no fixture changed). It is still recursive, so a value nested about

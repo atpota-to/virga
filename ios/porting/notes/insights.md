@@ -4,7 +4,7 @@ A snapshot of what the agents that ported and audited this domain handed on (Nov
 The code and ios/parity/modules/*.json are the truth; read this for orientation, the API
 map, and the known gaps and deliberate differences.
 
-Status: ported, audited.
+Status: ported, audited. The tables in an earlier wave; the reports' models, chart notes, sharing and the Interaction lookup on 2026-11-21 (the section at the end, which supersedes this file's remarks that call them pending).
 Parity cases at port time: 3210, plus 1802 added by the audit.
 Tests at the time: `swift test` on Linux: 212 tests pass. VirgaInsightsTests has 79 tests in 18 suites, about 12s. VirgaCoreTests has 126 in 25, plus 7 one-test module checks. `PARITY_ALLOW_PENDING=1 npx vitest run ios/parity` passes 35 tests in 3 files. `npx eslint ios` is clean and prettier is clean on the generators. Mutation checks: dropping spacing marks from fold, NFC-composing fold's output, and removing only the first card with a repeated id each fail the suite now; the old fixtures passed all three. The new canonical-equivalence and Kelvin cases failed 20 checks before the fix. Committed as 88b4b1e on i
 
@@ -142,3 +142,164 @@ TEST SUPPORT (Tests/VirgaInsightsTests/)
 - low (open) src/posting/routes.js parsePostingRoute: Web bug, confirmed by running the web code; I didn't fix it, as instructed. POSTING_PAGE_BY_KEY is a plain object, so parseRoute('/posting/constructor') gives {section:'posting', page:'constructor', id:null}. PostingPage.jsx then finds PAGES['constructor'] (Object) instead of a page. The same goes for '__proto__', 'toString' and the like. Fix: Object.hasOwn. On purpose, the port returns missing for these (RoutesInheritedNames).
 - low (open) src/dashboards/layouts.js sanitizeLayout / resetDashboard / dashboardFromTemplate / addDashboard: Web bugs, confirmed. sanitizeLayout keeps template 'constructor' and card type 'toString' (plain-object lookups), and resetDashboard on that dashboard throws "Cannot read properties of undefined (reading 'map')". addDashboard({template:'nope'}) stores template 'nope', and resetDashboard on it throws "Cannot read properties of undefined (reading 'widgets')". On purpose, the port drops these names and resets to the overview's cards (LayoutsBehaviour).
 - low (fixed) all insights files: Verified by side-by-side reading and fixtures, no discrepancy found: every export of the 12 files (plus ACCESS) is ported; UTF-16 indexing in slice/indexOf/startsWith/scattered gaps; ASCII-only /i folding in isMacPlatform; JS trim set; Final_Sigma and İ lower-casing; NFD and \p{M}/\p{L}\p{N} splitting; the ranking order is a total order, so sort stability doesn't matter; newId call order and counter wrap; default parameters; every word of copy is compared by whole-table fixtures with strictNulls; SF Symbols all exist on iOS 17.
+
+## The rest of insights (2026-11-21)
+
+Parity cases at port time: 5322, plus 1827 added by the audit.
+Tests at the time: `swift test` (whole package) passes on Linux:
+- VirgaInsightsTests: 152 tests in 29 suites, about 13s (one new test, ChartImageParity/drawShareImagePartly).
+- Other targets: 79, 57, 190, 99, 69, 77, 176 and 126 tests, all passing.
+
+Other checks:
+- `PARITY_ALLOW_PENDING=1 npx vitest run ios/parity`: 128 tests in 4 files pass.
+- `npx eslint ios` is clean. Prettier is clean on insights.collation.js, insights.chartImage.js and generate-collation-table.mjs.
+- `npm run parity:drift`: no drift.
+
+Insights parity numbers are now compared exactly, and all fixtures pass.
+
+Mutation checks:
+- The previous JSCollation fails 162 of the 4,823 insights.collation cases.
+- The new code passes them all, plus 100,000 fresh random pairs from Node.
+
+Commits on ios/w5-b:
+- 32d4cc3 iOS insights audit: localeCompare's contractions and compatibility cases
+- e0f3d56 iOS insights audit: the share picture stops where the web's drawing throws
+
+### API for the code that builds on it
+
+Everything below is in VirgaInsights (import VirgaInsights). Paths are under ios/VirgaKit/Sources/VirgaInsights/.
+
+INPUTS (Reports/ReportArchive.swift)
+- struct ReportArchive(did:handle:nowMs:data: ArchiveData), and `@MainActor init(_ model: ArchiveModel)`.
+  - Pass-through accessors: posts, followers, following, blocks, inbound, outbound, meta, rev, followRev.
+  - No `atmosphere` accessor: use archive.data.atmosphere (VirgaRepo's type).
+- struct ReportFormats(locale:weekStart:timeZone:twelveHour:), with `.active` (AppLocale's) and static twelveHour(_ locale).
+- Every model, mark and share function takes `formats: ReportFormats = .active`.
+
+REPORT MODELS (enum ReportModels; Reports/ReportModels*.swift)
+- Every model first replaces nowMs with Periods.periodEnd(period, nowMs). Each takes (_ archive, _ period: AnalyticsPeriod, _ nowMs: Double, …, formats:).
+- followersModel(…, unit: AnalyticsUnit?) -> FollowersReport
+- blocksModel(…, unit:) -> BlocksReport
+- postsModel(…, unit:) -> PostsReport
+- engagementModel(…, kind: String = "all", unit:, rateUnit:) -> EngagementReport
+- givenModel(…, kind:, unit:) -> GivenReport
+- peopleModel(…, kind:) -> PeopleReport
+- followBackModel(…) -> [TopActor]
+- atmosphereModel(…, unit:) -> AtmosphereReport?
+- bestTimeModel(…, block: Int = 2) -> BestTimeReport. The block is clamped to ≥ 1.
+- contentModel(…) -> ContentReport
+- relationSets(_ archive) -> RelationSets, with isFollower, isFollowed and followerCard.
+- listsModel(_:) -> [ListInfo]; followerLogModel(_:) -> FollowerLogReport.
+- Pure functions:
+  - median([Double]) -> Double?
+  - hourRange(_ col, _ block = 2, twelveHour:)
+  - hourColumns(_ block, twelveHour:) -> [HourColumn]
+  - weekdayOrder(_ weekStart?)
+  - formatOf(PostRow), contentReady(ReportArchive)
+  - contentStandout([ContentGroup], Double?, String?) -> ContentStandout?
+- Constants: weekdays, weekdaysLong, bestTimeMinPosts, contentMinPosts, contentFormats, lengthBands, threadPlaces ([ContentDef]), givenNoun.
+- Cache: public cached(_ archive, _ name, _ period?, _ options: [(String, JSONValue)], formats:, compute) -> T.
+  - It uses the web's key plus the zone and clock; cacheLimit is 80; clearCache().
+  - There is also an internal Cache class for tests.
+- Result types are in ReportModels+Types.swift: public fields named as the web's, and `json: JSONValue`, the web's object with NaN kept.
+  - DatedFollower {row, atMs}; PostRow with atMs set on dated posts.
+  - Content results: ContentGroup, ContentUse {name, tally} (writes tag/host), LangCount, AltCoverage.
+
+JS SUPPORT
+- JSCollation.localeCompare(a, b) -> Int is `a.localeCompare(b)` with no locale, in ICU root order (Support/JSCollation.swift; its table is JSCollationTable.swift).
+  - It handles ICU's contractions (й, أ إ آ ؤ ئ, the two-part Indic vowel signs), in a row or across an unblocked mark.
+  - Compatibility forms take their case from the table's `@slot`, on a tertiary scale of 2t+1.
+  - The table is generated by `node ios/scripts/generate-collation-table.mjs`; rerun it when Node's ICU changes.
+  - VirgaPosting's templates need it too; it could move to VirgaCore at the merge.
+- JSMath (internal): max, min, less (code-unit `<`), or (JS `||` over comparator terms).
+
+ANNOTATIONS (Reports/Annotations.swift)
+- Types: Annotation {id, day, label}; ChartMark {t, label, kind: .note|.milestone, id?, count?}; SeriesMark {i, t, kind, items}.
+- enum Annotations, constants: annotationLabelMax (80), annotationsMax (200), annotationsKey(did) ("virga:annotations:<did>").
+- Notes:
+  - cleanAnnotations(JSONValue?) and cleanAnnotations([Annotation]).
+  - readAnnotations(did, store:) and writeAnnotations(did, list, store:), which writes byte-exact JSON.stringify; serialize.
+  - newId(now:), addAnnotation(list, day:, label:, id:), removeAnnotation.
+- Milestones: milestoneSteps(Double) -> [Double]; followerMilestones([FollowerRow]?, locale:) -> [ChartMark].
+- On a chart:
+  - noteMark(_:).
+  - marksOnSeries(_ series: [Double]|[SeriesPoint]|[RatePoint], unit, marks, weekStart:) -> [SeriesMark].
+  - markText(mark, unit, locale:), todayKey(now).
+  - chartMarks(notes:archive:series:unit:milestones:formats:).
+- @MainActor @Observable AnnotationsModel(did:store:changes: = .shared, timeZone:, newId:): list, add(day, label), remove(id), reload(), chartMarks(archive, series, unit, milestones:).
+- @MainActor AnnotationsChanges (.shared) stands in for the web's window event. Make one model per account.
+
+INTERACTION LOOKUP (enum InteractionModel; Tools/InteractionModel*.swift)
+- interactionModel(_ archive, _ who, nowMs: Double? = nil, formats:) -> Interaction.
+  - Fields: did, isSelf, relationship, totals/first/latest as BothWays<…> (.in/.out), timeline, coverage, engagedPosts, yourPosts, events: [InteractionEvent].
+- interactionIndex(_:) -> InteractionIndex {order, byDid, ranked, count(did)}.
+- peopleDirectory(_:cardOf: (String) -> ActorCard?) -> [DirectoryPerson]; matchPeople(_:_:limit:).
+- filterEvents(_:direction:kind:); eventPhrase(_ ev) or eventPhrase(dir:kind:); eventsCsvRows(_:did:handle:) -> [[String]].
+- kindsLine(entries:byCount:locale:) or kindsLine(_ [String: Int]?); keepsMentions; isDid.
+- parseActorInput -> ActorInput {kind: .did|.handle, value}; lookupHref(who, search).
+- Constants: lookupPath, lookupKinds, outboundKinds, kindLabel, kindNoun, directions.
+
+SHARE (Share/)
+- ShareSpec (enum):
+  - shareSpec(type, archive, period, nowMs, ShareOptions(kind:rows:title:notes:), formats:) -> ShareSpecification?
+  - canShare(type); shareAltText(spec, formats:); sharePostText(spec, period, formats:); altTextMax.
+  - ShareSpecification fields: kind (.series|.bars), title, subtitle, figure: ShareFigure?, series: [SharePoint {t, v?, total?, posts?}], unit, mode ("bars"|"line"), trend, zeroBase, format: ShareNumberFormat (.count|.rate, callable), marks, noun, ghost: Double?, rows: [ShareBarRow], measure. `json` gives the web's spec.
+- ChartImage (enum):
+  - Constants: shareWidth 1200, shareHeight 675, plot: ShareBox, fontFamily.
+  - readShareTheme(ResolvedTheme) -> ShareTheme (13 ThemeColors).
+  - seriesLayout(spec, box) -> SeriesLayout with x(i) and y(v); axisLabels(series, unit, locale:, timeZone:) -> [AxisLabel]; fitText(ctx, text, width).
+  - `@discardableResult drawShareImage(ctx: some ShareCanvas, spec, theme, formats:) -> Bool`. It is CHANGED by the audit: it returns false where the web's drawing throws part way (a line with no buckets, which shareSpec never gives), after the same calls and none after. Treat false as "the picture couldn't be made", as renderShareImage rejects.
+- protocol ShareCanvas: AnyObject.
+  - Properties: fillStyle/strokeStyle: ShareStyle (.color, .linearGradient(ShareGradient)), font: ShareFont {weight, size}, textAlign, textBaseline, lineWidth, lineCap, lineJoin, supportsLetterSpacing, letterSpacing.
+  - Methods: measureText, fillRect, fillText, save, restore, translate, scale, beginPath, moveTo, lineTo, arc (radians, clockwise, y-down), arcTo, rect, closePath, fill, stroke, clip, setLineDash.
+  - VirgaUI implements it over GraphicsContext and renders to PNG with ImageRenderer.
+
+TEST HELPERS (Tests/VirgaInsightsTests, internal)
+- InsightsTestSupport.swift: exactDiff is Parity.diff, then scalarDiff, then numberDiff (NEW: every double compared exactly).
+- ReportsTestSupport.swift:
+  - ReportFixtures.archives (insights.archives plus insights.interaction's own), data(json), archive(c).
+  - ParityCase.zone, formats, period, option, unitOption, compactOutput.
+  - recorded() (NaN and ±Infinity become null, deeply); expectReport().
+  - All fixtures load from VIRGA_PARITY_DIR when it is set, which is handy for fuzzing over a scratch directory.
+- ShareTestSupport.swift: shareSpecification(json), shareTheme(json), canonical(ThemeColor) ("rgba(r,g,b,a)"), RecordingCanvas (measures 0.55·size per UTF-16 unit plus the spacing).
+- ChartImageParityTests has drawShareImagePartly (NEW).
+- Generator helpers:
+  - ios/parity/cases/_reports.js: worldArchive, harnessArchives, edgeArchives, emptyArchive, archiveCases, contexts(base), compact, modelCases, MODELS, periodsAt, preset, roundTrip, NOW, EDGE_NOW.
+  - ios/parity/cases/_share.js: shareThemeFor, canonical, recordingContext, logRecord, measure.
+  - insights.collation.js: OWN_LETTERS groups (all pairs) and OWN_LETTER_TEXT seeded pairs.
+
+### Known gaps and deliberate differences
+
+- src/share/chartImage.js stays partial: renderShareImage is VirgaUI's. It needs a ShareCanvas over GraphicsContext, CoreText measuring in Instrument Sans and ImageRenderer to PNG (virga-chart.png). VirgaUI should treat drawShareImage returning false as a picture that couldn't be made.
+- src/shell/shortcuts.js stays partial: turning key presses and focus into KeyEvent/KeyTarget is VirgaUI's.
+- JSCollation remains a table-driven approximation of ICU root:
+- Scripts outside the table's ranges sort by code point after its letters, with Han last; this includes Tibetan and Balinese and so their contractions.
+- Discontiguous contraction matching handles two-part contractions only.
+- The case of a compatibility form's later parts is approximate: one step above the part's own case. This only matters between two such forms that tie up to that part.
+- Rerun ios/scripts/generate-collation-table.mjs when Node's ICU changes.
+- Cross-chain: JSCollation lives in VirgaInsights, but VirgaPosting's templates and library also use localeCompare, some with sensitivity: 'base'. It should move to VirgaCore at the merge, with a base-sensitivity mode.
+- The report models' cache keys on the zone and the clock as well as the web's key. Like the web, it keys on the archive's nowMs, not the one passed in.
+- Rows are VirgaArchive's typed rows, so a field of the wrong type reads as absent. For example, a numeric post `at` or follower `followedAt` reads as undated where the web keeps the number. PostRow.json also writes mentions [] and altCount 0 for current-shape rows; the web's shaper always writes both fields there anyway.
+- AtmosphereRow is VirgaRepo's type and VirgaInsights doesn't declare VirgaRepo as a dependency, so ReportArchive has no `atmosphere` accessor; use data.atmosphere. Adding VirgaRepo to VirgaInsights' dependencies in Package.swift at the merge would tidy this.
+- Node's URLSearchParams truncates non-ASCII text in a segment that mixes a valid escape with a malformed '%'. Browsers don't, and neither does Swift's JSURI. A fixture generated in Node can't hold the browser's answer for such input.
+- Deliberate differences, pinned by tests and noted in the map:
+- Object.prototype names are not share types, event phrases, counted kinds or list purposes.
+- A note's day must be a string.
+- A note label cut through an emoji keeps U+FFFD where the web keeps a lone surrogate.
+- An interaction event at a time outside Date's range gets at "" where the web throws.
+- The best-time block is a whole number of at least 1.
+- drawShareImage returns false where the web throws.
+
+### The audit
+
+- **medium**, src/reports/models.js contentModel (ranked tags/links, langs) and listsModel: String.prototype.localeCompare, ported as Support/JSCollation.swift: JSCollation (Swift's localeCompare, which breaks name ties for tags, links, languages and list names) took text apart canonically before weighing it. So letters that ICU weighs as letters of their own came out as their base letter plus an accent. Affected: Cyrillic й/Й (the letter after і and ї), the Arabic hamza letters أ إ آ ؤ ئ, and the two-part vowel signs of Bengali, Oriya, Tamil, Telugu, Kannada, Malayalam, Sinhala and Myanmar. Node puts "моим" before "мой" and "احمد" before "أحمد"; Swift gave the reverse. 363 of 20,000 random pairs in those scripts disagreed with Node. Fix: generate-collation-table.mjs now asks the collator which canonical decompositions are contractions (30 in the table's ranges) and weighs them like single code points. JSCollation puts their decompositions back together after NFD, either in a row or across an unblocked mark (UCA S2.1, e.g. the shadda in و + ّ + ٔ). 100,000 fresh random pairs, Latin through Hangul, now match Node with none differing.
+- **low**, src/reports/models.js (localeCompare ties), Support/JSCollation.swift + JSCollationTable.swift: In JSCollation, compatibility forms (ﬁ ﬀ ﬃ ĳ Ĳ ǅ ǆ ½) gave their parts a case heavier than every capital. ICU puts that case between a letter's small forms and its capitals, so Swift sorted ﬁ after FI and ﬀ after FF (Node: ﬁ < Fi < FI). 13 of 30,000 mixed-text pairs were wrong. Fix: the generator reads where each expansion's first part falls among its letter's cases (`@slot` in the table), on a tertiary scale of 2t+1 that leaves room between ranks. The later parts keep their own case one step up, so ǅ still sorts before Ǆ. Accented expansions (æ, ß) keep the heavier case, which is right for them.
+- **low**, src/share/chartImage.js drawShareImage/drawSeries: Swift's drawShareImage on a line-mode spec with no buckets read series[L.n - 1] with L.n = 0, which traps (crashes). The web throws a TypeError at the same point, after stroking the line, and renderShareImage rejects, so ShareDialog shows an error. shareSpec never returns such a spec, but ShareSpecification has a public init. Fix: drawShareImage now makes the web's calls up to that point and none after (it skips the foot, as the web's throw does), then returns false. The function is @discardableResult and returns true otherwise, so VirgaUI can refuse the picture as the web does. New fixture case drawShareImagePartly holds the web's 42 calls and its throw. empty-bars, which finishes on the web, is covered too.
+- **low**, ios/parity/modules/insights.json (src/reports/models.js, src/share/chartImage.js): The module map was missing deliberate differences. bestTimeModel and hourColumns clamp the block to a whole number of at least 1, where the web takes fractions (2.5 gives cols 10), throws RangeError for 0 in bestTimeModel (hourColumns(0) gives one label spanning Infinity), and returns cols -12 for a block of -2. BestTime.jsx only offers 1 to 4, so this is unreachable. Also, a post's `at` or a follower's `followedAt` written as a number reads as undated in the typed rows; the web's interactionModel and relationSets keep it. The sync never writes either. Both are now written in the models.js note, and the chartImage.js note describes drawShareImage's Bool.
+- **low**, ios/VirgaKit/Tests/VirgaInsightsTests/InsightsTestSupport.swift exactDiff/numberDiff: Test-harness hardening: insights' exactDiff used Parity.diff's relative tolerance of 1e-9 for numbers. It now also runs numberDiff, which compares every double exactly, as VirgaRepoTests does. All 151 existing insights tests already passed exactly, so the port's sums, medians and pixel positions are bit-for-bit the web's.
+- **low** (left as it is), src/tools/interactionModel.js lookupHref (new URLSearchParams(search)); Swift JSURI (VirgaCore): Node's URLSearchParams differs from browsers (WHATWG) when a query segment has a valid %XX escape, then a malformed %, then non-ASCII text. Node falls back to a byte-truncating unescape: "%3A%İ" serializes as "%3A%250=" (İ becomes '0'), U+3000 becomes %00 and U+00A0 becomes U+FFFD. Browsers, and VirgaCore's JSURI.parseSearchParams, decode the UTF-8 bytes. So Swift matches the browser the web app actually runs in, but a Node-generated fixture would disagree for such input. No fixture currently has it. This is a Node runtime quirk, not a web-app bug; I changed nothing.
+- **low**, src/reports/*.js, src/share/*.js, src/tools/interactionModel.js: Verified without finding any discrepancy, beyond the items above:
+- Read the web code side by side with the Swift for every export of models.js, annotations.js, useAnnotations.js, shareSpec.js, chartImage.js and interactionModel.js. Checked UTF-16 slicing, JS truthiness, `||` vs `??` defaults, stable sorts, Math.max/min with NaN and -0, Map insertion order, code-unit keys, the cache key and FIFO eviction at 80, and regex ports (DID, handle, profile link, at:// URI).
+- Fuzzed the report models, share specs and Interaction lookup with VIRGA_PARITY_DIR: 12 random archives × 3 seeds × every period and model in four zones. About 3,300 cases, all exact.
+- Fuzzed parseActorInput, isDid, matchPeople and cleanAnnotations on 8,500 random strings, all matching. lookupHref matched apart from the Node quirk above.
+- The map is honest: no drift, every header names its web file, and the partial entries (chartImage renderShareImage, shortcuts DOM input) are accurate.

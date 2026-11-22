@@ -87,6 +87,25 @@ visible to people: they are marked **visible**.
 - **visible** src/signin/identity.js normalizeSignInInput decodes a pasted bsky.app profile link before it checks whether the result is an address, so `https://bsky.app/profile/https%3A%2F%2Fevil.example` becomes `https://evil.example` and is read as a host address: a link that looks like a Bluesky profile starts a sign-in at another host. The card shown before leaving does name that host. Reproduced in Node (fixture session.signin).
 - src/session/sessionHealth.js createSessionChecker always waits CONFIRM_GAP_MS (2.5 s) after a definitive first answer, even with `rounds: 1`, so a browser session the library can't restore is reported as expired 2.5 s late, with no further probe in between.
 
+## Templates (src/posting/templates, src/posting/library/templateEditorModel.js)
+
+- **visible** src/posting/templates/postTemplates.js wordsOf/keywordMatches: the WORDS regex `/[\p{L}\p{N}](?:[\p{L}\p{N}']*[\p{L}\p{N}])?/gu` has no `\p{M}`, so a word splits at every combining mark: a keyword typed with a decomposed accent ('élise') matches the text 'e lise' and not 'élise', and Devanagari keywords split at their vowel signs.
+- **visible** src/posting/library/templateEditorModel.js editorHasChanges compares JSON.stringify text. TemplateEditor.jsx builds an attached record as `{uri, cid}`, but a record read back from the PDS arrives as `{cid, uri}`, so re-picking the same quoted post asks 'Discard your changes?'.
+- src/posting/templates/templateUsage.js sortTemplatesForShelf and templateService.js compareTemplates call `localeCompare(…, undefined, …)`, the browser's locale, not activeLocale() as the rest of the app does (the same pattern as slotLabel's).
+- src/posting/templates/templateUsage.js sanitize does `out[rkey] = …` on a plain object, so a stored `"__proto__"` entry becomes the counts object's prototype; recordTemplateUse('__proto__') counts on from it but never writes it back. templateService.js readCache/fetchAll has the same pattern.
+
+## Reports, sharing and tools (src/reports, src/share, src/tools)
+
+- **visible** src/reports/annotations.js cleanAnnotations cuts a label with `.slice(0, 80)` by UTF-16 unit, which can split an emoji: half a surrogate pair is stored and the note shows a replacement character.
+- src/share/shareSpec.js canShare/shareSpec: BUILDERS and SAME_AS are plain objects, so canShare('constructor') (and 'toString', '__proto__') is true, and shareSpec('constructor', archive, …) returns the archive itself spread as a spec. Card types come from the catalog, so this is unreachable in the app.
+- src/tools/interactionModel.js: plain-object lookups give eventPhrase({ dir: 'in', kind: 'toString' }) a function instead of '', and totalsOf concatenates strings for a kind named 'constructor'.
+- src/tools/interactionModel.js dated/eventsWith: dated() accepts any finite number as a time, but `new Date(atMs).toISOString()` throws RangeError outside Date's range, so one stored event with a numeric `at` such as 1e300 makes the whole lookup throw (the sync writes ISO strings).
+- src/reports/models.js cached: the key holds the locale and week start but not the time zone, so after a change of zone with a page open, buckets stay in the old zone until the archive's revision moves.
+
+## Virga's server (server/)
+
+- server/oauth/handlers/proxy.js forwardedQuery fills a plain `{}` and tests `key in params`, which also sees inherited keys: a query param named after an Object.prototype key (toString, constructor, valueOf) is forwarded as `[<function>, value]`, which JSON writes as `[null, value]`, and `__proto__=x` swaps the params object's prototype for an array.
+
 ## Stylesheets and components
 
 - **visible** src/styles/theme.css draws the high-contrast ink ring round the narrow tab bar's current-tab disc only under @media (max-width: 374px). Its own comment says the ring is for when the current tab is a disc with its name hidden. src/shell/shell.css hides the name and makes the disc from (max-width: 429px), and README says 'from 430px wide; narrower, it is a tinted disc'. So in high contrast, between 375 and 429 px the current tab is a pale disc with no ring and no word to underline, which is the case the rule was written to fix. The query should probably be (max-width: 429px). DESIGN.md tells the app to follow the stylesheet until this is settled.
@@ -100,3 +119,9 @@ visible to people: they are marked **visible**.
 - harness/views.js embedView throws a TypeError ('(embed.images || []).map is not a function', and the same for items) for a truthy images or items value that isn't an array. One such record in a world makes postView, authorFeed and searchPosts fail as a whole. placeholderImage (through hashOf) also throws 'text.charCodeAt is not a function' for a non-empty array `$link`.
 - harness/views.js: recordView, threadView and listView call postView or listView without passing `now`, so an embedded or threaded written post's live counts, and the date of a list someone else made, read Date.now() even when the caller gave its own `now`.
 - harness/views.js threadView doesn't check for cycles: a post whose reply parent is itself climbs the full 80 levels of the same parent.
+- harness/fakeXrpc.js applyWrites is not all-or-nothing for a write whose value is missing: the up-front checks pass, earlier writes land, then writeRecord throws 'A record is required'.
+- harness/fakeXrpc.js scopesFor runs before applyWrites' own validation, so a truthy non-array `writes` fails with a TypeError (a 500 through a proxy) instead of the method's 400.
+- harness/fakeXrpc.js getRecord's RecordNotFound message names the agent's own DID even when another repo was read.
+- harness/fakeXrpc.js looks methods up with `methods[nsid]` on a plain object, so handle('toString') answers "[object Undefined]" and handle('constructor', x) echoes x where MethodNotImplemented was meant.
+- harness/fakeXrpc.js updateDraft with no draft.draft answers success and wipes the stored draft's body; createBookmark with no uri stores `{uri: undefined}`.
+- harness/fakeNetwork.js Constellation: for a subject that is neither an account nor one of their lists, the fallback world is list[0] (Mira), so getManyToMany for an unknown DID answers Mira's lists.
