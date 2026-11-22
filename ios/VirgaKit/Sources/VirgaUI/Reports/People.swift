@@ -8,14 +8,14 @@
 // you" and a fact, a dot between them; in a list under 600 wide a row with
 // a fact leaves "follows you" out, and under 480 the handle too
 // (PersonList measures the list). Then the number at the right, the way to
-// your history with them (the Interaction lookup; not on a phone), and
-// Follow where the archive knows who you follow, its slot one width so the
-// column lines up. Names come from the archive's cards (wantActors fills
-// them in), else the follower list, else a card the caller remembers (the
-// unfollows log's). A post: its words (a link to it on Bluesky, two lines
-// at most), and a meta line of when (relative within a week), whether it
-// was a reply or a quote, and its counts by kind, the ones not counted
-// dimmed.
+// your history with them (the Interaction lookup; not on a phone, nor in
+// a dashboard card 400 wide or less), and Follow where the archive knows
+// who you follow, its slot one width so the column lines up. Names come
+// from the archive's cards (wantActors fills them in), else the follower
+// list, else a card the caller remembers (the unfollows log's). A post:
+// its words (a link to it on Bluesky, two lines at most), and a meta line
+// of when (relative within a week), whether it was a reply or a quote, and
+// its counts by kind, the ones not counted dimmed.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -103,6 +103,8 @@ struct PersonRow: View {
   @Environment(\.navigate) private var navigate
   @Environment(\.openURL) private var openURL
   @Environment(\.personListWidth) private var listWidth
+  /// The dashboard card the row is in, if it is in one (`@container widget`).
+  @Environment(\.widgetWidth) private var widgetWidth
   @Environment(ArchiveModel.self) private var model: ArchiveModel?
   let archive: ReportArchive
   let did: String
@@ -130,18 +132,19 @@ struct PersonRow: View {
     let followsYou = rel && sets.isFollower(did)
     let phone = theme.isPhone
     HStack(spacing: phone ? Measure.Dashboard.phonePersonGap : Measure.Dashboard.personGap) {
-      Avatar(src: face.avatar, name: face.displayName ?? face.handle ?? "?")
+      Avatar(src: face.avatar, name: Avatar.named(face.displayName, face.handle))
+      // `.person-main { line-height: 1.35 }`: each single line in its box.
       VStack(alignment: .leading, spacing: 0) {
         Button(name) { if let url = People.profileUrl(face.handle, did) { openURL(url) } }
           .buttonStyle(.plain)
-          .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Dashboard.personLineHeight)
+          .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Dashboard.personLineHeight, lineBox: true)
           .foregroundStyle(theme.ink)
           .lineLimit(1)
           .truncationMode(.tail)
           .accessibilityAddTraits(.isLink)
         if let line = metaLine(handle: handle, followsYou: followsYou) {
           Text(line)
-            .virgaText(.textSm, lineHeight: Measure.Dashboard.personLineHeight)
+            .virgaText(.textSm, lineHeight: Measure.Dashboard.personLineHeight, lineBox: true)
             .foregroundStyle(theme.muted)
             .lineLimit(1)
             .truncationMode(.tail)
@@ -154,8 +157,10 @@ struct PersonRow: View {
       if let value {
         Text(value).virgaText(.textBase, weight: VirgaWeight.semibold).foregroundStyle(theme.ink).fixedSize()
       }
-      // A phone gives the name the room: the way to your history goes.
-      if !phone, !did.jsEquals(archive.did) {
+      // A phone gives the name the room: the way to your history goes; so
+      // does a dashboard card 400 wide or less, room for a name, a count
+      // and Follow.
+      if !phone, (widgetWidth ?? .infinity) > Measure.Dashboard.personHistoryHiddenAt, !did.jsEquals(archive.did) {
         Button {
           navigate(InteractionModel.lookupHref(did))
         } label: {
@@ -187,7 +192,9 @@ struct PersonRow: View {
   }
 
   /// FollowButton: the kit's small outline, Following the word alone; one
-  /// slot wide above a phone, so the column of them lines up.
+  /// slot wide above a phone, so the column of them lines up. On a phone
+  /// Following is a quiet word flush with the row's end
+  /// (`.follow-button.is-on { padding-inline: 0 }`).
   private func followButton(_ model: ArchiveModel, sets: RelationSets, name: String, phone: Bool) -> some View {
     let on = sets.following.contains { $0.jsEquals(did) }
     let slot: CGFloat? = phone ? nil : max(0, Measure.Dashboard.followMinWidth - 2 * theme.points(ThemeKit.smallButtonPadding.left))
@@ -207,6 +214,8 @@ struct PersonRow: View {
       Text(on ? "Following" : followLabel)
         .fixedSize()
         .frame(minWidth: slot)
+        // Cancels the button body's own padding.
+        .padding(.horizontal, phone && on ? -theme.points(ThemeKit.smallButtonPadding.left) : 0)
     }
     .buttonStyle(.virga(size: .small, isOn: on))
     .disabled(busy || model.sync?.step == "following")

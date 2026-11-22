@@ -613,11 +613,14 @@ struct StartingPoint: View {
         Avatar(src: card?.avatar, name: card?.avatarName ?? "?")
         VStack(alignment: .leading, spacing: 0) {
           Text(name)
-            .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Tools.personLineHeight)
+            .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Tools.personLineHeight, lineBox: true)
             .foregroundStyle(theme.ink)
             .lineLimit(1)
           if !meta.isEmpty {
-            Text(meta).virgaText(.textSm).foregroundStyle(theme.muted).lineLimit(1)
+            Text(meta)
+              .virgaText(.textSm, lineHeight: Measure.Tools.personLineHeight, lineBox: true)
+              .foregroundStyle(theme.muted)
+              .lineLimit(1)
           }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

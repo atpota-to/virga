@@ -67,6 +67,9 @@ extension View {
 struct CardGrid: Layout {
   var columnGap: CGFloat
   var rowGap: CGFloat
+  /// Below a 1180-wide window the gutter narrows with the grid: 4% of the
+  /// grid's own width, at least 24, at most `columnGap`.
+  var narrows = false
 
   struct SizeKey: LayoutValueKey { static let defaultValue = "m" }
   struct StatKey: LayoutValueKey { static let defaultValue = false }
@@ -85,15 +88,17 @@ struct CardGrid: Layout {
   private func rows(_ width: CGFloat, _ subviews: Subviews) -> [[(index: Int, x: CGFloat, width: CGFloat)]] {
     var out: [[(index: Int, x: CGFloat, width: CGFloat)]] = [[]]
     var used = 0
-    let column = (width - columnGap * 11) / 12
+    // `clamp(24px, 4cqi, var(--grid-gap-x))`, the grid's box the container.
+    let gap = narrows ? min(columnGap, max(Measure.Dashboard.narrowGapMin, width * Measure.Dashboard.narrowGapShare)) : columnGap
+    let column = (width - gap * 11) / 12
     for (i, view) in subviews.enumerated() {
       let span = Self.span(size: view[SizeKey.self], stat: view[StatKey.self], width: width)
       if used + span > 12 {
         out.append([])
         used = 0
       }
-      let x = CGFloat(used) * (column + columnGap)
-      let w = column * CGFloat(span) + columnGap * CGFloat(span - 1)
+      let x = CGFloat(used) * (column + gap)
+      let w = column * CGFloat(span) + gap * CGFloat(span - 1)
       out[out.count - 1].append((i, x, w))
       used += span
     }
@@ -162,6 +167,9 @@ struct DashboardPage: View {
         }
         .buttonStyle(.virga)
         .accessibilityIdentifier("library-open")
+        // `.library-open { margin-bottom: calc(16px - var(--section-gap)) }`:
+        // closer to the cards it adds to than the next band would be.
+        .padding(.bottom, Measure.Dashboard.libraryOpenSpaceBelow - theme.sectionGap)
         if dashboard.widgets.isEmpty {
           empty
         } else {
@@ -170,7 +178,10 @@ struct DashboardPage: View {
       } else if dashboard.widgets.isEmpty {
         empty
       } else if let report {
-        CardGrid(columnGap: theme.isPhone ? Measure.Dashboard.phoneColumnGap : theme.gridGapX, rowGap: theme.gridGap) {
+        CardGrid(
+          columnGap: theme.isPhone ? Measure.Dashboard.phoneColumnGap : theme.gridGapX, rowGap: theme.gridGap,
+          narrows: !theme.isPhone && theme.windowWidth <= Measure.Dashboard.narrowGapAt
+        ) {
           ForEach(dashboard.widgets) { card in
             if let def = Catalog.widgets[card.type] {
               WidgetCard(card: card, def: def, archive: report, period: Self.period(of: card, else: period, nowMs: nowMs))
@@ -384,7 +395,11 @@ struct WidgetCard: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         if !under, let chartModes { chartModes }
+        // On a phone the 44-point tools are pulled in over the title's line
+        // (`.card-head:has(> :nth-child(2)) > .head-tools { margin-block:
+        // -12px }`), so the head stays the title's height.
         tools(title: title)
+          .padding(.vertical, theme.isPhone ? -Measure.Section.iconToolLift : 0)
       }
       if under, let chartModes {
         chartModes.padding(.top, Measure.Dashboard.headModesSpaceAbove)

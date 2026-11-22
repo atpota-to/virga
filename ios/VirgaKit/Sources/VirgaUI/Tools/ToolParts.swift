@@ -279,7 +279,7 @@ struct ToolPersonRow: View {
           if let url = ToolPeople.profileUrl(card, did) { openURL(url) }
         } label: {
           Text(name)
-            .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Tools.personLineHeight)
+            .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Tools.personLineHeight, lineBox: true)
             .foregroundStyle(theme.ink)
             .lineLimit(1)
         }
@@ -343,7 +343,7 @@ struct ToolPersonMeta: View {
 
   var body: some View {
     Text(parts.joined(separator: Self.separator))
-      .virgaText(size: theme.points(ThemeKit.metaFontSize), lineHeight: Measure.Tools.personLineHeight)
+      .virgaText(size: theme.points(ThemeKit.metaFontSize), lineHeight: Measure.Tools.personLineHeight, lineBox: true)
       .foregroundStyle(theme.color(ThemeKit.metaInk))
       .lineLimit(wraps ? nil : 1)
       .truncationMode(.tail)
@@ -501,19 +501,57 @@ struct ToolPostRow: View {
 // MARK: - The tools' own bits
 
 /// `.tool-statement`: what a page found, in a sentence, before the charts
-/// it was found in, at the lead step.
+/// it was found in, at the lead step, its lines balanced
+/// (`text-wrap: balance`).
 struct ToolStatement: View {
   @Environment(\.virgaTheme) private var theme
   let text: String
 
   var body: some View {
-    Text(text)
-      .virgaText(
-        .textLead, weight: VirgaWeight.medium, lineHeight: Measure.Tools.statementLineHeight, tracking: Measure.Tools.statementTracking)
-      .foregroundStyle(theme.ink)
-      .fixedSize(horizontal: false, vertical: true)
-      .frame(maxWidth: Measure.Tools.statementMax, alignment: .leading)
-      .frame(maxWidth: .infinity, alignment: .leading)
+    BalancedLines {
+      Text(text)
+        .virgaText(
+          .textLead, weight: VirgaWeight.medium, lineHeight: Measure.Tools.statementLineHeight, tracking: Measure.Tools.statementTracking)
+        .foregroundStyle(theme.ink)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+    .frame(maxWidth: Measure.Tools.statementMax, alignment: .leading)
+    .frame(maxWidth: .infinity, alignment: .leading)
+  }
+}
+
+/// `text-wrap: balance` for the one text inside: set at the narrowest width
+/// that keeps the lines it has at the width offered, so they come out of a
+/// length rather than full lines and a short last one, as a browser
+/// balances. The width is found by halving between half the width offered
+/// (no fewer lines' worth) and all of it.
+struct BalancedLines: Layout {
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    guard let text = subviews.first else { return .zero }
+    return text.sizeThatFits(ProposedViewSize(width: Self.width(proposal.width, text), height: nil))
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    guard let text = subviews.first else { return }
+    let width = Self.width(proposal.width ?? bounds.width, text).map { min($0, bounds.width) }
+    text.place(at: bounds.origin, anchor: .topLeading, proposal: ProposedViewSize(width: width, height: nil))
+  }
+
+  /// The narrowest width no taller than `offered` gives (to half a point).
+  private static func width(_ offered: CGFloat?, _ text: LayoutSubview) -> CGFloat? {
+    guard let offered, offered.isFinite, offered > 0 else { return offered }
+    let height = text.sizeThatFits(ProposedViewSize(width: offered, height: nil)).height
+    var low = offered / 2
+    var high = offered
+    while high - low > 0.5 {
+      let mid = (low + high) / 2
+      if text.sizeThatFits(ProposedViewSize(width: mid, height: nil)).height <= height + 0.5 {
+        high = mid
+      } else {
+        low = mid
+      }
+    }
+    return high
   }
 }
 

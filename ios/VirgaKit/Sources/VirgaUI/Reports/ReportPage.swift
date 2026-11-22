@@ -94,7 +94,8 @@ struct NoteLink: View {
 }
 
 /// "4,810 can be listed (i)": the count, and why it isn't the profile's,
-/// kept on one line (`.stat-keep`).
+/// kept on one line (`.stat-keep`). The tip lays itself out as the touch
+/// block's margins leave it, its (i) 3 clear of the words.
 struct ListedNote: View {
   let profileCount: Int
   let listed: Int
@@ -105,8 +106,6 @@ struct ListedNote: View {
     HStack(spacing: 0) {
       Text("\(AppLocale.formatNumber(listed)) \(words)")
       FollowerCountTip(profileCount: Double(profileCount), listed: Double(listed))
-        .padding(.vertical, -Measure.Reports.infoTipMarginV)
-        .padding(.horizontal, -Measure.Reports.infoTipMarginH)
     }
   }
 }

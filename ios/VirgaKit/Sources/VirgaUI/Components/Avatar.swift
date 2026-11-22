@@ -30,6 +30,17 @@ public struct Avatar: View {
     self.side = side
   }
 
+  /// The first of `names` that is there and not empty, as the web picks
+  /// the name a face's letter comes from (`card?.displayName ||
+  /// card?.handle || '?'`): Swift's `??` would keep an empty display name,
+  /// and the face would be a "?" beside a handle. Nil (a "?") when none is.
+  public static func named(_ names: String?...) -> String? {
+    for name in names {
+      if let name, !name.isEmpty { return name }
+    }
+    return nil
+  }
+
   /// `String(name || '?').replace(/^@/, '').trim().charAt(0).toUpperCase() || '?'`
   public static func letter(_ name: String?) -> String {
     var text = (name?.isEmpty ?? true) ? "?" : name!

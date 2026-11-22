@@ -593,7 +593,7 @@ struct CleanupPerson: View {
           if let url = ToolPeople.profileUrl(card, row.did) { openURL(url) }
         } label: {
           Text(name)
-            .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Tools.personLineHeight)
+            .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Tools.personLineHeight, lineBox: true)
             .strikethrough(undone)
             .foregroundStyle(undone ? theme.muted : theme.ink)
             .lineLimit(1)

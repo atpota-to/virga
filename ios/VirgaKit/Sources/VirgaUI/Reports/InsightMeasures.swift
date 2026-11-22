@@ -50,10 +50,6 @@ extension Measure.Reports {
   static let tileGap: CGFloat = 8
   static let phoneTilePaddingTop: CGFloat = 12
   static let tileDescSpaceAbove: CGFloat = 4
-  /// controls.css's touch `.info-tip-button { margin: -8px -6px }`: the (i)
-  /// beside a note's words takes no more of the line than its 20 points.
-  static let infoTipMarginV: CGFloat = 8
-  static let infoTipMarginH: CGFloat = 6
   /// `.chart-notes-list { margin-top: 18px }`, its rows at least 46 tall in
   /// a 108 | 1fr | auto grid (84 at 760 and under), 12 apart.
   static let notesListSpaceAbove: CGFloat = 18
@@ -64,6 +60,12 @@ extension Measure.Reports {
 }
 
 extension Measure.Dashboard {
+  /// `@media (max-width: 1179px) { .dash-grid { column-gap: clamp(24px, 4cqi,
+  /// var(--grid-gap-x)) } }`: with less room the gutter narrows with the
+  /// grid, 4% of the grid box's width and at least 24.
+  static let narrowGapAt: CGFloat = 1179
+  static let narrowGapMin: CGFloat = 24
+  static let narrowGapShare: CGFloat = 0.04
   /// `.stat { padding-top: 16px }`, 12 at 560 and under.
   static let phoneStatPaddingTop: CGFloat = 12
   /// `@container widget (max-width: 250px) { .stat-window { display: none } }`
@@ -93,6 +95,10 @@ extension Measure.Dashboard {
   /// `(max-width: 479px)` the handle too.
   static let personRelHiddenAt: CGFloat = 599
   static let personHandleHiddenAt: CGFloat = 479
+  /// tools.css `@container widget (max-width: 400px) { .person-history {
+  /// display: none } }`: a card a third of the row wide keeps a name, a
+  /// count and Follow.
+  static let personHistoryHiddenAt: CGFloat = 400
   /// `.person-meta > :not(:last-child)::after { margin: 0 6px }`
   static let personDotMargin: CGFloat = 6
   /// `.post-row { gap: 14px }`, `.post-rank { width: 16px }`, `.post-main { gap: 4px }`,
@@ -138,9 +144,18 @@ extension Measure.Dashboard {
   static let libraryOnIcon: CGFloat = 13
   /// `.library-text { line-height: 1.35 }`
   static let libraryLineHeight: Double = 1.35
+  /// `.library-open { margin-bottom: calc(16px - var(--section-gap)) }`:
+  /// Add a report from the library 16 over the list it adds to.
+  static let libraryOpenSpaceBelow: CGFloat = 16
 }
 
 extension Measure.Chart {
+  /// SeriesChart.jsx's `PAD.t` (18) over the plot, and `MARKS_ROOM` (10)
+  /// more with marked days, which its `ghostY - 8 < 12` counts in: the
+  /// ghost's words go under its dot only when the dot is within 2 of the
+  /// plot's top (and never with marks).
+  static let plotTop: CGFloat = 18
+  static let marksRoom: CGFloat = 10
   /// SeriesChart.jsx: the middle date steps aside when it would come within
   /// 12 of an end date, each date's width estimated at 6.6 a character.
   static let dateCharWidth: CGFloat = 6.6
