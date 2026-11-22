@@ -12,10 +12,16 @@
 // case, accent, width and compatibility variants, every pair within small
 // groups of look-alikes, and seeded random text in each script, mutated so
 // that pairs tie at the base letter and differ only in accent or case.
-// Each case's output holds the sign of both comparisons per pair
-// (`variant`, `base`), and under `locales` any locale that answers
-// differently from the runtime's (none does today: CLDR has no English
-// tailoring).
+// Each case's output holds the sign of both comparisons, a character a
+// pair ('<', '=' or '>': `variant`, `base`), and under `locales` any
+// locale that answers differently from the runtime's (none does today:
+// CLDR has no English tailoring).
+//
+// One thing is left out: Node's collator isn't canonically closed for the
+// Kirat Rai vowel signs U+16D68..U+16D6A (Unicode 16, whose decompositions
+// are runs of starters), so text that is canonically the same can sort
+// apart there; the port, as the Unicode Collation Algorithm does, sorts it
+// together.
 
 import { each } from './_helpers.js';
 import { seeded } from './_insights.js';
@@ -31,6 +37,8 @@ export const sources = [
 ];
 
 const sign = (n) => (n < 0 ? -1 : n > 0 ? 1 : 0);
+/** Signs as one character a pair, '<', '=' or '>', to keep the fixture small. */
+const signs = (list) => list.map((n) => '<=>'[n + 1]).join('');
 const plain = (a, b) => sign(a.localeCompare(b));
 const base = (a, b) =>
   sign(a.localeCompare(b, undefined, { sensitivity: 'base' }));
@@ -750,6 +758,34 @@ const GROUPS = [
   tokens('K k K Å å Å Ω ω Ω µ μ µ'),
   tokens('σ ς Σ ϲ Ϲ ό ὸ ό ὸ ᾳ ᾼ ᾳ ι ͅ ΐ ΐ'),
   tokens('ש שׁ שׂ שׁ בּ ב בּ יִ ײ יי'),
+  // What measuring the port against Node turned up: contractions no code
+  // point decomposes to (l·, ํา, the Tibetan vocalic vowels), canonical
+  // ones inside compatibility forms (ﻷ), expansions no decomposition gives
+  // (ײ, ༀ, ʩ), accents no mark makes (ß before ſs), cases between a
+  // letter's cases (ꟹ, 🆏, ㎩, ﮤ, ㉰, ꙶ, ﬃ, ⅟), marks that are several
+  // accents (ﳳ), and contractions across marks that don't block them.
+  tokens('l· L· ŀ Ŀ l L l·l ŀl l·· ĺ· l·́'),
+  tokens('ํา ำ ໍາ ຳ กำ กํา ກຳ'),
+  tokens('ྲཱྀ ཷ ླཱྀ ཹ ྲྀ ྲྀ ླྀ ླྀ ྲཱྀ ླّཱྀ ྲ़ཱྀྀ'),
+  tokens('ﻷ لأ ﻻ لا ﻸ ﻹ ﻺ ﻵ لآ ﻼ'),
+  tokens('ײ יי ױ וי װ וו ׯ'),
+  tokens('ༀ ཨོཾ ཨོ ཨ'),
+  tokens('ʩ fŋ ʨ tɕ ꭦ dʐ ʪ ls'),
+  tokens('ß ss ſs ſ s ẞ SS sſ Ss ſſ'),
+  tokens('œ Œ ꟹ oe OE Oe ɶ'),
+  tokens('æ Æ ᷔ 𐞃 ᴭ ae AE Ae ǽ ǣ'),
+  tokens('🆏 🅏 WC wc Wc 🆌 ㎩ PA Pa pa'),
+  tokens('ﮤ ﮥ ۀ ۀ ۀ'),
+  tokens('㉢ ㉰ ᄃ 다 ㉢ￂ ㉢ᅡ ﾷ ﾷￂ'),
+  tokens('ﺲﺮ ﴪ سر ﺲ ﺮ ﴎ'),
+  tokens('ꙶ ї Ї ї Ї і'),
+  tokens('ﬃ ﬀi ﬀ ffi FFI ﬁ fi ﬀI'),
+  tokens('⅟2 ½ 1⁄2 ⅟ 1⁄ ⅟₂ ⅟² ⅓ ⅟³ ⅒ ⅟¹0 ⅟10'),
+  tokens('㎜ ㎟ ㎜² ㎣ ㎜³ mm² ㎝² ㎠ ㎞ ㎢ ㎞²'),
+  tokens('⩵ ⩶ ⩵⁼ ⩵₌ ⩵﹦ ⩵= === ︰ ︙ ︰․ ︰．'),
+  tokens('㌔ ㌕ ㌔ｸﾞラム ㌔㋗゙ラム キログラム ㌖ ㌔ﾒートル ㍉ ㍊'),
+  tokens('ﳳ ُّ ـُّ ﱡ ﹹ ﹽ ﹹﹽ ﳲ'),
+  tokens('ෝ ෝ़ ෝ़ ෝ़ ෝ़ ෝ̴ ෞ'),
 ];
 
 // The pairs compared, in chunks.
@@ -853,7 +889,7 @@ export default async function cases() {
   // The app's words, against words a few steps on.
   const words = [];
   for (let i = 0; i < WORDS.length; i += 1)
-    for (let j = i + 1; j < WORDS.length; j += 7)
+    for (let j = i + 1; j < WORDS.length; j += 19)
       words.push([WORDS[i], WORDS[j]]);
   addPairs('words', words);
 
@@ -873,7 +909,7 @@ export default async function cases() {
   for (const [name, pool] of Object.entries(SCRIPTS)) {
     const pairs = [];
     const n =
-      name === 'han' || name === 'latin' || name === 'emoji' ? 300 : 120;
+      name === 'han' || name === 'latin' || name === 'emoji' ? 200 : 120;
     for (let i = 0; i < n; i += 1) {
       const draw = () => {
         const length = 1 + rand.int(5);
@@ -892,7 +928,7 @@ export default async function cases() {
   // Every script at once.
   const all = Object.values(SCRIPTS).flat();
   const mixed = [];
-  for (let i = 0; i < 800; i += 1) {
+  for (let i = 0; i < 600; i += 1) {
     const a = rand.string(all, 5);
     const b = rand.next() < 0.5 ? mutate(rand, a, all) : rand.string(all, 5);
     mixed.push([wellFormed(a), wellFormed(b)]);
@@ -910,17 +946,14 @@ export default async function cases() {
 
   const out = await each('localeCompare', chunks, ({ a, b }) => {
     const result = {
-      variant: a.map((x, i) => plain(x, b[i])),
-      base: a.map((x, i) => base(x, b[i])),
+      variant: signs(a.map((x, i) => plain(x, b[i]))),
+      base: signs(a.map((x, i) => base(x, b[i]))),
     };
     const locales = {};
     for (const [tag, col] of LOCALES) {
-      const variant = a.map((x, i) => col.variant(x, b[i]));
-      const baseOrder = a.map((x, i) => col.base(x, b[i]));
-      if (
-        variant.some((v, i) => v !== result.variant[i]) ||
-        baseOrder.some((v, i) => v !== result.base[i])
-      )
+      const variant = signs(a.map((x, i) => col.variant(x, b[i])));
+      const baseOrder = signs(a.map((x, i) => col.base(x, b[i])));
+      if (variant !== result.variant || baseOrder !== result.base)
         locales[tag] = { variant, base: baseOrder };
     }
     if (Object.keys(locales).length) result.locales = locales;

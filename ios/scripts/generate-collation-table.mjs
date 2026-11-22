@@ -29,7 +29,10 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const OUT = process.argv[2]
   ? path.resolve(process.argv[2])
-  : path.join(here, '../VirgaKit/Sources/VirgaCore/Support/JSCollationTable.swift');
+  : path.join(
+      here,
+      '../VirgaKit/Sources/VirgaCore/Support/JSCollationTable.swift',
+    );
 
 const full = new Intl.Collator(undefined, { sensitivity: 'variant' });
 const base = new Intl.Collator(undefined, { sensitivity: 'base' });
@@ -94,7 +97,9 @@ singles.sort((x, y) => cpOf(x) - cpOf(y));
 // middle dot), ํา (ำ), the Tibetan vowels ྲཱྀ and ླཱྀ. Each is weighed below
 // like a code point of its own, under an id past U+10FFFF that
 // JSCollation.swift gives the sequence.
-const byDecomposition = new Map([...contractions].map(([c, d]) => [d.join(''), c]));
+const byDecomposition = new Map(
+  [...contractions].map(([c, d]) => [d.join(''), c]),
+);
 const synthetic = new Map();
 /** The table's id for a code point or a contraction. */
 const idOf = (c) => synthetic.get(c) ?? cpOf(c);
@@ -104,7 +109,13 @@ const idOf = (c) => synthetic.get(c) ?? cpOf(c);
  */
 const isUnit = (w) => {
   for (let k = 1; k < w.length; k += 1)
-    if (full.compare(w.join(''), w.slice(0, k).join('') + SEP + w.slice(k).join('')) === 0) return false;
+    if (
+      full.compare(
+        w.join(''),
+        w.slice(0, k).join('') + SEP + w.slice(k).join(''),
+      ) === 0
+    )
+      return false;
   return w.length > 1;
 };
 /**
@@ -115,7 +126,7 @@ const isUnit = (w) => {
 function unitsOf(parts) {
   if (full.compare(parts.join(''), parts.join(SEP)) === 0) return parts;
   const units = [];
-  for (let i = 0; i < parts.length; ) {
+  for (let i = 0; i < parts.length;) {
     let j = parts.length;
     while (j > i + 1 && !isUnit(parts.slice(i, j))) j -= 1;
     const unit = parts.slice(i, j).join('');
@@ -141,7 +152,9 @@ for (const x of singles) {
   for (const y of singles) {
     if (full.compare(x + y, x + SEP + y) === 0) continue;
     if (full.compare(x + y, y + SEP + x) !== 0)
-      throw new Error(`${hex(cpOf(x))} ${hex(cpOf(y))}: a contraction that isn't a swap`);
+      throw new Error(
+        `${hex(cpOf(x))} ${hex(cpOf(y))}: a contraction that isn't a swap`,
+      );
     ys.push(cpOf(y));
   }
   if (ys.length) swaps.set(cpOf(x), ys);
@@ -178,7 +191,9 @@ const accentWeight = new Map();
   }
 }
 const markRanks = Math.max(0, ...[...accentWeight.values()].map((w) => w.rank));
-const marks = [...accentWeight.keys()].filter((m) => accentWeight.get(m).t === 0);
+const marks = [...accentWeight.keys()].filter(
+  (m) => accentWeight.get(m).t === 0,
+);
 const COMMON = 0x20;
 const MARK_BASE = COMMON + 1;
 
@@ -206,7 +221,9 @@ for (const c of weighed) {
     for (const y of LETTERS) {
       if (base.compare(c, x + y) === 0) {
         // A capital (Æ) is its capitals (AE).
-        expansions.set(c, [...(c === c.toLowerCase() ? x + y : (x + y).toUpperCase())]);
+        expansions.set(c, [
+          ...(c === c.toLowerCase() ? x + y : (x + y).toUpperCase()),
+        ]);
         break outer;
       }
     }
@@ -219,7 +236,9 @@ for (const [c, run] of markExpansions) expansions.set(c, unitsOf(run));
 implicitChars.sort((x, y) => full.compare(x, y));
 for (let i = 1; i < implicitChars.length; i += 1)
   if (base.compare(implicitChars[i - 1], implicitChars[i]) === 0)
-    throw new Error(`ideographs ${hex(cpOf(implicitChars[i - 1]))} and ${hex(cpOf(implicitChars[i]))} tie`);
+    throw new Error(
+      `ideographs ${hex(cpOf(implicitChars[i - 1]))} and ${hex(cpOf(implicitChars[i]))} tie`,
+    );
 /** The ideograph `c` weighs the same as at the base level, or null. */
 function implicitBase(c) {
   let lo = 0;
@@ -231,7 +250,11 @@ function implicitBase(c) {
     if (order < 0) lo = mid + 1;
     else hi = mid;
   }
-  return lo === 0 ? 'before' : lo === implicitChars.length ? 'after' : 'between';
+  return lo === 0
+    ? 'before'
+    : lo === implicitChars.length
+      ? 'after'
+      : 'between';
 }
 // Past every ideograph come the code points ICU weighs by code point
 // (unassigned and private use, the last of them U+10FFFD), then a few
@@ -259,7 +282,8 @@ for (const c of primaries) {
   const found = [];
   for (const g of groups) {
     const last = singleGroups[singleGroups.length - 1];
-    if (last && base.compare(g.members[0], last.members[0] + '\uFFFF') < 0) found.push({ g, first: last });
+    if (last && base.compare(g.members[0], last.members[0] + '\uFFFF') < 0)
+      found.push({ g, first: last });
     else singleGroups.push(g);
   }
   const heads = singleGroups.map((g) => g.members[0]);
@@ -275,7 +299,8 @@ for (const c of primaries) {
         if (base.compare(prefix + heads[mid], c) <= 0) lo = mid + 1;
         else hi = mid;
       }
-      if (lo === 0) throw new Error(`${hex(cpOf(c))}: no run of weights makes it`);
+      if (lo === 0)
+        throw new Error(`${hex(cpOf(c))}: no run of weights makes it`);
       run.push(heads[lo - 1]);
       const order = base.compare(run.join(''), c);
       if (order === 0) break;
@@ -286,7 +311,12 @@ for (const c of primaries) {
     if (accent.compare(c, run.join('')) !== 0) {
       search: for (let i = run.length; i > 0; i -= 1)
         for (const m of marks)
-          if (accent.compare(c, [...run.slice(0, i), m, ...run.slice(i)].join('')) === 0) {
+          if (
+            accent.compare(
+              c,
+              [...run.slice(0, i), m, ...run.slice(i)].join(''),
+            ) === 0
+          ) {
             run.splice(i, 0, m);
             break search;
           }
@@ -302,7 +332,9 @@ for (const g of groups) {
   if (where === 'before') g.p = ++explicitRanks;
   else if (where === 'after') {
     if (base.compare(g.members[0], LAST_IMPLICIT) <= 0)
-      throw new Error(`${hex(cpOf(g.members[0]))} sorts among the code points weighed by code point`);
+      throw new Error(
+        `${hex(cpOf(g.members[0]))} sorts among the code points weighed by code point`,
+      );
     post.push(g);
   } else if (where === 'between')
     throw new Error(`${hex(cpOf(g.members[0]))} sorts among the ideographs`);
@@ -311,9 +343,11 @@ for (const g of groups) {
     g.ideograph = where;
     g.members.unshift(where);
     g.members.sort((x, y) => full.compare(x, y));
-    if (g.members[0] !== where) throw new Error(`${hex(cpOf(where))} isn't first among its variants`);
+    if (g.members[0] !== where)
+      throw new Error(`${hex(cpOf(where))} isn't first among its variants`);
   }
 }
+groups.forEach((g, i) => (g.index = i));
 const IMPLICIT_RANK = explicitRanks + 1;
 const UNASSIGNED_RANK = explicitRanks + 2;
 post.forEach((g, i) => {
@@ -332,7 +366,9 @@ const EXPANSION_CASE = 1 << 20;
 
 /** `{ p | ideograph, mark, t }` per code point: primary, secondary, tertiary. */
 const weights = new Map();
-const heaviestMark = marks.reduce((x, y) => (accentWeight.get(y).rank > accentWeight.get(x).rank ? y : x));
+const heaviestMark = marks.reduce((x, y) =>
+  accentWeight.get(y).rank > accentWeight.get(x).rank ? y : x,
+);
 // The accents no mark makes (ſ is s and one, ð is d and one) are heavier
 // than every mark, and only ever weighed against the other accents of the
 // same base letter (no two strings can set them side by side otherwise):
@@ -366,11 +402,14 @@ for (const g of groups) {
     let mark = null;
     let markChar = null;
     if (si > 0) {
-      markChar = marks.find((m) => accent.compare(head + m, sub[0]) === 0) ?? null;
+      markChar =
+        marks.find((m) => accent.compare(head + m, sub[0]) === 0) ?? null;
       if (markChar) mark = MARK_BASE + accentWeight.get(markChar).rank;
       else {
         if (accent.compare(head + heaviestMark, sub[0]) >= 0)
-          throw new Error(`${hex(cpOf(sub[0]))}: an accent lighter than a mark that no mark makes`);
+          throw new Error(
+            `${hex(cpOf(sub[0]))}: an accent lighter than a mark that no mark makes`,
+          );
         mark = VARIANT_BASE + 2 * (g.variants.length + 1);
         g.variants.push({ rep: sub[0], mark });
       }
@@ -383,7 +422,12 @@ for (const g of groups) {
       for (const c of sub) {
         const w = { p: g.p, ideograph: g.ideograph, mark, t: null };
         weights.set(c, w);
-        placed.push({ c, group: g, rest: markChar, done: ({ t }) => (w.t = t) });
+        placed.push({
+          c,
+          group: g,
+          rest: markChar,
+          done: ({ t }) => (w.t = t),
+        });
       }
       return;
     }
@@ -393,7 +437,8 @@ for (const g of groups) {
     sub.forEach((c, j) => {
       if (j > 0 && full.compare(sub[j - 1], c) !== 0) t += 1;
       weights.set(c, { p: g.p, ideograph: g.ideograph, mark, t: tertiary(t) });
-      if (!cases.length || cases[cases.length - 1].t !== tertiary(t)) cases.push({ t: tertiary(t), rep: c });
+      if (!cases.length || cases[cases.length - 1].t !== tertiary(t))
+        cases.push({ t: tertiary(t), rep: c });
     });
     // The subgroup's cases, lightest first: `{ t, rep }`.
     g.cases.set(mark, cases);
@@ -405,7 +450,7 @@ for (const g of groups) {
 // mark, or in the gap after one.
 for (const item of placed) {
   const cases = item.group.cases.get(null);
-  item.key = `${groups.indexOf(item.group)}|null|0|`;
+  item.key = `${item.group.index}|null|0|`;
   item.after = null;
   for (const { t, rep } of cases) {
     const order = full.compare(rep + item.rest, item.c);
@@ -433,7 +478,9 @@ for (let i = placed.length - 1; i >= 0; i -= 1)
 function accentSlot(c, run) {
   const [first, ...rest] = run;
   if (accent.compare(first + heaviestMark + rest.join(''), c) >= 0)
-    throw new Error(`${hex(cpOf(c))}: an expansion's accent lighter than a mark`);
+    throw new Error(
+      `${hex(cpOf(c))}: an expansion's accent lighter than a mark`,
+    );
   const g = groupOf.get(first);
   let slot = VARIANT_BASE + 1;
   if (!g || weights.get(first).mark !== null) return slot;
@@ -450,7 +497,8 @@ const markCases = new Map();
 for (const [m, { rank, t }] of accentWeight) {
   if (!markCases.has(rank)) markCases.set(rank, []);
   const cases = markCases.get(rank);
-  if (!cases.some((x) => x.t === tertiary(t))) cases.push({ t: tertiary(t), rep: m });
+  if (!cases.some((x) => x.t === tertiary(t)))
+    cases.push({ t: tertiary(t), rep: m });
 }
 for (const cases of markCases.values()) cases.sort((x, y) => x.t - y.t);
 
@@ -466,7 +514,7 @@ function casesOf(u) {
   const g = groupOf.get(u);
   const w = weights.get(u);
   if (!g || !w || !g.cases.has(w.mark)) return null;
-  return { key: `${groups.indexOf(g)}|${w.mark}`, cases: g.cases.get(w.mark) };
+  return { key: `${g.index}|${w.mark}`, cases: g.cases.get(w.mark) };
 }
 const lightest = (u) => casesOf(u)?.cases[0].rep ?? u;
 const heaviest = (u) => casesOf(u)?.cases.at(-1).rep ?? u;
@@ -513,8 +561,87 @@ function placeRun(c, run) {
   throw new Error(`${hex(cpOf(c))}: no case of its parts`);
 }
 
+/** What a part weighs at the base and accent levels: its letter and accent. */
+const unitKey = (u) => {
+  if (accentWeight.has(u)) return `m${accentWeight.get(u).rank}`;
+  const g = groupOf.get(u);
+  return g ? `g${g.index}.${weights.get(u).mark}` : `u${idOf(u)}`;
+};
+const runKey = (run) => run.map(unitKey).join(' ');
+/** Expansions with a case of their own, by what their runs weigh but for case. */
+const siblings = new Map();
+for (const [c, run] of expansions) {
+  if (accent.compare(c, run.join('')) !== 0) continue;
+  const key = runKey(run);
+  if (!siblings.has(key)) siblings.set(key, []);
+  siblings.get(key).push(c);
+}
+
+/**
+ * The cases of the parts after part k, which falls between two cases of
+ * its letter: unless something ties the expansion up to a part, which a
+ * shorter expansion that the run begins with can (㎜ ties ㎟ up to its
+ * 2, so ㎜² sorts before ㎟), a part's case can't be weighed against
+ * anything, and is a step heavier than its own. Otherwise it is read as in
+ * placeRun, with the shorter expansion before it. Returns the run, with parts that weigh a case exactly put in,
+ * and for each part after k `'own'`, `{ t }` (in the gap after the case
+ * t - 1) or null (a step heavier).
+ */
+function placeRest(c, run, k) {
+  const parts = [...run];
+  const modes = [];
+  let tie = null;
+  for (let m = k + 1; m < run.length; m += 1) {
+    if (tie === null) {
+      // One that ties, else one lighter (the rest is heavier than every
+      // case: ⅟ and ½), else any: probing with it keeps the two in order.
+      const rest = run.slice(m);
+      const found = (siblings.get(runKey(run.slice(0, m))) ?? []).filter(
+        (e) => e !== c,
+      );
+      const low = (e) => full.compare(e + rest.map(lightest).join(''), c) <= 0;
+      const high = (e) => full.compare(e + rest.map(heaviest).join(''), c) >= 0;
+      tie =
+        found.find((e) => low(e) && high(e)) ??
+        found.find(low) ??
+        found[0] ??
+        null;
+    }
+    const at = tie === null ? null : casesOf(run[m]);
+    if (!at) {
+      modes.push(null);
+      tie = null;
+      continue;
+    }
+    const after = run.slice(m + 1);
+    const lo = after.map(lightest).join('');
+    const hi = after.map(heaviest).join('');
+    let gap = null;
+    let exact = null;
+    for (const { t, rep } of at.cases) {
+      const low = full.compare(tie + rep + lo, c);
+      const high = full.compare(tie + rep + hi, c);
+      if (low <= 0 && high >= 0) {
+        exact = rep;
+        break;
+      }
+      if (high > 0) break;
+      gap = t;
+    }
+    if (exact === null) {
+      modes.push({ t: (gap ?? 0) + 1 });
+      tie = null;
+    } else {
+      parts[m] = exact;
+      modes.push('own');
+      tie += exact;
+    }
+  }
+  return { parts, modes };
+}
+
 // Expansions: an accent after the first part (æ), or the cases of the
-// parts (placeRun).
+// parts (placeRun, placeRest).
 const expansionEntry = new Map();
 const families = [];
 for (const [c, run] of expansions) {
@@ -524,10 +651,23 @@ for (const [c, run] of expansions) {
   }
   const place = placeRun(c, run);
   if (place.run) {
-    expansionEntry.set(c, { run: place.run, accent: null, slot: null, at: null });
+    expansionEntry.set(c, {
+      run: place.run,
+      accent: null,
+      slot: null,
+      at: null,
+      modes: [],
+    });
     continue;
   }
-  const e = { run: [...place.fixed, ...run.slice(place.k)], accent: null, slot: null, at: place.k };
+  const rest = placeRest(c, [...place.fixed, ...run.slice(place.k)], place.k);
+  const e = {
+    run: rest.parts,
+    accent: null,
+    slot: null,
+    at: place.k,
+    modes: rest.modes,
+  };
   expansionEntry.set(c, e);
   if (place.at)
     placed.push({
@@ -565,9 +705,12 @@ for (const [c, run] of expansions) {
       cls.forEach((item, i) => {
         if (i > 0 && full.compare(cls[i - 1].c, item.c) !== 0) k += 1;
         const t = (after ?? 0) + 1 + k;
-        if (t >= (after ?? 0) + TSCALE - HALF) throw new Error(`${hex(cpOf(item.c))}: no room among the cases`);
+        if (t >= (after ?? 0) + TSCALE - HALF)
+          throw new Error(`${hex(cpOf(item.c))}: no room among the cases`);
         item.done({ t });
-        const same = cls.slice(0, i).find((x) => x.expansion && full.compare(x.c, item.c) === 0);
+        const same = cls
+          .slice(0, i)
+          .find((x) => x.expansion && full.compare(x.c, item.c) === 0);
         if (same && item.expansion) item.expansion.run = same.expansion.run;
       });
     }
@@ -579,7 +722,9 @@ for (const [c, run] of expansions) {
 {
   const classes = [];
   for (const f of families) {
-    const cls = classes.find((k) => k[0].accent === f.accent && accent.compare(k[0].c, f.c) === 0);
+    const cls = classes.find(
+      (k) => k[0].accent === f.accent && accent.compare(k[0].c, f.c) === 0,
+    );
     if (cls) cls.push(f);
     else classes.push([f]);
   }
@@ -588,7 +733,13 @@ for (const [c, run] of expansions) {
     let k = 0;
     cls.forEach((f, i) => {
       if (i > 0 && full.compare(cls[i - 1].c, f.c) !== 0) k += 1;
-      expansionEntry.set(f.c, { run: f.run, accent: f.accent, slot: EXPANSION_CASE + tertiary(k), at: 0 });
+      expansionEntry.set(f.c, {
+        run: f.run,
+        accent: f.accent,
+        slot: EXPANSION_CASE + tertiary(k),
+        at: 0,
+        modes: [],
+      });
     });
   }
 }
@@ -608,7 +759,14 @@ for (const c of singles) {
   } else {
     const { p, ideograph, mark, t } = weights.get(c);
     if (t === null) throw new Error(`${hex(cp)}: no case`);
-    entries.push({ cp, kind: 'W', p, ideograph: ideograph && cpOf(ideograph), mark, t });
+    entries.push({
+      cp,
+      kind: 'W',
+      p,
+      ideograph: ideograph && cpOf(ideograph),
+      mark,
+      t,
+    });
   }
 }
 
@@ -619,7 +777,7 @@ const text = (e) => {
     case 'M':
       return `M${hex(e.w)}${e.t === PLAIN ? '' : `.${hex(e.t)}`}`;
     case 'E':
-      return `=${e.run.map(hex).join(',')}${e.accent ? `!${hex(e.accent)}` : ''}${e.at === null ? '' : `@${hex(e.at)}:${e.slot === null ? '' : hex(e.slot)}`}`;
+      return `=${e.run.map(hex).join(',')}${e.accent ? `!${hex(e.accent)}` : ''}${e.at === null ? '' : `@${hex(e.at)}:${e.slot === null ? '' : hex(e.slot)}${e.modes.some((m) => m !== null) ? e.modes.map((m) => `/${m === 'own' ? '=' : m === null ? '' : hex(m.t)}`).join('') : ''}`}`;
     default:
       return `${e.ideograph ? `~${hex(e.ideograph)}` : hex(e.p)}.${e.mark == null ? '' : hex(e.mark)}.${hex(e.t)}`;
   }
@@ -630,24 +788,40 @@ const continues = (a, b) => {
   if (a.kind === 'I') return true;
   if (a.kind === 'M') return b.w === a.w + 1 && b.t === a.t;
   if (a.kind === 'W')
-    return !a.ideograph && !b.ideograph && b.p === a.p + 1 && b.mark === a.mark && b.t === a.t;
+    return (
+      !a.ideograph &&
+      !b.ideograph &&
+      b.p === a.p + 1 &&
+      b.mark === a.mark &&
+      b.t === a.t
+    );
   return false;
 };
 const lines = [];
-for (let i = 0; i < entries.length; ) {
+for (let i = 0; i < entries.length;) {
   let n = 1;
-  while (i + n < entries.length && continues(entries[i + n - 1], entries[i + n])) n += 1;
+  while (
+    i + n < entries.length &&
+    continues(entries[i + n - 1], entries[i + n])
+  )
+    n += 1;
   const e = entries[i];
-  lines.push(`${hex(e.cp)}${e.kind === 'E' ? '' : ':'}${text(e)}${n > 1 ? `*${hex(n)}` : ''}`);
+  lines.push(
+    `${hex(e.cp)}${e.kind === 'E' ? '' : ':'}${text(e)}${n > 1 ? `*${hex(n)}` : ''}`,
+  );
   i += n;
 }
 
 // The ideographs, in order, as runs of consecutive code points.
 const implicitRuns = [];
-for (let i = 0; i < implicitChars.length; ) {
+for (let i = 0; i < implicitChars.length;) {
   const start = cpOf(implicitChars[i]);
   let n = 1;
-  while (i + n < implicitChars.length && cpOf(implicitChars[i + n]) === start + n) n += 1;
+  while (
+    i + n < implicitChars.length &&
+    cpOf(implicitChars[i + n]) === start + n
+  )
+    n += 1;
   implicitRuns.push(n > 1 ? `${hex(start)}+${hex(n)}` : hex(start));
   i += n;
 }
@@ -657,7 +831,7 @@ const contractionLines = [...contractions].map(
 );
 const swapLines = [...swaps].map(([x, ys]) => {
   const ranges = [];
-  for (let i = 0; i < ys.length; ) {
+  for (let i = 0; i < ys.length;) {
     let n = 1;
     while (i + n < ys.length && ys[i + n] === ys[i] + n) n += 1;
     ranges.push(n > 1 ? `${hex(ys[i])}-${hex(ys[i] + n - 1)}` : hex(ys[i]));
@@ -676,11 +850,18 @@ const swapLines = [...swaps].map(([x, ys]) => {
 const decompositionLines = [];
 const marksWithClass = [];
 for (let cp = 0; cp <= 0x10ffff; cp += 1) {
-  if ((cp >= 0xd800 && cp <= 0xdfff) || (cp >= 0xac00 && cp <= 0xd7a3)) continue;
+  if ((cp >= 0xd800 && cp <= 0xdfff) || (cp >= 0xac00 && cp <= 0xd7a3))
+    continue;
   const c = String.fromCodePoint(cp);
   const d = c.normalize('NFD');
-  if (d !== c) decompositionLines.push(`${hex(cp)}=${[...d].map((x) => hex(cpOf(x))).join(',')}`);
-  else if (`${c}̴`.normalize('NFD') !== `${c}̴` || `ͅ${c}`.normalize('NFD') !== `ͅ${c}`)
+  if (d !== c)
+    decompositionLines.push(
+      `${hex(cp)}=${[...d].map((x) => hex(cpOf(x))).join(',')}`,
+    );
+  else if (
+    `${c}̴`.normalize('NFD') !== `${c}̴` ||
+    `ͅ${c}`.normalize('NFD') !== `ͅ${c}`
+  )
     marksWithClass.push(c);
 }
 /** Negative when `x`'s class is lower than `y`'s (`y x` reorders to `x y`). */
@@ -701,10 +882,17 @@ const classRank = new Map();
 const classLines = [];
 {
   const cps = [...classRank.keys()].sort((a, b) => a - b);
-  for (let i = 0; i < cps.length; ) {
+  for (let i = 0; i < cps.length;) {
     let n = 1;
-    while (i + n < cps.length && cps[i + n] === cps[i] + n && classRank.get(cps[i + n]) === classRank.get(cps[i])) n += 1;
-    classLines.push(`${hex(cps[i])}:${hex(classRank.get(cps[i]))}${n > 1 ? `*${hex(n)}` : ''}`);
+    while (
+      i + n < cps.length &&
+      cps[i + n] === cps[i] + n &&
+      classRank.get(cps[i + n]) === classRank.get(cps[i])
+    )
+      n += 1;
+    classLines.push(
+      `${hex(cps[i])}:${hex(classRank.get(cps[i]))}${n > 1 ? `*${hex(n)}` : ''}`,
+    );
     i += n;
   }
 }

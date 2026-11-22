@@ -69,17 +69,26 @@ public enum JSCollation {
     /// An accent alone: its secondary weight, and its tertiary.
     case mark(UInt32, t: UInt32)
     /// A run of other code points (or contractions), each weighing as it
-    /// does, but from part `at` on: part `at` weighs the tertiary `slot`
-    /// (a step heavier than its own when nil) and the parts after it a
-    /// step heavier than their own, as in a compatibility form (ICU weighs
-    /// ﬁ's f after the small f and ｆ and before ⓕ and F, so ﬁ sorts after
-    /// "fI" and before "Fi"). With an `accent`, a letter like æ: that
-    /// accent after its first part, which weighs `slot`, and the rest of
-    /// its parts heavier than every case.
-    case expansion([UInt32], accent: UInt32?, slot: UInt32?, at: Int?)
+    /// does, but from part `from` on, which weigh `cases` (a compatibility
+    /// form's: ICU weighs ﬁ's f after the small f and ｆ and before ⓕ and
+    /// F, so ﬁ sorts after "fI" and before "Fi"; parts past the end of
+    /// `cases` are a step heavier than their own). With an `accent`, a
+    /// letter like æ: that accent after its first part, which weighs
+    /// `cases[0]`, and the rest of its parts heavier than every case.
+    case expansion([UInt32], accent: UInt32?, from: Int?, cases: [PartCase])
     /// A base letter's primary weight, the accent that sets it apart from
     /// the first of its base letters, and its tertiary (case and form).
     case weights(p: UInt64, mark: UInt32?, t: UInt32)
+  }
+
+  /// What a part of an expansion weighs for its case.
+  enum PartCase: Sendable, Hashable {
+    /// Its own tertiary.
+    case own
+    /// A step heavier than its own: what nothing can weigh it against.
+    case step
+    /// That tertiary, read from the collator.
+    case value(UInt32)
   }
 
   /// The primary weight of a table rank: ranks sit 2³² apart, so that the
@@ -191,14 +200,19 @@ public enum JSCollation {
   static func parseEntry(_ item: Substring, into table: inout Table) {
     if let eq = item.firstIndex(of: "="), !item[..<eq].contains(":") {
       guard let cp = hex(item[..<eq]) else { return }
-      // `a,b,…`, then `!accent` and `@at:slot`, each when present.
+      // `a,b,…`, then `!accent` and `@from:case/case/…` (a tertiary, `=`
+      // its own, empty a step heavier), each when present.
       var rest = item[item.index(after: eq)...]
-      var slot: UInt32?
-      var at: Int?
+      var from: Int?
+      var cases: [PartCase] = []
       if let sign = rest.firstIndex(of: "@") {
         let place = rest[rest.index(after: sign)...].split(separator: ":", omittingEmptySubsequences: false)
-        at = hex(place[0]).map(Int.init)
-        slot = place.count > 1 ? hex(place[1]) : nil
+        from = hex(place[0]).map(Int.init)
+        if place.count > 1 {
+          cases = place[1].split(separator: "/", omittingEmptySubsequences: false).map { text in
+            text == "=" ? .own : hex(text).map(PartCase.value) ?? .step
+          }
+        }
         rest = rest[..<sign]
       }
       var accent: UInt32?
@@ -207,7 +221,7 @@ public enum JSCollation {
         rest = rest[..<bang]
       }
       let parts = rest.split(separator: ",").compactMap { hex($0) }
-      table.entries[cp] = .expansion(parts, accent: accent, slot: slot, at: at)
+      table.entries[cp] = .expansion(parts, accent: accent, from: from, cases: cases)
       return
     }
     guard let colon = item.firstIndex(of: ":"), let cp = hex(item[..<colon]) else { return }
@@ -346,26 +360,24 @@ public enum JSCollation {
       return
     case .mark(let s, let own):
       out.append(Element(p: 0, s: s, t: t(own)))
-    case .expansion(let parts, let accent, let partSlot, let at):
+    case .expansion(let parts, let accent, let from, let cases):
       for (index, part) in parts.enumerated() {
-        if let accent {
-          if index == 0 {
-            append(part, to: &out, caseBoost: caseBoost, slot: slot ?? partSlot)
-            out.append(Element(p: 0, s: accent, t: t(plainTertiary)))
-          } else {
-            append(part, to: &out, caseBoost: caseBoost + expansionCase, slot: slot)
-          }
-        } else if let at, index >= at {
-          // The case read from the collator, and after it the parts' own
-          // cases a step heavier (ﬃ sorts after ﬀi).
-          if index == at, let partSlot, slot == nil {
-            append(part, to: &out, slot: partSlot)
-          } else {
-            append(part, to: &out, caseBoost: caseBoost + 1, slot: slot)
-          }
-        } else {
-          append(part, to: &out, caseBoost: caseBoost, slot: slot)
+        if let accent, index > 0 {
+          append(part, to: &out, caseBoost: caseBoost + expansionCase, slot: slot)
+          continue
         }
+        let partCase: PartCase
+        if let from, index >= from {
+          partCase = index - from < cases.count ? cases[index - from] : .step
+        } else {
+          partCase = .own
+        }
+        switch partCase {
+        case .own: append(part, to: &out, caseBoost: caseBoost, slot: slot)
+        case .step: append(part, to: &out, caseBoost: caseBoost + 1, slot: slot)
+        case .value(let value): append(part, to: &out, slot: slot ?? value)
+        }
+        if index == 0, let accent { out.append(Element(p: 0, s: accent, t: t(plainTertiary))) }
       }
     case .weights(let p, let mark, let own):
       out.append(Element(p: p, s: common, t: t(own)))
