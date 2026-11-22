@@ -383,7 +383,12 @@ public enum Publish {
           blobs[postIndex]["video"] = held
         } else if video["file"]?.isTruthy == true {
           do {
-            guard let file = ComposerFile(json: video["file"]) else { throw NotAFileError() }
+            guard let file = ComposerFile(json: video["file"]) else {
+              // video.js's uploadVideo checks the file first (validateVideoFile).
+              let check = Video.validateVideoFile(video["file"])
+              if !check.ok { throw VideoError(check.message ?? "", code: check.code ?? "VIDEO_FAILED") }
+              throw NotAFileError()
+            }
             let index = Double(postIndex)
             let result = try await uploadVideo(target, file) { p in
               var event: JSONValue = ["phase": "video", "step": .string(p.phase), "postIndex": .number(index)]

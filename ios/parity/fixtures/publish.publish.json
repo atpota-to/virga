@@ -6284,6 +6284,130 @@
       }
     },
     {
+      "id": "video-not-a-file",
+      "fn": "publish",
+      "input": {
+        "state": {
+          "posts": [
+            {
+              "id": "p1",
+              "text": "b",
+              "video": {
+                "file": {
+                  "name": "v.mp4"
+                },
+                "alt": "",
+                "status": "idle"
+              },
+              "images": [],
+              "record": null,
+              "card": null
+            }
+          ],
+          "reply": null,
+          "tags": [],
+          "langs": [
+            "en"
+          ],
+          "labels": [],
+          "gates": {
+            "custom": false,
+            "reply": null,
+            "quotes": true
+          },
+          "asDid": "did:plc:writer",
+          "schedule": null,
+          "lifespan": {
+            "enabled": false
+          },
+          "source": null
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "Choose a video to add.",
+            "name": "PublishError",
+            "code": "VIDEO_MISSING",
+            "status": null,
+            "problems": null
+          }
+        },
+        "fired": [],
+        "events": [],
+        "calls": []
+      }
+    },
+    {
+      "id": "image-not-a-file",
+      "fn": "publish",
+      "input": {
+        "state": {
+          "posts": [
+            {
+              "id": "p1",
+              "text": "b",
+              "images": [
+                {
+                  "id": "i",
+                  "alt": "",
+                  "file": {
+                    "name": "a.jpg",
+                    "size": 2
+                  }
+                }
+              ],
+              "video": null,
+              "record": null,
+              "card": null
+            }
+          ],
+          "reply": null,
+          "tags": [],
+          "langs": [
+            "en"
+          ],
+          "labels": [],
+          "gates": {
+            "custom": false,
+            "reply": null,
+            "quotes": true
+          },
+          "asDid": "did:plc:writer",
+          "schedule": null,
+          "lifespan": {
+            "enabled": false
+          },
+          "source": null
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "An image couldn’t be uploaded: data.arrayBuffer is not a function",
+            "name": "PublishError",
+            "code": "UPLOAD_FAILED",
+            "status": null,
+            "problems": null
+          }
+        },
+        "fired": [],
+        "events": [
+          {
+            "phase": "uploading",
+            "kind": "images",
+            "done": 0,
+            "total": 1
+          }
+        ],
+        "calls": []
+      }
+    },
+    {
       "id": "video-bytes-gone",
       "fn": "publish",
       "input": {
