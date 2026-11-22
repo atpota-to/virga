@@ -79,30 +79,47 @@ struct PeopleReportView: View {
   @Environment(ArchiveModel.self) private var model: ArchiveModel?
   let archive: ReportArchive
   let period: AnalyticsPeriod
+  var kind = "all"
+  /// Whom to show: "all", "not" (not followed) or "following".
+  var relation = "all"
   @State private var limits = (inbound: PeopleReportView.page, outbound: PeopleReportView.page)
   static let page = 12
 
   var body: some View {
-    let m = ReportModels.peopleModel(archive, period, archive.nowMs ?? SyncStatus.now())
+    let m = ReportModels.peopleModel(archive, period, archive.nowMs ?? SyncStatus.now(), kind: kind)
     let sets = ReportModels.relationSets(archive)
-    let inTop = Array(m.inbound.prefix(limits.inbound))
-    let outTop = Array(m.outbound.prefix(limits.outbound))
+    let follows = { (did: String) in sets.following.contains { $0.jsEquals(did) } }
+    let keep = { (r: TopActor) in relation == "not" ? !follows(r.did) : relation == "following" ? follows(r.did) : true }
+    let inRanked = m.inbound.filter(keep)
+    let outRanked = m.outbound.filter(keep)
+    let inTop = Array(inRanked.prefix(limits.inbound))
+    let outTop = Array(outRanked.prefix(limits.outbound))
     let notFollowing = m.inbound.filter { r in !sets.following.contains { $0.jsEquals(r.did) } }.count
     let days = period.days.map { $0 != 0 } ?? false
     var caption: [String] = []
-    if archive.meta.following != nil, notFollowing > 0 { caption.append("\(AppLocale.formatNumber(notFollowing)) of them you don’t follow.") }
+    if archive.meta.following != nil, relation != "not", notFollowing > 0 { caption.append("\(AppLocale.formatNumber(notFollowing)) of them you don’t follow.") }
     if let oldest = m.inOldest, days, oldest > m.inT0 {
       caption.append("Notifications reach back to \(Time.formatDateShort(oldest)) so far, so earlier events in this window are outside them.")
     }
     return Group {
       ReportCard(title: "They engage with you", sub: nil, tools: nil) {
-        list(inTop, m.inbound, side: 0, empty: "Nobody has engaged with you in this window yet.")
+        list(
+          inTop, inRanked, side: 0,
+          empty: relation == "not" && !m.inbound.isEmpty
+            ? "You already follow everyone who engaged with you in this window." : "Nobody has engaged with you in this window yet.")
         if !caption.isEmpty {
           Text(caption.joined(separator: " ")).virgaText(.textSm).foregroundStyle(theme.muted).fixedSize(horizontal: false, vertical: true)
         }
       }
       ReportCard(title: "You engage with them", sub: nil, tools: nil) {
-        list(outTop, m.outbound, side: 1, empty: "You haven’t engaged with anyone in this window yet.")
+        if kind == "mention" {
+          EmptyState("Mentions are counted inbound only.")
+        } else {
+          list(
+            outTop, outRanked, side: 1,
+            empty: relation == "not" && !m.outbound.isEmpty
+              ? "You already follow everyone you engaged with in this window." : "You haven’t engaged with anyone in this window.")
+        }
       }
       HowCounted(paragraphs: [
         "Inbound counts come from your notifications: likes, reposts, replies, quotes and mentions aimed at you. Outbound counts come from your repo’s like and repost history, plus the replies and quotes in your post archive.",

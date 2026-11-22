@@ -156,6 +156,9 @@ struct ReportPage: View {
   @Environment(ArchiveModel.self) private var archive: ArchiveModel?
   let report: ReportEntry
   @State private var adding = false
+  @State private var kind = "all"
+  @State private var direction = "received"
+  @State private var relation = "all"
 
   var body: some View {
     let widget = ReportWidgets.byReport[report.key].flatMap { Catalog.widgets[$0] }
@@ -173,7 +176,7 @@ struct ReportPage: View {
             .accessibilityIdentifier("add-to-dashboard")
           }
           PeriodPicker()
-        }))
+        }), extra: filters)
     if let archive, ["followers", "posts", "engagement", "content", "blocks", "people", "atmosphere"].contains(report.key) {
       let period = preferences.period()
       let data = ReportArchive(archive)
@@ -183,9 +186,9 @@ struct ReportPage: View {
         case "posts": PostsReportView(archive: data, period: period)
         case "content": ContentReportView(archive: data, period: period)
         case "blocks": BlocksReportView(archive: data, period: period)
-        case "people": PeopleReportView(archive: data, period: period)
+        case "people": PeopleReportView(archive: data, period: period, kind: kind, relation: relation)
         case "atmosphere": AtmosphereReportView(archive: data, period: period)
-        default: EngagementReportView(archive: data, period: period)
+        default: EngagementReportView(archive: data, period: period, kind: kind, given: direction == "given")
         }
       }
       .virgaDialog(isPresented: $adding, title: "Add \(widget?.name ?? report.label) to a dashboard") {
@@ -194,6 +197,34 @@ struct ReportPage: View {
     } else {
       UnportedPage(PageHeaderModel(title: report.label, sub: report.desc, crumbs: [Crumb("Reports", to: "/reports")]))
     }
+  }
+}
+
+extension ReportPage {
+  /// The engagement and people reports' filters: the direction (engagement),
+  /// the kind of engagement, and whom to show (people).
+  var filters: AnyView? {
+    guard report.key == "engagement" || report.key == "people" else { return nil }
+    let kinds = report.key == "people" ? Analytics.eventKinds : Analytics.engagementKinds
+    return AnyView(
+      FlowLayout(spacing: 24, lineSpacing: 12) {
+        if report.key == "engagement" {
+          Segmented(
+            label: "Direction",
+            options: [
+              SegmentedOption("received", "Received", systemImage: Glyph.received), SegmentedOption("given", "Given", systemImage: Glyph.given),
+            ], selection: $direction, size: .small)
+        }
+        Segmented(
+          label: "Engagement type", options: kinds.map { SegmentedOption($0.key, $0.label, systemImage: WidgetParts.kindGlyph[$0.key]) },
+          selection: $kind, size: .small)
+        if report.key == "people" {
+          Segmented(
+            label: "Show people",
+            options: [SegmentedOption("all", "Everyone"), SegmentedOption("not", "Not following"), SegmentedOption("following", "Following")],
+            selection: $relation, size: .small)
+        }
+      })
   }
 }
 
@@ -330,10 +361,21 @@ struct EngagementReportView: View {
   @Environment(AppModel.self) private var app
   let archive: ReportArchive
   let period: AnalyticsPeriod
+  var kind = "all"
+  var given = false
   @State private var unitPick: String?
 
   var body: some View {
-    let m = ReportModels.engagementModel(archive, period, archive.nowMs ?? SyncStatus.now(), unit: unitPick.map { AnalyticsUnit($0) })
+    let m = ReportModels.engagementModel(archive, period, archive.nowMs ?? SyncStatus.now(), kind: kind, unit: unitPick.map { AnalyticsUnit($0) })
+    if given {
+      GivenReportView(archive: archive, period: period, kind: kind)
+    } else {
+      received(m)
+    }
+  }
+
+  @ViewBuilder
+  private func received(_ m: EngagementReport) -> some View {
     let days = period.days.map { $0 != 0 } ?? false
     FiguresView(
       [
@@ -360,7 +402,63 @@ struct EngagementReportView: View {
       BarList(
         rows: m.byKind.map { BarListRow(key: $0.kind, label: $0.label, value: Double($0.value)) }, accessibilityLabel: "Engagement by kind")
     }
-    TopPostsCard(archive: archive, posts: m.top, kind: "all")
+    TopPostsCard(archive: archive, posts: m.top, kind: kind)
+  }
+}
+#endif
+
+#if canImport(UIKit)
+/// The engagement report's other direction: what you gave.
+struct GivenReportView: View {
+  let archive: ReportArchive
+  let period: AnalyticsPeriod
+  let kind: String
+  @State private var unitPick: String?
+
+  var body: some View {
+    let m = ReportModels.givenModel(archive, period, archive.nowMs ?? SyncStatus.now(), kind: kind, unit: unitPick.map { AnalyticsUnit($0) })
+    let days = period.days.map { $0 != 0 } ?? false
+    let head = kind == "all" ? "Engagement" : Analytics.engagementKinds.first { $0.key == kind }?.label ?? "Engagement"
+    let coverage = archive.meta.outbound?.coverageMs ?? 0
+    if archive.posts.isEmpty && archive.outbound.isEmpty {
+      SyncEmpty(text: "Nothing given on record yet. Run a sync to build the archive.")
+    } else {
+      FiguresView(
+        [
+          ReportParts.fig(
+            kind == "all" ? "Given" : "\(head) given", Double(m.total), delta: days ? .some(m.compare.pct) : nil,
+            deltaTitle: days ? "\(Periods.periodBefore(period, true)): \(AppLocale.formatNumber(m.compare.previous))" : nil),
+          ReportParts.fig("Per day", m.perDay, decimals: true),
+          ReportParts.fig("Accounts", Double(m.accounts), sub: "Engaged with"),
+        ], label: "Engagement given in figures")
+      ReportCard(
+        title: "\(head) given per \(ChartFormat.unitNoun(m.unit))", sub: "Counted on the day you gave it",
+        tools: AnyView(
+          Segmented(label: "Chart", options: ReportParts.unitOptions(m.units, "\(head) given"), selection: m.unit.rawValue, size: .small) {
+            unitPick = $0
+          })
+      ) {
+        SeriesChart(
+          series: ChartPoint.of(m.series), trend: ChartPoint.of(m.trend), mode: .bars, unit: m.unit, height: 260,
+          accessibilityLabel: "\(head) given per \(m.unit.rawValue) over \(Periods.periodPhrase(period))")
+        ChartTable(series: ChartPoint.of(m.series), trend: ChartPoint.of(m.trend), unit: m.unit, valueHead: "\(head) given")
+      }
+      if kind == "all" {
+        ReportCard(title: "By type", sub: nil, tools: nil) {
+          BarList(
+            rows: m.byKind.map { k in
+              let noun = ReportModels.givenNoun.first { $0.kind == k.kind }?.noun ?? k.kind
+              return BarListRow(
+                key: k.kind, label: noun.prefix(1).uppercased() + noun.dropFirst(), value: Double(k.count), systemImage: WidgetParts.kindGlyph[k.kind])
+            }, accessibilityLabel: "Engagement given by type")
+        }
+      }
+      HowCounted(paragraphs: [
+        "Likes and reposts come from your repo"
+          + (coverage > 0 ? ", which reaches back to \(Time.formatDateShort(coverage)) so far" : ", every one you have ever made")
+          + "; replies and quotes from the post archive. Replies and quotes aimed at your own posts are threading, not engagement, and are left out. Who you engage with most is in the People report."
+      ])
+    }
   }
 }
 #endif
