@@ -1,5 +1,5 @@
 // Ports src/posting/pages/hubParts.jsx (RowSkeleton, LoadError, ConfirmDialog)
-// Ports src/posting/ui/PostingHeader.jsx (the header's model)
+// Ports src/posting/ui/PostingHeader.jsx
 // Ports src/posting/pages/hub.css (.hub-skeleton, .hub-bone, .hub-error, .hub-confirm, .hub-notice)
 //
 // What the posting pages share: the bones a list loads under, a read that
@@ -14,10 +14,25 @@ import VirgaInsights
 /// `PostingHeader`: Posting in the crumbs (except on the overview), the
 /// page's title and line, and what it touches.
 enum PostingHeader {
-  static func model(_ key: String, showAccess: Bool = true) -> PageHeaderModel {
+  /// `crumbs` replaces the usual ones (a page reached from another, as the
+  /// weekly schedule is from Scheduled posts); `title` and `sub` the page's;
+  /// `showAccess` is false where the page itself isn't shown (NeedsBackend).
+  static func model(
+    _ key: String, title: String? = nil, sub: String? = nil, crumbs: [Crumb]? = nil, showAccess: Bool = true
+  ) -> PageHeaderModel {
     let page = PostingRoutes.postingPageByKey[key] ?? PostingRoutes.postingPageByKey["hub"]
-    let crumbs = page?.key == "hub" || page == nil ? [] : [Crumb("Posting", to: PostingRoutes.postingBase)]
-    return PageHeaderModel(title: page?.title ?? "Posting", sub: page?.desc, access: showAccess ? page?.access ?? [] : [], crumbs: crumbs)
+    let usual = page?.key == "hub" || page == nil ? [] : [Crumb("Posting", to: PostingRoutes.postingBase)]
+    return PageHeaderModel(
+      title: title ?? page?.title ?? "Posting", sub: sub ?? page?.desc, access: showAccess ? page?.access ?? [] : [],
+      crumbs: crumbs ?? usual)
+  }
+
+  /// The header with the caller's `actions` and what goes under it (`extra`), drawn only when given.
+  static func header(
+    _ key: String, title: String? = nil, sub: String? = nil, crumbs: [Crumb]? = nil, showAccess: Bool = true,
+    actions: AnyView? = nil, extra: AnyView? = nil
+  ) -> PageHeader {
+    PageHeader(model(key, title: title, sub: sub, crumbs: crumbs, showAccess: showAccess), actions: actions, extra: extra)
   }
 }
 

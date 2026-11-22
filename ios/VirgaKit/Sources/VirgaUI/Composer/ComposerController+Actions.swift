@@ -370,10 +370,11 @@ extension ComposerController {
     }
   }
 
-  var disabled: Bool { busy != nil || loads["scheduled"] == .loading || loads["draft"] == .loading }
+  // ADVISER: a read holds the post still too.
+  var disabled: Bool { busy != nil || adviserReading || loads["scheduled"] == .loading || loads["draft"] == .loading }
 
   func runAction(_ action: String) {
-    guard busy == nil else { return }
+    guard busy == nil, !adviserReading else { return }  // ADVISER
     switch action {
     case PublishActions.post:
       publishTask = Task { await submitPost() }
@@ -426,7 +427,7 @@ extension ComposerController {
     busy = nil
   }
 
-  func submitPost() async {
+  func submitPost(skipAdviser: Bool = false) async {  // ADVISER: skipAdviser
     var s = state
     let did = s.asDid
     error = nil
@@ -451,6 +452,11 @@ extension ComposerController {
         var lifespan = s.lifespan.objectValue ?? [:]
         lifespan["enabled"] = false
         s.json["lifespan"] = .object(lifespan)
+      }
+      // ADVISER: the check before sending (ComposerController+Adviser.swift).
+      if !skipAdviser {
+        guard let checked = await adviserGate(s, attempt: attempt) else { return }
+        s = checked
       }
       s = await ensureGates(s)
       let target = try await session.targetFor(did)

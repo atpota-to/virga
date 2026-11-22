@@ -134,6 +134,28 @@ means porting the code, not reimagining it.
   (`let expected: Double = 272 + 1040 + 51.2 * 2`) and write one `#expect`
   per comparison.
 - iOS 17.4 is the floor: no iOS 18-only API without `if #available`.
+- VirgaUI can only be compiled by CI, and its first compiles have failed
+  for the same few reasons. Check these before a round goes to CI:
+  - **A name already taken.** A type in VirgaUI hides one of the same name
+    in the logic targets for every file in VirgaUI: a view named `Library`
+    hid VirgaPosting's `Library`, and VirgaPosting also has `LibraryPage`,
+    `LibraryPreview` and `ComposerFiles`. SwiftUI has names of its own too
+    (`TextSelection` from iOS 18, `LibraryItem` from DeveloperToolsSupport),
+    so a bare name in a file importing both is ambiguous; VirgaUI settles
+    those two with typealiases. Grep VirgaUI and the logic targets, and
+    think of SwiftUI's, before naming a type. The same goes for a static
+    added to a shared enum such as `Measure.Tools`, which two people may add
+    to at once.
+  - **Something internal.** A logic target's internal helpers
+    (`jsStartsWith`) and a public struct's synthesized memberwise
+    initializer aren't visible from VirgaUI: give the struct a public
+    `init`. Nothing provides `String.nonEmpty`.
+  - **A subscript's label.** A subscript's parameter name isn't an argument
+    label: `views[uri]`, not `views[uri: x]`.
+  - **Isolation and optionals.** Read a `@MainActor` model only from
+    `@MainActor` code (static helpers included); unwrap an optional before
+    `jsEquals`; give a tuple fallback its labels; import the target a
+    type lives in (`PostingRoutes` is VirgaInsights').
 
 ## Tests
 
@@ -163,6 +185,13 @@ means porting the code, not reimagining it.
 - **Behaviour tests** for what can't be a fixture: models, stores, networking
   against `MockTransport` (request shape, pagination, errors, retries), and
   anything with I/O. Port the web module's own tests where they apply.
+- **No clocks in assertions.** Swift Testing runs suites in parallel on a
+  few pool threads, and CPU-bound parity replays can hold them for minutes
+  on a loaded machine: a 30 ms deadline has been met after 128 seconds. So
+  no test orders work with `Task.yield` counts or short sleeps, and none
+  asserts a wall-clock bound. To show something answered before slow work
+  ended, have the slow work set a flag when it ends and check the flag;
+  wait for a state with a polling loop that has a generous limit.
 - Assert with a message that shows the difference:
   `let d = Parity.diff(actual, c.output); #expect(d == nil, "\(c): \(d ?? "")")`.
 

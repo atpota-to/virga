@@ -1,5 +1,6 @@
 // Ports src/shell/Shell.jsx (the page the address names, and NotFound)
 // Ports src/posting/ui/PostingHeader.jsx (the header a posting page has)
+// Ports src/posting/PostingPage.jsx (the page the address names, NeedsBackend in its place)
 // Ports src/tools/ToolPage.jsx (ToolHeader, and the page of a tool that isn't built)
 //
 // Every route resolves to a view here. A page that has been ported is its
@@ -157,13 +158,22 @@ public struct RoutedPage: View {
     }
   }
 
-  /// PostingPage: Templates (Posting/TemplatesPage.swift), keyed by the
-  /// open account, with the part of the address after it; every other
-  /// posting page its header (PostingHeader) and that it isn't here yet.
+  /// PostingPage: a page that runs on Virga's server shows NeedsBackend
+  /// instead for an account without a long session; Templates
+  /// (Posting/TemplatesPage.swift), keyed by the open account, with the
+  /// part of the address after it; every other posting page its header
+  /// (PostingHeader) and that it isn't here yet.
   @ViewBuilder
   private func posting(_ key: String?, id: String?) -> some View {
     let pageKey = key == "compose" ? "hub" : (key ?? "hub")
-    if pageKey == "templates" {
+    let did = app.session.did
+    let canSchedule = did.map { app.session.capabilitiesFor($0).canSchedule } ?? false
+    if PostingRoutes.postingPageByKey[pageKey]?.needsBackend == true && !canSchedule {
+      VirgaPage(PostingHeader.model(pageKey, showAccess: false)) {
+        NeedsBackendNotice(did: did)
+      }
+      .id(did ?? "")
+    } else if pageKey == "templates" {
       TemplatesPage(session: app.session, did: app.session.did, id: id)
         .id(app.session.did ?? "")
     } else if pageKey == "library" {
