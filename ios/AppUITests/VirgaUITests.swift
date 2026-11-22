@@ -119,13 +119,24 @@ final class VirgaUITests: XCTestCase {
     }
   }
 
-  /// New post opens the composer over the page, as the web's Shell does
-  /// (composer.open({})), rather than going to Posting.
+  /// New post (the sidebar's, or the tab bar's round button) opens the
+  /// composer in place, over the page it was pressed on; Close shuts it and
+  /// leaves that page where it was. Its title is the dialog's head from 640
+  /// wide, the phone's bar at the top under that.
   func testNewPostOpensTheComposer() {
     let app = launch()
     waitForHome(app)
-    element(app, isDesk(app) ? "sidebar-new-post" : "tab-new-post").tap()
-    XCTAssertTrue(element(app, "composer-title").waitForExistence(timeout: 15), "the composer didn't open")
+    let newPost = element(app, isDesk(app) ? "sidebar-new-post" : "tab-new-post")
+    XCTAssertTrue(newPost.waitForExistence(timeout: 5), "no New post button")
+    newPost.tap()
+    let title = element(app, "composer-title")
+    XCTAssertTrue(title.waitForExistence(timeout: 15), "the composer didn't open")
+    XCTAssertEqual(title.label, "New post")
+    let close = element(app, "composer-close")
+    XCTAssertTrue(close.exists, "no Close on the composer")
+    close.tap()
+    XCTAssertTrue(title.waitForNonExistence(timeout: 5), "the composer stayed open")
+    waitForHome(app)
   }
 
   func testTheAccountMenuOpens() {

@@ -134,8 +134,8 @@ means porting the code, not reimagining it.
   (`let expected: Double = 272 + 1040 + 51.2 * 2`) and write one `#expect`
   per comparison.
 - iOS 17.4 is the floor: no iOS 18-only API without `if #available`.
-- VirgaUI can only be compiled by CI, and its first compiles have failed
-  for the same few reasons. Check these before a round goes to CI:
+- VirgaUI can only be compiled by CI, and its first compiles and runs have
+  failed for the same few reasons. Check these before a round goes to CI:
   - **A name already taken.** A type in VirgaUI hides one of the same name
     in the logic targets for every file in VirgaUI: a view named `Library`
     hid VirgaPosting's `Library`, and VirgaPosting also has `LibraryPage`,
@@ -156,12 +156,14 @@ means porting the code, not reimagining it.
     `@MainActor` code (static helpers included); unwrap an optional before
     `jsEquals`; give a tuple fallback its labels; import the target a
     type lives in (`PostingRoutes` is VirgaInsights').
-- **An identifier on a container hides its children's.** SwiftUI hands an
-  `.accessibilityIdentifier` set on a stack, a sheet's body or a card down
-  to every element inside it, over their own, so a UI test can't find the
-  Close or the switch within. Put `.accessibilityElement(children:
-  .contain)` just before the container's identifier (the sidebar's, the
-  composer's bar). Compiling doesn't show this; only a UI test does.
+  - **A container's identifier** (a UI test, not the compiler). An
+    `.accessibilityIdentifier` on a stack, a `Group`, a custom view or a
+    layout is handed to every accessibility element directly inside it and
+    replaces theirs: the composer's bar took over its Close, title and send
+    button. A container with identified elements in it is
+    `.accessibilityElement(children: .contain)` first, then gets its
+    identifier; a leaf control (a Button, Text, TextField, Toggle, Image)
+    needs nothing.
 
 ## Tests
 

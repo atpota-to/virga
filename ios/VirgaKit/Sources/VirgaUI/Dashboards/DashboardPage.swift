@@ -142,6 +142,7 @@ struct DashboardPage: View {
             }
           }
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("dash-grid")
       }
     }

@@ -5,7 +5,11 @@
 // knob takes --on-accent, which is dark at night). In high contrast it is an
 // outline (an inset 2-point edge in --muted, no fill) with its knob in
 // --muted at 70% of its size; on, the accent's fill with the knob in
-// --on-accent, still at 70%. The knob moves on --ease.
+// --on-accent, still at 70%. The knob moves on --ease. It draws no words, as
+// the web's `.switch` (a `role="switch"` button) shows none: the Toggle's
+// label is its name for VoiceOver (the web's aria-label), and the row it
+// sits in says what it is. A custom ToggleStyle can't see `.labelsHidden()`,
+// so the style itself leaves the label out.
 //
 // VirgaCheckStyle: a checkbox with its words beside it (`.check`), the box
 // in the accent when ticked.
@@ -43,32 +47,30 @@ struct SwitchBody: View {
     let knobFill: ThemeValue = on ? ThemeKit.switchOnKnobFill : (high ? ThemeKit.highContrastSwitchKnobFill : ThemeKit.switchKnobFill)
     let edge = ThemeKit.highContrastSwitchEdge.first
     let shadow = theme.shadow(ThemeKit.switchKnobShadow)
-    HStack {
-      configuration.label
-      Button {
-        configuration.isOn.toggle()
-      } label: {
-        ZStack(alignment: on ? .trailing : .leading) {
-          Capsule().fill(theme.color(fill))
-          if high && !on, let edge {
-            Capsule().strokeBorder(theme.color(edge.color ?? .color(.transparent)), lineWidth: theme.points(edge.spread ?? .px(0)))
-          }
-          Circle()
-            .fill(theme.color(knobFill))
-            .frame(width: knob, height: knob)
-            .scaleEffect(scale)
-            .virgaShadow(high ? VirgaShadow(color: .clear, radius: 0, x: 0, y: 0) : shadow)
-            .padding(inset)
+    // The capsule and its knob alone: the label is only for VoiceOver.
+    Button {
+      configuration.isOn.toggle()
+    } label: {
+      ZStack(alignment: on ? .trailing : .leading) {
+        Capsule().fill(theme.color(fill))
+        if high && !on, let edge {
+          Capsule().strokeBorder(theme.color(edge.color ?? .color(.transparent)), lineWidth: theme.points(edge.spread ?? .px(0)))
         }
-        .frame(width: width, height: height)
-        .animation(theme.motion.knob, value: on)
-        .touchTarget()
+        Circle()
+          .fill(theme.color(knobFill))
+          .frame(width: knob, height: knob)
+          .scaleEffect(scale)
+          .virgaShadow(high ? VirgaShadow(color: .clear, radius: 0, x: 0, y: 0) : shadow)
+          .padding(inset)
       }
-      .buttonStyle(.plain)
-      .virgaFocusOutline(Capsule())
-      .opacity(isEnabled ? 1 : ThemeKit.switchDisabledOpacity)
+      .frame(width: width, height: height)
+      .animation(theme.motion.knob, value: on)
+      .touchTarget()
     }
-    // Read as the system's own switch: its name, and on or off.
+    .buttonStyle(.plain)
+    .virgaFocusOutline(Capsule())
+    .opacity(isEnabled ? 1 : ThemeKit.switchDisabledOpacity)
+    // Read as the system's own switch: its name (the label), and on or off.
     .accessibilityRepresentation {
       Toggle(isOn: configuration.$isOn) { configuration.label }
     }
@@ -127,7 +129,12 @@ struct CheckBody: View {
 #Preview("Switch and check") {
   VirgaPreviewHost {
     VStack(alignment: .leading) {
-      Toggle("Show the live sky", isOn: .constant(true)).toggleStyle(.virgaSwitch)
+      // A switch's row says what it is; the switch is named only for VoiceOver.
+      HStack {
+        Text("Live sky")
+        Spacer(minLength: 0)
+        Toggle("Show the live sky", isOn: .constant(true)).toggleStyle(.virgaSwitch)
+      }
       Toggle("Also delete what it keeps in this browser", isOn: .constant(false)).toggleStyle(.virgaCheck)
     }
     .padding()

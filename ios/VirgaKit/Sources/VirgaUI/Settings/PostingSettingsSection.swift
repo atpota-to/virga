@@ -73,6 +73,7 @@ struct PostingSettingsSection: View {
       PostingSettingsCards(did: did, server: server)
         .id(did ?? "")
     }
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("posting-settings")
   }
 }
@@ -204,6 +205,7 @@ struct ComposerDefaultsCard: View {
           .padding(.top, Measure.Settings.calloutSpaceAbove)
       }
     }
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("posting-new-posts")
   }
 
@@ -343,6 +345,7 @@ struct QueueSettingsCard: View {
           .padding(.top, Measure.Settings.calloutSpaceAbove)
       }
     }
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("posting-queue")
   }
 
@@ -424,6 +427,7 @@ struct LifespanDefaultsCard: View {
       }
       caption
     }
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("posting-default-timer")
   }
 

@@ -270,6 +270,7 @@ struct LibraryPanel: View {
             }
           }
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("library-list")
       }
       listFoot

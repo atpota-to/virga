@@ -47,6 +47,24 @@ Others `swiftc -parse` doesn't see, met while writing: `JSONValue` is
 (use `.isPresent`); a modifier on a `GridRow` makes it one cell (put it on the cells); a
 `let` that shadows a name used above it in the same scope.
 
+Identifiers and containers, which only the UI tests show: an `.accessibilityIdentifier`
+on anything that isn't an accessibility element of its own (a stack, a `Group`, a custom
+view's body, a `Layout`) is given to each element directly inside it and replaces their
+own; the outermost wins, and an element that is itself a `.contain` container (a widget
+card) loses its identifier too, though what's inside it keeps theirs. A `ScrollView` is an
+element, so an identifier right on it stays on it (the template editor's fields kept
+theirs inside its dialog's ScrollView). So a container with identified elements in it is
+`.accessibilityElement(children: .contain)` before its identifier, as the tools' and
+Defense's always were. A failed test's `App UI hierarchy` attachment shows a missed one
+as the same identifier on several elements and none of theirs. The containers fixed
+together: `composer-bar` (it had taken the phone composer's Close, title and send
+button), `library-dialog`, `library-panel`, `library-list`, `template-editor`,
+`templates-page`, `templates-list`, Settings › Posting's `posting-settings`,
+`posting-new-posts`, `posting-queue`, `posting-default-timer` and `posting-adviser`,
+`style-dialog`, `alt-dialog`, `adviser-sheet`, `dash-grid` (which had hidden every
+`widget-<type>`, so `dashboard-heatmap` was never taken) and the phone's `sync-banner`
+(which had hidden its `sync-cancel`).
+
 ## API for the screens that build on it
 
 All under ios/VirgaKit/Sources/VirgaUI/.
@@ -81,7 +99,11 @@ COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
 - `Segmented(label:options:selection:size:)` (scrolls with faded edges, keys held at their
   bold width), `ChipStyle`, `TokenView`/`TokenRow`, `Badge`, `MetaLine`/`MetaPiece`,
   `StateDot`, `Avatar`, `AccessLine`.
-- `.toggleStyle(.virgaSwitch)`, `.virgaCheck`; `.virgaField(invalid:size:)`,
+- `.toggleStyle(.virgaSwitch)` draws the capsule and its knob and no words, as the web's
+  `.switch` (its label is VoiceOver's name for it, the web's aria-label; the row beside it
+  says what it is, as `SettingsSwitch`'s and the timer editor's rows do: a ToggleStyle
+  can't see `.labelsHidden()`, so it once drew its label beside it, "Require alt text"
+  twice); `.virgaCheck` draws its words beside the box. `.virgaField(invalid:size:)`,
   `.virgaTextArea()`, `FieldStack`, `FieldHint(_, isOver:)`, `SearchField`.
 - Menus: `MoreMenu`/`VirgaMenu` over `[MenuEntry]` (`.item(MenuItem(...))`, `.separator`),
   a native Menu.
@@ -349,5 +371,6 @@ LIBRARY (Library/)
 - Every window shares one session, so the web's "another tab switched accounts" notice
   has no case; TermsGate's Reload can't fetch newer documents (they are bundled).
 - Until the composer is in the app, Post this chart's Write a post with it is the system's
-  share sheet, and New post (the sidebar's, the tab bar's, the palette's) goes to the
-  composer's address, whose page says it isn't here yet.
+  share sheet. New post (the sidebar's, the tab bar's round button) opens the composer in
+  place, over the page it was pressed on, as Shell.jsx's does; VirgaUITests'
+  `testNewPostOpensTheComposer` checks it opens and that Close shuts it.

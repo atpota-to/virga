@@ -278,6 +278,7 @@ struct SyncBanner: View {
         .accessibilityHidden(true)
     }
     .padding(.bottom, Measure.Sync.bannerSpaceBelow)
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("sync-banner")
   }
 
