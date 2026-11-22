@@ -155,10 +155,28 @@ struct ReportPage: View {
   @Environment(PreferencesModel.self) private var preferences
   @Environment(ArchiveModel.self) private var archive: ArchiveModel?
   let report: ReportEntry
+  @State private var adding = false
+  @State private var kind = "all"
+  @State private var direction = "received"
+  @State private var relation = "all"
 
   var body: some View {
+    let widget = ReportWidgets.byReport[report.key].flatMap { Catalog.widgets[$0] }
     let header = PageHeader(
-      PageHeaderModel(title: report.label, sub: report.desc, crumbs: [Crumb("Reports", to: "/reports")]), actions: AnyView(PeriodPicker()))
+      PageHeaderModel(title: report.label, sub: report.desc, crumbs: [Crumb("Reports", to: "/reports")]),
+      actions: AnyView(
+        HStack(spacing: Measure.Chart.footGap) {
+          if widget != nil {
+            Button {
+              adding = true
+            } label: {
+              Label("Add to dashboard", systemImage: Glyph.dashboards)
+            }
+            .buttonStyle(.linkAction)
+            .accessibilityIdentifier("add-to-dashboard")
+          }
+          PeriodPicker()
+        }), extra: filters)
     if let archive, ["followers", "posts", "engagement", "content", "blocks", "people", "atmosphere"].contains(report.key) {
       let period = preferences.period()
       let data = ReportArchive(archive)
@@ -168,14 +186,45 @@ struct ReportPage: View {
         case "posts": PostsReportView(archive: data, period: period)
         case "content": ContentReportView(archive: data, period: period)
         case "blocks": BlocksReportView(archive: data, period: period)
-        case "people": PeopleReportView(archive: data, period: period)
+        case "people": PeopleReportView(archive: data, period: period, kind: kind, relation: relation)
         case "atmosphere": AtmosphereReportView(archive: data, period: period)
-        default: EngagementReportView(archive: data, period: period)
+        default: EngagementReportView(archive: data, period: period, kind: kind, given: direction == "given")
         }
+      }
+      .virgaDialog(isPresented: $adding, title: "Add \(widget?.name ?? report.label) to a dashboard") {
+        if let widget { AddToDashboard(widget: widget) { adding = false } }
       }
     } else {
       UnportedPage(PageHeaderModel(title: report.label, sub: report.desc, crumbs: [Crumb("Reports", to: "/reports")]))
     }
+  }
+}
+
+extension ReportPage {
+  /// The engagement and people reports' filters: the direction (engagement),
+  /// the kind of engagement, and whom to show (people).
+  var filters: AnyView? {
+    guard report.key == "engagement" || report.key == "people" else { return nil }
+    let kinds = report.key == "people" ? Analytics.eventKinds : Analytics.engagementKinds
+    return AnyView(
+      FlowLayout(spacing: 24, lineSpacing: 12) {
+        if report.key == "engagement" {
+          Segmented(
+            label: "Direction",
+            options: [
+              SegmentedOption("received", "Received", systemImage: Glyph.received), SegmentedOption("given", "Given", systemImage: Glyph.given),
+            ], selection: $direction, size: .small)
+        }
+        Segmented(
+          label: "Engagement type", options: kinds.map { SegmentedOption($0.key, $0.label, systemImage: WidgetParts.kindGlyph[$0.key]) },
+          selection: $kind, size: .small)
+        if report.key == "people" {
+          Segmented(
+            label: "Show people",
+            options: [SegmentedOption("all", "Everyone"), SegmentedOption("not", "Not following"), SegmentedOption("following", "Following")],
+            selection: $relation, size: .small)
+        }
+      })
   }
 }
 
@@ -187,9 +236,11 @@ struct FollowersReportView: View {
   @State private var mode = "cumulative"
 
   var body: some View {
-    let unitPick = mode == "cumulative" ? nil : AnalyticsUnit(mode)
+    let unitPick = mode == "cumulative" || mode == "together" ? nil : AnalyticsUnit(mode)
     let m = ReportModels.followersModel(archive, period, archive.nowMs ?? SyncStatus.now(), unit: unitPick)
-    let cumulative = mode == "cumulative"
+    let log = ReportModels.followerLogModel(archive)
+    let together = mode == "together"
+    let cumulative = mode == "cumulative" || together
     let series = ChartPoint.of(cumulative ? m.cumulative : m.counts)
     let days = period.days.map { $0 != 0 } ?? false
     if archive.followers.isEmpty {
@@ -206,6 +257,9 @@ struct FollowersReportView: View {
             deltaTitle: days ? "\(Periods.periodBefore(period, true)): \(AppLocale.formatNumber(m.compare.previous))" : nil,
             sub: days ? "\(AppLocale.formatNumber(m.compare.previous)) \(Periods.periodBefore(period))" : nil),
           ReportParts.fig("Per day", m.perDay, decimals: true, sub: "Averaged over the window"),
+          FigureItem(
+            label: "Unfollows at the last sync", value: log.tracking ? .number(Double(log.latestLost.count)) : .text("—"),
+            note: AnyView(Text(log.tracking ? "Open the Unfollow tracker" : "Counted from your next sync"))),
         ], label: "Followers in figures")
       ReportCard(
         title: "Growth",
@@ -214,18 +268,40 @@ struct FollowersReportView: View {
           : "New followers per \(ChartFormat.unitNoun(m.unit)), dated by each follow record",
         tools: AnyView(
           Segmented(
-            label: "Growth", options: [SegmentedOption("cumulative", "Total")] + ReportParts.unitOptions(m.units, "New followers"),
+            label: "Growth",
+            options: [
+              SegmentedOption("cumulative", "Total", accessibilityLabel: "Running total over the window"),
+              SegmentedOption("together", "With blocks", accessibilityLabel: "Followers and block reach on one chart"),
+            ] + ReportParts.unitOptions(m.units, "New followers"),
             selection: $mode, size: .small))
       ) {
         SeriesChart(
-          series: series, mode: cumulative ? .line : .bars, unit: m.unit, zeroBase: !cumulative,
-          ghost: cumulative && (m.counterGap ?? 0) > 0 ? m.profileCount.map { ChartGhost(v: Double($0)) } : nil,
+          series: series, seriesLabel: together ? "Followers" : nil,
+          secondary: together ? ChartSecondary(label: "Blocks", series: ChartPoint.of(m.blockCumulative)) : nil,
+          mode: cumulative ? .line : .bars, unit: m.unit, zeroBase: !cumulative,
+          ghost: !together && cumulative && (m.counterGap ?? 0) > 0 ? m.profileCount.map { ChartGhost(v: Double($0)) } : nil,
           marks: ChartNotesModels.marks(app, archive, cumulative ? m.cumulative : m.counts, m.unit, milestones: true), height: 280,
           accessibilityLabel: cumulative
             ? "Followers over \(Periods.periodPhrase(period))" : "New followers per \(m.unit.rawValue) over \(Periods.periodPhrase(period))")
-        ChartTable(series: series, unit: m.unit, valueHead: cumulative ? "Followers" : "New followers")
+        ChartTable(
+          series: series, secondary: together ? ChartPoint.of(m.blockCumulative) : nil, unit: m.unit,
+          valueHead: cumulative ? "Followers" : "New followers", secondaryHead: together ? "Blocks" : nil)
       }
+      FollowerLists(archive: archive, period: period, m: m)
       ChartNotes(did: archive.did)
+      HowCounted(
+        paragraphs: [
+          "Virga walks your follower list and dates each follower by their follow record, so the total is the followers whose accounts exist right now.",
+          "The diamonds on the chart mark the round numbers your count has passed, each on the day the follower who made it arrived. They are counted from the followers you have today, so if people have left since, you reached that number on that day or a little before it. Notes you add below are marked the same way.",
+        ]
+          + ((m.counterGap ?? 0) > 0
+            ? [
+              "Bluesky’s profile counter says \(AppLocale.formatNumber(m.profileCount ?? 0)). It keeps counting deactivated, suspended and deleted accounts, so the \(AppLocale.formatNumber(m.counterGap ?? 0))-account gap is followers who can’t currently be listed. The dashed reach on the chart marks that counter; it is not measured growth."
+            ] : [])
+          + [
+            "The curve dates each follower by their follow record, so accounts that unfollowed are invisible to it. The Unfollow tracker finds them by comparing two syncs."
+              + (m.undated > 0 ? " \(AppLocale.formatNumber(m.undated)) followers carry no readable follow date and sit outside the chart." : "")
+          ])
     }
   }
 }
@@ -285,10 +361,21 @@ struct EngagementReportView: View {
   @Environment(AppModel.self) private var app
   let archive: ReportArchive
   let period: AnalyticsPeriod
+  var kind = "all"
+  var given = false
   @State private var unitPick: String?
 
   var body: some View {
-    let m = ReportModels.engagementModel(archive, period, archive.nowMs ?? SyncStatus.now(), unit: unitPick.map { AnalyticsUnit($0) })
+    let m = ReportModels.engagementModel(archive, period, archive.nowMs ?? SyncStatus.now(), kind: kind, unit: unitPick.map { AnalyticsUnit($0) })
+    if given {
+      GivenReportView(archive: archive, period: period, kind: kind)
+    } else {
+      received(m)
+    }
+  }
+
+  @ViewBuilder
+  private func received(_ m: EngagementReport) -> some View {
     let days = period.days.map { $0 != 0 } ?? false
     FiguresView(
       [
@@ -314,6 +401,63 @@ struct EngagementReportView: View {
     ReportCard(title: "By kind", sub: nil, tools: nil) {
       BarList(
         rows: m.byKind.map { BarListRow(key: $0.kind, label: $0.label, value: Double($0.value)) }, accessibilityLabel: "Engagement by kind")
+    }
+    TopPostsCard(archive: archive, posts: m.top, kind: kind)
+  }
+}
+#endif
+
+#if canImport(UIKit)
+/// The engagement report's other direction: what you gave.
+struct GivenReportView: View {
+  let archive: ReportArchive
+  let period: AnalyticsPeriod
+  let kind: String
+  @State private var unitPick: String?
+
+  var body: some View {
+    let m = ReportModels.givenModel(archive, period, archive.nowMs ?? SyncStatus.now(), kind: kind, unit: unitPick.map { AnalyticsUnit($0) })
+    let days = period.days.map { $0 != 0 } ?? false
+    let head = kind == "all" ? "Engagement" : Analytics.engagementKinds.first { $0.key == kind }?.label ?? "Engagement"
+    let coverage = archive.meta.outbound?.coverageMs ?? 0
+    if archive.posts.isEmpty && archive.outbound.isEmpty {
+      SyncEmpty(text: "Nothing given on record yet. Run a sync to build the archive.")
+    } else {
+      FiguresView(
+        [
+          ReportParts.fig(
+            kind == "all" ? "Given" : "\(head) given", Double(m.total), delta: days ? .some(m.compare.pct) : nil,
+            deltaTitle: days ? "\(Periods.periodBefore(period, true)): \(AppLocale.formatNumber(m.compare.previous))" : nil),
+          ReportParts.fig("Per day", m.perDay, decimals: true),
+          ReportParts.fig("Accounts", Double(m.accounts), sub: "Engaged with"),
+        ], label: "Engagement given in figures")
+      ReportCard(
+        title: "\(head) given per \(ChartFormat.unitNoun(m.unit))", sub: "Counted on the day you gave it",
+        tools: AnyView(
+          Segmented(label: "Chart", options: ReportParts.unitOptions(m.units, "\(head) given"), selection: m.unit.rawValue, size: .small) {
+            unitPick = $0
+          })
+      ) {
+        SeriesChart(
+          series: ChartPoint.of(m.series), trend: ChartPoint.of(m.trend), mode: .bars, unit: m.unit, height: 260,
+          accessibilityLabel: "\(head) given per \(m.unit.rawValue) over \(Periods.periodPhrase(period))")
+        ChartTable(series: ChartPoint.of(m.series), trend: ChartPoint.of(m.trend), unit: m.unit, valueHead: "\(head) given")
+      }
+      if kind == "all" {
+        ReportCard(title: "By type", sub: nil, tools: nil) {
+          BarList(
+            rows: m.byKind.map { k in
+              let noun = ReportModels.givenNoun.first { $0.kind == k.kind }?.noun ?? k.kind
+              return BarListRow(
+                key: k.kind, label: noun.prefix(1).uppercased() + noun.dropFirst(), value: Double(k.count), systemImage: WidgetParts.kindGlyph[k.kind])
+            }, accessibilityLabel: "Engagement given by type")
+        }
+      }
+      HowCounted(paragraphs: [
+        "Likes and reposts come from your repo"
+          + (coverage > 0 ? ", which reaches back to \(Time.formatDateShort(coverage)) so far" : ", every one you have ever made")
+          + "; replies and quotes from the post archive. Replies and quotes aimed at your own posts are threading, not engagement, and are left out. Who you engage with most is in the People report."
+      ])
     }
   }
 }

@@ -261,10 +261,18 @@ final class VirgaUITests: XCTestCase {
     scrollTo(app, note)
     if note.exists {
       note.tap()
-      note.typeText("A post went round")
-      element(app, "chart-note-add").tap()
-      app.swipeDown()
-      app.swipeDown()
+      // Return puts the keyboard away; then the chart is scrolled back
+      // into view, with the note marked on it.
+      note.typeText("A post went round\n")
+      let add = element(app, "chart-note-add")
+      scrollTo(app, add)
+      add.tap()
+      let chart = element(app, "series-chart")
+      var tries = 0
+      while !chart.isHittable && tries < 8 {
+        app.swipeDown()
+        tries += 1
+      }
       snapshot("chart-note")
     }
     part(app, "reports").tap()

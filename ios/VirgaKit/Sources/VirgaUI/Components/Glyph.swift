@@ -80,6 +80,9 @@ public enum Glyph {
   public static let reply = "bubble.left"
   public static let quote = "quote.opening"
   public static let history = "clock.arrow.circlepath"
+  /// ArrowDownLeft and ArrowUpRight: received and given.
+  public static let received = "arrow.down.left"
+  public static let given = "arrow.up.right"
   /// Table2: "Show as table".
   public static let table = "tablecells"
   /// Download and RotateCcw: Settings › Data's exports and Rebuild posts.

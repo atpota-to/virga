@@ -49,7 +49,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Dashboards/DashboardPage.swift"
       ],
-      "note": "The header (the name with its ⋯: Rename, Duplicate, New dashboard, Reset or Clear with its toast, Delete with its dialog; the period's line; Customize and the period picker; Done), the twelve-column grid with dashboards.css's narrowing (CardGrid), the cards under their titles with the way to the full report, the empty state, ?edit=1, and Customize as the web's phone and keyboard path at every width (each card a line to move up or down, its size, Remove, with toasts) with the library in a dialog (search, kind, Add). The card settings dialog (title, period, kind of engagement, rows, Use the defaults) opens from a card's line in Customize. Not yet: dragging cards and reports, the chosen card's floating tools, OwnLine (the words under a card's title for its own period and kind), and Post this chart (ShareDialog).",
+      "note": "The header (the name with its ⋯: Rename, Duplicate, New dashboard, Reset or Clear with its toast, Delete with its dialog; the period's line; Customize and the period picker; Done), the twelve-column grid with dashboards.css's narrowing (CardGrid), the cards under their titles with the way to the full report, the empty state, ?edit=1, and Customize as the web's phone and keyboard path at every width (each card a line to move up or down, its size, Remove, with toasts) with the library in a dialog (search, kind, Add). The card settings dialog (title, period, kind of engagement, rows, Use the defaults) opens from a card's line in Customize. OwnLine says a card's own period and kind under its title, and Post this chart is each chart card's PostChartButton (the share dialog). Not yet, and why: dragging cards and reports; SwiftUI's draggable and dropDestination give no place between two cards of a custom twelve-column layout to drop on, and List's onMove, the system's long-press reorder, can't hold the grid; the up and down controls are the whole web keyboard path, and VoiceOver's. Nor the chosen card's floating tools.",
       "synced": "55c8f98f100f"
     },
     "src/dashboards/DashboardsContext.jsx": {
@@ -78,12 +78,12 @@
       "synced": "d8886917b04c"
     },
     "src/dashboards/widgets/index.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift",
         "ios/VirgaKit/Sources/VirgaUI/Dashboards/MoreWidgets.swift"
       ],
-      "note": "Every card: the figures (followers, new followers, unfollows, engagement, per post, given, posts, blocked by), the charts (follower growth with the ghost and the milestones, new followers, engagement over time, rate, by type and given, posting cadence, Best time, blocks over time, repo activity) with the notes marked, and the lists (top posts, top engagers, you engage with, follow-back, newest followers, unfollows, the lists you're on, records by collection) with Follow and the names filled in. Not yet: WIDGET_HEADS (a list's count and the follower chart's Total and New modes in the card's heading).",
+      "note": "Every card: the figures (followers, new followers, unfollows, engagement, per post, given, posts, blocked by), the charts (follower growth with the ghost and the milestones, new followers, engagement over time, rate, by type and given, posting cadence, Best time, blocks over time, repo activity) with the notes marked, and the lists (top posts, top engagers, you engage with, follow-back, newest followers, unfollows, the lists you're on, records by collection) with Follow and the names filled in. WIDGET_HEADS: the follower chart's Total and New in its heading, and the lists' count under the title of the lists you're on.",
       "synced": "6a863f721549"
     },
     "src/dashboards/widgets/parts.jsx": {
@@ -107,7 +107,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Reports/People.swift"
       ],
-      "note": "cardFor, displayName and profileUrl (People), and PersonRow: the picture, the name (a link to the profile), the handle where the name isn't it, follows you, a fact, the value, Follow (archive.setFollow, held while the sync reads follows, its error under the name) and the way to the Interaction lookup. useWantActors is a .task on the rows shown. Not yet: the follow's kept rows across a relation filter (useFollow's keep), and FollowButton's own sizes.",
+      "note": "cardFor, displayName and profileUrl (People), and PersonRow: the picture, the name (a link to the profile), the handle where the name isn't it, follows you, a fact, the value, Follow (archive.setFollow, held while the sync reads follows, its error under the name) and the way to the Interaction lookup. useWantActors is a .task on the rows shown. Not yet: a row followed under Not following stays until the filter changes on the web (useFollow's kept set); here it leaves at once. FollowButton is the kit's small button.",
       "synced": "9ce56098d8ab"
     },
     "src/reports/ChartNotes.jsx": {
@@ -135,13 +135,14 @@
       "synced": "0adefe7512b7"
     },
     "src/reports/ReportPage.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Reports/ReportPage.swift",
         "ios/VirgaKit/Sources/VirgaUI/Reports/MoreReports.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Reports/ContentReport.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Reports/ContentReport.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Reports/ReportExtras.swift"
       ],
-      "note": "ReportsIndex with every report's leading figure (contentHeadline included), and every report's page: Followers, Posts, Engagement, Content, Blocks (total, by path, with followers, or per bucket), People (both ways, twelve more at a time, with Follow) and Atmosphere (per bucket, by collection), each with its table and How this is counted where the web has one. Not yet: the followers' blocks-together mode, newest followers, biggest days and unfollow figure; the engagement report's top posts and the given direction with its kinds; People's kind and relation filters; and Add to dashboard.",
+      "note": "ReportsIndex and every report: Followers (Total, With blocks, per bucket; the unfollow figure; newest followers; biggest days with the post that day or the day before; How this is counted), Posts, Engagement (received or given, by kind; top posts), Content, Blocks, People (by kind; everyone, not following or following) and Atmosphere, each chart with its table and notes. Add to dashboard (REPORT_WIDGET, AddToDashboard) is a link action in the header beside the period picker, where the web puts it on the line under the chart (and in a phone's ⋯); the new-dashboard toast has no Open it link (a toast here holds words only).",
       "synced": "18e37669d694"
     },
     "src/reports/parts.jsx": {
