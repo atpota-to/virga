@@ -334,7 +334,8 @@ TEMPLATES AND POSTING (Templates/, Posting/, Settings/PostingSettingsSection.swi
   no toggle of its own; the switch above it, `default-timer-on`, keeps `enabled`).
 - `Measure.Templates` (Templates/TemplateMeasures.swift) names library.css's and hub.css's measures.
 - PostingUITests (`testTemplatesAndPostingSettings`, no archive build): `posting-templates`,
-  `template-editor`, `template-editor-questions`, `settings-posting`, `settings-posting-timer`.
+  `template-editor`, `template-editor-questions`, `posting-template-use` (Use on Event reminder: the
+  composer, its questions in the library), `settings-posting`, `settings-posting-timer`.
 
 ADVISER (Adviser/, Composer/ComposerController+Adviser.swift, Posting/)
 - The views are over VirgaPosting/Adviser's logic, unchanged: `AdviserGateModel` (the composer's

@@ -520,6 +520,13 @@ public final class ComposerController {
         guard let template else { throw JSError(message: "That template is gone, or couldn’t be read.") }
         self.dispatch(.setSource(ComposerSource(json: ["kind": "template", "id": .string(templateId)])))
         self.loads["template"] = nil
+        // One with questions opens the library over the composer: not until
+        // the composer's own sheet is up, as a sheet can't be presented over
+        // one still coming in.
+        if !PostTemplates.templateQuestions(template, self.templateContext()).isEmpty {
+          try? await Task.sleep(nanoseconds: UInt64(Self.sheetSettleSeconds * 1_000_000_000))
+          guard self.loadToken == token else { return }
+        }
         guard let postId = self.state.posts.first?.id else { return }
         self.reseedToken = token
         self.applyTemplate(postId, template, range: nil)
@@ -529,6 +536,9 @@ public final class ComposerController {
       }
     }
   }
+
+  /// How long a sheet takes to come in, before another is put over it.
+  static let sheetSettleSeconds = 0.5
 
   /// The seed taken again from the posts' words, once what an intent's
   /// template or attachment put in is on screen.
