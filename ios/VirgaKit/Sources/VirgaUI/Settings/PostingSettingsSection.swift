@@ -2,7 +2,7 @@
 // Ports src/posting/ui/ComposerDefaults.jsx
 // Ports src/posting/ui/QueueSettings.jsx
 // Ports src/posting/ui/LifespanDefaults.jsx
-// Ports src/posting/pages/scheduleParts.jsx (TimezoneSelect, SwitchButton: as Settings › Posting uses them)
+// Ports src/posting/pages/scheduleParts.jsx (SwitchButton, as Settings › Posting uses it)
 // Ports src/settings/SettingsPage.jsx (its Posting section)
 //
 // Settings › Posting, per account, over the account's PostingSettingsModel
@@ -16,8 +16,9 @@
 // The languages and who can reply are the composer's own pickers
 // (LanguagePicker, GatesEditor in VirgaUI/Composer). The queue's line about
 // the week, its time zone's name and moving the week to another zone are
-// scheduleModel.js's (weeklyCount, weekSummary, slotLabel, zoneLabel,
-// moveToZone), written here until the scheduling pages' model is ported.
+// scheduleModel.js's (VirgaPosting's ScheduleModel: weeklyCount, weekSummary,
+// zoneLabel, moveToZone); its time-zone picker is scheduleParts'
+// TimezoneSelect (Posting/ScheduleParts.swift).
 //
 // The post adviser's settings are AdviserSettingsCard (Adviser/), and an
 // account without a long session sees NeedsBackendNotice in the server's
@@ -236,72 +237,6 @@ struct SettingsSwitch: View {
 
 // MARK: - The weekly queue
 
-/// scheduleModel.js's words for the week, as Settings › Posting says them.
-enum ScheduleWords {
-  static let shortDay = ["mon": "Mon", "tue": "Tue", "wed": "Wed", "thu": "Thu", "fri": "Fri", "sat": "Sat", "sun": "Sun"]
-
-  /// `weeklyCount(schedule)`.
-  static func weeklyCount(_ schedule: QueueSettings) -> Int {
-    PostingQueue.weekdays.reduce(0) { $0 + (schedule.slots[$1.key]?.count ?? 0) }
-  }
-
-  /// `zoneLabel(tz)`: its underscores as spaces.
-  static func zoneLabel(_ tz: String) -> String { tz.replacingOccurrences(of: "_", with: " ") }
-
-  /// `slotLabel('HH:MM')`: "9:00 AM", in the active locale.
-  static func slotLabel(_ hhmm: String) -> String {
-    let units = Array(hhmm.utf16)
-    guard units.count == 5, units[2] == 0x3A, let h = Int(hhmm.jsSlice(0, 2)), let m = Int(hhmm.jsSlice(3, 5)) else { return hhmm }
-    // 2000-01-03, a Monday, at that time in UTC.
-    let ms = 946_857_600_000.0 + Double(h) * 3_600_000 + Double(m) * 60_000
-    return AppLocale.toLocaleTimeString(ms, DateFormatOptions(hour: "numeric", minute: "2-digit"), timeZone: .gmt)
-  }
-
-  /// `weekSummary(schedule)`: 'Weekdays at 9:00 AM and 5:00 PM', 'Mon,
-  /// Wed at 9:00 AM; Sat at 10:00 AM', or 'No posting times yet.'.
-  static func weekSummary(_ schedule: QueueSettings) -> String {
-    if PostingQueue.isScheduleEmpty(schedule.json) { return "No posting times yet." }
-    var groups: [(sig: String, days: [String], times: [String])] = []
-    for day in PostingQueue.weekdays {
-      let times = (schedule.slots[day.key] ?? []).sorted { $0.utf16.lexicographicallyPrecedes($1.utf16) }
-      if times.isEmpty { continue }
-      let sig = times.joined(separator: ",")
-      if let last = groups.last, last.sig == sig {
-        groups[groups.count - 1].days.append(day.key)
-      } else {
-        groups.append((sig, [day.key], times))
-      }
-    }
-    let order = PostingQueue.weekdays.map(\.key)
-    func daysPhrase(_ days: [String]) -> String {
-      let s = days.joined(separator: ",")
-      if s == "mon,tue,wed,thu,fri" { return "Weekdays" }
-      if s == "sat,sun" { return "Weekends" }
-      if days.count == 7 { return "Every day" }
-      let runs = days.indices.allSatisfy { i in
-        i == 0 || (order.firstIndex(of: days[i]) ?? -9) == (order.firstIndex(of: days[i - 1]) ?? -9) + 1
-      }
-      if days.count >= 3 && runs, let first = days.first, let last = days.last {
-        return "\(shortDay[first] ?? first) to \(shortDay[last] ?? last)"
-      }
-      return days.map { shortDay[$0] ?? $0 }.joined(separator: ", ")
-    }
-    func timesPhrase(_ times: [String]) -> String {
-      let labels = times.map(slotLabel)
-      if labels.count == 1 { return labels[0] }
-      return "\(labels.dropLast().joined(separator: ", ")) and \(labels[labels.count - 1])"
-    }
-    return groups.map { "\(daysPhrase($0.days)) at \(timesPhrase($0.times))" }.joined(separator: "; ")
-  }
-
-  /// `moveToZone(schedule, timezone)`: the same times, read in another zone.
-  static func moveToZone(_ schedule: QueueSettings, _ timezone: String) -> QueueSettings {
-    var slots: [String: [String]] = [:]
-    for day in PostingQueue.weekdays { slots[day.key] = schedule.slots[day.key] ?? [] }
-    return QueueSettings(timezone: timezone, slots: slots)
-  }
-}
-
 /// `QueueSettings`: the week in a line, its time zone, and suggestions.
 struct QueueSettingsCard: View {
   @Environment(\.virgaTheme) private var theme
@@ -310,14 +245,14 @@ struct QueueSettingsCard: View {
   @State private var error: String?
 
   var body: some View {
-    let schedule = model.settings.queue
-    let tz = PostingQueue.resolveTimezone(schedule.json)
+    let schedule = model.settings.queue.json
+    let tz = PostingQueue.resolveTimezone(schedule)
     let device = PostingQueue.resolveTimezone(nil)
-    let count = ScheduleWords.weeklyCount(schedule)
+    let count = ScheduleModel.weeklyCount(schedule)
     SettingsSectionView(
       title: "Weekly queue", sub: "The times each week that a post added to the queue goes out. Kept in this browser, for this account."
     ) {
-      SettingsRow(label: count == 1 ? "1 posting time a week" : "\(count) posting times a week", hint: ScheduleWords.weekSummary(schedule)) {
+      SettingsRow(label: count == 1 ? "1 posting time a week" : "\(count) posting times a week", hint: ScheduleModel.weekSummary(schedule)) {
         Button {
           navigate(PostingRoutes.postingPageByKey["schedule"]?.path ?? PostingRoutes.postingBase)
         } label: {
@@ -327,11 +262,13 @@ struct QueueSettingsCard: View {
       }
       SettingsRow(
         label: "Time zone",
-        hint: tz == device
+        hint: tz.jsEquals(device)
           ? "The queue’s times are read on this clock."
-          : "The queue’s times are read on this clock. This device is in \(ScheduleWords.zoneLabel(device))."
+          : "The queue’s times are read on this clock. This device is in \(ScheduleModel.zoneLabel(device))."
       ) {
-        TimezonePicker(value: tz) { save(["queue": ScheduleWords.moveToZone(schedule, $0).json]) }
+        TimezoneSelect(value: tz, identifier: "posting-time-zone") {
+          save(["queue": ScheduleModel.moveToZone(schedule, .string($0))])
+        }
       }
       SettingsRow(
         label: "Suggest posting times",
@@ -356,30 +293,6 @@ struct QueueSettingsCard: View {
     } catch {
       self.error = PostingSettingsSave.message(error)
     }
-  }
-}
-
-/// `TimezoneSelect`: every zone this device knows, this device's first.
-struct TimezonePicker: View {
-  @Environment(\.virgaTheme) private var theme
-  let value: String
-  let onChange: (String) -> Void
-
-  var body: some View {
-    let device = PostingQueue.resolveTimezone(nil)
-    var zones = TimeZone.knownTimeZoneIdentifiers.filter { $0 != device }
-    if !value.isEmpty && value != device && !zones.contains(value) { zones.insert(value, at: 0) }
-    return Picker("Time zone", selection: Binding(get: { value.isEmpty ? device : value }, set: { onChange($0) })) {
-      Text("\(ScheduleWords.zoneLabel(device)) (this device)").tag(device)
-      ForEach(zones, id: \.self) { z in
-        Text(ScheduleWords.zoneLabel(z)).tag(z)
-      }
-    }
-    .pickerStyle(.menu)
-    .tint(theme.ink)
-    .frame(minWidth: Measure.Settings.selectMinWidth, maxWidth: Measure.Settings.selectMaxWidth, alignment: .leading)
-    .virgaField()
-    .accessibilityIdentifier("posting-time-zone")
   }
 }
 

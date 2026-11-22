@@ -164,6 +164,8 @@ struct TimezoneSelect: View {
   @Environment(\.virgaTheme) private var theme
   let value: String
   var disabled = false
+  /// The picker's identifier, for the UI tests (the web's `id`).
+  var identifier = "time-zone-select"
   let onChange: (String) -> Void
 
   /// `allZones()`: Intl.supportedValuesOf('timeZone') is sorted by code unit.
@@ -188,7 +190,7 @@ struct TimezoneSelect: View {
     .disabled(disabled)
     .frame(minWidth: Measure.Settings.selectMinWidth, maxWidth: Measure.Settings.selectMaxWidth, alignment: .leading)
     .virgaField()
-    .accessibilityIdentifier("time-zone-select")
+    .accessibilityIdentifier(identifier)
   }
 }
 
