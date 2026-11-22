@@ -59,7 +59,7 @@ struct BestTimeBody: View {
       Heatmap(
         rows: WidgetParts.bestTimeRows(m), columns: ReportModels.hourColumns(block).map { HeatmapColumn(label: $0.label, span: $0.span) },
         summary: sentence, cellHeight: block == 1 ? 22 : 30)
-      CardCaption(
+      ToolCaption(
         "Each slot shows its typical post (the median), so one post that went round doesn’t make its hour look like the best time forever. The ringed slot is the best. A slot with fewer than \(ReportModels.bestTimeMinPosts) posts is left as an outline: too few to say anything. Posts from the last two days are still collecting engagement and are left out."
       )
       ShowAsTable {
@@ -71,8 +71,8 @@ struct BestTimeBody: View {
         .frame(maxHeight: Measure.Tools.bestTableMaxHeight)
       }
     }
-    SplitLayout(columnGap: theme.gridGapX, rowGap: theme.gridGap) {
-      BestSlots(m: m, block: block)
+    ToolSplit(columnGap: theme.gridGapX, rowGap: theme.gridGap) {
+      BestTimeSlots(m: m, block: block)
       VirgaSection(title: "By weekday", flush: true) {
         BarList(
           rows: ReportModels.weekdayOrder().compactMap { day in m.byDay.first { $0.day == day } }.map { d in
@@ -83,7 +83,7 @@ struct BestTimeBody: View {
           format: { ChartFormat.fmtRate($0) }, accessibilityLabel: "What a typical post earns, by weekday"
         )
         .padding(.top, Measure.Tools.bestDaysSpaceAbove)
-        CardCaption("What a typical post earns.")
+        ToolCaption("What a typical post earns.")
       }
     }
   }
@@ -104,7 +104,7 @@ struct BestTimeBody: View {
 
 /// The best slots: rank, when, what a typical post there earns, and how
 /// many posts that comes from (on a phone, a meta line under the slot).
-struct BestSlots: View {
+struct BestTimeSlots: View {
   @Environment(\.virgaTheme) private var theme
   let m: BestTimeReport
   let block: Int

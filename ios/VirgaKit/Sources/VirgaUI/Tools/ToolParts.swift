@@ -67,7 +67,7 @@ enum ToolGlyph {
 
 /// A person's card as people.jsx reads one: a handle, a name and a face,
 /// each nil when it is missing or empty (the web's falsy).
-struct PersonCard: Hashable {
+struct ToolPersonCard: Hashable {
   var handle: String?
   var displayName: String?
   var avatar: String?
@@ -98,23 +98,23 @@ struct PersonCard: Hashable {
 enum ToolPeople {
   /// `cardFor(archive, did)`: the resolved profile, else the follower row.
   @MainActor
-  static func cardFor(_ archive: ArchiveModel, _ did: String, sets: RelationSets) -> PersonCard? {
-    if let card = archive.actors[did] { return PersonCard(card) }
-    return sets.followerCard(did).map(PersonCard.init)
+  static func cardFor(_ archive: ArchiveModel, _ did: String, sets: RelationSets) -> ToolPersonCard? {
+    if let card = archive.actors[did] { return ToolPersonCard(card) }
+    return sets.followerCard(did).map(ToolPersonCard.init)
   }
 
   @MainActor
-  static func cardFor(_ archive: ArchiveModel, _ did: String) -> PersonCard? {
+  static func cardFor(_ archive: ArchiveModel, _ did: String) -> ToolPersonCard? {
     cardFor(archive, did, sets: ReportModels.relationSets(ReportArchive(archive)))
   }
 
   /// `displayName(card, did)`: the name, else @handle, else the DID.
-  static func displayName(_ card: PersonCard?, _ did: String) -> String {
+  static func displayName(_ card: ToolPersonCard?, _ did: String) -> String {
     card?.displayName ?? card?.handle.map { "@\($0)" } ?? did
   }
 
   /// `profileUrl(card, did)`.
-  static func profileUrl(_ card: PersonCard?, _ did: String) -> URL? {
+  static func profileUrl(_ card: ToolPersonCard?, _ did: String) -> URL? {
     URL(string: "https://bsky.app/profile/\(JSURI.encodeURIComponent(card?.handle ?? did))")
   }
 }
@@ -189,7 +189,7 @@ final class FollowWriter {
 
 /// `FollowButton`: Follow (or `followLabel`) as the kit's small outline;
 /// once done, Following, the word alone.
-struct FollowButton: View {
+struct ToolFollowButton: View {
   @Environment(\.virgaTheme) private var theme
   let follow: FollowWriter
   let archive: ArchiveModel
@@ -234,7 +234,7 @@ struct ToolPersonRow: View {
   let archive: ArchiveModel
   let sets: RelationSets
   let did: String
-  var card: PersonCard? = nil
+  var card: ToolPersonCard? = nil
   var meta: [String] = []
   var value: String? = nil
   var follow: FollowWriter? = nil
@@ -248,7 +248,7 @@ struct ToolPersonRow: View {
     // A card passed in (someone who has since left the follower list, as
     // the log remembers them) stands in until a fresher one is resolved.
     let resolved = ToolPeople.cardFor(archive, did, sets: sets)
-    let card: PersonCard? = resolved?.handle != nil ? resolved : (self.card?.handle != nil ? self.card : (resolved ?? self.card))
+    let card: ToolPersonCard? = resolved?.handle != nil ? resolved : (self.card?.handle != nil ? self.card : (resolved ?? self.card))
     let name = ToolPeople.displayName(card, did)
     let shownName = name.utf16.first == 0x40 ? name.jsSlice(1) : name
     let handle = card?.handle.flatMap { shownName.jsEquals($0) ? nil : $0 }
@@ -292,7 +292,7 @@ struct ToolPersonRow: View {
         .accessibilityLabel("See your history with \(name)")
       }
       if let follow {
-        FollowButton(follow: follow, archive: archive, did: did, name: name, followLabel: followLabel, onDone: onFollowDone)
+        ToolFollowButton(follow: follow, archive: archive, did: did, name: name, followLabel: followLabel, onDone: onFollowDone)
       }
       if let extra { extra }
     }
@@ -378,7 +378,7 @@ struct ToolPostMeta: View {
           case .quote:
             Text("quote")
           case .counts:
-            CountsLine(post: post, counts: counts.map(\.key))
+            ToolPostCounts(post: post, counts: counts.map(\.key))
           }
         }
       }
@@ -387,7 +387,7 @@ struct ToolPostMeta: View {
 }
 
 /// A post's counts above zero, each with its glyph, read as words.
-struct CountsLine: View {
+struct ToolPostCounts: View {
   let post: PostRow
   let counts: [String]
 
@@ -656,7 +656,7 @@ struct TimelineList: View {
 }
 
 /// `.card-foot` under a list: "Show 30 more", and how many of how many.
-struct ShowMoreFoot: View {
+struct ToolMoreFoot: View {
   let shown: Int
   let total: Int
   let page: Int
@@ -673,7 +673,7 @@ struct ShowMoreFoot: View {
 }
 
 /// `.field-inline`: a select with its words beside it ("Sort  Newest first").
-struct InlineSelect<Value: Hashable>: View {
+struct ToolSelect<Value: Hashable>: View {
   @Environment(\.virgaTheme) private var theme
   let label: String
   let options: [(value: Value, label: String)]
@@ -719,7 +719,7 @@ struct InlineSelect<Value: Hashable>: View {
 
 /// The system's exporter for a file the archive writes (exportRows,
 /// exportPosts, exportArchive): the web's download.
-struct ExportSheet: ViewModifier {
+struct ToolExportSheet: ViewModifier {
   @Binding var file: ExportFile?
 
   func body(content: Content) -> some View {
@@ -734,13 +734,13 @@ struct ExportSheet: ViewModifier {
 }
 
 extension View {
-  func exportSheet(_ file: Binding<ExportFile?>) -> some View {
-    modifier(ExportSheet(file: file))
+  func toolExporter(_ file: Binding<ExportFile?>) -> some View {
+    modifier(ToolExportSheet(file: file))
   }
 }
 
 /// `.card-caption`: what a section needs said about it, under what it says.
-struct CardCaption: View {
+struct ToolCaption: View {
   @Environment(\.virgaTheme) private var theme
   let text: String
 
@@ -763,7 +763,7 @@ struct CardCaption: View {
 /// (`minColumn`), one under the other where they don't; `shares` sets the
 /// columns' proportions (equal by default), `stacked` keeps them one under
 /// the other whatever the width (a media query's narrowing).
-struct SplitLayout: Layout {
+struct ToolSplit: Layout {
   var minColumn: CGFloat = Measure.Tools.splitMin
   var columnGap: CGFloat
   var rowGap: CGFloat
@@ -814,7 +814,7 @@ struct SplitLayout: Layout {
 
 /// `<Menu variant="link" label="Export" icon={Download}>`: a link action
 /// that opens a short list of what to export.
-struct ExportMenu: View {
+struct ToolExportMenu: View {
   @Environment(\.virgaTheme) private var theme
   let entries: [MenuEntry]
 

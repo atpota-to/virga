@@ -102,14 +102,14 @@ struct UnfollowLog: View {
       ForEach(Self.groups(shown)) { group in
         groupView(group, sets: sets)
       }
-      ShowMoreFoot(shown: shown.count, total: entries.count, page: Self.page) { limit += Self.page }
-      CardCaption(
+      ToolMoreFoot(shown: shown.count, total: entries.count, page: Self.page) { limit += Self.page }
+      ToolCaption(
         "A change is noticed at the sync after it happened, so “noticed” is a window, not a moment. Someone who unfollowed and followed again between two syncs never shows. The log is kept in this browser, up to 5,000 changes."
       )
     }
     .accessibilityElement(children: .contain)
     .accessibilityLabel(side == "lost" ? "Who left" : "Who arrived")
-    .exportSheet($exporting)
+    .toolExporter($exporting)
   }
 
   /// The two lists as the heading's words, then what to do with the log.
@@ -153,7 +153,7 @@ struct UnfollowLog: View {
         .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
         .accessibilityAddTraits(.isHeader)
       ForEach(Array(group.entries.enumerated()), id: \.offset) { _, entry in
-        ToolPersonRow(archive: archive, sets: sets, did: entry.did, card: PersonCard(entry), meta: meta(entry), follow: follow)
+        ToolPersonRow(archive: archive, sets: sets, did: entry.did, card: ToolPersonCard(entry), meta: meta(entry), follow: follow)
       }
     }
   }

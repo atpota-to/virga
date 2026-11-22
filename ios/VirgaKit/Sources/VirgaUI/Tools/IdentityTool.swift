@@ -142,7 +142,7 @@ struct IdentityBody: View {
           note: created.map { AnyView(Text(IdentityModel.date($0))) }),
       ], label: "The account in figures")
     identifiers(did)
-    SplitLayout(columnGap: theme.gridGapX, rowGap: theme.gridGap) {
+    ToolSplit(columnGap: theme.gridGapX, rowGap: theme.gridGap) {
       historySection(did, events)
       repoSection
     }
@@ -207,12 +207,12 @@ struct IdentityBody: View {
             .lineLimit(1)
             .truncationMode(.middle)
             .textSelection(.enabled)
-          CopyButton(text: did, label: "the DID")
+          ToolCopyButton(text: did, label: "the DID")
         }
         KVRow("Handle") {
           if let handle = profile?.handle {
             Text("@\(handle)").lineLimit(1).truncationMode(.tail)
-            CopyButton(text: handle, label: "the handle")
+            ToolCopyButton(text: handle, label: "the handle")
           } else {
             Text("Not verified right now").foregroundStyle(theme.muted)
           }
@@ -220,7 +220,7 @@ struct IdentityBody: View {
         KVRow("PDS") {
           if let pds, !pds.isEmpty {
             Text(pds).lineLimit(1).truncationMode(.tail)
-            CopyButton(text: pds, label: "the PDS address")
+            ToolCopyButton(text: pds, label: "the PDS address")
           } else {
             Text(pds == nil ? "Looking it up…" : "Couldn’t be resolved").foregroundStyle(theme.muted)
           }
@@ -287,7 +287,7 @@ struct IdentityBody: View {
 }
 
 /// `CopyButton`: copies `text`, and says so for a moment.
-struct CopyButton: View {
+struct ToolCopyButton: View {
   let text: String
   let label: String
   @State private var done = false

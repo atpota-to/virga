@@ -509,7 +509,7 @@ struct StartingPoint: View {
           pick(row)
         }
       }
-      ShowMoreFoot(shown: shown.count, total: ranked.count, page: InteractionLookup.startPage) { limit += InteractionLookup.startPage }
+      ToolMoreFoot(shown: shown.count, total: ranked.count, page: InteractionLookup.startPage) { limit += InteractionLookup.startPage }
     }
     .frame(maxWidth: Measure.Tools.lookupMax, alignment: .leading)
     .wantActors(archive, Array(names))

@@ -66,7 +66,7 @@ struct ListsYoureOnBody: View {
     } else {
       content(lists, sets: ReportModels.relationSets(report))
         .wantActors(archive, lists.map(\.owner))
-        .exportSheet($exporting)
+        .toolExporter($exporting)
     }
   }
 
@@ -104,7 +104,7 @@ struct ListsYoureOnBody: View {
         "Found through Constellation, which indexes who links to whom across the network, then each list read from Bluesky’s public API. Subscribers are counted for moderation lists only, where they decide who blocks you. A list removed since the last sync is gone from here at the next one."
     ) {
       ForEach(shown, id: \.uri) { list in
-        ListRowView(list: list, owner: ToolPeople.cardFor(archive, list.owner, sets: sets))
+        ListsToolRow(list: list, owner: ToolPeople.cardFor(archive, list.owner, sets: sets))
       }
       if shown.isEmpty {
         EmptyState("No lists here.").padding(.top, theme.rowPad)
@@ -126,11 +126,11 @@ struct ListsYoureOnBody: View {
 }
 
 /// One list, as the web's phone sets a row of its table.
-struct ListRowView: View {
+struct ListsToolRow: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(\.openURL) private var openURL
   let list: ListInfo
-  let owner: PersonCard?
+  let owner: ToolPersonCard?
 
   var body: some View {
     let counted = list.purpose == "moderation" && list.subscribers != nil

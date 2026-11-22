@@ -41,7 +41,7 @@ struct ChosenHistory: View {
           "Nothing on record between you and \(name)\(model.coverage.inboundSinceMs.map { ". Your notifications reach back to \(Time.formatDateShort($0)); anything before that wouldn’t show." } ?? ".")"
         )
       } else {
-        SplitLayout(
+        ToolSplit(
           minColumn: 300, columnGap: theme.gridGapX, rowGap: theme.gridGap, shares: [1, 2],
           stacked: theme.windowWidth <= Measure.Tools.lookupTopSplit
         ) {
@@ -51,7 +51,7 @@ struct ChosenHistory: View {
           }
         }
         if model.engagedPosts.known {
-          SplitLayout(columnGap: theme.gridGapX, rowGap: theme.gridGap) {
+          ToolSplit(columnGap: theme.gridGapX, rowGap: theme.gridGap) {
             EngagedPostsView(model: model, did: archive.did)
             YourPostsView(model: model, did: archive.did, who: who)
           }
@@ -64,14 +64,14 @@ struct ChosenHistory: View {
           onExport: { events in exportEvents(events, card: card) })
       }
       if !model.isSelf {
-        HowCounted(model: model)
+        LookupHowCounted(model: model)
       }
     }
     .wantActors(archive, [who])
-    .exportSheet($exporting)
+    .toolExporter($exporting)
   }
 
-  private func exportEvents(_ events: [InteractionEvent], card: PersonCard?) {
+  private func exportEvents(_ events: [InteractionEvent], card: ToolPersonCard?) {
     let rows = InteractionModel.eventsCsvRows(events, did: who, handle: card?.handle ?? "")
     exporting = archive.exportRows("interactions-\(InteractionLookup.fileSafe(card?.handle ?? who))", ToolExport.rows(rows))
   }
@@ -111,7 +111,7 @@ enum LookupWords {
 struct LookupPersonCard: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(\.openURL) private var openURL
-  let card: PersonCard?
+  let card: ToolPersonCard?
   let who: String
   let model: Interaction
   let onClear: () -> Void
@@ -225,8 +225,8 @@ struct LookupTotals: View {
             .virgaText(.textBase, weight: VirgaWeight.medium)
             .lineLimit(1)
             .padding(.vertical, pad)
-            TotalCell(value: Self.value(totals.in, k), max: biggest, dir: "in").padding(.vertical, pad)
-            TotalCell(value: Self.value(totals.out, k), max: biggest, dir: "out").padding(.vertical, pad)
+            LookupTotalCell(value: Self.value(totals.in, k), max: biggest, dir: "in").padding(.vertical, pad)
+            LookupTotalCell(value: Self.value(totals.out, k), max: biggest, dir: "out").padding(.vertical, pad)
           }
           rule(theme.color(ThemeKit.tableRowRule))
         }
@@ -239,14 +239,14 @@ struct LookupTotals: View {
         rule(theme.color(ThemeKit.tableRowRule))
         GridRow {
           edgeLabel("First on record")
-          EdgeCell(event: model.first.in).padding(.vertical, pad)
-          EdgeCell(event: model.first.out).padding(.vertical, pad)
+          LookupEdgeCell(event: model.first.in).padding(.vertical, pad)
+          LookupEdgeCell(event: model.first.out).padding(.vertical, pad)
         }
         rule(theme.color(ThemeKit.tableRowRule))
         GridRow {
           edgeLabel("Latest")
-          EdgeCell(event: model.latest.in).padding(.vertical, pad)
-          EdgeCell(event: model.latest.out).padding(.vertical, pad)
+          LookupEdgeCell(event: model.latest.in).padding(.vertical, pad)
+          LookupEdgeCell(event: model.latest.out).padding(.vertical, pad)
         }
       }
     }
@@ -290,7 +290,7 @@ struct LookupTotals: View {
   }
 }
 
-struct TotalCell: View {
+struct LookupTotalCell: View {
   @Environment(\.virgaTheme) private var theme
   let value: Int?
   let max: Int
@@ -325,7 +325,7 @@ struct TotalCell: View {
 }
 
 /// `EdgeCell`: a date on one line, with its kind under it.
-struct EdgeCell: View {
+struct LookupEdgeCell: View {
   @Environment(\.virgaTheme) private var theme
   let event: InteractionEvent?
 
@@ -367,7 +367,7 @@ struct LookupTimeline: View {
         unit: .month, format: { $0 == nil ? "not on record" : ChartFormat.fmtCount($0) }, height: 240,
         accessibilityLabel: "Interactions with \(name) per month, them to you and you to them")
       ChartTable(series: inbound, secondary: outbound, unit: .month, valueHead: "Them to you", secondaryHead: "You to them")
-      if let caption { CardCaption(caption) }
+      if let caption { ToolCaption(caption) }
     }
   }
 }
@@ -408,7 +408,7 @@ struct EngagedPostsView: View {
         ForEach(Array(shown.enumerated()), id: \.element.uri) { index, row in
           engagedRow(index, row)
         }
-        ShowMoreFoot(shown: shown.count, total: engaged.rows.count, page: InteractionLookup.postsPage * 2) {
+        ToolMoreFoot(shown: shown.count, total: engaged.rows.count, page: InteractionLookup.postsPage * 2) {
           limit += InteractionLookup.postsPage * 2
         }
       }
@@ -478,7 +478,7 @@ struct YourPostsView: View {
       ForEach(shown, id: \.uri) { post in
         ToolPostRow(post: post, did: did, now: now)
       }
-      ShowMoreFoot(shown: shown.count, total: posts.count, page: InteractionLookup.postsPage * 2) {
+      ToolMoreFoot(shown: shown.count, total: posts.count, page: InteractionLookup.postsPage * 2) {
         limit += InteractionLookup.postsPage * 2
       }
     }
@@ -522,11 +522,11 @@ struct LookupEvents: View {
       } else {
         LazyVStack(alignment: .leading, spacing: 0) {
           ForEach(rows) { event in
-            EventRowView(event: event)
+            LookupEventRow(event: event)
           }
         }
       }
-      ShowMoreFoot(shown: rows.count, total: filtered.count, page: InteractionLookup.eventsPage) { limit += InteractionLookup.eventsPage }
+      ToolMoreFoot(shown: rows.count, total: filtered.count, page: InteractionLookup.eventsPage) { limit += InteractionLookup.eventsPage }
     }
     .accessibilityElement(children: .contain)
     .accessibilityLabel("Every interaction")
@@ -565,7 +565,7 @@ struct LookupEvents: View {
   @ViewBuilder
   private func exportTool(narrowed: Bool, total: Int) -> some View {
     if narrowed {
-      ExportMenu(entries: [
+      ToolExportMenu(entries: [
         .item(
           MenuItem(
             "These \(InteractionLookup.nounOf(filtered.count, "event", "events")) (CSV)", key: "these",
@@ -590,7 +590,7 @@ struct LookupEvents: View {
 
 /// `EventRow`: when, the kind in its direction's colour, what happened (and
 /// the post's words), and the way to the post.
-struct EventRowView: View {
+struct LookupEventRow: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(\.openURL) private var openURL
   let event: InteractionEvent
@@ -639,7 +639,7 @@ struct EventRowView: View {
 
 // MARK: - How it's counted
 
-struct HowCounted: View {
+struct LookupHowCounted: View {
   @Environment(\.virgaTheme) private var theme
   let model: Interaction
 

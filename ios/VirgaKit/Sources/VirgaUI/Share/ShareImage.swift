@@ -60,7 +60,7 @@ enum ShareFace {
 /// A ShareCanvas over a GraphicsContext.
 final class GraphicsShareCanvas: ShareCanvas {
   /// What `save()` keeps besides the transform and the clip.
-  struct State {
+  struct CanvasState {
     var fillStyle: ShareStyle = .color(.hex(0x000000))
     var strokeStyle: ShareStyle = .color(.hex(0x000000))
     var font = ShareFont(weight: 400, size: 10)
@@ -74,8 +74,8 @@ final class GraphicsShareCanvas: ShareCanvas {
   }
 
   private var context: GraphicsContext
-  private var state = State()
-  private var saved: [(context: GraphicsContext, state: State)] = []
+  private var state = CanvasState()
+  private var saved: [(context: GraphicsContext, state: CanvasState)] = []
   private var path = Path()
 
   init(_ context: GraphicsContext) {

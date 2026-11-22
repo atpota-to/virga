@@ -211,8 +211,8 @@ struct FollowCleanupPage: View {
             filter == "quiet" && checkedCount == 0
               ? "Check activity to find the accounts that went quiet." : "Nobody here. Your follows are in good shape.")
         }
-        ShowMoreFoot(shown: shown.count, total: filtered.count, page: FollowCleanup.page) { limit += FollowCleanup.page }
-        CardCaption(
+        ToolMoreFoot(shown: shown.count, total: filtered.count, page: FollowCleanup.page) { limit += FollowCleanup.page }
+        ToolCaption(
           "Unfollowing deletes the follow record from your repo, the same as unfollowing in any app. Undo writes a new one. Marking an account Keep only changes what this page suggests, in this browser."
         )
       }
@@ -226,7 +226,7 @@ struct FollowCleanupPage: View {
     .onAppear {
       for r in rows { known[JSKey(r.did)] = r }
     }
-    .exportSheet($exporting)
+    .toolExporter($exporting)
     .virgaDialog(
       isPresented: $confirming,
       title: "Unfollow \(fmt(selectedLive.count)) \(selectedLive.count == 1 ? "account" : "accounts")?"
@@ -306,7 +306,7 @@ struct FollowCleanupPage: View {
       .frame(minHeight: theme.points(ThemeKit.touchButtonHeight))
     } else {
       HStack(spacing: Measure.Tools.checkActionsGap) {
-        InlineSelect(label: "Quiet after", options: FollowCleanup.quietChoices.map { ($0, "\($0) days") }, selection: $quietDays, large: true)
+        ToolSelect(label: "Quiet after", options: FollowCleanup.quietChoices.map { ($0, "\($0) days") }, selection: $quietDays, large: true)
         Button {
           runCheck(rows.map(\.did))
         } label: {
@@ -365,7 +365,7 @@ struct FollowCleanupPage: View {
             .accessibilityIdentifier("cleanup-unfollow")
         }
       } else {
-        InlineSelect(
+        ToolSelect(
           label: "Sort", options: [("quiet", "Quiet longest"), ("interactions", "Fewest interactions"), ("oldest", "Followed longest ago")],
           selection: $sort)
         HStack(spacing: theme.space4) {
@@ -394,7 +394,7 @@ struct FollowCleanupPage: View {
   private func selectAll(live: [CleanupRow]) -> some View {
     let all = !live.isEmpty && live.allSatisfy { has(selected, $0.did) }
     return HStack(spacing: Measure.Tools.rowGap) {
-      RowCheck(
+      ToolCheck(
         isOn: Binding(get: { all }, set: { on in selected = on ? live.map(\.did) : [] }), label: "Select every account shown",
         disabled: live.isEmpty)
       Text("Select all shown")
@@ -442,7 +442,7 @@ struct FollowCleanupPage: View {
 
 /// A row's tick box: a box rather than a word on a line, a finger's size
 /// to press.
-struct RowCheck: View {
+struct ToolCheck: View {
   @Environment(\.virgaTheme) private var theme
   @Binding var isOn: Bool
   let label: String
@@ -497,7 +497,7 @@ struct CleanupRowView: View {
     let following = follow.isFollowing(archive, row.did, sets: sets)
     let bleed = Measure.Tools.selectedBleed
     return HStack(alignment: .top, spacing: Measure.Tools.rowGap) {
-      RowCheck(isOn: $selected, label: "Select \(name)", disabled: !following)
+      ToolCheck(isOn: $selected, label: "Select \(name)", disabled: !following)
       VStack(alignment: .leading, spacing: theme.space1) {
         HStack(alignment: .center, spacing: Measure.Tools.personGap) {
           Avatar(src: card?.avatar, name: card?.displayName ?? card?.handle)
@@ -519,7 +519,7 @@ struct CleanupRowView: View {
     .accessibilityElement(children: .contain)
   }
 
-  private func person(_ card: PersonCard?, _ name: String) -> some View {
+  private func person(_ card: ToolPersonCard?, _ name: String) -> some View {
     VStack(alignment: .leading, spacing: 0) {
       Button {
         if let url = ToolPeople.profileUrl(card, row.did) { openURL(url) }

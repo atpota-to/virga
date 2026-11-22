@@ -92,7 +92,7 @@ struct FollowBackQueue: View {
         EmptyState("Everyone who follows you and engaged in this window, you already follow.")
           .padding(.top, theme.rowPad)
       }
-      ShowMoreFoot(shown: shown.count, total: rows.count, page: Self.page) { limit += Self.page }
+      ToolMoreFoot(shown: shown.count, total: rows.count, page: Self.page) { limit += Self.page }
     }
     .accessibilityElement(children: .contain)
     .accessibilityLabel("The queue")

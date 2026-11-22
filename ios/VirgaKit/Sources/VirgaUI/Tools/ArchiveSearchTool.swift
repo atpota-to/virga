@@ -131,10 +131,10 @@ struct ArchiveSearchBody: View {
           }
         }
       }
-      ShowMoreFoot(shown: shown.count, total: results.count, page: ArchiveSearch.page) { limit += ArchiveSearch.page }
-      CardCaption("The archive keeps the first 200 characters of each post, so a search finds words in that part. Counts are as of the last sync.")
+      ToolMoreFoot(shown: shown.count, total: results.count, page: ArchiveSearch.page) { limit += ArchiveSearch.page }
+      ToolCaption("The archive keeps the first 200 characters of each post, so a search finds words in that part. Counts are as of the last sync.")
     }
-    .exportSheet($exporting)
+    .toolExporter($exporting)
     .onChange(of: query) { _, _ in limit = ArchiveSearch.page }
   }
 
@@ -157,12 +157,12 @@ struct ArchiveSearchBody: View {
         kind = k
         limit = ArchiveSearch.page
       }
-      InlineSelect(label: "Sort", options: ArchiveSearch.sorts, selection: $sort)
+      ToolSelect(label: "Sort", options: ArchiveSearch.sorts, selection: $sort)
     }
   }
 
   private func exportMenu(_ results: [PostRow]) -> some View {
-    ExportMenu(entries: [
+    ToolExportMenu(entries: [
       .item(
         MenuItem(
           "These \(AppLocale.formatNumber(results.count)) posts (CSV)", key: "these", hint: "What the search shows, newest first.",
