@@ -277,15 +277,23 @@ struct AddToListCard: View {
             // name fades (`.defense-band-tick:has(input:disabled)`).
             Text(AppLocale.fmtInt(Double(count))).virgaText(.textBase).foregroundStyle(theme.ink2)
           }
+          // Under the name, not the mark (`.defense-band-tick-means {
+          // grid-column: 3 / -1 }`), in its line box, which sets the row's
+          // foot as the browser's does.
           Text(BandWords.bandMeans[band] ?? "")
-            .virgaText(.textSm)
+            .virgaText(.textSm, lineBox: true)
             .foregroundStyle(theme.muted)
             .fixedSize(horizontal: false, vertical: true)
             .multilineTextAlignment(.leading)
+            .padding(.leading, Measure.Defense.bandMark + Measure.Defense.tickGap)
         }
         .padding(.top, theme.space2)
       }
-      .padding(.vertical, theme.rowPad / 2)
+      // `padding: var(--row-pad) 0`: the box's 44-point reach already sets
+      // the first line, so only half the pad above it; the full pad under
+      // the meaning.
+      .padding(.top, theme.rowPad / 2)
+      .padding(.bottom, theme.rowPad)
       .frame(maxWidth: .infinity, alignment: .leading)
       .contentShape(Rectangle())
     }
