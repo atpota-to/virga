@@ -1,5 +1,6 @@
 // Parity with harness/fakeServer.js and harness/fakeDefense.js: the
 // recorded scenarios of ios/parity/fixtures/demo-server.fakeServer.json
+// (and demo-server.audit.json, demo-server.fakeDefense.json)
 // replayed against DemoServer (every route, good and bad input, limits
 // reached, the workers run between requests), and the server's tables, its
 // log and what the workers wrote into each world compared at the end.
@@ -171,6 +172,12 @@ import VirgaTestSupport
   @Test(arguments: try Parity.cases("demo-server.fakeServer", fn: "server").map(\.id))
   func server(_ id: String) async throws {
     try await Self.check("demo-server.fakeServer", id)
+  }
+
+  /// The flows over many ticks of the workers (demo-server.audit).
+  @Test(arguments: try Parity.cases("demo-server.audit", fn: "server").map(\.id))
+  func audit(_ id: String) async throws {
+    try await Self.check("demo-server.audit", id)
   }
 
   @Test(arguments: try Parity.cases("demo-server.fakeDefense", fn: "server").map(\.id))
