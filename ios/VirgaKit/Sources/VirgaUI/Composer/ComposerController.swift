@@ -7,11 +7,12 @@
 // can be taken back. Its functions keep the web's names (startFromIntent,
 // restoreFor, changeAsDid, loadState, …); the view only binds to it.
 //
-// Not here yet, because what they call isn't ported: scheduling and the
-// weekly queue (WhenPicker, scheduleService), drafts (drafts.js), the
-// timer's editor and its limits (LifespanEditor, getLimits), the adviser,
-// the library and templates (library/model.js), continuing a thread, and
-// a draft's media store. Their buttons say so, or aren't drawn.
+// Scheduling (Schedule, Add to queue, a scheduled post opened to edit) is
+// ComposerController+Schedule.swift, its state `scheduling`; the lines that
+// reach it from here are marked SCHEDULE.
+//
+// Not here yet: the timer's editor in the composer (LifespanDialog) and its
+// default (defaultTimerFor). Its button says so.
 
 #if canImport(UIKit)
 import Foundation
@@ -125,6 +126,9 @@ public final class ComposerController {
   let templates: TemplatesModel
   /// ADVISER: the post adviser (useAdviserGate; ComposerController+Adviser.swift).
   let adviser: AdviserGateModel
+  /// SCHEDULE: the when panel, the queue's next slot, the limits, the row a
+  /// scheduled post was opened from (ComposerController+Schedule.swift).
+  let scheduling = ComposerScheduling()
   /// The account the autosaver may still write for (its `currentDid`).
   @ObservationIgnored let currentDid: Locked<String?>
 
@@ -280,6 +284,7 @@ public final class ComposerController {
     // Reopened with nothing new: what was being written is still here.
     if !plan.hasContent && !ComposerModel.isEmptyComposer(cur) {
       error = nil
+      reopenScheduling(plan.mode)  // SCHEDULE
       return
     }
 
@@ -287,6 +292,8 @@ public final class ComposerController {
     let token = loadToken
     error = nil
     permissionForced = false
+    scheduling.row = nil  // SCHEDULE
+    scheduling.sourceWarning = ""
     let base = baseState(plan.asDid)
 
     if !plan.hasContent {
@@ -294,6 +301,7 @@ public final class ComposerController {
       if restoreFor(plan.asDid, base: base, token: token) { return }
       loadState(ComposerIntent.seedFromIntent(base, plan))
       notices = elsewhereNotices(plan.asDid)
+      if plan.mode == "schedule" { openWhen() }  // SCHEDULE
       return
     }
 
@@ -321,6 +329,9 @@ public final class ComposerController {
       notes.append(ComposerNotice(key: "link", tone: .info, text: "From a link. Nothing is posted until you send it."))
     }
     notices = notes
+    // SCHEDULE: an intent that asks for a time opens the when panel at the next hour.
+    scheduling.whenOpen = plan.mode == "schedule"
+    if plan.mode == "schedule" { dispatch(.setSchedule(.at(Self.nextHour()))) }
     if !plan.images.isEmpty, let postId = seeded.posts.first?.id {
       Task { await addDescribedImages(postId, plan.images) }
     }
@@ -363,6 +374,7 @@ public final class ComposerController {
 
   func loadKept(_ state: ComposerState, touched: Bool, notes: [ComposerNotice]) {
     loads = [:]
+    scheduling.whenOpen = false  // SCHEDULE
     loadState(state, touched: touched)
     notices = notes
     fillMedia(state, token: loadToken)
@@ -411,6 +423,8 @@ public final class ComposerController {
     }
     error = nil
     permissionForced = false
+    scheduling.row = nil  // SCHEDULE
+    scheduling.sourceWarning = ""
     let restored = item.inMemory ? ComposerState(json: item.state) : ComposerModel.normalizeComposerState(item.state)
     loadKept(
       restored, touched: ComposerRestore.restoredTouched(Self.touchedJSON(item)),
@@ -428,8 +442,8 @@ public final class ComposerController {
     var next: [String: ComposerLoad] = [:]
     for kind in kinds { next[kind] = .loading }
     loads = next
-    if plan.scheduledId != nil {
-      loads = ["scheduled": .failed(ComposerUnported.open, soft: false)]
+    if let scheduledId = plan.scheduledId {
+      loadScheduled(scheduledId, asDid: plan.asDid, token: token)  // SCHEDULE
       return
     }
     if plan.draftId != nil {
@@ -520,6 +534,7 @@ public final class ComposerController {
     autosaver.cancel()
     error = nil
     permissionForced = false
+    scheduling.preview = QueuePreview()  // SCHEDULE
     let base = baseState(did)
     let label = ComposerSubmit.accountLabel(accountJSON(did), did)
 
@@ -571,8 +586,11 @@ public final class ComposerController {
     loadToken += 1
     error = nil
     replyRefPending = nil
+    scheduling.row = nil  // SCHEDULE
+    scheduling.sourceWarning = ""
     if home.isEmpty || !restoreFor(home, base: baseState(home), token: loadToken) {
       loads = [:]
+      scheduling.whenOpen = false  // SCHEDULE
       loadState(baseState(home))
       notices = []
     }

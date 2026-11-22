@@ -117,9 +117,10 @@ struct ComposerBar: View {
         .frame(maxWidth: .infinity)
         .accessibilityAddTraits(.isHeader)
         .accessibilityIdentifier("composer-title")
-      PublishButton(state: controller.state, model: model, busy: controller.sendBusy, also: controller.also) {  // ADVISER: sendBusy
-        controller.runAction($0)
-      }
+      PublishButton(
+        state: controller.state, model: model, busy: controller.sendBusy, also: controller.also,  // ADVISER: sendBusy
+        footnote: controller.usageLine.isEmpty ? "" : "\(controller.usageLine).",  // SCHEDULE
+        onAction: { controller.runAction($0) })
     }
     .frame(minHeight: ComposerMeasure.barHeight)
     .padding(ComposerMeasure.bar)
@@ -150,6 +151,7 @@ struct ComposerBody: View {
       ) { controller.changeAsDid($0) }
       ComposerAccountNotice(controller: controller)
       ComposerNotices(controller: controller)
+      ComposerSourceWarning(controller: controller)  // SCHEDULE
       if let loadError {
         Callout(tone: .danger) {
           VStack(alignment: .leading, spacing: theme.space2) {
@@ -158,18 +160,21 @@ struct ComposerBody: View {
               .buttonStyle(.virga(size: .small))
           }
         }
-      } else if controller.loads["draft"] == .loading {
-        // The composer's shape while a draft is read (ComposerSkeleton).
+      } else if controller.loads["draft"] == .loading || controller.loads["scheduled"] == .loading {
+        // The composer's shape while a draft or a scheduled post is read (ComposerSkeleton).
         LibrarySkeleton(rows: 3)
           .accessibilityElement()
-          .accessibilityLabel("Opening the draft")
+          .accessibilityLabel(controller.loads["scheduled"] != nil ? "Opening the scheduled post" : "Opening the draft")
           .accessibilityIdentifier("composer-skeleton")
       } else {
         ComposerPosts(controller: controller, disabled: disabled)
         ComposerOptions(controller: controller, disabled: disabled)
+        ComposerWhenPanel(controller: controller, disabled: disabled)  // SCHEDULE
       }
       ComposerStatus(controller: controller)
     }
+    // SCHEDULE: the account's limits, read as it opens and for each account it goes out as.
+    .task(id: controller.asDid) { await controller.refreshLimits(controller.asDid) }
   }
 }
 
@@ -383,10 +388,14 @@ struct ComposerFoot: View {
           }
           .buttonStyle(.virga)
           .disabled(busy || model.actions.schedule.disabled)
+          .accessibilityIdentifier("composer-schedule")
         }
         // On a phone the main button is in the bar at the top of the sheet.
         if !narrow {
-          PublishButton(state: state, model: model, busy: busy, also: also) { controller.runAction($0) }
+          PublishButton(
+            state: state, model: model, busy: busy, also: also,
+            footnote: controller.usageLine.isEmpty ? "" : "\(controller.usageLine).",  // SCHEDULE
+            onAction: { controller.runAction($0) })
         }
       }
       .padding(narrow ? ComposerMeasure.phoneFoot : ComposerMeasure.foot)

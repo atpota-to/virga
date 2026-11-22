@@ -31,6 +31,9 @@ extension Measure {
     public static let clockSeconds: Double = 60
     public static let longToastSeconds: Double = 9
     public static let skipToastSeconds: Double = 7
+    /// Composer.jsx's toasts: Scheduled… `{ ms: 8000 }`, what a post that went out couldn't do `{ ms: 10000 }`.
+    public static let scheduledToastSeconds: Double = 8
+    public static let warningToastSeconds: Double = 10
     /// WhenPicker.jsx's clock (`setInterval(…, 30_000)`).
     public static let pickerClockSeconds: Double = 30
     /// `.sched-row[aria-busy='true'] { opacity: 0.6 }`

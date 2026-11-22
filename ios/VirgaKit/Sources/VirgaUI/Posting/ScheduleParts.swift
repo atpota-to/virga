@@ -96,10 +96,24 @@ enum ScheduleIds {
   }
 }
 
-/// An error that says what the web's `new Error(text)` says.
-struct ScheduleSaid: LocalizedError {
+/// An error that says what the web's `new Error(text)` says (with a
+/// `code` where the web gives it one, as the composer's ROOM).
+struct ScheduleSaid: LocalizedError, ScheduleErrorObject {
   let message: String
+  var code: String?
+
+  init(message: String, code: String? = nil) {
+    self.message = message
+    self.code = code
+  }
+
   var errorDescription: String? { message }
+
+  var errorObject: JSONValue {
+    var out: JSONValue = ["name": "Error", "message": .string(message)]
+    if let code { out["code"] = .string(code) }
+    return out
+  }
 }
 
 // MARK: - Words with a link in them

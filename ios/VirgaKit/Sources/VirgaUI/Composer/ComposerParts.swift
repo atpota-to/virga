@@ -282,6 +282,8 @@ struct PublishButton: View {
   let model: ComposerActionSet
   let busy: Bool
   let also: [String]
+  /// SCHEDULE: the allowance in use, at the foot of the menu (`footnote`).
+  var footnote = ""
   let onAction: (String) -> Void
 
   static let order = [PublishActions.post, PublishActions.schedule, PublishActions.queue, PublishActions.draft]
@@ -320,6 +322,9 @@ struct PublishButton: View {
         Menu {
           ForEach(listed, id: \.self) { action in
             item(action, primaryReason: p.disabled ? p.reason : nil)
+          }
+          if !footnote.isEmpty {
+            Text(footnote)
           }
         } label: {
           let side = theme.points(ThemeKit.touchButtonHeight)
