@@ -383,6 +383,22 @@ export default async function cases() {
       }),
     )),
   );
+  // The sky's dome, as createHillside makes it.
+  const dome = new THREE.SphereGeometry(30000, 48, 24);
+  const domePos = dome.getAttribute('position').array;
+  const domeIdx = dome.getIndex().array;
+  out.push(
+    value('skySphere', {
+      vertexCount: domePos.length / 3,
+      indexCount: domeIdx.length,
+      vertices: [0, 1, 48, 49, 50, 600, 612, 1199, 1224].map((v) => ({
+        v,
+        position: [...domePos.slice(v * 3, v * 3 + 3)],
+      })),
+      indices: [...domeIdx.slice(0, 12), ...domeIdx.slice(-12)],
+      sum: [...domeIdx].reduce((s, i) => s + i, 0),
+    }),
+  );
   out.push(
     ...(await each(
       'createHillside',

@@ -75,6 +75,37 @@ import VirgaTestSupport
   }
 }
 
+/// hillside.css's flat picture (lines 7–61) as a browser lays it out.
+@Suite struct HillsideFlatPictureBehaviour {
+  @Test func halfWayDown() {
+    let stops = HillsideStyle.flatGradient(.day, crest: 0.5)
+    let places = stops.map(\.at)
+    let expected: [Double] = [0, 0.25, 0.44, 0.495, 0.5, 0.6, 1]
+    #expect(places.count == expected.count)
+    for (a, b) in zip(places, expected) { #expect(abs(a - b) < 1e-12) }
+    #expect(stops[4].color == HillsideColor(hex: "#94d43c"))
+  }
+
+  @Test func aCrestNearTheTopMovesStopsUpToEachOther() {
+    // at 4%: the low sky at −2% and the horizon at 3.5% come before the
+    // mid sky at 2%, so they move up to it, and the box starts partway
+    let stops = HillsideStyle.flatGradient(.night, crest: 0.04)
+    let places = stops.map(\.at)
+    #expect(places == places.sorted())
+    #expect(places.first == 0)
+    #expect(places.last == 1)
+    #expect(stops.last?.color == HillsideColor(hex: "#081712"))
+  }
+
+  @Test func aCrestNearTheFootCutsTheField() {
+    let stops = HillsideStyle.flatGradient(.dawn, crest: 0.96)
+    // the field's mid green sits at 106%, past the box: the foot is part way to it
+    let foot = stops.last?.color
+    #expect(foot != HillsideColor(hex: "#557c2c"))
+    #expect(stops.map(\.at) == stops.map(\.at).sorted())
+  }
+}
+
 /// useSkyTaps' count (bits.jsx lines 32–46): each tap within 1,500 ms of
 /// the last counts on, any later starts again at one, and the fifth turns
 /// the sky and starts the count over.

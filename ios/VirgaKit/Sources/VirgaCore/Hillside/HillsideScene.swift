@@ -178,3 +178,38 @@ public struct HillsideCamera: Hashable, Sendable {
     HillsideMatrix.perspective(fov: fov, aspect: aspect, near: near, far: far, depth: depth, viewOffset: viewOffset)
   }
 }
+
+extension HillsideScene {
+  /// The sky's dome: `new THREE.SphereGeometry(30000, 48, 24)` (seen from
+  /// inside; its normals aren't needed).
+  public static let skyRadius: Double = 30000
+
+  public static func skySphere(radius: Double = skyRadius, widthSegments: Int = 48, heightSegments: Int = 24) -> HillsideMesh {
+    var positions: [Float] = []
+    positions.reserveCapacity((widthSegments + 1) * (heightSegments + 1) * 3)
+    for iy in 0...heightSegments {
+      let v = Double(iy) / Double(heightSegments)
+      let theta = v * Double.pi
+      let y = radius * cos(theta)
+      let ringRadius = (radius * radius - y * y).squareRoot()
+      for ix in 0...widthSegments {
+        let u = Double(ix) / Double(widthSegments)
+        let phi = u * (Double.pi * 2)
+        positions += [Float(-ringRadius * cos(phi)), Float(y), Float(ringRadius * sin(phi))]
+      }
+    }
+    var indices: [UInt32] = []
+    let row = widthSegments + 1
+    for iy in 0..<heightSegments {
+      for ix in 0..<widthSegments {
+        let a = UInt32(iy * row + ix + 1)
+        let b = UInt32(iy * row + ix)
+        let c = UInt32((iy + 1) * row + ix)
+        let d = UInt32((iy + 1) * row + ix + 1)
+        if iy != 0 { indices += [a, b, d] }
+        if iy != heightSegments - 1 { indices += [b, c, d] }
+      }
+    }
+    return HillsideMesh(positions: positions, normals: [], indices: indices)
+  }
+}

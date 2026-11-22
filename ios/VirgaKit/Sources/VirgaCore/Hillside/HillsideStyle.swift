@@ -47,6 +47,32 @@ public enum HillsideStyle {
     return zip(colors, places).map { FlatStop($0, crest: $1.crest, offset: $1.offset) }
   }
 
+  /// The flat picture for a crest at `crest` of the height, as a browser
+  /// lays the gradient out: a stop placed before an earlier one moves up
+  /// to it, and the stops are cut to the box (0 to 1), a stop past an edge
+  /// leaving the colour it gives at the edge.
+  public static func flatGradient(_ phase: SkyPhase, crest: Double) -> [(color: HillsideColor, at: Double)] {
+    var placed: [(color: HillsideColor, at: Double)] = []
+    var furthest = -Double.infinity
+    for stop in flatStops(phase) {
+      furthest = max(furthest, stop.position(crest: crest))
+      placed.append((stop.color, furthest))
+    }
+    func colour(at y: Double) -> HillsideColor {
+      guard let first = placed.first, let last = placed.last else { return .white }
+      if y <= first.at { return first.color }
+      if y >= last.at { return last.color }
+      for (a, b) in zip(placed, placed.dropFirst()) where y >= a.at && y <= b.at {
+        return b.at > a.at ? a.color.lerp(b.color, (y - a.at) / (b.at - a.at)) : b.color
+      }
+      return last.color
+    }
+    var out: [(color: HillsideColor, at: Double)] = [(colour(at: 0), 0)]
+    for stop in placed where stop.at > 0 && stop.at < 1 { out.append(stop) }
+    out.append((colour(at: 1), 1))
+    return out
+  }
+
   // MARK: The canvas
 
   /// `--hill-blur` when the page sets none, in points.

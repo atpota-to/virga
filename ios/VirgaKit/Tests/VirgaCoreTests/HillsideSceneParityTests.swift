@@ -159,3 +159,22 @@ import VirgaTestSupport
     }
   }
 }
+
+@Suite struct HillsideSkySphereParity {
+  @Test func skySphere() throws {
+    let c = try Parity.cases("hillside.scene", fn: "skySphere")[0]
+    let mesh = HillsideScene.skySphere()
+    let vertices: [JSONValue] = (c.output["vertices"]?.arrayValue ?? []).map { entry in
+      let v = entry["v"]?.intValue ?? 0
+      return ["v": .number(Double(v)), "position": .array((0..<3).map { .number(Double(mesh.positions[v * 3 + $0])) })]
+    }
+    let ends = Array(mesh.indices.prefix(12)) + Array(mesh.indices.suffix(12))
+    let actual: JSONValue = [
+      "vertexCount": .number(Double(mesh.vertexCount)), "indexCount": .number(Double(mesh.indices.count)),
+      "vertices": .array(vertices), "indices": .array(ends.map { .number(Double($0)) }),
+      "sum": .number(Double(mesh.indices.reduce(0) { $0 + Int($1) })),
+    ]
+    let d = Parity.diff(actual, c.output)
+    #expect(d == nil, "\(d ?? "")")
+  }
+}
