@@ -827,6 +827,31 @@ extension View {
   }
 }
 
+/// `.empty` on its own (not in an `.empty-block`): a line that says there is
+/// nothing here, muted, 24 above and below it and as wide as the section.
+/// `padded` false for the line under a table with no rows and no head
+/// (`.cleanup-table:has(> thead[hidden]) + .empty { padding: 0 }`).
+struct ToolEmptyLine: View {
+  @Environment(\.virgaTheme) private var theme
+  let text: String
+  var padded = true
+
+  init(_ text: String, padded: Bool = true) {
+    self.text = text
+    self.padded = padded
+  }
+
+  var body: some View {
+    Text(text)
+      .virgaText(.textBase)
+      .foregroundStyle(theme.muted)
+      .fixedSize(horizontal: false, vertical: true)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .padding(.top, padded ? theme.points(ThemeKit.emptyPadding.top) : 0)
+      .padding(.bottom, padded ? theme.points(ThemeKit.emptyPadding.bottom) : 0)
+  }
+}
+
 /// `.card-caption`: what a section needs said about it, under what it says.
 struct ToolCaption: View {
   @Environment(\.virgaTheme) private var theme

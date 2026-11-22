@@ -110,7 +110,7 @@ struct YourListsCard: View {
     ) {
       if making { form }
       if all.isEmpty {
-        if !making { EmptyState("No lists yet. Make one here, or from a scan’s Add to a list.") }
+        if !making { ToolEmptyLine("No lists yet. Make one here, or from a scan’s Add to a list.") }
       } else {
         VStack(alignment: .leading, spacing: 0) {
           Rectangle().fill(theme.rule).frame(height: 1)

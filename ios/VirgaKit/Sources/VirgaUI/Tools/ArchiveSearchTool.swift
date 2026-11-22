@@ -126,7 +126,7 @@ struct ArchiveSearchBody: View {
       .padding(.bottom, theme.points(ThemeKit.flushHeadSpaceBelow))
       Rectangle().fill(theme.color(ThemeKit.flushHeadRule)).frame(height: theme.points(ThemeKit.flushHeadRule))
       if shown.isEmpty {
-        EmptyState("Nothing matches.").padding(.top, theme.rowPad)
+        ToolEmptyLine("Nothing matches.")
       } else {
         LazyVStack(alignment: .leading, spacing: 0) {
           ForEach(shown, id: \.uri) { post in

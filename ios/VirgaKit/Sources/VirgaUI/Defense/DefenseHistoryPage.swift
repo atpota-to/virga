@@ -61,7 +61,7 @@ struct DefenseHistoryPage: View {
         }
         .accessibilityIdentifier("defense-history-needs")
       } else if loading {
-        EmptyState("Reading the history…")
+        ToolEmptyLine("Reading the history…")
       } else {
         if let error {
           Callout(tone: .danger) { Text(error) }
@@ -117,7 +117,7 @@ struct DefenseHistoryPage: View {
     let names = listName
     return VirgaSection(title: "Approvals", sub: "Each time you added people from a scan, and what came of it.") {
       if plans.isEmpty {
-        EmptyState("Nothing approved yet. Scan a post, and Add to a list under its result.")
+        ToolEmptyLine("Nothing approved yet. Scan a post, and Add to a list under its result.")
       } else {
         VStack(alignment: .leading, spacing: 0) {
           Rectangle().fill(theme.rule).frame(height: 1)
@@ -198,7 +198,7 @@ struct DefenseHistoryPage: View {
       title: "Everyone", sub: "Newest first. A vetoed add is someone the veto kept off at the moment they would have been written."
     ) {
       if decisions.isEmpty {
-        EmptyState("Nobody added or taken off yet.")
+        ToolEmptyLine("Nobody added or taken off yet.")
       } else if let archive {
         let sets = ReportModels.relationSets(ReportArchive(archive))
         VStack(alignment: .leading, spacing: 0) {

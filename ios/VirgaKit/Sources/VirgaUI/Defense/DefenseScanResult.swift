@@ -153,7 +153,7 @@ struct ScanResultView: View {
         .padding(.bottom, theme.space3)
       }
       if rows.isEmpty {
-        EmptyState("Nobody near you engaged with this post: everyone here has no connection to you.")
+        ToolEmptyLine("Nobody near you engaged with this post: everyone here has no connection to you.")
       } else {
         LazyVStack(alignment: .leading, spacing: 0) {
           ForEach(Array(rows.prefix(shown)), id: \.did) { row in

@@ -218,9 +218,10 @@ struct FollowCleanupPage: View {
           }
         }
         if shown.isEmpty {
-          EmptyState(
+          ToolEmptyLine(
             filter == "quiet" && checkedCount == 0
-              ? "Check activity to find the accounts that went quiet." : "Nobody here. Your follows are in good shape.")
+              ? "Check activity to find the accounts that went quiet." : "Nobody here. Your follows are in good shape.",
+            padded: false)
         }
         ToolMoreFoot(shown: shown.count, total: filtered.count, page: FollowCleanup.page) { limit += FollowCleanup.page }
         ToolCaption(
@@ -665,10 +666,11 @@ struct CleanupActivity: View {
   }
 }
 
-/// The table as a table, from 641 wide: a tick box, the account (taking
-/// what the other columns leave, its words ending in an ellipsis), whether
-/// they follow you, when they were last active, the interactions, when you
-/// followed them, and the row's button.
+/// The table as a table, from 641 wide: a tick box, the account (36% of the
+/// table, its words ending in an ellipsis, `.cleanup-table td.col-main {
+/// width: 36%; max-width: 0 }`), whether they follow you, when they were
+/// last active, the interactions and when you followed them (sharing what
+/// is left), and the row's button.
 struct CleanupTable: View {
   @Environment(\.virgaTheme) private var theme
   let rows: [CleanupRow]
@@ -683,28 +685,39 @@ struct CleanupTable: View {
   let allSelected: Binding<Bool>
   let anyLive: Bool
   let onUnfollowed: (String) -> Void
+  /// The table's width, which the account's column is a share of.
+  @State private var width: CGFloat = 0
 
   var body: some View {
     let anySelected = rows.contains { isSelected($0.did) }
     let bleed = Measure.Tools.selectedBleed
+    let account: CGFloat? = width > 0 ? width * Measure.Tools.cleanupAccountShare : nil
     Grid(alignment: .leading, horizontalSpacing: 0, verticalSpacing: 0) {
       GridRow {
         ToolCheck(isOn: allSelected, label: "Select every account shown", disabled: !anyLive)
           .frame(width: Measure.Tools.checkColumn, alignment: .leading)
           .padding(.bottom, theme.points(ThemeKit.tableHeadSpaceBelow))
-        head("Account", flexible: true)
-        head("Follows you")
-        head("Last active")
-        head("Interactions", numeric: true)
-        head("Followed")
+        head("Account", flexible: account == nil)
+          .frame(width: account, alignment: .leading)
+        head("Follows you", flexible: account != nil)
+        head("Last active", flexible: account != nil)
+        head("Interactions", numeric: true, flexible: account != nil)
+        head("Followed", flexible: account != nil)
         Color.clear.frame(width: 0, height: 0)
           .gridColumnAlignment(.trailing)
           .accessibilityHidden(true)
       }
       Rectangle().fill(theme.color(ThemeKit.tableHeadRule)).frame(height: 1).gridCellUnsizedAxes(.horizontal)
       ForEach(rows, id: \.did) { row in
-        line(row, anySelected: anySelected)
+        line(row, anySelected: anySelected, account: account)
         Rectangle().fill(theme.color(ThemeKit.tableRowRule)).frame(height: 1).gridCellUnsizedAxes(.horizontal)
+      }
+    }
+    .background {
+      GeometryReader { geometry in
+        Color.clear
+          .onAppear { width = geometry.size.width }
+          .onChange(of: geometry.size.width) { _, next in width = next }
       }
     }
     // A ticked row is tinted from side to side, let out past the table's
@@ -735,7 +748,7 @@ struct CleanupTable: View {
   }
 
   @ViewBuilder
-  private func line(_ row: CleanupRow, anySelected: Bool) -> some View {
+  private func line(_ row: CleanupRow, anySelected: Bool, account: CGFloat?) -> some View {
     let card = ToolPeople.cardFor(archive, row.did, sets: sets)
     let name = ToolPeople.displayName(card, row.did)
     let following = follow.isFollowing(archive, row.did, sets: sets)
@@ -753,6 +766,7 @@ struct CleanupTable: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, pad)
         .padding(.vertical, theme.rowPad)
+        .frame(width: account, alignment: .leading)
       Group {
         if row.followsYou { Text("Yes").foregroundStyle(ink) } else { Text("No").foregroundStyle(theme.muted) }
       }

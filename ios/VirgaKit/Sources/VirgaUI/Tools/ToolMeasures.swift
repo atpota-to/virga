@@ -80,6 +80,8 @@ extension Measure {
     public static let stackedCheckBox: CGFloat = 20
     /// `.col-check { width: 36px }`: the tick box's column, its padding in it.
     public static let checkColumn: CGFloat = 36
+    /// `@media (min-width: 641px) { .cleanup-table td.col-main { width: 36%; max-width: 0 } }`
+    public static let cleanupAccountShare: CGFloat = 0.36
     /// `.table-person { gap: 12px }`
     public static let personGap: CGFloat = 12
     /// `.activity { gap: 7px }`

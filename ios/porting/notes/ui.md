@@ -177,9 +177,11 @@ TOOLS (Tools/)
   `ToolStatement`, `FilterCards`/`FilterChoice` (figures that are the filter), `KVList`,
   `TimelineList`, `ToolMoreFoot` ("Show 30 more"), `ToolSelect`, `ToolSplit`, `ToolCaption`,
   and `.toolExporter($file)` with `archive.exportRows(name, rows)` for Export.
-- From 641 wide Follow cleanup and Lists are tables (`CleanupTable`, `ListsTable`, a Grid
-  whose first column takes what the rest leave); narrower, rows as the web's phone sets
-  them. `Measure.Tools` (ToolMeasures.swift) names tools.css's measures.
+- From 641 wide Follow cleanup and Lists are tables (`CleanupTable`, `ListsTable`, a Grid;
+  the cleanup table's account is 36% of its width, as `.cleanup-table td.col-main` is, the
+  other columns sharing the rest, and the lists table's name takes what the rest leave);
+  narrower, rows as the web's phone sets them. `Measure.Tools` (ToolMeasures.swift) names
+  tools.css's measures.
 
 SHARING (Share/)
 - The hook, for a card or a report: `PostChartButton(type:name:options:period:)` (a card's

@@ -247,10 +247,9 @@ struct IdentityBody: View {
     VirgaSection(title: "Handle and server history", sub: "From the PLC directory’s log of this DID", flush: true) {
       switch history {
       case .reading:
-        EmptyState("Reading the log…").padding(.top, theme.rowPad)
+        ToolEmptyLine("Reading the log…")
       case .unread:
-        EmptyState(did.utf16.starts(with: "did:web:".utf16) ? "A did:web keeps no history." : "The directory couldn’t be reached.")
-          .padding(.top, theme.rowPad)
+        ToolEmptyLine(did.utf16.starts(with: "did:web:".utf16) ? "A did:web keeps no history." : "The directory couldn’t be reached.")
       case .log:
         TimelineList(
           steps: events.enumerated().map { i, e in

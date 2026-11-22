@@ -50,7 +50,7 @@ struct ModeratorCard: View {
           Callout(tone: .danger) { Text(error) }
             .toolAnnounces(error, onAppear: true)
         } else {
-          EmptyState("Reading…")
+          ToolEmptyLine("Reading…")
         }
       } else if let handle {
         if linked {

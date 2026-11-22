@@ -96,8 +96,7 @@ struct UnfollowLog: View {
         .padding(.bottom, theme.points(ThemeKit.flushHeadSpaceBelow))
       Rectangle().fill(theme.color(ThemeKit.flushHeadRule)).frame(height: theme.points(ThemeKit.flushHeadRule))
       if entries.isEmpty {
-        EmptyState(side == "lost" ? "Nobody has unfollowed you since \(since)." : "Nobody new since \(since).")
-          .padding(.top, theme.rowPad)
+        ToolEmptyLine(side == "lost" ? "Nobody has unfollowed you since \(since)." : "Nobody new since \(since).")
       }
       ForEach(Self.groups(shown)) { group in
         groupView(group, sets: sets)

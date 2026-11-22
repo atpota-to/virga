@@ -132,7 +132,7 @@ struct LookupPage: View {
           )
           .zIndex(1)
           if state == "looking", let named {
-            EmptyState("Looking up \(named)…")
+            ToolEmptyLine("Looking up \(named)…")
               .accessibilityAddTraits(.updatesFrequently)
               .toolAnnounces("Looking up \(named)…", onAppear: true)
           }
@@ -587,8 +587,7 @@ struct StartingPoint: View {
       .padding(.bottom, theme.points(ThemeKit.flushHeadSpaceBelow))
       Rectangle().fill(theme.color(ThemeKit.flushHeadRule)).frame(height: theme.points(ThemeKit.flushHeadRule))
       if shown.isEmpty {
-        EmptyState("No interactions on record yet. Search for someone above to see whether they follow you.")
-          .padding(.top, theme.rowPad)
+        ToolEmptyLine("No interactions on record yet. Search for someone above to see whether they follow you.")
       } else {
         ForEach(shown, id: \.did) { row in
           pick(row)

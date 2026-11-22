@@ -89,8 +89,7 @@ struct FollowBackQueue: View {
             extra: AnyView(dismiss(row.did)))
         }
       } else {
-        EmptyState("Everyone who follows you and engaged in this window, you already follow.")
-          .padding(.top, theme.rowPad)
+        ToolEmptyLine("Everyone who follows you and engaged in this window, you already follow.")
       }
       ToolMoreFoot(shown: shown.count, total: rows.count, page: Self.page) { limit += Self.page }
     }

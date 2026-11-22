@@ -35,9 +35,9 @@ struct ChosenHistory: View {
       search
       LookupPersonCard(card: card, who: who, model: model, onClear: onClear)
       if model.isSelf {
-        EmptyState("This is the account you’re signed in with. Replies to your own posts are threads, so there’s no history to show.")
+        ToolEmptyLine("This is the account you’re signed in with. Replies to your own posts are threads, so there’s no history to show.")
       } else if model.events.isEmpty {
-        EmptyState(
+        ToolEmptyLine(
           "Nothing on record between you and \(name)\(model.coverage.inboundSinceMs.map { ". Your notifications reach back to \(Time.formatDateShort($0)); anything before that wouldn’t show." } ?? ".")"
         )
       } else {
@@ -417,7 +417,7 @@ struct EngagedPostsView: View {
         flush: true
       ) {
         if shown.isEmpty {
-          EmptyState("None of the events that name a post name one of yours.").padding(.top, theme.rowPad)
+          ToolEmptyLine("None of the events that name a post name one of yours.")
         }
         ForEach(Array(shown.enumerated()), id: \.element.uri) { index, row in
           engagedRow(index, row)
@@ -484,10 +484,9 @@ struct YourPostsView: View {
       flush: true
     ) {
       if shown.isEmpty {
-        EmptyState(
+        ToolEmptyLine(
           "You haven’t replied to them or quoted them\(model.coverage.postsComplete ? "." : ", in the part of your posts archived so far.")"
         )
-        .padding(.top, theme.rowPad)
       }
       ForEach(shown, id: \.uri) { post in
         ToolPostRow(post: post, did: did, now: now)
@@ -535,7 +534,7 @@ struct LookupEvents: View {
       .toolAnnounces(counted)
       Rectangle().fill(theme.color(ThemeKit.flushHeadRule)).frame(height: theme.points(ThemeKit.flushHeadRule))
       if rows.isEmpty {
-        EmptyState(none).padding(.top, theme.rowPad)
+        ToolEmptyLine(none)
       } else {
         LazyVStack(alignment: .leading, spacing: 0) {
           ForEach(rows) { event in

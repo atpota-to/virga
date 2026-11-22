@@ -206,8 +206,7 @@ struct BestTimeSlots: View {
   var body: some View {
     VirgaSection(title: "The best slots", trailing: AnyView(MoreLink("Use them in the weekly schedule", to: "/posting/schedule")), flush: true) {
       if m.best.isEmpty {
-        EmptyState("Not enough posts in this window yet.")
-          .padding(.top, theme.rowPad)
+        ToolEmptyLine("Not enough posts in this window yet.")
       } else {
         ForEach(Array(m.best.enumerated()), id: \.offset) { index, b in
           slot(index, b)
