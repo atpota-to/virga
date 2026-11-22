@@ -444,7 +444,13 @@ export default async function cases() {
         { error: { error: 'DraftLimitReached', status: 400 } },
         { error: { code: 'DraftLimitReached' } },
         { error: { message: 'Error: DraftLimitReached' } },
+        {
+          error: { message: 'DraftLimitReached\u0301 (combining mark after)' },
+        },
+        { error: { message: 'Draft\u200bLimitReached' } },
         { error: { message: 'draftlimitreached' } },
+        { error: { error: 'DraftLimitReached\u0301' } },
+        { error: { code: 'DraftLimitReache' } },
         { error: { message: 'offline' } },
         { error: { message: 5 } },
         { error: { error: 'Other', message: 'x' } },

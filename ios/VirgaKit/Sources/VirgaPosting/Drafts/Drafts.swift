@@ -206,7 +206,9 @@ public enum Drafts {
       return true
     }
     // (The SDK's DraftLimitReachedError is an XRPCError whose `error` says so.)
-    return str(error["message"]).contains("DraftLimitReached")
+    // `/DraftLimitReached/.test(...)`, by code unit: Swift's `contains`
+    // compares Characters, and misses the name before a combining mark.
+    return str(error["message"]).jsIndexOf("DraftLimitReached") >= 0
   }
 
   public static func isDraftLimitError(_ error: (any Error)?) -> Bool {
