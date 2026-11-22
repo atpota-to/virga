@@ -279,6 +279,64 @@ ADVISER (Adviser/, Composer/ComposerController+Adviser.swift, Posting/)
   `adviser-check`, `adviser-gate-busy`, `adviser-gate` (or `adviser-gate-passed`) and
   `alt-text-described`.
 
+THE POSTING PAGES (Posting/: HubPage, DraftsPage, PostedPage, TimersPage, TimerDialog, LifespanDefaults)
+- RoutedPage's posting case is PostingPage.jsx: a `needsBackend` page (Scheduled, the weekly schedule,
+  Timers) shows NeedsBackend under its header, without its access line, for an account that can't
+  schedule; otherwise the page, `.id(did)` so a switch never shows one account's state under another's:
+  `HubPage(session:did:)` (/posting), `DraftsPage(session:did:id:)` (/posting/drafts and
+  /posting/drafts/<id>, which opens that draft in the composer), `PostedPage(did:)`, `TimersPage(did:)`,
+  Templates and the Library. Scheduled and the weekly schedule are the scheduling chain's to plug in.
+- `PostingLoad<Value>` (HubParts.swift) is hubParts.jsx's useLoad: `follow(key:did:events:enabled:_:)`
+  from the view's `.task(id:)` (the same key keeps what's on screen, a new one starts over, `enabled:
+  false` is `.idle`), read again on each posting event for the account (`PostingEvents.*ChangedEvent`);
+  `phase` (.idle, .loading, .ready, .failed; a failed reload stays .ready with its `error`), `data`,
+  `reload()`, and `stop()` on disappear. Drafts has its own `DraftsPageList` (useDraftList, a page at a
+  time).
+- `PostingPages` (HubParts.swift) holds what the web reaches through its window and stores:
+  `deviceId(app)`, `settings(app, did)` (a one-off read of PostingSettings), `archivePosts(archive, did)`,
+  `authorFeed(did, limit:cursor:transport:)` (getAuthorFeed's rows through rowFromPostView, reposts left
+  out), `media(app)` (PublishMedia over TemporaryComposerFiles, ImageIO and the session's network),
+  `draftMedia(app, did)`, `target(app, did)` (a PublishTarget), and `message`/`code` (a thrown error's
+  `err.message` and `err.code`, through ScheduledPostError.errorObject). Post now and Schedule on a draft
+  run DraftActions with `DraftActionDeps.live` over these; Posted's actions run PostedModel.
+- Rows: `HubRowText` (two lines, a draft's three, or its muted stand-in), `HubRowWhy` (muted, warn or
+  danger), `HubPostMeta` (PostRow.jsx's PostMeta and postWhen, with an `extra` piece),
+  `HubPostWords`/`HubPostedRow` (a post's words as the way to it on Bluesky, and its line), `HubTimedRow`
+  (a row led by its day over its hour in `--time-col`; on a phone its first line of meta),
+  `HubCornerRow(words:button:menu:)` (`.has-corner-menu`: on a phone the ⋯ in the row's top corner and the
+  button under the words), `DraftsRowMenu` (the ⋯, a `HubSpinner` while the row works), `HubQuote`, and
+  `PostingPagesError` (a sentence a page throws to its dialog, which shows it).
+- `.postTimerDialog($post, did:onArmed:)` is TimerDialog.jsx (`PostTimerDialog`: the composer's
+  stand-in already holds the name TimerDialog), over a `PostTimerTarget` (uri, cid, extraUris, text,
+  postedAt, reply; nil reply or postedAt is the web's undefined and is read from Bluesky).
+  `PostTimerTarget(arm)` takes a scheduled post's timer note (ScheduleModel.TimerNoteArm), for the
+  Scheduled page's "Set a timer". `onArmed` hears the armed row after the sheet has closed.
+- `LifespanDefaultsCard(did:model:)` (Posting/LifespanDefaults.swift, from Settings › Posting) reads
+  getLimits with a long session, so its editor checks the free timers and its caption starts with
+  timerLimitsLine.
+- The Timers page's question is `TimersCancelDialog` (scheduleParts.jsx's ActionDialog as that page asks
+  it: Keep it, the action in ink, a refusal's words kept). `Measure.Hub` (HubMeasures.swift) names the
+  measures of hub.css and of schedule.css's Timers and timer-dialog rules that these pages use.
+- Identifiers: `posting-hub`, `posting-nav` (`posting-nav-<key>`), `hub-next`, `hub-retry`, `hub-drafts`,
+  `hub-draft-open`, `hub-posted`; `drafts-page`, `drafts-list`, `draft-row-<id>`, `draft-open`, `row-menu`,
+  `drafts-notice`, `drafts-new-post`, `schedule-draft-dialog`, `when-picker`, `schedule-draft-queue`,
+  `schedule-draft-confirm`; `posted-page`, `posted-search`, `posted-list`, `posted-row`, `posted-more`,
+  `posted-error`, `posted-gates-dialog`, `posted-gates-save`; `timer-dialog`, `timer-dialog-start`,
+  `timer-dialog-set`, `timer-dialog-acts`, `timer-dialog-error`; `timers-page`, `timers-live`,
+  `timers-waiting`, `timers-failed`, `timer-row`, `timer-cancel`, `timer-cancel-confirm`,
+  `timer-waiting-row`, `timers-settled`, `timers-limits`, `timers-empty`; `default-timer-caption`.
+- PostingPagesUITests (`testThePostingPagesOnTheDemo`, no archive build, over the demo server's seeded
+  rows): `posting-hub`, `posting-hub-posted`, `posting-drafts` (or `-empty`), `posting-drafts-menu`,
+  `posting-drafts-schedule`, `posting-posted`, `posting-posted-menu`, `posting-timer-dialog`,
+  `posting-timer-set` (or `posting-timer-dialog-refused`), `posting-timers` (or `-empty`),
+  `posting-timers-settled`.
+- Deliberate differences: the focus after a row goes (posted, deleted, called off) is the system's to
+  place, not useFocusAfterRemoval's; Schedule this draft's time is the system's date and time picker,
+  from a minute from now, until WhenPicker is in the app; a timer row whose model throws (a corrupt
+  `acted` step, a web bug in timerRowModel) is left out where the web's page would fail. The web shows
+  no PostPreview on the posted or scheduled rows (only in the composer's dialogs, a quote's card, the
+  reply's context and the library), so neither does the app.
+
 SHELL, ROUND 6
 - `ShellActions` (in the shell's environment): `creatingDashboard` opens the shell's
   NewDashboardDialog (the sidebar's New dashboard, the palette's), and
