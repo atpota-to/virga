@@ -111,7 +111,7 @@ struct ArchiveSearchBody: View {
     let now = SyncStatus.now()
     VStack(alignment: .leading, spacing: 0) {
       toolbar
-        .padding(.bottom, theme.space5)
+        .padding(.bottom, theme.space4)
       SectionHead(
         "\(count) \(results.count == 1 ? "post" : "posts") in \(Periods.periodPhrase(period))\(q.isEmpty ? "" : " matching “\(query.jsTrimmed())”")",
         sub: ReportModels.contentReady(ReportArchive(archive))
@@ -139,12 +139,20 @@ struct ArchiveSearchBody: View {
   }
 
   private var toolbar: some View {
-    FlowLayout(spacing: theme.space4, lineSpacing: theme.space3, alignment: .center) {
+    let phone = theme.isPhone
+    return FlowLayout(
+      spacing: phone ? Measure.Tools.phoneToolbarColumnGap : Measure.Tools.toolbarColumnGap, lineSpacing: Measure.Tools.toolbarRowGap,
+      alignment: .center
+    ) {
       SearchField("Search words, #tags or sites", text: $query)
         .textInputAutocapitalization(.never)
         .autocorrectionDisabled()
         .accessibilityLabel("Search your posts")
-        .frame(minWidth: 240, maxWidth: 360)
+        .frame(
+          width: phone ? theme.windowWidth - theme.pagePad * 2 : nil,
+          alignment: .leading
+        )
+        .frame(minWidth: phone ? nil : Measure.Tools.toolbarSearchMin, maxWidth: phone ? nil : Measure.Tools.toolbarSearchMax)
       Segmented(label: "Kind of post", options: ArchiveSearch.kinds, selection: kind, size: .small) { k in
         kind = k
         limit = ArchiveSearch.page

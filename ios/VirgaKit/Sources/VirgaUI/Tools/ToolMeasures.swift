@@ -83,6 +83,13 @@ extension Measure {
     public static let checkActionsGap: CGFloat = 16
     public static let checkProgressWidth: CGFloat = 160
 
+    /// controls.css `.list-toolbar { gap: 12px 32px; margin-bottom: var(--space-4) }` (16 apart on a phone),
+    /// `.list-toolbar > .search { flex: 1 1 240px; max-width: 420px }` (the whole line on a phone)
+    public static let toolbarRowGap: CGFloat = 12
+    public static let toolbarColumnGap: CGFloat = 32
+    public static let phoneToolbarColumnGap: CGFloat = 16
+    public static let toolbarSearchMin: CGFloat = 240
+    public static let toolbarSearchMax: CGFloat = 420
     /// `.search--lg > svg { left: 16px; width: 18px }`, `.search--lg > .input { padding-left: 44px }`
     public static let largeSearchIconInset: CGFloat = 16
     public static let largeSearchIcon: CGFloat = 18

@@ -16,6 +16,7 @@
 
 #if canImport(UIKit)
 import SwiftUI
+import UIKit
 import VirgaArchive
 import VirgaCore
 import VirgaInsights
@@ -259,7 +260,6 @@ struct PersonSearch: View {
   @State private var open = false
   @State private var status: (error: Bool, text: String)?
   @State private var busy = false
-  @FocusState private var focused: Bool
 
   static func options(_ directory: [DirectoryPerson], _ query: String) -> [LookupOption] {
     let typed = InteractionModel.parseActorInput(query)
@@ -311,7 +311,6 @@ struct PersonSearch: View {
         .textInputAutocapitalization(.never)
         .autocorrectionDisabled()
         .submitLabel(.search)
-        .focused($focused)
         .disabled(busy)
         .virgaField(size: .large, leading: Measure.Tools.largeSearchLeading)
         .accessibilityLabel("Find an account")
@@ -321,7 +320,6 @@ struct PersonSearch: View {
           open = true
           status = nil
         }
-        .onChange(of: focused) { _, now in if now { open = true } }
       Image(systemName: Glyph.search)
         .font(.system(size: Measure.Tools.largeSearchIcon))
         .foregroundStyle(theme.muted)
@@ -421,7 +419,8 @@ struct PersonSearch: View {
     query = ""
     open = false
     status = nil
-    focused = false
+    // The keyboard goes with the search it was typing in.
+    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     onChoose(did)
   }
 

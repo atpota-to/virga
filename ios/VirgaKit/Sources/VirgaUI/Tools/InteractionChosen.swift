@@ -509,7 +509,7 @@ struct LookupEvents: View {
     let count = InteractionLookup.nounOf(total, "event", "events")
     VStack(alignment: .leading, spacing: 0) {
       filters
-        .padding(.bottom, theme.space5)
+        .padding(.bottom, theme.space4)
       SectionHead(
         "Every interaction",
         sub: "\(narrowed ? "\(AppLocale.fmtInt(Double(filtered.count))) of \(count)" : count), newest first",
@@ -535,7 +535,10 @@ struct LookupEvents: View {
 
   /// Which way, then which kind.
   private var filters: some View {
-    FlowLayout(spacing: theme.space5, lineSpacing: theme.space3, alignment: .center) {
+    FlowLayout(
+      spacing: theme.isPhone ? Measure.Tools.phoneToolbarColumnGap : Measure.Tools.toolbarColumnGap, lineSpacing: Measure.Tools.toolbarRowGap,
+      alignment: .center
+    ) {
       Segmented(
         label: "Direction",
         options: InteractionModel.directions.map {

@@ -473,7 +473,6 @@ struct RowCheck: View {
     .opacity(disabled ? ThemeKit.disabledOpacity : 1)
     .padding(.horizontal, -(Measure.Touch.target - box) / 2)
     .accessibilityLabel(label)
-    .accessibilityValue(isOn ? "Checked" : "Unchecked")
     .accessibilityAddTraits(isOn ? .isSelected : [])
   }
 }

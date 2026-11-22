@@ -270,7 +270,6 @@ struct ToolPersonRow: View {
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(.isLink)
-        .accessibilityHint("Opens on Bluesky")
         if !items.isEmpty { MetaLine(items) }
         if let error = follow?.error(did) {
           Text(error)
