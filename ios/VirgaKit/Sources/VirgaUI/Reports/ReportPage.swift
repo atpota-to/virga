@@ -181,6 +181,7 @@ struct ReportPage: View {
 
 struct FollowersReportView: View {
   @Environment(\.virgaTheme) private var theme
+  @Environment(AppModel.self) private var app
   let archive: ReportArchive
   let period: AnalyticsPeriod
   @State private var mode = "cumulative"
@@ -218,16 +219,19 @@ struct FollowersReportView: View {
       ) {
         SeriesChart(
           series: series, mode: cumulative ? .line : .bars, unit: m.unit, zeroBase: !cumulative,
-          ghost: cumulative && (m.counterGap ?? 0) > 0 ? m.profileCount.map { ChartGhost(v: Double($0)) } : nil, height: 280,
+          ghost: cumulative && (m.counterGap ?? 0) > 0 ? m.profileCount.map { ChartGhost(v: Double($0)) } : nil,
+          marks: ChartNotesModels.marks(app, archive, cumulative ? m.cumulative : m.counts, m.unit, milestones: true), height: 280,
           accessibilityLabel: cumulative
             ? "Followers over \(Periods.periodPhrase(period))" : "New followers per \(m.unit.rawValue) over \(Periods.periodPhrase(period))")
         ChartTable(series: series, unit: m.unit, valueHead: cumulative ? "Followers" : "New followers")
       }
+      ChartNotes(did: archive.did)
     }
   }
 }
 
 struct PostsReportView: View {
+  @Environment(AppModel.self) private var app
   let archive: ReportArchive
   let period: AnalyticsPeriod
   @State private var unitPick: String?
@@ -258,7 +262,8 @@ struct PostsReportView: View {
           ) { unitPick = $0 })
       ) {
         SeriesChart(
-          series: ChartPoint.of(m.counts), trend: ChartPoint.of(m.trend), mode: .bars, unit: m.unit, height: 260,
+          series: ChartPoint.of(m.counts), trend: ChartPoint.of(m.trend), mode: .bars, unit: m.unit,
+          marks: ChartNotesModels.marks(app, archive, m.counts, m.unit), height: 260,
           accessibilityLabel: "Posts per \(m.unit.rawValue) over \(Periods.periodPhrase(period))")
         ChartTable(series: ChartPoint.of(m.counts), trend: ChartPoint.of(m.trend), unit: m.unit, valueHead: "Posts")
       }
@@ -271,11 +276,13 @@ struct PostsReportView: View {
             BarListRow(key: "media", label: "With media", value: Double(m.withMedia)),
           ], max: Double(max(m.count, 1)), accessibilityLabel: "Posts by kind")
       }
+      ChartNotes(did: archive.did)
     }
   }
 }
 
 struct EngagementReportView: View {
+  @Environment(AppModel.self) private var app
   let archive: ReportArchive
   let period: AnalyticsPeriod
   @State private var unitPick: String?
@@ -299,7 +306,8 @@ struct EngagementReportView: View {
         ) { unitPick = $0 })
     ) {
       SeriesChart(
-        series: ChartPoint.of(m.series), trend: ChartPoint.of(m.trend), mode: .bars, unit: m.unit, height: 260,
+        series: ChartPoint.of(m.series), trend: ChartPoint.of(m.trend), mode: .bars, unit: m.unit,
+        marks: ChartNotesModels.marks(app, archive, m.series, m.unit), height: 260,
         accessibilityLabel: "Engagement on posts made each \(m.unit.rawValue), over \(Periods.periodPhrase(period))")
       ChartTable(series: ChartPoint.of(m.series), trend: ChartPoint.of(m.trend), unit: m.unit, valueHead: "Engagement")
     }

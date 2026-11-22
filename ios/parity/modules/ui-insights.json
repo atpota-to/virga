@@ -109,8 +109,12 @@
       "synced": "9ce56098d8ab"
     },
     "src/reports/ChartNotes.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Reports/ChartNotes.swift"
+      ],
+      "note": "Notes on your charts: the day (the system's date picker, up to today) and what happened (at most 80), Add note, the notes newest first with Remove, and the empty line, over one AnnotationsModel per account (ChartNotesModels); on the followers, posts and engagement reports. useChartMarks is ChartNotesModels.marks: the notes, and the follower milestones on the follower charts, on the reports' charts and the dashboard's. The widget's visually hidden marks list (.widget .an-chart-marks) is drawn under the card's chart here.",
+      "synced": "d2a0b9be0794"
     },
     "src/reports/ContentReport.jsx": {
       "status": "ported",

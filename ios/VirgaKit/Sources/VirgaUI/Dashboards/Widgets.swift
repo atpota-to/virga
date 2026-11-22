@@ -19,7 +19,8 @@
 // and people cards, the repo's, Blocked by) show their title and say they
 // aren't in the app yet; the posting cards (scheduled posts, timers, what
 // goes out next, drafts) say they need the composer, which isn't either.
-// The chart cards don't carry the notes and milestones yet (ChartNotes).
+// The chart cards carry the notes, and the follower cards the milestones
+// (ChartNotesModels.marks, useChartMarks).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -87,6 +88,7 @@ enum WidgetParts {
 /// What a card draws for its type.
 struct WidgetBody: View {
   @Environment(\.virgaTheme) private var theme
+  @Environment(AppModel.self) private var app
   let card: DashboardCard
   let def: WidgetDef
   let archive: ReportArchive
@@ -190,7 +192,8 @@ struct WidgetBody: View {
     } else {
       SeriesChart(
         series: ChartPoint.of(m.cumulative), mode: .line, unit: m.unit, zeroBase: false,
-        ghost: (m.counterGap ?? 0) > 0 ? m.profileCount.map { ChartGhost(v: Double($0)) } : nil, height: WidgetParts.height(card.size),
+        ghost: (m.counterGap ?? 0) > 0 ? m.profileCount.map { ChartGhost(v: Double($0)) } : nil,
+        marks: ChartNotesModels.marks(app, archive, m.cumulative, m.unit, milestones: true), height: WidgetParts.height(card.size),
         accessibilityLabel: "Followers over \(Periods.periodPhrase(period))")
     }
   }
@@ -202,7 +205,7 @@ struct WidgetBody: View {
     } else {
       SeriesChart(
         series: ChartPoint.of(m.counts), trend: ChartPoint.of(Analytics.movingAverage(m.counts, 7)), mode: .bars, unit: m.unit,
-        height: WidgetParts.height(card.size),
+        marks: ChartNotesModels.marks(app, archive, m.counts, m.unit, milestones: true), height: WidgetParts.height(card.size),
         accessibilityLabel: "New followers per \(m.unit.rawValue) over \(Periods.periodPhrase(period))")
     }
   }
@@ -210,7 +213,8 @@ struct WidgetBody: View {
   private var engagementOverTime: some View {
     let m = ReportModels.engagementModel(archive, period, nowMs, kind: kind)
     return SeriesChart(
-      series: ChartPoint.of(m.series), trend: ChartPoint.of(m.trend), mode: .bars, unit: m.unit, height: WidgetParts.height(card.size),
+      series: ChartPoint.of(m.series), trend: ChartPoint.of(m.trend), mode: .bars, unit: m.unit,
+      marks: ChartNotesModels.marks(app, archive, m.series, m.unit), height: WidgetParts.height(card.size),
       accessibilityLabel:
         "\(WidgetParts.kindWord(kind, "Engagement")) on posts made each \(m.unit.rawValue), over \(Periods.periodPhrase(period))")
   }
@@ -228,7 +232,8 @@ struct WidgetBody: View {
   private var postingCadence: some View {
     let m = ReportModels.postsModel(archive, period, nowMs)
     return SeriesChart(
-      series: ChartPoint.of(m.counts), trend: ChartPoint.of(m.trend), mode: .bars, unit: m.unit, height: WidgetParts.height(card.size),
+      series: ChartPoint.of(m.counts), trend: ChartPoint.of(m.trend), mode: .bars, unit: m.unit,
+      marks: ChartNotesModels.marks(app, archive, m.counts, m.unit), height: WidgetParts.height(card.size),
       accessibilityLabel: "Posts per \(m.unit.rawValue) over \(Periods.periodPhrase(period))")
   }
 
