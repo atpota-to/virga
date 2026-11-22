@@ -333,6 +333,46 @@ private func lists(waiting: Int, name: String = "Pile-on") -> JSONValue {
     #expect(model.error == nil)
   }
 
+  @Test func aReadUnderWayWhenItGoesDoesntSetTheTimerAgain() async {
+    // The poll's read is out when the page goes: it lands, but the timer
+    // stays gone, as the hook's interval, cleared at unmount, is never made
+    // again. Opened again, the timer is back.
+    let s = session()
+    let hold = Locked(false)
+    let release = Locked(false)
+    s.transport.on(.path("/api/defense/lists")) { _ in
+      if hold.wrappedValue {
+        while !release.wrappedValue { try await Task.sleep(nanoseconds: 1_000_000) }
+      }
+      return .json(lists(waiting: 1))
+    }
+    let ticker = Ticker()
+    let model = DefenseListsModel(did: mira, session: s, sleep: ticker.sleep)
+    await model.start()
+    await eventually { ticker.sleeping == 1 }
+    #expect(model.polling)
+    hold.withLock { $0 = true }
+    ticker.tick()
+    await eventually { s.transport.requests.count == 2 }
+    #expect(model.loading)
+    model.stop()
+    #expect(!model.polling)
+    release.withLock { $0 = true }
+    await eventually { !model.loading }
+    #expect(!model.loading)
+    #expect(model.waiting)
+    #expect(!model.polling)
+    await eventually { ticker.sleeping == 0 }
+    #expect(ticker.sleeping == 0)
+    ticker.tick()
+    #expect(s.transport.requests.count == 2)
+
+    await model.start()
+    #expect(s.transport.requests.count == 3)
+    #expect(model.polling)
+    model.stop()
+  }
+
   @Test func onlyTheLatestReadSetsTheLists() async {
     let s = session()
     let first = Locked(true)

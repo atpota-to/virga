@@ -131,6 +131,11 @@ public final class DefenseListsModel {
   @ObservationIgnored private var watching = false
   /// A change of the session is being listened for.
   @ObservationIgnored private var armed = false
+  /// After stop() (until start() again): no timer is set. A read still
+  /// under way when it stopped lands, but doesn't set the timer again, as
+  /// the hook's interval, cleared at unmount, is never made again. Apart
+  /// from `watching` so that a model read without start() still polls.
+  @ObservationIgnored private var stopped = false
 
   /// - Parameters:
   ///   - did: the account whose lists these are.
@@ -168,6 +173,7 @@ public final class DefenseListsModel {
   /// followed (a session that is an @Observable, as SessionModel is).
   public func start() async {
     watching = true
+    stopped = false
     watchSession()
     await refresh()
   }
@@ -190,11 +196,16 @@ public final class DefenseListsModel {
   }
 
   /// The hook's unmount: no more reads on a timer, and the session no
-  /// longer followed.
+  /// longer followed. A read under way still lands, without setting the
+  /// timer again.
   public func stop() {
     watching = false
+    stopped = true
     stopPolling()
   }
+
+  /// Whether the timer is set (tests).
+  var polling: Bool { poll != nil }
 
   private func stopPolling() {
     poll?.cancel()
@@ -257,9 +268,9 @@ public final class DefenseListsModel {
   }
 
   /// The hook's polling effect: an interval while anything waits, none
-  /// otherwise; a new one when the requester changed.
+  /// otherwise; a new one when the requester changed. None once stopped.
   private func syncPolling(restart: Bool = false) {
-    guard waiting else {
+    guard waiting, !stopped else {
       stopPolling()
       return
     }
