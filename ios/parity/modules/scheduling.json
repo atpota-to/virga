@@ -56,8 +56,16 @@
       "synced": "08c5c2a6bc55"
     },
     "src/posting/schedule/scheduleSerialize.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/ScheduleSerialize.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/ScheduleSerialize+Reconstruct.swift"
+      ],
+      "fixtures": [
+        "scheduling.scheduleSerialize"
+      ],
+      "note": "Files are ComposerFiles' (options.media: PublishMedia, whose encoder re-encodes a card's own image on its clock); reconstructFromScheduled is async because each stored image becomes a file through ComposerFiles.makeFile. URL.createObjectURL is makePreviewUrl (none by default; VirgaUI passes its own). The web's signal is the task's cancellation. warnings sit beside the body (ScheduleBody.warnings), never in its json. atob is Node's forgiving-base64 with its words. blobToBase64(_ bytes: Data) -> String is public for the adviser.",
+      "synced": "64bb535f74e7"
     },
     "src/posting/schedule/scheduleService.js": {
       "status": "ported",
