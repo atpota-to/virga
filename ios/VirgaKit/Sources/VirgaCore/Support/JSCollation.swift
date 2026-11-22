@@ -27,7 +27,11 @@
 // (Han by radical and stroke), and unassigned and private-use code points
 // after them by code point, as ICU weighs them.
 // ios/parity/cases/core.collation.js holds the result to localeCompare,
-// with each option the app passes and in each locale it offers.
+// with each option the app passes and in each locale it offers. The one
+// deliberate difference: Node's collator isn't canonically closed for the
+// Kirat Rai vowel signs U+16D68..U+16D6A (their decompositions are runs of
+// starters), so it can sort canonically equal text apart there; this
+// sorts it together, as the algorithm says.
 
 public enum JSCollation {
   /// The `sensitivity` the web passes.

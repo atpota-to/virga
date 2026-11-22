@@ -8,15 +8,20 @@
 //
 // Everything is read from Node's own collator, by comparing strings: which
 // code points it ignores, which only carry an accent (a secondary weight),
-// which equal a run of others (æ is a, a mark and e; ½ is 1⁄2), which
-// sequences it weighs as one letter (contractions: й, ো, and the Thai and
-// Lao vowels written before their consonant), the order of the rest at
-// each of the three levels (base letter, accent, case), and the order of
-// the ideographs it weighs implicitly (Han in radical-stroke order, then
-// Tangut, Khitan and Nushu). The Swift side compares strings level by level
-// over those weights after canonical decomposition, as the Unicode
-// Collation Algorithm does. ios/parity/cases/core.collation.js then holds it
-// to localeCompare.
+// which equal a run of others (æ is a, a mark and e; ½ is 1⁄2; ײ is יי,
+// found by bisecting the weights), which sequences it weighs as one letter
+// (contractions: й, ো, l·, and the Thai and Lao vowels written before
+// their consonant), the order of the rest at each of the three levels
+// (base letter, accent, case and form, with what falls between two cases
+// of a letter read part by part), and the order of the ideographs it
+// weighs implicitly (Han in radical-stroke order, then Tangut, Khitan and
+// Nushu). Canonical decompositions and combining classes come from
+// Node's String.prototype.normalize. The Swift side compares strings level
+// by level over those weights after canonical decomposition, as the
+// Unicode Collation Algorithm does. ios/parity/cases/core.collation.js then
+// holds it to localeCompare. Each step throws when the collator answers
+// something the table can't say, so a newer ICU that breaks an assumption
+// stops the script rather than writing a wrong table.
 //
 // Run it again when Node's ICU moves to a newer CLDR or Unicode.
 
