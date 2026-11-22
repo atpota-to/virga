@@ -241,7 +241,8 @@ struct LookupTotals: View {
                 .frame(width: Measure.Tools.kindGlyph)
               Text(InteractionModel.kindLabel[k] ?? k)
             }
-            .virgaText(.textBase, weight: VirgaWeight.medium)
+            // A cell's line in its box (the body's 1.45), as a table's is.
+            .virgaText(.textBase, weight: VirgaWeight.medium, lineBox: true)
             .lineLimit(1)
             .padding(.vertical, pad)
             LookupTotalCell(value: Self.value(totals.in, k), max: biggest, dir: "in").padding(.vertical, pad)
@@ -293,7 +294,7 @@ struct LookupTotals: View {
 
   private func sumCell(_ text: String, alignment: Alignment) -> some View {
     Text(text)
-      .virgaText(.textBase, weight: VirgaWeight.semibold)
+      .virgaText(.textBase, weight: VirgaWeight.semibold, lineBox: true)
       .foregroundStyle(theme.ink)
       .frame(maxWidth: .infinity, alignment: alignment)
       .padding(.vertical, theme.points(ThemeKit.tableCellPadding.top))

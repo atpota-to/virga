@@ -279,7 +279,7 @@ struct ToolPersonRow: View {
           if let url = ToolPeople.profileUrl(card, did) { openURL(url) }
         } label: {
           Text(name)
-            .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Tools.personLineHeight)
+            .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Tools.personLineHeight, lineBox: true)
             .foregroundStyle(theme.ink)
             .lineLimit(1)
         }
@@ -343,7 +343,7 @@ struct ToolPersonMeta: View {
 
   var body: some View {
     Text(parts.joined(separator: Self.separator))
-      .virgaText(size: theme.points(ThemeKit.metaFontSize), lineHeight: Measure.Tools.personLineHeight)
+      .virgaText(size: theme.points(ThemeKit.metaFontSize), lineHeight: Measure.Tools.personLineHeight, lineBox: true)
       .foregroundStyle(theme.color(ThemeKit.metaInk))
       .lineLimit(wraps ? nil : 1)
       .truncationMode(.tail)

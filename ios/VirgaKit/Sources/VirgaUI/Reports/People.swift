@@ -132,18 +132,19 @@ struct PersonRow: View {
     let followsYou = rel && sets.isFollower(did)
     let phone = theme.isPhone
     HStack(spacing: phone ? Measure.Dashboard.phonePersonGap : Measure.Dashboard.personGap) {
-      Avatar(src: face.avatar, name: face.displayName ?? face.handle ?? "?")
+      Avatar(src: face.avatar, name: Avatar.named(face.displayName, face.handle))
+      // `.person-main { line-height: 1.35 }`: each single line in its box.
       VStack(alignment: .leading, spacing: 0) {
         Button(name) { if let url = People.profileUrl(face.handle, did) { openURL(url) } }
           .buttonStyle(.plain)
-          .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Dashboard.personLineHeight)
+          .virgaText(.textMd, weight: VirgaWeight.medium, lineHeight: Measure.Dashboard.personLineHeight, lineBox: true)
           .foregroundStyle(theme.ink)
           .lineLimit(1)
           .truncationMode(.tail)
           .accessibilityAddTraits(.isLink)
         if let line = metaLine(handle: handle, followsYou: followsYou) {
           Text(line)
-            .virgaText(.textSm, lineHeight: Measure.Dashboard.personLineHeight)
+            .virgaText(.textSm, lineHeight: Measure.Dashboard.personLineHeight, lineBox: true)
             .foregroundStyle(theme.muted)
             .lineLimit(1)
             .truncationMode(.tail)
