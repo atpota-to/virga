@@ -175,9 +175,9 @@ public final class AppModel {
   /// over the app's file store, read through the session's transport and
   /// clock. The view that holds it starts it and stops it (ArchiveHost).
   ///
-  /// Posts made in the app reach it through VirgaPosting's posting events;
-  /// `postsChanged` stays unwired until the composer is ported, as nothing
-  /// in the app posts yet.
+  /// Posts made in the app reach it through VirgaPosting's posting events
+  /// (`PostingEvents.postsChangedListener`): the composer emits
+  /// virga:posts-changed after a send, and the archive adds the posts.
   /// The open account's archive: the one already made for it, or a new one.
   public func archive(for did: String) -> ArchiveModel {
     if let open = openArchive, open.did.jsEquals(did) { return open }
@@ -197,7 +197,7 @@ public final class AppModel {
     let remembered = session.accounts.first { $0.did.jsEquals(did) }
     let handle = profile.profile?.handle ?? remembered?.handle
     var environment = archiveEnvironment
-    environment.postsChanged = nil
+    environment.postsChanged = PostingEvents.postsChangedListener()
     return ArchiveModel(agent: session.did.jsEquals(did) ? session.agent : nil, did: did, handle: handle, environment: environment)
   }
 
