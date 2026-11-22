@@ -7,8 +7,9 @@
 // it, tap to take it; a passage a goal flags underlined and numbered to its
 // note), the fixes to take one at a time or all at once, and the way past
 // it. Facts only, no rewrites; it never stops a post on its own. A sheet,
-// full height on a phone, with its buttons in the foot. While a read is
-// still loading it shows a skeleton shaped like the read.
+// full height on a phone and on a wider window 640 wide and as tall as the
+// read, with its buttons in the foot. While a read is still loading it
+// shows a skeleton shaped like the read.
 //
 // A fix is a link inside the run of words (a span with a button's role, as
 // on the web, so a long fix can break across lines); a numbered note lights
@@ -40,7 +41,10 @@ struct AdviserSheetPresenter: ViewModifier {
           onPublishAnyway: read.canPublish ? { adviser.publishFromSheet() } : nil,
           onKeepEditing: { adviser.keepEditingFromSheet() },
           onSaveDraft: read.canSaveDraft ? { adviser.saveDraftFromSheet() } : nil)
-          .presentationDetents([.large])
+          // The whole height on a phone (640 and under, with the composer);
+          // wider, adviser.css's `.dialog.adviser-sheet`, 640 wide and as tall
+          // as its read.
+          .dialogSheetSizing(phone: theme.composerNarrow, detents: [.large], width: Measure.Dialog.wideWidth)
           .presentationBackground(theme.surface)
           .presentationCornerRadius(Measure.Dialog.radius)
       }
