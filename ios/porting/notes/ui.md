@@ -9,7 +9,9 @@ Status: the foundation is built and passes CI (compile, the app's unit tests, th
 on an iPhone and an iPad). Not yet audited against the web's components as a whole. Round 5
 added the charts, the dashboards and the first reports (below); round 6 the tools, Post this
 chart (the share dialog) and Defense, then New dashboard, Customize from the palette,
-Settings › Dashboards and the handle field's arrows; posting is still to come.
+Settings › Dashboards and the handle field's arrows. Then the composer, Settings › Posting, the
+adviser, scheduling, the posting pages and the composer's timer (each section below); the last three
+wait on CI's first compile.
 
 ## How the layer is checked
 
@@ -577,7 +579,7 @@ LIVE SKY (Sky/, and VirgaCore/Hillside/ for everything that isn't drawing)
 
 - Left for later steps: dragging cards, a card's settings dialog, the dashboard cards and reports not listed
   above, ChartNotes and the charts' notes and milestones; of posting, what the composer's entry
-  (Composer.jsx) lists, its timer and every posting page being in;
+  (Composer.jsx) lists as not yet (the duplicate guard, drag and drop, the posted toast's View it on Bluesky);
   "Keep it when space runs low" (iOS has nothing to ask).
 - Copy is the web's word for word, including words that only fit a browser ("This
   browser's region", "Forget X on this browser", "Saving the repo to this browser"). Worth
