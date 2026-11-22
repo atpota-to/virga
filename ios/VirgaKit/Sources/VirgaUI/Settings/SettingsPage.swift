@@ -1,5 +1,6 @@
 // Ports src/settings/SettingsPage.jsx
 // Ports src/settings/settings.css
+// Ports src/posting/ui/SettingsParts.jsx (SettingsCard and SettingsRow: SettingsSectionView and SettingsRow here)
 //
 // Settings: each section is a page of its own. Beside the sidebar the
 // sidebar lists them and the bare address opens the first; on a phone
@@ -10,12 +11,11 @@
 // two of state.
 //
 // Here now: Account (AccountsSettings), Data and sync (DataSection.swift),
-// Dashboards (DashboardsSection.swift), Appearance (the sky, the accent
-// with its swatches, contrast, density, the sidebar, numbers and dates),
-// Permissions, and About (with the Terms and the Privacy Policy, and when
-// the repo was last read). Posting needs the posting settings, which come
-// later; it shows its header and says so. Appearance's live sky waits for
-// the hillside.
+// Dashboards (DashboardsSection.swift), Posting (PostingSettingsSection.swift),
+// Appearance (the sky, the accent with its swatches, contrast, density, the
+// sidebar, numbers and dates), Permissions, and About (with the Terms and
+// the Privacy Policy, and when the repo was last read). Appearance's live
+// sky waits for the hillside.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -51,6 +51,7 @@ public struct SettingsPage: View {
     case "account": AccountsSettings()
     case "data": DataSection()
     case "dashboards": DashboardsSection()
+    case "posting": PostingSettingsSection()
     case "appearance": AppearanceSection()
     case "permissions": PermissionsSection()
     case "about": AboutSection()

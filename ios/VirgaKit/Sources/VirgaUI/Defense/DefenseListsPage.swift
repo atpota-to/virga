@@ -190,6 +190,8 @@ struct YourListsCard: View {
     .padding(.vertical, theme.rowPadLg)
     .frame(maxWidth: .infinity, alignment: .leading)
     .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+    .accessibilityElement(children: .contain)
+    .accessibilityIdentifier("defense-list-row")
   }
 }
 

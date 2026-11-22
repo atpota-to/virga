@@ -98,6 +98,7 @@ struct DefenseHistoryPage: View {
       Button(busy ? "Taking off…" : "Take off") { Task { await confirmUndo() } }
         .buttonStyle(.virga(.primary))
         .disabled(busy)
+        .accessibilityIdentifier("defense-undo-confirm")
     }
   }
 
@@ -165,6 +166,7 @@ struct DefenseHistoryPage: View {
       Label("Undo", systemImage: ToolGlyph.undo)
     }
     .buttonStyle(.linkAction)
+    .accessibilityIdentifier("defense-plan-undo")
     return Group {
       if theme.isPhone {
         VStack(alignment: .leading, spacing: theme.space2) {
