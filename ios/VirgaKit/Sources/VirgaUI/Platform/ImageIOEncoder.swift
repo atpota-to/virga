@@ -2,13 +2,15 @@
 //
 // VirgaPosting's ImageEncoder over ImageIO: a composer file's bytes are at
 // its `ref` (a file path). Decoding reads the pixel size, turned upright by
-// its orientation. Compressing draws the image upright at most
-// `maxWidthOrHeight` on its longer side (unless `alwaysKeepResolution`),
-// writes it as `fileType` (JPEG where ImageIO can't write the type asked,
-// as WebP) starting at `initialQuality`, and steps the quality down, then
-// the size, until it weighs no more than `maxSizeMB` MiB. Nothing of the
-// original's metadata is copied, so no EXIF (and no location) goes out.
-// The output is a new temporary file, its ref the path.
+// its orientation. Compressing walks browser-image-compression's loop
+// (Images.compress): the image drawn upright at most `maxWidthOrHeight` on
+// its longer side, written as `fileType` (JPEG where ImageIO can't write
+// the type asked, as WebP) at `initialQuality`, then up to ten more tries
+// at 0.95 the quality, smaller by 0.95 only when it was over `maxSizeMB`
+// and `alwaysKeepResolution` is off; the last try is the answer, and
+// prepareImage refuses it if it is still over. Nothing of the original's
+// metadata is copied, so no EXIF (and no location) goes out. The output is
+// a new temporary file, its ref the path.
 
 #if canImport(UIKit)
 import Foundation
@@ -30,23 +32,20 @@ public struct ImageIOEncoder: ImageEncoder {
 
   public func compress(_ file: ComposerFile, _ options: ImageCompressOptions) async throws -> ComposerFile? {
     guard let source = Self.source(file) else { return nil }
-    let budget = Int(options.maxSizeMB * 1_048_576)
     let type = UTType(mimeType: options.fileType).flatMap { Self.writable($0) ? $0 : nil } ?? .jpeg
-    var side = options.alwaysKeepResolution ? Self.longSide(source) : options.maxWidthOrHeight
-    var best: Data?
-    for _ in 0..<6 {
-      guard let image = Self.upright(source, maxSide: side) else { return nil }
-      var quality = options.initialQuality
-      while quality > 0.05 {
-        guard let data = Self.encode(image, type: type, quality: quality) else { return nil }
-        best = data
-        if data.count <= budget { return try Self.write(data, like: file, type: type) }
-        if type == .png { break }
-        quality -= 0.1
+    // The picture is drawn again only when the size changes; most tries
+    // only lower the quality.
+    var drawn: (side: Int, image: CGImage)?
+    let data = Images.compress(
+      longSide: Self.longSide(source), originalSize: file.size, options: options, png: type == .png
+    ) { side, quality in
+      if drawn?.side != side {
+        guard let image = Self.upright(source, maxSide: side) else { return nil }
+        drawn = (side, image)
       }
-      side = max(1, Int(Double(side) * 0.8))
+      return drawn.flatMap { Self.encode($0.image, type: type, quality: quality) }
     }
-    return try best.map { try Self.write($0, like: file, type: type) }
+    return try data.map { try Self.write($0, like: file, type: type) }
   }
 
   // MARK: ImageIO
