@@ -320,6 +320,7 @@ struct TemplateEditorForm: View {
           .virgaField(invalid: problem("keywords") != nil)
           .focused($focus, equals: .keywords)
           .accessibilityLabel("Suggest it when a post mentions")
+          .accessibilityHint(problem("keywords") ?? "")
         FieldHint("Words separated by commas. A reply to a post with one of them offers this template first.")
         fieldError(problem("keywords"))
       }
@@ -347,8 +348,15 @@ struct TemplateEditorForm: View {
       VirgaTextField("Is there an app for that?", text: $draft.name)
         .virgaField(invalid: problem("name") != nil)
         .focused($focus, equals: .name)
-        .onChange(of: draft.name) { _, next in if next.utf16.count > 200 { draft.name = next.jsSlice(0, 200) } }
+        // `maxLength={200}`: typing can't take the name past 200 units, but
+        // a longer name the template already has is kept as it is (the
+        // browser never shortens a value it was given).
+        .onChange(of: draft.name) { old, next in
+          guard next.utf16.count > 200, next.utf16.count > old.utf16.count, next != initial?.name else { return }
+          draft.name = old.utf16.count >= 200 ? old : Self.fitting(next, 200)
+        }
         .accessibilityLabel("Name")
+        .accessibilityHint(problem("name") ?? "")
         .accessibilityIdentifier("template-name")
       fieldError(problem("name"))
     }
@@ -364,6 +372,7 @@ struct TemplateEditorForm: View {
         .virgaTextArea(invalid: problem("text") != nil)
         .focused($focus, equals: .text)
         .accessibilityLabel("Text")
+        .accessibilityHint(problem("text") ?? "")
         .accessibilityIdentifier("template-text")
       // One line under the text: what can be put in it, and its count.
       HStack(alignment: .firstTextBaseline, spacing: Measure.Templates.footColumnGap) {
@@ -560,6 +569,7 @@ struct TemplateEditorForm: View {
           .focused($focus, equals: .quote)
           .onSubmit { Task { await readLink() } }
           .accessibilityLabel("A link to a post, feed, list or web page")
+          .accessibilityHint(problem("quote") ?? "")
           Button(link.status == "loading" ? "Reading…" : "Read the link") { Task { await readLink() } }
             .buttonStyle(.virga(size: .small))
             .disabled(draft.quoteUrl.jsTrimmed().isEmpty || link.status == "loading")
@@ -687,6 +697,7 @@ struct TemplateEditorForm: View {
         .virgaField(invalid: problem("group") != nil)
         .focused($focus, equals: .group)
         .accessibilityLabel("Group")
+        .accessibilityHint(problem("group") ?? "")
       fieldError(problem("group"))
     }
     let shortcut = FieldStack("Shortcut") {
@@ -707,6 +718,7 @@ struct TemplateEditorForm: View {
         .virgaField(invalid: problem("shortcut") != nil)
         .focused($focus, equals: .shortcut)
         .accessibilityLabel("Shortcut")
+        .accessibilityHint(problem("shortcut") ?? "")
       }
       FieldHint("Type it after a slash in the composer to use the template.")
       fieldError(problem("shortcut"))
@@ -832,6 +844,9 @@ struct TemplateEditorForm: View {
     let own = TemplateEditorModel.editorProblems(draft, others)
     if let first = own.fields.first {
       focus = Self.field(first)
+      // The field's problem is its hint (aria-invalid, aria-describedby),
+      // and is read out now: moving the keyboard there doesn't say it.
+      if let message = own[first], !message.isEmpty { AccessibilityNotification.Announcement(message).post() }
       return
     }
     guard let model else { return }
@@ -878,6 +893,20 @@ struct TemplateEditorForm: View {
       if let failed = error as? TemplateServiceError { serverError = failed } else { otherError = Self.saidOrSaveFailed(error) }
       confirmDelete = false
     }
+  }
+
+  /// The text's first whole characters that fit in `limit` UTF-16 units, as
+  /// a browser cuts a paste at maxLength: no emoji or accent split.
+  static func fitting(_ text: String, _ limit: Int) -> String {
+    var out = ""
+    var used = 0
+    for character in text {
+      let units = character.utf16.count
+      if used + units > limit { break }
+      out.append(character)
+      used += units
+    }
+    return out
   }
 
   static func field(_ name: String) -> Field? {
