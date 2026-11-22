@@ -13,7 +13,14 @@
 // ↑ and ↓ move through the suggestions (round through the field itself:
 // moveActive), Return takes the marked one (or, with none marked, signs
 // in as the field always does), Escape puts the list away and Tab leaves
-// it closed.
+// it closed. The marked one is read out to VoiceOver as it is marked (the
+// web's aria-activedescendant).
+//
+// The field is named by the label over it (the web's <label for>), and a
+// notice about what was typed is its hint (aria-describedby). On a phone
+// the page is scrolled to put the field at its top when suggestions come
+// up (`reveal`, through the page's SignInScroller), so the list floats in
+// the room above the keyboard rather than under it.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -23,7 +30,15 @@ import VirgaSession
 struct HandleField: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(AppModel.self) private var app
+  @Environment(\.signInScroller) private var scroller
   @Binding var value: String
+  /// The visible label over the field: its name for VoiceOver.
+  var label: String
+  /// A notice about what was typed, read as the field's hint.
+  var hint: String?
+  /// The id of the view to bring to the page's top when suggestions come
+  /// up on a phone (the field's label).
+  var reveal: String?
   var size: FieldSize
   var floats: Bool
   var invalid: Bool
@@ -47,10 +62,14 @@ struct HandleField: View {
   var body: some View {
     let height = theme.points(size == .large ? ThemeKit.largeInputHeight : ThemeKit.touchInputHeight)
     let showing = focus.wrappedValue && !items.isEmpty && !closed
+    // The @ grows with Dynamic Type, so the words start after it at its
+    // own scale (the web's are both in CSS px under the browser's size).
+    let leading = Measure.SignIn.atInset
+      + theme.scaled(Measure.SignIn.fieldLeading - Measure.SignIn.atInset, relativeTo: VirgaTheme.textStyle(for: theme.textMd))
     VStack(alignment: .leading, spacing: 0) {
       ZStack(alignment: .leading) {
         TextField(
-          "you.bsky.social",
+          label,
           text: Binding(
             get: { value },
             set: { next in
@@ -58,7 +77,8 @@ struct HandleField: View {
               skip = nil
               value = SignInIdentity.cleanTyped(next)
               onEdit()
-            })
+            }),
+          prompt: Text("you.bsky.social")
         )
         .focused(focus)
         .textInputAutocapitalization(.never)
@@ -97,9 +117,9 @@ struct HandleField: View {
           }
           return .ignored
         }
-        .accessibilityValue(showing && items.indices.contains(active) ? "@\(items[active].handle ?? "")" : "")
+        .accessibilityHint(hint ?? "")
         .disabled(disabled)
-        .virgaField(invalid: invalid, size: size, leading: Measure.SignIn.fieldLeading)
+        .virgaField(invalid: invalid, size: size, leading: leading)
         .accessibilityIdentifier("handle-field")
         Text("@")
           .virgaText(.textMd)
@@ -128,6 +148,23 @@ struct HandleField: View {
     .onChange(of: focus.wrappedValue) { _, focused in
       if !focused { active = -1 }
     }
+    .onChange(of: showing) { _, now in
+      // On a phone the keyboard takes the lower half: the field goes to the
+      // top of the page, so the list has room under it.
+      if now, floats, theme.isPhone, let reveal { scroller?.scrollTo(reveal) }
+    }
+    .onChange(of: active) { _, marked in
+      // The web's aria-activedescendant: the option the arrows marked is read.
+      guard showing, items.indices.contains(marked) else { return }
+      AccessibilityNotification.Announcement(Self.spoken(items[marked])).post()
+    }
+  }
+
+  /// A suggestion as VoiceOver reads it: its name, then its handle.
+  static func spoken(_ item: SignInSuggestion) -> String {
+    let handle = "@\(item.handle ?? "")"
+    guard let name = item.displayName, !name.isEmpty else { return handle }
+    return "\(name), \(handle)"
   }
 
   /// The debounce, then the search (cancelled by the next keystroke).
@@ -232,6 +269,41 @@ struct HandleSuggestionBody<Label: View>: View {
         }
       }
       .onHover { hovered = $0 }
+  }
+}
+
+/// Scrolls the page the sign-in is on, so a view of it (by its id) comes to
+/// the top: the front page's ScrollViewReader, handed down.
+struct SignInScroller {
+  let scrollTo: @MainActor (String) -> Void
+}
+
+private struct SignInScrollerKey: EnvironmentKey {
+  static let defaultValue: SignInScroller? = nil
+}
+
+extension EnvironmentValues {
+  /// The page's scroller, where the page gives one (the front page).
+  var signInScroller: SignInScroller? {
+    get { self[SignInScrollerKey.self] }
+    set { self[SignInScrollerKey.self] = newValue }
+  }
+}
+
+/// A ScrollViewReader round the page's scroll view, its proxy handed to the
+/// sign-in as a SignInScroller.
+struct SignInScrolling: ViewModifier {
+  func body(content: Content) -> some View {
+    ScrollViewReader { proxy in
+      content.environment(\.signInScroller, SignInScroller { id in proxy.scrollTo(id, anchor: .top) })
+    }
+  }
+}
+
+extension View {
+  /// Lets the sign-in in this scroll view bring its field to the top.
+  func signInScrolling() -> some View {
+    modifier(SignInScrolling())
   }
 }
 #endif

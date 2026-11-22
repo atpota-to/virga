@@ -35,6 +35,9 @@ public struct AppRoot: View {
   /// The composer's host (ComposerContext), above the per-account identity,
   /// so an open composer survives switching accounts.
   @State private var composer = ComposerHost()
+  /// A compose link opened while signed out waits for the sign-in: the
+  /// front page says so (Landing's `composing`).
+  @State private var composing = false
 
   public init() {}
 
@@ -50,6 +53,7 @@ public struct AppRoot: View {
 
   public var body: some View {
     content
+      .environment(\.signInComposing, composing)
       .task(id: session.did) {
         let remembered = session.accounts.first { Optional($0.did).jsEquals(session.did) }
         await app.profile.load(did: session.did, remembered: remembered)
@@ -76,7 +80,9 @@ public struct AppRoot: View {
     } else if let did = session.did, session.session != nil, session.agent != nil {
       signedIn(did)
     } else {
-      LandingView()
+      // The page's scroll view, for the sign-in to bring its field up over
+      // a phone's keyboard.
+      LandingView().signInScrolling()
     }
   }
 
@@ -113,6 +119,7 @@ public struct AppRoot: View {
         // (sessionStorage: "for this tab only"), which the sign-in comes
         // back into and a new launch starts without.
         let now = Date().timeIntervalSince1970 * 1000
+        composing = false
         if let kept = PendingCompose.takePendingCompose(store: app.stores.tab, now: now) { navigator.navigate(kept) }
       }
       .sessionNotices()
@@ -128,7 +135,9 @@ public struct AppRoot: View {
     } else {
       let search = url.query.map { "?\($0)" } ?? ""
       let now = Date().timeIntervalSince1970 * 1000
-      _ = PendingCompose.rememberPendingCompose(ComposeIntent.intentComposePath, search, store: app.stores.tab, now: now)
+      if PendingCompose.rememberPendingCompose(ComposeIntent.intentComposePath, search, store: app.stores.tab, now: now) {
+        composing = true
+      }
     }
     return true
   }
