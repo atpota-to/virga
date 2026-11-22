@@ -124,6 +124,16 @@ extension VirgaTheme {
     return Font.system(size: points, weight: Self.systemWeight(weight)).monospacedDigit()
   }
 
+  /// The face at `points` already scaled (a size worked out after Dynamic
+  /// Type, such as one held to the room it has), in tabular figures.
+  @MainActor
+  public func font(points: CGFloat, weight: Double = VirgaWeight.regular) -> Font {
+    if hasTypeface, let face = VirgaTypeface.face(size: points, weight: weight) {
+      return Font(face)
+    }
+    return Font.system(size: points, weight: Self.systemWeight(weight)).monospacedDigit()
+  }
+
   /// A type-scale token's face.
   @MainActor
   public func font(_ token: ThemeToken, weight: Double = VirgaWeight.regular) -> Font {
@@ -283,18 +293,23 @@ public struct GlyphFont: ViewModifier {
   var size: CGFloat
   var weight: Font.Weight
   var words: CGFloat?
+  var upTo: CGFloat?
 
   public func body(content: Content) -> some View {
     let style = VirgaTheme.textStyle(for: words ?? size)
-    content.font(.system(size: theme.scaled(size, relativeTo: style), weight: weight))
+    let points = theme.scaled(size, relativeTo: style)
+    content.font(.system(size: upTo.map { min(points, $0) } ?? points, weight: weight))
   }
 }
 
 extension View {
   /// An SF Symbol at `size` points (and `weight`), grown with Dynamic Type
-  /// as words of `words` points (the glyph's own size by default) are.
-  public func virgaGlyph(_ size: CGFloat, weight: Font.Weight = .regular, beside words: CGFloat? = nil) -> some View {
-    modifier(GlyphFont(size: size, weight: weight, words: words))
+  /// as words of `words` points (the glyph's own size by default) are, and
+  /// at most `upTo` (a glyph alone in a box of fixed size).
+  public func virgaGlyph(
+    _ size: CGFloat, weight: Font.Weight = .regular, beside words: CGFloat? = nil, upTo: CGFloat? = nil
+  ) -> some View {
+    modifier(GlyphFont(size: size, weight: weight, words: words, upTo: upTo))
   }
 
   /// The type scale's `token` (theme.textBase by default) at `weight`, at a

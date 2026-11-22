@@ -268,7 +268,7 @@ struct LinkActionIconStyle: LabelStyle {
   func makeBody(configuration: Configuration) -> some View {
     HStack(spacing: theme.points(ThemeKit.linkActionGap)) {
       configuration.icon
-        .font(.system(size: theme.points(ThemeKit.linkActionIconSize)))
+        .virgaGlyph(theme.points(ThemeKit.linkActionIconSize), beside: theme.points(ThemeKit.linkActionFontSize))
       configuration.title
         .modifier(LinkUnderline())
     }

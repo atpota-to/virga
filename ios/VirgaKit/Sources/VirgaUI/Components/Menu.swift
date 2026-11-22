@@ -159,8 +159,9 @@ public struct MoreMenu: View {
     Menu {
       MenuContent(entries: entries)
     } label: {
+      // Grown with Dynamic Type, kept inside its 44-point circle.
       Image(systemName: Glyph.more)
-        .font(.system(size: theme.points(ThemeKit.menuItemIconSize), weight: .medium))
+        .virgaGlyph(theme.points(ThemeKit.menuItemIconSize), weight: .medium, upTo: side / 2)
         .foregroundStyle(theme.color(ThemeKit.ghostButtonInk))
         .frame(width: side, height: side)
         .contentShape(Circle())

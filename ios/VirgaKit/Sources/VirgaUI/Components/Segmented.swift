@@ -114,7 +114,7 @@ struct SegmentedKey<Value: Hashable>: View {
       HStack(spacing: Measure.Segmented.keyGap) {
         if let image = option.systemImage {
           Image(systemName: image)
-            .font(.system(size: theme.points(ThemeKit.segmentedIconSize)))
+            .virgaGlyph(theme.points(ThemeKit.segmentedIconSize), beside: fontSize)
         }
         // The word in bold holds the key's width, so pressing doesn't nudge
         // the keys beside it.

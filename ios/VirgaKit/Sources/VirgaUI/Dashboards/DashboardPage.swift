@@ -286,7 +286,7 @@ struct WidgetCard: View {
       if def.kind == "stat" {
         WidgetBody(card: card, def: def, archive: archive, period: period, title: title)
       } else {
-        VStack(alignment: .leading, spacing: Measure.Dashboard.headGap) {
+        VStack(alignment: .leading, spacing: theme.points(ThemeKit.cardHeadSpaceBelow)) {
           VStack(alignment: .leading, spacing: 2) {
             HStack(alignment: .firstTextBaseline, spacing: theme.space2) {
               Text(title ?? def.name)

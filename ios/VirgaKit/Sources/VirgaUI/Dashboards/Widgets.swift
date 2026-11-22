@@ -314,7 +314,7 @@ struct Stat: View {
         .foregroundStyle(theme.muted)
       }
     }
-    .padding(.top, Measure.Dashboard.statPaddingTop)
+    .padding(.top, theme.isPhone ? Measure.Dashboard.phoneStatPaddingTop : Measure.Dashboard.statPaddingTop)
     .overlay(alignment: .top) { Rectangle().fill(theme.line).frame(height: 2) }
     .accessibilityElement(children: .combine)
   }

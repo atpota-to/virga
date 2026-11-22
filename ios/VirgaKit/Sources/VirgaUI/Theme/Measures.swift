@@ -70,6 +70,11 @@ public enum Measure {
     public static let token: Double = 1.2
   }
 
+  public enum Avatar {
+    /// The most of the disc its letter may take under Dynamic Type.
+    public static let letterShare: CGFloat = 0.5
+  }
+
   public enum Token {
     /// `.token { border: 1px solid var(--line-2); font-size: var(--text-sm); font-weight: 500 }`
     public static let border: CGFloat = 1
@@ -278,11 +283,14 @@ public enum Measure {
 
   /// dashboards.css.
   public enum Dashboard {
-    /// `.stat { gap: 8px; padding-top: 16px; border-top: 2px }`, its head
-    /// 8 apart, the label's glyph 14 and 6 from its words, the number's
-    /// line 16 from the trend (`.stat-value { letter-spacing: -0.04em }`).
+    /// `.stat { gap: 8px; padding-top: 16px; border-top: 2px }` (12 at 560
+    /// and under), its head 8 apart, the label's glyph 14 and 6 from its
+    /// words, the number's line 16 from the trend (`.stat-value {
+    /// letter-spacing: -0.04em }`). A report tile's padding (reports.css
+    /// `.report-tile`) is 16 at every width.
     public static let statGap: CGFloat = 8
     public static let statPaddingTop: CGFloat = 16
+    public static let phoneStatPaddingTop: CGFloat = 12
     public static let statHeadGap: CGFloat = 8
     public static let statLabelGap: CGFloat = 6
     public static let statIcon: CGFloat = 14
@@ -291,12 +299,14 @@ public enum Measure {
     public static let noteGap: CGFloat = 6
     public static let sparkMinWidth: CGFloat = 48
     public static let sparkMaxWidth: CGFloat = 120
-    /// A card's head: its title, the way to the full report, 12 above its body.
+    /// A list card's head (`.widget--list > .widget-head { padding-bottom:
+    /// 12px; border-bottom: 1px solid var(--rule) }`): 12 above its rule. Any
+    /// other card's head is the kit's (ThemeKit.cardHeadSpaceBelow, 16).
     public static let headGap: CGFloat = 12
     /// Customize: the dashed outline (1, dashes 4 3), a line of the arrange
-    /// list at least 56 tall.
+    /// list at least 52 tall (`.arrange-line { min-height: 52px }`).
     public static let editDash: [CGFloat] = [4, 3]
-    public static let arrangeRowHeight: CGFloat = 56
+    public static let arrangeRowHeight: CGFloat = 52
     /// The grid's column gap on a phone (`.dash-grid { column-gap: 20px }`).
     public static let phoneColumnGap: CGFloat = 20
     /// Where the grid narrows (`@container dash`): from 860 down a third

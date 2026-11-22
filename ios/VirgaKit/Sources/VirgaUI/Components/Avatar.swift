@@ -53,10 +53,13 @@ public struct Avatar: View {
       fontSize = theme.points(ThemeKit.largeAvatarFontSize)
     }
     let side = self.side ?? diameter
+    // The letter grows with Dynamic Type, but no further than the disc
+    // holds: it is decorative (the name is beside it), and the disc is not.
+    let letter = min(theme.scaled(self.side == nil ? fontSize : theme.textXs), side * Measure.Avatar.letterShare)
     return ZStack {
       Circle().fill(theme.avatarBg)
       Text(Self.letter(name))
-        .virgaText(size: self.side == nil ? fontSize : theme.textXs, weight: ThemeKit.avatarWeight)
+        .font(theme.font(points: letter, weight: ThemeKit.avatarWeight))
         .foregroundStyle(theme.avatarInk)
       if let src, !src.isEmpty, let url = URL(string: src) {
         AsyncImage(url: url) { phase in
