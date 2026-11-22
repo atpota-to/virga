@@ -73,10 +73,13 @@ public struct TabBar: View {
   public var body: some View {
     let section = navigator.route.section
     HStack(spacing: Measure.TabBar.gap) {
-      HStack(spacing: Measure.TabBar.tabsGap) {
+      // `.tabbar-tabs { justify-content: space-between; gap: 4px }`: one
+      // spacer between two tabs, at least the gap, so the tabs (`flex:
+      // none`) keep their width and only what is left spreads them.
+      HStack(spacing: 0) {
         ForEach(tabs) { tab in
           TabButton(tab: tab, current: section == tab.key) { navigate(tab.to) }
-          if tab.id != tabs.last?.id { Spacer(minLength: 0) }
+          if tab.id != tabs.last?.id { Spacer(minLength: Measure.TabBar.tabsGap) }
         }
       }
       .frame(maxWidth: Measure.TabBar.tabsMaxWidth)

@@ -17,6 +17,9 @@ import VirgaInsights
 extension Measure.AppBar {
   /// `.appbar-back { padding-right: 8px }`
   static let backPaddingTrailing: CGFloat = 8
+  /// `.appbar-back { margin-left: -6px }`: the link reaches that far into
+  /// the bar's leading padding.
+  static let backMarginLeading: CGFloat = -6
 }
 
 /// `.appbar-back`: ‹ Reports, ‹ Settings, ‹ Scheduled posts.
@@ -37,20 +40,52 @@ struct AppBarBack: View {
     .accessibilityIdentifier("app-bar-back")
   }
 
+  /// The room `.appbar` leaves the link: the window less the bar's padding
+  /// (`padding: 0 8px 0 var(--page-pad)`), its gap and the actions beside
+  /// it (`.appbar-actions { flex: none }`: Search and the account, 44 each),
+  /// with the 6 the link reaches into the padding (`margin-left: -6px`).
+  private var room: CGFloat {
+    let actions = Measure.AppBar.iconButton + Measure.Account.compactSize
+    let bar = theme.pagePad + Measure.AppBar.paddingTrailing + Measure.AppBar.gap + actions
+    return max(0, theme.windowWidth - bar - Measure.AppBar.backMarginLeading)
+  }
+
   private var label: some View {
-    HStack(spacing: Measure.AppBar.backGap) {
-      Image(systemName: Glyph.chevronLeft)
-        .font(.system(size: Measure.AppBar.backChevron))
-        .accessibilityHidden(true)
-      Text(link.label)
-        .virgaText(.textMd, weight: VirgaWeight.medium)
-        .lineLimit(1)
-        .truncationMode(.tail)
+    BackLinkWidth(room: room) {
+      HStack(spacing: Measure.AppBar.backGap) {
+        Image(systemName: Glyph.chevronLeft)
+          .font(.system(size: Measure.AppBar.backChevron))
+          .accessibilityHidden(true)
+        // `.appbar-back-label`: on one line, ellipsised only past the room.
+        Text(link.label)
+          .virgaText(.textMd, weight: VirgaWeight.medium)
+          .lineLimit(1)
+          .truncationMode(.tail)
+      }
+      .foregroundStyle(theme.ink)
+      .padding(.trailing, Measure.AppBar.backPaddingTrailing)
+      .frame(minHeight: Measure.AppBar.iconButton)
     }
-    .foregroundStyle(theme.ink)
-    .padding(.trailing, Measure.AppBar.backPaddingTrailing)
-    .frame(minHeight: Measure.AppBar.iconButton)
     .contentShape(Rectangle())
+  }
+}
+
+/// Sizes the back link to its whole width, up to the room the bar has,
+/// whatever width it is offered. During a push iOS 26's navigation bar can
+/// offer its leading item almost none, keep the narrow size the item gives
+/// back, and then clip the whole label to it (‹ R for ‹ Reports, with no
+/// ellipsis); `.appbar-back` takes the width of its words.
+private struct BackLinkWidth: Layout {
+  let room: CGFloat
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    guard let link = subviews.first else { return .zero }
+    let width = min(link.sizeThatFits(.unspecified).width, room)
+    return link.sizeThatFits(ProposedViewSize(width: width, height: proposal.height))
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    subviews.first?.place(at: bounds.origin, proposal: ProposedViewSize(bounds.size))
   }
 }
 
