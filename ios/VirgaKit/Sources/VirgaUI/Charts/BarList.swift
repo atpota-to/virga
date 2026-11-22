@@ -70,8 +70,10 @@ public struct BarList: View {
       let trackMin = nsids ? Measure.Chart.barTrackCode : Measure.Chart.barTrack
       // `minmax(0, var(--barlist-label))` grows to its limit before the
       // `minmax(var(--barlist-track), 1fr)` track grows past its least.
-      let labelWidth = listWidth.map {
-        Swift.min(labelMax, Swift.max(0, $0 - 2 * Measure.Chart.barColumnGap - trackMin - valueWidth))
+      let taken: CGFloat = 2 * Measure.Chart.barColumnGap + trackMin + valueWidth
+      let labelWidth: CGFloat? = listWidth.map { width in
+        let room: CGFloat = width - taken
+        return Swift.min(labelMax, Swift.max(0, room))
       }
       Grid(alignment: .leading, horizontalSpacing: Measure.Chart.barColumnGap, verticalSpacing: Measure.Chart.barRowGap) {
         ForEach(rows) { row in
