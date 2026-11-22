@@ -33,6 +33,7 @@
 import SwiftUI
 import VirgaCore
 import VirgaNetwork
+import VirgaInsights
 import VirgaPosting
 import VirgaSession
 

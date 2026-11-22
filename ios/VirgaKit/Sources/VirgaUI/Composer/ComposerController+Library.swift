@@ -2,11 +2,11 @@
 //
 // A "/" shortcut's template goes into the post where the shortcut was
 // typed: its text, and what it attaches (a link card, or a post, feed or
-// list it quotes). A template with blanks to fill opens the library on the
-// web, where its questions are asked; the library's panel isn't ported, so
-// the composer says so instead. Continue a thread picks one of the
-// account's own recent posts (from the archive, else its author feed) and
-// makes the post a reply to it.
+// list it quotes). A template with blanks to fill opens the library on
+// it, where its questions are asked. The library's plan comes back here
+// (applyPlan). Save as a template opens the template editor on the post;
+// Continue a thread picks one of the account's own recent posts (from the
+// archive, else its author feed) and makes the post a reply to it.
 
 #if canImport(UIKit)
 import Foundation
@@ -15,10 +15,6 @@ import VirgaNetwork
 import VirgaPosting
 
 extension ComposerController {
-  /// Templates with blanks to fill are filled in the library's panel.
-  static let templateNeedsLibrary =
-    "This template has blanks to fill in, which the library asks for. The library isn’t in the iOS app yet."
-
   /// The template context: who's being replied to, and the account's handle.
   func templateContext() -> TemplateContext {
     Library.libraryContext(state: state.json, selfHandle: account?.handle)
@@ -33,8 +29,8 @@ extension ComposerController {
   func applyTemplate(_ postId: String, _ template: PostTemplate, range: TextSelection?) {
     let context = templateContext()
     guard PostTemplates.templateQuestions(template, context).isEmpty else {
-      notices.removeAll { $0.key == "template-library" }
-      notices.append(ComposerNotice(key: "template-library", tone: .info, text: Self.templateNeedsLibrary))
+      // A template with questions opens the library on it, where they're asked.
+      dialog = .library(LibraryRequest(postId: postId, range: range, templateRkey: template.rkey.isEmpty ? nil : template.rkey))
       return
     }
     let plan = Library.applyPlanFor(Library.itemFromTemplate(template, context), context: context)
@@ -119,6 +115,45 @@ extension ComposerController {
       let pick = error as? LibraryPickError
       mediaNote = pick?.code == LibraryPickError.gone ? pick?.message ?? "" : "Couldn’t attach that from your library. Try again."
     }
+  }
+
+  /// The library, for a post (PostTools, or the slash list's Open the library).
+  func openLibrary(_ postId: String?, range: TextSelection?) {
+    guard let postId = postId ?? state.posts.first?.id else { return }
+    dialog = .library(LibraryRequest(postId: postId, range: range))
+  }
+
+  /// Save as a template: the post being written in, as the editor's seed. A
+  /// reply's is draftFromReply's, with the note that says which name became
+  /// a blank.
+  func saveAsTemplate() {
+    let s = state
+    let index = min(activeIndex, max(0, s.posts.count - 1))
+    guard s.posts.indices.contains(index) else { return }
+    let post = s.posts[index]
+    if let reply = s.reply {
+      var args: [String: JSONValue] = ["text": .string(post.text), "reply": reply.json]
+      if let record = post.record { args["record"] = record.json }
+      if let card = post.card { args["card"] = card.json }
+      let made = EditorDrafts.draftFromReply(.object(args))
+      templateSeed = TemplateSeed(draft: TemplateDraft(json: made.0), note: made.1)
+    } else {
+      templateSeed = TemplateSeed(text: post.text, embed: Self.seedEmbed(post))
+    }
+    dialog = .saveTemplate
+  }
+
+  static func seedEmbed(_ post: PostDraft) -> JSONValue? {
+    if let record = post.record, !record.uri.isEmpty, let cid = record.cid, !cid.isEmpty {
+      return ["$type": "app.bsky.embed.record", "record": ["uri": .string(record.uri), "cid": .string(cid)]]
+    }
+    if let card = post.card, !card.url.isEmpty {
+      return [
+        "$type": "app.bsky.embed.external",
+        "external": ["uri": .string(card.url), "title": .string(card.title), "description": .string(card.description)],
+      ]
+    }
+    return nil
   }
 
   // MARK: Continue a thread

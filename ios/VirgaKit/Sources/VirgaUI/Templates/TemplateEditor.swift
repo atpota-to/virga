@@ -19,7 +19,9 @@
 // Differences: SwiftUI's text editor doesn't say where the caret is on iOS
 // 17, so Insert and A blank… put what they add at the end of the text; the
 // Group field has no list of the groups already used (a datalist) under it.
-// Reading a link to a web page waits for linkCard.js (TemplateEditorSources).
+// Its reads are the library's (LibrarySources: the account's posts, what a
+// template quotes, a pasted link); a web page's card comes through the
+// composer's stand-in for linkCard.js (ComposerLinkCards).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -156,7 +158,8 @@ struct TemplateEditorForm: View {
   @State private var posts = PostsState()
   @FocusState private var focus: Field?
 
-  private var sources: TemplateEditorSources { TemplateEditorSources(transport: app.archiveEnvironment.transport) }
+  /// The library's reads (LibrarySources) go through the session's transport.
+  private var transport: any HTTPTransport { app.archiveEnvironment.transport }
 
   var body: some View {
     let templates = model?.templates ?? []
@@ -201,7 +204,7 @@ struct TemplateEditorForm: View {
       guard draft.quoteMode == "post", posts.status == "idle", let did else { return }
       posts.status = "loading"
       do {
-        let read = try await sources.fetchOwnPosts(did)
+        let read = try await LibrarySources.fetchOwnPosts(did, transport: transport)
         posts = PostsState(status: "ready", items: read.items, cursor: read.cursor)
       } catch {
         posts.status = "error"
@@ -229,14 +232,13 @@ struct TemplateEditorForm: View {
   private func readInitialQuote(_ start: TemplateDraft) async {
     let kind = EditorDrafts.templateEmbedKind(start.embed)
     guard kind == "post" || kind == "feed" || kind == "list" else { return }
-    switch await sources.embedView(start.embed) {
-    case .missing?:
+    let views = await LibrarySources.hydrateEmbedViews([start.embed ?? .null], transport: transport)
+    guard let view = views[uri: start.embed?["record"]?["uri"]?.stringValue ?? ""] else { return }
+    if view == .string(Library.missing) {
       link = LinkState(status: "ready", summary: TemplateAttachSummary(by: "Gone", title: "What this quotes has been deleted."))
-    case .view(let view)?:
+    } else {
       link = LinkState(status: "ready", summary: TemplateEditorWords.viewSummary(view))
       if draft.embed == start.embed { draft.quoteView = view }
-    case nil:
-      break
     }
   }
 
@@ -599,8 +601,11 @@ struct TemplateEditorForm: View {
     let url = draft.quoteUrl.jsTrimmed()
     guard !url.isEmpty else { return }
     link = LinkState(status: "loading")
-    var found = await sources.resolveRecordLink(url)
-    if found == nil { found = await sources.resolveExternalLink(url) }
+    let transport = self.transport
+    // linkCard.js's fetchLinkCard: the composer's stand-in until the publishing port's.
+    let fetchLinkCard: FetchLinkCard = { address in await ComposerLinkCards.fetchLinkCard(address, transport: transport)?.json }
+    var found = await LibrarySources.resolveRecordLink(url, transport: transport)
+    if found == nil { found = try? await LibrarySources.resolveExternalLink(url, fetchLinkCard: fetchLinkCard) }
     guard let found else {
       link = LinkState(status: "error", error: "That link couldn’t be read. Check it, or try another.")
       return
@@ -612,7 +617,7 @@ struct TemplateEditorForm: View {
 
   private func pickPost(_ view: JSONValue) {
     draft.embed = [
-      "$type": .string(TemplateEditorSources.recordEmbed),
+      "$type": "app.bsky.embed.record",
       "record": ["uri": view["uri"] ?? .null, "cid": view["cid"] ?? .null],
     ]
     draft.quoteView = view

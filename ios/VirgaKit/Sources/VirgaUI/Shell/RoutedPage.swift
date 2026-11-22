@@ -176,6 +176,8 @@ public struct RoutedPage: View {
     } else if pageKey == "templates" {
       TemplatesPage(session: app.session, did: app.session.did, id: id)
         .id(app.session.did ?? "")
+    } else if pageKey == "library" {
+      LibraryScreen(did: app.session.did).id(app.session.did ?? "")
     } else {
       UnportedPage(PostingHeader.model(pageKey))
     }

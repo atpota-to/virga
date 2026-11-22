@@ -46,7 +46,7 @@ struct ComposerSheet: View {
       .scrollDismissesKeyboard(.interactively)
       .sheet(item: $controller.dialog) { dialog in
         ComposerDialogView(controller: controller, dialog: dialog)
-          .presentationDetents([.medium, .large])
+          .presentationDetents(dialog.isTall ? [.large] : [.medium, .large])
           .presentationBackground(theme.surface)
           .presentationCornerRadius(Measure.Dialog.radius)
       }
@@ -466,6 +466,11 @@ struct ComposerDialogView: View {
         status: controller.continueState.status, items: controller.continueState.items,
         error: controller.continueState.error, onPick: { controller.pickContinue($0) },
         onRetry: { controller.openContinue() }, onClose: close)
+    case .library(let request):
+      LibraryDialog(controller: controller, request: request, onClose: close)
+    case .saveTemplate:
+      TemplateEditorForm(
+        did: controller.asDid, template: nil, seed: controller.templateSeed, onClose: close, onSaved: nil, onDeleting: nil)
     }
   }
 }

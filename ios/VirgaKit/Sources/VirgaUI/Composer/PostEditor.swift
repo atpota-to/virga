@@ -13,8 +13,8 @@
 //
 // Typing "/" at the start of a word suggests templates by shortcut
 // (Library.detectSlashCommand, rankTemplatesForSlash, matchShortcut); a
-// template picked goes in over the shortcut. Not here yet: the list's
-// "Open the library" (the library's panel isn't ported).
+// template picked goes in over the shortcut, and Open the library opens
+// it over the shortcut's range.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -79,7 +79,10 @@ struct PostEditor: View {
         MentionList(mention: mention) { actor in pick(actor) }
       }
       if let slash {
-        SlashList(controller: controller, slash: slash) { template in
+        SlashList(
+          controller: controller, slash: slash,
+          onOpenLibrary: { controller.openLibrary(postId, range: TextSelection(start: slash.start, end: slash.end)) }
+        ) { template in
           controller.applyTemplate(postId, template, range: TextSelection(start: slash.start, end: slash.end))
         }
       }
@@ -304,6 +307,7 @@ struct SlashList: View {
   @Environment(\.virgaTheme) private var theme
   let controller: ComposerController
   let slash: SlashCommand
+  let onOpenLibrary: () -> Void
   let pick: (PostTemplate) -> Void
 
   var body: some View {
@@ -322,6 +326,17 @@ struct SlashList: View {
           .foregroundStyle(theme.muted)
           .padding(theme.space3)
       }
+      Rectangle().fill(theme.line).frame(height: 1)
+      Button(action: onOpenLibrary) {
+        Label("Open the library", systemImage: ComposerGlyph.library)
+          .virgaText(.textSm, weight: VirgaWeight.medium)
+          .foregroundStyle(theme.ink)
+          .padding(.horizontal, theme.space3)
+          .frame(maxWidth: .infinity, minHeight: Measure.Touch.target, alignment: .leading)
+          .contentShape(Rectangle())
+      }
+      .buttonStyle(.plain)
+      .accessibilityIdentifier("slash-open-library")
     }
     .background(theme.surface, in: RoundedRectangle(cornerRadius: theme.radiusLg))
     .overlay(RoundedRectangle(cornerRadius: theme.radiusLg).strokeBorder(theme.line))
@@ -355,6 +370,7 @@ struct SlashList: View {
     }
     .buttonStyle(.plain)
     .accessibilityLabel(template.shortcut.isEmpty ? name : "\(name), /\(template.shortcut)")
+    .accessibilityIdentifier("slash-template-\(template.shortcut)")
   }
 }
 

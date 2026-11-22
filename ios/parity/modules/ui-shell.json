@@ -267,9 +267,11 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateMeasures.swift",
         "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateEditor.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateQuestions.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateQuestions.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Library/LibraryPanel.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Library/LibraryDialog.swift"
       ],
-      "note": "The template editor (.tpl-form, the text's foot, a new blank's rule, the questions between hairlines and their two columns from 640, the attach rows and the posts to quote with the accent's rule, the grid, the shortcut's slash, the foot), the questions and the preview (.lib-questions, .lib-answers, .lib-preview, the parts, the attachment's card, the bones). Measure.Templates names them. Not yet: the library panel's (its shelves, list, detail and dialog) and the hover rules. A blank still to answer is in brackets in the run of words, where the web draws a dashed chip.",
+      "note": "The template editor (.tpl-form, the text's foot, a new blank's rule, the questions between hairlines and their two columns from 640, the attach rows and the posts to quote with the accent's rule, the grid, the shortcut's slash, the foot), the questions and the preview (.lib-questions, .lib-answers, .lib-preview, the parts, the attachment's card, the bones). Measure.Templates names them. The library panel (LibraryMeasure: the shelves as a row of words over the list, the list's section heads and rows between hairlines with the accent's rule beside the chosen one, the detail beside the list from 760 wide and in its place narrower, the bones) and its dialog, a sheet the whole height. Not yet: the three-column grid with the shelves down a rail, and the hover rules. A blank still to answer is in brackets in the run of words, where the web draws a dashed chip.",
       "synced": "9ce1436bac34"
     },
     "src/posting/pages/hub.css": {
