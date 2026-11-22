@@ -126,7 +126,6 @@ struct PostBlock: View {
         controller: controller, postId: post.id, index: index, label: label,
         placeholder: index > 0 ? "Keep going…" : replying ? "Write your reply" : "What’s on your mind?",
         disabled: disabled)
-      .accessibilityIdentifier("post-editor-\(index)")
       SplitOffer(controller: controller, post: post, index: index, total: total, disabled: disabled, numberChoice: $numberChoice)
       attachments
       problems

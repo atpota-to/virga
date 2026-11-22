@@ -53,7 +53,6 @@ struct ComposerSheet: View {
         .presentationBackground(theme.surface)
         .presentationCornerRadius(Measure.Dialog.radius)
     }
-    .accessibilityIdentifier("composer")
   }
 }
 

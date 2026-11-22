@@ -496,6 +496,8 @@ public final class ComposerController {
     }
     notices = notices.filter { !$0.key.hasPrefix("elsewhere-") && $0.key != "gates-lists" } + notes
     resolveGates()
+    // Blobs belong to one repo: a video starts again as the new account.
+    startVideoUploads()
   }
 
   /// An account removed from this device takes its unsent post with it.

@@ -97,6 +97,7 @@ struct PostEditor: View {
         segments: segments,
         style: EditorStyle(theme: theme),
         label: label,
+        identifier: "post-editor-\(index)",
         placeholder: placeholder,
         disabled: disabled,
         caretRequest: caretRequest,
@@ -379,6 +380,7 @@ struct HighlightedTextView: UIViewRepresentable {
   var segments: [HighlightSegment]
   var style: EditorStyle
   var label: String
+  var identifier: String
   var placeholder: String
   var disabled: Bool
   var caretRequest: Int?
@@ -414,6 +416,7 @@ struct HighlightedTextView: UIViewRepresentable {
     view.isEditable = !disabled
     view.tintColor = style.tint
     view.accessibilityLabel = label
+    view.accessibilityIdentifier = identifier
     view.accessibilityHint = text.isEmpty ? placeholder : nil
     if view.text != text {
       let keep = view.selectedRange
