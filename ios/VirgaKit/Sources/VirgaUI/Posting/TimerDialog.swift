@@ -8,8 +8,8 @@
 // account's limits, any timer the post already has, and (when the caller
 // doesn't know) whether it's a reply and when it went up.
 //
-// Named PostTimerDialog: the composer's own timer stand-in is TimerDialog
-// (Composer/ComposerDialogs.swift). Present it with
+// Named PostTimerDialog, beside the composer's own timer dialog
+// (LifespanDialog, Composer/LifespanDialog.swift). Present it with
 // `.postTimerDialog($post, did:onArmed:)`, `post` a PostTimerTarget (the
 // web's `{ uri, cid, extraUris, text, postedAt, reply }`).
 

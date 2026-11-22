@@ -185,6 +185,9 @@ struct ComposerBody: View {
     }
     // SCHEDULE: the account's limits, read as it opens and for each account it goes out as.
     .task(id: controller.asDid) { await controller.refreshLimits(controller.asDid) }
+    // TIMER: a post whose timer the writer hasn't chosen takes the default,
+    // whenever the default or the state loaded changes (ComposerController+Timer.swift).
+    .onChange(of: controller.defaultTimerKey, initial: true) { _, _ in controller.applyDefaultTimer() }
   }
 }
 
@@ -487,7 +490,12 @@ struct ComposerDialogView: View {
         },
         onUseDefault: useDefault, onClose: close)
     case .timer:
-      TimerDialog(note: "", onClose: close)
+      // TIMER: the post's timer over its rule (LifespanDialog.swift, ComposerController+Timer.swift).
+      LifespanDialog(
+        value: controller.state.lifespan, fit: controller.timerDialogFit, publishAt: controller.timerPublishAt,
+        limits: controller.limits.value, did: controller.asDid, holds: controller.timerDialogHolds,
+        note: controller.timerNote, transport: controller.transport,
+        onSave: { controller.saveTimer($0) }, onClose: close)
     case .continueThread:
       ContinueThreadDialog(
         status: controller.continueState.status, items: controller.continueState.items,

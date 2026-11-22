@@ -31,6 +31,7 @@ extension ComposerController {
     }
     let attempt = startBusy(PublishActions.draft, "Saving the draft")
     defer { endBusy(attempt) }
+    let defaultRule = defaultTimer.rule  // TIMER: what the toast compares the draft's timer with
     do {
       let agent = try await session.agentFor(did)
       let opts = DraftSaveOptions(
@@ -50,7 +51,8 @@ extension ComposerController {
       } else {
         dispatch(.setSource(saved.source))
       }
-      var notes: [String] = []
+      // TIMER: a draft keeps no timer; the toast says when the post had its own.
+      var notes = [SelfDestruct.draftTimerNote(s.lifespan, model.lifespanTouched, defaultRule)].filter { !$0.isEmpty }
       if s.source?.kind == "scheduled" { notes.append("The scheduled copy is still in your queue.") }
       let label = ComposerSubmit.accountLabel(accountJSON(did), did)
       toasts.push("Draft saved to \(label)’s Bluesky drafts.\(notes.map { " \($0)" }.joined())", seconds: 7)

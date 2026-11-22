@@ -70,6 +70,7 @@ struct ComposerOptions: View {
     let state = controller.state
     let replying = state.reply != nil
     let phone = theme.composerNarrow
+    let timerNote = controller.timerNote  // TIMER
     VStack(alignment: .leading, spacing: phone ? 0 : ComposerMeasure.optionsTop) {
       Rectangle().fill(theme.rule).frame(height: 1)
       if phone {
@@ -82,6 +83,10 @@ struct ComposerOptions: View {
       if controller.showTags || !state.tags.isEmpty {
         TagsField(tags: state.tags, disabled: disabled) { controller.dispatch(.setTags($0)) }
           .padding(.top, theme.space2)
+      }
+      // TIMER: why the post has no timer, while it has none (timerNote).
+      if !timerNote.isEmpty && !controller.timerOn {
+        FieldHint(timerNote).accessibilityIdentifier("composer-timer-note")
       }
       if let info = controller.gatesInfo, info.did.jsEquals(controller.asDid), info.source == "everyone", !state.gates.custom,
         !replying, let notice = info.notice
@@ -106,6 +111,8 @@ struct ComposerOptions: View {
     }
     word(ComposerGlyph.timer, controller.timerValue, id: "option-timer") { controller.dialog = .timer }
       .accessibilityLabel(controller.timerOn ? "Timer: \(controller.timerValue)" : "Timer: none")
+      .help(controller.timerNote)  // TIMER: the button's title
+      .accessibilityHint(controller.timerNote)
     // ADVISER: Check this post, the month's checks on the pointer's tip.
     if controller.adviser.enabled {
       word(AdviserGlyph.sparkles, "Check this post", id: "option-adviser") { controller.askAdviser() }
@@ -165,6 +172,7 @@ struct ComposerOptions: View {
     }
     row(ComposerGlyph.timer, "Timer", controller.timerValue, id: "option-timer") { controller.dialog = .timer }
       .accessibilityLabel(controller.timerOn ? "Timer: \(controller.timerValue)" : "Timer: none")
+      .accessibilityHint(controller.timerNote)  // TIMER: the button's title
     // ADVISER: Check this post, with the month's checks as its value.
     if controller.adviser.enabled {
       row(AdviserGlyph.sparkles, "Check this post", controller.adviser.usageLine.isEmpty ? nil : controller.adviser.usageLine, id: "option-adviser") {

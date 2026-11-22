@@ -11,8 +11,10 @@
 // ComposerController+Schedule.swift, its state `scheduling`; the lines that
 // reach it from here are marked SCHEDULE.
 //
-// Not here yet: the timer's editor in the composer (LifespanDialog) and its
-// default (defaultTimerFor). Its button says so.
+// The post's timer (the default timer, lifespanTouched, timerNote, the "No
+// free timer" question, arming it after a post goes out) is
+// ComposerController+Timer.swift, its dialog LifespanDialog.swift; the lines
+// that reach it from here are marked TIMER.
 
 #if canImport(UIKit)
 import Foundation
@@ -98,10 +100,11 @@ enum ComposerDialog: Identifiable, Equatable {
     }
   }
 
-  /// The library and the template editor take the whole height.
+  /// The library and the template editor take the whole height, and so
+  /// does the timer's editor (TIMER), as the posting pages' timer dialog does.
   var isTall: Bool {
     switch self {
-    case .library, .saveTemplate: return true
+    case .library, .saveTemplate, .timer: return true
     default: return false
     }
   }

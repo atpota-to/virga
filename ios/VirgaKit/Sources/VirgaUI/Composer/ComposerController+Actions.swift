@@ -421,7 +421,12 @@ extension ComposerController {
       return
     }
     let settings = self.settings
-    let problems = model.problems(now: Date(), requireAltText: settings.requireAltText, lifespanProblem: { _ in "" })
+    // TIMER: a set time already passed is a problem only where a timer can be set.
+    let fit = timerFit
+    let at = now
+    let problems = model.problems(
+      now: Date(), requireAltText: settings.requireAltText,
+      lifespanProblem: { rule in fit.available ? SelfDestruct.immediateTimerProblem(rule, at) : "" })
     if let first = problems.first {
       error = ComposerErrorLine(text: first.message)
       if let index = first.postIndex, state.posts.indices.contains(index) { focusPostId = state.posts[index].id }
@@ -431,17 +436,18 @@ extension ComposerController {
     defer { endBusy(attempt) }
     var late = false
     do {
-      // Timers need their port (and Virga's server): a post goes out without one.
-      if s.lifespan["enabled"]?.isTruthy ?? false {
-        var lifespan = s.lifespan.objectValue ?? [:]
-        lifespan["enabled"] = false
-        s.json["lifespan"] = .object(lifespan)
-      }
+      // TIMER: no free timer of its kind is asked about before anything goes
+      // (ComposerController+Timer.swift).
+      guard let roomed = await askNoFreeTimer(s, fit: fit) else { return }
+      s = roomed
       // ADVISER: the check before sending (ComposerController+Adviser.swift).
       if !skipAdviser {
         guard let checked = await adviserGate(s, attempt: attempt) else { return }
         s = checked
       }
+      // TIMER: a set time that has passed stops it here; with no server to
+      // arm it, the post goes out without its timer.
+      s = try timerChecked(s, fit: fit)
       s = await ensureGates(s)
       let target = try await session.targetFor(did)
       busy?.cancellable = true
@@ -539,6 +545,8 @@ extension ComposerController {
     for warning in result.warnings {
       if let text = warning["message"]?.stringValue { toasts.push(text, seconds: 7) }
     }
+    // TIMER: the post's timer, armed on what was written (not waited for).
+    armAfterPublish(s, result)
     // SCHEDULE: a post that came from a scheduled row takes the row off
     // (finishSource's scheduled half); if it can't, the post stays to try again.
     if s.source?.kind == "scheduled" {

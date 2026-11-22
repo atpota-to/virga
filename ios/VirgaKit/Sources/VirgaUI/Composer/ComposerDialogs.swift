@@ -4,14 +4,14 @@
 //
 // The small dialogs the composer opens: a yes-or-no question, languages
 // and content labels, who can reply and quote, a video's description and
-// an image's alt text, and the timer. Each sits beside the composer (a
-// sheet over its sheet), so closing it closes only it.
+// an image's alt text. Each sits beside the composer (a sheet over its
+// sheet), so closing it closes only it. The timer's (LifespanDialog) is
+// LifespanDialog.swift.
 //
 // Alt text: describing the image for the writer needs the adviser's AI
 // service (aiService.js, altTextModel.js), which isn't ported; the web
 // offers no Generate button without a server requester either, which is
-// how the dialog is here. The timer's editor (LifespanEditor.jsx) isn't
-// ported: its dialog says so. Continue a thread lists the account's own
+// how the dialog is here. Continue a thread lists the account's own
 // recent posts.
 
 #if canImport(UIKit)
@@ -384,24 +384,6 @@ struct ContinueThreadDialog: View {
     .accessibilityLabel("Continue the post from \(when): \(text.isEmpty ? "no text" : text)")
     .accessibilityAddTraits(.isButton)
     .accessibilityIdentifier("continue-item")
-  }
-}
-
-/// The post's timer. LifespanEditor isn't ported, so the dialog says so.
-struct TimerDialog: View {
-  @Environment(\.virgaTheme) private var theme
-  let note: String
-  let onClose: () -> Void
-
-  var body: some View {
-    DialogFrame(title: "Timer", onClose: onClose) {
-      DialogForm {
-        if !note.isEmpty { Callout(tone: .warn) { Text(note) } }
-        Text(Unported.section).foregroundStyle(theme.muted)
-      }
-    } actions: {
-      Button("Cancel", action: onClose).buttonStyle(.virga)
-    }
   }
 }
 #endif
