@@ -2420,6 +2420,104 @@
         "embed": {
           "$type": "app.bsky.embed.external",
           "external": {
+            "uri": "https://user:pw@www.example.com:443/path"
+          }
+        }
+      },
+      "output": "Link: example.com"
+    },
+    {
+      "id": "embedSummary#17",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-US",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "http://[::1]:8080/x"
+          }
+        }
+      },
+      "output": "Link: [::1]:8080"
+    },
+    {
+      "id": "embedSummary#18",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-US",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "HTTPS://WWW.EXAMPLE.COM/"
+          }
+        }
+      },
+      "output": "Link: example.com"
+    },
+    {
+      "id": "embedSummary#19",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-US",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "https://www./"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#20",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-US",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "data:text/plain,hi"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#21",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-US",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "mailto:a@b.example"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#22",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-US",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": 42
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#23",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-US",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
             "uri": "https://BÜCHER.example/"
           }
         }
@@ -2427,7 +2525,7 @@
       "output": "Link: xn--bcher-kva.example"
     },
     {
-      "id": "embedSummary#17",
+      "id": "embedSummary#24",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2439,7 +2537,7 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#18",
+      "id": "embedSummary#25",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2450,7 +2548,7 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#19",
+      "id": "embedSummary#26",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2464,7 +2562,7 @@
       "output": "Link: 42"
     },
     {
-      "id": "embedSummary#20",
+      "id": "embedSummary#27",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2479,7 +2577,7 @@
       "output": "Link: e.example"
     },
     {
-      "id": "embedSummary#21",
+      "id": "embedSummary#28",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2493,7 +2591,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#22",
+      "id": "embedSummary#29",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2507,7 +2605,7 @@
       "output": "Shares a feed"
     },
     {
-      "id": "embedSummary#23",
+      "id": "embedSummary#30",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2521,7 +2619,7 @@
       "output": "Shares a list"
     },
     {
-      "id": "embedSummary#24",
+      "id": "embedSummary#31",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2535,7 +2633,7 @@
       "output": "Shares a starter pack"
     },
     {
-      "id": "embedSummary#25",
+      "id": "embedSummary#32",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2549,7 +2647,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#26",
+      "id": "embedSummary#33",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2561,7 +2659,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#27",
+      "id": "embedSummary#34",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2572,7 +2670,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#28",
+      "id": "embedSummary#35",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2594,7 +2692,7 @@
       "output": "1 image · Quotes a post"
     },
     {
-      "id": "embedSummary#29",
+      "id": "embedSummary#36",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2613,7 +2711,7 @@
       "output": "A video · Shares a list"
     },
     {
-      "id": "embedSummary#30",
+      "id": "embedSummary#37",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2631,7 +2729,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#31",
+      "id": "embedSummary#38",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2642,7 +2740,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#32",
+      "id": "embedSummary#39",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2653,7 +2751,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#33",
+      "id": "embedSummary#40",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2667,7 +2765,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#34",
+      "id": "embedSummary#41",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2678,7 +2776,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#35",
+      "id": "embedSummary#42",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2687,7 +2785,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#36",
+      "id": "embedSummary#43",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2696,7 +2794,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#37",
+      "id": "embedSummary#44",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2705,7 +2803,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#38",
+      "id": "embedSummary#45",
       "fn": "embedSummary",
       "input": {
         "locale": "en-US",
@@ -2714,7 +2812,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#39",
+      "id": "embedSummary#46",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -2729,7 +2827,7 @@
       "output": "2 images"
     },
     {
-      "id": "embedSummary#40",
+      "id": "embedSummary#47",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -2743,7 +2841,7 @@
       "output": "1 image"
     },
     {
-      "id": "embedSummary#41",
+      "id": "embedSummary#48",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -2755,7 +2853,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#42",
+      "id": "embedSummary#49",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -2766,7 +2864,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#43",
+      "id": "embedSummary#50",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -2778,7 +2876,7 @@
       "output": "3 images"
     },
     {
-      "id": "embedSummary#44",
+      "id": "embedSummary#51",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -2792,7 +2890,7 @@
       "output": "3 images"
     },
     {
-      "id": "embedSummary#45",
+      "id": "embedSummary#52",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4039,7 +4137,7 @@
       "output": "1,234 images"
     },
     {
-      "id": "embedSummary#46",
+      "id": "embedSummary#53",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4050,7 +4148,7 @@
       "output": "A video"
     },
     {
-      "id": "embedSummary#47",
+      "id": "embedSummary#54",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4061,7 +4159,7 @@
       "output": "A video"
     },
     {
-      "id": "embedSummary#48",
+      "id": "embedSummary#55",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4076,7 +4174,7 @@
       "output": "Link: A page"
     },
     {
-      "id": "embedSummary#49",
+      "id": "embedSummary#56",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4090,7 +4188,7 @@
       "output": "Link: example.com"
     },
     {
-      "id": "embedSummary#50",
+      "id": "embedSummary#57",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4104,7 +4202,7 @@
       "output": "Link: example.com:8443"
     },
     {
-      "id": "embedSummary#51",
+      "id": "embedSummary#58",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4118,7 +4216,7 @@
       "output": "Link: wwwx.example.com"
     },
     {
-      "id": "embedSummary#52",
+      "id": "embedSummary#59",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4132,7 +4230,7 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#53",
+      "id": "embedSummary#60",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4146,7 +4244,105 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#54",
+      "id": "embedSummary#61",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-GB",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "https://user:pw@www.example.com:443/path"
+          }
+        }
+      },
+      "output": "Link: example.com"
+    },
+    {
+      "id": "embedSummary#62",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-GB",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "http://[::1]:8080/x"
+          }
+        }
+      },
+      "output": "Link: [::1]:8080"
+    },
+    {
+      "id": "embedSummary#63",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-GB",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "HTTPS://WWW.EXAMPLE.COM/"
+          }
+        }
+      },
+      "output": "Link: example.com"
+    },
+    {
+      "id": "embedSummary#64",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-GB",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "https://www./"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#65",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-GB",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "data:text/plain,hi"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#66",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-GB",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "mailto:a@b.example"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#67",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-GB",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": 42
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#68",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4160,7 +4356,7 @@
       "output": "Link: xn--bcher-kva.example"
     },
     {
-      "id": "embedSummary#55",
+      "id": "embedSummary#69",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4172,7 +4368,7 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#56",
+      "id": "embedSummary#70",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4183,7 +4379,7 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#57",
+      "id": "embedSummary#71",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4197,7 +4393,7 @@
       "output": "Link: 42"
     },
     {
-      "id": "embedSummary#58",
+      "id": "embedSummary#72",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4212,7 +4408,7 @@
       "output": "Link: e.example"
     },
     {
-      "id": "embedSummary#59",
+      "id": "embedSummary#73",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4226,7 +4422,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#60",
+      "id": "embedSummary#74",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4240,7 +4436,7 @@
       "output": "Shares a feed"
     },
     {
-      "id": "embedSummary#61",
+      "id": "embedSummary#75",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4254,7 +4450,7 @@
       "output": "Shares a list"
     },
     {
-      "id": "embedSummary#62",
+      "id": "embedSummary#76",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4268,7 +4464,7 @@
       "output": "Shares a starter pack"
     },
     {
-      "id": "embedSummary#63",
+      "id": "embedSummary#77",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4282,7 +4478,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#64",
+      "id": "embedSummary#78",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4294,7 +4490,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#65",
+      "id": "embedSummary#79",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4305,7 +4501,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#66",
+      "id": "embedSummary#80",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4327,7 +4523,7 @@
       "output": "1 image · Quotes a post"
     },
     {
-      "id": "embedSummary#67",
+      "id": "embedSummary#81",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4346,7 +4542,7 @@
       "output": "A video · Shares a list"
     },
     {
-      "id": "embedSummary#68",
+      "id": "embedSummary#82",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4364,7 +4560,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#69",
+      "id": "embedSummary#83",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4375,7 +4571,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#70",
+      "id": "embedSummary#84",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4386,7 +4582,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#71",
+      "id": "embedSummary#85",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4400,7 +4596,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#72",
+      "id": "embedSummary#86",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4411,7 +4607,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#73",
+      "id": "embedSummary#87",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4420,7 +4616,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#74",
+      "id": "embedSummary#88",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4429,7 +4625,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#75",
+      "id": "embedSummary#89",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4438,7 +4634,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#76",
+      "id": "embedSummary#90",
       "fn": "embedSummary",
       "input": {
         "locale": "en-GB",
@@ -4447,7 +4643,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#77",
+      "id": "embedSummary#91",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -4462,7 +4658,7 @@
       "output": "2 images"
     },
     {
-      "id": "embedSummary#78",
+      "id": "embedSummary#92",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -4476,7 +4672,7 @@
       "output": "1 image"
     },
     {
-      "id": "embedSummary#79",
+      "id": "embedSummary#93",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -4488,7 +4684,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#80",
+      "id": "embedSummary#94",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -4499,7 +4695,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#81",
+      "id": "embedSummary#95",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -4511,7 +4707,7 @@
       "output": "3 images"
     },
     {
-      "id": "embedSummary#82",
+      "id": "embedSummary#96",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -4525,7 +4721,7 @@
       "output": "3 images"
     },
     {
-      "id": "embedSummary#83",
+      "id": "embedSummary#97",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -5772,7 +5968,7 @@
       "output": "1.234 images"
     },
     {
-      "id": "embedSummary#84",
+      "id": "embedSummary#98",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -5783,7 +5979,7 @@
       "output": "A video"
     },
     {
-      "id": "embedSummary#85",
+      "id": "embedSummary#99",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -5794,7 +5990,7 @@
       "output": "A video"
     },
     {
-      "id": "embedSummary#86",
+      "id": "embedSummary#100",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -5809,7 +6005,7 @@
       "output": "Link: A page"
     },
     {
-      "id": "embedSummary#87",
+      "id": "embedSummary#101",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -5823,7 +6019,7 @@
       "output": "Link: example.com"
     },
     {
-      "id": "embedSummary#88",
+      "id": "embedSummary#102",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -5837,7 +6033,7 @@
       "output": "Link: example.com:8443"
     },
     {
-      "id": "embedSummary#89",
+      "id": "embedSummary#103",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -5851,7 +6047,7 @@
       "output": "Link: wwwx.example.com"
     },
     {
-      "id": "embedSummary#90",
+      "id": "embedSummary#104",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -5865,7 +6061,7 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#91",
+      "id": "embedSummary#105",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -5879,7 +6075,105 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#92",
+      "id": "embedSummary#106",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-DE",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "https://user:pw@www.example.com:443/path"
+          }
+        }
+      },
+      "output": "Link: example.com"
+    },
+    {
+      "id": "embedSummary#107",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-DE",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "http://[::1]:8080/x"
+          }
+        }
+      },
+      "output": "Link: [::1]:8080"
+    },
+    {
+      "id": "embedSummary#108",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-DE",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "HTTPS://WWW.EXAMPLE.COM/"
+          }
+        }
+      },
+      "output": "Link: example.com"
+    },
+    {
+      "id": "embedSummary#109",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-DE",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "https://www./"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#110",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-DE",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "data:text/plain,hi"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#111",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-DE",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "mailto:a@b.example"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#112",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-DE",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": 42
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#113",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -5893,7 +6187,7 @@
       "output": "Link: xn--bcher-kva.example"
     },
     {
-      "id": "embedSummary#93",
+      "id": "embedSummary#114",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -5905,7 +6199,7 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#94",
+      "id": "embedSummary#115",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -5916,7 +6210,7 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#95",
+      "id": "embedSummary#116",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -5930,7 +6224,7 @@
       "output": "Link: 42"
     },
     {
-      "id": "embedSummary#96",
+      "id": "embedSummary#117",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -5945,7 +6239,7 @@
       "output": "Link: e.example"
     },
     {
-      "id": "embedSummary#97",
+      "id": "embedSummary#118",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -5959,7 +6253,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#98",
+      "id": "embedSummary#119",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -5973,7 +6267,7 @@
       "output": "Shares a feed"
     },
     {
-      "id": "embedSummary#99",
+      "id": "embedSummary#120",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -5987,7 +6281,7 @@
       "output": "Shares a list"
     },
     {
-      "id": "embedSummary#100",
+      "id": "embedSummary#121",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -6001,7 +6295,7 @@
       "output": "Shares a starter pack"
     },
     {
-      "id": "embedSummary#101",
+      "id": "embedSummary#122",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -6015,7 +6309,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#102",
+      "id": "embedSummary#123",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -6027,7 +6321,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#103",
+      "id": "embedSummary#124",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -6038,7 +6332,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#104",
+      "id": "embedSummary#125",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -6060,7 +6354,7 @@
       "output": "1 image · Quotes a post"
     },
     {
-      "id": "embedSummary#105",
+      "id": "embedSummary#126",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -6079,7 +6373,7 @@
       "output": "A video · Shares a list"
     },
     {
-      "id": "embedSummary#106",
+      "id": "embedSummary#127",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -6097,7 +6391,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#107",
+      "id": "embedSummary#128",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -6108,7 +6402,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#108",
+      "id": "embedSummary#129",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -6119,7 +6413,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#109",
+      "id": "embedSummary#130",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -6133,7 +6427,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#110",
+      "id": "embedSummary#131",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -6144,7 +6438,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#111",
+      "id": "embedSummary#132",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -6153,7 +6447,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#112",
+      "id": "embedSummary#133",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -6162,7 +6456,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#113",
+      "id": "embedSummary#134",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -6171,7 +6465,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#114",
+      "id": "embedSummary#135",
       "fn": "embedSummary",
       "input": {
         "locale": "en-DE",
@@ -6180,7 +6474,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#115",
+      "id": "embedSummary#136",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -6195,7 +6489,7 @@
       "output": "2 images"
     },
     {
-      "id": "embedSummary#116",
+      "id": "embedSummary#137",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -6209,7 +6503,7 @@
       "output": "1 image"
     },
     {
-      "id": "embedSummary#117",
+      "id": "embedSummary#138",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -6221,7 +6515,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#118",
+      "id": "embedSummary#139",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -6232,7 +6526,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#119",
+      "id": "embedSummary#140",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -6244,7 +6538,7 @@
       "output": "3 images"
     },
     {
-      "id": "embedSummary#120",
+      "id": "embedSummary#141",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -6258,7 +6552,7 @@
       "output": "3 images"
     },
     {
-      "id": "embedSummary#121",
+      "id": "embedSummary#142",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7505,7 +7799,7 @@
       "output": "1 234 images"
     },
     {
-      "id": "embedSummary#122",
+      "id": "embedSummary#143",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7516,7 +7810,7 @@
       "output": "A video"
     },
     {
-      "id": "embedSummary#123",
+      "id": "embedSummary#144",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7527,7 +7821,7 @@
       "output": "A video"
     },
     {
-      "id": "embedSummary#124",
+      "id": "embedSummary#145",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7542,7 +7836,7 @@
       "output": "Link: A page"
     },
     {
-      "id": "embedSummary#125",
+      "id": "embedSummary#146",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7556,7 +7850,7 @@
       "output": "Link: example.com"
     },
     {
-      "id": "embedSummary#126",
+      "id": "embedSummary#147",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7570,7 +7864,7 @@
       "output": "Link: example.com:8443"
     },
     {
-      "id": "embedSummary#127",
+      "id": "embedSummary#148",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7584,7 +7878,7 @@
       "output": "Link: wwwx.example.com"
     },
     {
-      "id": "embedSummary#128",
+      "id": "embedSummary#149",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7598,7 +7892,7 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#129",
+      "id": "embedSummary#150",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7612,7 +7906,105 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#130",
+      "id": "embedSummary#151",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-FR",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "https://user:pw@www.example.com:443/path"
+          }
+        }
+      },
+      "output": "Link: example.com"
+    },
+    {
+      "id": "embedSummary#152",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-FR",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "http://[::1]:8080/x"
+          }
+        }
+      },
+      "output": "Link: [::1]:8080"
+    },
+    {
+      "id": "embedSummary#153",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-FR",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "HTTPS://WWW.EXAMPLE.COM/"
+          }
+        }
+      },
+      "output": "Link: example.com"
+    },
+    {
+      "id": "embedSummary#154",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-FR",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "https://www./"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#155",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-FR",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "data:text/plain,hi"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#156",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-FR",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "mailto:a@b.example"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#157",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-FR",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": 42
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#158",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7626,7 +8018,7 @@
       "output": "Link: xn--bcher-kva.example"
     },
     {
-      "id": "embedSummary#131",
+      "id": "embedSummary#159",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7638,7 +8030,7 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#132",
+      "id": "embedSummary#160",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7649,7 +8041,7 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#133",
+      "id": "embedSummary#161",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7663,7 +8055,7 @@
       "output": "Link: 42"
     },
     {
-      "id": "embedSummary#134",
+      "id": "embedSummary#162",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7678,7 +8070,7 @@
       "output": "Link: e.example"
     },
     {
-      "id": "embedSummary#135",
+      "id": "embedSummary#163",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7692,7 +8084,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#136",
+      "id": "embedSummary#164",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7706,7 +8098,7 @@
       "output": "Shares a feed"
     },
     {
-      "id": "embedSummary#137",
+      "id": "embedSummary#165",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7720,7 +8112,7 @@
       "output": "Shares a list"
     },
     {
-      "id": "embedSummary#138",
+      "id": "embedSummary#166",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7734,7 +8126,7 @@
       "output": "Shares a starter pack"
     },
     {
-      "id": "embedSummary#139",
+      "id": "embedSummary#167",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7748,7 +8140,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#140",
+      "id": "embedSummary#168",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7760,7 +8152,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#141",
+      "id": "embedSummary#169",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7771,7 +8163,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#142",
+      "id": "embedSummary#170",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7793,7 +8185,7 @@
       "output": "1 image · Quotes a post"
     },
     {
-      "id": "embedSummary#143",
+      "id": "embedSummary#171",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7812,7 +8204,7 @@
       "output": "A video · Shares a list"
     },
     {
-      "id": "embedSummary#144",
+      "id": "embedSummary#172",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7830,7 +8222,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#145",
+      "id": "embedSummary#173",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7841,7 +8233,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#146",
+      "id": "embedSummary#174",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7852,7 +8244,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#147",
+      "id": "embedSummary#175",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7866,7 +8258,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#148",
+      "id": "embedSummary#176",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7877,7 +8269,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#149",
+      "id": "embedSummary#177",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7886,7 +8278,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#150",
+      "id": "embedSummary#178",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7895,7 +8287,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#151",
+      "id": "embedSummary#179",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7904,7 +8296,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#152",
+      "id": "embedSummary#180",
       "fn": "embedSummary",
       "input": {
         "locale": "en-FR",
@@ -7913,7 +8305,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#153",
+      "id": "embedSummary#181",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -7928,7 +8320,7 @@
       "output": "2 images"
     },
     {
-      "id": "embedSummary#154",
+      "id": "embedSummary#182",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -7942,7 +8334,7 @@
       "output": "1 image"
     },
     {
-      "id": "embedSummary#155",
+      "id": "embedSummary#183",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -7954,7 +8346,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#156",
+      "id": "embedSummary#184",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -7965,7 +8357,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#157",
+      "id": "embedSummary#185",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -7977,7 +8369,7 @@
       "output": "3 images"
     },
     {
-      "id": "embedSummary#158",
+      "id": "embedSummary#186",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -7991,7 +8383,7 @@
       "output": "3 images"
     },
     {
-      "id": "embedSummary#159",
+      "id": "embedSummary#187",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9238,7 +9630,7 @@
       "output": "1'234 images"
     },
     {
-      "id": "embedSummary#160",
+      "id": "embedSummary#188",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9249,7 +9641,7 @@
       "output": "A video"
     },
     {
-      "id": "embedSummary#161",
+      "id": "embedSummary#189",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9260,7 +9652,7 @@
       "output": "A video"
     },
     {
-      "id": "embedSummary#162",
+      "id": "embedSummary#190",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9275,7 +9667,7 @@
       "output": "Link: A page"
     },
     {
-      "id": "embedSummary#163",
+      "id": "embedSummary#191",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9289,7 +9681,7 @@
       "output": "Link: example.com"
     },
     {
-      "id": "embedSummary#164",
+      "id": "embedSummary#192",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9303,7 +9695,7 @@
       "output": "Link: example.com:8443"
     },
     {
-      "id": "embedSummary#165",
+      "id": "embedSummary#193",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9317,7 +9709,7 @@
       "output": "Link: wwwx.example.com"
     },
     {
-      "id": "embedSummary#166",
+      "id": "embedSummary#194",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9331,7 +9723,7 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#167",
+      "id": "embedSummary#195",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9345,7 +9737,105 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#168",
+      "id": "embedSummary#196",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-CH",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "https://user:pw@www.example.com:443/path"
+          }
+        }
+      },
+      "output": "Link: example.com"
+    },
+    {
+      "id": "embedSummary#197",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-CH",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "http://[::1]:8080/x"
+          }
+        }
+      },
+      "output": "Link: [::1]:8080"
+    },
+    {
+      "id": "embedSummary#198",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-CH",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "HTTPS://WWW.EXAMPLE.COM/"
+          }
+        }
+      },
+      "output": "Link: example.com"
+    },
+    {
+      "id": "embedSummary#199",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-CH",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "https://www./"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#200",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-CH",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "data:text/plain,hi"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#201",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-CH",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "mailto:a@b.example"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#202",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-CH",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": 42
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#203",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9359,7 +9849,7 @@
       "output": "Link: xn--bcher-kva.example"
     },
     {
-      "id": "embedSummary#169",
+      "id": "embedSummary#204",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9371,7 +9861,7 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#170",
+      "id": "embedSummary#205",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9382,7 +9872,7 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#171",
+      "id": "embedSummary#206",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9396,7 +9886,7 @@
       "output": "Link: 42"
     },
     {
-      "id": "embedSummary#172",
+      "id": "embedSummary#207",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9411,7 +9901,7 @@
       "output": "Link: e.example"
     },
     {
-      "id": "embedSummary#173",
+      "id": "embedSummary#208",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9425,7 +9915,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#174",
+      "id": "embedSummary#209",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9439,7 +9929,7 @@
       "output": "Shares a feed"
     },
     {
-      "id": "embedSummary#175",
+      "id": "embedSummary#210",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9453,7 +9943,7 @@
       "output": "Shares a list"
     },
     {
-      "id": "embedSummary#176",
+      "id": "embedSummary#211",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9467,7 +9957,7 @@
       "output": "Shares a starter pack"
     },
     {
-      "id": "embedSummary#177",
+      "id": "embedSummary#212",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9481,7 +9971,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#178",
+      "id": "embedSummary#213",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9493,7 +9983,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#179",
+      "id": "embedSummary#214",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9504,7 +9994,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#180",
+      "id": "embedSummary#215",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9526,7 +10016,7 @@
       "output": "1 image · Quotes a post"
     },
     {
-      "id": "embedSummary#181",
+      "id": "embedSummary#216",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9545,7 +10035,7 @@
       "output": "A video · Shares a list"
     },
     {
-      "id": "embedSummary#182",
+      "id": "embedSummary#217",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9563,7 +10053,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#183",
+      "id": "embedSummary#218",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9574,7 +10064,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#184",
+      "id": "embedSummary#219",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9585,7 +10075,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#185",
+      "id": "embedSummary#220",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9599,7 +10089,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#186",
+      "id": "embedSummary#221",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9610,7 +10100,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#187",
+      "id": "embedSummary#222",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9619,7 +10109,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#188",
+      "id": "embedSummary#223",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9628,7 +10118,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#189",
+      "id": "embedSummary#224",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9637,7 +10127,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#190",
+      "id": "embedSummary#225",
       "fn": "embedSummary",
       "input": {
         "locale": "en-CH",
@@ -9646,7 +10136,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#191",
+      "id": "embedSummary#226",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -9661,7 +10151,7 @@
       "output": "2 images"
     },
     {
-      "id": "embedSummary#192",
+      "id": "embedSummary#227",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -9675,7 +10165,7 @@
       "output": "1 image"
     },
     {
-      "id": "embedSummary#193",
+      "id": "embedSummary#228",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -9687,7 +10177,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#194",
+      "id": "embedSummary#229",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -9698,7 +10188,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#195",
+      "id": "embedSummary#230",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -9710,7 +10200,7 @@
       "output": "3 images"
     },
     {
-      "id": "embedSummary#196",
+      "id": "embedSummary#231",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -9724,7 +10214,7 @@
       "output": "3 images"
     },
     {
-      "id": "embedSummary#197",
+      "id": "embedSummary#232",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -10971,7 +11461,7 @@
       "output": "1,234 images"
     },
     {
-      "id": "embedSummary#198",
+      "id": "embedSummary#233",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -10982,7 +11472,7 @@
       "output": "A video"
     },
     {
-      "id": "embedSummary#199",
+      "id": "embedSummary#234",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -10993,7 +11483,7 @@
       "output": "A video"
     },
     {
-      "id": "embedSummary#200",
+      "id": "embedSummary#235",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11008,7 +11498,7 @@
       "output": "Link: A page"
     },
     {
-      "id": "embedSummary#201",
+      "id": "embedSummary#236",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11022,7 +11512,7 @@
       "output": "Link: example.com"
     },
     {
-      "id": "embedSummary#202",
+      "id": "embedSummary#237",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11036,7 +11526,7 @@
       "output": "Link: example.com:8443"
     },
     {
-      "id": "embedSummary#203",
+      "id": "embedSummary#238",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11050,7 +11540,7 @@
       "output": "Link: wwwx.example.com"
     },
     {
-      "id": "embedSummary#204",
+      "id": "embedSummary#239",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11064,7 +11554,7 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#205",
+      "id": "embedSummary#240",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11078,7 +11568,105 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#206",
+      "id": "embedSummary#241",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-IN",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "https://user:pw@www.example.com:443/path"
+          }
+        }
+      },
+      "output": "Link: example.com"
+    },
+    {
+      "id": "embedSummary#242",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-IN",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "http://[::1]:8080/x"
+          }
+        }
+      },
+      "output": "Link: [::1]:8080"
+    },
+    {
+      "id": "embedSummary#243",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-IN",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "HTTPS://WWW.EXAMPLE.COM/"
+          }
+        }
+      },
+      "output": "Link: example.com"
+    },
+    {
+      "id": "embedSummary#244",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-IN",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "https://www./"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#245",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-IN",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "data:text/plain,hi"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#246",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-IN",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "mailto:a@b.example"
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#247",
+      "fn": "embedSummary",
+      "input": {
+        "locale": "en-IN",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": 42
+          }
+        }
+      },
+      "output": "A link"
+    },
+    {
+      "id": "embedSummary#248",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11092,7 +11680,7 @@
       "output": "Link: xn--bcher-kva.example"
     },
     {
-      "id": "embedSummary#207",
+      "id": "embedSummary#249",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11104,7 +11692,7 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#208",
+      "id": "embedSummary#250",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11115,7 +11703,7 @@
       "output": "A link"
     },
     {
-      "id": "embedSummary#209",
+      "id": "embedSummary#251",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11129,7 +11717,7 @@
       "output": "Link: 42"
     },
     {
-      "id": "embedSummary#210",
+      "id": "embedSummary#252",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11144,7 +11732,7 @@
       "output": "Link: e.example"
     },
     {
-      "id": "embedSummary#211",
+      "id": "embedSummary#253",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11158,7 +11746,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#212",
+      "id": "embedSummary#254",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11172,7 +11760,7 @@
       "output": "Shares a feed"
     },
     {
-      "id": "embedSummary#213",
+      "id": "embedSummary#255",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11186,7 +11774,7 @@
       "output": "Shares a list"
     },
     {
-      "id": "embedSummary#214",
+      "id": "embedSummary#256",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11200,7 +11788,7 @@
       "output": "Shares a starter pack"
     },
     {
-      "id": "embedSummary#215",
+      "id": "embedSummary#257",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11214,7 +11802,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#216",
+      "id": "embedSummary#258",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11226,7 +11814,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#217",
+      "id": "embedSummary#259",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11237,7 +11825,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#218",
+      "id": "embedSummary#260",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11259,7 +11847,7 @@
       "output": "1 image · Quotes a post"
     },
     {
-      "id": "embedSummary#219",
+      "id": "embedSummary#261",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11278,7 +11866,7 @@
       "output": "A video · Shares a list"
     },
     {
-      "id": "embedSummary#220",
+      "id": "embedSummary#262",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11296,7 +11884,7 @@
       "output": "Quotes a post"
     },
     {
-      "id": "embedSummary#221",
+      "id": "embedSummary#263",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11307,7 +11895,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#222",
+      "id": "embedSummary#264",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11318,7 +11906,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#223",
+      "id": "embedSummary#265",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11332,7 +11920,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#224",
+      "id": "embedSummary#266",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11343,7 +11931,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#225",
+      "id": "embedSummary#267",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11352,7 +11940,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#226",
+      "id": "embedSummary#268",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11361,7 +11949,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#227",
+      "id": "embedSummary#269",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",
@@ -11370,7 +11958,7 @@
       "output": null
     },
     {
-      "id": "embedSummary#228",
+      "id": "embedSummary#270",
       "fn": "embedSummary",
       "input": {
         "locale": "en-IN",

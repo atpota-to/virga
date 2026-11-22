@@ -3931,6 +3931,71 @@
       }
     },
     {
+      "id": "the-files-image-wins",
+      "fn": "generateAltTextForFile",
+      "input": {
+        "file": {
+          "bytes": [
+            1,
+            2,
+            3
+          ],
+          "name": "p.png",
+          "type": "image/png"
+        },
+        "payload": {
+          "imageBase64": "ZZZZ",
+          "mimeType": "image/heic",
+          "context": "c"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "altText": "Mine."
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "AQID",
+                  "mimeType": "image/png",
+                  "context": "c"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"altText\":\"Mine.\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "Mine.",
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
       "id": "needs-a-file",
       "fn": "generateAltTextForFile",
       "input": {
