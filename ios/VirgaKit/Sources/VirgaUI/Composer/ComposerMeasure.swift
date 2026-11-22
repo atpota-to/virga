@@ -13,6 +13,14 @@ enum ComposerMeasure {
   static let dialogWidth: CGFloat = 640
   /// `.composer { gap: 14px }`
   static let gap: CGFloat = 14
+  /// `.composer-drop { border: 2px dashed var(--accent); background:
+  /// color-mix(in srgb, var(--surface) 90%, transparent) }`. A browser draws
+  /// a 2px dashed border in dashes about three times as long as it is wide;
+  /// the padding is iOS's, room for the words to wrap on a narrow phone.
+  static let dropBorder: CGFloat = 2
+  static let dropDash: CGFloat = 6
+  static let dropFillShare: Double = 0.9
+  static let dropPadding: CGFloat = 16
   /// `.composer-dialog .dialog-body { padding-top: 6px }` over `.dialog-body
   /// { padding: 4px 24px 20px }`; a phone's `0 20px 20px`, with the bar's
   /// `margin-bottom: -6px` leaving 8 under it (the composer's gap less 6).

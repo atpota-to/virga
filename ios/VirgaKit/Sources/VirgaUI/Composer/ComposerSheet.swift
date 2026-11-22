@@ -156,6 +156,8 @@ struct ComposerSheet: View {
       ComposerFoot(controller: controller)
     }
     .background(theme.surface)
+    // Pictures dropped on the composer go into the post being written.
+    .composerDrop(controller)
     .overlay { ToastStack(center: toasts) }
     // ADVISER: the adviser's sheet, and its account while the composer is open.
     .adviserSheet(controller.adviser)
