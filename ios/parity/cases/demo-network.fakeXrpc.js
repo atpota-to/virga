@@ -20,8 +20,6 @@ import { outcome, worldsFor } from './_demoNetwork.js';
 
 export const sources = ['harness/fakeXrpc.js'];
 
-const APPVIEW = 'did:web:api.bsky.app#bsky_appview';
-
 const NSIDS = [
   'com.atproto.repo.createRecord',
   'com.atproto.repo.putRecord',
@@ -136,7 +134,7 @@ const READS = [
   `bearer\t\t${minted(TOKENS[1])}`,
   `BEARER  ${minted(TOKENS[2])}`,
   `Bearer${minted(TOKENS[0])}`,
-  `Bearer  ${minted(TOKENS[0])}`,
+  `Bearer \u00a0${minted(TOKENS[0])}`,
   ` Bearer ${minted(TOKENS[0])}`,
   minted(TOKENS[6]),
   minted(TOKENS[9]),

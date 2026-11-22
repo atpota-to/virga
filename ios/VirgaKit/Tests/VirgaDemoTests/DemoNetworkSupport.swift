@@ -48,6 +48,10 @@ enum DemoNetwork {
       out["error"] = .string(e.error)
     case let e as HarnessJSError:
       out["name"] = .string(e.name)
+    case is JSURIError:
+      out["name"] = "URIError"
+    case is WebURLError:
+      out["name"] = "TypeError"
     default:
       out["name"] = "Error"
     }
@@ -61,6 +65,35 @@ enum DemoNetwork {
     } catch {
       return thrown(error)
     }
+  }
+
+  /// `answerOf(res)`: the status, the content type, and the body (JSON
+  /// shrunk, bytes by length and digest); null for no answer.
+  static func answerOf(_ res: HTTPResponse?) -> JSONValue {
+    guard let res else { return .null }
+    let type = res.headers.get("content-type")
+    var out: [String: JSONValue] = ["status": .number(Double(res.status)), "type": type.map(JSONValue.string) ?? .null]
+    if res.status == 204 { return .object(out) }
+    if let type, type.contains("json") {
+      out["json"] = shrink((try? JSONValue.parse(res.body)) ?? .null)
+    } else {
+      out["bytes"] = ["length": .number(Double(res.body.count)), "sha256": .string(CanonicalJSON.sha256(bytes: [UInt8](res.body)))]
+    }
+    if let length = res.headers.get("content-length") { out["length"] = .string(length) }
+    return .object(out)
+  }
+
+  /// A fixture's request: `{ url, method?, headers?, body? }` (a body as bytes).
+  static func request(_ step: JSONValue, url: String? = nil) -> HTTPRequest {
+    var headers = HTTPHeaders()
+    for (name, value) in (step["headers"]?.objectValue ?? [:]).sorted(by: { $0.key < $1.key }) {
+      headers.append(name, value.stringValue ?? value.jsString)
+    }
+    var body: Data?
+    if let bytes = step["body"]?.arrayValue { body = Data(bytes.map { UInt8($0.doubleValue ?? 0) }) }
+    if let text = step["text"]?.stringValue { body = Data(text.utf8) }
+    return HTTPRequest(
+      method: step["method"]?.stringValue ?? "GET", url: url ?? step["url"]?.stringValue ?? "", headers: headers, body: body)
   }
 
   /// An agent's answer as JSON: `{ success, headers, data }`.
