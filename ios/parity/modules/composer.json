@@ -17,52 +17,114 @@
       "swift": []
     },
     "src/posting/composer/actions.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerActions.swift"
+      ],
+      "fixtures": [
+        "composer.flow"
+      ],
+      "synced": "582e55dcb293"
     },
     "src/posting/composer/defaults.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerDefaults.swift"
+      ],
+      "fixtures": [
+        "composer.flow"
+      ],
+      "synced": "60da69a8f6ff"
     },
     "src/posting/composer/editing.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerEditing.swift"
+      ],
+      "fixtures": [
+        "composer.editor"
+      ],
+      "synced": "a85d0ff38802"
     },
     "src/posting/composer/gatesModel.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/GatesModel.swift"
+      ],
+      "fixtures": [
+        "composer.flow"
+      ],
+      "synced": "78b57746f95b"
     },
     "src/posting/composer/highlight.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/Highlight.swift"
+      ],
+      "fixtures": [
+        "composer.editor"
+      ],
+      "synced": "3d57bf4e589d"
     },
     "src/posting/composer/intent.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerIntent.swift"
+      ],
+      "fixtures": [
+        "composer.flow"
+      ],
+      "synced": "3c360151f168"
     },
     "src/posting/composer/languages.js": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerLanguages.swift"
+      ],
+      "fixtures": [
+        "composer.editor"
+      ],
+      "note": "Intl.DisplayNames' English names for the 184 codes and CLDR's regional names are a table taken from Node 22's ICU (held to the fixture). Other tags with a region or script are named 'Language (Region)' from Foundation's region names, and a locale that isn't English through Foundation; both can differ from ICU's. Sorting goes through VirgaPosting's LocaleCompare (ComposerLanguages.compareNames), to move to VirgaCore's consolidated localeCompare at the merge.",
+      "synced": "fac34e76eafd"
     },
     "src/posting/composer/loaders.js": {
       "status": "pending",
       "swift": []
     },
     "src/posting/composer/media.js": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerMedia.swift"
+      ],
+      "fixtures": [
+        "composer.editor"
+      ],
+      "note": "pastedImageFiles reads the clipboard's DataTransfer on the web; the port takes the pasteboard's items (PastedItem) and its text, which VirgaUI reads from UIPasteboard. The sorting, notes and names are held to the fixture.",
+      "synced": "46c632f17b11"
     },
     "src/posting/composer/restore.js": {
       "status": "pending",
       "swift": []
     },
     "src/posting/composer/submit.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerSubmit.swift"
+      ],
+      "fixtures": [
+        "composer.flow"
+      ],
+      "synced": "a5c847b33831"
     },
     "src/posting/composer/threadEdits.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ThreadEdits.swift"
+      ],
+      "fixtures": [
+        "composer.editor"
+      ],
+      "synced": "bf7e454e1634"
     },
     "src/posting/lib/composerModel.js": {
       "status": "ported",

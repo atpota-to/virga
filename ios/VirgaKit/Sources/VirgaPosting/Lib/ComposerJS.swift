@@ -55,6 +55,12 @@ enum ComposerJS {
     TemplateJS.strictEquals(a, b)
   }
 
+  /// SameValueZero (`Set.has`, `includes`): `===`, except NaN equals NaN.
+  static func sameValueZero(_ a: JSONValue?, _ b: JSONValue?) -> Bool {
+    if case .number(let x)? = a, case .number(let y)? = b, x.isNaN, y.isNaN { return true }
+    return strictEquals(a, b)
+  }
+
   /// `{ ...v }`'s members.
   static func spread(_ value: JSONValue?) -> [String: JSONValue] {
     TemplateJS.spread(value)
