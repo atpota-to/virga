@@ -16,8 +16,11 @@ SwiftUI can't be compiled on Linux. An agent writes VirgaUI in a worktree and ch
 syntax with `swiftc -parse`; the main session merges and pushes; CI's `iOS app` job is
 the compiler (Xcode 26.6, iOS 26.5 SDK, an iPhone and an iPad simulator); the UI tests
 (ios/AppUITests) drive demo mode and keep a screenshot of each screen worth seeing
-(XCTAttachment, kept always), which CI exports to the `screenshots` artifact
-(`iphone/` and `ipad/`; the iPad run uses a 13-inch iPad upright, over 900 wide). Every VirgaUI file is wrapped in
+(XCTAttachment, kept always), which CI exports to the `screenshots-iphone` and
+`screenshots-ipad` artifacts (the iPad's tests run in a job of their own, `iOS app on an
+iPad`, beside the iPhone's, on a 13-inch iPad upright, over 900 wide). Every test that
+builds the demo archive takes two to three minutes per device, so keep their number
+down: add screenshots to an existing built-archive test rather than a new one. Every VirgaUI file is wrapped in
 `#if canImport(UIKit)`. VirgaUI builds in Swift 5 language mode.
 
 Things CI's compiler has refused so far, worth avoiding: comparing an optional

@@ -51,8 +51,9 @@ worked from. The worktree paths in them were that session's own
 
 The SwiftUI layer can't be compiled on Linux, so its loop is: an agent
 writes it in a worktree (checking syntax with `swiftc -parse`), the main
-session merges and pushes, CI's `iOS app` job compiles it and runs the UI
-tests on an iPhone and an iPad, and the `screenshots` artifact (download it
-with the GitHub API's artifact download) shows what the screens look like.
+session merges and pushes, CI's `iOS app` and `iOS app on an iPad` jobs
+compile it and run the UI tests on an iPhone and an iPad side by side, and
+the `screenshots-iphone` and `screenshots-ipad` artifacts (download them with
+the GitHub API's artifact download) show what the screens look like.
 CI's errors and the screenshots go back to the agent for the next round.
 
