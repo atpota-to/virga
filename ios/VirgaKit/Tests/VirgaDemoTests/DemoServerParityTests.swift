@@ -12,8 +12,6 @@ import VirgaTestSupport
 @testable import VirgaDemo
 
 @Suite struct DemoServerParity {
-  static let fixture = "demo-server.fakeServer"
-
   /// The generator's `crypto.randomUUID`: a count.
   static func uuid(_ n: Int) -> String {
     let hex = String(n, radix: 16)
@@ -72,7 +70,8 @@ import VirgaTestSupport
   /// One scenario, replayed: each step's outcome, and the end.
   static func replay(_ c: ParityCase) async throws -> (steps: [JSONValue], end: JSONValue) {
     let flags = Harness.readFlags(c["search"].stringValue ?? "")
-    let world = DemoWorld(now: DemoNetwork.now, accounts: flags.accounts, scope: flags.scope)
+    let zone = TimeZone(identifier: c["zone"].stringValue ?? "UTC") ?? .gmt
+    let world = DemoWorld(now: DemoNetwork.now, accounts: flags.accounts, scope: flags.scope, timeZone: zone)
     let clock = Locked(DemoNetwork.now)
     let server = server(c, world: world, clock: clock)
     var tokens: [String] = []
@@ -169,9 +168,18 @@ import VirgaTestSupport
     return (out, end)
   }
 
-  @Test(arguments: try Parity.cases(DemoServerParity.fixture, fn: "server").map(\.id))
-  func scenario(_ id: String) async throws {
-    let c = try #require(try Parity.cases(Self.fixture, fn: "server").first { $0.id == id })
+  @Test(arguments: try Parity.cases("demo-server.fakeServer", fn: "server").map(\.id))
+  func server(_ id: String) async throws {
+    try await Self.check("demo-server.fakeServer", id)
+  }
+
+  @Test(arguments: try Parity.cases("demo-server.fakeDefense", fn: "server").map(\.id))
+  func defense(_ id: String) async throws {
+    try await Self.check("demo-server.fakeDefense", id)
+  }
+
+  static func check(_ fixture: String, _ id: String) async throws {
+    let c = try #require(try Parity.cases(fixture, fn: "server").first { $0.id == id })
     let (steps, end) = try await Self.replay(c)
     let want = c.output["steps"]?.arrayValue ?? []
     #expect(steps.count == want.count, "\(c)")
@@ -179,11 +187,11 @@ import VirgaTestSupport
     for (i, (got, expected)) in zip(steps, want).enumerated() {
       // A quiet step keeps the status and the code only.
       var got = got
-      if input[i]["quiet"] != nil || (expected.objectValue?.keys.sorted() == ["code", "status"]) {
+      if expected.objectValue?.keys.sorted() == ["code", "status"] {
         got = ["status": got["status"] ?? .null, "code": got["json"]?["code"] ?? .null]
       }
       let d = Exact.diff(got, expected)
-      #expect(d == nil, "\(c) #\(i) \(input[i].jsonString().prefix(240)): \(d ?? "") GOT \(got.jsonString().prefix(400))")
+      #expect(d == nil, "\(c) #\(i) \(input[i].jsonString().prefix(240)): \(d ?? "") got \(got.jsonString().prefix(400))")
     }
     for key in ["scheduled", "timers", "defense", "log", "worlds"] {
       let d = Exact.diff(end[key] ?? .null, c.output["end"]?[key] ?? .null)

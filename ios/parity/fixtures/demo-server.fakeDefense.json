@@ -1,0 +1,3201 @@
+{
+  "name": "demo-server.fakeDefense",
+  "sources": [
+    "harness/fakeDefense.js",
+    "harness/fakeServer.js"
+  ],
+  "cases": [
+    {
+      "id": "defense",
+      "fn": "server",
+      "input": {
+        "search": "?defense=lists",
+        "zone": "UTC",
+        "options": {},
+        "steps": [
+          {
+            "mint": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "mint": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/lists",
+            "token": 0
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/list-create",
+            "token": 0,
+            "text": "{\"name\":\"  \",\"purpose\":\"block\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/list-create",
+            "token": 0,
+            "text": "{\"name\":\"Pile-ons\",\"purpose\":\"report\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/list-create",
+            "token": 0,
+            "text": "null"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/list-create",
+            "token": 0,
+            "text": "{\"name\":\"  Pile-ons \\n\\t from   the quote xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"purpose\":\"block\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/list-create",
+            "token": 1,
+            "text": "{\"name\":\"Muted\",\"purpose\":\"mute\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/keep",
+            "token": 0,
+            "text": "{\"did\":\"did:plc:virgaharnesscrowd00003\",\"reason\":\"an old friend\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/keep",
+            "token": 0,
+            "text": "{\"did\":\"did:plc:virgaharnesscrowd00003\",\"reason\":\"  still   a friend  \"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/keep",
+            "token": 0,
+            "text": "{\"did\":\"did:plc:virgaharnesscrowd00009\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/keep",
+            "token": 0,
+            "text": "{\"did\":\"did:PLC:x\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/keep",
+            "token": 0,
+            "text": "{\"did\":[\"did:plc:arrayed\"]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/keep",
+            "token": 0,
+            "text": "null"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/unkeep",
+            "token": 0,
+            "text": "{\"did\":\"did:plc:virgaharnesscrowd00009\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/unkeep",
+            "token": 0,
+            "text": "{}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/plan",
+            "token": 0,
+            "text": "{\"listId\":\"nope\",\"rows\":[{\"did\":\"did:plc:a\",\"band\":\"UNKNOWN\"}]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/plan",
+            "token": 0,
+            "text": "{\"listId\":\"00000001-0000-4000-8000-01a1dc74bb00\",\"rows\":[]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/plan",
+            "token": 0,
+            "text": "{\"listId\":\"00000001-0000-4000-8000-01a1dc74bb00\",\"rows\":[{\"did\":\"did:plc:a\",\"band\":\"PROTECTED\"}]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/plan",
+            "token": 0,
+            "text": "{\"listId\":\"00000001-0000-4000-8000-01a1dc74bb00\",\"rows\":[null]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/plan",
+            "token": 0,
+            "text": "{\"listId\":\"00000002-0000-4000-8000-01a1dc74bb00\",\"rows\":[{\"did\":\"did:plc:a\",\"band\":\"UNKNOWN\"}]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/plan",
+            "token": 0,
+            "text": "{\"listId\":\"00000001-0000-4000-8000-01a1dc74bb00\",\"postUri\":\"at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2chq77mc22a\",\"totals\":{\"UNKNOWN\":6},\"rows\":[{\"did\":\"did:plc:virgaharnesscrowd00001\",\"band\":\"UNKNOWN\",\"trust\":1},{\"did\":\"did:plc:virgaharnesscrowd00002\",\"band\":\"NOTABLE\",\"trust\":0.4},{\"did\":\"did:plc:virgaharnesscast0000\",\"band\":\"UNKNOWN\",\"trust\":1},{\"did\":\"did:plc:virgaharnesscrowd00003\",\"band\":\"UNKNOWN\"},{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"band\":\"UNKNOWN\"},{\"did\":\"did:plc:virgaharnesscast0000\",\"band\":\"PERIPHERAL\"},{\"did\":\"did:plc:virgaharnesscrowd00001\",\"band\":\"UNKNOWN\",\"trust\":null},{\"did\":[\"did:plc:arrayed\"],\"band\":\"CONNECTED\"}]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/approve",
+            "token": 0,
+            "text": "{\"planId\":\"00000003-0000-4000-8000-01a1dc74bb00\",\"bands\":[]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/approve",
+            "token": 0,
+            "text": "{\"planId\":\"00000003-0000-4000-8000-01a1dc74bb00\",\"bands\":[\"PROTECTED\"]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/approve",
+            "token": 0,
+            "text": "{\"planId\":\"nope\",\"bands\":[\"UNKNOWN\"]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/approve",
+            "token": 0,
+            "text": "{\"planId\":\"00000003-0000-4000-8000-01a1dc74bb00\",\"bands\":[\"UNKNOWN\",\"PERIPHERAL\"],\"note\":\"  the quote   pile-on \"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/approve",
+            "token": 0,
+            "text": "{\"planId\":\"00000003-0000-4000-8000-01a1dc74bb00\",\"bands\":[\"UNKNOWN\",\"NOTABLE\",\"CONNECTED\"]}"
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/lists",
+            "token": 0
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/history",
+            "token": 0
+          },
+          {
+            "cron": true
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/lists",
+            "token": 0
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/history",
+            "token": 0
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/history?before=3",
+            "token": 0
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/history?before=x",
+            "token": 0
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/undo",
+            "token": 0,
+            "text": "{\"planId\":\"00000003-0000-4000-8000-01a1dc74bb00\",\"note\":\"sorry\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/undo",
+            "token": 0,
+            "text": "{\"ids\":[1]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/undo",
+            "token": 0,
+            "text": "{}"
+          },
+          {
+            "defense": true
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/history",
+            "token": 0
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/lists",
+            "token": 0
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/lists",
+            "token": 1
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/link",
+            "token": 0
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/link-code",
+            "token": 0,
+            "text": "{}"
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/link",
+            "token": 0
+          },
+          {
+            "advance": 11000
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/link",
+            "token": 0
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/link-list",
+            "token": 0,
+            "text": "{\"listId\":\"00000001-0000-4000-8000-01a1dc74bb00\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/link-list",
+            "token": 0,
+            "text": "{\"listId\":\"00000002-0000-4000-8000-01a1dc74bb00\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/link-list",
+            "token": 0,
+            "text": "{}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/unlink",
+            "token": 0,
+            "text": "{}"
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/link",
+            "token": 0
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/link-code",
+            "token": 0,
+            "text": "{}"
+          },
+          {
+            "advance": 960000
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/link",
+            "token": 0
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/unlink",
+            "token": 1,
+            "text": "{}"
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/link",
+            "token": 1
+          }
+        ]
+      },
+      "output": {
+        "steps": [
+          {
+            "token": "vg_0b30557a9fc4e90e33587da2c7ec11365b80a5caef14395e83a8cdf2173c6186"
+          },
+          {
+            "token": "vg_abd0f51a3f6489aed3f81d42678cb1d6fb20456a8fb4d9fe23486d92b7dc0126"
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "lists": [],
+                "kept": [],
+                "writes": true
+              }
+            }
+          },
+          {
+            "status": 400,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "INVALID",
+              "error": "A list needs a name and to be for blocking or muting."
+            }
+          },
+          {
+            "status": 400,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "INVALID",
+              "error": "A list needs a name and to be for blocking or muting."
+            }
+          },
+          {
+            "status": 400,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "INVALID",
+              "error": "A list needs a name and to be for blocking or muting."
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "list": {
+                  "id": "00000001-0000-4000-8000-01a1dc74bb00",
+                  "holderDid": "did:plc:virgaharnessmira2zq4x",
+                  "mode": "own",
+                  "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3n2conzoy2222",
+                  "name": "Pile-ons from the quote xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                  "purpose": "block",
+                  "createdAt": "2026-11-14T23:46:40.000Z",
+                  "listed": 0,
+                  "waiting": 0,
+                  "heldUntil": null,
+                  "lastError": null
+                }
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "list": {
+                  "id": "00000002-0000-4000-8000-01a1dc74bb00",
+                  "holderDid": "did:plc:virgaharnesslab7k2pq",
+                  "mode": "own",
+                  "uri": "at://did:plc:virgaharnesslab7k2pq/app.bsky.graph.list/3n2conzoy2322",
+                  "name": "Muted",
+                  "purpose": "mute",
+                  "createdAt": "2026-11-14T23:46:40.000Z",
+                  "listed": 0,
+                  "waiting": 0,
+                  "heldUntil": null,
+                  "lastError": null
+                }
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "did": "did:plc:virgaharnesscrowd00003",
+                "reason": "an old friend"
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "did": "did:plc:virgaharnesscrowd00003",
+                "reason": "still a friend"
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "did": "did:plc:virgaharnesscrowd00009",
+                "reason": "kept by hand"
+              }
+            }
+          },
+          {
+            "status": 400,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "INVALID",
+              "error": "That isn’t an account’s DID."
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "did": [
+                  "did:plc:arrayed"
+                ],
+                "reason": "kept by hand"
+              }
+            }
+          },
+          {
+            "status": 400,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "INVALID",
+              "error": "That isn’t an account’s DID."
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "did": "did:plc:virgaharnesscrowd00009"
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {}
+            }
+          },
+          {
+            "status": 404,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "NO_LIST",
+              "error": "That list isn’t one of yours, or isn’t kept any more."
+            }
+          },
+          {
+            "status": 400,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "INVALID",
+              "error": "A plan needs between one and ten thousand accounts."
+            }
+          },
+          {
+            "status": 400,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "INVALID",
+              "error": "A plan can’t hold anyone protected, or a row without a DID."
+            }
+          },
+          {
+            "status": 400,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "INVALID",
+              "error": "A plan can’t hold anyone protected, or a row without a DID."
+            }
+          },
+          {
+            "status": 404,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "NO_LIST",
+              "error": "That list isn’t one of yours, or isn’t kept any more."
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                "rows": 8
+              }
+            }
+          },
+          {
+            "status": 400,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "INVALID",
+              "error": "Approve a plan by naming at least one band."
+            }
+          },
+          {
+            "status": 400,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "INVALID",
+              "error": "Approve a plan by naming at least one band."
+            }
+          },
+          {
+            "status": 404,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "NO_PLAN",
+              "error": "That plan isn’t yours, has expired, or its list is gone."
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "jobId": "00000004-0000-4000-8000-01a1dc74bb00",
+                "queued": 5,
+                "kept": 1,
+                "already": 0
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "jobId": "00000005-0000-4000-8000-01a1dc74bb00",
+                "queued": 2,
+                "kept": 1,
+                "already": 4
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "lists": [
+                  {
+                    "id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "holderDid": "did:plc:virgaharnessmira2zq4x",
+                    "mode": "own",
+                    "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3n2conzoy2222",
+                    "name": "Pile-ons from the quote xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                    "purpose": "block",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "listed": 0,
+                    "waiting": 7,
+                    "heldUntil": null,
+                    "lastError": null
+                  }
+                ],
+                "kept": [
+                  {
+                    "did": [
+                      "did:plc:arrayed"
+                    ],
+                    "reason": "kept by hand",
+                    "addedAt": "2026-11-14T23:46:40.000Z"
+                  },
+                  {
+                    "did": "did:plc:virgaharnesscrowd00003",
+                    "reason": "still a friend",
+                    "addedAt": "2026-11-14T23:46:40.000Z"
+                  }
+                ],
+                "writes": true
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "decisions": [
+                  {
+                    "id": 7,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": [
+                      "did:plc:arrayed"
+                    ],
+                    "action": "add",
+                    "band": "CONNECTED",
+                    "trust": null,
+                    "via": "web",
+                    "note": null,
+                    "state": "queued",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 6,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscrowd00002",
+                    "action": "add",
+                    "band": "NOTABLE",
+                    "trust": 0.4,
+                    "via": "web",
+                    "note": null,
+                    "state": "queued",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 5,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscrowd00001",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": null,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "queued",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 4,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscast0000",
+                    "action": "add",
+                    "band": "PERIPHERAL",
+                    "trust": null,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "queued",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 3,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnessmira2zq4x",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": null,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "queued",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 2,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscast0000",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": 1,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "queued",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 1,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscrowd00001",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": 1,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "queued",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  }
+                ],
+                "plans": [
+                  {
+                    "id": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "postUri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2chq77mc22a",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "approvedAt": "2026-11-14T23:46:40.000Z",
+                    "bands": [
+                      "CONNECTED",
+                      "NOTABLE",
+                      "PERIPHERAL",
+                      "UNKNOWN"
+                    ],
+                    "note": "the quote pile-on",
+                    "totals": {
+                      "UNKNOWN": 6
+                    },
+                    "counts": {
+                      "added": 0,
+                      "waiting": 7,
+                      "kept": 0,
+                      "failed": 0,
+                      "undone": 0,
+                      "live": 7
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "published": [],
+            "settled": [],
+            "listed": 2
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "lists": [
+                  {
+                    "id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "holderDid": "did:plc:virgaharnessmira2zq4x",
+                    "mode": "own",
+                    "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3n2conzoy2222",
+                    "name": "Pile-ons from the quote xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                    "purpose": "block",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "listed": 2,
+                    "waiting": 2,
+                    "heldUntil": null,
+                    "lastError": null
+                  }
+                ],
+                "kept": [
+                  {
+                    "did": [
+                      "did:plc:arrayed"
+                    ],
+                    "reason": "kept by hand",
+                    "addedAt": "2026-11-14T23:46:40.000Z"
+                  },
+                  {
+                    "did": "did:plc:virgaharnesscrowd00003",
+                    "reason": "still a friend",
+                    "addedAt": "2026-11-14T23:46:40.000Z"
+                  }
+                ],
+                "writes": true
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "decisions": [
+                  {
+                    "id": 7,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": [
+                      "did:plc:arrayed"
+                    ],
+                    "action": "add",
+                    "band": "CONNECTED",
+                    "trust": null,
+                    "via": "web",
+                    "note": null,
+                    "state": "queued",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 6,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscrowd00002",
+                    "action": "add",
+                    "band": "NOTABLE",
+                    "trust": 0.4,
+                    "via": "web",
+                    "note": null,
+                    "state": "queued",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 5,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscrowd00001",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": null,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "done",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": "2026-11-14T23:46:40.000Z",
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 4,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscast0000",
+                    "action": "add",
+                    "band": "PERIPHERAL",
+                    "trust": null,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "vetoed",
+                    "reason": "you follow them",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 3,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnessmira2zq4x",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": null,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "vetoed",
+                    "reason": "your own account",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 2,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscast0000",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": 1,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "vetoed",
+                    "reason": "you follow them",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 1,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscrowd00001",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": 1,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "done",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": "2026-11-14T23:46:40.000Z",
+                    "undoneAt": null,
+                    "undoes": null
+                  }
+                ],
+                "plans": [
+                  {
+                    "id": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "postUri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2chq77mc22a",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "approvedAt": "2026-11-14T23:46:40.000Z",
+                    "bands": [
+                      "CONNECTED",
+                      "NOTABLE",
+                      "PERIPHERAL",
+                      "UNKNOWN"
+                    ],
+                    "note": "the quote pile-on",
+                    "totals": {
+                      "UNKNOWN": 6
+                    },
+                    "counts": {
+                      "added": 2,
+                      "waiting": 2,
+                      "kept": 3,
+                      "failed": 0,
+                      "undone": 0,
+                      "live": 4
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "decisions": [
+                  {
+                    "id": 2,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscast0000",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": 1,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "vetoed",
+                    "reason": "you follow them",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 1,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscrowd00001",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": 1,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "done",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": "2026-11-14T23:46:40.000Z",
+                    "undoneAt": null,
+                    "undoes": null
+                  }
+                ],
+                "plans": [
+                  {
+                    "id": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "postUri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2chq77mc22a",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "approvedAt": "2026-11-14T23:46:40.000Z",
+                    "bands": [
+                      "CONNECTED",
+                      "NOTABLE",
+                      "PERIPHERAL",
+                      "UNKNOWN"
+                    ],
+                    "note": "the quote pile-on",
+                    "totals": {
+                      "UNKNOWN": 6
+                    },
+                    "counts": {
+                      "added": 2,
+                      "waiting": 2,
+                      "kept": 3,
+                      "failed": 0,
+                      "undone": 0,
+                      "live": 4
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "decisions": [
+                  {
+                    "id": 7,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": [
+                      "did:plc:arrayed"
+                    ],
+                    "action": "add",
+                    "band": "CONNECTED",
+                    "trust": null,
+                    "via": "web",
+                    "note": null,
+                    "state": "queued",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 6,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscrowd00002",
+                    "action": "add",
+                    "band": "NOTABLE",
+                    "trust": 0.4,
+                    "via": "web",
+                    "note": null,
+                    "state": "queued",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 5,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscrowd00001",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": null,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "done",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": "2026-11-14T23:46:40.000Z",
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 4,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscast0000",
+                    "action": "add",
+                    "band": "PERIPHERAL",
+                    "trust": null,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "vetoed",
+                    "reason": "you follow them",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 3,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnessmira2zq4x",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": null,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "vetoed",
+                    "reason": "your own account",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 2,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscast0000",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": 1,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "vetoed",
+                    "reason": "you follow them",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 1,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscrowd00001",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": 1,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "done",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": "2026-11-14T23:46:40.000Z",
+                    "undoneAt": null,
+                    "undoes": null
+                  }
+                ],
+                "plans": [
+                  {
+                    "id": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "postUri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2chq77mc22a",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "approvedAt": "2026-11-14T23:46:40.000Z",
+                    "bands": [
+                      "CONNECTED",
+                      "NOTABLE",
+                      "PERIPHERAL",
+                      "UNKNOWN"
+                    ],
+                    "note": "the quote pile-on",
+                    "totals": {
+                      "UNKNOWN": 6
+                    },
+                    "counts": {
+                      "added": 2,
+                      "waiting": 2,
+                      "kept": 3,
+                      "failed": 0,
+                      "undone": 0,
+                      "live": 4
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "jobId": "00000006-0000-4000-8000-01a1dc74bb00",
+                "cancelled": 2,
+                "queued": 2
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "jobId": null,
+                "cancelled": 0,
+                "queued": 0
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "jobId": null,
+                "cancelled": 0,
+                "queued": 0
+              }
+            }
+          },
+          {
+            "listed": 0
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "decisions": [
+                  {
+                    "id": 9,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": null,
+                    "did": "did:plc:virgaharnesscrowd00001",
+                    "action": "remove",
+                    "band": null,
+                    "trust": null,
+                    "via": "web",
+                    "note": "sorry",
+                    "state": "queued",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": 5
+                  },
+                  {
+                    "id": 8,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": null,
+                    "did": "did:plc:virgaharnesscrowd00001",
+                    "action": "remove",
+                    "band": null,
+                    "trust": null,
+                    "via": "web",
+                    "note": "sorry",
+                    "state": "queued",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": 1
+                  },
+                  {
+                    "id": 7,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": [
+                      "did:plc:arrayed"
+                    ],
+                    "action": "add",
+                    "band": "CONNECTED",
+                    "trust": null,
+                    "via": "web",
+                    "note": null,
+                    "state": "cancelled",
+                    "reason": "undone before it was written",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": "2026-11-14T23:46:40.000Z",
+                    "undoes": null
+                  },
+                  {
+                    "id": 6,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscrowd00002",
+                    "action": "add",
+                    "band": "NOTABLE",
+                    "trust": 0.4,
+                    "via": "web",
+                    "note": null,
+                    "state": "cancelled",
+                    "reason": "undone before it was written",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": "2026-11-14T23:46:40.000Z",
+                    "undoes": null
+                  },
+                  {
+                    "id": 5,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscrowd00001",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": null,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "done",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": "2026-11-14T23:46:40.000Z",
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 4,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscast0000",
+                    "action": "add",
+                    "band": "PERIPHERAL",
+                    "trust": null,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "vetoed",
+                    "reason": "you follow them",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 3,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnessmira2zq4x",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": null,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "vetoed",
+                    "reason": "your own account",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 2,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscast0000",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": 1,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "vetoed",
+                    "reason": "you follow them",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": null,
+                    "undoneAt": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 1,
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "planId": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "did": "did:plc:virgaharnesscrowd00001",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": 1,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "done",
+                    "reason": null,
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "actedAt": "2026-11-14T23:46:40.000Z",
+                    "undoneAt": null,
+                    "undoes": null
+                  }
+                ],
+                "plans": [
+                  {
+                    "id": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "listId": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "postUri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2chq77mc22a",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "approvedAt": "2026-11-14T23:46:40.000Z",
+                    "bands": [
+                      "CONNECTED",
+                      "NOTABLE",
+                      "PERIPHERAL",
+                      "UNKNOWN"
+                    ],
+                    "note": "the quote pile-on",
+                    "totals": {
+                      "UNKNOWN": 6
+                    },
+                    "counts": {
+                      "added": 2,
+                      "waiting": 0,
+                      "kept": 3,
+                      "failed": 0,
+                      "undone": 2,
+                      "live": 2
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "lists": [
+                  {
+                    "id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "holderDid": "did:plc:virgaharnessmira2zq4x",
+                    "mode": "own",
+                    "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3n2conzoy2222",
+                    "name": "Pile-ons from the quote xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                    "purpose": "block",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "listed": 2,
+                    "waiting": 2,
+                    "heldUntil": null,
+                    "lastError": null
+                  }
+                ],
+                "kept": [
+                  {
+                    "did": [
+                      "did:plc:arrayed"
+                    ],
+                    "reason": "kept by hand",
+                    "addedAt": "2026-11-14T23:46:40.000Z"
+                  },
+                  {
+                    "did": "did:plc:virgaharnesscrowd00003",
+                    "reason": "still a friend",
+                    "addedAt": "2026-11-14T23:46:40.000Z"
+                  }
+                ],
+                "writes": true
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "lists": [
+                  {
+                    "id": "00000002-0000-4000-8000-01a1dc74bb00",
+                    "holderDid": "did:plc:virgaharnesslab7k2pq",
+                    "mode": "own",
+                    "uri": "at://did:plc:virgaharnesslab7k2pq/app.bsky.graph.list/3n2conzoy2322",
+                    "name": "Muted",
+                    "purpose": "mute",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "listed": 0,
+                    "waiting": 0,
+                    "heldUntil": null,
+                    "lastError": null
+                  }
+                ],
+                "kept": [],
+                "writes": true
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "moderator": "mod.virga.example",
+                "linked": false,
+                "linkedAt": null,
+                "codeExpiresAt": null,
+                "listId": null
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "code": "F2L7-RCWH",
+                "expiresAt": "2026-11-15T00:01:40.000Z",
+                "moderator": "mod.virga.example"
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "moderator": "mod.virga.example",
+                "linked": false,
+                "linkedAt": null,
+                "codeExpiresAt": "2026-11-15T00:01:40.000Z",
+                "listId": null
+              }
+            }
+          },
+          null,
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "moderator": "mod.virga.example",
+                "linked": true,
+                "linkedAt": "2026-11-14T23:46:51.000Z",
+                "codeExpiresAt": null,
+                "listId": null
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "listId": "00000001-0000-4000-8000-01a1dc74bb00"
+              }
+            }
+          },
+          {
+            "status": 404,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "NOT_FOUND",
+              "error": "That list isn’t one of yours."
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "listId": null
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "linked": false
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "moderator": "mod.virga.example",
+                "linked": false,
+                "linkedAt": null,
+                "codeExpiresAt": null,
+                "listId": null
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "code": "3N8T-DYJ5",
+                "expiresAt": "2026-11-15T00:01:51.000Z",
+                "moderator": "mod.virga.example"
+              }
+            }
+          },
+          null,
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "moderator": "mod.virga.example",
+                "linked": true,
+                "linkedAt": "2026-11-15T00:02:51.000Z",
+                "codeExpiresAt": null,
+                "listId": null
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "linked": false
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "moderator": "mod.virga.example",
+                "linked": false,
+                "linkedAt": null,
+                "codeExpiresAt": null,
+                "listId": null
+              }
+            }
+          }
+        ],
+        "end": {
+          "scheduled": [
+            {
+              "id": "8d6f7e0d-8a6f-4954-8b6f-7ae7886f762e",
+              "user_did": "did:plc:virgaharnessmira2zq4x",
+              "scheduled_for": "2026-11-15T10:00:00.000Z",
+              "status": "pending",
+              "target": "bluesky",
+              "queued": false,
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Seed swap at the library on Saturday morning. Bring envelopes and labels.",
+                      "langs": [
+                        "en"
+                      ]
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                },
+                "media": {},
+                "rkeys": [
+                  "3n2dqwqvu223j"
+                ],
+                "tz": "Europe/London",
+                "selfDestruct": null,
+                "repeat": {
+                  "every": "month",
+                  "tz": "Europe/London",
+                  "until": null,
+                  "count": 6,
+                  "anchor": {
+                    "date": "2026-11-15",
+                    "time": "10:00",
+                    "occurrence": 2
+                  }
+                }
+              },
+              "series_id": "6ba8dad7-6ca8-4c6a-8da8-ddfd66a8d2f8",
+              "occurrence": 2,
+              "progress": [],
+              "result_uri": null,
+              "result_cid": null,
+              "attempts": 0,
+              "max_attempts": 5,
+              "next_attempt_at": null,
+              "last_error": null,
+              "last_error_code": null,
+              "created_at": "2026-11-14T23:46:40.000Z",
+              "updated_at": "2026-11-14T23:46:40.000Z"
+            },
+            {
+              "id": "5e08c4c5-5b08-400c-8c08-c19f5908bce6",
+              "user_did": "did:plc:virgaharnessmira2zq4x",
+              "scheduled_for": "2026-11-16T09:00:00.000Z",
+              "status": "pending",
+              "target": "bluesky",
+              "queued": true,
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "Repair café this Sunday, 11 till 3. Lamps, zips, bikes, anything with one thing wrong with it.",
+                      "langs": [
+                        "en"
+                      ]
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                },
+                "media": {},
+                "rkeys": [
+                  "3n2g62f5d227c"
+                ],
+                "tz": "Europe/London",
+                "selfDestruct": null
+              },
+              "series_id": null,
+              "occurrence": null,
+              "progress": [],
+              "result_uri": null,
+              "result_cid": null,
+              "attempts": 0,
+              "max_attempts": 5,
+              "next_attempt_at": null,
+              "last_error": null,
+              "last_error_code": null,
+              "created_at": "2026-11-14T23:46:40.000Z",
+              "updated_at": "2026-11-14T23:46:40.000Z"
+            },
+            {
+              "id": "d53161fd-d231-4d44-8331-5ed7d0315a1e",
+              "user_did": "did:plc:virgaharnessmira2zq4x",
+              "scheduled_for": "2026-11-11T18:00:00.000Z",
+              "status": "failed",
+              "target": "bluesky",
+              "queued": false,
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "A thread on what the tool library lent out this year.",
+                      "langs": [
+                        "en"
+                      ]
+                    }
+                  },
+                  {
+                    "record": {
+                      "text": "Most borrowed: the long ladder. Least returned: the good secateurs.",
+                      "langs": [
+                        "en"
+                      ]
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                },
+                "media": {},
+                "rkeys": [
+                  "3n22jvev422sf",
+                  "3n22jvev4zcsf"
+                ],
+                "tz": "Europe/London",
+                "selfDestruct": null
+              },
+              "series_id": null,
+              "occurrence": null,
+              "progress": [],
+              "result_uri": null,
+              "result_cid": null,
+              "attempts": 5,
+              "max_attempts": 5,
+              "next_attempt_at": null,
+              "last_error": "couldn't reach your account session. reconnect your account if this keeps happening.",
+              "last_error_code": "SESSION_UNAVAILABLE",
+              "created_at": "2026-11-09T12:00:00.000Z",
+              "updated_at": "2026-11-14T23:46:40.000Z"
+            },
+            {
+              "id": "f39dad40-f69d-41f9-859d-b066f89db51f",
+              "user_did": "did:plc:virgaharnessmira2zq4x",
+              "scheduled_for": "2026-11-13T08:00:00.000Z",
+              "status": "published",
+              "target": "bluesky",
+              "queued": false,
+              "payload": {
+                "posts": [
+                  {
+                    "record": {
+                      "text": "I counted: 41 tabs open, 11 of them the same page.",
+                      "langs": [
+                        "en"
+                      ]
+                    }
+                  }
+                ],
+                "gates": {
+                  "threadgate": null,
+                  "postgate": null
+                },
+                "media": {},
+                "rkeys": [
+                  "3n26jcdjs22j4"
+                ],
+                "tz": "Europe/London",
+                "selfDestruct": null
+              },
+              "series_id": null,
+              "occurrence": null,
+              "progress": [],
+              "result_uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2akv7aol226",
+              "result_cid": "bafyharness",
+              "attempts": 0,
+              "max_attempts": 5,
+              "next_attempt_at": null,
+              "last_error": "this post published, but its self-destruct timer could not be set: this account can keep one plain timer at a time, counting scheduled posts. set a timer by hand from the posted page.",
+              "last_error_code": "TIMER_NOT_ARMED",
+              "created_at": "2026-11-14T23:46:40.000Z",
+              "updated_at": "2026-11-14T23:46:40.000Z"
+            }
+          ],
+          "timers": [
+            {
+              "id": "c9087d36-c808-4ba3-8708-7a10ce088515",
+              "user_did": "did:plc:virgaharnessmira2zq4x",
+              "post_uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n27wdjp5x225",
+              "post_cid": "bafyharness",
+              "collection": "app.bsky.feed.post",
+              "rkey": "3n27wdjp5x225",
+              "extra_uris": [],
+              "snippet": "An appreciation post for people who write alt text.",
+              "posted_at": "2026-11-13T21:25:58.404Z",
+              "check_at": "2026-11-16T23:46:40.000Z",
+              "status": "armed",
+              "conditions": {
+                "logic": "any",
+                "clauses": [
+                  {
+                    "metric": "likes",
+                    "op": "gte",
+                    "value": 20
+                  }
+                ],
+                "sense": "unless",
+                "onSpare": "keep",
+                "maxExtensions": 0
+              },
+              "effects": [
+                {
+                  "action": "delete"
+                }
+              ],
+              "acted": null,
+              "lifespan_seconds": 259200,
+              "extensions": 0,
+              "last_counts": null,
+              "resolution": null,
+              "resolved_at": null,
+              "attempts": 0,
+              "max_attempts": 5,
+              "last_error": null,
+              "last_error_code": null,
+              "created_at": "2026-11-14T23:46:40.000Z"
+            },
+            {
+              "id": "d25beef4-d55b-43ad-845b-f21acf5bea3b",
+              "user_did": "did:plc:virgaharnessmira2zq4x",
+              "post_uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3mzymsdty224h",
+              "post_cid": null,
+              "collection": "app.bsky.feed.post",
+              "rkey": "3mzymsdty224h",
+              "extra_uris": [],
+              "snippet": "Lost a glove on the towpath. Black, left hand, very loved.",
+              "posted_at": "2026-11-10T23:46:40.000Z",
+              "check_at": "2026-11-11T23:46:40.000Z",
+              "status": "deleted",
+              "conditions": {
+                "logic": "any",
+                "clauses": [],
+                "sense": "unless",
+                "onSpare": "keep",
+                "maxExtensions": 0
+              },
+              "effects": [
+                {
+                  "action": "delete"
+                }
+              ],
+              "acted": [
+                {
+                  "action": "delete",
+                  "ok": true,
+                  "detail": "deleted"
+                }
+              ],
+              "lifespan_seconds": 86400,
+              "extensions": 0,
+              "last_counts": {
+                "likes": 3,
+                "replies": 1,
+                "reposts": 0,
+                "quotes": 0,
+                "selfReplies": 0
+              },
+              "resolution": "deleted, on time",
+              "resolved_at": "2026-11-11T23:46:40.000Z",
+              "attempts": 1,
+              "max_attempts": 5,
+              "last_error": null,
+              "last_error_code": null,
+              "created_at": "2026-11-10T23:46:40.000Z"
+            }
+          ],
+          "defense": {
+            "$sha256": "e3b4224f589fa1d3c0aadf2ddabb1332a1c45d1d0f48bf6a2e635a7dd8373a2d",
+            "lists": {
+              "$part": {
+                "count": 2,
+                "sha256": "51e6661000592151fdef2bfc70870ce90ef55c44589db0ed7529e19c7450cfdb",
+                "items": [
+                  {
+                    "id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "owner_did": "did:plc:virgaharnessmira2zq4x",
+                    "holder_did": "did:plc:virgaharnessmira2zq4x",
+                    "mode": "own",
+                    "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3n2conzoy2222",
+                    "name": "Pile-ons from the quote xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                    "purpose": "block",
+                    "created_at": "2026-11-14T23:46:40.000Z"
+                  },
+                  {
+                    "id": "00000002-0000-4000-8000-01a1dc74bb00",
+                    "owner_did": "did:plc:virgaharnesslab7k2pq",
+                    "holder_did": "did:plc:virgaharnesslab7k2pq",
+                    "mode": "own",
+                    "uri": "at://did:plc:virgaharnesslab7k2pq/app.bsky.graph.list/3n2conzoy2322",
+                    "name": "Muted",
+                    "purpose": "mute",
+                    "created_at": "2026-11-14T23:46:40.000Z"
+                  }
+                ]
+              }
+            },
+            "kept": {
+              "$part": {
+                "count": 2,
+                "sha256": "aa8e882065a0e6e6e4f948999721f8711c67f52f9bafddbfbe9db89a22b38c76",
+                "items": [
+                  {
+                    "owner_did": "did:plc:virgaharnessmira2zq4x",
+                    "did": [
+                      "did:plc:arrayed"
+                    ],
+                    "reason": "kept by hand",
+                    "added_at": "2026-11-14T23:46:40.000Z"
+                  },
+                  {
+                    "owner_did": "did:plc:virgaharnessmira2zq4x",
+                    "did": "did:plc:virgaharnesscrowd00003",
+                    "reason": "still a friend",
+                    "added_at": "2026-11-14T23:46:40.000Z"
+                  }
+                ]
+              }
+            },
+            "plans": {
+              "$part": {
+                "count": 1,
+                "sha256": "cbc4108fe4118cc7d01ec8322fbd20b5d2f18414aebfe2a873ab774c4c804841",
+                "items": [
+                  {
+                    "id": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "owner_did": "did:plc:virgaharnessmira2zq4x",
+                    "list_id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "post_uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2chq77mc22a",
+                    "rows": [
+                      {
+                        "did": "did:plc:virgaharnesscrowd00001",
+                        "band": "UNKNOWN",
+                        "trust": 1
+                      },
+                      {
+                        "did": "did:plc:virgaharnesscrowd00002",
+                        "band": "NOTABLE",
+                        "trust": 0.4
+                      },
+                      {
+                        "did": "did:plc:virgaharnesscast0000",
+                        "band": "UNKNOWN",
+                        "trust": 1
+                      },
+                      {
+                        "did": "did:plc:virgaharnesscrowd00003",
+                        "band": "UNKNOWN",
+                        "trust": null
+                      },
+                      {
+                        "did": "did:plc:virgaharnessmira2zq4x",
+                        "band": "UNKNOWN",
+                        "trust": null
+                      },
+                      {
+                        "did": "did:plc:virgaharnesscast0000",
+                        "band": "PERIPHERAL",
+                        "trust": null
+                      },
+                      {
+                        "did": "did:plc:virgaharnesscrowd00001",
+                        "band": "UNKNOWN",
+                        "trust": null
+                      },
+                      {
+                        "did": [
+                          "did:plc:arrayed"
+                        ],
+                        "band": "CONNECTED",
+                        "trust": null
+                      }
+                    ],
+                    "approved_at": "2026-11-14T23:46:40.000Z",
+                    "approved_bands": [
+                      "CONNECTED",
+                      "NOTABLE",
+                      "PERIPHERAL",
+                      "UNKNOWN"
+                    ],
+                    "note": "the quote pile-on",
+                    "totals": {
+                      "UNKNOWN": 6
+                    },
+                    "created_at": "2026-11-14T23:46:40.000Z"
+                  }
+                ]
+              }
+            },
+            "decisions": {
+              "$part": {
+                "count": 9,
+                "sha256": "bd5f40884f0eb46ecba298c2d903213394e2692dc23b5bf5f725da3ad8c5dcfd",
+                "items": [
+                  {
+                    "id": 1,
+                    "owner_did": "did:plc:virgaharnessmira2zq4x",
+                    "list_id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "plan_id": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "job_id": "00000004-0000-4000-8000-01a1dc74bb00",
+                    "subject_did": "did:plc:virgaharnesscrowd00001",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": 1,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "done",
+                    "rkey": "3n2conzoy2422",
+                    "reason": null,
+                    "created_at": "2026-11-14T23:46:40.000Z",
+                    "acted_at": "2026-11-14T23:46:40.000Z",
+                    "undone_at": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 2,
+                    "owner_did": "did:plc:virgaharnessmira2zq4x",
+                    "list_id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "plan_id": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "job_id": "00000004-0000-4000-8000-01a1dc74bb00",
+                    "subject_did": "did:plc:virgaharnesscast0000",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": 1,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "vetoed",
+                    "rkey": "3n2conzoy2522",
+                    "reason": "you follow them",
+                    "created_at": "2026-11-14T23:46:40.000Z",
+                    "acted_at": null,
+                    "undone_at": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 3,
+                    "owner_did": "did:plc:virgaharnessmira2zq4x",
+                    "list_id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "plan_id": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "job_id": "00000004-0000-4000-8000-01a1dc74bb00",
+                    "subject_did": "did:plc:virgaharnessmira2zq4x",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": null,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "vetoed",
+                    "rkey": "3n2conzoy2622",
+                    "reason": "your own account",
+                    "created_at": "2026-11-14T23:46:40.000Z",
+                    "acted_at": null,
+                    "undone_at": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 4,
+                    "owner_did": "did:plc:virgaharnessmira2zq4x",
+                    "list_id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "plan_id": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "job_id": "00000004-0000-4000-8000-01a1dc74bb00",
+                    "subject_did": "did:plc:virgaharnesscast0000",
+                    "action": "add",
+                    "band": "PERIPHERAL",
+                    "trust": null,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "vetoed",
+                    "rkey": "3n2conzoy2722",
+                    "reason": "you follow them",
+                    "created_at": "2026-11-14T23:46:40.000Z",
+                    "acted_at": null,
+                    "undone_at": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 5,
+                    "owner_did": "did:plc:virgaharnessmira2zq4x",
+                    "list_id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "plan_id": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "job_id": "00000004-0000-4000-8000-01a1dc74bb00",
+                    "subject_did": "did:plc:virgaharnesscrowd00001",
+                    "action": "add",
+                    "band": "UNKNOWN",
+                    "trust": null,
+                    "via": "web",
+                    "note": "the quote pile-on",
+                    "state": "done",
+                    "rkey": "3n2conzoy2a22",
+                    "reason": null,
+                    "created_at": "2026-11-14T23:46:40.000Z",
+                    "acted_at": "2026-11-14T23:46:40.000Z",
+                    "undone_at": null,
+                    "undoes": null
+                  },
+                  {
+                    "id": 6,
+                    "owner_did": "did:plc:virgaharnessmira2zq4x",
+                    "list_id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "plan_id": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "job_id": "00000005-0000-4000-8000-01a1dc74bb00",
+                    "subject_did": "did:plc:virgaharnesscrowd00002",
+                    "action": "add",
+                    "band": "NOTABLE",
+                    "trust": 0.4,
+                    "via": "web",
+                    "note": null,
+                    "state": "cancelled",
+                    "rkey": null,
+                    "reason": "undone before it was written",
+                    "created_at": "2026-11-14T23:46:40.000Z",
+                    "acted_at": null,
+                    "undone_at": "2026-11-14T23:46:40.000Z",
+                    "undoes": null
+                  },
+                  {
+                    "id": 7,
+                    "owner_did": "did:plc:virgaharnessmira2zq4x",
+                    "list_id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "plan_id": "00000003-0000-4000-8000-01a1dc74bb00",
+                    "job_id": "00000005-0000-4000-8000-01a1dc74bb00",
+                    "subject_did": [
+                      "did:plc:arrayed"
+                    ],
+                    "action": "add",
+                    "band": "CONNECTED",
+                    "trust": null,
+                    "via": "web",
+                    "note": null,
+                    "state": "cancelled",
+                    "rkey": null,
+                    "reason": "undone before it was written",
+                    "created_at": "2026-11-14T23:46:40.000Z",
+                    "acted_at": null,
+                    "undone_at": "2026-11-14T23:46:40.000Z",
+                    "undoes": null
+                  },
+                  {
+                    "id": 8,
+                    "owner_did": "did:plc:virgaharnessmira2zq4x",
+                    "list_id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "plan_id": null,
+                    "job_id": "00000006-0000-4000-8000-01a1dc74bb00",
+                    "subject_did": "did:plc:virgaharnesscrowd00001",
+                    "action": "remove",
+                    "band": null,
+                    "trust": null,
+                    "via": "web",
+                    "note": "sorry",
+                    "state": "queued",
+                    "rkey": "3n2conzoy2422",
+                    "reason": null,
+                    "created_at": "2026-11-14T23:46:40.000Z",
+                    "acted_at": null,
+                    "undone_at": null,
+                    "undoes": 1
+                  },
+                  {
+                    "id": 9,
+                    "owner_did": "did:plc:virgaharnessmira2zq4x",
+                    "list_id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "plan_id": null,
+                    "job_id": "00000006-0000-4000-8000-01a1dc74bb00",
+                    "subject_did": "did:plc:virgaharnesscrowd00001",
+                    "action": "remove",
+                    "band": null,
+                    "trust": null,
+                    "via": "web",
+                    "note": "sorry",
+                    "state": "queued",
+                    "rkey": "3n2conzoy2a22",
+                    "reason": null,
+                    "created_at": "2026-11-14T23:46:40.000Z",
+                    "acted_at": null,
+                    "undone_at": null,
+                    "undoes": 5
+                  }
+                ]
+              }
+            },
+            "jobs": {
+              "$part": {
+                "count": 3,
+                "sha256": "f46db4254621c15303110a161ddf6659de7f069fb2893ace0b04bbbb6f126615",
+                "items": [
+                  {
+                    "id": "00000004-0000-4000-8000-01a1dc74bb00",
+                    "owner_did": "did:plc:virgaharnessmira2zq4x",
+                    "list_id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "kind": "add",
+                    "state": "done",
+                    "next_at": 1794700000000,
+                    "last_error": null
+                  },
+                  {
+                    "id": "00000005-0000-4000-8000-01a1dc74bb00",
+                    "owner_did": "did:plc:virgaharnessmira2zq4x",
+                    "list_id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "kind": "add",
+                    "state": "done",
+                    "next_at": 1794700000000,
+                    "last_error": null
+                  },
+                  {
+                    "id": "00000006-0000-4000-8000-01a1dc74bb00",
+                    "owner_did": "did:plc:virgaharnessmira2zq4x",
+                    "list_id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "kind": "remove",
+                    "state": "pending",
+                    "next_at": 1794700000000,
+                    "last_error": null
+                  }
+                ]
+              }
+            },
+            "links": {
+              "did:plc:virgaharnessmira2zq4x": {
+                "linked_at": "2026-11-15T00:02:51.000Z",
+                "list_id": null,
+                "code": null,
+                "code_at": 1794700011000
+              }
+            }
+          },
+          "log": [
+            {
+              "at": "2026-11-14T23:46:40.000Z",
+              "line": "defense: made the list “Pile-ons from the quote xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx” for did:plc:virgaharnessmira2zq4x"
+            },
+            {
+              "at": "2026-11-14T23:46:40.000Z",
+              "line": "defense: made the list “Muted” for did:plc:virgaharnesslab7k2pq"
+            },
+            {
+              "at": "2026-11-14T23:46:40.000Z",
+              "line": "defense: queued 5 for did:plc:virgaharnessmira2zq4x"
+            },
+            {
+              "at": "2026-11-14T23:46:40.000Z",
+              "line": "defense: queued 2 for did:plc:virgaharnessmira2zq4x"
+            },
+            {
+              "at": "2026-11-14T23:46:40.000Z",
+              "line": "defense: wrote 2 list items"
+            },
+            {
+              "at": "2026-11-14T23:46:51.000Z",
+              "line": "the moderator was linked by did:plc:virgaharnessmira2zq4x"
+            },
+            {
+              "at": "2026-11-15T00:02:51.000Z",
+              "line": "the moderator was linked by did:plc:virgaharnessmira2zq4x"
+            }
+          ],
+          "worlds": [
+            {
+              "revision": 3,
+              "posts": 1031,
+              "writtenPosts": [],
+              "written": [
+                [
+                  "net.anisota.feed.template/3mtaep67i224k",
+                  {
+                    "value": {
+                      "$type": "net.anisota.feed.template",
+                      "name": "Thanks for the follow",
+                      "text": "Thanks for the follow, {{their.firstName}}!",
+                      "use": "reply",
+                      "shortcut": "thanks",
+                      "createdAt": "2026-08-16T23:46:40.000Z"
+                    },
+                    "cid": "bafyharness"
+                  }
+                ],
+                [
+                  "net.anisota.feed.template/3musnzlgi224l",
+                  {
+                    "value": {
+                      "$type": "net.anisota.feed.template",
+                      "name": "Event reminder",
+                      "text": "Reminder: {{event}} is on {{day}}. Everyone welcome.",
+                      "use": "post",
+                      "shortcut": "remind",
+                      "variables": [
+                        {
+                          "key": "event",
+                          "label": "What is on"
+                        },
+                        {
+                          "key": "day",
+                          "label": "Which day",
+                          "kind": "choice",
+                          "choices": [
+                            "Saturday",
+                            "Sunday"
+                          ]
+                        }
+                      ],
+                      "createdAt": "2026-09-05T23:46:40.000Z"
+                    },
+                    "cid": "bafyharness"
+                  }
+                ],
+                [
+                  "app.bsky.graph.list/3n2conzoy2222",
+                  {
+                    "value": {
+                      "$type": "app.bsky.graph.list",
+                      "purpose": "app.bsky.graph.defs#modlist",
+                      "name": "Pile-ons from the quote xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                      "description": "Kept with Virga.",
+                      "createdAt": "2026-11-14T23:46:40.000Z"
+                    },
+                    "cid": "bafyreicgsa3qu42dk47emmvao7agubxxnaqruoph662gur24qqlxhdsqji"
+                  }
+                ],
+                [
+                  "app.bsky.graph.listitem/3n2conzoy2422",
+                  {
+                    "value": {
+                      "$type": "app.bsky.graph.listitem",
+                      "subject": "did:plc:virgaharnesscrowd00001",
+                      "list": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3n2conzoy2222",
+                      "createdAt": "2026-11-14T23:46:40.000Z"
+                    },
+                    "cid": "bafyreihbrfn6xeytv3wvh4onzk2uewjsl6dzgckjjmafb7kxj7poaedtjm"
+                  }
+                ],
+                [
+                  "app.bsky.graph.listitem/3n2conzoy2a22",
+                  {
+                    "value": {
+                      "$type": "app.bsky.graph.listitem",
+                      "subject": "did:plc:virgaharnesscrowd00001",
+                      "list": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3n2conzoy2222",
+                      "createdAt": "2026-11-14T23:46:40.000Z"
+                    },
+                    "cid": "bafyreihbrfn6xeytv3wvh4onzk2uewjsl6dzgckjjmafb7kxj7poaedtjm"
+                  }
+                ]
+              ],
+              "removed": [],
+              "blobs": [],
+              "listItems": 133
+            },
+            {
+              "revision": 1,
+              "posts": 9,
+              "writtenPosts": [],
+              "written": [
+                [
+                  "app.bsky.graph.list/3n2conzoy2322",
+                  {
+                    "value": {
+                      "$type": "app.bsky.graph.list",
+                      "purpose": "app.bsky.graph.defs#modlist",
+                      "name": "Muted",
+                      "description": "Kept with Virga.",
+                      "createdAt": "2026-11-14T23:46:40.000Z"
+                    },
+                    "cid": "bafyreihgrko2szuo7sohcjuat3nomtlfm5cd4f5nl5ojutq2n7nfxd2ylu"
+                  }
+                ]
+              ],
+              "removed": [],
+              "blobs": [],
+              "listItems": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "defense-scope",
+      "fn": "server",
+      "input": {
+        "search": "?defense=on",
+        "zone": "UTC",
+        "options": {
+          "seed": false,
+          "moderator": "off"
+        },
+        "steps": [
+          {
+            "mint": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/list-create",
+            "token": 0,
+            "text": "{\"name\":\"X\",\"purpose\":\"block\"}"
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/link",
+            "token": 0
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/link-code",
+            "token": 0,
+            "text": "{}"
+          }
+        ]
+      },
+      "output": {
+        "steps": [
+          {
+            "token": "vg_0b30557a9fc4e90e33587da2c7ec11365b80a5caef14395e83a8cdf2173c6186"
+          },
+          {
+            "status": 403,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "NO_SCOPE",
+              "error": "This sign-in doesn’t let Virga make lists. Sign in again from Defense to let it."
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "moderator": null,
+                "linked": false,
+                "linkedAt": null,
+                "codeExpiresAt": null,
+                "listId": null
+              }
+            }
+          },
+          {
+            "status": 503,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "NO_MODERATOR",
+              "error": "Virga’s moderator isn’t set up on this server yet."
+            }
+          }
+        ],
+        "end": {
+          "scheduled": [],
+          "timers": [],
+          "defense": {
+            "lists": [],
+            "kept": [],
+            "plans": [],
+            "decisions": [],
+            "jobs": [],
+            "links": {}
+          },
+          "log": [],
+          "worlds": [
+            {
+              "revision": 0,
+              "posts": 1031,
+              "writtenPosts": [],
+              "written": [
+                [
+                  "net.anisota.feed.template/3mtaep67i224k",
+                  {
+                    "value": {
+                      "$type": "net.anisota.feed.template",
+                      "name": "Thanks for the follow",
+                      "text": "Thanks for the follow, {{their.firstName}}!",
+                      "use": "reply",
+                      "shortcut": "thanks",
+                      "createdAt": "2026-08-16T23:46:40.000Z"
+                    },
+                    "cid": "bafyharness"
+                  }
+                ],
+                [
+                  "net.anisota.feed.template/3musnzlgi224l",
+                  {
+                    "value": {
+                      "$type": "net.anisota.feed.template",
+                      "name": "Event reminder",
+                      "text": "Reminder: {{event}} is on {{day}}. Everyone welcome.",
+                      "use": "post",
+                      "shortcut": "remind",
+                      "variables": [
+                        {
+                          "key": "event",
+                          "label": "What is on"
+                        },
+                        {
+                          "key": "day",
+                          "label": "Which day",
+                          "kind": "choice",
+                          "choices": [
+                            "Saturday",
+                            "Sunday"
+                          ]
+                        }
+                      ],
+                      "createdAt": "2026-09-05T23:46:40.000Z"
+                    },
+                    "cid": "bafyharness"
+                  }
+                ]
+              ],
+              "removed": [],
+              "blobs": [],
+              "listItems": 131
+            },
+            {
+              "revision": 0,
+              "posts": 9,
+              "writtenPosts": [],
+              "written": [],
+              "removed": [],
+              "blobs": [],
+              "listItems": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "defense-held",
+      "fn": "server",
+      "input": {
+        "search": "?defense=lists",
+        "zone": "UTC",
+        "options": {
+          "seed": false,
+          "moderator": "linked"
+        },
+        "steps": [
+          {
+            "mint": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/link",
+            "token": 0
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/list-create",
+            "token": 0,
+            "text": "{\"name\":\"Held\",\"purpose\":\"mute\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/plan",
+            "token": 0,
+            "text": "{\"listId\":\"00000001-0000-4000-8000-01a1dc74bb00\",\"rows\":[{\"did\":\"did:plc:virgaharnesscrowd00011\",\"band\":\"UNKNOWN\"}]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/approve",
+            "token": 0,
+            "text": "{\"planId\":\"00000002-0000-4000-8000-01a1dc74bb00\",\"bands\":[\"UNKNOWN\"]}"
+          },
+          {
+            "setScope": {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "scope": "atproto"
+            }
+          },
+          {
+            "advance": 1000
+          },
+          {
+            "cron": true
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/lists",
+            "token": 0
+          },
+          {
+            "setScope": {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete"
+            }
+          },
+          {
+            "advance": 61000
+          },
+          {
+            "cron": true
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/lists",
+            "token": 0
+          }
+        ]
+      },
+      "output": {
+        "steps": [
+          {
+            "token": "vg_0b30557a9fc4e90e33587da2c7ec11365b80a5caef14395e83a8cdf2173c6186"
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "moderator": "mod.virga.example",
+                "linked": true,
+                "linkedAt": "2026-11-14T23:46:40.000Z",
+                "codeExpiresAt": null,
+                "listId": null
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "list": {
+                  "id": "00000001-0000-4000-8000-01a1dc74bb00",
+                  "holderDid": "did:plc:virgaharnessmira2zq4x",
+                  "mode": "own",
+                  "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3n2conzoy2222",
+                  "name": "Held",
+                  "purpose": "mute",
+                  "createdAt": "2026-11-14T23:46:40.000Z",
+                  "listed": 0,
+                  "waiting": 0,
+                  "heldUntil": null,
+                  "lastError": null
+                }
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "planId": "00000002-0000-4000-8000-01a1dc74bb00",
+                "rows": 1
+              }
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "jobId": "00000003-0000-4000-8000-01a1dc74bb00",
+                "queued": 1,
+                "kept": 0,
+                "already": 0
+              }
+            }
+          },
+          null,
+          null,
+          {
+            "published": [],
+            "settled": [],
+            "listed": 0
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "lists": [
+                  {
+                    "id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "holderDid": "did:plc:virgaharnessmira2zq4x",
+                    "mode": "own",
+                    "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3n2conzoy2222",
+                    "name": "Held",
+                    "purpose": "mute",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "listed": 0,
+                    "waiting": 1,
+                    "heldUntil": "2026-11-14T23:47:41.000Z",
+                    "lastError": "This sign-in doesn’t let Virga write lists. Sign in again from Defense › Lists to let it."
+                  }
+                ],
+                "kept": [],
+                "writes": true
+              }
+            }
+          },
+          null,
+          null,
+          {
+            "published": [],
+            "settled": [],
+            "listed": 1
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "lists": [
+                  {
+                    "id": "00000001-0000-4000-8000-01a1dc74bb00",
+                    "holderDid": "did:plc:virgaharnessmira2zq4x",
+                    "mode": "own",
+                    "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3n2conzoy2222",
+                    "name": "Held",
+                    "purpose": "mute",
+                    "createdAt": "2026-11-14T23:46:40.000Z",
+                    "listed": 1,
+                    "waiting": 0,
+                    "heldUntil": null,
+                    "lastError": null
+                  }
+                ],
+                "kept": [],
+                "writes": true
+              }
+            }
+          }
+        ],
+        "end": {
+          "scheduled": [],
+          "timers": [],
+          "defense": {
+            "lists": [
+              {
+                "id": "00000001-0000-4000-8000-01a1dc74bb00",
+                "owner_did": "did:plc:virgaharnessmira2zq4x",
+                "holder_did": "did:plc:virgaharnessmira2zq4x",
+                "mode": "own",
+                "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3n2conzoy2222",
+                "name": "Held",
+                "purpose": "mute",
+                "created_at": "2026-11-14T23:46:40.000Z"
+              }
+            ],
+            "kept": [],
+            "plans": [
+              {
+                "id": "00000002-0000-4000-8000-01a1dc74bb00",
+                "owner_did": "did:plc:virgaharnessmira2zq4x",
+                "list_id": "00000001-0000-4000-8000-01a1dc74bb00",
+                "post_uri": null,
+                "rows": [
+                  {
+                    "did": "did:plc:virgaharnesscrowd00011",
+                    "band": "UNKNOWN",
+                    "trust": null
+                  }
+                ],
+                "approved_at": "2026-11-14T23:46:40.000Z",
+                "approved_bands": [
+                  "UNKNOWN"
+                ],
+                "note": null,
+                "totals": {},
+                "created_at": "2026-11-14T23:46:40.000Z"
+              }
+            ],
+            "decisions": [
+              {
+                "id": 1,
+                "owner_did": "did:plc:virgaharnessmira2zq4x",
+                "list_id": "00000001-0000-4000-8000-01a1dc74bb00",
+                "plan_id": "00000002-0000-4000-8000-01a1dc74bb00",
+                "job_id": "00000003-0000-4000-8000-01a1dc74bb00",
+                "subject_did": "did:plc:virgaharnesscrowd00011",
+                "action": "add",
+                "band": "UNKNOWN",
+                "trust": null,
+                "via": "web",
+                "note": null,
+                "state": "done",
+                "rkey": "3n2coput2w222",
+                "reason": null,
+                "created_at": "2026-11-14T23:46:40.000Z",
+                "acted_at": "2026-11-14T23:47:42.000Z",
+                "undone_at": null,
+                "undoes": null
+              }
+            ],
+            "jobs": [
+              {
+                "id": "00000003-0000-4000-8000-01a1dc74bb00",
+                "owner_did": "did:plc:virgaharnessmira2zq4x",
+                "list_id": "00000001-0000-4000-8000-01a1dc74bb00",
+                "kind": "add",
+                "state": "done",
+                "next_at": 1794700061000,
+                "last_error": null
+              }
+            ],
+            "links": {
+              "did:plc:virgaharnessmira2zq4x": {
+                "linked_at": "2026-11-14T23:46:40.000Z",
+                "code": null,
+                "code_at": null,
+                "list_id": null
+              },
+              "did:plc:virgaharnesslab7k2pq": {
+                "linked_at": "2026-11-14T23:46:40.000Z",
+                "code": null,
+                "code_at": null,
+                "list_id": null
+              }
+            }
+          },
+          "log": [
+            {
+              "at": "2026-11-14T23:46:40.000Z",
+              "line": "defense: made the list “Held” for did:plc:virgaharnessmira2zq4x"
+            },
+            {
+              "at": "2026-11-14T23:46:40.000Z",
+              "line": "defense: queued 1 for did:plc:virgaharnessmira2zq4x"
+            },
+            {
+              "at": "2026-11-14T23:47:42.000Z",
+              "line": "defense: wrote 1 list items"
+            }
+          ],
+          "worlds": [
+            {
+              "revision": 2,
+              "posts": 1031,
+              "writtenPosts": [],
+              "written": [
+                [
+                  "net.anisota.feed.template/3mtaep67i224k",
+                  {
+                    "value": {
+                      "$type": "net.anisota.feed.template",
+                      "name": "Thanks for the follow",
+                      "text": "Thanks for the follow, {{their.firstName}}!",
+                      "use": "reply",
+                      "shortcut": "thanks",
+                      "createdAt": "2026-08-16T23:46:40.000Z"
+                    },
+                    "cid": "bafyharness"
+                  }
+                ],
+                [
+                  "net.anisota.feed.template/3musnzlgi224l",
+                  {
+                    "value": {
+                      "$type": "net.anisota.feed.template",
+                      "name": "Event reminder",
+                      "text": "Reminder: {{event}} is on {{day}}. Everyone welcome.",
+                      "use": "post",
+                      "shortcut": "remind",
+                      "variables": [
+                        {
+                          "key": "event",
+                          "label": "What is on"
+                        },
+                        {
+                          "key": "day",
+                          "label": "Which day",
+                          "kind": "choice",
+                          "choices": [
+                            "Saturday",
+                            "Sunday"
+                          ]
+                        }
+                      ],
+                      "createdAt": "2026-09-05T23:46:40.000Z"
+                    },
+                    "cid": "bafyharness"
+                  }
+                ],
+                [
+                  "app.bsky.graph.list/3n2conzoy2222",
+                  {
+                    "value": {
+                      "$type": "app.bsky.graph.list",
+                      "purpose": "app.bsky.graph.defs#modlist",
+                      "name": "Held",
+                      "description": "Kept with Virga.",
+                      "createdAt": "2026-11-14T23:46:40.000Z"
+                    },
+                    "cid": "bafyreid7dkzmn4ojtookcd3fd6pimt5h7nlhre6s4hmhebqqt5yh6pklka"
+                  }
+                ],
+                [
+                  "app.bsky.graph.listitem/3n2coput2w222",
+                  {
+                    "value": {
+                      "$type": "app.bsky.graph.listitem",
+                      "subject": "did:plc:virgaharnesscrowd00011",
+                      "list": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3n2conzoy2222",
+                      "createdAt": "2026-11-14T23:47:42.000Z"
+                    },
+                    "cid": "bafyreihmlynexk46thni2no2nnsgsiad3iq2n26lztmblxjo5t56dendaa"
+                  }
+                ]
+              ],
+              "removed": [],
+              "blobs": [],
+              "listItems": 132
+            },
+            {
+              "revision": 0,
+              "posts": 9,
+              "writtenPosts": [],
+              "written": [],
+              "removed": [],
+              "blobs": [],
+              "listItems": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "defense-off",
+      "fn": "server",
+      "input": {
+        "search": "?defense=lists",
+        "zone": "UTC",
+        "options": {
+          "seed": false,
+          "defenseWrites": false
+        },
+        "steps": [
+          {
+            "mint": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "method": "GET",
+            "path": "/api/defense/lists",
+            "token": 0
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/list-create",
+            "token": 0,
+            "text": "{\"name\":\"X\",\"purpose\":\"block\"}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/approve",
+            "token": 0,
+            "text": "{\"planId\":\"x\",\"bands\":[\"UNKNOWN\"]}"
+          },
+          {
+            "method": "POST",
+            "path": "/api/defense/undo",
+            "token": 0,
+            "text": "{\"ids\":[1]}"
+          },
+          {
+            "cron": true
+          }
+        ]
+      },
+      "output": {
+        "steps": [
+          {
+            "token": "vg_0b30557a9fc4e90e33587da2c7ec11365b80a5caef14395e83a8cdf2173c6186"
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "lists": [],
+                "kept": [],
+                "writes": false
+              }
+            }
+          },
+          {
+            "status": 503,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "WRITES_OFF",
+              "error": "Defense’s lists aren’t turned on on Virga’s server yet."
+            }
+          },
+          {
+            "status": 503,
+            "type": "application/json",
+            "json": {
+              "success": false,
+              "code": "WRITES_OFF",
+              "error": "Defense’s lists aren’t turned on on Virga’s server yet."
+            }
+          },
+          {
+            "status": 200,
+            "type": "application/json",
+            "json": {
+              "success": true,
+              "data": {
+                "jobId": null,
+                "cancelled": 0,
+                "queued": 0
+              }
+            }
+          },
+          {
+            "published": [],
+            "settled": [],
+            "listed": 0
+          }
+        ],
+        "end": {
+          "scheduled": [],
+          "timers": [],
+          "defense": {
+            "lists": [],
+            "kept": [],
+            "plans": [],
+            "decisions": [],
+            "jobs": [],
+            "links": {}
+          },
+          "log": [],
+          "worlds": [
+            {
+              "revision": 0,
+              "posts": 1031,
+              "writtenPosts": [],
+              "written": [
+                [
+                  "net.anisota.feed.template/3mtaep67i224k",
+                  {
+                    "value": {
+                      "$type": "net.anisota.feed.template",
+                      "name": "Thanks for the follow",
+                      "text": "Thanks for the follow, {{their.firstName}}!",
+                      "use": "reply",
+                      "shortcut": "thanks",
+                      "createdAt": "2026-08-16T23:46:40.000Z"
+                    },
+                    "cid": "bafyharness"
+                  }
+                ],
+                [
+                  "net.anisota.feed.template/3musnzlgi224l",
+                  {
+                    "value": {
+                      "$type": "net.anisota.feed.template",
+                      "name": "Event reminder",
+                      "text": "Reminder: {{event}} is on {{day}}. Everyone welcome.",
+                      "use": "post",
+                      "shortcut": "remind",
+                      "variables": [
+                        {
+                          "key": "event",
+                          "label": "What is on"
+                        },
+                        {
+                          "key": "day",
+                          "label": "Which day",
+                          "kind": "choice",
+                          "choices": [
+                            "Saturday",
+                            "Sunday"
+                          ]
+                        }
+                      ],
+                      "createdAt": "2026-09-05T23:46:40.000Z"
+                    },
+                    "cid": "bafyharness"
+                  }
+                ]
+              ],
+              "removed": [],
+              "blobs": [],
+              "listItems": 131
+            },
+            {
+              "revision": 0,
+              "posts": 9,
+              "writtenPosts": [],
+              "written": [],
+              "removed": [],
+              "blobs": [],
+              "listItems": 0
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
