@@ -22,6 +22,9 @@ public protocol TemplateFields {
   func templateField(_ name: String) -> JSONValue?
   /// Whether the web reads the value as truthy (a list's `.filter(Boolean)`).
   var templateIsPresent: Bool { get }
+  /// The members `{ ...template }` spreads, or nil when `typeof template`
+  /// isn't 'object'.
+  var templateObject: [String: JSONValue]? { get }
 }
 
 extension TemplateFields {
@@ -37,6 +40,16 @@ extension JSONValue: TemplateFields {
   }
 
   public var templateIsPresent: Bool { isTruthy }
+
+  public var templateObject: [String: JSONValue]? {
+    switch self {
+    case .object(let members): return members
+    // An array spreads its elements under their indexes, none of which a
+    // template function reads.
+    case .array: return [:]
+    default: return nil
+    }
+  }
 }
 
 // MARK: - A template
@@ -141,6 +154,8 @@ public struct PostTemplate: Codable, Hashable, Sendable, TemplateFields {
       "updatedAt": updatedAt.map(JSONValue.string) ?? .null,
     ])
   }
+
+  public var templateObject: [String: JSONValue]? { json.objectValue }
 
   public func templateField(_ name: String) -> JSONValue? {
     switch name {

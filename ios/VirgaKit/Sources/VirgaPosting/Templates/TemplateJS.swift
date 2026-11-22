@@ -105,3 +105,34 @@ enum TemplateJS {
     match.group(index, in: units)
   }
 }
+
+/// A plain JavaScript object used as a map: keys compared by code unit and
+/// listed in the order an object lists them (array-index keys first,
+/// ascending, then the rest as they were added). Setting `__proto__` on an
+/// object sets its prototype instead, so that key is never held.
+struct JSObjectMap<Value> {
+  private(set) var entries: [(key: String, value: Value)] = []
+
+  var isEmpty: Bool { entries.isEmpty }
+  var count: Int { entries.count }
+  var keys: [String] { entries.map(\.key) }
+  var values: [Value] { entries.map(\.value) }
+
+  subscript(key: String) -> Value? {
+    get { entries.first { $0.key.jsEquals(key) }?.value }
+    set {
+      if let index = entries.firstIndex(where: { $0.key.jsEquals(key) }) {
+        if let newValue { entries[index].value = newValue } else { entries.remove(at: index) }
+        return
+      }
+      guard let newValue, !key.jsEquals("__proto__") else { return }
+      if TemplateJS.isArrayIndex(key) {
+        let n = UInt64(key)!
+        let at = entries.firstIndex { !TemplateJS.isArrayIndex($0.key) || UInt64($0.key)! > n } ?? entries.count
+        entries.insert((key, newValue), at: at)
+      } else {
+        entries.append((key, newValue))
+      }
+    }
+  }
+}

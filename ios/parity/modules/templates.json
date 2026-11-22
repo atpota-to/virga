@@ -42,8 +42,15 @@
       "synced": "87238481a9e9"
     },
     "src/posting/templates/templateService.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "note": "A @MainActor class (TemplateService, with `shared` the app gives its store at launch). The agent is TemplateRepoAgent, which VirgaNetwork's XRPCAgent conforms to, so the session's agentFor serves it; a load in flight is a shared Task. Held to templates.templateService by recorded exchanges through BackendFetchHandler (every one-call-after-another case of templateService.test.js); the races (writes and resets while a load is held open) are Swift behaviour tests. Differences: the cache is the web's JSON with each record's keys sorted; listeners are closures that can't throw, so 'one reader's failure' has no counterpart; the SDK's lexicon check of answers isn't ported (VirgaNetwork's gap), so a malformed listRecords answer the web refuses as InvalidResponse is read leniently here. list() sorts with Foundation's ICU collation in `locale` (nil: the active one).",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Templates/TemplateService.swift"
+      ],
+      "fixtures": [
+        "templates.templateService"
+      ],
+      "synced": "275be3b0a702"
     },
     "src/posting/templates/templateUsage.js": {
       "status": "ported",

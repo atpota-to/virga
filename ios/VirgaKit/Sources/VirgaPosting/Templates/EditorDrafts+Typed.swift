@@ -184,6 +184,7 @@ public struct TemplateDraft: Codable, Hashable, Sendable, TemplateFields {
   }
 
   public func templateField(_ name: String) -> JSONValue? { json.templateField(name) }
+  public var templateObject: [String: JSONValue]? { json.objectValue }
 
   public init(from decoder: Decoder) throws { self.init(json: try JSONValue(from: decoder)) }
   public func encode(to encoder: Encoder) throws { try json.encode(to: encoder) }
