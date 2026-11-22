@@ -225,7 +225,13 @@ struct AdviserSettingsCard: View {
         ) { next in change { $0.writingChecks.customText = next.jsSlice(0, notesLimit) } }
         FieldHint("These come before everything else the proofread goes by.")
       }
-      FlowLayout(spacing: Measure.Adviser.styleRowGap, lineSpacing: theme.space2) {
+      // `.adviser-style`: a wrapping row, centred, the words `flex: 1 1
+      // 220px` (the room the button leaves them) and the button beside
+      // them, under them only when that room is below 220.
+      BesideOrUnder(
+        minLead: Measure.Adviser.styleWordsMin, columnGap: Measure.Adviser.styleRowGap, rowGap: theme.space2, baseline: false,
+        centred: true
+      ) {
         VStack(alignment: .leading, spacing: Measure.Adviser.checkTextGap) {
           Text("Your writing style").virgaText(.textBase, weight: VirgaWeight.medium).foregroundStyle(theme.ink)
           Text(
@@ -237,7 +243,6 @@ struct AdviserSettingsCard: View {
           .foregroundStyle(theme.muted)
           .fixedSize(horizontal: false, vertical: true)
         }
-        .frame(minWidth: Measure.Adviser.styleWordsMin, alignment: .leading)
         Button {
           styleOpen = true
         } label: {
