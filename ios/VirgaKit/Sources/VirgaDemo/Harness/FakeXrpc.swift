@@ -97,6 +97,37 @@ public enum FakeXrpc {
 
   static func listed(_ list: [String], _ nsid: String) -> Bool { list.contains { $0.jsEquals(nsid) } }
 
+  /// The keys of `Object.prototype`, which `methods[nsid]` finds on the
+  /// web's plain methods object too: an NSID named after one is "a method"
+  /// there, so it passes the 501 and (its scope token never parsing) the
+  /// scope check, and is called as `method(input ?? {}, opts ?? {})`.
+  static let objectPrototypeKeys = [
+    "constructor", "__defineGetter__", "__defineSetter__", "hasOwnProperty", "__lookupGetter__", "__lookupSetter__",
+    "isPrototypeOf", "propertyIsEnumerable", "toString", "valueOf", "__proto__", "toLocaleString",
+  ]
+
+  /// What calling one of `Object.prototype`'s functions with no `this`
+  /// answers (or throws), as the web's agent does for an NSID named after
+  /// one.
+  static func objectPrototypeAnswer(_ nsid: String, _ params: JSONValue) throws -> JSONValue {
+    switch nsid {
+    // `Object(value)`: the value itself (an object, or a primitive's wrapper,
+    // which JSON writes as the primitive).
+    case "constructor": return params
+    case "toString": return "[object Undefined]"
+    // `isPrototypeOf(v)`: false for a v that isn't an object, before `this` is read.
+    case "isPrototypeOf":
+      switch params {
+      case .object, .array: break
+      default: return false
+      }
+    case "__proto__": throw HarnessJSError.typeError("method is not a function")
+    case "toLocaleString": throw HarnessJSError.typeError("Object.prototype.toLocaleString called on null or undefined")
+    default: break
+    }
+    throw HarnessJSError.typeError("Cannot convert undefined or null to object")
+  }
+
   /// `${value}` in a template literal: `undefined` for a value that isn't
   /// there, else `String(value)`.
   static func text(_ value: JSONValue?) -> String { value.map(\.jsString) ?? "undefined" }
@@ -383,7 +414,9 @@ public final class FakeAgent: Sendable {
     let wait = slow ? core.latency * 4 : core.latency
     if wait > 0 { await core.clock.sleep(wait) }
     try Task.checkCancellation()
-    guard FakeXrpc.listed(FakeXrpc.methods, nsid) else {
+    // `methods[nsid]`: a key of Object.prototype is found there too.
+    let inherited = FakeXrpc.objectPrototypeKeys.contains(nsid)
+    guard inherited || FakeXrpc.listed(FakeXrpc.methods, nsid) else {
       throw HarnessRepo.XrpcError(501, "MethodNotImplemented", "Method Not Implemented: \(nsid)")
     }
     if FakeXrpc.listed(FakeXrpc.appviewOnly, nsid) && !proxy.jsEquals(FakeXrpc.appviewProxy) {
@@ -398,6 +431,7 @@ public final class FakeAgent: Sendable {
     // `input ?? {}`: a null input is an empty one.
     var params: JSONValue = input.json ?? [:]
     if params.isNull { params = [:] }
+    if inherited { return FakeXrpc.Answer(success: true, headers: [:], data: try FakeXrpc.objectPrototypeAnswer(nsid, params)) }
     let data = try await answer(nsid, params, input, opts ?? [:])
     return FakeXrpc.Answer(success: true, headers: [:], data: data)
   }

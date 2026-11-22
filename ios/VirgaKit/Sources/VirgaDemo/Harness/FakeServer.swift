@@ -89,6 +89,18 @@ public enum FakeServer {
   public static let numericParams = ["limit", "depth", "parentHeight"]
   /// … as lists, split on commas when sent as one (`ARRAY_PARAMS`).
   public static let arrayParams = ["feeds", "uris", "actors", "dids", "handles", "members", "labelers"]
+  /// Bluesky's AppView as a proxy header (`BLUESKY_APPVIEW_PROXY`): what a
+  /// read through another AppView falls back to.
+  public static let blueskyAppviewProxy = "did:web:api.bsky.app#bsky_appview"
+
+  /// The keys of `Array.prototype` (Node 22's V8), which a params object
+  /// whose prototype became an array sees as its own.
+  static let arrayPrototypeKeys = [
+    "length", "constructor", "at", "concat", "copyWithin", "fill", "find", "findIndex", "findLast", "findLastIndex",
+    "lastIndexOf", "pop", "push", "reverse", "shift", "unshift", "slice", "sort", "splice", "includes", "indexOf", "join",
+    "keys", "entries", "values", "forEach", "filter", "flat", "flatMap", "map", "every", "some", "reduce", "reduceRight",
+    "toReversed", "toSorted", "toSpliced", "with", "toLocaleString", "toString",
+  ]
   /// Outputs that are bytes, not JSON (`BINARY_OUTPUT`).
   public static let binaryOutput = ["com.atproto.sync.getRepo", "com.atproto.sync.getBlob", "com.atproto.sync.getRecord"]
 
@@ -98,12 +110,35 @@ public enum FakeServer {
   public static func forwardedQuery(_ pairs: [(String, String)]) -> JSONValue {
     var params: [(String, JSONValue)] = []
     func index(_ key: String) -> Int? { params.firstIndex { $0.0.jsEquals(key) } }
+    // `params = {}` is a plain object, and `key in params` sees its
+    // prototype's keys too (server/oauth/handlers/proxy.js; a web bug kept,
+    // see WEB-BUGS.md): a param named after one is first
+    // `[].concat(<function>, value)`, which JSON holds as `[null, value]`.
+    // `__proto__=x` sets the object's prototype to `[<prototype>, 'x']`, so
+    // it is never a param of its own, and from then on the array's keys
+    // (`length`, its indexes, Array.prototype's methods, `reverse` among
+    // them) are "in" it too.
+    var proto: [JSONValue]?
+    func inherited(_ key: String) -> JSONValue?? {
+      if let proto {
+        if key == "length" { return .some(.number(Double(proto.count))) }
+        if let i = Int(key), String(i) == key, i >= 0, i < proto.count { return .some(proto[i]) }
+        if arrayPrototypeKeys.contains(key) { return .some(nil) }
+      }
+      return FakeXrpc.objectPrototypeKeys.contains(key) ? .some(nil) : nil
+    }
     for (key, value) in pairs {
-      if let i = index(key) {
+      if key == "__proto__" {
+        // `[].concat(params.__proto__, value)`: an array prototype is spread.
+        proto = (proto ?? [[:]]) + [.string(value)]
+      } else if let i = index(key) {
         switch params[i].1 {
         case .array(let held): params[i].1 = .array(held + [.string(value)])
         default: params[i].1 = .array([params[i].1, .string(value)])
         }
+      } else if let held = inherited(key) {
+        // A function is null in JSON.
+        params.append((key, .array([held ?? .null, .string(value)])))
       } else {
         params.append((key, .string(value)))
       }
@@ -111,7 +146,12 @@ public enum FakeServer {
     if let i = index("action"), params[i].1 == .string("proxy") { params.remove(at: i) }
     if let i = index("method") { params.remove(at: i) }
     for name in booleanParams {
-      if let i = index(name) { params[i].1 = .bool(params[i].1.stringValue == "true") }
+      if let i = index(name) {
+        params[i].1 = .bool(params[i].1 == .string("true"))
+      } else if case .some = inherited(name) {
+        // Array.prototype.reverse, once the prototype is an array: not 'true'.
+        params.append((name, false))
+      }
     }
     for name in numericParams {
       if let i = index(name) { params[i].1 = .number(params[i].1.jsNumber) }
@@ -632,19 +672,39 @@ public final class DemoServer: Sendable {
     } else {
       input = .none
     }
-    do {
+    // `executeXrpcCall(session, proxyHeader)`.
+    func call(_ proxy: String?) async throws -> JSONValue {
       var agent = try agents(did)
-      if let proxy = headers.get("x-atproto-proxy"), !proxy.isEmpty {
+      if let proxy, !proxy.isEmpty {
         let at = proxy.jsIndexOf("#")
         agent = at < 0 ? agent.withProxy("bsky_fg", proxy) : agent.withProxy(proxy.jsSlice(at + 1), proxy.jsSlice(0, at))
       }
-      let answer = try await agent.handle(xrpcMethod, input)
-      return ServerAnswer(200, ["success": true, "data": answer.data])
-    } catch let error as HarnessRepo.XrpcError {
-      return ServerAnswer(
-        FakeServer.httpStatusForXrpcError(error.status), FakeServer.failure(error.message, code: error.error))
-    } catch {
+      return try await agent.handle(xrpcMethod, input).data
+    }
+    // `sendXrpcError(err)`.
+    func failed(_ error: any Error) -> ServerAnswer {
+      if let error = error as? HarnessRepo.XrpcError {
+        return ServerAnswer(FakeServer.httpStatusForXrpcError(error.status), FakeServer.failure(error.message, code: error.error))
+      }
       return ServerAnswer(500, FakeServer.failure(jsMessage(error)))
+    }
+    let customProxy = headers.get("x-atproto-proxy")
+    let usingCustomAppView = (customProxy.map { !$0.isEmpty } ?? false) && customProxy != FakeServer.blueskyAppviewProxy
+    do {
+      return ServerAnswer(200, ["success": true, "data": try await call(customProxy)])
+    } catch {
+      // A read whose chosen AppView failed (no status, a 5xx or the SDK's
+      // InvalidResponse) tries Bluesky's once; not a write.
+      let status = (error as? HarnessRepo.XrpcError)?.status ?? 0
+      let upstreamFailure = status == 0 || status >= 500 || status == 2
+      if !isPost && usingCustomAppView && upstreamFailure {
+        do {
+          return ServerAnswer(200, ["success": true, "data": try await call(FakeServer.blueskyAppviewProxy)])
+        } catch {
+          return failed(error)
+        }
+      }
+      return failed(error)
     }
   }
 

@@ -28,6 +28,7 @@ import {
   isSafeXrpcMethod,
 } from '../../../server/oauth/handlers/proxy.js';
 import { httpStatusForXrpcError } from '../../../server/oauth/xrpcErrors.js';
+import { ResponseType } from '@atproto/xrpc';
 import { extractBlobPayload } from '../../../server/oauth/blobPayload.js';
 import { each } from './_helpers.js';
 import { NOW, atTime } from './_demoWorld.js';
@@ -495,6 +496,8 @@ const BINARY_OUTPUT = new Set([
   'com.atproto.sync.getRecord',
 ]);
 
+const BLUESKY_APPVIEW_PROXY = 'did:web:api.bsky.app#bsky_appview';
+
 const failure = (status, error, code) => ({
   status,
   body: { success: false, error, ...(code ? { code } : {}) },
@@ -527,27 +530,49 @@ async function proxyCall(
     )
       requestBody = body;
   }
-  let target = agent;
-  const proxy = headers['x-atproto-proxy'];
-  if (proxy) {
-    const at = proxy.indexOf('#');
-    const [did, service] =
-      at === -1
-        ? [proxy, 'bsky_fg']
-        : [proxy.slice(0, at), proxy.slice(at + 1)];
-    target = agent.withProxy(service, did);
-  }
+  const input =
+    isPost && requestBody
+      ? requestBody
+      : Object.keys(params).length > 0
+        ? params
+        : undefined;
+  // executeXrpcCall(session, proxyHeader)
+  const call = async (proxy) => {
+    let target = agent;
+    if (proxy) {
+      const at = proxy.indexOf('#');
+      const [did, service] =
+        at === -1
+          ? [proxy, 'bsky_fg']
+          : [proxy.slice(0, at), proxy.slice(at + 1)];
+      target = agent.withProxy(service, did);
+    }
+    return (await target.handle(xrpcMethod, input)).data;
+  };
+  const sendXrpcError = (error) =>
+    failure(httpStatusForXrpcError(error), error.message, error.error);
+  const customProxy = headers['x-atproto-proxy'];
+  const usingCustomAppView =
+    !!customProxy && customProxy !== BLUESKY_APPVIEW_PROXY;
   try {
-    const input =
-      isPost && requestBody
-        ? requestBody
-        : Object.keys(params).length > 0
-          ? params
-          : undefined;
-    const result = await target.handle(xrpcMethod, input);
-    return { status: 200, body: { success: true, data: result.data } };
+    return {
+      status: 200,
+      body: { success: true, data: await call(customProxy) },
+    };
   } catch (error) {
-    return failure(httpStatusForXrpcError(error), error.message, error.error);
+    // A read whose chosen AppView failed tries Bluesky's once.
+    const status = error.status || error.statusCode;
+    const upstreamFailure =
+      !status || status >= 500 || status === ResponseType.InvalidResponse;
+    if (!isPost && usingCustomAppView && upstreamFailure) {
+      try {
+        const data = await call(BLUESKY_APPVIEW_PROXY);
+        return { status: 200, body: { success: true, data } };
+      } catch (fallbackError) {
+        return sendXrpcError(fallbackError);
+      }
+    }
+    return sendXrpcError(error);
   }
 }
 
@@ -655,6 +680,65 @@ const FORWARDS = [
   {
     query: 'q=garden&limit=2',
     headers: { 'x-xrpc-method': 'app.bsky.feed.searchPosts' },
+  },
+  // Through another AppView: a read that fails there (a 5xx, or no status)
+  // is asked of Bluesky's once; a 4xx, and a write, are not.
+  {
+    headers: {
+      'x-xrpc-method': 'app.bsky.draft.getDrafts',
+      'x-atproto-proxy': 'did:web:appview.example#bsky_appview',
+    },
+  },
+  {
+    query: 'limit=1',
+    headers: {
+      'x-xrpc-method': 'app.bsky.bookmark.getBookmarks',
+      'x-atproto-proxy': 'did:web:appview.example',
+    },
+  },
+  {
+    headers: {
+      'x-xrpc-method': 'app.bsky.unspecced.getSomething',
+      'x-atproto-proxy': 'did:web:appview.example#bsky_appview',
+    },
+  },
+  {
+    query: 'q=garden&author=a&author=b',
+    headers: {
+      'x-xrpc-method': 'app.bsky.feed.searchPosts',
+      'x-atproto-proxy': 'did:web:appview.example#bsky_appview',
+    },
+  },
+  {
+    query: 'limit=1',
+    headers: {
+      'x-xrpc-method': 'app.bsky.feed.searchPosts',
+      'x-atproto-proxy': 'did:web:appview.example#bsky_appview',
+    },
+  },
+  {
+    query: 'q=garden&author=a&author=b',
+    headers: { 'x-xrpc-method': 'app.bsky.feed.searchPosts' },
+  },
+  {
+    method: 'POST',
+    headers: {
+      'x-xrpc-method': 'app.bsky.draft.createDraft',
+      'x-atproto-proxy': 'did:web:appview.example#bsky_appview',
+    },
+    text: JSON.stringify({ draft: { posts: [{ text: 'x' }] } }),
+  },
+  {
+    query: 'toString=x&limit=1',
+    headers: { 'x-xrpc-method': 'app.bsky.notification.listNotifications' },
+  },
+  {
+    query: 'aud=did:web:x&lxm=a.b.c&constructor=y',
+    headers: { 'x-xrpc-method': 'com.atproto.server.getServiceAuth' },
+  },
+  {
+    query: '__proto__=z&collection=app.bsky.graph.follow&limit=1',
+    headers: { 'x-xrpc-method': `${P}.listRecords` },
   },
   { headers: { 'x-xrpc-method': 'app.bsky.unspecced.getSomething' } },
   { headers: { 'x-xrpc-method': 'com.atproto.server.getServiceAuth' } },
@@ -792,6 +876,20 @@ export default async function cases() {
         'action=x',
         'q=a+b%20c&cursor=%E0%A4',
         '%E2%80%A8=1&=2&x',
+        'toString=x',
+        'constructor=y&a=1',
+        'valueOf=1&valueOf=2&hasOwnProperty=3',
+        '__defineGetter__=a&__lookupSetter__=b&isPrototypeOf=c&propertyIsEnumerable=d&toLocaleString=e',
+        'limit=1&toString=x&toString=y',
+        '__proto__=z&a=1',
+        'a=1&__proto__=z',
+        '__proto__=z&length=5&0=a&1=b&2=c&map=m&reverse=true',
+        '__proto__=z&__proto__=w&length=5&2=c&01=d&-0=e',
+        '__proto__=z&limit=3&uris=a,b&feeds=x&with=1&flatMap=2&toSorted=3&push=4',
+        '__proto__=z&reverse=false&reverse=true',
+        'reverse=x&__proto__=z',
+        '__proto__=z&method=x&action=proxy',
+        'length=3&map=x&0=y',
       ].map((query) => ({ $id: query || 'empty', query })),
       ({ query }) => forwardedQuery({ url: `/api/oauth/proxy?${query}` }),
     )),

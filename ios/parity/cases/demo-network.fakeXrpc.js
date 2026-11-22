@@ -161,7 +161,8 @@ const READS = [
 
 /**
  * One step of an agent scenario. `swapFrom` names an earlier step whose
- * answer's CID is this one's `swapRecord`.
+ * answer's CID is this one's `swapRecord`; `draftId` the n-th draft id the
+ * agent minted, put in the input at `draft.id` (`idAt: 'draft'`) or `id`.
  */
 async function step(agent, minted, s, earlier) {
   const target = s.proxy
@@ -170,6 +171,11 @@ async function step(agent, minted, s, earlier) {
   let input = s.bytes ? Uint8Array.from(s.bytes) : s.input;
   if (s.swapFrom !== undefined)
     input = { ...input, swapRecord: earlier[s.swapFrom].result.data.cid };
+  if (s.draftId !== undefined)
+    input =
+      s.idAt === 'draft'
+        ? { ...input, draft: { ...input.draft, id: minted[s.draftId] } }
+        : { ...input, id: minted[s.draftId] };
   return outcome(
     () => target.handle(s.nsid, input, s.opts),
     (answer) => {
@@ -785,6 +791,168 @@ const SCENARIOS = [
         input: { repo: ME.did, collection: 'x', rkey: 'a', record: {} },
       },
       { nsid: `${repo}.describeRepo` },
+    ],
+  },
+  {
+    name: 'drafts',
+    steps: [
+      {
+        nsid: 'app.bsky.draft.createDraft',
+        input: { draft: draftPost },
+        proxy: true,
+      },
+      {
+        nsid: 'app.bsky.draft.createDraft',
+        input: { draft: { posts: [{ text: 'Second' }], langs: ['en'] } },
+        proxy: true,
+      },
+      { nsid: 'app.bsky.draft.getDrafts', input: { limit: 3 }, proxy: true },
+      {
+        nsid: 'app.bsky.draft.updateDraft',
+        input: { draft: { draft: { posts: [{ text: 'Edited' }] } } },
+        draftId: 0,
+        idAt: 'draft',
+        proxy: true,
+      },
+      { nsid: 'app.bsky.draft.getDrafts', input: { limit: 3 }, proxy: true },
+      // An update that sends no draft leaves the stored one without any.
+      {
+        nsid: 'app.bsky.draft.updateDraft',
+        input: { draft: {} },
+        draftId: 1,
+        idAt: 'draft',
+        proxy: true,
+      },
+      {
+        nsid: 'app.bsky.draft.updateDraft',
+        input: { draft: { draft: null } },
+        draftId: 0,
+        idAt: 'draft',
+        proxy: true,
+      },
+      { nsid: 'app.bsky.draft.getDrafts', input: { limit: 3 }, proxy: true },
+      {
+        nsid: 'app.bsky.draft.updateDraft',
+        input: { draft: null },
+        proxy: true,
+      },
+      {
+        nsid: 'app.bsky.draft.updateDraft',
+        input: { draft: 'abc' },
+        proxy: true,
+      },
+      {
+        nsid: 'app.bsky.draft.deleteDraft',
+        input: {},
+        draftId: 1,
+        proxy: true,
+      },
+      { nsid: 'app.bsky.draft.getDrafts', input: { limit: 3 }, proxy: true },
+      { nsid: 'app.bsky.draft.deleteDraft', input: { id: 5 }, proxy: true },
+      { nsid: 'app.bsky.draft.getDrafts', input: { limit: 1 }, proxy: true },
+    ],
+  },
+  {
+    name: 'odd-inputs',
+    steps: [
+      // NSIDs named after Object.prototype's keys, which the web's methods
+      // object has too.
+      ...[
+        'constructor',
+        '__defineGetter__',
+        '__defineSetter__',
+        'hasOwnProperty',
+        '__lookupGetter__',
+        '__lookupSetter__',
+        'isPrototypeOf',
+        'propertyIsEnumerable',
+        'toString',
+        'valueOf',
+        '__proto__',
+        'toLocaleString',
+      ].flatMap((nsid) =>
+        [
+          { nsid },
+          { nsid, input: null },
+          { nsid, input: { a: [1, 'b'] } },
+          { nsid, input: 'text' },
+          { nsid, input: 7 },
+          { nsid, input: [1] },
+          // `Object(value)` of a primitive is its wrapper, which the
+          // fixture's toJSON would spread into indexes where JSON.stringify
+          // (the server's answer) writes the primitive: left out.
+        ].filter(
+          (s) =>
+            s.nsid !== 'constructor' ||
+            (typeof s.input !== 'string' && typeof s.input !== 'number'),
+        ),
+      ),
+      { nsid: 'hasOwnProperty', proxy: true },
+      { nsid: 'Constructor' },
+      {
+        nsid: 'app.bsky.feed.searchPosts',
+        input: { q: 'garden', author: ['a', 'b'] },
+      },
+      { nsid: 'app.bsky.feed.searchPosts', input: { q: 'garden', author: 5 } },
+      { nsid: 'app.bsky.feed.searchPosts', input: { q: 'garden', author: '' } },
+      {
+        nsid: 'app.bsky.feed.searchPosts',
+        input: { q: 'garden', author: LAB.did },
+      },
+      { nsid: 'app.bsky.feed.searchPosts', input: { q: 5 } },
+      {
+        nsid: 'app.bsky.feed.searchPosts',
+        input: { q: ['garden'], limit: 1 },
+      },
+      {
+        nsid: `${repo}.listRecords`,
+        input: {
+          repo: [LAB.handle],
+          collection: 'app.bsky.feed.post',
+          limit: 1,
+        },
+      },
+      {
+        nsid: `${repo}.listRecords`,
+        input: {
+          repo: 'LAB.example.com',
+          collection: 'app.bsky.feed.post',
+          limit: 1,
+        },
+      },
+      {
+        nsid: `${repo}.listRecords`,
+        input: {
+          repo: `@${LAB.handle}`,
+          collection: 'app.bsky.feed.post',
+          limit: 1,
+        },
+      },
+    ],
+  },
+  {
+    name: 'odd-profiles',
+    search: '?defense=on',
+    steps: [
+      {
+        nsid: 'app.bsky.actor.getProfiles',
+        input: {
+          actors: [
+            [LAB.did],
+            ['did:plc:virgaharness000000000002', 'x'],
+            [LAB.handle],
+            5,
+            null,
+            'ANA.Example.com',
+            '@ana.example.com',
+          ],
+        },
+      },
+      {
+        nsid: 'app.bsky.actor.getProfiles',
+        input: { actors: 'ana.example.com' },
+      },
+      { nsid: 'app.bsky.actor.getProfiles', input: { actors: '' } },
     ],
   },
   {

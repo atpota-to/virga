@@ -86,6 +86,18 @@ import VirgaTestSupport
         given["swapRecord"] = out[from]["result"]?["data"]?["cid"] ?? .null
         input = .json(given)
       }
+      // `draftId`: the n-th draft id minted, at `draft.id` or `id`.
+      if let n = s["draftId"]?.intValue, case .json(var given) = input {
+        let id = JSONValue.string(minted[n])
+        if s["idAt"]?.stringValue == "draft" {
+          var draft = given["draft"] ?? [:]
+          draft["id"] = id
+          given["draft"] = draft
+        } else {
+          given["id"] = id
+        }
+        input = .json(given)
+      }
       let nsid = s["nsid"]?.stringValue ?? ""
       let opts = s["opts"]
       out.append(

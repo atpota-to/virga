@@ -253,7 +253,8 @@ extension FakeAgent {
       let views = world.views
       var all = try views.searchPosts(q.stringValue ?? q.jsString, now: now)
       if let author = p["author"].jsTruthy {
-        let name = author.stringValue ?? author.jsString
+        // `author.startsWith('did:')`: only a string has it.
+        guard let name = author.stringValue else { throw HarnessJSError.typeError("author.startsWith is not a function") }
         let authorDid = name.jsHasPrefix("did:") ? name : views.resolveHandle(name)
         all = all.filter { Optional($0["author"]?["did"]?.stringValue ?? "").jsEquals(authorDid) }
       }
@@ -295,7 +296,8 @@ extension FakeAgent {
       let stamp = World.iso(now)
       try world.update(did) { w in
         guard let i = w.drafts.firstIndex(where: { Optional($0.id).jsEquals(id) }) else { return }
-        w.drafts[i].draft = p["draft"]?["draft"] ?? .null
+        // `found.draft = draft.draft`: left out when the update sent none.
+        w.drafts[i].draft = p["draft"]?["draft"]
         w.drafts[i].updatedAt = stamp
       }
       return [:]
@@ -377,6 +379,9 @@ extension FakeAgent {
     var profiles: [JSONValue] = []
     for actor in list {
       let text = actor.stringValue
+      // A list (say) whose `String()` starts "did:" is kept as the id
+      // itself, which no Map holds: nobody is found.
+      if text == nil && actor.jsString.jsHasPrefix("did:") { continue }
       let byDid = text.map { views.world($0) != nil } ?? false
       let id: String? = byDid || actor.jsString.jsHasPrefix("did:") ? actor.jsString : views.resolveHandle(FakeXrpc.textOrEmpty(actor))
       guard let known = views.person(id) else { continue }

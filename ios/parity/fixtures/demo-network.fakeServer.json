@@ -1534,6 +1534,71 @@
           },
           {
             "headers": {
+              "x-xrpc-method": "app.bsky.draft.getDrafts",
+              "x-atproto-proxy": "did:web:appview.example#bsky_appview"
+            }
+          },
+          {
+            "query": "limit=1",
+            "headers": {
+              "x-xrpc-method": "app.bsky.bookmark.getBookmarks",
+              "x-atproto-proxy": "did:web:appview.example"
+            }
+          },
+          {
+            "headers": {
+              "x-xrpc-method": "app.bsky.unspecced.getSomething",
+              "x-atproto-proxy": "did:web:appview.example#bsky_appview"
+            }
+          },
+          {
+            "query": "q=garden&author=a&author=b",
+            "headers": {
+              "x-xrpc-method": "app.bsky.feed.searchPosts",
+              "x-atproto-proxy": "did:web:appview.example#bsky_appview"
+            }
+          },
+          {
+            "query": "limit=1",
+            "headers": {
+              "x-xrpc-method": "app.bsky.feed.searchPosts",
+              "x-atproto-proxy": "did:web:appview.example#bsky_appview"
+            }
+          },
+          {
+            "query": "q=garden&author=a&author=b",
+            "headers": {
+              "x-xrpc-method": "app.bsky.feed.searchPosts"
+            }
+          },
+          {
+            "method": "POST",
+            "headers": {
+              "x-xrpc-method": "app.bsky.draft.createDraft",
+              "x-atproto-proxy": "did:web:appview.example#bsky_appview"
+            },
+            "text": "{\"draft\":{\"posts\":[{\"text\":\"x\"}]}}"
+          },
+          {
+            "query": "toString=x&limit=1",
+            "headers": {
+              "x-xrpc-method": "app.bsky.notification.listNotifications"
+            }
+          },
+          {
+            "query": "aud=did:web:x&lxm=a.b.c&constructor=y",
+            "headers": {
+              "x-xrpc-method": "com.atproto.server.getServiceAuth"
+            }
+          },
+          {
+            "query": "__proto__=z&collection=app.bsky.graph.follow&limit=1",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.listRecords"
+            }
+          },
+          {
+            "headers": {
               "x-xrpc-method": "app.bsky.unspecced.getSomething"
             }
           },
@@ -1930,11 +1995,49 @@
           }
         },
         {
-          "status": 501,
+          "status": 200,
           "body": {
-            "success": false,
-            "error": "app.bsky.draft.getDrafts is only answered by Bluesky's AppView; call it through withProxy('bsky_appview', 'did:web:api.bsky.app')",
-            "code": "MethodNotImplemented"
+            "success": true,
+            "data": {
+              "drafts": [
+                {
+                  "id": "3n25nq6ri223c",
+                  "draft": {
+                    "posts": [
+                      {
+                        "text": "Half-finished thought about bus shelters and who they are really for."
+                      }
+                    ],
+                    "langs": [
+                      "en"
+                    ]
+                  },
+                  "createdAt": "2026-11-12T23:46:40.000Z",
+                  "updatedAt": "2026-11-12T23:46:40.000Z"
+                },
+                {
+                  "id": "3mztluiwi223d",
+                  "draft": {
+                    "posts": [
+                      {
+                        "text": "A short thread on the repair café numbers from this year."
+                      },
+                      {
+                        "text": "412 things came in. 301 went home working."
+                      },
+                      {
+                        "text": "Lamps were the most common. Toasters were the most stubborn."
+                      }
+                    ],
+                    "langs": [
+                      "en"
+                    ]
+                  },
+                  "createdAt": "2026-11-08T23:46:40.000Z",
+                  "updatedAt": "2026-11-08T23:46:40.000Z"
+                }
+              ]
+            }
           }
         },
         {
@@ -2042,6 +2145,188 @@
               ],
               "cursor": "2",
               "hitsTotal": 114
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "drafts": [
+                {
+                  "id": "3n25nq6ri223c",
+                  "draft": {
+                    "posts": [
+                      {
+                        "text": "Half-finished thought about bus shelters and who they are really for."
+                      }
+                    ],
+                    "langs": [
+                      "en"
+                    ]
+                  },
+                  "createdAt": "2026-11-12T23:46:40.000Z",
+                  "updatedAt": "2026-11-12T23:46:40.000Z"
+                },
+                {
+                  "id": "3mztluiwi223d",
+                  "draft": {
+                    "posts": [
+                      {
+                        "text": "A short thread on the repair café numbers from this year."
+                      },
+                      {
+                        "text": "412 things came in. 301 went home working."
+                      },
+                      {
+                        "text": "Lamps were the most common. Toasters were the most stubborn."
+                      }
+                    ],
+                    "langs": [
+                      "en"
+                    ]
+                  },
+                  "createdAt": "2026-11-08T23:46:40.000Z",
+                  "updatedAt": "2026-11-08T23:46:40.000Z"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "bookmarks": [
+                {
+                  "subject": {
+                    "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2a674aa223w",
+                    "cid": "bafyharness"
+                  },
+                  "createdAt": "2026-11-14T00:46:40.000Z",
+                  "item": {
+                    "$type": "app.bsky.feed.defs#postView",
+                    "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2a674aa223w",
+                    "cid": "bafyharness",
+                    "author": {
+                      "did": "did:plc:virgaharnesscast0000",
+                      "handle": "ana.example.com",
+                      "displayName": "Ana Nakamura",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EA%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    "record": {
+                      "$type": "app.bsky.feed.post",
+                      "text": "New zine about local wildflowers is out. Free at the café while copies last.",
+                      "createdAt": "2026-11-13T23:46:40.000Z",
+                      "langs": [
+                        "en"
+                      ]
+                    },
+                    "likeCount": 76,
+                    "repostCount": 7,
+                    "replyCount": 1,
+                    "quoteCount": 1,
+                    "indexedAt": "2026-11-13T23:46:40.000Z",
+                    "labels": [],
+                    "viewer": {}
+                  }
+                }
+              ],
+              "cursor": "1"
+            }
+          }
+        },
+        {
+          "status": 501,
+          "body": {
+            "success": false,
+            "error": "Method Not Implemented: app.bsky.unspecced.getSomething",
+            "code": "MethodNotImplemented"
+          }
+        },
+        {
+          "status": 500,
+          "body": {
+            "success": false,
+            "error": "author.startsWith is not a function"
+          }
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "q is required",
+            "code": "InvalidRequest"
+          }
+        },
+        {
+          "status": 500,
+          "body": {
+            "success": false,
+            "error": "author.startsWith is not a function"
+          }
+        },
+        {
+          "status": 501,
+          "body": {
+            "success": false,
+            "error": "app.bsky.draft.createDraft is only answered by Bluesky's AppView; call it through withProxy('bsky_appview', 'did:web:api.bsky.app')",
+            "code": "MethodNotImplemented"
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "notifications": [
+                {
+                  "uri": "at://did:plc:virgaharnesscast0018/app.bsky.harness.repost/3n2conhiifc6t",
+                  "reason": "repost",
+                  "reasonSubject": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3mjjyaoqddcnq",
+                  "author": {
+                    "did": "did:plc:virgaharnesscast0018",
+                    "handle": "sami.example.com",
+                    "displayName": "Sami Tanaka",
+                    "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(96%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(96%2060%25%2024%25)%22%3ES%3C%2Ftext%3E%3C%2Fsvg%3E"
+                  },
+                  "record": {
+                    "createdAt": "2026-11-14T23:46:20.913Z"
+                  },
+                  "indexedAt": "2026-11-14T23:46:21.813Z"
+                }
+              ],
+              "cursor": "1"
+            }
+          }
+        },
+        {
+          "status": 403,
+          "body": {
+            "success": false,
+            "error": "Missing required scope \"rpc:a.b.c?aud=*\"",
+            "code": "ScopeMissingError"
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "records": [
+                {
+                  "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.follow/3mzyqiesnj222",
+                  "cid": "bafyharness",
+                  "value": {
+                    "$type": "app.bsky.graph.follow",
+                    "subject": "did:plc:virgaharnesscast0000",
+                    "createdAt": "2026-11-11T00:52:40.428Z"
+                  }
+                }
+              ],
+              "cursor": "1"
             }
           }
         },
@@ -2287,6 +2572,14 @@
           {
             "method": "POST",
             "headers": {
+              "x-xrpc-method": "app.bsky.draft.createDraft",
+              "x-atproto-proxy": "did:web:appview.example#bsky_appview"
+            },
+            "text": "{\"draft\":{\"posts\":[{\"text\":\"x\"}]}}"
+          },
+          {
+            "method": "POST",
+            "headers": {
               "x-xrpc-method": "com.atproto.repo.createRecord"
             },
             "text": "{\"repo\":\"did:plc:virgaharnessmira2zq4x\",\"collection\":\"app.bsky.feed.post\",\"rkey\":\"3mproxypost22\",\"record\":{\"$type\":\"app.bsky.feed.post\",\"text\":\"Through the proxy\",\"createdAt\":\"2026-11-14T23:46:40.000Z\"}}"
@@ -2375,6 +2668,14 @@
         ]
       },
       "output": [
+        {
+          "status": 501,
+          "body": {
+            "success": false,
+            "error": "app.bsky.draft.createDraft is only answered by Bluesky's AppView; call it through withProxy('bsky_appview', 'did:web:api.bsky.app')",
+            "code": "MethodNotImplemented"
+          }
+        },
         {
           "status": 403,
           "body": {
@@ -2668,6 +2969,240 @@
         " ": "1",
         "": "2",
         "x": ""
+      }
+    },
+    {
+      "id": "toString=x",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "toString=x"
+      },
+      "output": {
+        "toString": [
+          null,
+          "x"
+        ]
+      }
+    },
+    {
+      "id": "constructor=y&a=1",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "constructor=y&a=1"
+      },
+      "output": {
+        "constructor": [
+          null,
+          "y"
+        ],
+        "a": "1"
+      }
+    },
+    {
+      "id": "valueOf=1&valueOf=2&hasOwnProperty=3",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "valueOf=1&valueOf=2&hasOwnProperty=3"
+      },
+      "output": {
+        "valueOf": [
+          null,
+          "1",
+          "2"
+        ],
+        "hasOwnProperty": [
+          null,
+          "3"
+        ]
+      }
+    },
+    {
+      "id": "__defineGetter__=a&__lookupSetter__=b&isPrototypeOf=c&propertyIsEnumerable=d&toLocaleString=e",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "__defineGetter__=a&__lookupSetter__=b&isPrototypeOf=c&propertyIsEnumerable=d&toLocaleString=e"
+      },
+      "output": {
+        "__defineGetter__": [
+          null,
+          "a"
+        ],
+        "__lookupSetter__": [
+          null,
+          "b"
+        ],
+        "isPrototypeOf": [
+          null,
+          "c"
+        ],
+        "propertyIsEnumerable": [
+          null,
+          "d"
+        ],
+        "toLocaleString": [
+          null,
+          "e"
+        ]
+      }
+    },
+    {
+      "id": "limit=1&toString=x&toString=y",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "limit=1&toString=x&toString=y"
+      },
+      "output": {
+        "limit": 1,
+        "toString": [
+          null,
+          "x",
+          "y"
+        ]
+      }
+    },
+    {
+      "id": "__proto__=z&a=1",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "__proto__=z&a=1"
+      },
+      "output": {
+        "a": "1",
+        "reverse": false
+      }
+    },
+    {
+      "id": "a=1&__proto__=z",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "a=1&__proto__=z"
+      },
+      "output": {
+        "a": "1",
+        "reverse": false
+      }
+    },
+    {
+      "id": "__proto__=z&length=5&0=a&1=b&2=c&map=m&reverse=true",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "__proto__=z&length=5&0=a&1=b&2=c&map=m&reverse=true"
+      },
+      "output": {
+        "0": [
+          {},
+          "a"
+        ],
+        "1": [
+          "z",
+          "b"
+        ],
+        "2": "c",
+        "length": [
+          2,
+          "5"
+        ],
+        "map": [
+          null,
+          "m"
+        ],
+        "reverse": false
+      }
+    },
+    {
+      "id": "__proto__=z&__proto__=w&length=5&2=c&01=d&-0=e",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "__proto__=z&__proto__=w&length=5&2=c&01=d&-0=e"
+      },
+      "output": {
+        "2": [
+          "w",
+          "c"
+        ],
+        "length": [
+          3,
+          "5"
+        ],
+        "01": "d",
+        "-0": "e",
+        "reverse": false
+      }
+    },
+    {
+      "id": "__proto__=z&limit=3&uris=a,b&feeds=x&with=1&flatMap=2&toSorted=3&push=4",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "__proto__=z&limit=3&uris=a,b&feeds=x&with=1&flatMap=2&toSorted=3&push=4"
+      },
+      "output": {
+        "limit": 3,
+        "uris": [
+          "a",
+          "b"
+        ],
+        "feeds": [
+          "x"
+        ],
+        "with": [
+          null,
+          "1"
+        ],
+        "flatMap": [
+          null,
+          "2"
+        ],
+        "toSorted": [
+          null,
+          "3"
+        ],
+        "push": [
+          null,
+          "4"
+        ],
+        "reverse": false
+      }
+    },
+    {
+      "id": "__proto__=z&reverse=false&reverse=true",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "__proto__=z&reverse=false&reverse=true"
+      },
+      "output": {
+        "reverse": false
+      }
+    },
+    {
+      "id": "reverse=x&__proto__=z",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "reverse=x&__proto__=z"
+      },
+      "output": {
+        "reverse": false
+      }
+    },
+    {
+      "id": "__proto__=z&method=x&action=proxy",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "__proto__=z&method=x&action=proxy"
+      },
+      "output": {
+        "reverse": false
+      }
+    },
+    {
+      "id": "length=3&map=x&0=y",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "length=3&map=x&0=y"
+      },
+      "output": {
+        "0": "y",
+        "length": "3",
+        "map": "x"
       }
     },
     {
