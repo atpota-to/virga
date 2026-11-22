@@ -5,24 +5,59 @@
   "summary": "Publishing records, link cards and Bluesky drafts.",
   "files": {
     "src/posting/drafts/draftMedia.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Drafts/DraftMedia.swift"
+      ],
+      "fixtures": [
+        "publish.draftMedia"
+      ],
+      "note": "IndexedDB is VirgaCore's FileStore (DraftMediaStorage, set once at launch in DraftMedia.storage; FileStoreDraftMedia lays an account's media out under <postingDbName(did)>/media/<ref>/, each name escaped into one path segment, the bytes as `file` and the rest of the entry as `entry.json`; a put that fails removes what it wrote, as the transaction would). Without a storage the store is MemoryDraftMedia for the run, as the web's memory handle. loadDraftMedia's makePreviewUrl defaults to none: URL.createObjectURL has no logic-side equivalent, so the app passes its own. A post whose `images` isn't a list reads as none, where the web throws a TypeError.",
+      "synced": "70973d79bd33"
     },
     "src/posting/drafts/drafts.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Drafts/Drafts.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Drafts/Drafts+Shapes.swift"
+      ],
+      "fixtures": [
+        "publish.drafts"
+      ],
+      "note": "The agent is the session's XRPCAgent, always through withBlueskyAppView(); a call's AbortSignal is the task's cancellation. postingDeviceId reads and writes the KeyValueStore it is given (the web's localStorage; nil for none), and the length refusal counts in the locale given (nil: the active one). openDraft's makePreviewUrl defaults to none (URL.createObjectURL has no logic-side equivalent) and its fetchCard to LinkCard over HTTP.transport. isDraftLimitError doesn't read an error's constructor name: the SDK's DraftLimitReachedError is an XRPCError whose `error` says DraftLimitReached, which it does read. The SDK checks the AppView's answers against the lexicon and the port doesn't, so a page's broken entries are filtered where the web would refuse the page; the fixtures answer only what the lexicon accepts.",
+      "synced": "b05af8e6f5fd"
     },
     "src/posting/lib/linkCard.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/LinkCard.swift"
+      ],
+      "fixtures": [
+        "publish.linkCard"
+      ],
+      "note": "normalizeAssociatedRefs is Embeds.normalizeAssociatedRefs (posting-text ported it for embeds.js), which LinkCard's forwards to. A response's blob type follows Fetch's MIME extraction for the shapes a card image server sends (lists, case, parameters); quoted parameters with escapes are approximated. The web's File objects are ComposerFiles (Lib/ComposerFiles.swift).",
+      "synced": "813a280f31fb"
     },
     "src/posting/lib/publish.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/Publish.swift"
+      ],
+      "fixtures": [
+        "publish.publish"
+      ],
+      "note": "The web's options map to Swift's: `signal` is the task's cancellation (uploads stop; a write once started runs to the end), `fetch`, `compress` and `decode` are PublishMedia's transport and ImageEncoder, a File's bytes come through ComposerFiles, and record keys come from the injected `mintTid` (the web's nextTid). A post whose `text` isn't a string reads as '' in publishSignature and buildPostRecords, where the web throws a TypeError, as composerModel's port reads it.",
+      "synced": "cb827ebfceab"
     },
     "src/posting/lib/publishRecord.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/PublishRecord.swift"
+      ],
+      "fixtures": [
+        "publish.publishRecord"
+      ],
+      "synced": "2d7171ef9946"
     }
   }
 }

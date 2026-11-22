@@ -20,8 +20,8 @@
 // 17, so Insert and A blank… put what they add at the end of the text; the
 // Group field has no list of the groups already used (a datalist) under it.
 // Its reads are the library's (LibrarySources: the account's posts, what a
-// template quotes, a pasted link); a web page's card comes through the
-// composer's stand-in for linkCard.js (ComposerLinkCards).
+// template quotes, a pasted link); a web page's card is linkCard.js's
+// fetchLinkCard (VirgaPosting's LinkCard).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -602,8 +602,7 @@ struct TemplateEditorForm: View {
     guard !url.isEmpty else { return }
     link = LinkState(status: "loading")
     let transport = self.transport
-    // linkCard.js's fetchLinkCard: the composer's stand-in until the publishing port's.
-    let fetchLinkCard: FetchLinkCard = { address in await ComposerLinkCards.fetchLinkCard(address, transport: transport)?.json }
+    let fetchLinkCard: FetchLinkCard = LinkCard.fetchLinkCard(transport: transport)
     var found = await LibrarySources.resolveRecordLink(url, transport: transport)
     if found == nil { found = try? await LibrarySources.resolveExternalLink(url, fetchLinkCard: fetchLinkCard) }
     guard let found else {

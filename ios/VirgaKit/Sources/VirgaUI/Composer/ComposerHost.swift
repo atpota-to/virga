@@ -31,13 +31,14 @@ public final class ComposerHost {
   public var isOpen = false
   /// What the composer holds while it's closed.
   public internal(set) var controller: ComposerController?
-  /// The publisher the composer sends through (publish.js's seam).
-  @ObservationIgnored public var publisher: any ComposerPublisher
+  /// The publisher the composer sends through (publish.js's seam); nil is
+  /// the app's own, PostingPublisher over the session's transport.
+  @ObservationIgnored public var publisher: (any ComposerPublisher)?
   /// The composer's toasts (Posted, and what went wrong), over the page
   /// once it closes.
   public let toasts = ToastCenter()
 
-  public init(publisher: any ComposerPublisher = UnavailablePublisher()) {
+  public init(publisher: (any ComposerPublisher)? = nil) {
     self.publisher = publisher
   }
 
@@ -115,9 +116,13 @@ struct ComposerHostModifier: ViewModifier {
 
   private func start() {
     if host.controller == nil {
+      let transport = app.archiveEnvironment.transport
+      // Mentions are resolved as a post goes out, through the session's network.
+      Mentions.useNetwork(transport: transport)
       host.controller = ComposerController(
-        session: session, store: app.stores.keyValue, transport: app.archiveEnvironment.transport,
-        publisher: host.publisher, toasts: host.toasts,
+        session: session, store: app.stores.keyValue, transport: transport,
+        publisher: host.publisher ?? PostingPublisher(transport: transport, clock: app.archiveEnvironment.clock),
+        files: app.stores.files, toasts: host.toasts,
         openArchive: LibraryEnvironment.archive(files: app.archiveEnvironment.files),
         close: { [weak host] in host?.close() })
     }

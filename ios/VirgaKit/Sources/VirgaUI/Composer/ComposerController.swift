@@ -113,6 +113,8 @@ public final class ComposerController {
   @ObservationIgnored let store: (any KeyValueStore)?
   @ObservationIgnored let transport: any HTTPTransport
   @ObservationIgnored let publisher: any ComposerPublisher
+  /// The app's file store, where a draft's media are kept on this device.
+  @ObservationIgnored let files: any FileStore
   @ObservationIgnored let toasts: ToastCenter
   @ObservationIgnored let closeSheet: () -> Void
   /// The account's archive, read for Continue a thread.
@@ -163,9 +165,10 @@ public final class ComposerController {
 
   init(
     session: SessionModel, store: (any KeyValueStore)?, transport: any HTTPTransport,
-    publisher: any ComposerPublisher, toasts: ToastCenter, openArchive: @escaping OpenArchiveStore,
+    publisher: any ComposerPublisher, files: any FileStore, toasts: ToastCenter, openArchive: @escaping OpenArchiveStore,
     close: @escaping () -> Void
   ) {
+    self.files = files
     self.openArchive = openArchive
     self.session = session
     self.store = store
@@ -357,6 +360,7 @@ public final class ComposerController {
     loads = [:]
     loadState(state, touched: touched)
     notices = notes
+    fillMedia(state, token: loadToken)
   }
 
   static func touchedJSON(_ aside: TakenAside) -> JSONValue {
@@ -419,8 +423,12 @@ public final class ComposerController {
     var next: [String: ComposerLoad] = [:]
     for kind in kinds { next[kind] = .loading }
     loads = next
-    if plan.scheduledId != nil || plan.draftId != nil {
-      loads = [plan.scheduledId != nil ? "scheduled" : "draft": .failed(ComposerUnported.open, soft: false)]
+    if plan.scheduledId != nil {
+      loads = ["scheduled": .failed(ComposerUnported.open, soft: false)]
+      return
+    }
+    if plan.draftId != nil {
+      openDraft(plan, token: token)
       return
     }
     // A template by its rkey waits for the library's own reading of it; an

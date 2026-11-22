@@ -9,11 +9,12 @@
 //   'writing', count }`, `{ phase: 'uploaded', … }`), and returns the web's
 //   result (`{ posts, root, written, warnings }`) or throws what publish
 //   throws (a PublishError's code and message, read by publishErrorView).
-//   Task cancellation is the web's AbortSignal. Until VirgaPosting's port
-//   of publish.js is wired, the app's is UnavailablePublisher: the button
-//   shows the web's busy line, then says publishing isn't here yet.
-// - ComposerLinkCards: linkCard.js's fetchLinkCard, a stand-in over the
-//   session's transport until the publishing port's own replaces it.
+//   Task cancellation is the web's AbortSignal. The app's is
+//   PostingPublisher, VirgaPosting's Publish.publish over the composer's
+//   temporary files, ImageIO and the session's transport; previews and
+//   tests can give UnavailablePublisher, which says publishing isn't here.
+// Link cards are VirgaPosting's LinkCard.fetchLinkCard, through
+// `ComposerLinkCards.fetchLinkCard`, which reads the card as a ComposerCard.
 
 #if canImport(UIKit)
 import Foundation
@@ -54,12 +55,11 @@ public protocol ComposerPublisher: Sendable {
 public enum ComposerUnported {
   public static let publish = "Publishing isn’t in the iOS app yet."
   public static let schedule = "Scheduling isn’t in the iOS app yet."
-  public static let draft = "Saving drafts isn’t in the iOS app yet."
-  public static let open = "Opening drafts and scheduled posts isn’t in the iOS app yet."
+  public static let open = "Opening scheduled posts isn’t in the iOS app yet."
 }
 
-/// The publisher until publish.js's port is wired: it says so, after the
-/// moment the web spends getting the post ready.
+/// A publisher that doesn't (previews, tests): it says publishing isn't in
+/// the iOS app, after the moment the web spends getting the post ready.
 public struct UnavailablePublisher: ComposerPublisher {
   public init() {}
 
@@ -76,36 +76,39 @@ public struct UnavailablePublisher: ComposerPublisher {
   }
 }
 
-/// linkCard.js's fetchLinkCard, until the publishing port's replaces it:
-/// cardyb's reading of the page, or nil. `url` stays the address given.
-public enum ComposerLinkCards {
-  public static let cardyb = "https://cardyb.bsky.app"
-  public static let titleMax = 200
-  public static let descriptionMax = 500
+/// The app's publisher: publish.js's publish (VirgaPosting's Publish) as
+/// the account the composer chose, its files the composer's temporary
+/// files, its images prepared by ImageIO.
+public struct PostingPublisher: ComposerPublisher {
+  let media: PublishMedia
 
-  /// An http(s) address, or nil.
-  static func safeExternalUrl(_ raw: String?) -> String? {
-    guard let raw, let parts = URLComponents(string: raw.jsTrimmed()),
-      let scheme = parts.scheme?.lowercased(), scheme == "http" || scheme == "https", parts.host != nil
-    else { return nil }
-    return raw.jsTrimmed()
+  public init(transport: any HTTPTransport, clock: NetworkClock) {
+    media = PublishMedia(files: TemporaryComposerFiles(), encoder: ImageIOEncoder(), transport: transport, clock: clock)
   }
 
+  public func publish(
+    _ state: ComposerState, target: SessionTarget, requireAltText: Bool,
+    onProgress: @escaping @Sendable (JSONValue) -> Void
+  ) async throws -> ComposerPublishResult {
+    let result = try await Publish.publish(
+      state, PublishTarget(did: target.did, agent: target.agent, pdsUrl: target.pdsUrl), media: media,
+      onProgress: onProgress, requireAltText: requireAltText)
+    func json<T: Encodable>(_ value: T?) -> JSONValue { value.flatMap { try? JSONValue(encoding: $0) } ?? .null }
+    return ComposerPublishResult(
+      root: json(result.root), posts: result.posts.map { json($0) }, written: result.written.map { json($0) },
+      warnings: result.warnings)
+  }
+}
+
+/// linkCard.js's fetchLinkCard (VirgaPosting's LinkCard) as the composer
+/// reads it: a ComposerCard, or nil.
+public enum ComposerLinkCards {
+  public static let titleMax = LinkCard.cardTitleMax
+  public static let descriptionMax = LinkCard.cardDescriptionMax
+
   public static func fetchLinkCard(_ url: String, transport: any HTTPTransport) async -> ComposerCard? {
-    guard safeExternalUrl(url) != nil else { return nil }
-    let address = "\(cardyb)/v1/extract?url=\(JSURI.encodeURIComponent(url))"
-    guard let response = try? await transport.send(HTTPRequest(method: "GET", url: address, timeoutMs: 10_000)),
-      (200..<300).contains(response.status), let data = try? JSONValue.parse(response.body), data.isTruthy,
-      !(data["error"]?.isTruthy ?? false)
-    else { return nil }
-    let title = data["title"]?.stringValue ?? ""
-    let description = data["description"]?.stringValue ?? ""
-    var card: [String: JSONValue] = [
-      "url": .string(url), "title": .string(title.jsSlice(0, titleMax)),
-      "description": .string(description.jsSlice(0, descriptionMax)),
-    ]
-    card["thumb"] = safeExternalUrl(data["image"]?.stringValue).map(JSONValue.string) ?? .null
-    return ComposerCard(json: .object(card))
+    guard let card = try? await LinkCard.fetchLinkCard(url, transport: transport), card.isTruthy else { return nil }
+    return ComposerCard(json: card)
   }
 }
 
@@ -144,7 +147,7 @@ enum ComposerGlyph {
 }
 
 extension ComposerPublisher where Self == UnavailablePublisher {
-  /// The publisher the app runs until publish.js's port is wired.
+  /// A publisher that says publishing isn't in the iOS app.
   public static var unavailable: UnavailablePublisher { UnavailablePublisher() }
 }
 #endif

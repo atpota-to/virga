@@ -346,7 +346,7 @@ extension ComposerController {
     case .failed(_, let soft)?: replyBlocks = !soft
     default: replyBlocks = false
     }
-    let blockedByLoad = loads["scheduled"] == .loading || loads["draft"] == .loading || replyBlocks
+    let blockedByLoad = loads["scheduled"] == .loading || loads["draft"] == .loading || loads["media"] == .loading || replyBlocks
     if blockedByLoad {
       var failed = false
       if case .failed? = loads["reply"] { failed = true }
@@ -380,7 +380,7 @@ extension ComposerController {
     case PublishActions.schedule, PublishActions.queue:
       unavailable(action, line: action == PublishActions.queue ? "Finding the next open time" : "Scheduling", ComposerUnported.schedule)
     case PublishActions.draft:
-      unavailable(action, line: "Saving the draft", ComposerUnported.draft)
+      publishTask = Task { await saveDraft() }
     default:
       break
     }
@@ -549,6 +549,8 @@ extension ComposerController {
     for warning in result.warnings {
       if let text = warning["message"]?.stringValue { toasts.push(text, seconds: 7) }
     }
+    // A post that came from a draft: the draft goes (ComposerSubmit's finishSource).
+    Task { await finishDraftSource(s) }
     // A post that landed after the composer gave up waiting: only clear
     // what the writer hasn't changed since.
     if late {

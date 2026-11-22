@@ -1,0 +1,5483 @@
+{
+  "name": "publish.publishRecord",
+  "sources": [
+    "src/posting/lib/publishRecord.js"
+  ],
+  "cases": [
+    {
+      "id": "null",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": null
+      },
+      "output": false
+    },
+    {
+      "id": "empty",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {}
+      },
+      "output": false
+    },
+    {
+      "id": "string-transient",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": "fetch failed"
+      },
+      "output": true
+    },
+    {
+      "id": "string-other",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": "nope"
+      },
+      "output": false
+    },
+    {
+      "id": "number",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": 5
+      },
+      "output": false
+    },
+    {
+      "id": "zero",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": 0
+      },
+      "output": false
+    },
+    {
+      "id": "true",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": true
+      },
+      "output": false
+    },
+    {
+      "id": "empty-array",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": []
+      },
+      "output": false
+    },
+    {
+      "id": "array-message",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": [
+          "fetch failed"
+        ]
+      },
+      "output": false
+    },
+    {
+      "id": "code-econnreset",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": "ECONNRESET"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-lower",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": "econnrefused"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-und",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": "UND_ERR_SOCKET"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-etimedout",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": "ETIMEDOUT"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-enotfound",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": "ENOTFOUND"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-eai-again",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": "EAI_AGAIN"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-epipe",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": "EPIPE"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-not-at-start",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": "XECONNRESET"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "code-other",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": "EACCES"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "code-number",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": 5
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "code-true",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "code-empty",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": ""
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "cause-code",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "cause": {
+            "code": "UND_ERR_SOCKET"
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "empty-code-cause",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": "",
+          "cause": {
+            "code": "ECONNRESET"
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-wins-over-cause",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "code": "EACCES",
+          "cause": {
+            "code": "ECONNRESET"
+          }
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "cause-null",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "cause": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "cause-string",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "cause": "ECONNRESET"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-504",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": 504
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-408",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": 408
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-string",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": "504"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-code-504",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "statusCode": 504
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-string-code",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": "x",
+          "statusCode": 408
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-500",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": 500
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-503",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": 503
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-429",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": 429
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-400",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": 400,
+          "message": "InvalidRequest"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-400-timeout",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": 400,
+          "message": "timeout"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-403",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": 403
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-1-bad",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": 1,
+          "message": "Bad record"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-1-fetch",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": 1,
+          "message": "fetch failed"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-99",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": 99,
+          "message": "timeout"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-100",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": 100,
+          "message": "timeout"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-0",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": 0
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-negative",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": -1,
+          "message": "x"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-599",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": 599
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-600",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": 600
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-499",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "status": 499
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "timed-out",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "timedOut": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "timed-out-one",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "timedOut": 1
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "timed-out-zero",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "timedOut": 0,
+          "status": 503
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "timed-out-string",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "timedOut": "yes",
+          "status": 400
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "failed-to-fetch",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "Failed to fetch"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "load-failed",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "Load failed"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "network-error-firefox",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "NetworkError when attempting to fetch resource."
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "network-error",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "network error"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "networkerror",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "networkerror"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "network-two-spaces",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "Network  error"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "timed-out-caps",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "TIMED OUT"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "request-timeout",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "Request Timeout"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "socket-hang-up",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "socket hang up"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "connection-reset",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "Connection reset by peer"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gateway-timeout",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "Gateway Timeout"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "service-unavailable",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "Service Unavailable"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "temporarily-unavailable",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "Backend temporarily unavailable, please retry"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "und-err-message",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "UND_ERR_CONNECT_TIMEOUT error"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "econnreset-message",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "read ECONNRESET"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "enotfound-message",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "getaddrinfo ENOTFOUND x"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "eai-again-message",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "eai_again"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "other-message",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "Something else"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "empty-message",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": ""
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "cause-message",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "",
+          "cause": {
+            "message": "fetch failed"
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "message-wins-over-cause",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "nope",
+          "cause": {
+            "message": "fetch failed"
+          }
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "zero-message-cause",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": 0,
+          "cause": {
+            "message": "timeout"
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "kelvin",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "networK error"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "dotted-i",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": "FETCH FAİLED"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "message-number",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": 42
+        }
+      },
+      "output": {
+        "$throws": "(err.message || (intermediate value) || (intermediate value)(intermediate value)(intermediate value) || \"\").toLowerCase is not a function"
+      }
+    },
+    {
+      "id": "message-object",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": {}
+        }
+      },
+      "output": {
+        "$throws": "(err.message || (intermediate value) || (intermediate value)(intermediate value)(intermediate value) || \"\").toLowerCase is not a function"
+      }
+    },
+    {
+      "id": "message-array",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": [
+            "Timeout"
+          ]
+        }
+      },
+      "output": {
+        "$throws": "(err.message || (intermediate value) || (intermediate value)(intermediate value)(intermediate value) || \"\").toLowerCase is not a function"
+      }
+    },
+    {
+      "id": "cause-message-number",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "cause": {
+            "message": 5
+          }
+        }
+      },
+      "output": {
+        "$throws": "(err.message || (intermediate value) || (intermediate value)(intermediate value)(intermediate value) || \"\").toLowerCase is not a function"
+      }
+    },
+    {
+      "id": "message-true",
+      "fn": "isTransientNetworkError",
+      "input": {
+        "err": {
+          "message": true
+        }
+      },
+      "output": {
+        "$throws": "(err.message || (intermediate value) || (intermediate value)(intermediate value)(intermediate value) || \"\").toLowerCase is not a function"
+      }
+    },
+    {
+      "id": "null",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": null
+      },
+      "output": false
+    },
+    {
+      "id": "empty",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {}
+      },
+      "output": false
+    },
+    {
+      "id": "string-transient",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": "fetch failed"
+      },
+      "output": true
+    },
+    {
+      "id": "string-other",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": "nope"
+      },
+      "output": false
+    },
+    {
+      "id": "number",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": 5
+      },
+      "output": false
+    },
+    {
+      "id": "zero",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": 0
+      },
+      "output": false
+    },
+    {
+      "id": "true",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": true
+      },
+      "output": false
+    },
+    {
+      "id": "empty-array",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": []
+      },
+      "output": false
+    },
+    {
+      "id": "array-message",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": [
+          "fetch failed"
+        ]
+      },
+      "output": false
+    },
+    {
+      "id": "code-econnreset",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": "ECONNRESET"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-lower",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": "econnrefused"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-und",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": "UND_ERR_SOCKET"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-etimedout",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": "ETIMEDOUT"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-enotfound",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": "ENOTFOUND"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-eai-again",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": "EAI_AGAIN"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-epipe",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": "EPIPE"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-not-at-start",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": "XECONNRESET"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "code-other",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": "EACCES"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "code-number",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": 5
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "code-true",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "code-empty",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": ""
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "cause-code",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "cause": {
+            "code": "UND_ERR_SOCKET"
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "empty-code-cause",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": "",
+          "cause": {
+            "code": "ECONNRESET"
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "code-wins-over-cause",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "code": "EACCES",
+          "cause": {
+            "code": "ECONNRESET"
+          }
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "cause-null",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "cause": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "cause-string",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "cause": "ECONNRESET"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-504",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": 504
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-408",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": 408
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-string",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": "504"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-code-504",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "statusCode": 504
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-string-code",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": "x",
+          "statusCode": 408
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-500",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": 500
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-503",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": 503
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-429",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": 429
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-400",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": 400,
+          "message": "InvalidRequest"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-400-timeout",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": 400,
+          "message": "timeout"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-403",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": 403
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-1-bad",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": 1,
+          "message": "Bad record"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-1-fetch",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": 1,
+          "message": "fetch failed"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-99",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": 99,
+          "message": "timeout"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-100",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": 100,
+          "message": "timeout"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-0",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": 0
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-negative",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": -1,
+          "message": "x"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "status-599",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": 599
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-600",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": 600
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "status-499",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "status": 499
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "timed-out",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "timedOut": true
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "timed-out-one",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "timedOut": 1
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "timed-out-zero",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "timedOut": 0,
+          "status": 503
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "timed-out-string",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "timedOut": "yes",
+          "status": 400
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "failed-to-fetch",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "Failed to fetch"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "load-failed",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "Load failed"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "network-error-firefox",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "NetworkError when attempting to fetch resource."
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "network-error",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "network error"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "networkerror",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "networkerror"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "network-two-spaces",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "Network  error"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "timed-out-caps",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "TIMED OUT"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "request-timeout",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "Request Timeout"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "socket-hang-up",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "socket hang up"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "connection-reset",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "Connection reset by peer"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gateway-timeout",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "Gateway Timeout"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "service-unavailable",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "Service Unavailable"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "temporarily-unavailable",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "Backend temporarily unavailable, please retry"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "und-err-message",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "UND_ERR_CONNECT_TIMEOUT error"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "econnreset-message",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "read ECONNRESET"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "enotfound-message",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "getaddrinfo ENOTFOUND x"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "eai-again-message",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "eai_again"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "other-message",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "Something else"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "empty-message",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": ""
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "cause-message",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "",
+          "cause": {
+            "message": "fetch failed"
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "message-wins-over-cause",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "nope",
+          "cause": {
+            "message": "fetch failed"
+          }
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "zero-message-cause",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": 0,
+          "cause": {
+            "message": "timeout"
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "kelvin",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "networK error"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "dotted-i",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": "FETCH FAİLED"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "message-number",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": 42
+        }
+      },
+      "output": {
+        "$throws": "(err.message || (intermediate value) || (intermediate value)(intermediate value)(intermediate value) || \"\").toLowerCase is not a function"
+      }
+    },
+    {
+      "id": "message-object",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": {}
+        }
+      },
+      "output": {
+        "$throws": "(err.message || (intermediate value) || (intermediate value)(intermediate value)(intermediate value) || \"\").toLowerCase is not a function"
+      }
+    },
+    {
+      "id": "message-array",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": [
+            "Timeout"
+          ]
+        }
+      },
+      "output": {
+        "$throws": "(err.message || (intermediate value) || (intermediate value)(intermediate value)(intermediate value) || \"\").toLowerCase is not a function"
+      }
+    },
+    {
+      "id": "cause-message-number",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "cause": {
+            "message": 5
+          }
+        }
+      },
+      "output": {
+        "$throws": "(err.message || (intermediate value) || (intermediate value)(intermediate value)(intermediate value) || \"\").toLowerCase is not a function"
+      }
+    },
+    {
+      "id": "message-true",
+      "fn": "isRetriablePublishError",
+      "input": {
+        "err": {
+          "message": true
+        }
+      },
+      "output": {
+        "$throws": "(err.message || (intermediate value) || (intermediate value)(intermediate value)(intermediate value) || \"\").toLowerCase is not a function"
+      }
+    },
+    {
+      "id": "array-empty",
+      "fn": "needsThreadgateRecord",
+      "input": {
+        "rules": []
+      },
+      "output": true
+    },
+    {
+      "id": "array-one",
+      "fn": "needsThreadgateRecord",
+      "input": {
+        "rules": [
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          }
+        ]
+      },
+      "output": true
+    },
+    {
+      "id": "array-null-rule",
+      "fn": "needsThreadgateRecord",
+      "input": {
+        "rules": [
+          null
+        ]
+      },
+      "output": true
+    },
+    {
+      "id": "null",
+      "fn": "needsThreadgateRecord",
+      "input": {
+        "rules": null
+      },
+      "output": false
+    },
+    {
+      "id": "missing",
+      "fn": "needsThreadgateRecord",
+      "input": {},
+      "output": false
+    },
+    {
+      "id": "object",
+      "fn": "needsThreadgateRecord",
+      "input": {
+        "rules": {}
+      },
+      "output": false
+    },
+    {
+      "id": "string",
+      "fn": "needsThreadgateRecord",
+      "input": {
+        "rules": "abc"
+      },
+      "output": false
+    },
+    {
+      "id": "zero",
+      "fn": "needsThreadgateRecord",
+      "input": {
+        "rules": 0
+      },
+      "output": false
+    },
+    {
+      "id": "array-empty",
+      "fn": "needsPostgateRecord",
+      "input": {
+        "rules": []
+      },
+      "output": false
+    },
+    {
+      "id": "array-one",
+      "fn": "needsPostgateRecord",
+      "input": {
+        "rules": [
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          }
+        ]
+      },
+      "output": true
+    },
+    {
+      "id": "array-null-rule",
+      "fn": "needsPostgateRecord",
+      "input": {
+        "rules": [
+          null
+        ]
+      },
+      "output": true
+    },
+    {
+      "id": "null",
+      "fn": "needsPostgateRecord",
+      "input": {
+        "rules": null
+      },
+      "output": false
+    },
+    {
+      "id": "missing",
+      "fn": "needsPostgateRecord",
+      "input": {},
+      "output": false
+    },
+    {
+      "id": "object",
+      "fn": "needsPostgateRecord",
+      "input": {
+        "rules": {}
+      },
+      "output": false
+    },
+    {
+      "id": "string",
+      "fn": "needsPostgateRecord",
+      "input": {
+        "rules": "abc"
+      },
+      "output": false
+    },
+    {
+      "id": "zero",
+      "fn": "needsPostgateRecord",
+      "input": {
+        "rules": 0
+      },
+      "output": false
+    },
+    {
+      "id": "array-disable",
+      "fn": "needsPostgateRecord",
+      "input": {
+        "rules": [
+          {
+            "$type": "app.bsky.feed.postgate#disableRule"
+          }
+        ]
+      },
+      "output": true
+    },
+    {
+      "id": "tg-missing-pg-missing",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": []
+    },
+    {
+      "id": "tg-missing-pg-null",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "postgateRules": null,
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": []
+    },
+    {
+      "id": "tg-missing-pg-empty",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "postgateRules": [],
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": []
+    },
+    {
+      "id": "tg-missing-pg-disable",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "postgateRules": [
+          {
+            "$type": "app.bsky.feed.postgate#disableRule"
+          }
+        ],
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.postgate",
+          "rkey": "rk1",
+          "value": {
+            "$type": "app.bsky.feed.postgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk1",
+            "createdAt": "2026-11-12T15:00:00.000Z",
+            "detachedEmbeddingUris": [],
+            "embeddingRules": [
+              {
+                "$type": "app.bsky.feed.postgate#disableRule"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tg-missing-pg-object",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "postgateRules": {},
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": []
+    },
+    {
+      "id": "tg-null-pg-missing",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": null,
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": []
+    },
+    {
+      "id": "tg-null-pg-null",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": null,
+        "postgateRules": null,
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": []
+    },
+    {
+      "id": "tg-null-pg-empty",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": null,
+        "postgateRules": [],
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": []
+    },
+    {
+      "id": "tg-null-pg-disable",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": null,
+        "postgateRules": [
+          {
+            "$type": "app.bsky.feed.postgate#disableRule"
+          }
+        ],
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.postgate",
+          "rkey": "rk1",
+          "value": {
+            "$type": "app.bsky.feed.postgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk1",
+            "createdAt": "2026-11-12T15:00:00.000Z",
+            "detachedEmbeddingUris": [],
+            "embeddingRules": [
+              {
+                "$type": "app.bsky.feed.postgate#disableRule"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tg-null-pg-object",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": null,
+        "postgateRules": {},
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": []
+    },
+    {
+      "id": "tg-nobody-pg-missing",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": [],
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.threadgate",
+          "rkey": "rk1",
+          "value": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk1",
+            "createdAt": "2026-11-12T15:00:00.000Z",
+            "allow": [],
+            "hiddenReplies": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "tg-nobody-pg-null",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": [],
+        "postgateRules": null,
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.threadgate",
+          "rkey": "rk1",
+          "value": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk1",
+            "createdAt": "2026-11-12T15:00:00.000Z",
+            "allow": [],
+            "hiddenReplies": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "tg-nobody-pg-empty",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": [],
+        "postgateRules": [],
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.threadgate",
+          "rkey": "rk1",
+          "value": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk1",
+            "createdAt": "2026-11-12T15:00:00.000Z",
+            "allow": [],
+            "hiddenReplies": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "tg-nobody-pg-disable",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": [],
+        "postgateRules": [
+          {
+            "$type": "app.bsky.feed.postgate#disableRule"
+          }
+        ],
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.threadgate",
+          "rkey": "rk1",
+          "value": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk1",
+            "createdAt": "2026-11-12T15:00:00.000Z",
+            "allow": [],
+            "hiddenReplies": []
+          }
+        },
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.postgate",
+          "rkey": "rk1",
+          "value": {
+            "$type": "app.bsky.feed.postgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk1",
+            "createdAt": "2026-11-12T15:00:00.000Z",
+            "detachedEmbeddingUris": [],
+            "embeddingRules": [
+              {
+                "$type": "app.bsky.feed.postgate#disableRule"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tg-nobody-pg-object",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": [],
+        "postgateRules": {},
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.threadgate",
+          "rkey": "rk1",
+          "value": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk1",
+            "createdAt": "2026-11-12T15:00:00.000Z",
+            "allow": [],
+            "hiddenReplies": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "tg-rules-pg-missing",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": [
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#followingRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://did:plc:writer/app.bsky.graph.list/3l"
+          }
+        ],
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.threadgate",
+          "rkey": "rk1",
+          "value": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk1",
+            "createdAt": "2026-11-12T15:00:00.000Z",
+            "allow": [
+              {
+                "$type": "app.bsky.feed.threadgate#mentionRule"
+              },
+              {
+                "$type": "app.bsky.feed.threadgate#followingRule"
+              },
+              {
+                "$type": "app.bsky.feed.threadgate#listRule",
+                "list": "at://did:plc:writer/app.bsky.graph.list/3l"
+              }
+            ],
+            "hiddenReplies": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "tg-rules-pg-null",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": [
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#followingRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://did:plc:writer/app.bsky.graph.list/3l"
+          }
+        ],
+        "postgateRules": null,
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.threadgate",
+          "rkey": "rk1",
+          "value": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk1",
+            "createdAt": "2026-11-12T15:00:00.000Z",
+            "allow": [
+              {
+                "$type": "app.bsky.feed.threadgate#mentionRule"
+              },
+              {
+                "$type": "app.bsky.feed.threadgate#followingRule"
+              },
+              {
+                "$type": "app.bsky.feed.threadgate#listRule",
+                "list": "at://did:plc:writer/app.bsky.graph.list/3l"
+              }
+            ],
+            "hiddenReplies": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "tg-rules-pg-empty",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": [
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#followingRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://did:plc:writer/app.bsky.graph.list/3l"
+          }
+        ],
+        "postgateRules": [],
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.threadgate",
+          "rkey": "rk1",
+          "value": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk1",
+            "createdAt": "2026-11-12T15:00:00.000Z",
+            "allow": [
+              {
+                "$type": "app.bsky.feed.threadgate#mentionRule"
+              },
+              {
+                "$type": "app.bsky.feed.threadgate#followingRule"
+              },
+              {
+                "$type": "app.bsky.feed.threadgate#listRule",
+                "list": "at://did:plc:writer/app.bsky.graph.list/3l"
+              }
+            ],
+            "hiddenReplies": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "tg-rules-pg-disable",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": [
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#followingRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://did:plc:writer/app.bsky.graph.list/3l"
+          }
+        ],
+        "postgateRules": [
+          {
+            "$type": "app.bsky.feed.postgate#disableRule"
+          }
+        ],
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.threadgate",
+          "rkey": "rk1",
+          "value": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk1",
+            "createdAt": "2026-11-12T15:00:00.000Z",
+            "allow": [
+              {
+                "$type": "app.bsky.feed.threadgate#mentionRule"
+              },
+              {
+                "$type": "app.bsky.feed.threadgate#followingRule"
+              },
+              {
+                "$type": "app.bsky.feed.threadgate#listRule",
+                "list": "at://did:plc:writer/app.bsky.graph.list/3l"
+              }
+            ],
+            "hiddenReplies": []
+          }
+        },
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.postgate",
+          "rkey": "rk1",
+          "value": {
+            "$type": "app.bsky.feed.postgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk1",
+            "createdAt": "2026-11-12T15:00:00.000Z",
+            "detachedEmbeddingUris": [],
+            "embeddingRules": [
+              {
+                "$type": "app.bsky.feed.postgate#disableRule"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tg-rules-pg-object",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": [
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#followingRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://did:plc:writer/app.bsky.graph.list/3l"
+          }
+        ],
+        "postgateRules": {},
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.threadgate",
+          "rkey": "rk1",
+          "value": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk1",
+            "createdAt": "2026-11-12T15:00:00.000Z",
+            "allow": [
+              {
+                "$type": "app.bsky.feed.threadgate#mentionRule"
+              },
+              {
+                "$type": "app.bsky.feed.threadgate#followingRule"
+              },
+              {
+                "$type": "app.bsky.feed.threadgate#listRule",
+                "list": "at://did:plc:writer/app.bsky.graph.list/3l"
+              }
+            ],
+            "hiddenReplies": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "tg-string-pg-missing",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": "x",
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": []
+    },
+    {
+      "id": "tg-string-pg-null",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": "x",
+        "postgateRules": null,
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": []
+    },
+    {
+      "id": "tg-string-pg-empty",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": "x",
+        "postgateRules": [],
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": []
+    },
+    {
+      "id": "tg-string-pg-disable",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": "x",
+        "postgateRules": [
+          {
+            "$type": "app.bsky.feed.postgate#disableRule"
+          }
+        ],
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.postgate",
+          "rkey": "rk1",
+          "value": {
+            "$type": "app.bsky.feed.postgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk1",
+            "createdAt": "2026-11-12T15:00:00.000Z",
+            "detachedEmbeddingUris": [],
+            "embeddingRules": [
+              {
+                "$type": "app.bsky.feed.postgate#disableRule"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tg-string-pg-object",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk1",
+        "threadgateRules": "x",
+        "postgateRules": {},
+        "createdAt": "2026-11-12T15:00:00.000Z"
+      },
+      "output": []
+    },
+    {
+      "id": "default-createdAt",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk2",
+        "threadgateRules": [],
+        "postgateRules": [
+          {
+            "$type": "app.bsky.feed.postgate#disableRule"
+          }
+        ]
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.threadgate",
+          "rkey": "rk2",
+          "value": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk2",
+            "createdAt": "2026-11-12T15:00:00.000Z",
+            "allow": [],
+            "hiddenReplies": []
+          }
+        },
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.postgate",
+          "rkey": "rk2",
+          "value": {
+            "$type": "app.bsky.feed.postgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk2",
+            "createdAt": "2026-11-12T15:00:00.000Z",
+            "detachedEmbeddingUris": [],
+            "embeddingRules": [
+              {
+                "$type": "app.bsky.feed.postgate#disableRule"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "null-createdAt",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:plc:writer",
+        "rkey": "rk3",
+        "threadgateRules": [],
+        "createdAt": null
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.threadgate",
+          "rkey": "rk3",
+          "value": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:writer/app.bsky.feed.post/rk3",
+            "createdAt": null,
+            "allow": [],
+            "hiddenReplies": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "unicode-did",
+      "fn": "buildGateWrites",
+      "input": {
+        "did": "did:web:café.example",
+        "rkey": "3k😀",
+        "threadgateRules": [
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          }
+        ],
+        "createdAt": "2026-01-01T00:00:00.000Z"
+      },
+      "output": [
+        {
+          "$type": "com.atproto.repo.applyWrites#create",
+          "collection": "app.bsky.feed.threadgate",
+          "rkey": "3k😀",
+          "value": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:web:café.example/app.bsky.feed.post/3k😀",
+            "createdAt": "2026-01-01T00:00:00.000Z",
+            "allow": [
+              {
+                "$type": "app.bsky.feed.threadgate#mentionRule"
+              }
+            ],
+            "hiddenReplies": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "happy",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "ok"
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"validationStatus\":\"valid\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "commit": {
+            "cid": "bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta",
+            "rev": "3lcommitrev22"
+          },
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "transient-then-ok",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "fail:503",
+            "ok"
+          ],
+          "checks": [
+            "missing"
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 503\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"validationStatus\":\"valid\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000,
+          30000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "commit": {
+            "cid": "bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta",
+            "rev": "3lcommitrev22"
+          },
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "genuine-4xx",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "fail:400:InvalidRequest:InvalidRequest"
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"InvalidRequest\",\"code\":\"InvalidRequest\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000
+        ],
+        "$throws": "InvalidRequest",
+        "fired": []
+      }
+    },
+    {
+      "id": "exhausted",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "fail:502:still down",
+            "fail:502:still down"
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 502,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"still down\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 502,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"still down\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000,
+          30000,
+          15000
+        ],
+        "$throws": "still down",
+        "fired": []
+      }
+    },
+    {
+      "id": "duplicate-rkey-landed",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "fail:400:Record already exists"
+          ]
+        },
+        "records": true
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Record already exists\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"value\":{\"$type\":\"app.bsky.feed.post\",\"text\":\"hi\",\"createdAt\":\"2026-07-24T00:00:00.000Z\"}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "value": {
+            "$type": "app.bsky.feed.post",
+            "text": "hi",
+            "createdAt": "2026-07-24T00:00:00.000Z"
+          }
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "landed-then-504",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "land-fail:504"
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 504,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 504\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"value\":{\"$type\":\"app.bsky.feed.post\",\"text\":\"hi\",\"createdAt\":\"2026-07-24T00:00:00.000Z\"}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "value": {
+            "$type": "app.bsky.feed.post",
+            "text": "hi",
+            "createdAt": "2026-07-24T00:00:00.000Z"
+          }
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "timed-out-but-landed",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "hang"
+          ]
+        },
+        "records": true,
+        "fire": [
+          [
+            30000,
+            0
+          ]
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "$hang": true
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"value\":{\"$type\":\"app.bsky.feed.post\",\"text\":\"hi\",\"createdAt\":\"2026-07-24T00:00:00.000Z\"}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "value": {
+            "$type": "app.bsky.feed.post",
+            "text": "hi",
+            "createdAt": "2026-07-24T00:00:00.000Z"
+          }
+        },
+        "fired": [
+          [
+            30000,
+            0,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "id": "timed-out-then-retried",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "hang",
+            "ok"
+          ]
+        },
+        "fire": [
+          [
+            30000,
+            0
+          ]
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "$hang": true
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"validationStatus\":\"valid\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000,
+          30000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "commit": {
+            "cid": "bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta",
+            "rev": "3lcommitrev22"
+          },
+          "validationStatus": "valid"
+        },
+        "fired": [
+          [
+            30000,
+            0,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "id": "offline-then-ok",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "offline",
+            "ok"
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"validationStatus\":\"valid\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000,
+          30000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "commit": {
+            "cid": "bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta",
+            "rev": "3lcommitrev22"
+          },
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "offline-twice",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "offline",
+            "offline"
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000,
+          30000,
+          15000
+        ],
+        "$throws": "fetch failed",
+        "fired": []
+      }
+    },
+    {
+      "id": "check-hangs",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "fail:503",
+            "ok"
+          ],
+          "checks": [
+            "hang"
+          ]
+        },
+        "fire": [
+          [
+            15000,
+            0
+          ]
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 503\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "$hang": true
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"validationStatus\":\"valid\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000,
+          30000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "commit": {
+            "cid": "bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta",
+            "rev": "3lcommitrev22"
+          },
+          "validationStatus": "valid"
+        },
+        "fired": [
+          [
+            15000,
+            0,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "id": "check-offline",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "fail:503",
+            "ok"
+          ],
+          "checks": [
+            "offline"
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 503\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"validationStatus\":\"valid\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000,
+          30000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "commit": {
+            "cid": "bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta",
+            "rev": "3lcommitrev22"
+          },
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "check-fails",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "fail:500",
+            "ok"
+          ],
+          "checks": [
+            "fail:500"
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 500\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 500\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"validationStatus\":\"valid\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000,
+          30000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "commit": {
+            "cid": "bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta",
+            "rev": "3lcommitrev22"
+          },
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "one-attempt",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "fail:503"
+          ]
+        },
+        "opts": {
+          "attempts": 1
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 503\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000
+        ],
+        "$throws": "failed with 503",
+        "fired": []
+      }
+    },
+    {
+      "id": "three-attempts",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "fail:503",
+            "fail:500",
+            "ok"
+          ]
+        },
+        "opts": {
+          "attempts": 3
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 503\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 500\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"validationStatus\":\"valid\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000,
+          30000,
+          15000,
+          30000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "commit": {
+            "cid": "bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta",
+            "rev": "3lcommitrev22"
+          },
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "three-attempts-exhausted",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "fail:503",
+            "fail:500",
+            "fail:429"
+          ]
+        },
+        "opts": {
+          "attempts": 3
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 503\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 500\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 429\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000,
+          30000,
+          15000,
+          30000,
+          15000
+        ],
+        "$throws": "failed with 429",
+        "fired": []
+      }
+    },
+    {
+      "id": "no-attempts",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {},
+        "opts": {
+          "attempts": 0
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "$throws": "undefined",
+        "fired": []
+      }
+    },
+    {
+      "id": "own-timeout",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "hang",
+            "ok"
+          ]
+        },
+        "opts": {
+          "timeoutMs": 5
+        },
+        "fire": [
+          [
+            5,
+            0
+          ]
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "$hang": true
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"validationStatus\":\"valid\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          5,
+          15000,
+          5
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "commit": {
+            "cid": "bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta",
+            "rev": "3lcommitrev22"
+          },
+          "validationStatus": "valid"
+        },
+        "fired": [
+          [
+            5,
+            0,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "id": "minted-rkey",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "ok"
+          ]
+        },
+        "mint": true
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNuMjRxY2duejIyMmIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3n24qcgnz222b\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"validationStatus\":\"valid\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3n24qcgnz222b",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "commit": {
+            "cid": "bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta",
+            "rev": "3lcommitrev22"
+          },
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "missing-scope",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "fail:403:Missing required scope \"repo:app.bsky.feed.post\":ScopeMissingError"
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 403,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Missing required scope \\\"repo\",\"code\":\"app.bsky.feed.post\\\"\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000
+        ],
+        "$throws": "Missing required scope \"repo",
+        "fired": []
+      }
+    },
+    {
+      "id": "rate-limited",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "fail:429",
+            "ok"
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 429\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"validationStatus\":\"valid\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000,
+          30000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "commit": {
+            "cid": "bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta",
+            "rev": "3lcommitrev22"
+          },
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "signed-out",
+      "fn": "createRecordIdempotent",
+      "input": {
+        "script": {
+          "writes": [
+            "fail:401:Sign in again:AuthenticationRequired"
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 401,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Sign in again\",\"code\":\"AuthenticationRequired\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000
+        ],
+        "$throws": "Sign in again",
+        "fired": []
+      }
+    },
+    {
+      "id": "apply-writes-retried",
+      "fn": "publishWithIdempotentRetry",
+      "input": {
+        "script": {
+          "writes": [
+            "fail:500",
+            "ok"
+          ]
+        },
+        "rkey": "fixedrkey"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.applyWrites"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJ2YWxpZGF0ZSI6dHJ1ZSwid3JpdGVzIjpbeyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInJrZXkiOiJmaXhlZHJrZXkiLCJ2YWx1ZSI6eyIkdHlwZSI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInRleHQiOiJoaSIsImNyZWF0ZWRBdCI6IjIwMjYtMDctMjRUMDA6MDA6MDAuMDAwWiJ9fV19"
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 500\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=fixedrkey",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.applyWrites"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJ2YWxpZGF0ZSI6dHJ1ZSwid3JpdGVzIjpbeyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInJrZXkiOiJmaXhlZHJrZXkiLCJ2YWx1ZSI6eyIkdHlwZSI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInRleHQiOiJoaSIsImNyZWF0ZWRBdCI6IjIwMjYtMDctMjRUMDA6MDA6MDAuMDAwWiJ9fV19"
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"results\":[{\"$type\":\"com.atproto.repo.applyWrites#createResult\",\"uri\":\"at://did:plc:writer/app.bsky.feed.post/fixedrkey\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"validationStatus\":\"valid\"}]}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000,
+          30000
+        ],
+        "result": {
+          "commit": {
+            "cid": "bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta",
+            "rev": "3lcommitrev22"
+          },
+          "results": [
+            {
+              "$type": "com.atproto.repo.applyWrites#createResult",
+              "uri": "at://did:plc:writer/app.bsky.feed.post/fixedrkey",
+              "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+              "validationStatus": "valid"
+            }
+          ]
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "apply-writes-landed",
+      "fn": "publishWithIdempotentRetry",
+      "input": {
+        "script": {
+          "writes": [
+            "land-fail:502"
+          ]
+        },
+        "rkey": "fixedrkey"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.applyWrites"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJ2YWxpZGF0ZSI6dHJ1ZSwid3JpdGVzIjpbeyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInJrZXkiOiJmaXhlZHJrZXkiLCJ2YWx1ZSI6eyIkdHlwZSI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInRleHQiOiJoaSIsImNyZWF0ZWRBdCI6IjIwMjYtMDctMjRUMDA6MDA6MDAuMDAwWiJ9fV19"
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 502,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 502\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=fixedrkey",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/fixedrkey\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"value\":{\"$type\":\"app.bsky.feed.post\",\"text\":\"hi\",\"createdAt\":\"2026-07-24T00:00:00.000Z\"}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/fixedrkey",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "value": {
+            "$type": "app.bsky.feed.post",
+            "text": "hi",
+            "createdAt": "2026-07-24T00:00:00.000Z"
+          }
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "no-gates",
+      "fn": "createPostWithGates",
+      "input": {
+        "threadgateRules": null,
+        "postgateRules": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"validationStatus\":\"valid\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "commit": {
+            "cid": "bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta",
+            "rev": "3lcommitrev22"
+          },
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "nobody-can-reply",
+      "fn": "createPostWithGates",
+      "input": {
+        "threadgateRules": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.applyWrites"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJ2YWxpZGF0ZSI6dHJ1ZSwid3JpdGVzIjpbeyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInJrZXkiOiIzbTVhYmNkZWZnaDIyIiwidmFsdWUiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0seyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQudGhyZWFkZ2F0ZSIsInJrZXkiOiIzbTVhYmNkZWZnaDIyIiwidmFsdWUiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnRocmVhZGdhdGUiLCJwb3N0IjoiYXQ6Ly9kaWQ6cGxjOndyaXRlci9hcHAuYnNreS5mZWVkLnBvc3QvM201YWJjZGVmZ2gyMiIsImNyZWF0ZWRBdCI6IjIwMjYtMTEtMTJUMTU6MDA6MDAuMDAwWiIsImFsbG93IjpbXSwiaGlkZGVuUmVwbGllcyI6W119fV19"
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"results\":[{\"$type\":\"com.atproto.repo.applyWrites#createResult\",\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"validationStatus\":\"valid\"},{\"$type\":\"com.atproto.repo.applyWrites#createResult\",\"uri\":\"at://did:plc:writer/app.bsky.feed.threadgate/3m5abcdefgh22\",\"cid\":\"bafyreih6jo7hbnmgltqr7snxkgnfmhxs5bt62oo4svsgtaaxvrxzwhvu2a\",\"validationStatus\":\"valid\"}]}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$type": "com.atproto.repo.applyWrites#createResult",
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "both-gates",
+      "fn": "createPostWithGates",
+      "input": {
+        "threadgateRules": [
+          {
+            "$type": "app.bsky.feed.threadgate#followingRule"
+          }
+        ],
+        "postgateRules": [
+          {
+            "$type": "app.bsky.feed.postgate#disableRule"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.applyWrites"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJ2YWxpZGF0ZSI6dHJ1ZSwid3JpdGVzIjpbeyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInJrZXkiOiIzbTVhYmNkZWZnaDIyIiwidmFsdWUiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0seyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQudGhyZWFkZ2F0ZSIsInJrZXkiOiIzbTVhYmNkZWZnaDIyIiwidmFsdWUiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnRocmVhZGdhdGUiLCJwb3N0IjoiYXQ6Ly9kaWQ6cGxjOndyaXRlci9hcHAuYnNreS5mZWVkLnBvc3QvM201YWJjZGVmZ2gyMiIsImNyZWF0ZWRBdCI6IjIwMjYtMTEtMTJUMTU6MDA6MDAuMDAwWiIsImFsbG93IjpbeyIkdHlwZSI6ImFwcC5ic2t5LmZlZWQudGhyZWFkZ2F0ZSNmb2xsb3dpbmdSdWxlIn1dLCJoaWRkZW5SZXBsaWVzIjpbXX19LHsiJHR5cGUiOiJjb20uYXRwcm90by5yZXBvLmFwcGx5V3JpdGVzI2NyZWF0ZSIsImNvbGxlY3Rpb24iOiJhcHAuYnNreS5mZWVkLnBvc3RnYXRlIiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJ2YWx1ZSI6eyIkdHlwZSI6ImFwcC5ic2t5LmZlZWQucG9zdGdhdGUiLCJwb3N0IjoiYXQ6Ly9kaWQ6cGxjOndyaXRlci9hcHAuYnNreS5mZWVkLnBvc3QvM201YWJjZGVmZ2gyMiIsImNyZWF0ZWRBdCI6IjIwMjYtMTEtMTJUMTU6MDA6MDAuMDAwWiIsImRldGFjaGVkRW1iZWRkaW5nVXJpcyI6W10sImVtYmVkZGluZ1J1bGVzIjpbeyIkdHlwZSI6ImFwcC5ic2t5LmZlZWQucG9zdGdhdGUjZGlzYWJsZVJ1bGUifV19fV19"
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"results\":[{\"$type\":\"com.atproto.repo.applyWrites#createResult\",\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"validationStatus\":\"valid\"},{\"$type\":\"com.atproto.repo.applyWrites#createResult\",\"uri\":\"at://did:plc:writer/app.bsky.feed.threadgate/3m5abcdefgh22\",\"cid\":\"bafyreifh2leylsshqbp5zh4qozchxatk6ayectgh5cx4pcl32ybfrvfx5m\",\"validationStatus\":\"valid\"},{\"$type\":\"com.atproto.repo.applyWrites#createResult\",\"uri\":\"at://did:plc:writer/app.bsky.feed.postgate/3m5abcdefgh22\",\"cid\":\"bafyreiedseq2qjhrhgu5q3ohypdfrrufhhlfeplhj7voncfuwayh3y6omi\",\"validationStatus\":\"valid\"}]}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$type": "com.atproto.repo.applyWrites#createResult",
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "postgate-only",
+      "fn": "createPostWithGates",
+      "input": {
+        "postgateRules": [
+          {
+            "$type": "app.bsky.feed.postgate#disableRule"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.applyWrites"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJ2YWxpZGF0ZSI6dHJ1ZSwid3JpdGVzIjpbeyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInJrZXkiOiIzbTVhYmNkZWZnaDIyIiwidmFsdWUiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0seyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdGdhdGUiLCJya2V5IjoiM201YWJjZGVmZ2gyMiIsInZhbHVlIjp7IiR0eXBlIjoiYXBwLmJza3kuZmVlZC5wb3N0Z2F0ZSIsInBvc3QiOiJhdDovL2RpZDpwbGM6d3JpdGVyL2FwcC5ic2t5LmZlZWQucG9zdC8zbTVhYmNkZWZnaDIyIiwiY3JlYXRlZEF0IjoiMjAyNi0xMS0xMlQxNTowMDowMC4wMDBaIiwiZGV0YWNoZWRFbWJlZGRpbmdVcmlzIjpbXSwiZW1iZWRkaW5nUnVsZXMiOlt7IiR0eXBlIjoiYXBwLmJza3kuZmVlZC5wb3N0Z2F0ZSNkaXNhYmxlUnVsZSJ9XX19XX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"results\":[{\"$type\":\"com.atproto.repo.applyWrites#createResult\",\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"validationStatus\":\"valid\"},{\"$type\":\"com.atproto.repo.applyWrites#createResult\",\"uri\":\"at://did:plc:writer/app.bsky.feed.postgate/3m5abcdefgh22\",\"cid\":\"bafyreiedseq2qjhrhgu5q3ohypdfrrufhhlfeplhj7voncfuwayh3y6omi\",\"validationStatus\":\"valid\"}]}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$type": "com.atproto.repo.applyWrites#createResult",
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "empty-postgate-only",
+      "fn": "createPostWithGates",
+      "input": {
+        "postgateRules": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"validationStatus\":\"valid\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "commit": {
+            "cid": "bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta",
+            "rev": "3lcommitrev22"
+          },
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "reply-never-gated",
+      "fn": "createPostWithGates",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "hi",
+          "createdAt": "2026-07-24T00:00:00.000Z",
+          "reply": {
+            "root": {
+              "uri": "at://did:plc:writer/app.bsky.feed.post/3root",
+              "cid": "bafyroot"
+            },
+            "parent": {
+              "uri": "at://did:plc:writer/app.bsky.feed.post/3root",
+              "cid": "bafyroot"
+            }
+          }
+        },
+        "threadgateRules": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmtleSI6IjNtNWFiY2RlZmdoMjIiLCJyZWNvcmQiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoiLCJyZXBseSI6eyJyb290Ijp7InVyaSI6ImF0Oi8vZGlkOnBsYzp3cml0ZXIvYXBwLmJza3kuZmVlZC5wb3N0LzNyb290IiwiY2lkIjoiYmFmeXJvb3QifSwicGFyZW50Ijp7InVyaSI6ImF0Oi8vZGlkOnBsYzp3cml0ZXIvYXBwLmJza3kuZmVlZC5wb3N0LzNyb290IiwiY2lkIjoiYmFmeXJvb3QifX19fQ=="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreieyrmcs57zmcwixm25dkwlnwp63br2lda5szx4wpiietsngvcf23e\",\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"validationStatus\":\"valid\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreieyrmcs57zmcwixm25dkwlnwp63br2lda5szx4wpiietsngvcf23e",
+          "commit": {
+            "cid": "bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta",
+            "rev": "3lcommitrev22"
+          },
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "null-reply-gated",
+      "fn": "createPostWithGates",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "hi",
+          "createdAt": "2026-07-24T00:00:00.000Z",
+          "reply": null
+        },
+        "threadgateRules": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.applyWrites"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJ2YWxpZGF0ZSI6dHJ1ZSwid3JpdGVzIjpbeyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInJrZXkiOiIzbTVhYmNkZWZnaDIyIiwidmFsdWUiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoiLCJyZXBseSI6bnVsbH19LHsiJHR5cGUiOiJjb20uYXRwcm90by5yZXBvLmFwcGx5V3JpdGVzI2NyZWF0ZSIsImNvbGxlY3Rpb24iOiJhcHAuYnNreS5mZWVkLnRocmVhZGdhdGUiLCJya2V5IjoiM201YWJjZGVmZ2gyMiIsInZhbHVlIjp7IiR0eXBlIjoiYXBwLmJza3kuZmVlZC50aHJlYWRnYXRlIiwicG9zdCI6ImF0Oi8vZGlkOnBsYzp3cml0ZXIvYXBwLmJza3kuZmVlZC5wb3N0LzNtNWFiY2RlZmdoMjIiLCJjcmVhdGVkQXQiOiIyMDI2LTExLTEyVDE1OjAwOjAwLjAwMFoiLCJhbGxvdyI6W10sImhpZGRlblJlcGxpZXMiOltdfX1dfQ=="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"results\":[{\"$type\":\"com.atproto.repo.applyWrites#createResult\",\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreigbcy2vzaskegvpfjhjdviu7tdgdk5mpaxbthjsyc4tbj3vp45x4q\",\"validationStatus\":\"valid\"},{\"$type\":\"com.atproto.repo.applyWrites#createResult\",\"uri\":\"at://did:plc:writer/app.bsky.feed.threadgate/3m5abcdefgh22\",\"cid\":\"bafyreih6jo7hbnmgltqr7snxkgnfmhxs5bt62oo4svsgtaaxvrxzwhvu2a\",\"validationStatus\":\"valid\"}]}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$type": "com.atproto.repo.applyWrites#createResult",
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreigbcy2vzaskegvpfjhjdviu7tdgdk5mpaxbthjsyc4tbj3vp45x4q",
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "other-collection",
+      "fn": "createPostWithGates",
+      "input": {
+        "collection": "com.example.note",
+        "record": {
+          "$type": "com.example.note",
+          "text": "hi",
+          "createdAt": "2026-07-24T00:00:00.000Z"
+        },
+        "threadgateRules": [
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJjb2xsZWN0aW9uIjoiY29tLmV4YW1wbGUubm90ZSIsInJrZXkiOiIzbTVhYmNkZWZnaDIyIiwicmVjb3JkIjp7IiR0eXBlIjoiY29tLmV4YW1wbGUubm90ZSIsInRleHQiOiJoaSIsImNyZWF0ZWRBdCI6IjIwMjYtMDctMjRUMDA6MDA6MDAuMDAwWiJ9fQ=="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/com.example.note/3m5abcdefgh22\",\"cid\":\"bafyreid6xcasllus26irgw5o6urrodoz5f2ivomvfwcwaemvycuo2hgy6a\",\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"validationStatus\":\"valid\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/com.example.note/3m5abcdefgh22",
+          "cid": "bafyreid6xcasllus26irgw5o6urrodoz5f2ivomvfwcwaemvycuo2hgy6a",
+          "commit": {
+            "cid": "bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta",
+            "rev": "3lcommitrev22"
+          },
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "gate-batch-retried",
+      "fn": "createPostWithGates",
+      "input": {
+        "threadgateRules": [],
+        "script": {
+          "writes": [
+            "fail:500",
+            "ok"
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.applyWrites"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJ2YWxpZGF0ZSI6dHJ1ZSwid3JpdGVzIjpbeyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInJrZXkiOiIzbTVhYmNkZWZnaDIyIiwidmFsdWUiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0seyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQudGhyZWFkZ2F0ZSIsInJrZXkiOiIzbTVhYmNkZWZnaDIyIiwidmFsdWUiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnRocmVhZGdhdGUiLCJwb3N0IjoiYXQ6Ly9kaWQ6cGxjOndyaXRlci9hcHAuYnNreS5mZWVkLnBvc3QvM201YWJjZGVmZ2gyMiIsImNyZWF0ZWRBdCI6IjIwMjYtMTEtMTJUMTU6MDA6MDAuMDAwWiIsImFsbG93IjpbXSwiaGlkZGVuUmVwbGllcyI6W119fV19"
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 500\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.applyWrites"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJ2YWxpZGF0ZSI6dHJ1ZSwid3JpdGVzIjpbeyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInJrZXkiOiIzbTVhYmNkZWZnaDIyIiwidmFsdWUiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0seyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQudGhyZWFkZ2F0ZSIsInJrZXkiOiIzbTVhYmNkZWZnaDIyIiwidmFsdWUiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnRocmVhZGdhdGUiLCJwb3N0IjoiYXQ6Ly9kaWQ6cGxjOndyaXRlci9hcHAuYnNreS5mZWVkLnBvc3QvM201YWJjZGVmZ2gyMiIsImNyZWF0ZWRBdCI6IjIwMjYtMTEtMTJUMTU6MDA6MDAuMDAwWiIsImFsbG93IjpbXSwiaGlkZGVuUmVwbGllcyI6W119fV19"
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"results\":[{\"$type\":\"com.atproto.repo.applyWrites#createResult\",\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"validationStatus\":\"valid\"},{\"$type\":\"com.atproto.repo.applyWrites#createResult\",\"uri\":\"at://did:plc:writer/app.bsky.feed.threadgate/3m5abcdefgh22\",\"cid\":\"bafyreih6jo7hbnmgltqr7snxkgnfmhxs5bt62oo4svsgtaaxvrxzwhvu2a\",\"validationStatus\":\"valid\"}]}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000,
+          30000
+        ],
+        "result": {
+          "$type": "com.atproto.repo.applyWrites#createResult",
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "no-results-recovered",
+      "fn": "createPostWithGates",
+      "input": {
+        "threadgateRules": [],
+        "script": {
+          "noResults": true
+        },
+        "recover": true
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.applyWrites"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJ2YWxpZGF0ZSI6dHJ1ZSwid3JpdGVzIjpbeyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInJrZXkiOiIzbTVhYmNkZWZnaDIyIiwidmFsdWUiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0seyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQudGhyZWFkZ2F0ZSIsInJrZXkiOiIzbTVhYmNkZWZnaDIyIiwidmFsdWUiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnRocmVhZGdhdGUiLCJwb3N0IjoiYXQ6Ly9kaWQ6cGxjOndyaXRlci9hcHAuYnNreS5mZWVkLnBvc3QvM201YWJjZGVmZ2gyMiIsImNyZWF0ZWRBdCI6IjIwMjYtMTEtMTJUMTU6MDA6MDAuMDAwWiIsImFsbG93IjpbXSwiaGlkZGVuUmVwbGllcyI6W119fV19"
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"}}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"value\":{\"$type\":\"app.bsky.feed.post\",\"text\":\"hi\",\"createdAt\":\"2026-07-24T00:00:00.000Z\"}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000
+        ],
+        "result": {
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3m5abcdefgh22",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "value": {
+            "$type": "app.bsky.feed.post",
+            "text": "hi",
+            "createdAt": "2026-07-24T00:00:00.000Z"
+          }
+        },
+        "fired": []
+      }
+    },
+    {
+      "id": "no-results-not-landed",
+      "fn": "createPostWithGates",
+      "input": {
+        "threadgateRules": [],
+        "script": {
+          "noResults": true,
+          "checks": [
+            "missing"
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.applyWrites"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJ2YWxpZGF0ZSI6dHJ1ZSwid3JpdGVzIjpbeyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInJrZXkiOiIzbTVhYmNkZWZnaDIyIiwidmFsdWUiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0seyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQudGhyZWFkZ2F0ZSIsInJrZXkiOiIzbTVhYmNkZWZnaDIyIiwidmFsdWUiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnRocmVhZGdhdGUiLCJwb3N0IjoiYXQ6Ly9kaWQ6cGxjOndyaXRlci9hcHAuYnNreS5mZWVkLnBvc3QvM201YWJjZGVmZ2gyMiIsImNyZWF0ZWRBdCI6IjIwMjYtMTEtMTJUMTU6MDA6MDAuMDAwWiIsImFsbG93IjpbXSwiaGlkZGVuUmVwbGllcyI6W119fV19"
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"}}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Awriter&collection=app.bsky.feed.post&rkey=3m5abcdefgh22",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000,
+          15000
+        ],
+        "$throws": "applyWrites returned no create result for the post",
+        "fired": []
+      }
+    },
+    {
+      "id": "minted-rkey",
+      "fn": "createPostWithGates",
+      "input": {
+        "threadgateRules": [],
+        "mint": true
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.applyWrites"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp3cml0ZXIiLCJ2YWxpZGF0ZSI6dHJ1ZSwid3JpdGVzIjpbeyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInJrZXkiOiIzbjI0cWNnbnoyMjJiIiwidmFsdWUiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnBvc3QiLCJ0ZXh0IjoiaGkiLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTI0VDAwOjAwOjAwLjAwMFoifX0seyIkdHlwZSI6ImNvbS5hdHByb3RvLnJlcG8uYXBwbHlXcml0ZXMjY3JlYXRlIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQudGhyZWFkZ2F0ZSIsInJrZXkiOiIzbjI0cWNnbnoyMjJiIiwidmFsdWUiOnsiJHR5cGUiOiJhcHAuYnNreS5mZWVkLnRocmVhZGdhdGUiLCJwb3N0IjoiYXQ6Ly9kaWQ6cGxjOndyaXRlci9hcHAuYnNreS5mZWVkLnBvc3QvM24yNHFjZ256MjIyYiIsImNyZWF0ZWRBdCI6IjIwMjYtMTEtMTJUMTU6MDA6MDAuMDAwWiIsImFsbG93IjpbXSwiaGlkZGVuUmVwbGllcyI6W119fV19"
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"},\"results\":[{\"$type\":\"com.atproto.repo.applyWrites#createResult\",\"uri\":\"at://did:plc:writer/app.bsky.feed.post/3n24qcgnz222b\",\"cid\":\"bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly\",\"validationStatus\":\"valid\"},{\"$type\":\"com.atproto.repo.applyWrites#createResult\",\"uri\":\"at://did:plc:writer/app.bsky.feed.threadgate/3n24qcgnz222b\",\"cid\":\"bafyreif3rwxxp6xgzgic53dx6463f2i3yvdddxuu2kcw4xtho3wj2imcra\",\"validationStatus\":\"valid\"}]}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30000
+        ],
+        "result": {
+          "$type": "com.atproto.repo.applyWrites#createResult",
+          "uri": "at://did:plc:writer/app.bsky.feed.post/3n24qcgnz222b",
+          "cid": "bafyreiehiexkncrg5pjgqhyecxpfg6ukbeql2io2tqwdptn4nwjkdg2qly",
+          "validationStatus": "valid"
+        },
+        "fired": []
+      }
+    }
+  ]
+}

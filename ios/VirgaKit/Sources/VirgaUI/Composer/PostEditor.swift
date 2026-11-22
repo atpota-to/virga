@@ -219,7 +219,7 @@ enum PasteboardItems {
             data = nil
           }
           let mime = (value is UIImage ? UTType.png : type).preferredMIMEType ?? "image/png"
-          let file = data.flatMap { ComposerFiles.write($0, mime: mime, name: "pasted") }
+          let file = data.flatMap { TemporaryComposerFiles.write($0, mime: mime, name: "pasted") }
           out.append(PastedItem(kind: "file", type: mime, file: file))
         } else if type.conforms(to: .text) {
           out.append(PastedItem(kind: "string", type: "text/plain", file: nil))
@@ -227,22 +227,6 @@ enum PasteboardItems {
       }
     }
     return out
-  }
-}
-
-/// Picked and pasted bytes as composer files: a temporary file each.
-enum ComposerFiles {
-  static func write(_ data: Data, mime: String, name: String) -> ComposerFile? {
-    let ext = UTType(mimeType: mime)?.preferredFilenameExtension ?? "bin"
-    let url = FileManager.default.temporaryDirectory.appendingPathComponent("composer-\(UUID().uuidString).\(ext)")
-    do {
-      try data.write(to: url)
-    } catch {
-      return nil
-    }
-    return ComposerFile(
-      name: "\(name).\(ext)", type: mime, size: Double(data.count), lastModified: Date().timeIntervalSince1970 * 1000,
-      ref: url.path)
   }
 }
 

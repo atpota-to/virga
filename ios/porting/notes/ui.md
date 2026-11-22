@@ -260,9 +260,16 @@ COMPOSER (Composer/)
 - `ComposerController` holds Composer.jsx's state beside the post (ComposerStateModel holds the
   post): startFromIntent, restoreFor, changeAsDid, addFiles, detected, submitPost, startOver.
 - `ComposerPublisher` (Composer/ComposerServices.swift) is publish.js's seam: `publish(state,
-  target:requireAltText:onProgress:)` → `ComposerPublishResult`. The app's is
-  `UnavailablePublisher` until VirgaPosting's port is wired: set `ComposerHost(publisher:)`.
-  `ComposerLinkCards.fetchLinkCard` is a stand-in for linkCard.js's, over the session's transport.
+  target:requireAltText:onProgress:)` → `ComposerPublishResult`. The app's is `PostingPublisher`
+  (VirgaPosting's Publish over `TemporaryComposerFiles`, ImageIO and the session's transport), built
+  when the host makes its controller unless `ComposerHost(publisher:)` gave another;
+  `UnavailablePublisher` is for previews. `ComposerLinkCards.fetchLinkCard` reads LinkCard's card as a
+  ComposerCard; the library and the template editor take `LinkCard.fetchLinkCard(transport:)`.
+- Drafts (Composer/ComposerController+Drafts.swift): Save as draft, an intent's `draftId`, a kept
+  post's media, a posted draft deleted; a draft's media live in `DraftMedia` over `app.stores.files`.
+- `TemporaryComposerFiles` (Platform/) is VirgaPosting's `ComposerFiles`: picked, pasted and fetched
+  bytes as temporary files, `ref` the path. VirgaPosting has a protocol of that name, so nothing in
+  VirgaUI may be called ComposerFiles.
 - The phone's composer (640 and under) sends from `ComposerBar` at the top; the foot keeps the
   tools (760 and under), why the button is off, Save as draft and Schedule.
 

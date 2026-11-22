@@ -2,13 +2,14 @@
 // post, empty; with words in it (a mention and a tag highlighted); a
 // thread of three; two pictures (pasted, as the simulator's photo library
 // may be empty); the "/" templates; a link card read from the demo's card
-// service; the language picker; the post-as picker; pressing Post, which
-// says publishing isn't in the iOS app yet; the library from the composer;
-// a template with blanks answered through its questions into the post;
-// Continue a thread; and the Library page. On a phone, the bar at the top
-// with the keyboard up. Each is kept as a
-// screenshot (an XCTAttachment kept always), on the iPhone and the iPad,
-// all in one launch.
+// service; the language picker; the post-as picker;
+// the library from the composer; a template with blanks answered through
+// its questions into the post; the thread saved as a draft and opened
+// again; the thread posted (its progress and its toast); Continue a thread
+// listing it, and a reply to it sent; and the Library page. On a phone,
+// the bar at the top with the keyboard up. Each is kept as a screenshot
+// (an XCTAttachment kept always), on the iPhone and the iPad, all in one
+// launch; the demo's server takes the writes (records, blobs, drafts).
 
 import UIKit
 import XCTest
@@ -173,13 +174,6 @@ final class ComposerUITests: XCTestCase {
     snapshot("composer-post-as")
     postAs.tap()
 
-    // Post: the web's busy line, then the sentence that it isn't here yet.
-    let publish = element(app, "publish")
-    XCTAssertTrue(publish.waitForExistence(timeout: 5))
-    publish.tap()
-    XCTAssertTrue(text(app, containing: "Publishing isn’t in the iOS app yet.").waitForExistence(timeout: 10))
-    snapshot("composer-publish")
-
     // The library, from the post's tools.
     let openLibrary = element(app, "open-library")
     scrollTo(app, openLibrary)
@@ -216,7 +210,33 @@ final class ComposerUITests: XCTestCase {
       snapshot("composer-template-answered")
     }
 
-    // Continue a thread: one of the account's own recent posts.
+    // Save as draft: the thread goes to the account's Bluesky drafts; closed
+    // and opened again, the composer has it back as the draft.
+    let saveDraft = element(app, "save-draft")
+    XCTAssertTrue(saveDraft.waitForExistence(timeout: 5), "no Save as draft")
+    saveDraft.tap()
+    XCTAssertTrue(text(app, containing: "Draft saved to").waitForExistence(timeout: 20), "the draft wasn't saved")
+    snapshot("composer-draft-saved")
+    element(app, "composer-close").tap()
+    XCTAssertTrue(element(app, "composer-title").waitForNonExistence(timeout: 5))
+    openComposer(app)
+    let draftTitle = app.descendants(matching: .any).matching(NSPredicate(format: "identifier == 'composer-title' AND label == 'Draft'")).firstMatch
+    XCTAssertTrue(draftTitle.waitForExistence(timeout: 10), "the draft didn't come back")
+    snapshot("composer-draft-reopened")
+
+    // Post the thread: its progress, then the toast, and the composer closes.
+    let publish = element(app, "publish")
+    XCTAssertTrue(publish.waitForExistence(timeout: 5))
+    publish.tap()
+    _ = element(app, "composer-busy").waitForExistence(timeout: 5)
+    snapshot("composer-sending")
+    XCTAssertTrue(text(app, containing: "Posted as").waitForExistence(timeout: 60), "the thread didn't go out")
+    snapshot("composer-thread-posted")
+    XCTAssertTrue(element(app, "composer-title").waitForNonExistence(timeout: 10), "the composer stayed open")
+    openComposer(app)
+
+    // Continue a thread: one of the account's own recent posts, the new
+    // thread among them.
     if isDesk(app) || isPad {
       let more = app.buttons["More for this post"]
       scrollTo(app, more)
@@ -240,11 +260,21 @@ final class ComposerUITests: XCTestCase {
       pick.tap()
       XCTAssertTrue(text(app, containing: "Continuing your thread").waitForExistence(timeout: 15))
       snapshot("composer-continue-reply")
+      // A single post (the reply) sent.
+      let reply = editor(app, 0)
+      reply.tap()
+      reply.typeText("Spares went fast. Thanks, all!")
+      element(app, "publish").tap()
+      XCTAssertTrue(text(app, containing: "Posted as").waitForExistence(timeout: 30), "the reply didn't go out")
+      snapshot("composer-post-posted")
+      XCTAssertTrue(element(app, "composer-title").waitForNonExistence(timeout: 10))
     }
 
     // The Library page, through the command palette.
-    element(app, "composer-close").tap()
-    XCTAssertTrue(element(app, "composer-title").waitForNonExistence(timeout: 5))
+    if element(app, "composer-title").exists {
+      element(app, "composer-close").tap()
+      XCTAssertTrue(element(app, "composer-title").waitForNonExistence(timeout: 5))
+    }
     let search = element(app, "palette-open")
     XCTAssertTrue(search.waitForExistence(timeout: 5))
     search.tap()
