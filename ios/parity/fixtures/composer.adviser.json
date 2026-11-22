@@ -1,0 +1,2266 @@
+{
+  "name": "composer.adviser",
+  "sources": [
+    "src/posting/adviser/analysis.js",
+    "src/posting/adviser/setup.js"
+  ],
+  "cases": [
+    {
+      "id": "analysisConstants",
+      "fn": "analysisConstants",
+      "input": {},
+      "output": {
+        "ADVISER_CHECK_SCOPES": [
+          "all",
+          "topLevel",
+          "replies"
+        ]
+      }
+    },
+    {
+      "id": "setupConstants",
+      "fn": "setupConstants",
+      "input": {},
+      "output": {
+        "REVIEW_MODES": [
+          "significant",
+          "always"
+        ],
+        "STYLE_SAMPLE_SIZES": [
+          100,
+          250,
+          500
+        ],
+        "DEFAULT_STYLE_SAMPLE_SIZE": 100,
+        "ADVISER_TEXT_LIMITS": {
+          "topic": 200,
+          "goalsText": 500,
+          "writingNotes": 500,
+          "styleSummary": 1500,
+          "styleGuidance": 500
+        },
+        "DEFAULT_ADVISER_SETTINGS": {
+          "enabled": false,
+          "checkBeforePublish": false,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": false,
+          "goals": {
+            "presets": {
+              "reduceNegativity": false,
+              "lessConfrontational": false,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": false,
+            "grammar": false,
+            "clarity": false,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "normalizeAdviserScope#1",
+      "fn": "normalizeAdviserScope",
+      "input": {
+        "scope": "all"
+      },
+      "output": "all"
+    },
+    {
+      "id": "normalizeAdviserScope#2",
+      "fn": "normalizeAdviserScope",
+      "input": {
+        "scope": "topLevel"
+      },
+      "output": "topLevel"
+    },
+    {
+      "id": "normalizeAdviserScope#3",
+      "fn": "normalizeAdviserScope",
+      "input": {
+        "scope": "replies"
+      },
+      "output": "replies"
+    },
+    {
+      "id": "normalizeAdviserScope#4",
+      "fn": "normalizeAdviserScope",
+      "input": {
+        "scope": "everything"
+      },
+      "output": "all"
+    },
+    {
+      "id": "normalizeAdviserScope#5",
+      "fn": "normalizeAdviserScope",
+      "input": {
+        "scope": ""
+      },
+      "output": "all"
+    },
+    {
+      "id": "normalizeAdviserScope#6",
+      "fn": "normalizeAdviserScope",
+      "input": {
+        "scope": null
+      },
+      "output": "all"
+    },
+    {
+      "id": "normalizeAdviserScope#7",
+      "fn": "normalizeAdviserScope",
+      "input": {},
+      "output": "all"
+    },
+    {
+      "id": "normalizeAdviserScope#8",
+      "fn": "normalizeAdviserScope",
+      "input": {
+        "scope": 5
+      },
+      "output": "all"
+    },
+    {
+      "id": "adviserScopeAllowsDraft#1",
+      "fn": "adviserScopeAllowsDraft",
+      "input": {
+        "scope": "all",
+        "repliesToOther": true
+      },
+      "output": true
+    },
+    {
+      "id": "adviserScopeAllowsDraft#2",
+      "fn": "adviserScopeAllowsDraft",
+      "input": {
+        "scope": "all",
+        "repliesToOther": false
+      },
+      "output": true
+    },
+    {
+      "id": "adviserScopeAllowsDraft#3",
+      "fn": "adviserScopeAllowsDraft",
+      "input": {
+        "scope": "topLevel",
+        "repliesToOther": true
+      },
+      "output": false
+    },
+    {
+      "id": "adviserScopeAllowsDraft#4",
+      "fn": "adviserScopeAllowsDraft",
+      "input": {
+        "scope": "topLevel",
+        "repliesToOther": false
+      },
+      "output": true
+    },
+    {
+      "id": "adviserScopeAllowsDraft#5",
+      "fn": "adviserScopeAllowsDraft",
+      "input": {
+        "scope": "replies",
+        "repliesToOther": true
+      },
+      "output": true
+    },
+    {
+      "id": "adviserScopeAllowsDraft#6",
+      "fn": "adviserScopeAllowsDraft",
+      "input": {
+        "scope": "replies",
+        "repliesToOther": false
+      },
+      "output": false
+    },
+    {
+      "id": "adviserScopeAllowsDraft#7",
+      "fn": "adviserScopeAllowsDraft",
+      "input": {
+        "scope": "everything",
+        "repliesToOther": true
+      },
+      "output": true
+    },
+    {
+      "id": "adviserScopeAllowsDraft#8",
+      "fn": "adviserScopeAllowsDraft",
+      "input": {
+        "scope": "everything",
+        "repliesToOther": false
+      },
+      "output": true
+    },
+    {
+      "id": "adviserScopeAllowsDraft#9",
+      "fn": "adviserScopeAllowsDraft",
+      "input": {
+        "scope": "",
+        "repliesToOther": true
+      },
+      "output": true
+    },
+    {
+      "id": "adviserScopeAllowsDraft#10",
+      "fn": "adviserScopeAllowsDraft",
+      "input": {
+        "scope": "",
+        "repliesToOther": false
+      },
+      "output": true
+    },
+    {
+      "id": "adviserScenarioFor#1",
+      "fn": "adviserScenarioFor",
+      "input": {
+        "repliesToOther": true,
+        "quotesOther": true,
+        "repliesToSelf": true,
+        "isThread": true
+      },
+      "output": "reply"
+    },
+    {
+      "id": "adviserScenarioFor#2",
+      "fn": "adviserScenarioFor",
+      "input": {
+        "repliesToOther": true,
+        "quotesOther": true,
+        "repliesToSelf": true,
+        "isThread": false
+      },
+      "output": "reply"
+    },
+    {
+      "id": "adviserScenarioFor#3",
+      "fn": "adviserScenarioFor",
+      "input": {
+        "repliesToOther": true,
+        "quotesOther": true,
+        "repliesToSelf": false,
+        "isThread": true
+      },
+      "output": "reply"
+    },
+    {
+      "id": "adviserScenarioFor#4",
+      "fn": "adviserScenarioFor",
+      "input": {
+        "repliesToOther": true,
+        "quotesOther": true,
+        "repliesToSelf": false,
+        "isThread": false
+      },
+      "output": "reply"
+    },
+    {
+      "id": "adviserScenarioFor#5",
+      "fn": "adviserScenarioFor",
+      "input": {
+        "repliesToOther": true,
+        "quotesOther": false,
+        "repliesToSelf": true,
+        "isThread": true
+      },
+      "output": "reply"
+    },
+    {
+      "id": "adviserScenarioFor#6",
+      "fn": "adviserScenarioFor",
+      "input": {
+        "repliesToOther": true,
+        "quotesOther": false,
+        "repliesToSelf": true,
+        "isThread": false
+      },
+      "output": "reply"
+    },
+    {
+      "id": "adviserScenarioFor#7",
+      "fn": "adviserScenarioFor",
+      "input": {
+        "repliesToOther": true,
+        "quotesOther": false,
+        "repliesToSelf": false,
+        "isThread": true
+      },
+      "output": "reply"
+    },
+    {
+      "id": "adviserScenarioFor#8",
+      "fn": "adviserScenarioFor",
+      "input": {
+        "repliesToOther": true,
+        "quotesOther": false,
+        "repliesToSelf": false,
+        "isThread": false
+      },
+      "output": "reply"
+    },
+    {
+      "id": "adviserScenarioFor#9",
+      "fn": "adviserScenarioFor",
+      "input": {
+        "repliesToOther": false,
+        "quotesOther": true,
+        "repliesToSelf": true,
+        "isThread": true
+      },
+      "output": "quote"
+    },
+    {
+      "id": "adviserScenarioFor#10",
+      "fn": "adviserScenarioFor",
+      "input": {
+        "repliesToOther": false,
+        "quotesOther": true,
+        "repliesToSelf": true,
+        "isThread": false
+      },
+      "output": "quote"
+    },
+    {
+      "id": "adviserScenarioFor#11",
+      "fn": "adviserScenarioFor",
+      "input": {
+        "repliesToOther": false,
+        "quotesOther": true,
+        "repliesToSelf": false,
+        "isThread": true
+      },
+      "output": "quote"
+    },
+    {
+      "id": "adviserScenarioFor#12",
+      "fn": "adviserScenarioFor",
+      "input": {
+        "repliesToOther": false,
+        "quotesOther": true,
+        "repliesToSelf": false,
+        "isThread": false
+      },
+      "output": "quote"
+    },
+    {
+      "id": "adviserScenarioFor#13",
+      "fn": "adviserScenarioFor",
+      "input": {
+        "repliesToOther": false,
+        "quotesOther": false,
+        "repliesToSelf": true,
+        "isThread": true
+      },
+      "output": "thread"
+    },
+    {
+      "id": "adviserScenarioFor#14",
+      "fn": "adviserScenarioFor",
+      "input": {
+        "repliesToOther": false,
+        "quotesOther": false,
+        "repliesToSelf": true,
+        "isThread": false
+      },
+      "output": "selfReply"
+    },
+    {
+      "id": "adviserScenarioFor#15",
+      "fn": "adviserScenarioFor",
+      "input": {
+        "repliesToOther": false,
+        "quotesOther": false,
+        "repliesToSelf": false,
+        "isThread": true
+      },
+      "output": "thread"
+    },
+    {
+      "id": "adviserScenarioFor#16",
+      "fn": "adviserScenarioFor",
+      "input": {
+        "repliesToOther": false,
+        "quotesOther": false,
+        "repliesToSelf": false,
+        "isThread": false
+      },
+      "output": "post"
+    },
+    {
+      "id": "enabledWritingChecks#1",
+      "fn": "enabledWritingChecks",
+      "input": {
+        "checks": null
+      },
+      "output": null
+    },
+    {
+      "id": "enabledWritingChecks#2",
+      "fn": "enabledWritingChecks",
+      "input": {
+        "checks": "on"
+      },
+      "output": null
+    },
+    {
+      "id": "enabledWritingChecks#3",
+      "fn": "enabledWritingChecks",
+      "input": {
+        "checks": {}
+      },
+      "output": null
+    },
+    {
+      "id": "enabledWritingChecks#4",
+      "fn": "enabledWritingChecks",
+      "input": {
+        "checks": {
+          "typos": true
+        }
+      },
+      "output": {
+        "typos": true
+      }
+    },
+    {
+      "id": "enabledWritingChecks#5",
+      "fn": "enabledWritingChecks",
+      "input": {
+        "checks": {
+          "typos": "yes",
+          "grammar": 1
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "enabledWritingChecks#6",
+      "fn": "enabledWritingChecks",
+      "input": {
+        "checks": {
+          "typos": true,
+          "grammar": true,
+          "clarity": true,
+          "customText": "  notes  ",
+          "styleProfile": {
+            "summary": " casual "
+          }
+        }
+      },
+      "output": {
+        "typos": true,
+        "grammar": true,
+        "clarity": true,
+        "customText": "notes",
+        "style": "casual"
+      }
+    },
+    {
+      "id": "enabledWritingChecks#7",
+      "fn": "enabledWritingChecks",
+      "input": {
+        "checks": {
+          "clarity": true,
+          "customText": "   ",
+          "styleProfile": {
+            "summary": 5
+          }
+        }
+      },
+      "output": {
+        "clarity": true
+      }
+    },
+    {
+      "id": "enabledWritingChecks#8",
+      "fn": "enabledWritingChecks",
+      "input": {
+        "checks": {
+          "customText": "only notes",
+          "styleProfile": {
+            "summary": "style"
+          }
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "enabledWritingChecks#9",
+      "fn": "enabledWritingChecks",
+      "input": {
+        "checks": [
+          true
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fixableWritingIssues#1",
+      "fn": "fixableWritingIssues",
+      "input": {
+        "issues": [
+          {
+            "found": "teh",
+            "replacement": "the"
+          },
+          {
+            "found": "recieve",
+            "replacement": "receive"
+          },
+          {
+            "found": "same",
+            "replacement": "same"
+          },
+          {
+            "found": "   ",
+            "replacement": "x"
+          },
+          {
+            "found": "x",
+            "replacement": "  "
+          },
+          {
+            "found": 5,
+            "replacement": "five"
+          },
+          null,
+          {
+            "found": "across posts",
+            "replacement": "joined"
+          },
+          {
+            "found": "😀",
+            "replacement": "🙂"
+          },
+          {
+            "found": "é",
+            "replacement": "é"
+          }
+        ]
+      },
+      "output": [
+        {
+          "found": "teh",
+          "replacement": "the"
+        },
+        {
+          "found": "recieve",
+          "replacement": "receive"
+        },
+        {
+          "found": "across posts",
+          "replacement": "joined"
+        },
+        {
+          "found": "😀",
+          "replacement": "🙂"
+        },
+        {
+          "found": "é",
+          "replacement": "é"
+        }
+      ]
+    },
+    {
+      "id": "fixableWritingIssues#2",
+      "fn": "fixableWritingIssues",
+      "input": {
+        "issues": null
+      },
+      "output": []
+    },
+    {
+      "id": "fixableWritingIssues#3",
+      "fn": "fixableWritingIssues",
+      "input": {
+        "issues": "x"
+      },
+      "output": []
+    },
+    {
+      "id": "fixableWritingIssues#4",
+      "fn": "fixableWritingIssues",
+      "input": {
+        "issues": []
+      },
+      "output": []
+    },
+    {
+      "id": "applyWritingFixes#1",
+      "fn": "applyWritingFixes",
+      "input": {
+        "text": "I recieve teh mail, teh end",
+        "issues": [
+          {
+            "found": "teh",
+            "replacement": "the"
+          },
+          {
+            "found": "recieve",
+            "replacement": "receive"
+          },
+          {
+            "found": "same",
+            "replacement": "same"
+          },
+          {
+            "found": "   ",
+            "replacement": "x"
+          },
+          {
+            "found": "x",
+            "replacement": "  "
+          },
+          {
+            "found": 5,
+            "replacement": "five"
+          },
+          null,
+          {
+            "found": "across posts",
+            "replacement": "joined"
+          },
+          {
+            "found": "😀",
+            "replacement": "🙂"
+          },
+          {
+            "found": "é",
+            "replacement": "é"
+          }
+        ]
+      },
+      "output": {
+        "text": "I receive the mail, teh end",
+        "applied": 2
+      }
+    },
+    {
+      "id": "applyWritingFixes#2",
+      "fn": "applyWritingFixes",
+      "input": {
+        "text": "nothing to fix",
+        "issues": [
+          {
+            "found": "teh",
+            "replacement": "the"
+          },
+          {
+            "found": "recieve",
+            "replacement": "receive"
+          },
+          {
+            "found": "same",
+            "replacement": "same"
+          },
+          {
+            "found": "   ",
+            "replacement": "x"
+          },
+          {
+            "found": "x",
+            "replacement": "  "
+          },
+          {
+            "found": 5,
+            "replacement": "five"
+          },
+          null,
+          {
+            "found": "across posts",
+            "replacement": "joined"
+          },
+          {
+            "found": "😀",
+            "replacement": "🙂"
+          },
+          {
+            "found": "é",
+            "replacement": "é"
+          }
+        ]
+      },
+      "output": {
+        "text": "nothing to fix",
+        "applied": 0
+      }
+    },
+    {
+      "id": "applyWritingFixes#3",
+      "fn": "applyWritingFixes",
+      "input": {
+        "text": "😀 and é",
+        "issues": [
+          {
+            "found": "teh",
+            "replacement": "the"
+          },
+          {
+            "found": "recieve",
+            "replacement": "receive"
+          },
+          {
+            "found": "same",
+            "replacement": "same"
+          },
+          {
+            "found": "   ",
+            "replacement": "x"
+          },
+          {
+            "found": "x",
+            "replacement": "  "
+          },
+          {
+            "found": 5,
+            "replacement": "five"
+          },
+          null,
+          {
+            "found": "across posts",
+            "replacement": "joined"
+          },
+          {
+            "found": "😀",
+            "replacement": "🙂"
+          },
+          {
+            "found": "é",
+            "replacement": "é"
+          }
+        ]
+      },
+      "output": {
+        "text": "🙂 and é",
+        "applied": 2
+      }
+    },
+    {
+      "id": "applyWritingFixes#4",
+      "fn": "applyWritingFixes",
+      "input": {
+        "text": 5,
+        "issues": [
+          {
+            "found": "teh",
+            "replacement": "the"
+          },
+          {
+            "found": "recieve",
+            "replacement": "receive"
+          },
+          {
+            "found": "same",
+            "replacement": "same"
+          },
+          {
+            "found": "   ",
+            "replacement": "x"
+          },
+          {
+            "found": "x",
+            "replacement": "  "
+          },
+          {
+            "found": 5,
+            "replacement": "five"
+          },
+          null,
+          {
+            "found": "across posts",
+            "replacement": "joined"
+          },
+          {
+            "found": "😀",
+            "replacement": "🙂"
+          },
+          {
+            "found": "é",
+            "replacement": "é"
+          }
+        ]
+      },
+      "output": {
+        "text": "",
+        "applied": 0
+      }
+    },
+    {
+      "id": "applyWritingFixes#5",
+      "fn": "applyWritingFixes",
+      "input": {
+        "text": "teh",
+        "issues": null
+      },
+      "output": {
+        "text": "teh",
+        "applied": 0
+      }
+    },
+    {
+      "id": "applyWritingFixesToThread#1",
+      "fn": "applyWritingFixesToThread",
+      "input": {
+        "posts": [
+          {
+            "id": 1,
+            "text": "first teh"
+          },
+          {
+            "id": 2,
+            "text": "second recieve"
+          },
+          {
+            "id": 3,
+            "text": "across"
+          },
+          {
+            "id": 4,
+            "text": "posts"
+          }
+        ],
+        "issues": [
+          {
+            "found": "teh",
+            "replacement": "the"
+          },
+          {
+            "found": "recieve",
+            "replacement": "receive"
+          },
+          {
+            "found": "same",
+            "replacement": "same"
+          },
+          {
+            "found": "   ",
+            "replacement": "x"
+          },
+          {
+            "found": "x",
+            "replacement": "  "
+          },
+          {
+            "found": 5,
+            "replacement": "five"
+          },
+          null,
+          {
+            "found": "across posts",
+            "replacement": "joined"
+          },
+          {
+            "found": "😀",
+            "replacement": "🙂"
+          },
+          {
+            "found": "é",
+            "replacement": "é"
+          }
+        ]
+      },
+      "output": {
+        "posts": [
+          {
+            "id": 1,
+            "text": "first the"
+          },
+          {
+            "id": 2,
+            "text": "second receive"
+          },
+          {
+            "id": 3,
+            "text": "across"
+          },
+          {
+            "id": 4,
+            "text": "posts"
+          }
+        ],
+        "applied": 2
+      }
+    },
+    {
+      "id": "applyWritingFixesToThread#2",
+      "fn": "applyWritingFixesToThread",
+      "input": {
+        "posts": [
+          {
+            "id": 1,
+            "text": "clean"
+          }
+        ],
+        "issues": [
+          {
+            "found": "teh",
+            "replacement": "the"
+          },
+          {
+            "found": "recieve",
+            "replacement": "receive"
+          },
+          {
+            "found": "same",
+            "replacement": "same"
+          },
+          {
+            "found": "   ",
+            "replacement": "x"
+          },
+          {
+            "found": "x",
+            "replacement": "  "
+          },
+          {
+            "found": 5,
+            "replacement": "five"
+          },
+          null,
+          {
+            "found": "across posts",
+            "replacement": "joined"
+          },
+          {
+            "found": "😀",
+            "replacement": "🙂"
+          },
+          {
+            "found": "é",
+            "replacement": "é"
+          }
+        ]
+      },
+      "output": {
+        "posts": [
+          {
+            "id": 1,
+            "text": "clean"
+          }
+        ],
+        "applied": 0
+      }
+    },
+    {
+      "id": "applyWritingFixesToThread#3",
+      "fn": "applyWritingFixesToThread",
+      "input": {
+        "posts": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2,
+            "text": 5
+          },
+          {
+            "id": 3,
+            "text": "teh"
+          }
+        ],
+        "issues": [
+          {
+            "found": "teh",
+            "replacement": "the"
+          },
+          {
+            "found": "recieve",
+            "replacement": "receive"
+          },
+          {
+            "found": "same",
+            "replacement": "same"
+          },
+          {
+            "found": "   ",
+            "replacement": "x"
+          },
+          {
+            "found": "x",
+            "replacement": "  "
+          },
+          {
+            "found": 5,
+            "replacement": "five"
+          },
+          null,
+          {
+            "found": "across posts",
+            "replacement": "joined"
+          },
+          {
+            "found": "😀",
+            "replacement": "🙂"
+          },
+          {
+            "found": "é",
+            "replacement": "é"
+          }
+        ]
+      },
+      "output": {
+        "posts": [
+          {
+            "id": 1,
+            "text": ""
+          },
+          {
+            "id": 2,
+            "text": ""
+          },
+          {
+            "id": 3,
+            "text": "the"
+          }
+        ],
+        "applied": 1
+      }
+    },
+    {
+      "id": "applyWritingFixesToThread#4",
+      "fn": "applyWritingFixesToThread",
+      "input": {
+        "posts": "not a thread",
+        "issues": [
+          {
+            "found": "teh",
+            "replacement": "the"
+          },
+          {
+            "found": "recieve",
+            "replacement": "receive"
+          },
+          {
+            "found": "same",
+            "replacement": "same"
+          },
+          {
+            "found": "   ",
+            "replacement": "x"
+          },
+          {
+            "found": "x",
+            "replacement": "  "
+          },
+          {
+            "found": 5,
+            "replacement": "five"
+          },
+          null,
+          {
+            "found": "across posts",
+            "replacement": "joined"
+          },
+          {
+            "found": "😀",
+            "replacement": "🙂"
+          },
+          {
+            "found": "é",
+            "replacement": "é"
+          }
+        ]
+      },
+      "output": {
+        "posts": "not a thread",
+        "applied": 0
+      }
+    },
+    {
+      "id": "applyWritingFixesToThread#5",
+      "fn": "applyWritingFixesToThread",
+      "input": {
+        "posts": [],
+        "issues": [
+          {
+            "found": "teh",
+            "replacement": "the"
+          },
+          {
+            "found": "recieve",
+            "replacement": "receive"
+          },
+          {
+            "found": "same",
+            "replacement": "same"
+          },
+          {
+            "found": "   ",
+            "replacement": "x"
+          },
+          {
+            "found": "x",
+            "replacement": "  "
+          },
+          {
+            "found": 5,
+            "replacement": "five"
+          },
+          null,
+          {
+            "found": "across posts",
+            "replacement": "joined"
+          },
+          {
+            "found": "😀",
+            "replacement": "🙂"
+          },
+          {
+            "found": "é",
+            "replacement": "é"
+          }
+        ]
+      },
+      "output": {
+        "posts": [],
+        "applied": 0
+      }
+    },
+    {
+      "id": "normalizeStyleSampleSize#1",
+      "fn": "normalizeStyleSampleSize",
+      "input": {
+        "value": 100
+      },
+      "output": 100
+    },
+    {
+      "id": "normalizeStyleSampleSize#2",
+      "fn": "normalizeStyleSampleSize",
+      "input": {
+        "value": 250
+      },
+      "output": 250
+    },
+    {
+      "id": "normalizeStyleSampleSize#3",
+      "fn": "normalizeStyleSampleSize",
+      "input": {
+        "value": 500
+      },
+      "output": 500
+    },
+    {
+      "id": "normalizeStyleSampleSize#4",
+      "fn": "normalizeStyleSampleSize",
+      "input": {
+        "value": "250"
+      },
+      "output": 250
+    },
+    {
+      "id": "normalizeStyleSampleSize#5",
+      "fn": "normalizeStyleSampleSize",
+      "input": {
+        "value": 300
+      },
+      "output": 100
+    },
+    {
+      "id": "normalizeStyleSampleSize#6",
+      "fn": "normalizeStyleSampleSize",
+      "input": {
+        "value": null
+      },
+      "output": 100
+    },
+    {
+      "id": "normalizeStyleSampleSize#7",
+      "fn": "normalizeStyleSampleSize",
+      "input": {},
+      "output": 100
+    },
+    {
+      "id": "normalizeStyleSampleSize#8",
+      "fn": "normalizeStyleSampleSize",
+      "input": {
+        "value": "x"
+      },
+      "output": 100
+    },
+    {
+      "id": "normalizeStyleSampleSize#9",
+      "fn": "normalizeStyleSampleSize",
+      "input": {
+        "value": 250
+      },
+      "output": 250
+    },
+    {
+      "id": "normalizeStyleSampleSize#10",
+      "fn": "normalizeStyleSampleSize",
+      "input": {
+        "value": [
+          500
+        ]
+      },
+      "output": 500
+    },
+    {
+      "id": "normalizeAdviserSettings#1",
+      "fn": "normalizeAdviserSettings",
+      "input": {
+        "raw": null
+      },
+      "output": {
+        "enabled": false,
+        "checkBeforePublish": false,
+        "reviewMode": "significant",
+        "checkScope": "all",
+        "checkReplyContext": false,
+        "goals": {
+          "presets": {
+            "reduceNegativity": false,
+            "lessConfrontational": false,
+            "limitTopic": {
+              "enabled": false,
+              "topic": ""
+            }
+          },
+          "customText": ""
+        },
+        "writingChecks": {
+          "typos": false,
+          "grammar": false,
+          "clarity": false,
+          "customText": "",
+          "styleSampleSize": 100,
+          "styleProfile": {
+            "summary": "",
+            "analyzedCount": 0,
+            "updatedAt": "",
+            "guidance": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "normalizeAdviserSettings#2",
+      "fn": "normalizeAdviserSettings",
+      "input": {
+        "raw": "on"
+      },
+      "output": {
+        "enabled": false,
+        "checkBeforePublish": false,
+        "reviewMode": "significant",
+        "checkScope": "all",
+        "checkReplyContext": false,
+        "goals": {
+          "presets": {
+            "reduceNegativity": false,
+            "lessConfrontational": false,
+            "limitTopic": {
+              "enabled": false,
+              "topic": ""
+            }
+          },
+          "customText": ""
+        },
+        "writingChecks": {
+          "typos": false,
+          "grammar": false,
+          "clarity": false,
+          "customText": "",
+          "styleSampleSize": 100,
+          "styleProfile": {
+            "summary": "",
+            "analyzedCount": 0,
+            "updatedAt": "",
+            "guidance": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "normalizeAdviserSettings#3",
+      "fn": "normalizeAdviserSettings",
+      "input": {
+        "raw": []
+      },
+      "output": {
+        "enabled": false,
+        "checkBeforePublish": false,
+        "reviewMode": "significant",
+        "checkScope": "all",
+        "checkReplyContext": false,
+        "goals": {
+          "presets": {
+            "reduceNegativity": false,
+            "lessConfrontational": false,
+            "limitTopic": {
+              "enabled": false,
+              "topic": ""
+            }
+          },
+          "customText": ""
+        },
+        "writingChecks": {
+          "typos": false,
+          "grammar": false,
+          "clarity": false,
+          "customText": "",
+          "styleSampleSize": 100,
+          "styleProfile": {
+            "summary": "",
+            "analyzedCount": 0,
+            "updatedAt": "",
+            "guidance": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "normalizeAdviserSettings#4",
+      "fn": "normalizeAdviserSettings",
+      "input": {
+        "raw": {}
+      },
+      "output": {
+        "enabled": false,
+        "checkBeforePublish": false,
+        "reviewMode": "significant",
+        "checkScope": "all",
+        "checkReplyContext": false,
+        "goals": {
+          "presets": {
+            "reduceNegativity": false,
+            "lessConfrontational": false,
+            "limitTopic": {
+              "enabled": false,
+              "topic": ""
+            }
+          },
+          "customText": ""
+        },
+        "writingChecks": {
+          "typos": false,
+          "grammar": false,
+          "clarity": false,
+          "customText": "",
+          "styleSampleSize": 100,
+          "styleProfile": {
+            "summary": "",
+            "analyzedCount": 0,
+            "updatedAt": "",
+            "guidance": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "normalizeAdviserSettings#5",
+      "fn": "normalizeAdviserSettings",
+      "input": {
+        "raw": {
+          "enabled": false,
+          "checkBeforePublish": false,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": false,
+          "goals": {
+            "presets": {
+              "reduceNegativity": false,
+              "lessConfrontational": false,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": false,
+            "grammar": false,
+            "clarity": false,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        }
+      },
+      "output": {
+        "enabled": false,
+        "checkBeforePublish": false,
+        "reviewMode": "significant",
+        "checkScope": "all",
+        "checkReplyContext": false,
+        "goals": {
+          "presets": {
+            "reduceNegativity": false,
+            "lessConfrontational": false,
+            "limitTopic": {
+              "enabled": false,
+              "topic": ""
+            }
+          },
+          "customText": ""
+        },
+        "writingChecks": {
+          "typos": false,
+          "grammar": false,
+          "clarity": false,
+          "customText": "",
+          "styleSampleSize": 100,
+          "styleProfile": {
+            "summary": "",
+            "analyzedCount": 0,
+            "updatedAt": "",
+            "guidance": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "normalizeAdviserSettings#6",
+      "fn": "normalizeAdviserSettings",
+      "input": {
+        "raw": {
+          "enabled": "true",
+          "checkBeforePublish": true,
+          "reviewMode": "always",
+          "checkScope": "replies",
+          "checkReplyContext": 1,
+          "goals": {
+            "presets": {
+              "reduceNegativity": true,
+              "lessConfrontational": "yes",
+              "limitTopic": {
+                "enabled": true,
+                "topic": "tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"
+              }
+            },
+            "customText": "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"
+          },
+          "writingChecks": {
+            "typos": true,
+            "grammar": false,
+            "clarity": true,
+            "customText": "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀",
+            "styleSampleSize": "500",
+            "styleProfile": {
+              "summary": "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+              "analyzedCount": "42.9",
+              "updatedAt": 5,
+              "guidance": "g"
+            }
+          },
+          "extra": "kept?"
+        }
+      },
+      "output": {
+        "enabled": false,
+        "checkBeforePublish": true,
+        "reviewMode": "always",
+        "checkScope": "replies",
+        "checkReplyContext": false,
+        "goals": {
+          "presets": {
+            "reduceNegativity": true,
+            "lessConfrontational": false,
+            "limitTopic": {
+              "enabled": true,
+              "topic": "tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"
+            }
+          },
+          "customText": "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"
+        },
+        "writingChecks": {
+          "typos": true,
+          "grammar": false,
+          "clarity": true,
+          "customText": "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀",
+          "styleSampleSize": 500,
+          "styleProfile": {
+            "summary": "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+            "analyzedCount": 42,
+            "updatedAt": "",
+            "guidance": "g"
+          }
+        }
+      }
+    },
+    {
+      "id": "normalizeAdviserSettings#7",
+      "fn": "normalizeAdviserSettings",
+      "input": {
+        "raw": {
+          "reviewMode": "sometimes",
+          "checkScope": "nope",
+          "goals": "x",
+          "writingChecks": {
+            "styleProfile": {
+              "analyzedCount": -3
+            }
+          }
+        }
+      },
+      "output": {
+        "enabled": false,
+        "checkBeforePublish": false,
+        "reviewMode": "significant",
+        "checkScope": "all",
+        "checkReplyContext": false,
+        "goals": {
+          "presets": {
+            "reduceNegativity": false,
+            "lessConfrontational": false,
+            "limitTopic": {
+              "enabled": false,
+              "topic": ""
+            }
+          },
+          "customText": ""
+        },
+        "writingChecks": {
+          "typos": false,
+          "grammar": false,
+          "clarity": false,
+          "customText": "",
+          "styleSampleSize": 100,
+          "styleProfile": {
+            "summary": "",
+            "analyzedCount": 0,
+            "updatedAt": "",
+            "guidance": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "normalizeAdviserSettings#8",
+      "fn": "normalizeAdviserSettings",
+      "input": {
+        "raw": {
+          "writingChecks": {
+            "styleProfile": {
+              "analyzedCount": null
+            }
+          }
+        }
+      },
+      "output": {
+        "enabled": false,
+        "checkBeforePublish": false,
+        "reviewMode": "significant",
+        "checkScope": "all",
+        "checkReplyContext": false,
+        "goals": {
+          "presets": {
+            "reduceNegativity": false,
+            "lessConfrontational": false,
+            "limitTopic": {
+              "enabled": false,
+              "topic": ""
+            }
+          },
+          "customText": ""
+        },
+        "writingChecks": {
+          "typos": false,
+          "grammar": false,
+          "clarity": false,
+          "customText": "",
+          "styleSampleSize": 100,
+          "styleProfile": {
+            "summary": "",
+            "analyzedCount": 0,
+            "updatedAt": "",
+            "guidance": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "isPostingAdviserPristine#1",
+      "fn": "isPostingAdviserPristine",
+      "input": {
+        "adviser": null
+      },
+      "output": true
+    },
+    {
+      "id": "isPostingAdviserPristine#2",
+      "fn": "isPostingAdviserPristine",
+      "input": {
+        "adviser": {}
+      },
+      "output": true
+    },
+    {
+      "id": "isPostingAdviserPristine#3",
+      "fn": "isPostingAdviserPristine",
+      "input": {
+        "adviser": {
+          "enabled": false,
+          "checkBeforePublish": false,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": false,
+          "goals": {
+            "presets": {
+              "reduceNegativity": false,
+              "lessConfrontational": false,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": false,
+            "grammar": false,
+            "clarity": false,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isPostingAdviserPristine#4",
+      "fn": "isPostingAdviserPristine",
+      "input": {
+        "adviser": {
+          "enabled": true,
+          "checkBeforePublish": false,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": false,
+          "goals": {
+            "presets": {
+              "reduceNegativity": false,
+              "lessConfrontational": false,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": false,
+            "grammar": false,
+            "clarity": false,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isPostingAdviserPristine#5",
+      "fn": "isPostingAdviserPristine",
+      "input": {
+        "adviser": {
+          "enabled": false,
+          "checkReplyContext": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isPostingAdviserPristine#6",
+      "fn": "isPostingAdviserPristine",
+      "input": {
+        "adviser": {
+          "goals": {
+            "customText": "  "
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isPostingAdviserPristine#7",
+      "fn": "isPostingAdviserPristine",
+      "input": {
+        "adviser": {
+          "goals": {
+            "customText": "stay kind"
+          }
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isPostingAdviserPristine#8",
+      "fn": "isPostingAdviserPristine",
+      "input": {
+        "adviser": {
+          "goals": {
+            "presets": {
+              "limitTopic": {
+                "enabled": true
+              }
+            }
+          }
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isPostingAdviserPristine#9",
+      "fn": "isPostingAdviserPristine",
+      "input": {
+        "adviser": {
+          "goals": {
+            "presets": {
+              "limitTopic": {
+                "enabled": false,
+                "topic": "cats"
+              }
+            }
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isPostingAdviserPristine#10",
+      "fn": "isPostingAdviserPristine",
+      "input": {
+        "adviser": {
+          "writingChecks": {
+            "styleProfile": {
+              "summary": "casual"
+            }
+          }
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isPostingAdviserPristine#11",
+      "fn": "isPostingAdviserPristine",
+      "input": {
+        "adviser": {
+          "writingChecks": {
+            "styleProfile": {
+              "guidance": "  "
+            }
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isPostingAdviserPristine#12",
+      "fn": "isPostingAdviserPristine",
+      "input": {
+        "adviser": {
+          "writingChecks": {
+            "grammar": true
+          }
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isPostingAdviserPristine#13",
+      "fn": "isPostingAdviserPristine",
+      "input": {
+        "adviser": {
+          "enabled": true,
+          "extra": {
+            "keep": 1
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isPostingAdviserPristine#14",
+      "fn": "isPostingAdviserPristine",
+      "input": {
+        "adviser": {
+          "extra": 1,
+          "goals": {
+            "other": 2,
+            "presets": {
+              "mine": 3
+            }
+          },
+          "writingChecks": {
+            "customText": ""
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "nextPostingAdviserState#1",
+      "fn": "nextPostingAdviserState",
+      "input": {
+        "adviser": null
+      },
+      "output": {
+        "enabled": true,
+        "checkBeforePublish": true,
+        "checkReplyContext": true,
+        "reviewMode": "significant",
+        "checkScope": "all",
+        "goals": {
+          "presets": {
+            "reduceNegativity": true,
+            "lessConfrontational": true
+          }
+        },
+        "writingChecks": {
+          "typos": true,
+          "grammar": true,
+          "clarity": true
+        }
+      }
+    },
+    {
+      "id": "nextPostingAdviserState#2",
+      "fn": "nextPostingAdviserState",
+      "input": {
+        "adviser": {}
+      },
+      "output": {
+        "enabled": true,
+        "checkBeforePublish": true,
+        "checkReplyContext": true,
+        "reviewMode": "significant",
+        "checkScope": "all",
+        "goals": {
+          "presets": {
+            "reduceNegativity": true,
+            "lessConfrontational": true
+          }
+        },
+        "writingChecks": {
+          "typos": true,
+          "grammar": true,
+          "clarity": true
+        }
+      }
+    },
+    {
+      "id": "nextPostingAdviserState#3",
+      "fn": "nextPostingAdviserState",
+      "input": {
+        "adviser": {
+          "enabled": false,
+          "checkBeforePublish": false,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": false,
+          "goals": {
+            "presets": {
+              "reduceNegativity": false,
+              "lessConfrontational": false,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": false,
+            "grammar": false,
+            "clarity": false,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        }
+      },
+      "output": {
+        "enabled": true,
+        "checkBeforePublish": true,
+        "reviewMode": "significant",
+        "checkScope": "all",
+        "checkReplyContext": true,
+        "goals": {
+          "presets": {
+            "reduceNegativity": true,
+            "lessConfrontational": true,
+            "limitTopic": {
+              "enabled": false,
+              "topic": ""
+            }
+          },
+          "customText": ""
+        },
+        "writingChecks": {
+          "typos": true,
+          "grammar": true,
+          "clarity": true,
+          "customText": "",
+          "styleSampleSize": 100,
+          "styleProfile": {
+            "summary": "",
+            "analyzedCount": 0,
+            "updatedAt": "",
+            "guidance": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "nextPostingAdviserState#4",
+      "fn": "nextPostingAdviserState",
+      "input": {
+        "adviser": {
+          "enabled": true,
+          "checkBeforePublish": false,
+          "reviewMode": "significant",
+          "checkScope": "all",
+          "checkReplyContext": false,
+          "goals": {
+            "presets": {
+              "reduceNegativity": false,
+              "lessConfrontational": false,
+              "limitTopic": {
+                "enabled": false,
+                "topic": ""
+              }
+            },
+            "customText": ""
+          },
+          "writingChecks": {
+            "typos": false,
+            "grammar": false,
+            "clarity": false,
+            "customText": "",
+            "styleSampleSize": 100,
+            "styleProfile": {
+              "summary": "",
+              "analyzedCount": 0,
+              "updatedAt": "",
+              "guidance": ""
+            }
+          }
+        }
+      },
+      "output": {
+        "enabled": false,
+        "checkBeforePublish": false,
+        "reviewMode": "significant",
+        "checkScope": "all",
+        "checkReplyContext": false,
+        "goals": {
+          "presets": {
+            "reduceNegativity": false,
+            "lessConfrontational": false,
+            "limitTopic": {
+              "enabled": false,
+              "topic": ""
+            }
+          },
+          "customText": ""
+        },
+        "writingChecks": {
+          "typos": false,
+          "grammar": false,
+          "clarity": false,
+          "customText": "",
+          "styleSampleSize": 100,
+          "styleProfile": {
+            "summary": "",
+            "analyzedCount": 0,
+            "updatedAt": "",
+            "guidance": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "nextPostingAdviserState#5",
+      "fn": "nextPostingAdviserState",
+      "input": {
+        "adviser": {
+          "enabled": false,
+          "checkReplyContext": true
+        }
+      },
+      "output": {
+        "enabled": true,
+        "checkReplyContext": true
+      }
+    },
+    {
+      "id": "nextPostingAdviserState#6",
+      "fn": "nextPostingAdviserState",
+      "input": {
+        "adviser": {
+          "goals": {
+            "customText": "  "
+          }
+        }
+      },
+      "output": {
+        "goals": {
+          "customText": "  ",
+          "presets": {
+            "reduceNegativity": true,
+            "lessConfrontational": true
+          }
+        },
+        "enabled": true,
+        "checkBeforePublish": true,
+        "checkReplyContext": true,
+        "reviewMode": "significant",
+        "checkScope": "all",
+        "writingChecks": {
+          "typos": true,
+          "grammar": true,
+          "clarity": true
+        }
+      }
+    },
+    {
+      "id": "nextPostingAdviserState#7",
+      "fn": "nextPostingAdviserState",
+      "input": {
+        "adviser": {
+          "goals": {
+            "customText": "stay kind"
+          }
+        }
+      },
+      "output": {
+        "goals": {
+          "customText": "stay kind"
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "nextPostingAdviserState#8",
+      "fn": "nextPostingAdviserState",
+      "input": {
+        "adviser": {
+          "goals": {
+            "presets": {
+              "limitTopic": {
+                "enabled": true
+              }
+            }
+          }
+        }
+      },
+      "output": {
+        "goals": {
+          "presets": {
+            "limitTopic": {
+              "enabled": true
+            }
+          }
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "nextPostingAdviserState#9",
+      "fn": "nextPostingAdviserState",
+      "input": {
+        "adviser": {
+          "goals": {
+            "presets": {
+              "limitTopic": {
+                "enabled": false,
+                "topic": "cats"
+              }
+            }
+          }
+        }
+      },
+      "output": {
+        "goals": {
+          "presets": {
+            "limitTopic": {
+              "enabled": false,
+              "topic": "cats"
+            },
+            "reduceNegativity": true,
+            "lessConfrontational": true
+          }
+        },
+        "enabled": true,
+        "checkBeforePublish": true,
+        "checkReplyContext": true,
+        "reviewMode": "significant",
+        "checkScope": "all",
+        "writingChecks": {
+          "typos": true,
+          "grammar": true,
+          "clarity": true
+        }
+      }
+    },
+    {
+      "id": "nextPostingAdviserState#10",
+      "fn": "nextPostingAdviserState",
+      "input": {
+        "adviser": {
+          "writingChecks": {
+            "styleProfile": {
+              "summary": "casual"
+            }
+          }
+        }
+      },
+      "output": {
+        "writingChecks": {
+          "styleProfile": {
+            "summary": "casual"
+          }
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "nextPostingAdviserState#11",
+      "fn": "nextPostingAdviserState",
+      "input": {
+        "adviser": {
+          "writingChecks": {
+            "styleProfile": {
+              "guidance": "  "
+            }
+          }
+        }
+      },
+      "output": {
+        "writingChecks": {
+          "styleProfile": {
+            "guidance": "  "
+          },
+          "typos": true,
+          "grammar": true,
+          "clarity": true
+        },
+        "enabled": true,
+        "checkBeforePublish": true,
+        "checkReplyContext": true,
+        "reviewMode": "significant",
+        "checkScope": "all",
+        "goals": {
+          "presets": {
+            "reduceNegativity": true,
+            "lessConfrontational": true
+          }
+        }
+      }
+    },
+    {
+      "id": "nextPostingAdviserState#12",
+      "fn": "nextPostingAdviserState",
+      "input": {
+        "adviser": {
+          "writingChecks": {
+            "grammar": true
+          }
+        }
+      },
+      "output": {
+        "writingChecks": {
+          "grammar": true
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "nextPostingAdviserState#13",
+      "fn": "nextPostingAdviserState",
+      "input": {
+        "adviser": {
+          "enabled": true,
+          "extra": {
+            "keep": 1
+          }
+        }
+      },
+      "output": {
+        "enabled": false,
+        "extra": {
+          "keep": 1
+        }
+      }
+    },
+    {
+      "id": "nextPostingAdviserState#14",
+      "fn": "nextPostingAdviserState",
+      "input": {
+        "adviser": {
+          "extra": 1,
+          "goals": {
+            "other": 2,
+            "presets": {
+              "mine": 3
+            }
+          },
+          "writingChecks": {
+            "customText": ""
+          }
+        }
+      },
+      "output": {
+        "extra": 1,
+        "goals": {
+          "other": 2,
+          "presets": {
+            "mine": 3,
+            "reduceNegativity": true,
+            "lessConfrontational": true
+          }
+        },
+        "writingChecks": {
+          "customText": "",
+          "typos": true,
+          "grammar": true,
+          "clarity": true
+        },
+        "enabled": true,
+        "checkBeforePublish": true,
+        "checkReplyContext": true,
+        "reviewMode": "significant",
+        "checkScope": "all"
+      }
+    }
+  ]
+}
