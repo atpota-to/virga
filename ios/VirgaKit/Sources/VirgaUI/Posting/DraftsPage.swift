@@ -15,9 +15,10 @@
 // another app are cleared out once a launch, after the list reads, while the
 // composer is closed.
 //
-// iOS: Schedule this draft's time is the system's date and time picker
-// (from a minute from now) until WhenPicker is in the app; the focus after
-// a row goes is the system's to place.
+// Schedule this draft's time is WhenPicker (Posting/WhenPicker.swift) on
+// the account's queue clock, given the account's weekly schedule and its
+// server session, as DraftsPage.jsx passes `did`. iOS: the focus after a
+// row goes is the system's to place.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -186,7 +187,9 @@ struct DraftsPage: View {
     }
     .sheet(isPresented: Binding(get: { scheduling != nil }, set: { if !$0 { scheduling = nil } })) {
       if let row = scheduling {
-        ScheduleDraftDialog(row: row, did: did, onClose: { scheduling = nil }) { scheduledFor, queued in
+        ScheduleDraftDialog(
+          row: row, did: did, queueSettings: PostingPages.settings(app, did).queue.json, onClose: { scheduling = nil }
+        ) { scheduledFor, queued in
           try await schedule(row, scheduledFor: scheduledFor, queued: queued)
         }
         .presentationDetents([.large])
@@ -516,6 +519,9 @@ struct ScheduleDraftDialog: View {
   @Environment(AppModel.self) private var app
   let row: JSONValue
   let did: String?
+  /// The account's weekly schedule (`settings.queue`): the picker's clock
+  /// and the queue's next open time.
+  let queueSettings: JSONValue
   let onClose: () -> Void
   let onSchedule: (_ scheduledFor: String, _ queued: Bool) async throws -> Void
 
@@ -523,7 +529,8 @@ struct ScheduleDraftDialog: View {
     case idle, loading, ready, failed
   }
 
-  @State private var when = Date().addingTimeInterval(60 * 60)
+  /// An ISO string, or nil while the picker's date or time is incomplete.
+  @State private var when: String?
   @State private var phase = Phase.idle
   @State private var slot: Double?
   @State private var usage = ""
@@ -533,14 +540,14 @@ struct ScheduleDraftDialog: View {
   @State private var now = SyncStatus.now()
 
   var body: some View {
-    let whenMs = when.timeIntervalSince1970 * 1000
-    let tooSoon = whenMs < now + 60_000
+    let whenMs = TimeValue.ms(when.map(JSONValue.string))
+    let tooSoon = !whenMs.isFinite || whenMs < now + 60_000
     let words = (row["text"]?.stringValue ?? "").jsTrimmed()
     DialogFrame(title: "Schedule this draft", onClose: { if !busy { onClose() } }) {
       DialogForm {
         if !words.isEmpty { HubQuote(text: words.jsSlice(0, Measure.Hub.scheduleQuoteMax)) }
-        whenFields
-        if tooSoon { FieldHint("Choose a time at least a minute from now.", isOver: true) }
+        WhenPicker(schedule: queueSettings, value: when, onChange: { when = $0 }, requester: req)
+        if tooSoon && !(when ?? "").isEmpty { FieldHint("Choose a time at least a minute from now.", isOver: true) }
         if phase == .loading { FieldHint("Looking for the next open time in your queue…") }
         if phase == .ready && slot == nil {
           FieldHint("Your weekly schedule has no open times. Set some in Posting › Weekly schedule to use the queue.")
@@ -563,24 +570,9 @@ struct ScheduleDraftDialog: View {
     .accessibilityIdentifier("schedule-draft-dialog")
   }
 
-  /// Until WhenPicker is in the app: its Date and Time fields, as the
-  /// system's pickers, from a minute from now.
-  private var whenFields: some View {
-    let soonest = Date(timeIntervalSince1970: (now + 60_000) / 1000)
-    return FlowLayout(spacing: theme.space4, lineSpacing: theme.space3, alignment: .bottom) {
-      FieldStack("Date") {
-        DatePicker("Date", selection: $when, in: soonest..., displayedComponents: [.date])
-          .labelsHidden()
-          .tint(theme.accent)
-      }
-      FieldStack("Time") {
-        DatePicker("Time", selection: $when, in: soonest..., displayedComponents: [.hourAndMinute])
-          .labelsHidden()
-          .tint(theme.accent)
-      }
-    }
-    .accessibilityElement(children: .contain)
-    .accessibilityIdentifier("when-picker")
+  /// `req`: Virga's server for the account, when it can schedule.
+  private var req: VirgaBackend? {
+    app.session.capabilitiesFor(did).canSchedule ? app.session.backendFor(did) : nil
   }
 
   /// On a phone the three buttons go one under another, Schedule first and
@@ -616,11 +608,10 @@ struct ScheduleDraftDialog: View {
 
   private func read() async {
     now = SyncStatus.now()
-    when = Date(timeIntervalSince1970: (now + 60 * 60 * 1000) / 1000)
+    guard let req else { return }
     error = ""
-    guard let did, app.session.capabilitiesFor(did).canSchedule, let req = app.session.backendFor(did) else { return }
+    when = JSDate.toISOString(now + 60 * 60 * 1000)
     phase = .loading
-    let queueSettings = PostingPages.settings(app, did).queue.json
     do {
       let list = try await ScheduleService.listScheduled(req)
       let limits = try? await ScheduleService.getLimits(req)
@@ -637,7 +628,7 @@ struct ScheduleDraftDialog: View {
   }
 
   private func go(queued: Bool) {
-    let at = queued ? slot.flatMap { JSDate.toISOString($0) } : JSDate.toISOString(when.timeIntervalSince1970 * 1000)
+    let at = queued ? slot.flatMap { JSDate.toISOString($0) } : when
     guard let at else { return }
     busy = true
     error = ""

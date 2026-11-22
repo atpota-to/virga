@@ -315,7 +315,8 @@ Posting/WhenPicker.swift, Composer/ComposerController+Schedule.swift, Composer/C
 - `WhenPicker(schedule:value:onChange:queue:requester:onQueue:min:max:repeatRule:onRepeatChange:
   repeatBlock:occurrence:)`: the caller passes the account's weekly schedule (its settings' `queue`) and
   its `VirgaBackend` (nil without a long session), where the web reads them from the did. Drafts'
-  "Schedule this draft" dialog can take it as it is. Identifiers: `when-picker`, `when-date`, `when-time`,
+  "Schedule this draft" dialog (`ScheduleDraftDialog`) takes it as DraftsPage.jsx does: no queue, no
+  repeat, the account's `settings.queue` and `backendFor(did)` when it can schedule. Identifiers: `when-picker`, `when-date`, `when-time`,
   `when-pick-<key>`, `when-zone`, `when-problem`, `when-repeat`, `when-ends`, `when-until`, `when-count`,
   `when-repeat-note`, `when-queue`, `when-queue-slot`, `when-use-queue`.
 - The composer (marked `SCHEDULE` in ComposerController, +Actions, ComposerSheet, ComposerParts):
@@ -405,10 +406,11 @@ THE POSTING PAGES (Posting/: HubPage, DraftsPage, PostedPage, TimersPage, TimerD
   `posting-drafts-schedule`, `posting-posted`, `posting-posted-menu`, `posting-timer-dialog`,
   `posting-timer-set` (or `posting-timer-dialog-refused`), `posting-timers` (or `-empty`),
   `posting-timers-settled`.
+- Schedule this draft's time is the scheduling pages' `WhenPicker` (SCHEDULING above), on the queue's
+  clock, an ISO string or nil as the web's `when`.
 - Deliberate differences: the focus after a row goes (posted, deleted, called off) is the system's to
-  place, not useFocusAfterRemoval's; Schedule this draft's time is WhenPicker's Date and Time fields as
-  the system's pickers, from a minute from now, until WhenPicker is in the app; a timer row whose model throws (a corrupt
-  `acted` step, a web bug in timerRowModel) is left out where the web's page would fail. The web shows
+  place, not useFocusAfterRemoval's; a timer row whose model throws (a corrupt `acted` step, a web bug
+  in timerRowModel) is left out where the web's page would fail. The web shows
   no PostPreview on the posted or scheduled rows (only in the composer's dialogs, a quote's card, the
   reply's context and the library), so neither does the app.
 
