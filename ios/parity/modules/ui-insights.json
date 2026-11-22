@@ -5,24 +5,44 @@
   "summary": "Dashboards, reports, charts, sharing and tools as SwiftUI screens.",
   "files": {
     "src/charts/BarList.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Charts/BarList.swift"
+      ],
+      "note": "A Grid of label (136, or 200 for NSIDs set a step smaller), bar (at least 96, or 60) and value, at most 640 wide; each row read as its title or label and its value. The web's label may be markup; here a row says whether its label is an NSID (`code`).",
+      "synced": "17cf00152b78"
     },
     "src/charts/ChartTable.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Charts/ChartTable.swift"
+      ],
+      "note": "ChartTable and ShowAsTable: the line under a chart (Show as table as a link action, then the chart's other actions), and the buckets newest first in a DataTable of at most 320 points that scrolls inside, with the trend's column named as the legend names it.",
+      "synced": "fafd2752a711"
     },
     "src/charts/Heatmap.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Charts/Heatmap.swift"
+      ],
+      "note": "A Grid of the day labels and the cells on the --heat ramp (ChartFormat.heatSteps), empty cells outlined and the best ringed, the hours under them over their spans, and the legend; the summary is the grid's VoiceOver label, each cell's title its tooltip (.help).",
+      "synced": "a1c8b6bc30a1"
     },
     "src/charts/SeriesChart.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Charts/SeriesChart.swift"
+      ],
+      "note": "In Swift Charts over bucket indices (equal slots): bars (at most 24 wide, a 2-point gap, 90% with the pressed one whole) or a line over the wash with its last dot; the trend (broken at gaps) and its legend; the second line, dashed, or stacked with its wash; the ghost's dashed reach past the last bucket with its open dot and words (drawn through the chart's proxy); the marks' rules and diamonds, and the newest five listed under the chart; the rules with their numbers (fmtTick) and the dates under the first, middle and last bucket (axisStops); a press is the hover (chartXSelection), with the crosshair, the markers and the readout on its own ground; the web's aria label. Swift Charts lays out the plot's margins and the rules' numbers itself (on the leading axis rather than on each rule at the column's edge), and a bar's foot is rounded as well as its top.",
+      "synced": "66b41ce06428"
     },
     "src/charts/Sparkline.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Charts/Sparkline.swift"
+      ],
+      "note": "The web's 100 by 30 box stretched to the width given, 32 tall, the line 1.5 over the wash; hidden from VoiceOver.",
+      "synced": "1ac1f49dceea"
     },
     "src/dashboards/DashboardPage.jsx": {
       "status": "pending",

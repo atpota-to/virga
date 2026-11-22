@@ -5,6 +5,7 @@
 // Ports src/accounts/accounts.css (its measures)
 // Ports src/settings/settings.css (its measures)
 // Ports src/shell/commandPalette.css (its measures)
+// Ports src/charts/charts.css (its measures)
 //
 // The measures of the stylesheets ThemeKit doesn't read yet (ThemeKit holds
 // theme.css, base.css, controls.css and app.css; ios/parity/cases/
@@ -187,6 +188,86 @@ public enum Measure {
     public static let narrowStepsAt: CGFloat = 479
     public static let stepGap: CGFloat = 6
     public static let tick: CGFloat = 13
+  }
+
+  /// charts.css and SeriesChart.jsx's own measures.
+  public enum Chart {
+    /// SeriesChart's column for the rules' numbers, roughly (Swift Charts
+    /// lays its own out; this sizes the slots for the bars and the ghost).
+    public static let labelColumn: CGFloat = 32
+    /// `GHOST_GUTTER`: the reach past the last bucket.
+    public static let ghostGutter: CGFloat = 28
+    /// Bars: at most 24 thick, a 2-point gap, top corners 3, at 90%.
+    public static let barMax: CGFloat = 24
+    public static let barGap: CGFloat = 2
+    public static let barRadius: CGFloat = 3
+    public static let barOpacity: Double = 0.9
+    /// `.an-chart-ylabel, .an-chart-xlabel { font-size: 12px }`
+    public static let labelSize: CGFloat = 12
+    /// The last point's dot (r 3.4), the readout's marker (r 4), a mark's
+    /// diamond (4 from centre to point).
+    public static let dot: CGFloat = 6.8
+    public static let marker: CGFloat = 8
+    public static let diamond: CGFloat = 5.6
+    /// Dashes: a mark's rule 2 3, the second line 6 5, the ghost 4 4.
+    public static let markDash: [CGFloat] = [2, 3]
+    public static let secondaryDash: [CGFloat] = [6, 5]
+    public static let ghostDash: [CGFloat] = [4, 4]
+    /// The ghost's dot, 4 in from the plot's right.
+    public static let ghostInset: CGFloat = 4
+    /// `.an-chart-area-secondary { fill-opacity: 0.14 }`
+    public static let stackedOpacity: Double = 0.14
+    /// `.an-chart-tip { padding: 7px 11px }`, 10 above its point; its ground
+    /// and words (charts.css's own: dark by day, light at night).
+    public static let tipPadding = EdgeInsets(top: 7, leading: 11, bottom: 7, trailing: 11)
+    public static let tipSpace: CGFloat = 10
+    public static let tipFillDay = Color(red: 0x0f / 255, green: 0x1b / 255, blue: 0x33 / 255)
+    public static let tipInkDay = Color(red: 0xc9 / 255, green: 0xd3 / 255, blue: 0xe6 / 255)
+    public static let tipStrongDay = Color.white
+    public static let tipFillNight = Color(red: 0xf2 / 255, green: 0xf5 / 255, blue: 0xfc / 255)
+    public static let tipInkNight = Color(red: 0x33 / 255, green: 0x41 / 255, blue: 0x5c / 255)
+    public static let tipStrongNight = Color(red: 0x0d / 255, green: 0x15 / 255, blue: 0x2b / 255)
+    /// `.an-chart-legend span { gap: 6px }`
+    public static let legendGap: CGFloat = 6
+    /// `.an-chart-marks { gap: 4px 14px }`, the newest five listed, each
+    /// diamond 6 before its words.
+    public static let marksGap: CGFloat = 14
+    public static let marksLineGap: CGFloat = 4
+    public static let marksListed = 5
+    public static let marksDiamondGap: CGFloat = 6
+    /// `.an-tableview-scroll { max-height: 20rem }`, 8 under the foot.
+    public static let tableMaxHeight: CGFloat = 320
+    public static let tableSpaceAbove: CGFloat = 8
+    /// `.an-tableview .table { min-width: min(100%, 28rem) }`
+    public static let tableMinWidth: CGFloat = 280
+    /// `.chart-foot { gap: 8px 24px; margin-top: var(--space-3) }`
+    public static let footGap: CGFloat = 24
+    public static let footLineGap: CGFloat = 8
+    /// `.barlist`: the label column 136 (200 for NSIDs), the track at
+    /// least 96 (60), 6 tall; 12 between rows, 16 between columns; at
+    /// most 640 wide; a label's glyph 15.
+    public static let barLabel: CGFloat = 136
+    public static let barLabelCode: CGFloat = 200
+    public static let barTrack: CGFloat = 96
+    public static let barTrackCode: CGFloat = 60
+    public static let barTrackHeight: CGFloat = 6
+    public static let barRowGap: CGFloat = 12
+    public static let barColumnGap: CGFloat = 16
+    public static let barListMax: CGFloat = 640
+    public static let barIcon: CGFloat = 15
+    /// `.heatmap`: the day column 34, 3 between cells, a cell 18 tall with
+    /// corners 3; the legend's cells 14 × 10, corners 2, 10 under the grid.
+    public static let heatDay: CGFloat = 34
+    public static let heatGap: CGFloat = 3
+    public static let heatCell: CGFloat = 18
+    public static let heatRadius: CGFloat = 3
+    public static let heatLegendCell = CGSize(width: 14, height: 10)
+    public static let heatLegendRadius: CGFloat = 2
+    public static let heatLegendSpace: CGFloat = 10
+    public static let heatLegendGap: CGFloat = 4
+    /// `.sparkline { height: 32px }`, its line 1.5.
+    public static let sparkHeight: CGFloat = 32
+    public static let sparkLine: CGFloat = 1.5
   }
 
   /// commandPalette.css.
