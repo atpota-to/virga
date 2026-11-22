@@ -1,6 +1,5 @@
 // Ports src/posting/library/TemplateQuestions.jsx
 // Ports src/posting/library/library.css (.lib-questions, .lib-question, .lib-answers, .lib-preview, .lib-part, .lib-preview-attach)
-// Ports src/posting/library/model.js (previewFor, attachmentFor and embedLabel, for a template on its own)
 //
 // A template's questions, asked before it fills a post: a text field per
 // typed question and a row of chips per choice question (one tab stop, the
@@ -11,145 +10,31 @@
 // it attaches, and any notes. Return in a field goes to the next question
 // that still needs an answer, or uses the template once none does.
 //
-// The preview is previewFor's. library/model.js is the library's, still to
-// be ported whole; until it is, `LibraryPreview.forTemplate` works out the
-// case the questions need on their own (a template's words added to an
-// empty post, nothing already attached), and a caller with a post under
-// way (the composer's library) passes its own preview instead. The context
-// is a template context (PostTemplates.buildTemplateContext), the
-// library's libraryContext.
+// The preview is the library's previewFor (VirgaPosting's Library): on its
+// own, a template's words added to an empty post; a caller with a post
+// under way (the composer's library) passes its own. The context is a
+// template context, the library's libraryContext.
 
 #if canImport(UIKit)
 import SwiftUI
 import VirgaCore
 import VirgaPosting
 
-/// previewFor's result: the post's words as kinded parts, its count, what
-/// it attaches, its notes, what stops it, and whether it can be used.
-struct LibraryPreview {
-  /// `{ text, kind }`: 'existing', 'added', 'context', 'answer' or 'blank'.
-  var parts: [TemplatePart]
-  var count: Int
-  var overLimit: Bool
-  var attachment: TemplateAttachSummary?
-  var notes: [String]
-  var blocked: String?
-  var usable: Bool
+/// What the editor and the preview show for an attachment: `{ by, title }`.
+struct TemplateAttachSummary: Hashable {
+  var by: String
+  var title: String
+}
 
-  static let noteGone = [
-    "post": "The post this template quotes is gone, so only its text will be added.",
-    "feed": "The feed this template attaches is gone, so only its text will be added.",
-    "list": "The list this template attaches is gone, so only its text will be added.",
-  ]
-  static let blockedGoneEmpty = [
-    "post": "The post this template quotes is gone, so there’s nothing to add.",
-    "feed": "The feed this template attaches is gone, so there’s nothing to add.",
-    "list": "The list this template attaches is gone, so there’s nothing to add.",
-  ]
-  static let noteUnsupported = "What this template attaches can’t be added here, so only its text will be added."
-  static let blockedUnsupportedEmpty = "What this template attaches can’t be added here, and it has no text."
-
-  /// `previewFor(itemFromTemplate(template, ctx, { embedView }), { currentText: '', answers, context })`.
-  static func forTemplate(
-    _ template: PostTemplate, answers: [String: String], context: TemplateContext?, embedView: TemplateEmbedView?, maxLength: Int = 300
+extension TemplateQuestions {
+  /// `previewFor(itemFromTemplate(template, ctx, { embedView }), { currentText: '', answers, context })`:
+  /// a template's words added to an empty post, nothing already attached.
+  static func defaultPreview(
+    _ template: PostTemplate, answers: [String: String], context: TemplateContext?, embedView: JSONValue?
   ) -> LibraryPreview {
-    // templateAdditionParts: the template's own words are what's added.
-    var parts: [TemplatePart] = []
-    for part in PostTemplates.templatePreviewParts(template, answers, context) {
-      push(&parts, part.text, part.kind == "text" ? "added" : part.kind)
-    }
-    let filled = PostTemplates.fillTemplate(template, answers, context)
-    let count = InlineLinks.countComposerGraphemes(filled)
-    let hasText = !template.text.jsTrimmed().isEmpty
-    let kind = EditorDrafts.templateEmbedKind(template.embed)
-    let isRecord = kind == "post" || kind == "feed" || kind == "list"
-    let missing: Bool
-    if case .missing? = embedView { missing = true } else { missing = false }
-    // slotFor: what it would attach, unless what it quotes is gone.
-    let slot: String? = missing ? nil : (isRecord ? "record" : (kind == "link" ? "link" : nil))
-    var notes: [String] = []
-    var blocked: String?
-    if isRecord && missing, let kind {
-      if hasText { notes.append(noteGone[kind] ?? "") } else { blocked = blockedGoneEmpty[kind] }
-    } else if kind == "unsupported" {
-      if hasText { notes.append(noteUnsupported) } else { blocked = blockedUnsupportedEmpty }
-    }
-    return LibraryPreview(
-      parts: parts, count: count, overLimit: count > maxLength,
-      attachment: attachment(template, embedView: embedView, context: context), notes: notes, blocked: blocked,
-      usable: hasText || slot != nil)
-  }
-
-  /// `pushPart`: a part joins the last when it is of the same kind; an empty one is left out.
-  static func push(_ parts: inout [TemplatePart], _ text: String, _ kind: String) {
-    guard !text.isEmpty else { return }
-    if let last = parts.last, last.kind == kind {
-      parts[parts.count - 1].text += text
-    } else {
-      parts.append(TemplatePart(text: text, kind: kind))
-    }
-  }
-
-  /// `attachmentFor({ kind: 'template', … })`: the mini card's words.
-  static func attachment(_ template: PostTemplate, embedView: TemplateEmbedView?, context: TemplateContext?) -> TemplateAttachSummary? {
-    var view: JSONValue?
-    switch embedView {
-    case .missing?: return nil
-    case .view(let v)?: view = v
-    case nil: view = nil
-    }
-    let embed = template.embed
-    let oneLine = { (v: String?) in (v ?? "").split(whereSeparator: \.isWhitespace).joined(separator: " ") }
-    switch EditorDrafts.templateEmbedKind(embed) {
-    case "post":
-      guard let view else { return TemplateAttachSummary(by: "Quoted post", title: "") }
-      let handle = view["author"]?["handle"]?.stringValue ?? ""
-      let mine = context?.my?.handle ?? ""
-      let by = !handle.isEmpty && !mine.isEmpty && handle == mine ? "Your post" : (handle.isEmpty ? "Post" : "Post by @\(handle)")
-      return TemplateAttachSummary(by: by, title: TemplateEditorWords.firstLine(view["record"]?["text"]?.stringValue).nonEmpty ?? embedLabel(view))
-    case "feed":
-      guard let view else { return TemplateAttachSummary(by: "Feed", title: "") }
-      let handle = view["creator"]?["handle"]?.stringValue ?? ""
-      return TemplateAttachSummary(by: handle.isEmpty ? "Feed" : "Feed by @\(handle)", title: oneLine(view["displayName"]?.stringValue))
-    case "list":
-      guard let view else { return TemplateAttachSummary(by: "List", title: "") }
-      let handle = view["creator"]?["handle"]?.stringValue ?? ""
-      return TemplateAttachSummary(by: handle.isEmpty ? "List" : "List by @\(handle)", title: oneLine(view["name"]?.stringValue))
-    case "link":
-      let uri = embed?["external"]?["uri"]?.stringValue ?? ""
-      var host = URL(string: uri)?.host ?? ""
-      if host.utf16.starts(with: "www.".utf16) { host = host.jsSlice(4) }
-      return TemplateAttachSummary(by: host.isEmpty ? "Link" : host, title: oneLine(embed?["external"]?["title"]?.stringValue).nonEmpty ?? uri)
-    default:
-      return nil
-    }
-  }
-
-  /// `embedLabel(post)`: what a post with no text shows instead.
-  static func embedLabel(_ post: JSONValue) -> String {
-    let embed = post["record"]?["embed"]
-    let own = embed?["$type"]?.stringValue ?? ""
-    let viewType = (post["embed"]?["$type"]?.stringValue ?? "").replacingOccurrences(of: "#view", with: "")
-    let type = own.isEmpty ? viewType : own
-    switch type {
-    case "app.bsky.embed.images": return "Image"
-    case "app.bsky.embed.video": return "Video"
-    case "app.bsky.embed.external": return "Link"
-    case "app.bsky.embed.recordWithMedia":
-      let media = embed?["media"]?["$type"]?.stringValue.flatMap { $0.isEmpty ? nil : $0 }
-        ?? (post["embed"]?["media"]?["$type"]?.stringValue ?? "").replacingOccurrences(of: "#view", with: "")
-      if media == "app.bsky.embed.video" { return "Video" }
-      if media == "app.bsky.embed.images" { return "Image" }
-      return "Quote"
-    case "app.bsky.embed.record":
-      let uri = embed?["record"]?["uri"]?.stringValue ?? post["embed"]?["record"]?["uri"]?.stringValue
-      let collection = TemplateEditorSources.parseAtUri(uri)?.collection
-      if collection == TemplateEditorSources.feedCollection { return "Feed" }
-      if collection == TemplateEditorSources.listCollection { return "List" }
-      return "Quote"
-    default:
-      return post["hasMedia"]?.isTruthy == true ? "Image" : "Post"
-    }
+    Library.previewFor(
+      Library.itemFromTemplate(template, context, embedView: embedView), currentText: "",
+      answers: .object(answers.mapValues(JSONValue.string)), context: context)
   }
 }
 
@@ -233,7 +118,7 @@ struct TemplatePreviewView: View {
           .accessibilityLabel(parts.map { $0.kind == "blank" ? "blank: \($0.text)" : $0.text }.joined())
       }
       if let attachment = preview.attachment {
-        TemplateAttachCard(summary: attachment)
+        TemplateAttachCard(summary: TemplateAttachSummary(by: attachment.by, title: attachment.title))
       }
       ForEach(preview.notes, id: \.self) { note in
         Text(note).virgaText(.textSm).foregroundStyle(theme.muted).fixedSize(horizontal: false, vertical: true)
@@ -254,7 +139,7 @@ struct TemplatePreviewView: View {
   /// fills itself underlined, answers on the accent's tint with a rule
   /// under them, a blank still to answer in brackets of its own, smaller
   /// and muted (a dashed chip on the web, which a run of text can't draw).
-  private func words(_ parts: [TemplatePart]) -> Text {
+  private func words(_ parts: [LibraryPreviewPart]) -> Text {
     var out = Text("")
     for part in parts {
       switch part.kind {
@@ -300,7 +185,9 @@ struct TemplateQuestions: View {
   @Environment(\.virgaTheme) private var theme
   let template: PostTemplate
   let context: TemplateContext?
-  var embedView: TemplateEmbedView? = nil
+  /// The library's view of what the template quotes (a view, or
+  /// `Library.missing`), when it has read it.
+  var embedView: JSONValue? = nil
   var submitLabel = "Use it"
   var cancelLabel = "Cancel"
   var busy = false
@@ -319,7 +206,7 @@ struct TemplateQuestions: View {
     let questions = PostTemplates.templateQuestions(template, context)
     let given = answers ?? PostTemplates.initialAnswers(questions)
     let missing = PostTemplates.missingAnswers(questions, given)
-    let shown = preview?(given) ?? LibraryPreview.forTemplate(template, answers: given, context: context, embedView: embedView)
+    let shown = preview?(given) ?? Self.defaultPreview(template, answers: given, context: context, embedView: embedView)
     VStack(alignment: .leading, spacing: Measure.Templates.questionsGap) {
       if !questions.isEmpty {
         VStack(alignment: .leading, spacing: Measure.Templates.questionListGap) {
