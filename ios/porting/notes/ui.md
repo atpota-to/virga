@@ -6,8 +6,9 @@ The code and ios/parity/modules/ui-*.json are the truth; read this for orientati
 API a new screen uses, and what was left out.
 
 Status: the foundation is built and passes CI (compile, the app's unit tests, the UI tests
-on an iPhone and an iPad). Not yet audited against the web's components as a whole. The
-dashboards, reports, tools, posting and Defense screens are still to come.
+on an iPhone and an iPad). Not yet audited against the web's components as a whole. Round 5
+added the charts, the dashboards and the first reports (below); tools, sharing, posting and
+Defense are still to come.
 
 ## How the layer is checked
 
@@ -94,6 +95,25 @@ SHELL (Shell/)
   PreferencesModel extensions), and the command palette (Search in the app bar and the
   sidebar, ⌘K; recent commands under `virga:palette-recent`).
 
+CHARTS (Charts/), in Swift Charts over bucket indices
+- `SeriesChart(series: [ChartPoint], seriesLabel:, secondary: ChartSecondary?, stacked:, trend:,
+  mode: .bars|.line, unit:, zeroBase:, ghost: ChartGhost?, format:, marks: [SeriesMark]?, height:,
+  accessibilityLabel:)`; `ChartPoint.of(...)` takes SeriesPoint, TrendPoint or RatePoint arrays.
+  A press is the hover (`chartXSelection`), with the readout on its own ground.
+- `ChartTable(series:secondary:trend:unit:valueHead:secondaryHead:format:) { actions }` and
+  `ShowAsTable`: the line under every chart and its table. `BarList(rows: [BarListRow])`,
+  `Heatmap(rows:columns:summary:)`, `Sparkline(values:)`.
+
+DASHBOARDS AND REPORTS (Dashboards/, Reports/)
+- `ShellDashboards` is DashboardsContext's provider now: every action over Layouts, written back
+  under `virga:dashboards:<did>` at once.
+- `DashboardPage(dashboard:)`: header with ⋯, Customize (move up/down, size, Remove, the library
+  in a dialog), the period picker; `CardGrid` (twelve columns, dashboards.css's 860/620 rules);
+  `WidgetBody` draws the ported cards (four figures, six charts, Best time); the rest show their
+  title and `Unported.card` (posting cards: `Unported.postingCard`).
+- `ReportsIndex`, `ReportPage(report:)`: Followers, Posts and Engagement; the others keep their
+  header and the unported sentence.
+
 APP (App/, Pages/, Legal/, SignIn/, Accounts/, Settings/, Platform/)
 - `AppModel` builds the stores and models once per process; `AppModel.archive(for:)` makes
   one ArchiveModel per signed-in account, and `ArchiveHost` (ArchiveProvider's role)
@@ -119,14 +139,15 @@ APP (App/, Pages/, Legal/, SignIn/, Accounts/, Settings/, Platform/)
 ## Known gaps and deliberate differences
 
 - Left for later steps: the live sky (src/hillside, three.js) and the five taps on the
-  mark; New dashboard and Customize; the dashboards, reports, tools, posting and Defense
-  pages; "Keep it when space runs low" (iOS has nothing to ask).
+  mark; dragging cards, a card's settings dialog, the dashboard cards and reports not listed
+  above, ChartNotes and the charts' notes and milestones; the tools, sharing, posting and
+  Defense pages; "Keep it when space runs low" (iOS has nothing to ask).
 - Copy is the web's word for word, including words that only fit a browser ("This
   browser's region", "Forget X on this browser", "Saving the repo to this browser"). Worth
   raising on the web side rather than changing on one side.
-- New copy the web has no counterpart for: "This page isn't in the iOS app yet." and "This
-  section isn't in the iOS app yet."
+- New copy the web has no counterpart for: "This page isn't in the iOS app yet.", "This
+  section isn't in the iOS app yet.", "This card isn't in the iOS app yet." and "This card
+  needs the composer, which isn't in the iOS app yet."
 - Every window shares one session, so the web's "another tab switched accounts" notice
   has no case; TermsGate's Reload can't fetch newer documents (they are bundled).
 - HandleField has no hardware-keyboard arrow navigation through the suggestions.
-- DashboardsContext is only read so far (ui-insights.json keeps it pending).

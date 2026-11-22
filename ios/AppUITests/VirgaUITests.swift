@@ -140,8 +140,8 @@ final class VirgaUITests: XCTestCase {
   /// Settings by way of the account menu, then Appearance: on a phone from
   /// the list of sections, beside the sidebar from its link under Settings
   /// (the bare address opens Account there).
-  private func openAppearance(_ app: XCUIApplication) {
-    waitForHome(app)
+  private func openAppearance(_ app: XCUIApplication, fromHome: Bool = true) {
+    if fromHome { waitForHome(app) }
     element(app, "account-menu").tap()
     let settings = button(app, "Accounts and settings")
     XCTAssertTrue(settings.waitForExistence(timeout: 5))
@@ -191,7 +191,7 @@ final class VirgaUITests: XCTestCase {
     snapshot("settings-night-high-contrast")
   }
 
-  /// The first dashboard under the day sky, whatever the clock says.
+  /// The first build's page under the day sky, whatever the clock says.
   func testTheDashboardByDay() {
     let app = launch()
     openAppearance(app)
@@ -201,23 +201,67 @@ final class VirgaUITests: XCTestCase {
     XCTAssertTrue(day.isSelected)
     part(app, "dashboard").tap()
     waitForHome(app)
-    snapshot("dashboard-day")
+    snapshot("first-run-day")
   }
 
   /// The first build, pressed: its steps while it runs, then the first
   /// dashboard once Mira's whole archive is built from the demo's network
-  /// (no added latency, so it takes seconds; the wait is bounded).
+  /// (no added latency, so it takes seconds; every wait is bounded). Then
+  /// what the built archive shows: the dashboard and its heatmap, Customize,
+  /// the reports and a chart's table, and the dashboard by night and by day.
   func testTheFirstBuildRuns() {
     let app = launch(["-VirgaDemoFlags", "latency=0"])
     waitForHome(app)
     snapshot("first-run")
     element(app, "first-run-build").tap()
-    let steps = element(app, "sync-steps")
-    if steps.waitForExistence(timeout: 5) { snapshot("first-run-building") }
+    if element(app, "sync-steps").waitForExistence(timeout: 5) { snapshot("first-run-building") }
     let built = element(app, "first-run-title").waitForNonExistence(timeout: 180)
     XCTAssertFalse(element(app, "first-run-error").exists, "the first build failed")
     XCTAssertTrue(built, "the first build didn't finish in three minutes")
+    waitForTitle(app, "Overview")
     snapshot("dashboard-built")
+
+    let heatmap = element(app, "widget-best-time")
+    scrollTo(app, heatmap)
+    if heatmap.exists { snapshot("dashboard-heatmap") }
+    app.swipeDown()
+    app.swipeDown()
+
+    let customize = element(app, "customize")
+    XCTAssertTrue(customize.waitForExistence(timeout: 5), "no Customize")
+    customize.tap()
+    XCTAssertTrue(element(app, "customize-done").waitForExistence(timeout: 5))
+    snapshot("customize")
+    element(app, "customize-done").tap()
+
+    part(app, "reports").tap()
+    waitForTitle(app, "Reports")
+    snapshot("reports-built")
+    for (key, title) in [("followers", "Followers"), ("posts", "Posts")] {
+      let tile = element(app, "report-\(key)")
+      scrollTo(app, tile)
+      tile.tap()
+      waitForTitle(app, title)
+      snapshot("report-\(key)")
+      if key == "followers" {
+        let table = element(app, "show-as-table")
+        scrollTo(app, table)
+        table.tap()
+        if element(app, "chart-table").waitForExistence(timeout: 5) { snapshot("chart-table") }
+      }
+      part(app, "reports").tap()
+      waitForTitle(app, "Reports")
+    }
+
+    for sky in ["night", "day"] {
+      openAppearance(app, fromHome: false)
+      let choice = element(app, "sky-\(sky)")
+      XCTAssertTrue(choice.waitForExistence(timeout: 5))
+      choice.tap()
+      part(app, "dashboard").tap()
+      waitForTitle(app, "Overview")
+      snapshot("dashboard-\(sky)")
+    }
   }
 
   /// The command palette, from Search, with a few letters typed; then one
