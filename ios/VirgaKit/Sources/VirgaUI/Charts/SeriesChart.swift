@@ -257,6 +257,10 @@ public struct SeriesChart: View {
       }
       .allowsHitTesting(false)
     }
+    // One image to VoiceOver, as the web's `<svg role="img">` is: without
+    // this every mark and axis label is a stop of its own, named by bucket
+    // index. Show as table is the way to the values.
+    .accessibilityElement(children: .ignore)
     .accessibilityLabel(summary(scale))
     .accessibilityIdentifier("series-chart")
   }
