@@ -310,10 +310,12 @@ struct FollowCleanupPage: View {
     .accessibilityIdentifier("cleanup-check")
   }
 
+  /// `.check-actions`, `.check-progress`: side by side, wrapping where a
+  /// narrow phone has no room for both (the select is as wide as its value).
   @ViewBuilder
   private func checkActions(rows: [CleanupRow], checkedCount: Int) -> some View {
     if let checking = progress.checking {
-      HStack(spacing: Measure.Tools.checkActionsGap) {
+      FlowLayout(spacing: Measure.Tools.checkActionsGap, lineSpacing: Measure.Tools.checkActionsRowGap, alignment: .center) {
         Text("\(AppLocale.formatNumber(checking.done)) of \(AppLocale.formatNumber(checking.total))")
           .virgaText(.textBase)
           .foregroundStyle(theme.muted)
@@ -325,7 +327,7 @@ struct FollowCleanupPage: View {
       }
       .frame(minHeight: theme.points(ThemeKit.touchButtonHeight))
     } else {
-      HStack(spacing: Measure.Tools.checkActionsGap) {
+      FlowLayout(spacing: Measure.Tools.checkActionsGap, lineSpacing: Measure.Tools.checkActionsRowGap, alignment: .center) {
         ToolSelect(label: "Quiet after", options: FollowCleanup.quietChoices.map { ($0, "\($0) days") }, selection: $quietDays)
         Button {
           runCheck(rows.map(\.did))

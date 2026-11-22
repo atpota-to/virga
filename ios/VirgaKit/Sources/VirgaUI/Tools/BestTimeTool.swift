@@ -106,11 +106,13 @@ struct BestTimeBody: View {
   }
 }
 
-/// `.best-table`: every slot with posts, the whole section wide, scrolling
-/// inside 24rem under a head that stays put on the page's ground
-/// (charts.css `.an-tableview .table thead th { position: sticky }`). Each
-/// number column keeps the width of its widest value or its head, so the
-/// head and the rows line up.
+/// `.best-table`: every slot with posts, the column's width up to 28rem
+/// (`.an-tableview .table { width: auto; min-width: min(100%, 28rem) }`,
+/// which its three columns fit within), scrolling inside 24rem under a head
+/// that stays put on the page's ground (charts.css `.an-tableview .table
+/// thead th { position: sticky }`). Each number column keeps the width of
+/// its widest value or its head, so the head and the rows line up; a row's
+/// slot is its head, in ink-2 (`.an-tableview .table tbody th`).
 struct BestTimeTable: View {
   @Environment(\.virgaTheme) private var theme
   let rows: [[String]]
@@ -140,13 +142,14 @@ struct BestTimeTable: View {
         }
       }
     }
-    .frame(maxHeight: Measure.Tools.bestTableMaxHeight)
+    .frame(maxWidth: Measure.Tools.bestTableWidth, maxHeight: Measure.Tools.bestTableMaxHeight, alignment: .leading)
     .accessibilityElement(children: .contain)
   }
 
   private func head(widest: [String]) -> some View {
     HStack(alignment: .bottom, spacing: 0) {
       headText(Self.heads[0])
+        .padding(.trailing, theme.insets(ThemeKit.tableCellPadding).trailing)
         .frame(maxWidth: .infinity, alignment: .leading)
       numberCell(Self.heads[1], column: 1, widest: widest[0], isHead: true)
       numberCell(Self.heads[2], column: 2, widest: widest[1], isHead: true)
@@ -166,8 +169,9 @@ struct BestTimeTable: View {
     return HStack(alignment: .firstTextBaseline, spacing: 0) {
       Text(row.first ?? "")
         .virgaText(.textBase)
-        .foregroundStyle(theme.ink)
+        .foregroundStyle(theme.ink2)
         .fixedSize(horizontal: false, vertical: true)
+        .padding(.trailing, pad.trailing)
         .frame(maxWidth: .infinity, alignment: .leading)
       numberCell(row.count > 1 ? row[1] : "", column: 1, widest: widest[0], isHead: false)
       numberCell(row.count > 2 ? row[2] : "", column: 2, widest: widest[1], isHead: false)

@@ -152,8 +152,11 @@ struct ModeratorCard: View {
     }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("defense-moderator-code")
-    // `role="status"`: the code to send is read out when it arrives.
-    .toolAnnounces("Send this to @\(handle) in a DM, from this account, within fifteen minutes: link \(code)", onAppear: true)
+    // `role="status"`: the code to send is read out when it arrives, with
+    // the rest of what the region says.
+    .toolAnnounces(
+      "Send this to @\(handle) in a DM, from this account, within fifteen minutes:\nlink \(code)\nIt works only from this account, and only once. This page notices when it lands.",
+      onAppear: true)
   }
 
   /// `load()`: the link as the server has it.

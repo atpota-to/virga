@@ -269,15 +269,13 @@ struct ScanFormCard: View {
       .accessibilityLabel("Link to a post")
       .accessibilityIdentifier("defense-link")
     // On a phone the button spans the column, under the field
-    // (`.defense-field { flex-direction: column; align-items: stretch }`).
-    let go = Button {
-      submit()
-    } label: {
-      Text("Scan").frame(maxWidth: theme.isPhone ? .infinity : nil)
-    }
-    .buttonStyle(.virga)
-    .disabled(text.jsTrimmed().isEmpty || running)
-    .accessibilityIdentifier("defense-scan-link")
+    // (`.defense-field { flex-direction: column; align-items: stretch }`),
+    // as the sign-in form's does.
+    let go = Button("Scan") { submit() }
+      .buttonStyle(.virga)
+      .environment(\.virgaFillsWidth, theme.isPhone)
+      .disabled(text.jsTrimmed().isEmpty || running)
+      .accessibilityIdentifier("defense-scan-link")
     return Group {
       if theme.isPhone {
         VStack(alignment: .leading, spacing: theme.space3) {

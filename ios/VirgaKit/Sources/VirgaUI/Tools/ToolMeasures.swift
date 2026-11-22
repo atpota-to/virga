@@ -97,8 +97,9 @@ extension Measure {
     public static let checkRowGap: CGFloat = 14
     public static let checkTextMeasure: CGFloat = 68
     public static let checkTextBasis: CGFloat = 360
-    /// `.check-actions, .check-progress { gap: 10px 16px }`, `.check-progress .progress { width: 160px }`
+    /// `.check-actions, .check-progress { flex-wrap: wrap; gap: 10px 16px }`, `.check-progress .progress { width: 160px }`
     public static let checkActionsGap: CGFloat = 16
+    public static let checkActionsRowGap: CGFloat = 10
     public static let checkProgressWidth: CGFloat = 160
 
     /// controls.css `.list-toolbar { gap: 12px 32px; margin-bottom: var(--space-4) }` (16 apart on a phone),
@@ -127,6 +128,9 @@ extension Measure {
     public static let bestDaysSpaceAbove: CGFloat = 14
     /// `.best-table { max-height: 24rem }`
     public static let bestTableMaxHeight: CGFloat = 384
+    /// charts.css `.an-tableview .table { width: auto; min-width: min(100%, 28rem) }`: the
+    /// table as wide as the column up to this, which its three columns fit within.
+    public static let bestTableWidth: CGFloat = 448
     /// charts.css `.an-tableview .table thead th { position: sticky; padding-top: 8px }`
     public static let stickyHeadSpaceAbove: CGFloat = 8
     /// controls.css `@media (max-width: 560px) { .card-head:has(> :nth-child(2)) > .segmented { margin-top: 8px } }`

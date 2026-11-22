@@ -261,13 +261,10 @@ struct KeptByHandCard: View {
         .accessibilityLabel("Why (optional)")
     }
     // On a phone Keep spans the column (`.defense-keep-form { grid-template-columns: 1fr }`).
-    let go = Button {
-      Task { await keep() }
-    } label: {
-      Text("Keep").frame(maxWidth: theme.isPhone ? .infinity : nil)
-    }
-    .buttonStyle(.virga)
-    .disabled(!canKeep)
+    let go = Button("Keep") { Task { await keep() } }
+      .buttonStyle(.virga)
+      .environment(\.virgaFillsWidth, theme.isPhone)
+      .disabled(!canKeep)
     return Group {
       if theme.isPhone {
         VStack(alignment: .leading, spacing: theme.space3) {

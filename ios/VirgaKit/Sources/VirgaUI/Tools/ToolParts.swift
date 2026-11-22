@@ -1149,10 +1149,11 @@ struct ToolAnnouncement: ViewModifier {
       .onChange(of: text ?? "") { _, next in Self.post(next) }
   }
 
+  /// As the toasts post theirs (Shell's `push`).
   @MainActor
   static func post(_ text: String?) {
     guard let text, !text.isEmpty else { return }
-    AccessibilityNotification.Announcement(text).post()
+    UIAccessibility.post(notification: .announcement, argument: text)
   }
 }
 
