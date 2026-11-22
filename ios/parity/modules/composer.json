@@ -176,7 +176,8 @@
     "src/posting/lib/images.js": {
       "status": "partial",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaPosting/Lib/Images.swift"
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/Images.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Platform/ImageIOEncoder.swift"
       ],
       "fixtures": [
         "composer.images"
