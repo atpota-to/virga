@@ -1,0 +1,2835 @@
+{
+  "name": "demo-network.harness",
+  "sources": [
+    "harness/harness.js"
+  ],
+  "cases": [
+    {
+      "id": "flags#0",
+      "fn": "readFlags",
+      "input": {
+        "search": ""
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#1",
+      "fn": "readFlags",
+      "input": {
+        "search": "?"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#2",
+      "fn": "readFlags",
+      "input": {
+        "search": "?accounts=1"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#3",
+      "fn": "readFlags",
+      "input": {
+        "search": "?accounts=2"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#4",
+      "fn": "readFlags",
+      "input": {
+        "search": "?accounts=1&accounts=2"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#5",
+      "fn": "readFlags",
+      "input": {
+        "search": "?a%63counts=1"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#6",
+      "fn": "readFlags",
+      "input": {
+        "search": "accounts=1&latency=5"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 5,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#7",
+      "fn": "readFlags",
+      "input": {
+        "search": "?mode=browser"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "browser",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#8",
+      "fn": "readFlags",
+      "input": {
+        "search": "?mode=Browser"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#9",
+      "fn": "readFlags",
+      "input": {
+        "search": "?mode=backend"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#10",
+      "fn": "readFlags",
+      "input": {
+        "search": "?signedout"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": true,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#11",
+      "fn": "readFlags",
+      "input": {
+        "search": "?signedout=0"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": true,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#12",
+      "fn": "readFlags",
+      "input": {
+        "search": "?expired=lab"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": "lab",
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#13",
+      "fn": "readFlags",
+      "input": {
+        "search": "?expired="
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#14",
+      "fn": "readFlags",
+      "input": {
+        "search": "?expired=mira&signedout"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": true,
+        "expired": "mira",
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#15",
+      "fn": "readFlags",
+      "input": {
+        "search": "?scope=read"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#16",
+      "fn": "readFlags",
+      "input": {
+        "search": "?scope=READ"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#17",
+      "fn": "readFlags",
+      "input": {
+        "search": "?defense=on"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#18",
+      "fn": "readFlags",
+      "input": {
+        "search": "?defense=lists"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#19",
+      "fn": "readFlags",
+      "input": {
+        "search": "?defense=1"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#20",
+      "fn": "readFlags",
+      "input": {
+        "search": "?scope=read&defense=lists"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#21",
+      "fn": "readFlags",
+      "input": {
+        "search": "?appview=failopen"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "failopen",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#22",
+      "fn": "readFlags",
+      "input": {
+        "search": "?appview=flaky"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "flaky",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#23",
+      "fn": "readFlags",
+      "input": {
+        "search": "?appview=ok"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#24",
+      "fn": "readFlags",
+      "input": {
+        "search": "?appview=x"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#25",
+      "fn": "readFlags",
+      "input": {
+        "search": "?defensewrites=off"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": false,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#26",
+      "fn": "readFlags",
+      "input": {
+        "search": "?defensewrites=OFF"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#27",
+      "fn": "readFlags",
+      "input": {
+        "search": "?defensewrites="
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#28",
+      "fn": "readFlags",
+      "input": {
+        "search": "?moderator=off"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "off",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#29",
+      "fn": "readFlags",
+      "input": {
+        "search": "?moderator=linked"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "linked",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#30",
+      "fn": "readFlags",
+      "input": {
+        "search": "?moderator=x"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#31",
+      "fn": "readFlags",
+      "input": {
+        "search": "?limits=3,1,1"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {
+          "scheduledPosts": 3,
+          "postTimers": 1,
+          "conditionalTimers": 1
+        },
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#32",
+      "fn": "readFlags",
+      "input": {
+        "search": "?limits=,2,0"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {
+          "postTimers": 2
+        },
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#33",
+      "fn": "readFlags",
+      "input": {
+        "search": "?limits= 4 , x, 5.5"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {
+          "scheduledPosts": 4
+        },
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#34",
+      "fn": "readFlags",
+      "input": {
+        "search": "?limits="
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#35",
+      "fn": "readFlags",
+      "input": {
+        "search": "?limits=1e3,0010,7,9"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {
+          "postTimers": 10,
+          "conditionalTimers": 7
+        },
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#36",
+      "fn": "readFlags",
+      "input": {
+        "search": "?limits=%E2%80%833"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {
+          "scheduledPosts": 3
+        },
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#37",
+      "fn": "readFlags",
+      "input": {
+        "search": "?ailimits=5,2,1"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 5,
+          "altText": 2,
+          "style": 1
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#38",
+      "fn": "readFlags",
+      "input": {
+        "search": "?ailimits=unlimited"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": null,
+          "altText": null,
+          "style": null
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#39",
+      "fn": "readFlags",
+      "input": {
+        "search": "?ailimits=%20NONE%20"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": null,
+          "altText": null,
+          "style": null
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#40",
+      "fn": "readFlags",
+      "input": {
+        "search": "?ailimits=Unlimited,1"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "altText": 1,
+          "style": 3
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#41",
+      "fn": "readFlags",
+      "input": {
+        "search": "?ailimits=0"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 0,
+          "altText": 15,
+          "style": 3
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#42",
+      "fn": "readFlags",
+      "input": {
+        "search": "?ailimits="
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "altText": 15,
+          "style": 3
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#43",
+      "fn": "readFlags",
+      "input": {
+        "search": "?ailimits=,,"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "altText": 15,
+          "style": 3
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#44",
+      "fn": "readFlags",
+      "input": {
+        "search": "?ailimits=a,4"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "altText": 4,
+          "style": 3
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#45",
+      "fn": "readFlags",
+      "input": {
+        "search": "?ailimits=1.5,2"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "altText": 2,
+          "style": 3
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#46",
+      "fn": "readFlags",
+      "input": {
+        "search": "?ai=slow"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "slow",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#47",
+      "fn": "readFlags",
+      "input": {
+        "search": "?ai=down"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "down",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#48",
+      "fn": "readFlags",
+      "input": {
+        "search": "?ai=x"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#49",
+      "fn": "readFlags",
+      "input": {
+        "search": "?terms=ask"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "ask",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#50",
+      "fn": "readFlags",
+      "input": {
+        "search": "?terms=down"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "down",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#51",
+      "fn": "readFlags",
+      "input": {
+        "search": "?terms=whatever"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#52",
+      "fn": "readFlags",
+      "input": {
+        "search": "?terms="
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#53",
+      "fn": "readFlags",
+      "input": {
+        "search": "?cron=0"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 0,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#54",
+      "fn": "readFlags",
+      "input": {
+        "search": "?cron=abc"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#55",
+      "fn": "readFlags",
+      "input": {
+        "search": "?cron="
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 0,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#56",
+      "fn": "readFlags",
+      "input": {
+        "search": "?cron=1e2"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 100,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#57",
+      "fn": "readFlags",
+      "input": {
+        "search": "?cron=0x10"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 16,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#58",
+      "fn": "readFlags",
+      "input": {
+        "search": "?latency=0"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 0,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#59",
+      "fn": "readFlags",
+      "input": {
+        "search": "?latency=-5"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": -5,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#60",
+      "fn": "readFlags",
+      "input": {
+        "search": "?latency=Infinity"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#61",
+      "fn": "readFlags",
+      "input": {
+        "search": "?latency=%2012%20"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 12,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#62",
+      "fn": "readFlags",
+      "input": {
+        "search": "?latency=+5"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 5,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#63",
+      "fn": "readFlags",
+      "input": {
+        "search": "?latency=1%2B1"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#64",
+      "fn": "readFlags",
+      "input": {
+        "search": "?now=1794700000000"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": 1794700000000
+      }
+    },
+    {
+      "id": "flags#65",
+      "fn": "readFlags",
+      "input": {
+        "search": "?now=0"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#66",
+      "fn": "readFlags",
+      "input": {
+        "search": "?now=-1"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#67",
+      "fn": "readFlags",
+      "input": {
+        "search": "?now=abc"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#68",
+      "fn": "readFlags",
+      "input": {
+        "search": "?now="
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#69",
+      "fn": "readFlags",
+      "input": {
+        "search": "?now=1794700000000.75"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": 1794700000000.75
+      }
+    },
+    {
+      "id": "flags#70",
+      "fn": "readFlags",
+      "input": {
+        "search": "?accounts=1&mode=browser&signedout&expired=lab&scope=read&defense=on&appview=flaky&defensewrites=off&moderator=linked&limits=1,2,3&ailimits=4,5,6&ai=down&terms=ask&cron=5&latency=7&now=8"
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          }
+        ],
+        "mode": "browser",
+        "signedOut": true,
+        "expired": "lab",
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+        "appview": "flaky",
+        "defenseWrites": false,
+        "moderator": "linked",
+        "limits": {
+          "scheduledPosts": 1,
+          "postTimers": 2,
+          "conditionalTimers": 3
+        },
+        "aiLimits": {
+          "adviser": 4,
+          "altText": 5,
+          "style": 6
+        },
+        "ai": "down",
+        "terms": "ask",
+        "cronSeconds": 5,
+        "latency": 7,
+        "now": 8
+      }
+    }
+  ]
+}

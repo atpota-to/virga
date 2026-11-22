@@ -1,0 +1,93 @@
+// The harness's address flags (harness/harness.js readFlags, with its
+// readLimits and readAiLimits): every flag, the values each takes and the
+// fallbacks for the rest, from the flags' own tests and the README. On iOS a
+// launch argument in the same form is read the same way. Swift:
+// VirgaDemo/Harness/Harness+Flags.swift; tests in
+// ios/VirgaKit/Tests/VirgaDemoTests/HarnessFlagsParityTests.swift.
+
+import { readFlags } from '../../../harness/harness.js';
+import { each } from './_helpers.js';
+
+export const sources = ['harness/harness.js'];
+
+const SEARCHES = [
+  '',
+  '?',
+  '?accounts=1',
+  '?accounts=2',
+  '?accounts=1&accounts=2',
+  '?a%63counts=1',
+  'accounts=1&latency=5',
+  '?mode=browser',
+  '?mode=Browser',
+  '?mode=backend',
+  '?signedout',
+  '?signedout=0',
+  '?expired=lab',
+  '?expired=',
+  '?expired=mira&signedout',
+  '?scope=read',
+  '?scope=READ',
+  '?defense=on',
+  '?defense=lists',
+  '?defense=1',
+  '?scope=read&defense=lists',
+  '?appview=failopen',
+  '?appview=flaky',
+  '?appview=ok',
+  '?appview=x',
+  '?defensewrites=off',
+  '?defensewrites=OFF',
+  '?defensewrites=',
+  '?moderator=off',
+  '?moderator=linked',
+  '?moderator=x',
+  '?limits=3,1,1',
+  '?limits=,2,0',
+  '?limits= 4 , x, 5.5',
+  '?limits=',
+  '?limits=1e3,0010,7,9',
+  '?limits=%E2%80%833',
+  '?ailimits=5,2,1',
+  '?ailimits=unlimited',
+  '?ailimits=%20NONE%20',
+  '?ailimits=Unlimited,1',
+  '?ailimits=0',
+  '?ailimits=',
+  '?ailimits=,,',
+  '?ailimits=a,4',
+  '?ailimits=1.5,2',
+  '?ai=slow',
+  '?ai=down',
+  '?ai=x',
+  '?terms=ask',
+  '?terms=down',
+  '?terms=whatever',
+  '?terms=',
+  '?cron=0',
+  '?cron=abc',
+  '?cron=',
+  '?cron=1e2',
+  '?cron=0x10',
+  '?latency=0',
+  '?latency=-5',
+  '?latency=Infinity',
+  '?latency=%2012%20',
+  '?latency=+5',
+  '?latency=1%2B1',
+  '?now=1794700000000',
+  '?now=0',
+  '?now=-1',
+  '?now=abc',
+  '?now=',
+  '?now=1794700000000.75',
+  '?accounts=1&mode=browser&signedout&expired=lab&scope=read&defense=on&appview=flaky&defensewrites=off&moderator=linked&limits=1,2,3&ailimits=4,5,6&ai=down&terms=ask&cron=5&latency=7&now=8',
+];
+
+export default async function cases() {
+  return each(
+    'readFlags',
+    SEARCHES.map((search, i) => ({ $id: `flags#${i}`, search })),
+    ({ search }) => readFlags(search),
+  );
+}
