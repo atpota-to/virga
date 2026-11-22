@@ -336,7 +336,7 @@ struct ScheduledDialogs: ViewModifier {
   /// slide away, and the sheet is still drawn until it has gone; its words
   /// come from this, so they don't change under it (the web unmounts the
   /// dialog's content at once).
-  @State private var asked: ScheduledConfirm?
+  @State private var asked: ScheduledConfirm? = nil
 
   private func shown(_ kind: ScheduledConfirm.Kind) -> Binding<Bool> {
     Binding(

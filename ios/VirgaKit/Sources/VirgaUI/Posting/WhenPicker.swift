@@ -59,7 +59,7 @@ struct WhenPicker: View {
   @State private var taken = Taken(status: .idle, rows: [])
   /// The picker's own width (`container: when / inline-size`); the
   /// window's stands in until it has been measured.
-  @State private var width: CGFloat?
+  @State private var width: CGFloat? = nil
 
   struct ZonedParts: Equatable {
     var date: String

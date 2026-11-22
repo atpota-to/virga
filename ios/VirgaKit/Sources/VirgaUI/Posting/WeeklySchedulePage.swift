@@ -136,7 +136,7 @@ struct WeeklySchedulePage: View {
   /// (usePostingSettings). Made in `.task`, not in init: SwiftUI makes the
   /// page again each time the shell redraws and keeps only the first, and a
   /// PostingSettingsModel listens from the moment it is made.
-  @State private var settings: PostingSettingsModel?
+  @State private var settings: PostingSettingsModel? = nil
   /// The settings stopped as the page went: kept to draw from until a new
   /// one is made as it comes back.
   @State private var settingsStopped = false
