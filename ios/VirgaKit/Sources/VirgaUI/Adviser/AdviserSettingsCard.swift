@@ -92,6 +92,7 @@ struct AdviserSettingsCard: View {
       }
     }
     .adviserStyleDialog(isPresented: $styleOpen, did: did, model: model)
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("posting-adviser")
   }
 

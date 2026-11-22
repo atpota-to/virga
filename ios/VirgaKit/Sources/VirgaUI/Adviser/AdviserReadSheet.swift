@@ -71,6 +71,7 @@ struct AdviserReadSheet: View {
           }
         }
       }
+      .accessibilityElement(children: .contain)
       .accessibilityIdentifier("adviser-sheet")
     } actions: {
       if busy {

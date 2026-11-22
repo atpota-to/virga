@@ -181,6 +181,7 @@ struct LibraryPanel: View {
     .task(id: shown?.id) { if let shown { await hydrate(shown) } }
     .onChange(of: lib.items("templates").count, initial: true) { _, _ in focusOnTemplate() }
     .onChange(of: selectedId) { _, _ in useError = nil }
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("library-panel")
   }
 
@@ -269,6 +270,7 @@ struct LibraryPanel: View {
             }
           }
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("library-list")
       }
       listFoot

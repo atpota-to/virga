@@ -141,6 +141,7 @@ struct TemplatesPage: View {
         "“\(deleting?.name ?? "")” goes from your repo, so every app that reads your templates loses it, Anisota included. This can’t be undone."
       )
     }
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("templates-page")
   }
 
@@ -220,6 +221,7 @@ struct TemplatesPage: View {
         .accessibilityLabel(anyGroup ? (group.name.isEmpty ? "Other templates" : group.name) : "")
       }
     }
+    .accessibilityElement(children: .contain)
     .accessibilityIdentifier("templates-list")
   }
 

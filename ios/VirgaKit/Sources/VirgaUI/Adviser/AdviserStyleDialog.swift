@@ -105,6 +105,7 @@ struct AdviserStyleDialog: View {
           }
         }
       }
+      .accessibilityElement(children: .contain)
       .accessibilityIdentifier("style-dialog")
     } actions: {
       if hasSaved && !working {
