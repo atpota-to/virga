@@ -23,6 +23,7 @@
 import SwiftUI
 import VirgaCore
 import VirgaNetwork
+import VirgaPosting
 import VirgaSession
 
 public struct AppRoot: View {
@@ -31,6 +32,9 @@ public struct AppRoot: View {
   @Environment(ShellNavigator.self) private var navigator
   @Environment(SessionModel.self) private var session
   @Environment(TermsAcceptanceModel.self) private var terms
+  /// The composer's host (ComposerContext), above the per-account identity,
+  /// so an open composer survives switching accounts.
+  @State private var composer = ComposerHost()
 
   public init() {}
 
@@ -53,7 +57,10 @@ public struct AppRoot: View {
       .onChange(of: subject, initial: true) { _, next in
         terms.update(did: next.did, mode: next.mode)
       }
-      .onOpenURL { url in finishReturn(url) }
+      .onOpenURL { url in
+        if openCompose(url) { return }
+        finishReturn(url)
+      }
       .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
         if let url = activity.webpageURL { finishReturn(url) }
       }
@@ -86,8 +93,29 @@ public struct AppRoot: View {
         ShellView(store: app.stores.keyValue, did: did)
       }
       .id(did)
+      .composerHost(composer)
+      .task {
+        // A compose link opened while signed out (PendingCompose), now
+        // there is an account to post as.
+        let now = Date().timeIntervalSince1970 * 1000
+        if let kept = PendingCompose.takePendingCompose(store: app.stores.keyValue, now: now) { navigator.navigate(kept) }
+      }
       .sessionNotices()
     }
+  }
+
+  /// virga://compose?text=…&url=…&tags=…: the composer, filled in. Kept
+  /// for after the sign-in when nobody is signed in yet.
+  private func openCompose(_ url: URL) -> Bool {
+    guard url.scheme?.lowercased() == "virga", url.host?.lowercased() == "compose" else { return false }
+    if session.did != nil, session.session != nil, terms.status == .accepted {
+      composer.openLink(url)
+    } else {
+      let search = url.query.map { "?\($0)" } ?? ""
+      let now = Date().timeIntervalSince1970 * 1000
+      _ = PendingCompose.rememberPendingCompose(ComposeIntent.intentComposePath, search, store: app.stores.keyValue, now: now)
+    }
+    return true
   }
 
   /// A return to `https://<server>/oauth/return#session=…` that reached the

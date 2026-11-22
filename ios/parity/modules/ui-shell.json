@@ -248,8 +248,19 @@
       "synced": "3cc815112e2b"
     },
     "src/posting/composer/composer.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerMeasure.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/PostEditor.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/MediaGrid.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/EmbedCards.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/PostBlock.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerSheet.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerOptions.swift"
+      ],
+      "note": "The composer's sheet, posts, editor (its type and highlights), media, embed cards, settings row, busy line and foot, the language picker, tags, post as and the send button, from the measures in ComposerMeasure.swift. Not yet: the drop target, the skeletons' shimmer, the slash list, the when panel, and the adviser's places.",
+      "synced": "4eb1a3099c0c"
     },
     "src/posting/library/library.css": {
       "status": "pending",
@@ -264,8 +275,12 @@
       "swift": []
     },
     "src/posting/posting.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerMeasure.swift"
+      ],
+      "note": "Only `.composer-dialog`'s width so far; the gates editor follows GatesEditor.jsx's own layout.",
+      "synced": "37fd5c2d457d"
     },
     "src/posting/ui/adviser.css": {
       "status": "pending",
