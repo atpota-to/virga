@@ -8,14 +8,11 @@
 // with its modes, every chart with its table. Over VirgaInsights' report
 // models for the period chosen.
 //
-// Here now: Followers (the figures, Growth as the total with the ghost to
-// the profile's count or new followers per day, week or month), Posts (the
-// figures, posts per bucket with the moving average, what kind of posts)
-// and Engagement (the figures, engagement on each bucket's posts with its
-// trend, by kind). The other reports (content, people, blocks, the repo)
-// show their header and say they aren't in the app yet; so do the
-// sections of these three still to come (the newest followers, the biggest
-// days, the top posts, the notes under the charts, How it's counted).
+// Every report is here: Followers, Posts and Engagement (below), Content
+// (ContentReport.swift), and Blocks, People and Atmosphere
+// (MoreReports.swift). Still to come in these: the followers' newest list
+// and biggest days, the top posts, the given direction and its kinds, and
+// Add to dashboard.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -124,11 +121,32 @@ struct ReportsIndex: View {
     let f = ReportModels.followersModel(a, period, now)
     let p = ReportModels.postsModel(a, period, now)
     let e = ReportModels.engagementModel(a, period, now)
+    let later = ("—", "read at the next sync")
+    let blocks = a.meta.blocks != nil ? ReportModels.blocksModel(a, period, now) : nil
+    let people = ReportModels.peopleModel(a, period, now)
+    let repo = ReportModels.atmosphereModel(a, period, now)
     return [
       "followers": (ChartFormat.fmtFigure(Double(f.profileCount ?? f.total)), "+\(AppLocale.formatNumber(f.gained)) in \(phrase)"),
+      "blocks": blocks.map { (ChartFormat.fmtFigure(Double($0.total)), "blocked by, +\(AppLocale.formatNumber($0.received)) in \(phrase)") } ?? later,
       "posts": (ChartFormat.fmtFigure(Double(p.count)), "posts in \(phrase)"),
+      "content": ReportModels.contentReady(a) ? Self.contentHeadline(ReportModels.contentModel(a, period, now)) : later,
       "engagement": (ChartFormat.fmtFigure(Double(e.total)), "received in \(phrase)"),
+      "people": (ChartFormat.fmtFigure(Double(people.inbound.count)), "people engaged with you in \(phrase)"),
+      "atmosphere": repo.map {
+        (ChartFormat.fmtFigure(Double($0.allTime)), "records in \($0.collections != 0 ? "\($0.collections) collections" : "your repo")")
+      } ?? later,
     ]
+  }
+
+  /// `contentHeadline(m)`.
+  static func contentHeadline(_ m: ContentReport) -> (String, String) {
+    let known = m.formats.filter { $0.typical != nil }
+    if known.count > 1, let best = known.reduce(nil, { (a: ContentGroup?, b: ContentGroup) in a.map { (b.typical ?? 0) > ($0.typical ?? 0) ? b : $0 } ?? b }) {
+      var label = best.label.jsLowercased()
+      if label.hasSuffix(" post") { label = String(label.dropLast(5)) }
+      return (ChartFormat.fmtRate(best.typical), "a typical \(label) post earns")
+    }
+    return (m.typical == nil ? "—" : ChartFormat.fmtRate(m.typical), "a typical post earns")
   }
 }
 
@@ -141,13 +159,17 @@ struct ReportPage: View {
   var body: some View {
     let header = PageHeader(
       PageHeaderModel(title: report.label, sub: report.desc, crumbs: [Crumb("Reports", to: "/reports")]), actions: AnyView(PeriodPicker()))
-    if let archive, ["followers", "posts", "engagement"].contains(report.key) {
+    if let archive, ["followers", "posts", "engagement", "content", "blocks", "people", "atmosphere"].contains(report.key) {
       let period = preferences.period()
       let data = ReportArchive(archive)
       VirgaPage(header: header) {
         switch report.key {
         case "followers": FollowersReportView(archive: data, period: period)
         case "posts": PostsReportView(archive: data, period: period)
+        case "content": ContentReportView(archive: data, period: period)
+        case "blocks": BlocksReportView(archive: data, period: period)
+        case "people": PeopleReportView(archive: data, period: period)
+        case "atmosphere": AtmosphereReportView(archive: data, period: period)
         default: EngagementReportView(archive: data, period: period)
         }
       }

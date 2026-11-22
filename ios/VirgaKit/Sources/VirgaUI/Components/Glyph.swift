@@ -74,6 +74,12 @@ public enum Glyph {
   public static let openReport = "arrow.up.right"
   public static let moveUp = "arrow.up"
   public static let moveDown = "arrow.down"
+  /// A post's counts (Heart, Repeat2, MessageCircle, Quote) and a person's
+  /// history (History).
+  public static let repost = Icons.sfSymbol(lucide: "Repeat2")
+  public static let reply = "bubble.left"
+  public static let quote = "quote.opening"
+  public static let history = "clock.arrow.circlepath"
   /// Table2: "Show as table".
   public static let table = "tablecells"
   /// Download and RotateCcw: Settings › Data's exports and Rebuild posts.

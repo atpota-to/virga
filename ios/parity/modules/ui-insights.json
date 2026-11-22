@@ -101,35 +101,50 @@
       "synced": "d108e840532d"
     },
     "src/people/people.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Reports/People.swift"
+      ],
+      "note": "cardFor, displayName and profileUrl (People), and PersonRow: the picture, the name (a link to the profile), the handle where the name isn't it, follows you, a fact, the value, Follow (archive.setFollow, held while the sync reads follows, its error under the name) and the way to the Interaction lookup. useWantActors is a .task on the rows shown. Not yet: the follow's kept rows across a relation filter (useFollow's keep), and FollowButton's own sizes.",
+      "synced": "9ce56098d8ab"
     },
     "src/reports/ChartNotes.jsx": {
       "status": "pending",
       "swift": []
     },
     "src/reports/ContentReport.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Reports/ContentReport.swift"
+      ],
+      "note": "The figures, by format and by length (each with its standout sentence, typical post or posts, and its table), tags and sites (the first twelve, Show all, their table), threads, languages (named in English by the system's Locale, as Intl.DisplayNames(['en']) does), the line on posts not read, the two SyncEmpty states and How this is counted, word for word.",
+      "synced": "7d0a12014262"
     },
     "src/reports/PostRow.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Reports/People.swift"
+      ],
+      "note": "PostRowView with postText, postUrl and postWhen: the words (a link to the post on Bluesky), when (relative within a week, else the short date with the year when it isn't this one), reply and quote, and the counts by kind (the ones not counted dimmed), or the one total with its rank.",
+      "synced": "0adefe7512b7"
     },
     "src/reports/ReportPage.jsx": {
       "status": "partial",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaUI/Reports/ReportPage.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Reports/ReportPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Reports/MoreReports.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Reports/ContentReport.swift"
       ],
-      "note": "ReportsIndex (each report under a rule with its leading figure where its model is ported: followers, posts, engagement) and the report page's header with the period picker. Followers: the figures and Growth (the total with the ghost to the profile's count, or new followers per bucket) with its table. Posts: the figures, posts per bucket with the moving average and its table, and what kind of posts. Engagement: the figures, engagement over time with its trend and table, and by kind. Not yet: the content, people, blocks and atmosphere reports (their header and the sentence that they aren't in the app), the followers' blocks-together mode, newest followers, biggest days and the unfollow figure, the top posts, the given direction and its kinds, Add to dashboard, ChartNotes and How it's counted.",
+      "note": "ReportsIndex with every report's leading figure (contentHeadline included), and every report's page: Followers, Posts, Engagement, Content, Blocks (total, by path, with followers, or per bucket), People (both ways, twelve more at a time, with Follow) and Atmosphere (per bucket, by collection), each with its table and How this is counted where the web has one. Not yet: the followers' blocks-together mode, newest followers, biggest days and unfollow figure; the engagement report's top posts and the given direction with its kinds; People's kind and relation filters; and Add to dashboard.",
       "synced": "18e37669d694"
     },
     "src/reports/parts.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaUI/Reports/ReportPage.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Reports/ReportPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Reports/ContentReport.swift"
       ],
-      "note": "Card (ReportCard over VirgaSection, its modes at the right), unitOptions and fig. Not yet: SyncEmpty's sync button, HowCounted and ModeToggle's titles (the keys say them to VoiceOver).",
+      "note": "Card (ReportCard), ModeToggle (a small Segmented, each key's title its VoiceOver name), unitOptions, fig, SyncEmpty (with Sync now), HowCounted (a Disclosure) and GroupTable (a bar list's table behind Show as table).",
       "synced": "96555b05c896"
     },
     "src/share/ShareDialog.jsx": {
