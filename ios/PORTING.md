@@ -164,6 +164,12 @@ means porting the code, not reimagining it.
     `.accessibilityElement(children: .contain)` first, then gets its
     identifier; a leaf control (a Button, Text, TextField, Toggle, Image)
     needs nothing.
+  - **A toolbar's group** (a UI test, not the compiler). On iOS 26 a
+    navigation bar wraps its trailing toolbar items in one element that
+    takes the first item's label and identifier, so a test that looks the
+    identifier up among elements of any type taps the group's middle,
+    which can be the next item. Look a button up as a button:
+    `app.buttons.matching(identifier: "palette-open").firstMatch`.
 
 ## Tests
 

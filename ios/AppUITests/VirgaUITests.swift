@@ -344,7 +344,9 @@ final class VirgaUITests: XCTestCase {
   func testThePaletteFindsAPage() {
     let app = launch()
     waitForHome(app)
-    let search = element(app, "palette-open")
+    // A button, not the navigation bar's group of toolbar items, which on iOS 26
+    // takes the first item's identifier and whose middle is the account button.
+    let search = app.buttons.matching(identifier: "palette-open").firstMatch
     XCTAssertTrue(search.waitForExistence(timeout: 5), "no Search")
     search.tap()
     let field = element(app, "palette-field")

@@ -279,7 +279,9 @@ final class ComposerUITests: XCTestCase {
       element(app, "composer-close").tap()
       XCTAssertTrue(element(app, "composer-title").waitForNonExistence(timeout: 5))
     }
-    let paletteButton = element(app, "palette-open")
+    // A button, not the navigation bar's group of toolbar items, which on iOS 26
+    // takes the first item's identifier and whose middle is the account button.
+    let paletteButton = app.buttons.matching(identifier: "palette-open").firstMatch
     XCTAssertTrue(paletteButton.waitForExistence(timeout: 5))
     paletteButton.tap()
     let field = element(app, "palette-field")
