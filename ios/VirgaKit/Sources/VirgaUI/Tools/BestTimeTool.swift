@@ -117,8 +117,17 @@ struct BestTimeTable: View {
 
   static let heads = ["When", "Posts", "Typical post"]
 
+  /// The longest value in a column.
+  static func widest(_ rows: [[String]], _ column: Int) -> String {
+    var out = ""
+    for row in rows where row.indices.contains(column) && row[column].count > out.count {
+      out = row[column]
+    }
+    return out
+  }
+
   var body: some View {
-    let widest = [1, 2].map { column in rows.map { $0.indices.contains(column) ? $0[column] : "" }.max { $0.count < $1.count } ?? "" }
+    let widest = [Self.widest(rows, 1), Self.widest(rows, 2)]
     ScrollView(.vertical) {
       LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
         Section {

@@ -174,9 +174,18 @@ TOOLS (Tools/)
   reports' `PersonRow`/`PostRowView`: `ToolPeople` (cardFor, displayName, profileUrl),
   `.wantActors(archive, dids)` (useWantActors), `FollowWriter` and `ToolFollowButton` (a
   follow per row, busy and its error), `ToolPersonRow`, `ToolPostRow`/`ToolPostMeta`,
-  `ToolStatement`, `FilterCards`/`FilterChoice` (figures that are the filter), `KVList`,
-  `TimelineList`, `ToolMoreFoot` ("Show 30 more"), `ToolSelect`, `ToolSplit`, `ToolCaption`,
-  and `.toolExporter($file)` with `archive.exportRows(name, rows)` for Export.
+  `ToolStatement`, `FilterCards`/`FilterChoice` (figures that are the filter, their counts
+  sized from the row as the web's clamp()s are), `KVList` (it measures itself, and its
+  rows choose their layout by its width, as the `.kv` container query does),
+  `TimelineList`, `ToolMoreFoot` ("Show 30 more"), `ToolSelect` (`hidesLabel` over a list
+  on a phone), `ToolSplit` (`shares`, and `mins` for a `minmax(300px, 1fr)` column),
+  `ToolSpreadRow` (flex-wrap with space-between: the line over a table, the activity
+  check), `ToolEmptyLine` (a bare `.empty`, 24 above and below), `ToolCaption`,
+  `.toolAnnounces(text, onAppear:)` (what the web marks `role="status"` or `role="alert"`,
+  posted to VoiceOver), and `.toolExporter($file)` with `archive.exportRows(name, rows)`
+  for Export. A person row's meta (`ToolPersonMeta`) is one line ending in an ellipsis that
+  drops "follows you" under 600 and the handle under 480 when the row has a fact, by the
+  list's width.
 - From 641 wide Follow cleanup and Lists are tables (`CleanupTable`, `ListsTable`, a Grid;
   the cleanup table's account is 36% of its width, as `.cleanup-table td.col-main` is, the
   other columns sharing the rest, and the lists table's name takes what the rest leave);
