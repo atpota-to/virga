@@ -193,6 +193,10 @@ function specs() {
       measure: 'posts',
       rows: [{ label: 'Only', value: 0.4, display: '0.4' }],
     },
+    // No buckets at all, which shareSpec never gives: the web's drawing of
+    // a line throws reading the last point (drawShareImagePartly).
+    'empty-line': { ...base, mode: 'line', series: [] },
+    'empty-bars': { ...base, series: [], trend: [] },
   });
   return out;
 }
@@ -340,8 +344,10 @@ export default async function cases() {
     ),
   );
   const draws = [];
+  const partly = ['empty-line'];
   for (const [name] of Object.entries(all))
-    draws.push({ $id: `${name}-day`, spec: name, theme: 'day' });
+    if (!partly.includes(name))
+      draws.push({ $id: `${name}-day`, spec: name, theme: 'day' });
   for (const name of [
     'mira-follower-growth-90d',
     'mira-engagement-rate-30d',
@@ -374,6 +380,23 @@ export default async function cases() {
         drawShareImage(ctx, live(all[input.spec]), drawThemes[input.theme]);
         return compact(logRecord(ctx.log));
       }),
+    )),
+  );
+  // A drawing that throws part way: the calls made before it did, and why.
+  out.push(
+    ...(await each(
+      'drawShareImagePartly',
+      partly.map((name) => ({ $id: name, spec: name, theme: 'day' })),
+      (input) => {
+        const ctx = recordingContext();
+        let threw = null;
+        try {
+          drawShareImage(ctx, live(all[input.spec]), drawThemes[input.theme]);
+        } catch (error) {
+          threw = error.message;
+        }
+        return compact({ ...logRecord(ctx.log), threw });
+      },
     )),
   );
   return out;

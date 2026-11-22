@@ -110,4 +110,28 @@ import VirgaTestSupport
       #expect(hash == expected["sha256"]?.stringValue, "\(c): the whole recording")
     }
   }
+
+  /// A drawing the web gives up on part way (a line with no buckets, whose
+  /// last point it reads): the same calls up to there, none after, and no
+  /// picture, where the web throws.
+  @Test func drawShareImagePartly() throws {
+    let all = try specs()
+    var themes: [String: ShareTheme] = [:]
+    for c in try Parity.cases(fixture, fn: "theme") { themes[c.id] = shareTheme(c.output) }
+    let cases = try Parity.cases(fixture, fn: "drawShareImagePartly")
+    #expect(!cases.isEmpty)
+    for c in cases {
+      guard let spec = all[c["spec"].stringValue ?? ""], let theme = themes[c["theme"].stringValue ?? ""] else {
+        Issue.record("\(c): no spec or theme")
+        continue
+      }
+      let ctx = RecordingCanvas()
+      let finished = ChartImage.drawShareImage(ctx, spec, theme, formats: c.formats)
+      let expected = c.compactOutput
+      #expect(finished == (expected["threw"] == .null), "\(c): finished \(finished), the web threw \(expected["threw"] ?? .null)")
+      // The web's x for the last of no buckets is infinite, written as null.
+      let d = exactDiff(recorded(.array(ctx.log)), expected["log"] ?? .null)
+      #expect(d == nil, "\(c): \(d ?? "")")
+    }
+  }
 }

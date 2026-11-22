@@ -168,7 +168,11 @@ public enum ChartImage {
     ctx.fillText("Virga", x + s + 8, y + 22)
   }
 
-  static func drawSeries(_ ctx: some ShareCanvas, _ spec: ShareSpecification, _ theme: ShareTheme, _ formats: ReportFormats) {
+  /// Draws a series; false where the web's drawing throws instead of
+  /// finishing (a line with no buckets).
+  static func drawSeries(
+    _ ctx: some ShareCanvas, _ spec: ShareSpecification, _ theme: ShareTheme, _ formats: ReportFormats
+  ) -> Bool {
     // The rules' numbers sit on the plot's left edge, the title's edge, and
     // the data starts past the widest of them, as on the page.
     ctx.font = font(400, 18)
@@ -212,6 +216,9 @@ public enum ChartImage {
       ctx.lineWidth = 4
       ctx.lineJoin = .round
       ctx.stroke()
+      // The web reads the last point here, and a series with no buckets
+      // (which shareSpec never gives) has none: its drawing throws.
+      guard L.n > 0 else { return false }
       let endX = L.x(L.n - 1)
       let endY = L.y(series[L.n - 1].v ?? 0)
       if let ghost = spec.ghost {
@@ -326,6 +333,7 @@ public enum ChartImage {
       let trendPoints = trend.map { TrendPoint(t: $0.t, v: $0.v) }
       drawTrendKey(ctx, ChartFormat.trendName(points, trendPoints, spec.unit), theme)
     }
+    return true
   }
 
   /// The trend's legend, as on the page: a short stroke in its colour and
@@ -380,9 +388,14 @@ public enum ChartImage {
 
   /// Draws `spec` on a canvas `shareWidth` by `shareHeight`, the web's calls
   /// in the web's order. `formats` writes the rules' numbers and the dates.
-  public static func drawShareImage(
+  ///
+  /// False when the web's drawing would throw part way instead (a line
+  /// with no buckets: shareSpec never gives one), after the calls the web
+  /// makes before it does and none after; the picture is then not one to
+  /// share, as renderShareImage rejects on the web.
+  @discardableResult public static func drawShareImage(
     _ ctx: some ShareCanvas, _ spec: ShareSpecification, _ theme: ShareTheme, formats: ReportFormats = .active
-  ) {
+  ) -> Bool {
     ctx.fillStyle = .color(theme.surface)
     ctx.fillRect(0, 0, shareWidth, shareHeight)
     // The sky, as on the page: a wash over the title that has faded into
@@ -398,9 +411,10 @@ public enum ChartImage {
     drawHead(ctx, spec, theme)
     if spec.kind == .bars {
       drawBars(ctx, spec, theme)
-    } else {
-      drawSeries(ctx, spec, theme, formats)
+    } else if !drawSeries(ctx, spec, theme, formats) {
+      return false
     }
     drawFoot(ctx, theme)
+    return true
   }
 }

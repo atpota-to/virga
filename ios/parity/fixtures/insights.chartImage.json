@@ -1694,6 +1694,18 @@
       "output": "{\"kind\":\"bars\",\"title\":\"One\",\"subtitle\":\"\",\"figure\":{\"value\":\"—\",\"label\":\"for a typical post\"},\"measure\":\"posts\",\"rows\":[{\"label\":\"Only\",\"value\":0.4,\"display\":\"0.4\"}]}"
     },
     {
+      "id": "empty-line",
+      "fn": "spec",
+      "input": {},
+      "output": "{\"kind\":\"series\",\"title\":\"Follower growth\",\"subtitle\":\"@mira.example.com, the last 7 days\",\"figure\":{\"value\":\"5,073\",\"label\":\"followers\"},\"unit\":\"day\",\"mode\":\"line\",\"trend\":null,\"zeroBase\":true,\"format\":\"fmtCount\",\"marks\":[],\"noun\":\"things\",\"ghost\":null,\"series\":[]}"
+    },
+    {
+      "id": "empty-bars",
+      "fn": "spec",
+      "input": {},
+      "output": "{\"kind\":\"series\",\"title\":\"Follower growth\",\"subtitle\":\"@mira.example.com, the last 7 days\",\"figure\":{\"value\":\"5,073\",\"label\":\"followers\"},\"unit\":\"day\",\"mode\":\"bars\",\"trend\":[],\"zeroBase\":true,\"format\":\"fmtCount\",\"marks\":[],\"noun\":\"things\",\"ghost\":null,\"series\":[]}"
+    },
+    {
       "id": "mira-follower-growth-7d-0",
       "fn": "seriesLayout",
       "input": {
@@ -3384,6 +3396,78 @@
         }
       },
       "output": "{\"n\":1,\"min\":0,\"max\":1.08,\"slot\":1024,\"barWidth\":40,\"ticks\":[0,1],\"labelled\":[1],\"xs\":[632],\"ys\":[545,264,545,545,284.81481481481484,284.81481481481484]}"
+    },
+    {
+      "id": "empty-line-0",
+      "fn": "seriesLayout",
+      "input": {
+        "spec": "empty-line"
+      },
+      "output": "{\"n\":0,\"min\":0,\"max\":1.08,\"slot\":null,\"barWidth\":null,\"ticks\":[0,1],\"labelled\":[0,1],\"xs\":[],\"ys\":[545,264,545,545,284.81481481481484]}"
+    },
+    {
+      "id": "empty-line-1",
+      "fn": "seriesLayout",
+      "input": {
+        "spec": "empty-line",
+        "box": {
+          "left": 0,
+          "right": 100,
+          "top": 0,
+          "bottom": 50
+        }
+      },
+      "output": "{\"n\":0,\"min\":0,\"max\":1.08,\"slot\":null,\"barWidth\":null,\"ticks\":[0,1],\"labelled\":[0,1],\"xs\":[],\"ys\":[50,0,50,50,3.7037037037037095]}"
+    },
+    {
+      "id": "empty-line-2",
+      "fn": "seriesLayout",
+      "input": {
+        "spec": "empty-line",
+        "box": {
+          "left": 120,
+          "right": 1144,
+          "top": 264,
+          "bottom": 545
+        }
+      },
+      "output": "{\"n\":0,\"min\":0,\"max\":1.08,\"slot\":null,\"barWidth\":null,\"ticks\":[0,1],\"labelled\":[0,1],\"xs\":[],\"ys\":[545,264,545,545,284.81481481481484]}"
+    },
+    {
+      "id": "empty-bars-0",
+      "fn": "seriesLayout",
+      "input": {
+        "spec": "empty-bars"
+      },
+      "output": "{\"n\":0,\"min\":0,\"max\":1.08,\"slot\":null,\"barWidth\":null,\"ticks\":[0,1],\"labelled\":[1],\"xs\":[],\"ys\":[545,264,545,545,284.81481481481484]}"
+    },
+    {
+      "id": "empty-bars-1",
+      "fn": "seriesLayout",
+      "input": {
+        "spec": "empty-bars",
+        "box": {
+          "left": 0,
+          "right": 100,
+          "top": 0,
+          "bottom": 50
+        }
+      },
+      "output": "{\"n\":0,\"min\":0,\"max\":1.08,\"slot\":null,\"barWidth\":null,\"ticks\":[0,1],\"labelled\":[1],\"xs\":[],\"ys\":[50,0,50,50,3.7037037037037095]}"
+    },
+    {
+      "id": "empty-bars-2",
+      "fn": "seriesLayout",
+      "input": {
+        "spec": "empty-bars",
+        "box": {
+          "left": 120,
+          "right": 1144,
+          "top": 264,
+          "bottom": 545
+        }
+      },
+      "output": "{\"n\":0,\"min\":0,\"max\":1.08,\"slot\":null,\"barWidth\":null,\"ticks\":[0,1],\"labelled\":[1],\"xs\":[],\"ys\":[545,264,545,545,284.81481481481484]}"
     },
     {
       "id": "UTC-day-0",
@@ -7828,6 +7912,15 @@
       "output": "{\"length\":68,\"log\":[[\"set\",\"fillStyle\",\"rgba(255,255,255,1)\"],[\"fillRect\",0,0,1200,675],[\"set\",\"fillStyle\",{\"x0\":0,\"y0\":0,\"x1\":0,\"y1\":384,\"stops\":[[0,\"rgba(185,213,255,1)\"],[0.45,\"rgba(225,237,255,1)\"],[1,\"rgba(255,255,255,1)\"]]}],[\"fillRect\",0,0,1200,384],[\"set\",\"textBaseline\",\"alphabetic\"],[\"set\",\"textAlign\",\"left\"],[\"set\",\"fillStyle\",\"rgba(15,27,51,1)\"],[\"set\",\"font\",[600,40]],[\"fillText\",\"One\",56,92],[\"set\",\"fillStyle\",\"rgba(70,83,107,1)\"],[\"set\",\"font\",[400,22]],[\"fillText\",\"\",56,128],[\"set\",\"fillStyle\",\"rgba(15,27,51,1)\"],[\"set\",\"font\",[500,64]],[\"set\",\"letterSpacing\",-2.5],[\"fillText\",\"—\",56,208],[\"set\",\"letterSpacing\",0],[\"set\",\"fillStyle\",\"rgba(51,65,92,1)\"],[\"set\",\"font\",[400,24]],[\"fillText\",\"for a typical post\",104.7,204],[\"set\",\"textBaseline\",\"middle\"],[\"set\",\"textAlign\",\"left\"],[\"set\",\"fillStyle\",\"rgba(51,65,92,1)\"],[\"set\",\"font\",[500,24]],[\"fillText\",\"Only\",56,284],[\"set\",\"fillStyle\",\"rgba(15,27,51,0.06)\"],[\"beginPath\"],[\"moveTo\",362,278],[\"arcTo\",1034,278,1034,290,6],[\"arcTo\",1034,290,356,290,6],[\"arcTo\",356,290,356,278,6],[\"arcTo\",356,278,1034,278,6],[\"closePath\"],[\"fill\"],[\"set\",\"fillStyle\",\"rgba(29,94,224,1)\"],[\"beginPath\"],[\"moveTo\",362,278],[\"arcTo\",627.2,278,627.2,290,6],[\"arcTo\",627.2,290,356,290,6],[\"arcTo\",356,290,356,278,6],[\"arcTo\",356,278,627.2,278,6],[\"closePath\"],[\"fill\"],[\"set\",\"textAlign\",\"right\"],[\"set\",\"fillStyle\",\"rgba(15,27,51,1)\"],[\"set\",\"font\",[600,24]],[\"fillText\",\"0.4\",1144,284],[\"set\",\"textBaseline\",\"alphabetic\"],[\"save\"],[\"translate\",52,595],[\"scale\",1.25,1.25],[\"set\",\"strokeStyle\",\"rgba(15,27,51,1)\"],[\"set\",\"lineWidth\",1.8],[\"set\",\"lineCap\",\"round\"],[\"beginPath\"],[\"arc\",12,11,7,3.141592653589793,0],[\"moveTo\",8.5,14.5],[\"lineTo\",7.5,18.5],[\"moveTo\",12.3,14.5],[\"lineTo\",11,20.5],[\"moveTo\",16,14.5],[\"lineTo\",15.1,17.7],[\"stroke\"],[\"restore\"],[\"set\",\"fillStyle\",\"rgba(15,27,51,1)\"],[\"set\",\"font\",[600,22]],[\"set\",\"textAlign\",\"left\"],[\"fillText\",\"Virga\",90,617]]}"
     },
     {
+      "id": "empty-bars-day",
+      "fn": "drawShareImage",
+      "input": {
+        "spec": "empty-bars",
+        "theme": "day"
+      },
+      "output": "{\"length\":56,\"log\":[[\"set\",\"fillStyle\",\"rgba(255,255,255,1)\"],[\"fillRect\",0,0,1200,675],[\"set\",\"fillStyle\",{\"x0\":0,\"y0\":0,\"x1\":0,\"y1\":384,\"stops\":[[0,\"rgba(185,213,255,1)\"],[0.45,\"rgba(225,237,255,1)\"],[1,\"rgba(255,255,255,1)\"]]}],[\"fillRect\",0,0,1200,384],[\"set\",\"textBaseline\",\"alphabetic\"],[\"set\",\"textAlign\",\"left\"],[\"set\",\"fillStyle\",\"rgba(15,27,51,1)\"],[\"set\",\"font\",[600,40]],[\"fillText\",\"Follower growth\",56,92],[\"set\",\"fillStyle\",\"rgba(70,83,107,1)\"],[\"set\",\"font\",[400,22]],[\"fillText\",\"@mira.example.com, the last 7 days\",56,128],[\"set\",\"fillStyle\",\"rgba(15,27,51,1)\"],[\"set\",\"font\",[500,64]],[\"set\",\"letterSpacing\",-2.5],[\"fillText\",\"5,073\",56,208],[\"set\",\"letterSpacing\",0],[\"set\",\"fillStyle\",\"rgba(51,65,92,1)\"],[\"set\",\"font\",[400,24]],[\"fillText\",\"followers\",235.5,204],[\"set\",\"font\",[400,18]],[\"set\",\"lineWidth\",1],[\"set\",\"strokeStyle\",\"rgba(15,27,51,0.1)\"],[\"beginPath\"],[\"moveTo\",56,545.5],[\"lineTo\",1144,545.5],[\"stroke\"],[\"beginPath\"],[\"moveTo\",56,285.5],[\"lineTo\",1144,285.5],[\"stroke\"],[\"set\",\"fillStyle\",\"rgba(29,94,224,1)\"],[\"set\",\"font\",[400,18]],[\"set\",\"textAlign\",\"left\"],[\"set\",\"fillStyle\",\"rgba(70,83,107,1)\"],[\"fillText\",\"1\",56,279],[\"save\"],[\"translate\",52,595],[\"scale\",1.25,1.25],[\"set\",\"strokeStyle\",\"rgba(15,27,51,1)\"],[\"set\",\"lineWidth\",1.8],[\"set\",\"lineCap\",\"round\"],[\"beginPath\"],[\"arc\",12,11,7,3.141592653589793,0],[\"moveTo\",8.5,14.5],[\"lineTo\",7.5,18.5],[\"moveTo\",12.3,14.5],[\"lineTo\",11,20.5],[\"moveTo\",16,14.5],[\"lineTo\",15.1,17.7],[\"stroke\"],[\"restore\"],[\"set\",\"fillStyle\",\"rgba(15,27,51,1)\"],[\"set\",\"font\",[600,22]],[\"set\",\"textAlign\",\"left\"],[\"fillText\",\"Virga\",90,617]]}"
+    },
+    {
       "id": "mira-follower-growth-90d-night",
       "fn": "drawShareImage",
       "input": {
@@ -8000,6 +8093,15 @@
         "locale": "en-IN"
       },
       "output": "{\"length\":107,\"log\":[[\"set\",\"fillStyle\",\"rgba(255,255,255,1)\"],[\"fillRect\",0,0,1200,675],[\"set\",\"fillStyle\",{\"x0\":0,\"y0\":0,\"x1\":0,\"y1\":384,\"stops\":[[0,\"rgba(185,213,255,1)\"],[0.45,\"rgba(225,237,255,1)\"],[1,\"rgba(255,255,255,1)\"]]}],[\"fillRect\",0,0,1200,384],[\"set\",\"textBaseline\",\"alphabetic\"],[\"set\",\"textAlign\",\"left\"],[\"set\",\"fillStyle\",\"rgba(15,27,51,1)\"],[\"set\",\"font\",[600,40]],[\"fillText\",\"Follower growth\",56,92],[\"set\",\"fillStyle\",\"rgba(70,83,107,1)\"],[\"set\",\"font\",[400,22]],[\"fillText\",\"@mira.example.com, the last 7 days\",56,128],[\"set\",\"fillStyle\",\"rgba(15,27,51,1)\"],[\"set\",\"font\",[500,64]],[\"set\",\"letterSpacing\",-2.5],[\"fillText\",\"5,073\",56,208],[\"set\",\"letterSpacing\",0],[\"set\",\"fillStyle\",\"rgba(51,65,92,1)\"],[\"set\",\"font\",[400,24]],[\"fillText\",\"followers\",235.5,204],[\"set\",\"font\",[400,18]],[\"set\",\"lineWidth\",1],[\"set\",\"strokeStyle\",\"rgba(15,27,51,0.1)\"],[\"beginPath\"],[\"moveTo\",56,545.5],[\"lineTo\",1144,545.5],[\"stroke\"],[\"beginPath\"],[\"moveTo\",56,429.5],[\"lineTo\",1144,429.5],[\"stroke\"],[\"beginPath\"],[\"moveTo\",56,314.5],[\"lineTo\",1144,314.5],[\"stroke\"],[\"beginPath\"],[\"moveTo\",257.25,545],[\"lineTo\",257.25,487.18106995884773],[\"lineTo\",611.9499999999999,545],[\"lineTo\",966.65,284.81481481481484],[\"lineTo\",966.65,545],[\"closePath\"],[\"set\",\"fillStyle\",\"rgba(29,94,224,0.08)\"],[\"fill\"],[\"beginPath\"],[\"moveTo\",257.25,487.18106995884773],[\"lineTo\",611.9499999999999,545],[\"lineTo\",966.65,284.81481481481484],[\"set\",\"strokeStyle\",\"rgba(29,94,224,1)\"],[\"set\",\"lineWidth\",4],[\"set\",\"lineJoin\",\"round\"],[\"stroke\"],[\"beginPath\"],[\"arc\",966.65,284.81481481481484,7,0,6.283185307179586],[\"set\",\"fillStyle\",\"rgba(29,94,224,1)\"],[\"fill\"],[\"beginPath\"],[\"moveTo\",257.25,487.18106995884773],[\"lineTo\",611.9499999999999,429.36213991769546],[\"lineTo\",966.65,313.724279835391],[\"set\",\"strokeStyle\",\"rgba(232,85,58,1)\"],[\"set\",\"lineWidth\",3],[\"set\",\"lineJoin\",\"round\"],[\"stroke\"],[\"set\",\"font\",[400,18]],[\"set\",\"textAlign\",\"left\"],[\"set\",\"fillStyle\",\"rgba(70,83,107,1)\"],[\"fillText\",\"0\",56,539],[\"fillText\",\"1\",56,423],[\"fillText\",\"2\",56,308],[\"set\",\"textAlign\",\"left\"],[\"fillText\",\"1 Nov\",257.25,575],[\"set\",\"textAlign\",\"right\"],[\"fillText\",\"3 Nov\",966.65,575],[\"set\",\"font\",[400,18]],[\"set\",\"textAlign\",\"right\"],[\"set\",\"textBaseline\",\"middle\"],[\"set\",\"fillStyle\",\"rgba(70,83,107,1)\"],[\"fillText\",\"Moving average\",1144,230],[\"set\",\"strokeStyle\",\"rgba(232,85,58,1)\"],[\"set\",\"lineWidth\",3],[\"set\",\"lineCap\",\"round\"],[\"beginPath\"],[\"moveTo\",967.4,230],[\"lineTo\",995.4,230],[\"stroke\"],[\"set\",\"textBaseline\",\"alphabetic\"],[\"save\"],[\"translate\",52,595],[\"scale\",1.25,1.25],[\"set\",\"strokeStyle\",\"rgba(15,27,51,1)\"],[\"set\",\"lineWidth\",1.8],[\"set\",\"lineCap\",\"round\"],[\"beginPath\"],[\"arc\",12,11,7,3.141592653589793,0],[\"moveTo\",8.5,14.5],[\"lineTo\",7.5,18.5],[\"moveTo\",12.3,14.5],[\"lineTo\",11,20.5],[\"moveTo\",16,14.5],[\"lineTo\",15.1,17.7],[\"stroke\"],[\"restore\"],[\"set\",\"fillStyle\",\"rgba(15,27,51,1)\"],[\"set\",\"font\",[600,22]],[\"set\",\"textAlign\",\"left\"],[\"fillText\",\"Virga\",90,617]]}"
+    },
+    {
+      "id": "empty-line",
+      "fn": "drawShareImagePartly",
+      "input": {
+        "spec": "empty-line",
+        "theme": "day"
+      },
+      "output": "{\"length\":42,\"log\":[[\"set\",\"fillStyle\",\"rgba(255,255,255,1)\"],[\"fillRect\",0,0,1200,675],[\"set\",\"fillStyle\",{\"x0\":0,\"y0\":0,\"x1\":0,\"y1\":384,\"stops\":[[0,\"rgba(185,213,255,1)\"],[0.45,\"rgba(225,237,255,1)\"],[1,\"rgba(255,255,255,1)\"]]}],[\"fillRect\",0,0,1200,384],[\"set\",\"textBaseline\",\"alphabetic\"],[\"set\",\"textAlign\",\"left\"],[\"set\",\"fillStyle\",\"rgba(15,27,51,1)\"],[\"set\",\"font\",[600,40]],[\"fillText\",\"Follower growth\",56,92],[\"set\",\"fillStyle\",\"rgba(70,83,107,1)\"],[\"set\",\"font\",[400,22]],[\"fillText\",\"@mira.example.com, the last 7 days\",56,128],[\"set\",\"fillStyle\",\"rgba(15,27,51,1)\"],[\"set\",\"font\",[500,64]],[\"set\",\"letterSpacing\",-2.5],[\"fillText\",\"5,073\",56,208],[\"set\",\"letterSpacing\",0],[\"set\",\"fillStyle\",\"rgba(51,65,92,1)\"],[\"set\",\"font\",[400,24]],[\"fillText\",\"followers\",235.5,204],[\"set\",\"font\",[400,18]],[\"set\",\"lineWidth\",1],[\"set\",\"strokeStyle\",\"rgba(15,27,51,0.1)\"],[\"beginPath\"],[\"moveTo\",56,545.5],[\"lineTo\",1144,545.5],[\"stroke\"],[\"beginPath\"],[\"moveTo\",56,285.5],[\"lineTo\",1144,285.5],[\"stroke\"],[\"beginPath\"],[\"moveTo\",null,545],[\"lineTo\",null,545],[\"closePath\"],[\"set\",\"fillStyle\",\"rgba(29,94,224,0.08)\"],[\"fill\"],[\"beginPath\"],[\"set\",\"strokeStyle\",\"rgba(29,94,224,1)\"],[\"set\",\"lineWidth\",4],[\"set\",\"lineJoin\",\"round\"],[\"stroke\"]],\"threw\":\"Cannot read properties of undefined (reading 'v')\"}"
     }
   ]
 }
