@@ -1,4 +1,4 @@
-// Ports harness/harness.js (readFlags and createHarness)
+// Ports harness/harness.js (readFlags, createHarness and its workers: cron, stopCron)
 //
 // The harness put together: the accounts' worlds, Virga's server, the
 // agents and the network, read from the address flags. On the web they
@@ -18,10 +18,17 @@
 //   ?scope=read      the sessions were granted reading only, as before posting
 //   ?defense=on      the sessions were granted Defense's permission too;
 //                    ?defense=lists the list writes as well
-//   ?defensewrites=off, ?moderator=off|linked, ?limits=3,1,1,
-//   ?ailimits=30,15,3, ?ai=slow|down, ?cron=20
-//                    read as the web reads them, for the server's routes a
-//                    later port adds (Defense, scheduling, timers, the adviser)
+//   ?defensewrites=off
+//                    Virga's server doesn't write Defense's lists
+//   ?moderator=off|linked
+//                    Virga's moderator isn't set up, or every account starts
+//                    linked to it
+//   ?limits=3,1,1    per-account limits on scheduled posts, plain timers and
+//                    conditional timers; a blank or 0 leaves one unlimited
+//   ?ailimits=30,15,3 the monthly AI allowances ('unlimited' for none)
+//   ?ai=slow|down    the adviser and alt text take longer than the composer
+//                    waits, or are unavailable
+//   ?cron=20         how often (seconds) the server's workers run; 0 stops them
 //   ?appview=failopen|flaky
 //                    the signed-in getProfiles leaves known followers off
 //   ?terms=ask|down  nobody has agreed to the Terms of Service yet; with
@@ -234,12 +241,52 @@ public final class DemoHarness: Sendable {
       }
     }
     makeAgent = made
-    if let randomBytes {
-      server = DemoServer(world: world, terms: flags.terms, now: clock.now, randomBytes: randomBytes, agents: made)
-    } else {
-      server = DemoServer(world: world, terms: flags.terms, now: clock.now, agents: made)
+    let bytes = randomBytes ?? { count in (0..<count).map { _ in UInt8.random(in: 0...255) } }
+    server = DemoServer(
+      world: world, terms: flags.terms, limits: FakeServer.limitsOption(flags.limits),
+      aiLimits: FakeServer.aiLimitsOption(flags.aiLimits), ai: flags.ai, defenseWrites: flags.defenseWrites,
+      moderator: flags.moderator, now: clock.now, sleep: clock.sleep, randomBytes: bytes, agents: made)
+  }
+
+  /// The workers' timer (`setInterval(cron, flags.cronSeconds * 1000)`), while it runs.
+  let cronTask = Locked<Task<Void, Never>?>(nil)
+
+  /// `window.__harness.cron()`: one run of the server's workers now (due
+  /// scheduled posts published, due timers settled, Defense's list items
+  /// written).
+  @discardableResult
+  public func cron() async -> DemoServer.CronRun { await server.runCron() }
+
+  /// install()'s timer: the workers every `flags.cronSeconds` seconds on
+  /// the harness's clock (the first run one interval in), until
+  /// `stopCron()`. No timer at all when `cronSeconds` is 0 or less, as on
+  /// the web. Starting again replaces the running timer.
+  public func startCron() {
+    guard flags.cronSeconds > 0 else { return }
+    let every = flags.cronSeconds * 1000
+    let task = Task { [server, clock] in
+      while !Task.isCancelled {
+        await clock.sleep(every)
+        if Task.isCancelled { break }
+        await server.runCron()
+      }
+    }
+    cronTask.withLock { running in
+      running?.cancel()
+      running = task
     }
   }
+
+  /// `window.__harness.stopCron()`.
+  public func stopCron() {
+    cronTask.withLock { running in
+      running?.cancel()
+      running = nil
+    }
+  }
+
+  /// Whether the workers' timer is running.
+  public var cronRunning: Bool { cronTask.withLock { $0 != nil } }
 
   /// The worlds as they are now.
   public var worlds: [AccountWorld] { world.worlds }
@@ -272,11 +319,14 @@ public final class DemoHarness: Sendable {
   /// the web's `window.fetch`) become the demo's, so whatever reads the
   /// network without being handed a transport reads the made-up one.
   /// Answers the transport.
+  /// It also starts the server's workers (`startCron()`), as the web's
+  /// install does, unless `cron` is false.
   @discardableResult
-  public func install(latency: Double? = nil) -> DemoTransport {
+  public func install(latency: Double? = nil, cron: Bool = true) -> DemoTransport {
     let net = transport(latency: latency)
     HTTP.transport = net
     HTTP.clock = clock
+    if cron { startCron() }
     return net
   }
 

@@ -257,10 +257,4 @@ extension Optional where Wrapped == JSONValue {
     guard case .some(let value) = self, value.isTruthy else { return Optional<JSONValue>.none }
     return value
   }
-
-  /// The value unless it is absent or null: `value ?? fallback`.
-  var nonNull: JSONValue? {
-    guard case .some(let value) = self, !value.isNull else { return Optional<JSONValue>.none }
-    return value
-  }
 }
