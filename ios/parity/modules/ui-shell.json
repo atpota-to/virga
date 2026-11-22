@@ -170,16 +170,30 @@
       "swift": []
     },
     "src/hillside/clouds.js": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Hillside/HillsideClouds.swift"
+      ],
+      "fixtures": [
+        "hillside.clouds"
+      ],
+      "note": "mulberry (HillsideRandom) and makeNoise's bytes (HillsideClouds.makeNoise), in VirgaCore. Not yet: the clouds' kinds and their puffs (GEN, makeCloud, layout), their drift, and the puffs' material and drawing (VirgaUI's Metal scene, still to come).",
+      "synced": "ad25ab032cd9"
     },
     "src/hillside/hillside.css": {
       "status": "pending",
       "swift": []
     },
     "src/hillside/land.js": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Hillside/HillsideLand.swift"
+      ],
+      "fixtures": [
+        "hillside.land"
+      ],
+      "note": "height and createLand's mesh (positions, normals, the triangle list) in VirgaCore (HillsideLand). Not yet: the land's material (its GLSL, to be translated to Metal) and its drawing.",
+      "synced": "13e2d87169cf"
     },
     "src/hillside/scene.js": {
       "status": "pending",
