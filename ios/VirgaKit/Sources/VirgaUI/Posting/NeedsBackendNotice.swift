@@ -28,7 +28,7 @@ struct NeedsBackendNotice: View {
       HStack(alignment: .top, spacing: Measure.Posting.needsBackendGap) {
         if !theme.isPhone {
           Image(systemName: "server.rack")
-            .font(.system(size: Measure.Posting.needsBackendIcon))
+            .virgaGlyph(Measure.Posting.needsBackendIcon, beside: theme.points(ThemeKit.cardTitleFontSize))
             .foregroundStyle(theme.ink2)
             .padding(.top, Measure.Posting.needsBackendIconTop)
             .accessibilityHidden(true)
@@ -36,7 +36,8 @@ struct NeedsBackendNotice: View {
         VStack(alignment: .leading, spacing: Measure.Posting.needsBackendTextGap) {
           Text(action == "signBackIn" ? "The long session has ended" : "Needs a long session")
             .virgaText(
-              size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, tracking: ThemeKit.cardTitleTracking)
+              size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, lineHeight: ThemeKit.headingLineHeight,
+              tracking: ThemeKit.cardTitleTracking)
             .foregroundStyle(theme.ink)
             .accessibilityAddTraits(.isHeader)
           Group {

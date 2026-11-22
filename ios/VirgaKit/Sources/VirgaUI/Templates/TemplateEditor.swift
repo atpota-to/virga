@@ -96,6 +96,35 @@ extension View {
   }
 }
 
+extension View {
+  /// The editor over this view while `item` is set, on that item's
+  /// template. The sheet keeps the template it opened on as it goes down
+  /// (`{open && <EditorForm/>}` leaves with the dialog), where one opened
+  /// with `isPresented` would turn into "New template" as it slides away.
+  func templateEditor<Item: Identifiable>(
+    item: Binding<Item?>, did: String?, template: @escaping (Item) -> PostTemplate?, onDismiss: (() -> Void)? = nil
+  ) -> some View {
+    modifier(TemplateEditorItemSheet(item: item, did: did, template: template, onDismiss: onDismiss))
+  }
+}
+
+struct TemplateEditorItemSheet<Item: Identifiable>: ViewModifier {
+  @Environment(\.virgaTheme) private var theme
+  @Binding var item: Item?
+  let did: String?
+  let template: (Item) -> PostTemplate?
+  let onDismiss: (() -> Void)?
+
+  func body(content: Content) -> some View {
+    content.sheet(item: $item, onDismiss: onDismiss) { shown in
+      TemplateEditorForm(did: did, template: template(shown), seed: nil, onClose: { item = nil }, onSaved: nil, onDeleting: nil)
+        .presentationDetents([.large])
+        .presentationBackground(theme.surface)
+        .presentationCornerRadius(Measure.Dialog.radius)
+    }
+  }
+}
+
 struct TemplateEditorSheet: ViewModifier {
   @Environment(\.virgaTheme) private var theme
   @Binding var isPresented: Bool
