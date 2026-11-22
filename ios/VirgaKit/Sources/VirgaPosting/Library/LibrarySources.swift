@@ -59,8 +59,8 @@ public struct LibraryPage: Hashable, Sendable {
   }
 }
 
-/// A shelf of archive rows as items, and how many rows matched.
-public struct ArchiveShelf: Hashable, Sendable {
+/// A shelf's items, and (for archive rows) how many rows matched.
+public struct ShelfItems: Hashable, Sendable {
   public var items: [LibraryItem]
   public var total: Int?
 
@@ -241,7 +241,7 @@ public enum LibrarySources {
   public static func archiveShelf(
     _ rows: [JSONValue]?, did: String? = nil, replies: Bool = false, sort: String = "date", query: String = "",
     limit: Double = 50, clock: LibraryClock = LibraryClock()
-  ) -> ArchiveShelf {
+  ) -> ShelfItems {
     let needle = query.jsTrimmed().jsLowercased()
     func time(_ r: JSONValue) -> Double {
       let t = JSDate.parse(text(r["at"]) ?? "", timeZone: clock.zone)
@@ -263,7 +263,7 @@ public enum LibrarySources {
     }
     let shelf = replies ? "replies" : "posts"
     let count = limit.isNaN ? 0 : Int(Swift.max(0, Swift.min(limit, Double(sorted.count))).rounded(.towardZero))
-    return ArchiveShelf(
+    return ShelfItems(
       items: sorted.prefix(count).map { Library.itemFromArchiveRow($0, shelf: shelf, selfDid: did, clock: clock) },
       total: matched.count)
   }
