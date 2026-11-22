@@ -12,9 +12,10 @@
 // name and nothing to press: each way to add a post sits at the head of the
 // list it adds to, and the weekly schedule is reached from the week it draws.
 //
-// Not here yet: Set a timer on a post whose timer couldn't be set opens the
-// timer dialog (TimerDialog.jsx), which comes with the timers' page; until
-// then such a row offers Dismiss. useFocusAfterRemoval is the system's.
+// Set a timer on a post whose timer couldn't be set opens the timer dialog
+// (TimerDialog.jsx's PostTimerDialog, Posting/TimerDialog.swift); once the
+// timer is set the page says so and the note is dismissed.
+// useFocusAfterRemoval is the system's.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -69,8 +70,16 @@ struct ScheduledPage: View {
       if !words.isEmpty { UIAccessibility.post(notification: .announcement, argument: words) }
     }
     .modifier(ScheduledDialogs(model: model))
+    .postTimerDialog(timerFor, did: did) { _ in
+      Task { await model.timerArmed(toasts: toasts) }
+    }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("scheduled-page")
+  }
+
+  /// TimerDialog's post, set while a timer note's Set a timer is open.
+  private var timerFor: Binding<PostTimerTarget?> {
+    Binding(get: { model.timerFor }, set: { if $0 == nil { model.timerFor = nil } })
   }
 
   private var loading: Bool { model.load.status == .loading }

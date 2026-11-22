@@ -1,8 +1,8 @@
 // Scheduling in demo mode (no archive build: the posting pages open before
 // it): Posting › Scheduled posts over the demo server's seeded rows (a
 // timer that couldn't be set, a thread that didn't go out, a queued post,
-// a repeating post at a set time), the week ahead and a time picked from
-// it; a post added to the queue from its Add to queue (the composer in
+// a repeating post at a set time), the timer dialog from the timer note's
+// Set a timer, the week ahead and a time picked from it; a post added to the queue from its Add to queue (the composer in
 // queue mode, then the when panel) so the queue can be reordered; a post
 // scheduled for a set time (the when panel, the WhenPicker with its quick
 // picks and Repeat); a scheduled post opened to edit; the questions
@@ -123,6 +123,29 @@ final class ScheduleUITests: XCTestCase {
     XCTAssertTrue(element(app, "sched-failed").waitForExistence(timeout: 15), "the post that didn't go out isn't listed")
     sleep(1)
     snapshot("scheduled-posts")
+
+    // A timer that couldn't be set: Set a timer opens the timer dialog over
+    // the post that went out; once the timer is set the note is done with.
+    let setTimer = element(app, "sched-note-set-timer")
+    if setTimer.waitForExistence(timeout: 5) && setTimer.isHittable {
+      setTimer.tap()
+      if element(app, "timer-dialog").waitForExistence(timeout: 10) {
+        _ = element(app, "lifespan-editor").waitForExistence(timeout: 10)
+        snapshot("scheduled-timer-dialog")
+        let set = element(app, "timer-dialog-set")
+        if set.exists && set.isEnabled {
+          set.tap()
+          if element(app, "timer-dialog").waitForNonExistence(timeout: 10) {
+            snapshot("scheduled-timer-set")
+          } else {
+            element(app, "dialog-close").tap()
+          }
+        } else {
+          element(app, "dialog-close").tap()
+        }
+        _ = element(app, "timer-dialog").waitForNonExistence(timeout: 5)
+      }
+    }
 
     // The queue and the week ahead, and a taken time picked from it.
     let calendar = element(app, "queue-calendar")

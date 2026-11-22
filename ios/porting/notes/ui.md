@@ -304,7 +304,8 @@ Posting/WhenPicker.swift, Composer/ComposerController+Schedule.swift, Composer/C
   (`QueueRowFrames`), the keys (Space or Return, the arrows, Escape) and VoiceOver's adjust; a phone has
   Move earlier and Move later. Identifiers: `scheduled-page`, `sched-notes`, `sched-failed`, `sched-queue`,
   `sched-queue-list`, `sched-timed`, `sched-row-<id>`, `sched-note-<id>`, `sched-edit`, `sched-retry`,
-  `sched-handle`, `sched-move-earlier`/`-later`, `sched-add-to-queue`, `sched-schedule-a-post`,
+  `sched-handle`, `sched-move-earlier`/`-later`, `sched-note-set-timer`, `sched-note-dismiss`,
+  `sched-add-to-queue`, `sched-schedule-a-post`,
   `queue-calendar`, `calendar-pick`, `schedule-dialog` (`-keep`, `-confirm`, `-error`), `sched-limits`.
 - `WeeklySchedulePage(app:did:)` (`/posting/schedule`): `DayRow` per weekday in the reader's week
   (`ScheduleWeek.orderedWeekdays()`), `CopyDaysDialog`, `ScheduleSuggestions.read(archive:…)` over the
@@ -326,7 +327,7 @@ Posting/WhenPicker.swift, Composer/ComposerController+Schedule.swift, Composer/C
   and `ComposerSourceWarning` (`composer-source-warning`) over the post; PublishButton takes the usage
   line as its `footnote`; the foot's Schedule is `composer-schedule`.
 - ScheduleUITests (`testSchedulingOnTheDemo`, no archive build, over the demo server's seeded rows):
-  `scheduled-posts`, `scheduled-queue`, `scheduled-picked`, `scheduled-timed`, `composer-queue`,
+  `scheduled-posts`, `scheduled-timer-dialog`, `scheduled-timer-set`, `scheduled-queue`, `scheduled-picked`, `scheduled-timed`, `composer-queue`,
   `composer-when-queue`, `composer-queued`, `scheduled-reorder`, `scheduled-reordered`, `composer-when`,
   `composer-when-picked`, `composer-scheduled`, `composer-scheduled-edit`, `scheduled-skip-dialog`,
   `scheduled-post-now-dialog`, `scheduled-remove-dialog`, `weekly-schedule`, `weekly-schedule-changed`,
@@ -339,8 +340,11 @@ Posting/WhenPicker.swift, Composer/ComposerController+Schedule.swift, Composer/C
   520 wide, measured on the calendar itself (in the weekly schedule's side column it is narrower than
   the page). The composer brings its when panel into view as it opens (a ScrollViewReader round the
   sheet's ScrollView, `ComposerWhenPanel.anchor`), as the web's scrollIntoView does.
-- Not yet: Set a timer on a timer note (the row offers Dismiss). The timers' page's and the timer and
-  when dialogs' rules of schedule.css are THE POSTING PAGES' (Measure.Hub). Deliberate differences:
+- A timer note's Set a timer (`ScheduledPageModel.setTimer(arm)`) opens THE POSTING PAGES'
+  `.postTimerDialog` over `PostTimerTarget(arm)`; once it's set (`timerArmed`) the page toasts "The
+  timer is set. Posting › Timers shows it." and dismisses the note (`acknowledge`). The timers' page's
+  and the timer and when dialogs' rules of schedule.css are THE POSTING PAGES' (Measure.Hub).
+  Deliberate differences:
   useFocusAfterRemoval is the system's; the date, the time and a new weekly time are the system's
   pickers (no 5-minute step, always a whole time); the picker's and a repeat's fields share their row
   evenly; forced colours have no counterpart.
@@ -380,7 +384,8 @@ THE POSTING PAGES (Posting/: HubPage, DraftsPage, PostedPage, TimersPage, TimerD
   stand-in already holds the name TimerDialog), over a `PostTimerTarget` (uri, cid, extraUris, text,
   postedAt, reply; nil reply or postedAt is the web's undefined and is read from Bluesky).
   `PostTimerTarget(arm)` takes a scheduled post's timer note (ScheduleModel.TimerNoteArm), for the
-  Scheduled page's "Set a timer". `onArmed` hears the armed row after the sheet has closed.
+  Scheduled page's "Set a timer" (SCHEDULING above). `onArmed` hears the armed row after the sheet has
+  closed.
 - `LifespanDefaultsCard(did:model:)` (Posting/LifespanDefaults.swift, from Settings › Posting) reads
   getLimits with a long session, so its editor checks the free timers and its caption starts with
   timerLimitsLine.

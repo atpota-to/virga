@@ -5,7 +5,8 @@
 // clock that moves on once a minute, the rows busy with an action, the
 // message over the page, the optimistic redraw while a new order is saved
 // (`redraw`, the web's `override`), the row being moved (`drag`), the row picked out from the
-// calendar (`lit`), what is announced, and the question up (`confirm`).
+// calendar (`lit`), what is announced, the question up (`confirm`), and
+// the timer note whose Set a timer is open (`timerFor`).
 // The functions keep the web's names: commitOrder, positionPhrase, retry,
 // cancel, postNow, skip, stopRepeat, acknowledge, pick.
 
@@ -67,6 +68,11 @@ final class ScheduledPageModel {
   var confirm: ScheduledConfirm?
   /// A row to bring into view (pick), once it's drawn.
   var scrollTarget: String?
+  /// `timerFor`: the post TimerDialog is open for, from a timer note's
+  /// Set a timer (nil: closed).
+  var timerFor: PostTimerTarget?
+  /// `timerFor.row`: that note's row, dismissed once the timer is set.
+  @ObservationIgnored private var timerForRow: JSONValue?
 
   @ObservationIgnored private var ticker: Task<Void, Never>?
   @ObservationIgnored private var litTask: Task<Void, Never>?
@@ -390,6 +396,24 @@ final class ScheduledPageModel {
     } catch {
       message = ScheduledMessage(danger: true, text: ScheduledPostError.scheduleErrorMessage(error))
     }
+  }
+
+  /// `setTimerFor(note.arm)`: the timer dialog, for the post that went out
+  /// without its timer.
+  func setTimer(_ arm: TimerNoteArm) {
+    timerForRow = arm.row
+    timerFor = PostTimerTarget(arm)
+  }
+
+  /// TimerDialog's onArmed (the dialog has closed): the toast, then the
+  /// note is done with.
+  func timerArmed(toasts: ToastCenter?) async {
+    let row = timerForRow
+    timerForRow = nil
+    timerFor = nil
+    toasts?.push("The timer is set. Posting › Timers shows it.")
+    guard let row, row.isTruthy else { return }
+    await acknowledge(row)
   }
 
   /// A taken time in the week, pressed: its row brought into view and lit

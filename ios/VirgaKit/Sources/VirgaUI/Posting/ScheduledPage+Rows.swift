@@ -579,8 +579,11 @@ struct TimerNoteRow: View {
         if !note.note.isEmpty { FieldHint(note.note) }
       }
       .frame(maxWidth: .infinity, alignment: .leading)
-      if note.dismiss && !phone {
-        dismiss(busy: busy).padding(.top, -Measure.Section.rowActionsLift)
+      if phone, let arm = note.arm {
+        // A phone: the action under the words, the ✕ in the corner.
+        setTimer(arm).padding(.top, Measure.Schedule.phoneActionsAbove)
+      } else if !phone && (note.arm != nil || note.dismiss) {
+        actions(note, busy: busy).padding(.top, -Measure.Section.rowActionsLift)
       }
     }
     .overlay(alignment: .topTrailing) {
@@ -594,6 +597,21 @@ struct TimerNoteRow: View {
     .opacity(busy ? Measure.Schedule.busyOpacity : 1)
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("sched-note-\(ScheduleIds.key(row["id"]))")
+  }
+
+  /// `.row-actions`: Set a timer, then the ✕.
+  private func actions(_ note: TimerNoteActions, busy: Bool) -> some View {
+    HStack(spacing: theme.points(ThemeKit.rowActionsGap)) {
+      if let arm = note.arm { setTimer(arm) }
+      if note.dismiss { dismiss(busy: busy) }
+    }
+  }
+
+  /// Set a timer: TimerDialog (PostTimerDialog) for the post that went out.
+  private func setTimer(_ arm: TimerNoteArm) -> some View {
+    Button("Set a timer") { model.setTimer(arm) }
+      .buttonStyle(.virga(size: .small))
+      .accessibilityIdentifier("sched-note-set-timer")
   }
 
   private func dismiss(busy: Bool) -> some View {
