@@ -96,19 +96,18 @@ struct TimersPage: View {
     VirgaPage(PostingHeader.model("timers")) {
       VStack(alignment: .leading, spacing: theme.sectionGap) {
         ForEach(full, id: \.self) { line in
-          Callout(tone: .warn) { Text(line) }
+          Callout(tone: .warn, line)
         }
         if unreadable {
           LoadError(message: "Couldn’t read \(name)’s timers. \(ScheduledPostError.scheduleErrorMessage(timers.error))") {
             timers.reload()
           }
         } else if unavailable {
-          VirgaSection(
-            title: "Post timers aren’t available yet",
-            sub: "Virga’s server can’t hold timers right now. Posts can still be deleted by hand from Posting › Posted."
-          ) {
-            EmptyView()
-          }
+          // A `.card` of a title and its line, no `.card-head`: nothing under
+          // it, so none of a heading's 16 below it.
+          SectionHead(
+            "Post timers aren’t available yet",
+            sub: "Virga’s server can’t hold timers right now. Posts can still be deleted by hand from Posting › Posted.")
         } else if loading {
           // `<section aria-label="Loading timers">` over bones VoiceOver doesn't read.
           // `.card--flush > .hub-list:first-child` carries the rule in ink itself.
@@ -221,22 +220,19 @@ struct TimersPage: View {
     .accessibilityIdentifier("timers-empty")
   }
 
+  /// The sentence with its way to Posted, a link in ink with a line under
+  /// it (`a { color: var(--ink) }` beats `.empty`'s muted).
   private var emptySentence: some View {
-    var words = AttributedString("No posts on a timer. Give a new post a timer in the composer, or put one that’s out on a timer from ")
-    var link = AttributedString("Posted")
-    link.link = URL(string: "virga-route:posted")
-    words += link
-    words += AttributedString(".")
-    return Text(words)
-      .virgaText(.textBase)
-      .foregroundStyle(theme.muted)
-      .tint(theme.ink)
-      .fixedSize(horizontal: false, vertical: true)
-      .frame(maxWidth: theme.characters(Measure.Section.emptyMeasure, size: theme.textBase), alignment: .leading)
-      .environment(\.openURL, OpenURLAction { _ in
-        navigate(PostingRoutes.postingPageByKey["posted"]?.path ?? PostingRoutes.postingBase)
-        return .handled
-      })
+    ScheduleLinkedText(pieces: [
+      .words("No posts on a timer. Give a new post a timer in the composer, or put one that’s out on a timer from "),
+      .link("Posted", to: PostingRoutes.postingPageByKey["posted"]?.path ?? PostingRoutes.postingBase),
+      .words("."),
+    ])
+    .virgaText(.textBase)
+    .foregroundStyle(theme.muted)
+    .tint(theme.ink)
+    .fixedSize(horizontal: false, vertical: true)
+    .frame(maxWidth: theme.characters(Measure.Section.emptyMeasure, size: theme.textBase), alignment: .leading)
   }
 
   /// '1 post counting down', '2 timers gave up, posts still up'.
@@ -291,9 +287,12 @@ struct TimersPage: View {
           // One container, there while the disclosure is open: the list
           // inside it changes from bones to rows without reading this as
           // closing and opening again.
+          // `.sched-settled > .hub-list, > .empty, > .hub-error { margin-top:
+          // var(--space-3) }`: what it opens sits 12 under the summary.
           VStack(alignment: .leading, spacing: 0) {
             settledList
           }
+          .padding(.top, theme.space3)
           .onAppear {
             history = true
             followSettled(open: true)
@@ -327,17 +326,29 @@ struct TimersPage: View {
         settled.reload()
       }
     } else if settled.data == nil {
-      RowSkeleton(rows: 2)
+      // The bones are a `.hub-list` too, under the same rule in ink.
+      VStack(alignment: .leading, spacing: 0) {
+        settledRule
+        RowSkeleton(rows: 2)
+      }
     } else if !rows.isEmpty {
       VStack(alignment: .leading, spacing: 0) {
-        Rectangle().fill(theme.rule).frame(height: Measure.Hub.settledRule)
+        settledRule
         ForEach(rows, id: \.self) { row in timerRow(row) }
       }
     } else {
+      // `.empty { padding: var(--space-5) 0 }`
       Text("No timer has settled in a while.")
         .virgaText(.textBase)
         .foregroundStyle(theme.muted)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.vertical, theme.space5)
     }
+  }
+
+  /// `.sched-settled > .hub-list { border-top: 1px solid var(--rule) }`
+  private var settledRule: some View {
+    Rectangle().fill(theme.rule).frame(height: Measure.Hub.settledRule)
   }
 
   // MARK: Actions
@@ -444,7 +455,7 @@ struct TimersActed: View {
       ForEach(Array(acted.enumerated()), id: \.offset) { _, step in
         HStack(alignment: .center, spacing: Measure.Hub.actedItemGap) {
           Image(systemName: step.ok ? HubGlyph.acted : HubGlyph.skipped)
-            .font(.system(size: Measure.Hub.actedGlyph))
+            .virgaGlyph(Measure.Hub.actedGlyph, beside: theme.textSm)
             .foregroundStyle(step.ok ? theme.ok : theme.muted)
             .accessibilityHidden(true)
           Text(step.text)

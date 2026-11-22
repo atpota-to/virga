@@ -90,7 +90,8 @@ struct PostedPage: View {
       PostingPermissionNotice(did: did ?? "")
       if archiveLoaded && !built { buildNotice }
       if let error {
-        Callout(tone: .danger) { Text(error) }
+        // `role="alert"`: read out as it appears.
+        Callout(tone: .danger, error)
           .accessibilityIdentifier("posted-error")
       }
       if failed {
@@ -152,22 +153,15 @@ struct PostedPage: View {
 
   // MARK: The parts
 
-  /// Only the latest posts are listed until the archive is built.
+  /// Only the latest posts are listed until the archive is built. The link
+  /// is underlined in the callout's own ink (`.callout a { color: inherit }`).
   private var buildNotice: some View {
-    var words = AttributedString("Only your latest posts are listed. ")
-    var link = AttributedString("Build your archive")
-    link.link = URL(string: "virga-route:build")
-    words += link
-    words += AttributedString(" to list and search everything you’ve posted.")
-    return Callout {
-      Text(words)
-        .tint(theme.ink)
-        .fixedSize(horizontal: false, vertical: true)
+    Callout {
+      ScheduleLinkedText(pieces: [
+        .words("Only your latest posts are listed. "), .link("Build your archive", to: "/"),
+        .words(" to list and search everything you’ve posted."),
+      ])
     }
-    .environment(\.openURL, OpenURLAction { _ in
-      navigate("/")
-      return .handled
-    })
     .accessibilityIdentifier("posted-build-notice")
   }
 
@@ -195,7 +189,10 @@ struct PostedPage: View {
   }
 
   private func list(rows: [JSONValue], visible: [JSONValue], loading: Bool) -> some View {
-    VirgaSection(title: loading ? "Your posts" : PostingWords.countPhrase(rows.count, "post"), sub: "Newest first.", flush: true) {
+    VirgaSection(
+      title: loading ? "Your posts" : HubModel.countPhrase(Double(rows.count), "post"), sub: "Newest first.", flush: true,
+      caption: caps.canSchedule ? nil : "Putting a post on a timer needs a long session. Settings › Account offers one."
+    ) {
       if loading {
         RowSkeleton(rows: 6)
       } else if !visible.isEmpty {
@@ -212,18 +209,9 @@ struct PostedPage: View {
           !query.isEmpty || filter != "all"
             ? "Nothing matches. Clear the search or choose All." : "Nothing posted yet. New post starts one."
         )
-        .padding(.top, theme.space4)
       }
       if !loading && (rows.count > shown || (!built && feedCursor != nil)) {
         foot(rows: rows, visible: visible)
-      }
-      if !caps.canSchedule {
-        Text("Putting a post on a timer needs a long session. Settings › Account offers one.")
-          .virgaText(.textSm)
-          .foregroundStyle(theme.muted)
-          .fixedSize(horizontal: false, vertical: true)
-          .frame(maxWidth: theme.measure, alignment: .leading)
-          .padding(.top, theme.points(ThemeKit.cardCaptionSpaceAbove))
       }
     }
   }
@@ -237,7 +225,9 @@ struct PostedPage: View {
       loadingMore
       ? "Loading…"
       : more ? "Show \(AppLocale.formatNumber(min(Measure.Hub.postedStep, rows.count - shown))) more" : "Show more"
-    return SectionFoot(count: knownTotal ? "\(AppLocale.formatNumber(visible.count)) of \(AppLocale.formatNumber(rows.count))" : nil) {
+    return SectionFoot(
+      count: knownTotal ? "\(AppLocale.formatNumber(visible.count)) of \(AppLocale.formatNumber(rows.count))" : nil, letOut: .small
+    ) {
       Button(label) {
         if more { shown += Measure.Hub.postedStep } else { Task { await loadMoreFeed() } }
       }
@@ -481,7 +471,7 @@ struct PostedGatesDialog: View {
           }
         }
         FieldHint("Changing who can quote doesn’t remove quotes already made.")
-        if !error.isEmpty { Callout(tone: .danger) { Text(error) } }
+        if !error.isEmpty { Callout(tone: .danger, error) }
       }
     } actions: {
       Button("Cancel", action: onClose)

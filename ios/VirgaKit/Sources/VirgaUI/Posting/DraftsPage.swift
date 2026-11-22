@@ -147,7 +147,10 @@ struct DraftsPage: View {
     VirgaPage(PostingHeader.model("drafts")) {
       PostingPermissionNotice(did: did ?? "", force: scopeError || notice?.scope == true)
       if let notice, !notice.scope {
-        Callout(tone: notice.danger ? .danger : .warn) { Text(notice.text) }
+        // `role={tone === 'danger' ? 'alert' : 'status'}`: a failure is the
+        // words-alone callout's alert; a warning is read out as it arrives.
+        Callout(tone: notice.danger ? .danger : .warn, notice.text)
+          .toolAnnounces(notice.danger ? nil : notice.text, onAppear: true)
           .accessibilityIdentifier("drafts-notice")
       }
       if list.phase == .ready && rows.isEmpty {
@@ -223,7 +226,17 @@ struct DraftsPage: View {
     let title =
       list.phase == .ready && !rows.isEmpty
       ? "\(AppLocale.formatNumber(rows.count))\(more ? "+" : "") \(rows.count == 1 && !more ? "draft" : "drafts")" : "Drafts"
-    return VirgaSection(title: title, sub: "The latest edit first. Pictures stay on the device that saved them.", flush: true) {
+    // The section's `.card-caption`s, under the list and its foot.
+    var captions: [String] = []
+    if list.phase == .ready && rows.count >= Measure.Hub.manyDrafts {
+      captions.append("Bluesky may stop keeping new drafts past a limit. If one won’t save: \(Drafts.draftLimitMessage)")
+    }
+    if !caps.canSchedule && !rows.isEmpty {
+      captions.append("Scheduling a draft needs a long session. Settings › Account offers one.")
+    }
+    return VirgaSection(
+      title: title, sub: "The latest edit first. Pictures stay on the device that saved them.", flush: true, captions: captions
+    ) {
       if list.phase == .loading {
         RowSkeleton(rows: 4, actions: 1)
       } else {
@@ -237,28 +250,13 @@ struct DraftsPage: View {
         .accessibilityIdentifier("drafts-list")
       }
       if list.phase == .ready && more {
-        SectionFoot {
+        SectionFoot(letOut: .small) {
           Button(list.loadingMore ? "Loading…" : "Show more") { list.loadMore() }
             .buttonStyle(.virga(.ghost, size: .small))
             .disabled(list.loadingMore)
         }
       }
-      if list.phase == .ready && rows.count >= Measure.Hub.manyDrafts {
-        caption("Bluesky may stop keeping new drafts past a limit. If one won’t save: \(Drafts.draftLimitMessage)")
-      }
-      if !caps.canSchedule && !rows.isEmpty {
-        caption("Scheduling a draft needs a long session. Settings › Account offers one.")
-      }
     }
-  }
-
-  private func caption(_ text: String) -> some View {
-    Text(text)
-      .virgaText(.textSm)
-      .foregroundStyle(theme.muted)
-      .fixedSize(horizontal: false, vertical: true)
-      .frame(maxWidth: theme.measure, alignment: .leading)
-      .padding(.top, theme.points(ThemeKit.cardCaptionSpaceAbove))
   }
 
   // MARK: A row
@@ -447,8 +445,9 @@ struct PostingPagesError: Error, LocalizedError {
   var errorDescription: String? { message }
 }
 
-/// The kit's ⋯ for a row, with a spinner in place of the dots while the
-/// row works.
+/// The kit's ⋯ for a row (MoreMenu's menu and glyph), with a spinner in
+/// place of the dots while the row works. It stays the one labelled menu
+/// throughout, as the web's Menu does, so VoiceOver keeps it and its focus.
 struct DraftsRowMenu: View {
   @Environment(\.virgaTheme) private var theme
   let label: String
@@ -456,13 +455,31 @@ struct DraftsRowMenu: View {
   let working: Bool
 
   var body: some View {
+    let side = theme.points(ThemeKit.touchGhostIconButtonSize)
+    Menu {
+      MenuContent(entries: entries)
+    } label: {
+      glyph(side: side)
+        .frame(width: side, height: side)
+        .contentShape(Circle())
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(label)
+    }
+    .menuOrder(.fixed)
+    .virgaFocusOutline(Circle())
+    .accessibilityLabel(label)
+    .accessibilityIdentifier("row-menu")
+  }
+
+  @ViewBuilder
+  private func glyph(side: CGFloat) -> some View {
     if working {
       HubSpinner()
-        .frame(width: theme.points(ThemeKit.touchGhostIconButtonSize), height: theme.points(ThemeKit.touchGhostIconButtonSize))
-        .accessibilityLabel(label)
     } else {
-      MoreMenu(label: label, entries: entries)
-        .accessibilityIdentifier("row-menu")
+      // MoreMenu's dots: grown with Dynamic Type, kept inside the circle.
+      Image(systemName: Glyph.more)
+        .virgaGlyph(theme.points(ThemeKit.menuItemIconSize), weight: .medium, upTo: side / 2)
+        .foregroundStyle(theme.color(ThemeKit.ghostButtonInk))
     }
   }
 }
@@ -495,9 +512,13 @@ struct HubCornerRow<Words: View, Action: View>: View {
       } else {
         HStack(alignment: .top, spacing: Measure.Hub.rowColumnGap) {
           words.frame(maxWidth: .infinity, alignment: .leading)
+          // `.row-actions { margin-top: -6px }`, and the 44-point ⋯ reaching
+          // 6 past it above and below (`.row-actions .btn--ghost.btn--icon {
+          // margin-block: -6px }`), so the group is the 32 of a small button,
+          // centred on the words' first line.
           HStack(spacing: theme.points(ThemeKit.rowActionsGap)) {
             if let button { button }
-            if let menu { menu }
+            if let menu { menu.padding(.vertical, -Measure.Section.rowActionsLift) }
           }
           .padding(.top, -Measure.Section.rowActionsLift)
         }
@@ -505,7 +526,7 @@ struct HubCornerRow<Words: View, Action: View>: View {
     }
     .padding(.vertical, theme.rowPad)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: Measure.Section.hairline) }
   }
 }
 
@@ -543,20 +564,32 @@ struct ScheduleDraftDialog: View {
     let whenMs = TimeValue.ms(when.map(JSONValue.string))
     let tooSoon = !whenMs.isFinite || whenMs < now + 60_000
     let words = (row["text"]?.stringValue ?? "").jsTrimmed()
-    DialogFrame(title: "Schedule this draft", onClose: { if !busy { onClose() } }) {
-      DialogForm {
+    // `.dialog--stack-actions`: on a phone the three buttons go one under
+    // another, Schedule first and Cancel last.
+    DialogFrame(title: "Schedule this draft", onClose: { if !busy { onClose() } }, stackActions: true) {
+      // `.hub-confirm { gap: 12px }`
+      VStack(alignment: .leading, spacing: Measure.Hub.confirmGap) {
         if !words.isEmpty { HubQuote(text: words.jsSlice(0, Measure.Hub.scheduleQuoteMax)) }
         WhenPicker(schedule: queueSettings, value: when, onChange: { when = $0 }, requester: req)
-        if tooSoon && !(when ?? "").isEmpty { FieldHint("Choose a time at least a minute from now.", isOver: true) }
+        if tooSoon && !(when ?? "").isEmpty {
+          // `.field-hint.lib-question-error`: the hint's weight, in red.
+          Text("Choose a time at least a minute from now.")
+            .virgaText(.textSm)
+            .foregroundStyle(theme.danger)
+        }
         if phase == .loading { FieldHint("Looking for the next open time in your queue…") }
         if phase == .ready && slot == nil {
           FieldHint("Your weekly schedule has no open times. Set some in Posting › Weekly schedule to use the queue.")
         }
         if !usage.isEmpty { FieldHint("\(usage).") }
-        if !room.isEmpty { Callout(tone: .warn) { Text(room) } }
-        if phase == .failed { Callout(tone: .warn) { Text("Your queue couldn’t be read, so only a set time can be chosen.") } }
+        if !room.isEmpty {
+          // `role="status"`: read out as it arrives.
+          Callout(tone: .warn, room)
+            .toolAnnounces(room, onAppear: true)
+        }
+        if phase == .failed { Callout(tone: .warn, "Your queue couldn’t be read, so only a set time can be chosen.") }
         FieldHint("Once it’s scheduled, the draft is deleted: the scheduled post takes its place.")
-        if !error.isEmpty { Callout(tone: .danger) { Text(error) } }
+        if !error.isEmpty { Callout(tone: .danger, error) }
       }
     } actions: {
       actions(tooSoon: tooSoon)
@@ -575,8 +608,8 @@ struct ScheduleDraftDialog: View {
     app.session.capabilitiesFor(did).canSchedule ? app.session.backendFor(did) : nil
   }
 
-  /// On a phone the three buttons go one under another, Schedule first and
-  /// Cancel last; wider, side by side.
+  /// Cancel, Add to queue, Schedule: side by side wider than a phone, and on
+  /// a phone the dialog's stacked foot puts the last (Schedule) first.
   @ViewBuilder
   private func actions(tooSoon: Bool) -> some View {
     let cancel = Button("Cancel", action: onClose).buttonStyle(.virga).disabled(busy)
@@ -593,17 +626,9 @@ struct ScheduleDraftDialog: View {
       .buttonStyle(.virga(.primary))
       .disabled(busy || tooSoon || !room.isEmpty)
       .accessibilityIdentifier("schedule-draft-confirm")
-    if theme.isPhone {
-      VStack(spacing: theme.space2) {
-        confirm.frame(maxWidth: .infinity)
-        queue.frame(maxWidth: .infinity)
-        cancel.frame(maxWidth: .infinity)
-      }
-    } else {
-      cancel
-      queue
-      confirm
-    }
+    cancel
+    queue
+    confirm
   }
 
   private func read() async {

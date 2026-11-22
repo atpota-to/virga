@@ -157,8 +157,9 @@ COMPONENTS (Components/), each with `// Ports` headers and a `#Preview`
   period:, actions:, extra:)` (pass the period picker as `period:` and the rest as `actions:`:
   a phone puts the period first and the rest at the far end; a lone primary action sits beside
   the title), `VirgaPage` (a tap on the page itself, off its controls, ends editing, as a
-  field's blur), `PageColumn`, `VirgaSection(title:sub:trailing:flush:caption:)` (a
-  small Segmented as `trailing` says so, and goes under the line on a phone), `SectionFoot(count:
+  field's blur), `PageColumn`, `VirgaSection(title:sub:trailing:flush:caption:captions:)` (a
+  small Segmented as `trailing` says so, and goes under the line on a phone; `captions` more
+  `.card-caption`s, each 12 under what is above it), `SectionFoot(count:
   letOut:)` (`letOut:` the size of a ghost button that starts it), `VirgaRow(roomy:time:) { }
   actions: { }`, `RowWords`.
 - Helpers: `FlowLayout`, `ScrollRow` (`.scrollRowFocus(_:)` marks the item to bring into
@@ -222,7 +223,9 @@ DASHBOARDS AND REPORTS (Dashboards/, Reports/)
 - `DashboardPage(dashboard:)`: header with ⋯, Customize (move up/down, size, Remove, the library
   in a dialog), the period picker; `CardGrid` (twelve columns, dashboards.css's 860/620 rules);
   `WidgetBody` draws the ported cards (four figures, six charts, Best time); the rest show their
-  title and `Unported.card` (posting cards: `Unported.postingCard`).
+  title and `Unported.card`. The posting cards (MoreWidgets.swift: `PostingStatScheduled`,
+  `PostingStatTimers`, `PostingNextCard`, `PostingDraftsCard`) read what the overview reads, through
+  THE POSTING PAGES' `PostingLoad`, for the dashboard's account; without a long session they say so.
 - `ReportsIndex`, `ReportPage(report:)`: every report (Followers, Posts, Engagement, Content,
   Blocks, People, Atmosphere), with `PersonRow`, `PersonList` (measures a list for its rows' meta
   line) and `PostRowView` (Reports/People.swift); `ChartNotes` and `ChartNotesModels.marks` (one
@@ -320,9 +323,12 @@ TEMPLATES AND POSTING (Templates/, Posting/, Settings/PostingSettingsSection.swi
 - `TemplateQuestions(template:context:…onDone:)`, `ChoiceGroup` and `TemplatePreviewView` are
   for the composer's library: it passes `preview:` from previewFor once library/model.js is
   ported; until then `LibraryPreview.forTemplate` works out a template on its own.
-- Posting/PostingParts.swift: `PostingHeader.model(key)`, `RowSkeleton`, `LoadError`,
-  `.postingConfirm(isPresented:title:onConfirm:message:)` (hubParts' ConfirmDialog) and
-  `PostingWords.countPhrase`. Use opens the composer through `ComposerHost`.
+- Posting/PostingParts.swift: `PostingHeader.model(key)`, `RowSkeleton` (each row as tall as its
+  bones, the action bones under them on a phone), `.hubBonePulse()` (the bones' pulse), `LoadError`
+  (role="alert", its triangle centred with the sentence and Try again) and
+  `.postingConfirm(isPresented:title:onConfirm:message:)` (hubParts' ConfirmDialog: no swipe away while it
+  works, a refusal read out). A count in words is VirgaPosting's `HubModel.countPhrase`. Use opens the
+  composer through `ComposerHost`.
 - Settings › Posting is `PostingSettingsSection` over `PostingSettingsModel`, with the composer's
   `LanguagePicker` and `GatesEditor`; its weekly queue reads VirgaPosting's `ScheduleModel` (the
   week's count and summary, the zone's name, moveToZone) and draws scheduleParts' `TimezoneSelect`. The
@@ -491,7 +497,9 @@ THE POSTING PAGES (Posting/: HubPage, DraftsPage, PostedPage, TimersPage, TimerD
   `HubPostWords`/`HubPostedRow` (a post's words as the way to it on Bluesky, and its line), `HubTimedRow`
   (a row led by its day over its hour in `--time-col`; on a phone its first line of meta),
   `HubCornerRow(words:button:menu:)` (`.has-corner-menu`: on a phone the ⋯ in the row's top corner and the
-  button under the words), `DraftsRowMenu` (the ⋯, a `HubSpinner` while the row works), `HubQuote`, and
+  button under the words; wider, the ⋯ reaching 6 past the actions group above and below, so the group is
+  the small button's 32 centred on the first line), `DraftsRowMenu` (the ⋯, one labelled menu throughout,
+  its dots a `HubSpinner` while the row works), `HubQuote`, and
   `PostingPagesError` (a sentence a page throws to its dialog, which shows it).
 - `.postTimerDialog($post, did:onArmed:)` is TimerDialog.jsx (`PostTimerDialog`, beside the
   composer's own `LifespanDialog`, COMPOSER TIMER below), over a `PostTimerTarget` (uri, cid, extraUris, text,
@@ -521,12 +529,22 @@ THE POSTING PAGES (Posting/: HubPage, DraftsPage, PostedPage, TimersPage, TimerD
   `posting-timer-set` (or `posting-timer-dialog-refused`), `posting-timers` (or `-empty`),
   `posting-timers-settled`.
 - Schedule this draft's time is the scheduling pages' `WhenPicker` (SCHEDULING above), on the queue's
-  clock, an ISO string or nil as the web's `when`.
+  clock, an ISO string or nil as the web's `when`. Its body is spaced as `.hub-confirm` (12), and its foot
+  is DialogFrame's `stackActions` (on a phone Schedule, Add to queue, Cancel, one under another).
+- What the web reads out: a role="alert" line is the words-alone `Callout(tone: .danger, words)` (LoadError
+  passes `alert:`), a role="status" or aria-live one `.toolAnnounces(words)` (Drafts' warning and the room
+  line as they arrive, the timer dialog's first-acts time as it changes).
+- The row of posting pages (`HubPostingNav`) is `.scroll-row--bleed`: let out by the page's margin and
+  padded back, so it scrolls out to the screen's edges, its keys SegmentedKey's measures with a count.
 - Deliberate differences: the focus after a row goes (posted, deleted, called off) is the system's to
   place, not useFocusAfterRemoval's; a timer row whose model throws (a corrupt `acted` step, a web bug
   in timerRowModel) is left out where the web's page would fail. The web shows
   no PostPreview on the posted or scheduled rows (only in the composer's dialogs, a quote's card, the
-  reply's context and the library), so neither does the app.
+  reply's context and the library), so neither does the app. Retry and "see what happened" are pressed
+  through at least 44 points (DESIGN.md › Touch), where the web's `inset: -12px -6px` gives 42.85.
+- Still hand-built: Drafts' and Timers' empty blocks (the kit's EmptyState takes neither a button with
+  an icon nor a sentence with a link), and the kit's VirgaRow doesn't yet let a ⋯ reach past its actions
+  group as HubCornerRow does (VirgaRow has no callers outside its previews, so no screen shows it yet).
 
 COMPOSER TIMER (Composer/ComposerController+Timer.swift, Composer/LifespanDialog.swift)
 - The post's timer is the state's `lifespan`; `model.lifespanTouched` (ComposerStateModel) says the writer
@@ -720,17 +738,14 @@ LIVE SKY (Sky/, and VirgaCore/Hillside/ for everything that isn't drawing)
 
 ## Known gaps and deliberate differences
 
-- Left for later steps: dragging cards; the dashboard's posting cards (StatScheduled, StatTimers,
-  PostingNext, PostingDrafts), which can now read scheduleService and hubModel; of posting, what the
-  composer's entry (Composer.jsx) lists as not yet (the duplicate guard, drag and drop, the posted toast's
-  View it on Bluesky); the pending-work warnings before a sign-out (AppModel.pendingWork, until the
+- Left for later steps: dragging cards; of posting, what the composer's entry (Composer.jsx) lists as
+  not yet (the duplicate guard, drag and drop, the posted toast's View it on Bluesky); the pending-work warnings before a sign-out (AppModel.pendingWork, until the
   schedule and timer services are wired to it); "Keep it when space runs low" (iOS has nothing to ask).
 - Copy is the web's word for word, including words that only fit a browser ("This
   browser's region", "Forget X on this browser", "Saving the repo to this browser"). Worth
   raising on the web side rather than changing on one side.
 - New copy the web has no counterpart for: "This page isn't in the iOS app yet.", "This
-  section isn't in the iOS app yet.", "This card isn't in the iOS app yet." and "This card
-  needs the posting pages, which aren’t in the iOS app yet."; the share dialog's toasts after
+  section isn't in the iOS app yet." and "This card isn't in the iOS app yet."; the share dialog's toasts after
   Save the picture ("Saved to Photos." and "The picture couldn’t be saved.") and Photos'
   permission line ("Virga saves a chart's picture to your photos when you ask it to."),
   since the web downloads the file instead.

@@ -134,22 +134,23 @@ public struct VirgaSection<Content: View>: View {
   private let sub: String?
   private let trailing: AnyView?
   private let flush: Bool
-  private let caption: String?
+  private let captions: [String]
   private let content: Content
 
   /// - Parameters:
   ///   - flush: a list or a table: a rule in ink under the heading, the rows
   ///     the section's full width.
   ///   - caption: what the list needs said about it, 12 under it.
+  ///   - captions: more of them, each 12 under the one before.
   public init(
     title: String? = nil, sub: String? = nil, trailing: AnyView? = nil, flush: Bool = false, caption: String? = nil,
-    @ViewBuilder content: () -> Content
+    captions: [String] = [], @ViewBuilder content: () -> Content
   ) {
     self.title = title
     self.sub = sub
     self.trailing = trailing
     self.flush = flush
-    self.caption = caption
+    self.captions = (caption.map { [$0] } ?? []) + captions
     self.content = content()
   }
 
@@ -164,7 +165,7 @@ public struct VirgaSection<Content: View>: View {
       }
       content
         .environment(\.virgaUnderRuledHead, flush && title != nil)
-      if let caption {
+      ForEach(Array(captions.enumerated()), id: \.offset) { _, caption in
         Text(caption)
           .virgaText(.textSm)
           .foregroundStyle(theme.muted)

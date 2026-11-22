@@ -128,7 +128,8 @@ struct PostTimerDialog: View {
           editor
         }
         if !error.isEmpty {
-          Callout(tone: .danger) { Text(error) }
+          // `role="alert"`: read out as it appears.
+          Callout(tone: .danger, error)
             .accessibilityIdentifier("timer-dialog-error")
         }
       }
@@ -207,6 +208,8 @@ struct PostTimerDialog: View {
       }
       .frame(height: Measure.Templates.rowBoneHeight * 2 + Measure.Hub.timerSkeletonBone * 2 + Measure.Hub.timerSkeletonGap * 3)
     }
+    // `.hub-bone`s pulse, as a list's bones do.
+    .hubBonePulse()
     .accessibilityElement(children: .ignore)
     .accessibilityLabel("Loading")
   }
@@ -225,11 +228,7 @@ struct PostTimerDialog: View {
     let notes = self.notes
     let counting = self.counting
     if let existing {
-      Callout {
-        Text(
-          "It already has a timer: \(SelfDestruct.describeTimer(ScheduleModel.ruleOfTimerRow(existing), now: now)) The rule below takes its place."
-        )
-      }
+      Callout("It already has a timer: \(SelfDestruct.describeTimer(ScheduleModel.ruleOfTimerRow(existing), now: now)) The rule below takes its place.")
     }
     VStack(alignment: .leading, spacing: Measure.Hub.subGap) {
       FieldLabel("Start counting")
@@ -248,8 +247,10 @@ struct PostTimerDialog: View {
     if notes.fitted.enabled, notes.room.isEmpty,
       let acts = LifespanModel.firstActAt(notes.fitted, startedAt: counting.startedAt, now: now), acts.isFinite
     {
-      FieldHint("\(firstActsLead(notes: notes, counting: counting)) first acts \(ScheduleModel.formatInZone(.number(acts), nil, now: now)).")
-        .accessibilityAddTraits(.updatesFrequently)
+      let hint = "\(firstActsLead(notes: notes, counting: counting)) first acts \(ScheduleModel.formatInZone(.number(acts), nil, now: now))."
+      // `aria-live="polite"`: read out as it changes.
+      FieldHint(hint)
+        .toolAnnounces(hint)
         .accessibilityIdentifier("timer-dialog-acts")
     }
   }

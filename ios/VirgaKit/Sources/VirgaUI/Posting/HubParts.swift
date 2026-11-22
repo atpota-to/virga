@@ -186,7 +186,8 @@ struct HubQuote: View {
       .foregroundStyle(theme.ink2)
       .fixedSize(horizontal: false, vertical: true)
       .padding(.vertical, Measure.Hub.quotePadding)
-      .padding(.leading, Measure.Hub.quoteInset)
+      // `padding-left: 14px` inside a 2px border: the words start 16 in.
+      .padding(.leading, Measure.Hub.quoteInset + Measure.Hub.quoteRule)
       .frame(maxWidth: .infinity, alignment: .leading)
       .overlay(alignment: .leading) {
         Rectangle().fill(theme.line2).frame(width: Measure.Hub.quoteRule)
@@ -300,7 +301,7 @@ struct HubPostCounts: View {
       ForEach(HubPostMeta.counts.filter { keys.contains($0.key) }, id: \.key) { c in
         let n = HubPostMeta.count(post, c.key)
         HStack(spacing: Measure.Posting.previewIconGap) {
-          Image(systemName: c.glyph).font(.system(size: Measure.Posting.previewIcon))
+          Image(systemName: c.glyph).virgaGlyph(Measure.Posting.previewIcon, beside: theme.textSm)
           Text(Analytics.fmtCompact(Double(n)))
         }
         .accessibilityElement(children: .ignore)

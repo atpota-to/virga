@@ -201,10 +201,8 @@ struct HubPage: View {
     } else if let read = scheduled.data {
       if read.unavailable {
         EmptyState("Scheduling isn’t available on Virga’s server just now.")
-          .padding(.top, theme.space4)
       } else if read.overview.next.isEmpty && read.failedRows.isEmpty {
         EmptyState("Nothing is scheduled. Write a post and choose Schedule, or add it to your queue.")
-          .padding(.top, theme.space4)
       } else {
         let now = SyncStatus.now()
         VStack(alignment: .leading, spacing: 0) {
@@ -252,7 +250,6 @@ struct HubPage: View {
     } else if let read = drafts.data {
       if read.rows.isEmpty {
         EmptyState("No drafts. In the composer, Save draft keeps a post here until you’re ready.")
-          .padding(.top, theme.space4)
       } else {
         let now = SyncStatus.now()
         VStack(alignment: .leading, spacing: 0) {
@@ -263,13 +260,12 @@ struct HubPage: View {
       }
     } else if Scopes.isMissingScopeError(drafts.error) {
       // The notice at the top of the page already asks for the permission
-      // when posting lacks it too; it isn't said twice.
+      // when posting lacks it too; it isn't said twice. It follows the
+      // ruled head directly: only `.card--flush > .hub-error` has 16 above.
       if caps.canPost {
         PostingPermissionNotice(did: did ?? "", force: true)
-          .padding(.top, Measure.Hub.errorAbove)
       } else {
         EmptyState("Your drafts can’t be read until Virga has permission.")
-          .padding(.top, theme.space4)
       }
     } else {
       LoadError(message: "Your drafts couldn’t be read from Bluesky.") { drafts.reload() }
@@ -309,7 +305,6 @@ struct HubPage: View {
         .padding(.top, Measure.Hub.errorAbove)
     } else {
       EmptyState("Nothing posted yet. New post starts one.")
-        .padding(.top, theme.space4)
     }
   }
 }
@@ -318,7 +313,10 @@ struct HubPage: View {
 
 /// `PostingNav`: the posting pages as a row of words, for a screen without
 /// the sidebar that lists them: the overview pressed, and after a page's
-/// name how many it holds. It scrolls sideways when it doesn't fit.
+/// name how many it holds. It scrolls sideways when it doesn't fit, out to
+/// the screen's edges (`.scroll-row--bleed`): let out by the page's margin
+/// and padded back by as much, so its first key starts on the page's edge
+/// and the end keys' reach (11) is inside that margin.
 struct HubPostingNav: View {
   @Environment(\.virgaTheme) private var theme
   let counts: [String: String]
@@ -328,7 +326,7 @@ struct HubPostingNav: View {
       keys.fixedSize()
       ScrollRow(focus: AnyHashable("hub")) { keys }
     }
-    .padding(.horizontal, -Measure.Touch.segmentedReach)
+    .padding(.horizontal, -theme.pagePad)
     .accessibilityElement(children: .contain)
     .accessibilityLabel("Posting pages")
     .accessibilityIdentifier("posting-nav")
@@ -341,12 +339,13 @@ struct HubPostingNav: View {
           .id(AnyHashable(page.key))
       }
     }
-    .padding(.horizontal, Measure.Touch.segmentedReach)
+    .padding(.horizontal, theme.pagePad)
   }
 }
 
-/// One page in the row: the kit's Segmented key, as a link, with its count
-/// after its name, quieter, not taking the pressed key's weight.
+/// One page in the row: the kit's Segmented key (SegmentedKey's measures,
+/// line, motion and focus in the row), as a link, with its count after its
+/// name, quieter, not taking the pressed key's weight.
 struct HubPostingNavKey: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(\.navigate) private var navigate
@@ -361,15 +360,21 @@ struct HubPostingNavKey: View {
     Button {
       if !isOn { navigate(page.path) }
     } label: {
-      HStack(spacing: theme.points(ThemeKit.linkActionGap)) {
+      // `.segmented-key { gap: 6px; line-height: 1 }`
+      HStack(spacing: Measure.Segmented.keyGap) {
         ZStack {
-          Text(page.label).virgaText(size: size, weight: ThemeKit.segmentedOnWeight).hidden()
-          Text(page.label).virgaText(size: size, weight: isOn ? ThemeKit.segmentedOnWeight : ThemeKit.segmentedKeyWeight)
+          Text(page.label)
+            .virgaText(size: size, weight: ThemeKit.segmentedOnWeight, lineHeight: Measure.Lines.segmentedKey)
+            .hidden()
+          Text(page.label)
+            .virgaText(
+              size: size, weight: isOn ? ThemeKit.segmentedOnWeight : ThemeKit.segmentedKeyWeight,
+              lineHeight: Measure.Lines.segmentedKey)
         }
         .foregroundStyle(theme.color(isOn ? ThemeKit.segmentedOnInk : ThemeKit.segmentedKeyInk))
         if let count {
           Text(count)
-            .virgaText(size: size, weight: VirgaWeight.regular)
+            .virgaText(size: size, weight: VirgaWeight.regular, lineHeight: Measure.Lines.segmentedKey)
             .monospacedDigit()
             .foregroundStyle(theme.muted)
         }
@@ -384,6 +389,9 @@ struct HubPostingNavKey: View {
         }
       }
       .touchReach(horizontal: Measure.Touch.segmentedReach, vertical: 0)
+      .animation(theme.motion.control, value: isOn)
+      // The pressed key, which the row brings clear of its fade.
+      .scrollRowFocus(isOn)
     }
     .buttonStyle(.plain)
     .virgaFocusOutline(RoundedRectangle(cornerRadius: theme.radiusSm), placement: .inside)
@@ -498,13 +506,18 @@ struct HubInlineAction: View {
   let action: () -> Void
 
   var body: some View {
+    // The web's `inset: -12px -6px` round a 13-point line at 1.45 is 42.85
+    // tall; DESIGN.md › Touch asks 44 of every control, so the reach above
+    // and below is at least what makes the line up to that.
+    let line = theme.scaled(theme.textSm) * CGFloat(Measure.Hub.whyLineHeight)
+    let reach = max(Measure.Hub.inlineReachVertical, (Measure.Touch.target - line) / 2)
     Button(action: action) {
       Text(title)
         .virgaText(.textSm, weight: VirgaWeight.medium, lineHeight: Measure.Hub.whyLineHeight)
         .foregroundStyle(theme.ink)
         .underline()
         .lineLimit(1)
-        .touchReach(horizontal: Measure.Hub.inlineReachHorizontal, vertical: Measure.Hub.inlineReachVertical)
+        .touchReach(horizontal: Measure.Hub.inlineReachHorizontal, vertical: reach)
     }
     .buttonStyle(.plain)
     .disabled(disabled)
@@ -548,7 +561,7 @@ struct HubTimedRow<Words: View>: View {
     }
     .padding(.vertical, theme.rowPad)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: Measure.Section.hairline) }
   }
 
   private var dayInk: Color { dayTone == .failed ? theme.danger : theme.ink }
@@ -628,7 +641,7 @@ struct HubDraftRow: View {
     }
     .padding(.vertical, theme.rowPad)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: Measure.Section.hairline) }
     .accessibilityElement(children: .contain)
   }
 }
@@ -644,7 +657,7 @@ struct HubPostedRow: View {
     HubPostWords(row: row, did: did, now: now)
       .padding(.vertical, theme.rowPad)
       .frame(maxWidth: .infinity, alignment: .leading)
-      .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+      .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: Measure.Section.hairline) }
   }
 }
 

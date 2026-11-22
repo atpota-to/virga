@@ -95,11 +95,12 @@
       "synced": "ae9b483b20c9"
     },
     "src/dashboards/widgets/posting.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Dashboards/MoreWidgets.swift"
       ],
-      "note": "Its cards (scheduled, timers, going out next, latest drafts) are in the library and on the grid with their titles; Scheduled and Timers are figures with their label. An account without a long session gets the web's words (Needs a long session; going out next's Scheduling needs a long session… See how). With one, each says it needs the posting pages, which aren't in the iOS app yet: the scheduled posts' and timers' reads and the hub's overview (scheduleService.js, hubModel.js) are still to be ported.",
+      "note": "Its four cards over the overview's reads (PostingLoad, read again on the posting events, for the dashboard's account): Scheduled (Waiting, the count, and how many didn't go out, Next: with whenLabel, or Nothing is scheduled) and Timers (Counting down, the count, Next check with relativeWhen, or None counting down) as figures, … Reading while they read and Couldn’t be read just now on a failure or an unavailable server; Going out next (scheduledOverview's next as many as the card's rows, each the overview's timed row, its day over its hour, Queue or Going out now; the bones, the failure with Try again, Scheduling isn’t available, Nothing is scheduled; how many didn't go out at its foot) and Latest drafts (the overview's draft rows with Open, which opens the draft in the composer; the bones, the failure, No drafts). Without a long session the figures say Needs a long session and Going out next why, with See how. What isn't rows stands 16 off the list's rule.",
       "synced": "d108e840532d"
     },
     "src/people/people.jsx": {
@@ -129,9 +130,10 @@
     "src/reports/PostRow.jsx": {
       "status": "ported",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaUI/Reports/People.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Reports/People.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/HubParts.swift"
       ],
-      "note": "PostRowView with postText, postUrl and postWhen: the words (a link to the post on Bluesky, --text-md, two lines at most), and a meta line of when (relative within a week, else the short date with the year when it isn't this one) · reply · quote · the counts by kind as a group 12 apart with their 13-point glyphs (the ones not counted dimmed), or the one total with its rank.",
+      "note": "PostRowView with postText, postUrl and postWhen: the words (a link to the post on Bluesky, --text-md, two lines at most), and a meta line of when (relative within a week, else the short date with the year when it isn't this one) · reply · quote · the counts by kind as a group 12 apart with their 13-point glyphs (the ones not counted dimmed), or the one total with its rank. The posting pages' PostMeta and postWhen are HubPostMeta and HubPostCounts (Posting/HubParts.swift): the same line, its counts' glyphs grown with Dynamic Type, with an `extra` piece at its end (Posted's Not in the archive yet), read with a post in a thread of the account's own not called a reply (the caller's isReplyRow).",
       "synced": "0adefe7512b7"
     },
     "src/reports/ReportPage.jsx": {
