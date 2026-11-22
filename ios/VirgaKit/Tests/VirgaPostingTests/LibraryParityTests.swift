@@ -19,12 +19,15 @@ func libraryClock(_ c: ParityCase) -> LibraryClock {
     timeZone: TimeZone(identifier: c.string("zone") ?? "UTC")!)
 }
 
+/// library.model, read once for every test (it is over a megabyte).
+let libraryModelFixture = Result { try Parity.load("library.model") }
+
 /// A fixture's item table, and its inputs with `{ $item: name }` put back.
 struct LibraryItems {
   let table: [String: JSONValue]
 
   init(_ fixture: String) throws {
-    table = try cases(fixture, "ITEMS")[0].output.objectValue ?? [:]
+    table = try LibraryModelParity.cases("ITEMS")[0].output.objectValue ?? [:]
   }
 
   func resolve(_ value: JSONValue?) -> JSONValue? {
@@ -73,6 +76,15 @@ func marked(_ made: JSONValue, _ input: JSONValue?, _ marker: String) -> JSONVal
 @Suite struct LibraryModelParity {
   static let f = "library.model"
   let items: LibraryItems
+
+  /// The cases of `fn`, failing when there are none.
+  static func cases(_ fn: String) throws -> [ParityCase] {
+    let found = try libraryModelFixture.get().cases.filter { $0.fn == fn }
+    if found.isEmpty { throw ParityError.noCases(fixture: f, fn: fn) }
+    return found
+  }
+
+  func cases(_ fixture: String, _ fn: String) throws -> [ParityCase] { try Self.cases(fn) }
 
   init() throws {
     items = try LibraryItems(Self.f)
