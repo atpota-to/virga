@@ -1,4 +1,5 @@
 // Ports src/styles/base.css (body's background: the sky)
+// Ports src/hillside/LiveSky.jsx (where the live sky's band is drawn: over the wash)
 //
 // The sky behind every page: `--sky-top` at the top, `--sky-mid` by
 // `--sky-mid-at`, faded into `--bg` by `--sky-end` (ThemeKit.skyWash), with

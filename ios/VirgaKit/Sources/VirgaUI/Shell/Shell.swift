@@ -31,8 +31,12 @@
 // Customize this dashboard puts ?edit=1 in the address and makes the
 // dashboard's page again, which opens it customizing (ShellActions).
 //
+// The live sky (Shell.jsx's `prefs.liveSky && <LiveSky />`) is drawn with
+// the page's sky, by PageSky (Theme/SkyWash.swift), so it is behind every
+// page here, and behind the sidebar and the page together on the desk.
+//
 // Not here yet: the composer (New post goes to its address, whose page
-// says it isn't here yet), and the live sky.
+// says it isn't here yet).
 
 #if canImport(UIKit)
 import Observation

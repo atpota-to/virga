@@ -58,7 +58,7 @@ The order follows the dependencies between the web modules.
    - Dashboards and reports with Swift Charts, sharing a chart with `ImageRenderer` (drawShareImage over a ShareCanvas), the tools.
    - Then the composer and the posting pages, once 2 to 4 are in.
    - Then Defense and the radar.
-   - The live sky (src/hillside/*, three.js on the web) last, if at all: the wash stands in for it.
+   - ~~The live sky (src/hillside/*, three.js on the web)~~ Done on 2026-11-22: the scene in Metal, held to the web's own createHillside (notes/ui.md, LIVE SKY).
    - An audit of the whole layer against the web's components and DESIGN.md.
 7. **Final review**: an adversarial review of every domain against the web code, a completeness check, and a pass over `npm run parity:drift`. Then the module map has no `pending` left and `Parity with the web app` goes green.
 

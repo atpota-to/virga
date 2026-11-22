@@ -33,7 +33,9 @@ dashboard card); DefenseUITests (`testDefenseOnTheBuiltArchive`, launched with
 `-VirgaDefense on` and `-VirgaDemoFlags "latency=0&defense=on"`: `defense-before-scan`,
 `defense-scanning`, `defense-scan` or `defense-scan-failed`, `defense-radar`,
 `defense-scan-table`, `defense-near`, `defense-add-to-list`, `defense-lists`,
-`defense-history`; a screen the demo can't reach is skipped, not failed). The tools' and
+`defense-history`; a screen the demo can't reach is skipped, not failed); LiveSkyUITests (no
+archive build: `front-page-live-sky-day` and `-night`, `front-page-live-sky-put-away`,
+`settings-live-sky`, `live-sky-dashboard-day` and `-night`, `live-sky-five-taps`). The tools' and
 Defense's views carry `accessibilityIdentifier`s (`cleanup-table`, `lists-table`,
 `lookup-field`, `lookup-option-<n>`, `defense-progress`, …) for these tests to find.
 
@@ -326,10 +328,50 @@ LIBRARY (Library/)
 - The template editor and questions read through `LibrarySources` and preview with
   `Library.previewFor`; `TemplateAttachSummary` lives in Templates/TemplateQuestions.swift.
 
+LIVE SKY (Sky/, and VirgaCore/Hillside/ for everything that isn't drawing)
+- The pure parts are VirgaCore's, held to the web's own code by hillside.scene, hillside.clouds,
+  hillside.land and hillside.style: `HillsideScene` (the palettes, phaseOf, TURN, the sky's dome),
+  `HillsideSceneState` (createHillside's closure: `resize(width:height:crest:)`, `setPhase`,
+  `setActive`, `intro()`, `setShown`, `pointerMoved`, and `frame(now:)` for each display frame while
+  `framesQueued`; a picture is due whenever `drawCount` moves), `HillsideCloudBatch` (the clouds'
+  drift and their puffs staged back to front), `HillsideClouds` (the kinds, generators, makeCloud,
+  layout, makeNoise), `HillsideLand`, `HillsideStyle` (hillside.css's numbers, and the flat picture
+  laid out as a browser lays a gradient out), `SkyTaps` (useSkyTaps' count and toasts). scene.js and
+  clouds.js keep these to themselves, so ios/parity/cases/_moduleScope.js reads a module's top-level
+  declarations from its source with acorn and runs them in a vm context, and hillside.scene runs
+  createHillside itself over a recording stand-in for WebGL and requestAnimationFrame.
+- The shaders are `HillsideShaders.source` (VirgaCore, MSL, compiled at run time: the package has
+  no .metal file), with `HillsideUniforms` and `HillsideBandUniforms` packing the structs it
+  declares (a Linux test holds the packing to the source). VirgaUITests' HillsideMetalTests compiles
+  them on the simulator, makes every pipeline and reads back a drawn band and hill.
+- `HillsideGPU` is made once, off the main thread (`HillsideGPULoader`); without a device, or when
+  the shaders don't compile, the reason is logged after "[Virga hillside]" and the flat picture
+  stays. `HillsideDriver` is Hillside.jsx's effect over the state, on a CADisplayLink at 30 frames a
+  second (60 while the view moves), paused with no frame queued, no canvas in a window, or no active
+  scene. `HillsideCanvas` (a UIViewRepresentable over an MTKView that draws only when told) and
+  `HillsideCanvasRenderer` (`.hill`: sky, land and clouds into the drawable; `.band`: sky and clouds
+  into a texture, then laid on the wash) draw it.
+- Views: `LiveSky(inView:)` is LiveSky.jsx; PageSky draws it over the wash while `prefs.liveSky`
+  (every page of the shell; on the iPad once, behind the sidebar and the page), and the front page
+  through `LandingFrame(liveSky:)` and `skyBackground(live:)`. Every page's band shares one scene
+  (`LiveSkyDrivers`), so the clouds drift on across pages. `HillsideView(phase:day:active:intro:depth:
+  soft:crest:blur:)` is Hillside.jsx, the whole hill with its intro and soft focus; no page draws it,
+  as no web page does now. `SkyTapsButton { Brand() }` is the mark in the app bar, the sidebar (open
+  and folded) and the front page (`brand`); Settings › Appearance ends with "Live sky" (`live-sky`).
+- Memory while it is on: the dome (about 15 KB), the noise (64 KB and its mipmaps), two buffers of
+  puffs per canvas (183 KB each), and the band's scene texture and two drawables at 1.5 pixels a
+  point; the land's mesh (about 2.2 MB) only once a hill is drawn.
+- Demo mode: `-VirgaDemoSky <sky>` and `-VirgaDemoLiveSky YES` start it with those preferences
+  stored (the front page has no Settings to pick night from).
+- Deliberate differences: the pointer's lean comes from a hovering pointer (an iPad's trackpad or
+  mouse), never a finger or a pencil; a scene starts once the GPU is ready, where Hillside.jsx waits
+  for the page to be idle when it starts covered; WebGL's context loss has no Metal counterpart; on a
+  phone's front page of a part the strip over the status bar is clear at rest over the live sky and
+  comes in as the page scrolls (`LiveSky.stripFade`), as the web has no status bar.
+
 ## Known gaps and deliberate differences
 
-- Left for later steps: the live sky (src/hillside, three.js) and the five taps on the
-  mark; dragging cards, a card's settings dialog, the dashboard cards and reports not listed
+- Left for later steps: dragging cards, a card's settings dialog, the dashboard cards and reports not listed
   above, ChartNotes and the charts' notes and milestones; posting (the composer, its pages,
   Settings › Posting and the pending-work warnings before a sign-out, which wait for
   VirgaPosting's services); "Keep it when space runs low" (iOS has nothing to ask).

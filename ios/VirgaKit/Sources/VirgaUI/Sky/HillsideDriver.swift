@@ -194,8 +194,17 @@ final class HillsideDriver {
       drawnCount = state.drawCount
       for view in views.compactMap(\.view) where view.window != nil { view.render(state) }
     }
+    // Told on the next turn of the run loop, not in the middle of SwiftUI's
+    // update (a canvas is attached and draws from updateUIView).
     let drawn = !state.isLost && views.contains { $0.view?.hasDrawn == true }
-    if drawn != showsPicture { showsPicture = drawn }
+    if drawn != showsPicture {
+      DispatchQueue.main.async { [weak self] in
+        MainActor.assumeIsolated {
+          guard let self, self.showsPicture != drawn else { return }
+          self.showsPicture = drawn
+        }
+      }
+    }
     runLink(state.framesQueued && views.contains { $0.view?.window != nil }, busy: state.busy)
   }
 

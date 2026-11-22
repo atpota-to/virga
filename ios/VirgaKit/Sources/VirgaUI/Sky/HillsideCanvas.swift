@@ -3,10 +3,10 @@
 // The canvas a hillside is drawn on: an MTKView that draws only when told
 // (its driver says when the scene has a new picture), at the scene's own
 // resolution (`setRatio`, the pace check's), clear until its first
-// picture, and hidden from VoiceOver as the web's aria-hidden box is. It tells its driver when it
-// enters or leaves a window, whether its page has it in view, and whether
-// its window's scene is active; while it is in a window, a hovering
-// pointer anywhere in that window leans the view.
+// picture, and hidden from VoiceOver as the web's aria-hidden box is. It
+// tells its driver when it enters or leaves a window, whether its page has
+// it in view, and whether its window's scene is active; while it is in a
+// window, a hovering pointer anywhere in that window leans the view.
 
 #if canImport(UIKit)
 import MetalKit
