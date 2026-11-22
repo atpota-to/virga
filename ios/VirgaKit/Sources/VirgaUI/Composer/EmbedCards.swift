@@ -68,7 +68,10 @@ struct RecordCard: View {
   var body: some View {
     Group {
       if record.kind == "post" {
-        // `.embed-card--post`: the preview is the card, its ✕ in its corner.
+        // `.embed-card--post`: the preview is the card, its ✕ at the top
+        // right. The web keeps the ✕ inside the preview's edge (its
+        // padding-right 44); PostPreviewCard draws its own edge, so here the
+        // ✕ sits in a 44-point room beside it.
         Group {
           if let view = record.view {
             PostPreviewCard(view: view, compact: true)

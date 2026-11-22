@@ -134,7 +134,10 @@ struct PostEditor: View {
           if controller.editingPostId.map({ $0.jsEquals(postId) }) ?? false { controller.editingPostId = nil }
           // Who to mention closes as the field loses focus, a beat later so
           // a press on one of them still lands.
-          DispatchQueue.main.asyncAfter(deadline: .now() + ComposerMeasure.suggestCloseDelay) { mention = nil }
+          Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64(ComposerMeasure.suggestCloseDelay * 1_000_000_000))
+            mention = nil
+          }
         },
         onRequestsDone: {
           controller.pendingCaret[postId] = nil

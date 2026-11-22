@@ -62,7 +62,10 @@ struct LanguagePicker: View {
           if now {
             open = true
           } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + ComposerMeasure.languagesCloseDelay) { open = false }
+            Task { @MainActor in
+              try? await Task.sleep(nanoseconds: UInt64(ComposerMeasure.languagesCloseDelay * 1_000_000_000))
+              if !focused { open = false }
+            }
           }
         }
         .onChange(of: query) { _, _ in
@@ -416,6 +419,7 @@ struct PublishButton: View {
     .disabled(a.disabled)
   }
 }
+
 /// One half of the send button: the primary's ink (pressed, its hover's),
 /// its words in --on-btn. A half that can't run while the other can keeps
 /// the ink and fades only its words (`.publish-main:disabled`), so the two

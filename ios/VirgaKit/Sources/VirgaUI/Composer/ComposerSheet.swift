@@ -95,7 +95,8 @@ struct ComposerSheet: View {
   private func focusFirstPost() {
     guard !theme.composerNarrow else { return }
     let controller = self.controller
-    DispatchQueue.main.asyncAfter(deadline: .now() + ComposerMeasure.focusDelay) {
+    Task { @MainActor in
+      try? await Task.sleep(nanoseconds: UInt64(ComposerMeasure.focusDelay * 1_000_000_000))
       if controller.focusPostId == nil, let first = controller.state.posts.first?.id { controller.focusPostId = first }
     }
   }
@@ -518,8 +519,9 @@ struct ComposerFoot: View {
     }
     .padding(narrow ? ComposerMeasure.phoneFoot : ComposerMeasure.foot)
     .background(theme.surface)
-    // aria-live="polite": the reason the main button is off, read out as it changes.
-    .onChange(of: why) { _, next in ComposerAnnounce.post(next) }
+    // aria-live="polite": the reason the main button is off, read out as
+    // it changes (a reason the foot hides is said where it's written).
+    .onChange(of: shown) { _, next in ComposerAnnounce.post(next) }
   }
 
   private func whyLine(_ text: String) -> some View {
