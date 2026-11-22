@@ -404,6 +404,10 @@ struct QueueHandle: View {
         .contentShape(Rectangle())
     }
     .buttonStyle(.plain)
+    // Pressed through 44 points each way, drawn and laid out at its own 28 by 36.
+    .touchReach(
+      horizontal: (Measure.Touch.target - Measure.Schedule.handleWidth) / 2,
+      vertical: (Measure.Touch.target - Measure.Schedule.handleHeight) / 2)
     .disabled(disabled)
     .opacity(disabled ? Measure.Schedule.handleDisabledOpacity : 1)
     // The handle takes the drag before the page's scroll does (`touch-action: none`).

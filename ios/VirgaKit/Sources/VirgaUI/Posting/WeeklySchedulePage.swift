@@ -237,21 +237,23 @@ struct WeeklySchedulePage: View {
       let db = order.firstIndex(of: b.dayKey) ?? -1
       return da != db ? da < db : a.time.utf16.lexicographicallyPrecedes(b.time.utf16)
     }
-    let times = sorted.map { s in
-      "\(PostingQueue.weekdays.first { $0.key == s.dayKey }?.label ?? "") \(ScheduleModel.slotLabel(s.time))"
+    // Each day and time kept whole, so a line never breaks between an hour and its AM or PM.
+    let times: [String] = sorted.map { s -> String in
+      let day = PostingQueue.weekdays.first(where: { $0.key == s.dayKey })?.label ?? ""
+      let whole = "\(day) \(ScheduleModel.slotLabel(s.time))"
+      return whole.replacingOccurrences(of: " ", with: "\u{00A0}")
     }
     let tail = shippedOrEmpty ? " They can replace the starting times." : " They can be added beside your own."
+    let zone = ScheduleModel.zoneLabel(device)
+    let words = "From your posts over the last year, in \(zone) time: \(times.joined(separator: ", ")).\(tail)"
     return VStack(alignment: .leading, spacing: 0) {
       SectionHead("Times your posts have done well")
-      // Each day and time kept whole, so a line never breaks between an hour and its AM or PM.
-      Text(
-        "From your posts over the last year, in \(ScheduleModel.zoneLabel(device)) time: \(times.map { $0.replacingOccurrences(of: " ", with: "\u{00A0}") }.joined(separator: ", ")).\(tail)"
-      )
-      .virgaText(size: theme.points(ThemeKit.cardSubFontSize))
-      .foregroundStyle(theme.color(ThemeKit.cardSubInk))
-      .fixedSize(horizontal: false, vertical: true)
-      .frame(maxWidth: theme.measure, alignment: .leading)
-      .padding(.top, theme.points(ThemeKit.cardSubSpaceAbove))
+      Text(words)
+        .virgaText(size: theme.points(ThemeKit.cardSubFontSize))
+        .foregroundStyle(theme.color(ThemeKit.cardSubInk))
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: theme.measure, alignment: .leading)
+        .padding(.top, theme.points(ThemeKit.cardSubSpaceAbove))
       FlowLayout(spacing: Measure.Schedule.suggestActionsGap, lineSpacing: Measure.Schedule.suggestActionsLineGap) {
         Button(shippedOrEmpty ? "Use these times" : "Add these times") {
           save(
@@ -281,7 +283,7 @@ struct WeeklySchedulePage: View {
     ) {
       VStack(alignment: .leading, spacing: theme.points(ThemeKit.fieldGap)) {
         FieldLabel("Time zone")
-        TimezoneSelect(value: tz) { save(ScheduleModel.moveToZone(schedule, .string($0))) }
+        TimezoneSelect(value: tz, fill: true) { save(ScheduleModel.moveToZone(schedule, .string($0))) }
         FieldHint("The times below are read on this clock, wherever you are when they come round.")
           .fixedSize(horizontal: false, vertical: true)
       }

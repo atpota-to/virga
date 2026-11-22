@@ -138,7 +138,8 @@ struct WordsButtonBody<Label: View>: View {
       .foregroundStyle(theme.ink)
       .underline()
       .opacity(isEnabled ? 1 : ThemeKit.disabledOpacity)
-      .touchTarget()
+      // A link action's reach: pressed past its words without making the hint's line taller.
+      .touchReach(horizontal: Measure.LinkAction.reachSides, vertical: Measure.LinkAction.reachAbove)
   }
 }
 

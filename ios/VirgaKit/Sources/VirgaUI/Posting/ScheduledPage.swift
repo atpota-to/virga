@@ -332,44 +332,60 @@ struct ScheduledDialogs: ViewModifier {
     try await model.run(ask, toasts: toasts)
   }
 
+  // The questions' sentences, worked out apart from the dialogs that say them.
+
+  private var cancelWords: String {
+    let repeats = series?.repeats == true ? " It stops repeating too: nothing follows it." : ""
+    return "It won’t go out, and Virga’s server deletes its copy, images included.\(repeats) This can’t be undone."
+  }
+
+  private var postNowWords: String {
+    let timer = row.map { !ScheduleModel.rowFacts($0, now: model.now).timer.isEmpty } ?? false
+    let takesPlace = row?["status"] == "pending" && series?.repeats == true
+    let timerWords = timer ? " Its timer starts now." : ""
+    let placeWords = takesPlace ? " It takes the place of this one; the next still goes out at its time." : ""
+    return
+      "It goes out at once as \(model.name), with the settings it was scheduled with, and comes off the schedule.\(timerWords)\(placeWords)"
+  }
+
+  private var skipWords: String {
+    if series?.last == true {
+      return "This one doesn’t go out. It’s the last, so the post stops repeating and Virga’s server deletes its copy."
+    }
+    return "The one due \(when) doesn’t go out. The next one takes its place, at its usual time."
+  }
+
+  private var stopWords: String {
+    if failed { return "Nothing follows this one. It stays here to retry or dismiss." }
+    return "It still goes out \(when), once, and nothing follows it. To take this one off too, remove it instead."
+  }
+
   func body(content: Content) -> some View {
     content
       .scheduleActionDialog(
         isPresented: shown(.cancel), title: failed ? "Dismiss this post?" : "Remove this scheduled post?",
         confirmLabel: failed ? "Dismiss" : "Remove", busyLabel: "Removing…", danger: true, onConfirm: run
       ) {
-        Text(
-          "It won’t go out, and Virga’s server deletes its copy, images included.\(series?.repeats == true ? " It stops repeating too: nothing follows it." : "") This can’t be undone."
-        )
+        Text(cancelWords)
         if !text.isEmpty { ScheduleQuote(text: text) }
       }
       .scheduleActionDialog(
         isPresented: shown(.now), title: "Post this now?", confirmLabel: "Post now", busyLabel: "Posting…", onConfirm: run
       ) {
-        let timer = row.map { !ScheduleModel.rowFacts($0, now: model.now).timer.isEmpty } ?? false
-        let takesPlace = row?["status"] == "pending" && series?.repeats == true
-        Text(
-          "It goes out at once as \(model.name), with the settings it was scheduled with, and comes off the schedule.\(timer ? " Its timer starts now." : "")\(takesPlace ? " It takes the place of this one; the next still goes out at its time." : "")"
-        )
+        Text(postNowWords)
         if !text.isEmpty { ScheduleQuote(text: text) }
       }
       .scheduleActionDialog(
         isPresented: shown(.skip), title: "Skip this one?", confirmLabel: "Skip it", busyLabel: "Skipping…", onConfirm: run
       ) {
-        Text(
-          series?.last == true
-            ? "This one doesn’t go out. It’s the last, so the post stops repeating and Virga’s server deletes its copy."
-            : "The one due \(when) doesn’t go out. The next one takes its place, at its usual time.")
+        Text(skipWords)
         if !text.isEmpty { ScheduleQuote(text: text) }
       }
       .scheduleActionDialog(
         isPresented: shown(.stop), title: "Stop this post repeating?", confirmLabel: "Stop repeating", busyLabel: "Stopping…",
         onConfirm: run
       ) {
-        Text(
-          failed
-            ? "Nothing follows this one. It stays here to retry or dismiss."
-            : "It still goes out \(when), once, and nothing follows it. To take this one off too, remove it instead.")
+        Text(stopWords)
         if !text.isEmpty { ScheduleQuote(text: text) }
       }
   }

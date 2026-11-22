@@ -167,6 +167,9 @@ struct TimezoneSelect: View {
   var disabled = false
   /// The picker's identifier, for the UI tests (the web's `id`).
   var identifier = "time-zone-select"
+  /// The field's whole width (`.sched-tz { max-width: 100% }` in the weekly
+  /// schedule's field); otherwise a settings row's select.
+  var fill = false
   let onChange: (String) -> Void
 
   /// `allZones()`: Intl.supportedValuesOf('timeZone') is sorted by code unit.
@@ -189,7 +192,10 @@ struct TimezoneSelect: View {
     .pickerStyle(.menu)
     .tint(theme.ink)
     .disabled(disabled)
-    .frame(minWidth: Measure.Settings.selectMinWidth, maxWidth: Measure.Settings.selectMaxWidth, alignment: .leading)
+    .frame(
+      minWidth: fill ? nil : Measure.Settings.selectMinWidth, maxWidth: fill ? .infinity : Measure.Settings.selectMaxWidth,
+      alignment: .leading
+    )
     .virgaField()
     .accessibilityIdentifier(identifier)
   }
@@ -496,6 +502,9 @@ struct CalendarMark: View {
   let onPick: ((JSONValue) -> Void)?
   let lit: Bool
 
+  /// How far a taken time is pressed past its circle: 44 points across.
+  static let reach = (Measure.Touch.target - Measure.Schedule.markSize) / 2
+
   /// `label(slot)`.
   private var label: String {
     let when = ScheduleModel.formatInZone(.number(slot.at), ScheduleText.deviceZone, now: now)
@@ -517,7 +526,9 @@ struct CalendarMark: View {
       }
       .buttonStyle(.plain)
       .frame(width: Measure.Schedule.markSize, height: Measure.Schedule.markSize)
-      .touchTarget()
+      // A finger's reach past the gaps (`.sched-cal-pick::after`), without
+      // making the grid's row any taller than the others.
+      .touchReach(horizontal: Self.reach, vertical: Self.reach)
       .help(label)
       .accessibilityLabel(label)
       .accessibilityIdentifier("calendar-pick")
