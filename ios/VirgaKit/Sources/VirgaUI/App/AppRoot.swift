@@ -13,6 +13,11 @@
 // is made again for it. The session notices sit above that, so a notice
 // outlives a switch.
 //
+// A Defense scan holds other people's names, so it goes when its account
+// is signed out or forgotten (ScanStore's keepScansFor). The shell is made
+// again when the number and date formats change, so nothing keeps a
+// string written the old way (App.jsx's `<Shell key={formats}>`).
+//
 // On iOS a sign-in comes back into the running app (ASWebAuthenticationSession),
 // not as a new page load on the return path, so "a sign-in that came back
 // without a session" is the session's error, whichever page is up; it
@@ -22,6 +27,7 @@
 #if canImport(UIKit)
 import SwiftUI
 import VirgaCore
+import VirgaDefense
 import VirgaNetwork
 import VirgaPosting
 import VirgaSession
@@ -32,6 +38,7 @@ public struct AppRoot: View {
   @Environment(ShellNavigator.self) private var navigator
   @Environment(SessionModel.self) private var session
   @Environment(TermsAcceptanceModel.self) private var terms
+  @Environment(PreferencesModel.self) private var preferences
   /// The composer's host (ComposerContext), above the per-account identity,
   /// so an open composer survives switching accounts.
   @State private var composer = ComposerHost()
@@ -51,6 +58,12 @@ public struct AppRoot: View {
     TermsSubject(did: session.session != nil && session.agent != nil ? session.did : nil, mode: session.mode)
   }
 
+  /// The accounts that are signed in (not needing a sign-in), whose scans
+  /// are kept.
+  private var signedIn: [String] {
+    session.accounts.filter { $0.status != .needsSignIn }.map(\.did)
+  }
+
   public var body: some View {
     content
       .environment(\.signInComposing, composing)
@@ -60,6 +73,10 @@ public struct AppRoot: View {
       }
       .onChange(of: subject, initial: true) { _, next in
         terms.update(did: next.did, mode: next.mode)
+      }
+      // A scan goes with its account's session.
+      .onChange(of: signedIn, initial: true) { _, dids in
+        ScanStore.shared.keepScansFor(dids)
       }
       .onOpenURL { url in
         if openCompose(url) { return }
@@ -109,7 +126,9 @@ public struct AppRoot: View {
       TermsGateView().id(did).sessionNotices()
     case .accepted:
       ArchiveHost(archive: app.archive(for: did)) {
+        // Drawn again in the new formats when they change.
         ShellView(store: app.stores.keyValue, did: did)
+          .id(preferences.formats)
       }
       .id(did)
       .composerHost(composer)

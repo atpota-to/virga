@@ -392,7 +392,9 @@ APP (App/, Pages/, Legal/, SignIn/, Accounts/, Settings/, Platform/)
   profile), else the remembered row's; ArchiveHost sets `archive.handle` again when the
   fresh read arrives, as the web hook takes it on every render.
 - `AppRoot` ports App.jsx's states; `onOpenURL` and universal links go to
-  `completeSignIn(callbackURL:)`. `SystemWebAuthenticator` is ASWebAuthenticationSession
+  `completeSignIn(callbackURL:)`. It keeps Defense's scans only for the accounts signed in
+  (`ScanStore.keepScansFor`), and makes the shell again when the number and date formats change
+  (`ShellView.id(preferences.formats)`, App.jsx's `<Shell key={formats}>`). `SystemWebAuthenticator` is ASWebAuthenticationSession
   with the `.https(host:path:)` callback. "Signing you in…" while `session.returning`
   (a sign-in that came back is being finished). An account the agreement model hasn't
   been told of yet (the first pass after a switch or an Add an account) is decided
