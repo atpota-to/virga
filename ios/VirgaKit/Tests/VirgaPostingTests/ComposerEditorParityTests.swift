@@ -93,6 +93,21 @@ import VirgaTestSupport
             hasVideo: c.input["hasVideo"]?.boolValue ?? false, allowVideo: c.input["allowVideo"]?.boolValue ?? true)),
         c)
     }
+    // The clipboard's items as the pasteboard's (the web's DataTransfer), at
+    // the generator's fixed time.
+    let pasteNow = Date(timeIntervalSince1970: 1_794_477_600.25)
+    for c in try cases(Self.f, "pastedImageFiles") {
+      let items = c.input["items"]?.arrayValue.map { list in
+        list.map { item in
+          PastedItem(
+            kind: item["kind"]?.stringValue ?? "", type: item["type"]?.stringValue ?? "",
+            file: ComposerFile(json: item["file"]))
+        }
+      }
+      let files = ComposerMedia.pastedImageFiles(
+        c.id.hasSuffix("no-clipboard") ? nil : items ?? nil, text: c.input["text"]?.stringValue, now: { pasteNow })
+      check(.array(files.map(\.json)), c)
+    }
     for c in try cases(Self.f, "formatDuration") {
       check(.string(ComposerMedia.formatDuration(c.input["seconds"])), c)
     }

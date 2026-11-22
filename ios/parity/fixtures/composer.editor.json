@@ -8039,6 +8039,383 @@
       }
     },
     {
+      "id": "pastedImageFiles#1",
+      "fn": "pastedImageFiles",
+      "input": {
+        "items": [
+          {
+            "kind": "file",
+            "type": "image/png",
+            "file": {
+              "$file": true,
+              "name": "image.png",
+              "type": "image/png",
+              "size": 9,
+              "lastModified": 0
+            }
+          }
+        ],
+        "text": ""
+      },
+      "output": [
+        {
+          "$file": true,
+          "name": "pasted-image-2026-11-12T10-00-00-250Z.png",
+          "type": "image/png",
+          "size": 9,
+          "lastModified": 1794477600250
+        }
+      ]
+    },
+    {
+      "id": "pastedImageFiles#2",
+      "fn": "pastedImageFiles",
+      "input": {
+        "items": [
+          {
+            "kind": "file",
+            "type": "image/png",
+            "file": {
+              "$file": true,
+              "name": "b.png",
+              "type": "image/png",
+              "size": 1,
+              "lastModified": 0
+            }
+          }
+        ],
+        "text": "words"
+      },
+      "output": []
+    },
+    {
+      "id": "pastedImageFiles#3",
+      "fn": "pastedImageFiles",
+      "input": {
+        "items": [
+          {
+            "kind": "file",
+            "type": "image/png",
+            "file": {
+              "$file": true,
+              "name": "b.png",
+              "type": "image/png",
+              "size": 1,
+              "lastModified": 0
+            }
+          }
+        ],
+        "text": " \n "
+      },
+      "output": [
+        {
+          "$file": true,
+          "name": "pasted-image-2026-11-12T10-00-00-250Z.png",
+          "type": "image/png",
+          "size": 1,
+          "lastModified": 1794477600250
+        }
+      ]
+    },
+    {
+      "id": "pastedImageFiles#4",
+      "fn": "pastedImageFiles",
+      "input": {
+        "items": [
+          {
+            "kind": "file",
+            "type": "image/png",
+            "file": {
+              "$file": true,
+              "name": "b.png",
+              "type": "image/png",
+              "size": 1,
+              "lastModified": 0
+            }
+          }
+        ]
+      },
+      "output": [
+        {
+          "$file": true,
+          "name": "pasted-image-2026-11-12T10-00-00-250Z.png",
+          "type": "image/png",
+          "size": 1,
+          "lastModified": 1794477600250
+        }
+      ]
+    },
+    {
+      "id": "pastedImageFiles#5",
+      "fn": "pastedImageFiles",
+      "input": {
+        "items": [
+          {
+            "kind": "string",
+            "type": "image/png",
+            "file": {
+              "$file": true,
+              "name": "b.png",
+              "type": "image/png",
+              "size": 1,
+              "lastModified": 0
+            }
+          }
+        ],
+        "text": ""
+      },
+      "output": []
+    },
+    {
+      "id": "pastedImageFiles#6",
+      "fn": "pastedImageFiles",
+      "input": {
+        "items": [
+          {
+            "kind": "file",
+            "type": "text/html",
+            "file": {
+              "$file": true,
+              "name": "b.png",
+              "type": "image/png",
+              "size": 1,
+              "lastModified": 0
+            }
+          }
+        ],
+        "text": ""
+      },
+      "output": []
+    },
+    {
+      "id": "pastedImageFiles#7",
+      "fn": "pastedImageFiles",
+      "input": {
+        "items": [
+          {
+            "kind": "file",
+            "type": "IMAGE/PNG",
+            "file": {
+              "$file": true,
+              "name": "b.png",
+              "type": "image/png",
+              "size": 1,
+              "lastModified": 0
+            }
+          }
+        ],
+        "text": ""
+      },
+      "output": []
+    },
+    {
+      "id": "pastedImageFiles#8",
+      "fn": "pastedImageFiles",
+      "input": {
+        "items": [
+          {
+            "kind": "file",
+            "type": "image/png",
+            "file": null
+          }
+        ],
+        "text": ""
+      },
+      "output": []
+    },
+    {
+      "id": "pastedImageFiles#9",
+      "fn": "pastedImageFiles",
+      "input": {
+        "items": [
+          {
+            "kind": "file",
+            "type": "image/",
+            "file": {
+              "$file": true,
+              "name": "x",
+              "type": "image/",
+              "size": 2,
+              "lastModified": 0
+            }
+          }
+        ],
+        "text": ""
+      },
+      "output": [
+        {
+          "$file": true,
+          "name": "pasted-image-2026-11-12T10-00-00-250Z.png",
+          "type": "image/",
+          "size": 2,
+          "lastModified": 1794477600250
+        }
+      ]
+    },
+    {
+      "id": "pastedImageFiles#10",
+      "fn": "pastedImageFiles",
+      "input": {
+        "items": [
+          {
+            "kind": "file",
+            "type": "image/png",
+            "file": {
+              "$file": true,
+              "name": "x",
+              "type": "",
+              "size": 2,
+              "lastModified": 0
+            }
+          }
+        ],
+        "text": ""
+      },
+      "output": [
+        {
+          "$file": true,
+          "name": "pasted-image-2026-11-12T10-00-00-250Z.png",
+          "type": "",
+          "size": 2,
+          "lastModified": 1794477600250
+        }
+      ]
+    },
+    {
+      "id": "pastedImageFiles#11",
+      "fn": "pastedImageFiles",
+      "input": {
+        "items": [
+          {
+            "kind": "file",
+            "type": "image/png",
+            "file": {
+              "$file": true,
+              "name": "x",
+              "type": "image/svg+xml",
+              "size": 2,
+              "lastModified": 0
+            }
+          }
+        ],
+        "text": ""
+      },
+      "output": [
+        {
+          "$file": true,
+          "name": "pasted-image-2026-11-12T10-00-00-250Z.svg+xml",
+          "type": "image/svg+xml",
+          "size": 2,
+          "lastModified": 1794477600250
+        }
+      ]
+    },
+    {
+      "id": "pastedImageFiles#12",
+      "fn": "pastedImageFiles",
+      "input": {
+        "items": [
+          {
+            "kind": "file",
+            "type": "image/png",
+            "file": {
+              "$file": true,
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 1,
+              "lastModified": 0
+            }
+          }
+        ],
+        "text": ""
+      },
+      "output": [
+        {
+          "$file": true,
+          "name": "pasted-image-2026-11-12T10-00-00-250Z.jpeg",
+          "type": "image/jpeg",
+          "size": 1,
+          "lastModified": 1794477600250
+        }
+      ]
+    },
+    {
+      "id": "pastedImageFiles#13",
+      "fn": "pastedImageFiles",
+      "input": {
+        "items": [
+          {
+            "kind": "file",
+            "type": "image/png",
+            "file": {
+              "$file": true,
+              "name": "b.png",
+              "type": "image/png",
+              "size": 1,
+              "lastModified": 0
+            }
+          },
+          {
+            "kind": "string",
+            "type": "text/plain",
+            "file": null
+          },
+          {
+            "kind": "file",
+            "type": "image/gif",
+            "file": {
+              "$file": true,
+              "name": "g.gif",
+              "type": "image/gif",
+              "size": 3,
+              "lastModified": 0
+            }
+          }
+        ],
+        "text": ""
+      },
+      "output": [
+        {
+          "$file": true,
+          "name": "pasted-image-2026-11-12T10-00-00-250Z.png",
+          "type": "image/png",
+          "size": 1,
+          "lastModified": 1794477600250
+        },
+        {
+          "$file": true,
+          "name": "pasted-image-2026-11-12T10-00-00-250Z.gif",
+          "type": "image/gif",
+          "size": 3,
+          "lastModified": 1794477600250
+        }
+      ]
+    },
+    {
+      "id": "pastedImageFiles#14",
+      "fn": "pastedImageFiles",
+      "input": {
+        "items": [],
+        "text": ""
+      },
+      "output": []
+    },
+    {
+      "id": "pastedImageFiles#15",
+      "fn": "pastedImageFiles",
+      "input": {
+        "items": null,
+        "text": ""
+      },
+      "output": []
+    },
+    {
+      "id": "no-clipboard",
+      "fn": "pastedImageFiles",
+      "input": {},
+      "output": []
+    },
+    {
       "id": "sortIncomingFiles#1",
       "fn": "sortIncomingFiles",
       "input": {

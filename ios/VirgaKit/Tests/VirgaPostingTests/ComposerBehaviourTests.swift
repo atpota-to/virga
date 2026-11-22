@@ -163,7 +163,7 @@ final class SignallingStore: KeyValueStore, Sendable {
     let store = InMemoryKeyValueStore()
     let timers = ManualTimers()
     let saver = Autosaver(store: store, now: { 1_000 }, setTimer: timers.set, clearTimer: timers.clear)
-    let model = ComposerStateModel(asDid: "did:plc:mira", autosaver: saver)
+    let model = ComposerStateModel(asDid: "did:plc:mira", autosaver: saver, now: { 1_000 }, session: AutosaveSession())
     #expect(model.isEmpty)
     model.dispatch(.setText(index: 0, text: "hello"))
     #expect(model.state.posts.first?.text == "hello")
@@ -180,5 +180,73 @@ final class SignallingStore: KeyValueStore, Sendable {
     #expect(model.problems(now: Date(timeIntervalSince1970: 0)).contains { $0.postIndex == 0 })
     model.cancelAutosave()
     #expect(saver.pending() == nil)
+  }
+
+  /// Composer.jsx's wroteFor: an empty state clears only an entry this
+  /// composer wrote, so switching to an account with a post kept for it
+  /// never wipes that post.
+  @Test func anEmptyStateClearsOnlyWhatItWrote() throws {
+    let store = InMemoryKeyValueStore()
+    let session = AutosaveSession()
+    let timers = ManualTimers()
+    let saver = Autosaver(
+      store: store, now: { 1_000 }, currentDid: nil, setTimer: timers.set, clearTimer: timers.clear)
+    let kept: JSONValue = ["posts": [["id": "k1", "text": "kept for wren", "images": []]]]
+    #expect(Autosave.writeAutosave("did:plc:wren", kept, store: store, now: 1_000) != nil)
+    let model = ComposerStateModel(asDid: "did:plc:mira", autosaver: saver, now: { 1_000 }, session: session)
+    #expect(saver.pending() == nil)
+    // Nothing written for wren: moving there with nothing on screen leaves its post.
+    model.dispatch(.setAsDid("did:plc:wren"))
+    #expect(saver.pending() == nil)
+    timers.run(upTo: 10_000)
+    #expect(Autosave.readAutosave("did:plc:wren", store: store, now: 2_000)?.state["posts"]?[0]?["text"] == "kept for wren")
+    // Written for, then emptied: that clears it, in both layers.
+    model.dispatch(.setText(index: 0, text: "mine"))
+    #expect(saver.pending() == "did:plc:wren")
+    #expect(Autosave.loadSessionDraft("did:plc:wren", session: session)?.state["posts"]?[0]?["text"] == "mine")
+    timers.run(upTo: 20_000)
+    model.dispatch(.setText(index: 0, text: ""))
+    #expect(saver.pending() == "did:plc:wren")
+    timers.run(upTo: 30_000)
+    #expect(Autosave.readAutosave("did:plc:wren", store: store, now: 2_000) == nil)
+    #expect(Autosave.loadSessionDraft("did:plc:wren", session: session) == nil)
+    // Once cleared, a further empty change writes nothing.
+    model.dispatch(.setLangs(["fr"]))
+    #expect(model.state.langs == ["fr"])
+    #expect(saver.pending() == nil)
+  }
+
+  @Test func aLoadForgetsWhatItWroteAndKeepsWhatItBrings() throws {
+    let store = InMemoryKeyValueStore()
+    let session = AutosaveSession()
+    let timers = ManualTimers()
+    let saver = Autosaver(store: store, now: { 1_000 }, setTimer: timers.set, clearTimer: timers.clear)
+    let model = ComposerStateModel(asDid: "did:plc:mira", autosaver: saver, now: { 5 }, session: session)
+    model.dispatch(.setText(index: 0, text: "draft one"))
+    #expect(saver.pending() == "did:plc:mira")
+    // An empty load cancels the waiting write and, written-for forgotten, writes nothing.
+    model.load(ComposerModel.emptyComposerState(asDid: "did:plc:mira"))
+    #expect(saver.pending() == nil)
+    #expect(Autosave.loadSessionDraft("did:plc:mira", session: session)?.state["posts"]?[0]?["text"] == "draft one")
+    // A load that brings words is kept at once, with its timer choice.
+    var loaded = ComposerModel.emptyComposerState(asDid: "did:plc:mira")
+    loaded = ComposerModel.composerReducer(loaded, .setText(index: 0, text: "restored"))
+    model.load(loaded, touched: true)
+    #expect(model.lifespanTouched)
+    #expect(saver.pending() == "did:plc:mira")
+    let draft = Autosave.loadSessionDraft("did:plc:mira", session: session)
+    #expect(draft?.state["posts"]?[0]?["text"] == "restored")
+    #expect(draft?.lifespanTouched == true)
+    #expect(draft?.savedAt == 5)
+  }
+
+  @Test func aStateWithWordsIsKeptOnceItOpens() {
+    let session = AutosaveSession()
+    var state = ComposerModel.emptyComposerState(asDid: "did:plc:mira")
+    state = ComposerModel.composerReducer(state, .setText(index: 0, text: "opened with words"))
+    _ = ComposerStateModel(state, now: { 7 }, session: session)
+    #expect(Autosave.loadSessionDraft("did:plc:mira", session: session)?.savedAt == 7)
+    _ = ComposerStateModel(asDid: "did:plc:wren", now: { 7 }, session: session)
+    #expect(Autosave.loadSessionDraft("did:plc:wren", session: session) == nil)
   }
 }

@@ -30,6 +30,7 @@ import {
 } from '../../../src/posting/composer/threadEdits.js';
 import {
   IMAGE_INPUT_ACCEPT,
+  pastedImageFiles,
   sortIncomingFiles,
   formatDuration,
   missingAltCount,
@@ -589,8 +590,84 @@ async function mediaCases() {
   const inputs = [];
   for (const [files] of sets)
     for (const p of posts) inputs.push({ files, ...p });
+  // A paste: the clipboard's items (`{ kind, type, file }`, a null file for
+  // an item that gives none) and its text; `items: null` is a clipboard
+  // without them, `text` left out one without getData.
+  const pastes = [
+    {
+      items: [
+        {
+          kind: 'file',
+          type: 'image/png',
+          file: file('image.png', 'image/png', 9),
+        },
+      ],
+      text: '',
+    },
+    { items: [{ kind: 'file', type: 'image/png', file: png }], text: 'words' },
+    { items: [{ kind: 'file', type: 'image/png', file: png }], text: ' \n ' },
+    { items: [{ kind: 'file', type: 'image/png', file: png }] },
+    { items: [{ kind: 'string', type: 'image/png', file: png }], text: '' },
+    { items: [{ kind: 'file', type: 'text/html', file: png }], text: '' },
+    { items: [{ kind: 'file', type: 'IMAGE/PNG', file: png }], text: '' },
+    { items: [{ kind: 'file', type: 'image/png', file: null }], text: '' },
+    {
+      items: [{ kind: 'file', type: 'image/', file: file('x', 'image/', 2) }],
+      text: '',
+    },
+    {
+      items: [{ kind: 'file', type: 'image/png', file: file('x', '', 2) }],
+      text: '',
+    },
+    {
+      items: [
+        {
+          kind: 'file',
+          type: 'image/png',
+          file: file('x', 'image/svg+xml', 2),
+        },
+      ],
+      text: '',
+    },
+    { items: [{ kind: 'file', type: 'image/png', file: jpg }], text: '' },
+    {
+      items: [
+        { kind: 'file', type: 'image/png', file: png },
+        { kind: 'string', type: 'text/plain', file: null },
+        {
+          kind: 'file',
+          type: 'image/gif',
+          file: file('g.gif', 'image/gif', 3),
+        },
+      ],
+      text: '',
+    },
+    { items: [], text: '' },
+    { items: null, text: '' },
+  ];
+  const clipboard = ({ items, text }) => ({
+    ...(items === null
+      ? {}
+      : {
+          items: items.map((item) => ({
+            kind: item.kind,
+            type: item.type,
+            getAsFile: () => (item.file ? withFiles(item.file) : null),
+          })),
+        }),
+    ...(text === undefined
+      ? {}
+      : { getData: (t) => (t === 'text/plain' ? text : '') }),
+  });
+  const NOW = () => new Date('2026-11-12T10:00:00.250Z');
   return [
     value('mediaConstants', { IMAGE_INPUT_ACCEPT }),
+    ...(await each('pastedImageFiles', pastes, (i) =>
+      markFiles(pastedImageFiles(clipboard(i), { now: NOW })),
+    )),
+    ...(await each('pastedImageFiles', [{ $id: 'no-clipboard' }], () =>
+      pastedImageFiles(null),
+    )),
     ...(await each('sortIncomingFiles', inputs, ({ files, ...p }) =>
       settle(sortIncomingFiles(withFiles(files), p), {}),
     )),
