@@ -675,7 +675,13 @@ COMPOSER (Composer/)
   detail, until it draws LibraryPanel.jsx's `<PostPreview view />`. `.suggestPop()`/`.suggestRow()`
   are `.suggest-pop` and `.suggest-item`, for the mention, "/" and language lists.
 - Posting as: one line; its list a popover (`presentationCompactAdaptation(.popover)`), closed by a
-  press outside it.
+  press outside it. ComposerUITests closes it on the system's dismiss region
+  (`PopoverDismissRegion`, pressed low down, clear of the popover), else on `post-as` again, and
+  waits for `post-as-list` to go.
+- The wide row's ⋯ (`option-more`) is an overlay on the row from the rule's foot, offset
+  (7, 11) as `.composer-more`'s `right: -7px; top: 11px` are; the tags field under the row keeps
+  the row's 40 of room at the right. The send button's seam is the caret's own left edge, inside
+  its 40.
 - Deliberate differences: the editor's selection is ink, as its caret is (a text view's selection
   follows its tint; the web's is the accent at 28%); Posting as's popover has the system's arrow; a
   phone's Save as draft and Schedule are the kit's 40, pressed through 44.

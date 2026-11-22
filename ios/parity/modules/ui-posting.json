@@ -55,12 +55,12 @@
       "synced": "65d002b47fa1"
     },
     "src/posting/composer/EmbedCards.jsx": {
-      "status": "ported",
+      "status": "partial",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Composer/EmbedCards.swift"
       ],
       "synced": "89b1c9d312b2",
-      "note": "RecordCard: a quoted post is PostPreviewCard's compact form (the preview is the card, its ✕ in the corner); a feed, list or starter pack shows its own picture (else its glyph) in a 40-point box, its name and kind line on one line each. LinkCardView: a picture that won't load is left out (TransportImage's onFailure), 56 at 420 and under; title and site on one line. LinkCardDialog: the picture's box 160 × 84, centred, a missing picture drawn for one that won't load."
+      "note": "RecordCard: a quoted post is PostPreviewCard's compact form (the preview is the card, its ✕ at the top right); a feed, list or starter pack shows its own picture (else its glyph) in a 40-point box, its name and kind line on one line each. LinkCardView: a picture that won't load is left out (TransportImage's onFailure), 56 at 420 and under; title and site on one line. LinkCardDialog: the picture's box 160 × 84, centred, a missing picture drawn for one that won't load. Not yet: the quoted post's ✕ inside its preview's edge (`.embed-card--post .post-preview { padding-right: 44px }`): PostPreviewCard draws its own edge and takes no room inside it, so the ✕ sits in a 44-point room beside the preview."
     },
     "src/posting/composer/LanguagePicker.jsx": {
       "status": "partial",
