@@ -269,13 +269,12 @@ struct PostedPage: View {
   /// deleting it last.
   private func menuEntries(_ row: JSONValue) -> [MenuEntry] {
     let offer = PostedModel.postRowActions(row, canPost: caps.canPost, canSchedule: caps.canSchedule)
-    let did = self.did
     var items: [MenuEntry] = []
     if offer.reply {
       items.append(
         .item(MenuItem("Reply", key: "reply", systemImage: HubGlyph.reply) {
           act(row, "The post couldn’t be read.") { post, _ in
-            openComposer(["asDid": did.map(JSONValue.string) ?? .null, "reply": ["uri": .string(post.uri)]])
+            answer("reply", post.uri)
           }
         }))
     }
@@ -283,7 +282,7 @@ struct PostedPage: View {
       items.append(
         .item(MenuItem("Quote", key: "quote", systemImage: HubGlyph.quote) {
           act(row, "The post couldn’t be read.") { post, _ in
-            openComposer(["asDid": did.map(JSONValue.string) ?? .null, "quote": ["uri": .string(post.uri)]])
+            answer("quote", post.uri)
           }
         }))
     }
@@ -326,8 +325,9 @@ struct PostedPage: View {
         .item(MenuItem("Save as a template", key: "template", systemImage: HubGlyph.template) {
           act(row, "The post couldn’t be read.") { post, _ in
             let from = PostedModel.templateSeedFrom(post.record)
+            // `embed: seedEmbed` (null when the post has none worth keeping).
             let found = from["embed"]
-            let embed: JSONValue? = found == nil || found?.isNull == true ? nil : found
+            let embed: JSONValue? = (found?.isNull ?? true) ? nil : found
             seed = PostedTemplateSeed(seed: TemplateSeed(text: from["text"]?.stringValue ?? "", embed: embed))
           }
         }))
@@ -348,6 +348,15 @@ struct PostedPage: View {
 
   private func openComposer(_ intent: JSONValue) {
     if let composer { composer.open(intent) } else { navigate("/posting/compose") }
+  }
+
+  /// `composer.open({ asDid: did, reply: { uri } })` (or `quote`), built
+  /// here rather than in the menu's closures, which the compiler checks
+  /// with the whole item.
+  private func answer(_ key: String, _ uri: String) {
+    var intent: JSONValue = ["asDid": PostingPages.asDid(did)]
+    intent[key] = ["uri": .string(uri)]
+    openComposer(intent)
   }
 
   /// `actionError(err, what)`, for the page and its gates dialog.

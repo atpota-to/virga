@@ -290,13 +290,16 @@ THE POSTING PAGES (Posting/: HubPage, DraftsPage, PostedPage, TimersPage, TimerD
   from the view's `.task(id:)` (the same key keeps what's on screen, a new one starts over, `enabled:
   false` is `.idle`), read again on each posting event for the account (`PostingEvents.*ChangedEvent`);
   `phase` (.idle, .loading, .ready, .failed; a failed reload stays .ready with its `error`), `data`,
-  `reload()`, and `stop()` on disappear. Drafts has its own `DraftsPageList` (useDraftList, a page at a
+  `stamp` (moves on with every answer, for what the web runs in an effect on `data`: Timers' drop-off check
+  and Posted's older pages), `reload()`, and `stop()` on disappear. Drafts has its own `DraftsPageList` (useDraftList, a page at a
   time).
 - `PostingPages` (HubParts.swift) holds what the web reaches through its window and stores:
   `deviceId(app)`, `settings(app, did)` (a one-off read of PostingSettings), `archivePosts(archive, did)`,
   `authorFeed(did, limit:cursor:transport:)` (getAuthorFeed's rows through rowFromPostView, reposts left
   out), `media(app)` (PublishMedia over TemporaryComposerFiles, ImageIO and the session's network),
-  `draftMedia(app, did)`, `target(app, did)` (a PublishTarget), and `message`/`code` (a thrown error's
+  `draftMedia(app, did)`, `target(app, did)` (a PublishTarget), `asDid(did)` and `draftIntent(id, did)` (the
+  composer's intents, built outside the menus' closures, which the compiler checks with the whole item),
+  and `message`/`code` (a thrown error's
   `err.message` and `err.code`, through ScheduledPostError.errorObject). Post now and Schedule on a draft
   run DraftActions with `DraftActionDeps.live` over these; Posted's actions run PostedModel.
 - Rows: `HubRowText` (two lines, a draft's three, or its muted stand-in), `HubRowWhy` (muted, warn or
@@ -331,8 +334,8 @@ THE POSTING PAGES (Posting/: HubPage, DraftsPage, PostedPage, TimersPage, TimerD
   `posting-timer-set` (or `posting-timer-dialog-refused`), `posting-timers` (or `-empty`),
   `posting-timers-settled`.
 - Deliberate differences: the focus after a row goes (posted, deleted, called off) is the system's to
-  place, not useFocusAfterRemoval's; Schedule this draft's time is the system's date and time picker,
-  from a minute from now, until WhenPicker is in the app; a timer row whose model throws (a corrupt
+  place, not useFocusAfterRemoval's; Schedule this draft's time is WhenPicker's Date and Time fields as
+  the system's pickers, from a minute from now, until WhenPicker is in the app; a timer row whose model throws (a corrupt
   `acted` step, a web bug in timerRowModel) is left out where the web's page would fail. The web shows
   no PostPreview on the posted or scheduled rows (only in the composer's dialogs, a quote's card, the
   reply's context and the library), so neither does the app.

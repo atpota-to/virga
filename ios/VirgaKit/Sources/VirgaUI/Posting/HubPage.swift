@@ -276,9 +276,7 @@ struct HubPage: View {
   }
 
   private func openDraft(_ row: JSONValue) {
-    let intent: JSONValue = [
-      "draftId": row["id"] ?? .null, "draftOwnerDid": did.map(JSONValue.string) ?? .null, "asDid": did.map(JSONValue.string) ?? .null,
-    ]
+    let intent = PostingPages.draftIntent(row["id"], did)
     if let composer { composer.open(intent) } else { navigate("/posting/compose") }
   }
 

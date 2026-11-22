@@ -62,7 +62,9 @@ struct LifespanDefaultsCard: View {
       }
       caption
     }
-    .task(id: did ?? "") { await readLimits() }
+    // Read again when the account gains or loses its long session, as the
+    // web's effect on `req` is.
+    .task(id: "\(did ?? "")|\(app.session.capabilitiesFor(did).canSchedule)") { await readLimits() }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("posting-default-timer")
   }

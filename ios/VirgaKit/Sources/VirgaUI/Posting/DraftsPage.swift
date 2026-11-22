@@ -203,7 +203,7 @@ struct DraftsPage: View {
         .fixedSize(horizontal: false, vertical: true)
         .frame(maxWidth: theme.characters(Measure.Section.emptyMeasure, size: theme.textBase), alignment: .leading)
       Button {
-        openComposer(["asDid": did.map(JSONValue.string) ?? .null])
+        openComposer(["asDid": PostingPages.asDid(did)])
       } label: {
         Label("New post", systemImage: HubGlyph.newPost)
       }
@@ -322,16 +322,14 @@ struct DraftsPage: View {
   }
 
   private func openDraft(_ row: JSONValue) {
-    openComposer([
-      "draftId": row["id"] ?? .null, "draftOwnerDid": did.map(JSONValue.string) ?? .null, "asDid": did.map(JSONValue.string) ?? .null,
-    ])
+    openComposer(PostingPages.draftIntent(row["id"], did))
   }
 
   /// /posting/drafts/<id> opens that draft in the composer.
   private func openFromAddress() {
     guard let id, !opened else { return }
     opened = true
-    openComposer(["draftId": .string(id), "draftOwnerDid": did.map(JSONValue.string) ?? .null, "asDid": did.map(JSONValue.string) ?? .null])
+    openComposer(PostingPages.draftIntent(.string(id), did))
     navigate(PostingRoutes.postingPageByKey["drafts"]?.path ?? "/posting/drafts")
   }
 
@@ -538,11 +536,7 @@ struct ScheduleDraftDialog: View {
     DialogFrame(title: "Schedule this draft", onClose: { if !busy { onClose() } }) {
       DialogForm {
         if !words.isEmpty { HubQuote(text: words.jsSlice(0, Measure.Hub.scheduleQuoteMax)) }
-        DatePicker(
-          "When", selection: $when, in: Date(timeIntervalSince1970: (now + 60_000) / 1000)..., displayedComponents: [.date, .hourAndMinute]
-        )
-        .tint(theme.accent)
-        .accessibilityIdentifier("when-picker")
+        whenFields
         if tooSoon { FieldHint("Choose a time at least a minute from now.", isOver: true) }
         if phase == .loading { FieldHint("Looking for the next open time in your queue…") }
         if phase == .ready && slot == nil {
@@ -564,6 +558,26 @@ struct ScheduleDraftDialog: View {
     .onChange(of: when) { _, _ in now = SyncStatus.now() }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("schedule-draft-dialog")
+  }
+
+  /// Until WhenPicker is in the app: its Date and Time fields, as the
+  /// system's pickers, from a minute from now.
+  private var whenFields: some View {
+    let soonest = Date(timeIntervalSince1970: (now + 60_000) / 1000)
+    return FlowLayout(spacing: theme.space4, lineSpacing: theme.space3, alignment: .bottom) {
+      FieldStack("Date") {
+        DatePicker("Date", selection: $when, in: soonest..., displayedComponents: [.date])
+          .labelsHidden()
+          .tint(theme.accent)
+      }
+      FieldStack("Time") {
+        DatePicker("Time", selection: $when, in: soonest..., displayedComponents: [.hourAndMinute])
+          .labelsHidden()
+          .tint(theme.accent)
+      }
+    }
+    .accessibilityElement(children: .contain)
+    .accessibilityIdentifier("when-picker")
   }
 
   /// On a phone the three buttons go one under another, Schedule first and

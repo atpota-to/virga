@@ -202,7 +202,7 @@ struct TimersPage: View {
   private var empty: some View {
     VStack(alignment: .leading, spacing: theme.points(ThemeKit.emptyBlockGap)) {
       emptySentence
-      Button("New post") { openComposer(["asDid": did.map(JSONValue.string) ?? .null]) }
+      Button("New post") { openComposer(["asDid": PostingPages.asDid(did)]) }
         .buttonStyle(.virga)
         .accessibilityIdentifier("timers-new-post")
     }
@@ -248,7 +248,7 @@ struct TimersPage: View {
         ForEach(group.rows, id: \.self) { row in
           if group.key == "waiting" {
             TimersWaitingRow(row: row, tz: tz, now: now) { r in
-              openComposer(["scheduledId": r["id"] ?? .null, "asDid": did.map(JSONValue.string) ?? .null])
+              editScheduled(r)
             }
           } else {
             timerRow(row)
@@ -333,6 +333,12 @@ struct TimersPage: View {
 
   private func openComposer(_ intent: JSONValue) {
     if let composer { composer.open(intent) } else { navigate("/posting/compose") }
+  }
+
+  /// A waiting post's Edit: `composer.open({ scheduledId, asDid })`.
+  private func editScheduled(_ row: JSONValue) {
+    let intent: JSONValue = ["scheduledId": row["id"] ?? .null, "asDid": PostingPages.asDid(did)]
+    openComposer(intent)
   }
 
   /// Calling a timer off (or dismissing one that gave up): the post stays.
@@ -451,7 +457,10 @@ struct TimersWaitingRow: View {
 
   var body: some View {
     let facts = ScheduleModel.rowFacts(row, now: now)
-    var stored = row["payload"]?["selfDestruct"] ?? [:]
+    // `{ ...row.payload.selfDestruct, enabled: true }`: anything but an
+    // object spreads as nothing.
+    var stored: JSONValue = [:]
+    if let given = row["payload"]?["selfDestruct"], given.objectValue != nil { stored = given }
     stored["enabled"] = true
     let timer = SelfDestruct.readStoredTimer(stored).timer
     let actions = ScheduleModel.rowActions(row, now: now)

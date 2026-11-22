@@ -334,6 +334,20 @@ enum PostingPages {
     return ScheduledPostError.errorObject(error)["code"]?.stringValue ?? ""
   }
 
+  /// The account as a composer intent names it (`asDid: did`).
+  static func asDid(_ did: String?) -> JSONValue {
+    guard let did else { return .null }
+    return .string(did)
+  }
+
+  /// `{ draftId, draftOwnerDid: did, asDid: did }`: a draft opened in the composer.
+  static func draftIntent(_ id: JSONValue?, _ did: String?) -> JSONValue {
+    let owner = asDid(did)
+    var intent: JSONValue = ["draftOwnerDid": owner, "asDid": owner]
+    intent["draftId"] = id ?? .null
+    return intent
+  }
+
   /// `postingDeviceId()`.
   static func deviceId(_ app: AppModel) -> String? {
     Drafts.postingDeviceId(app.stores.keyValue)
