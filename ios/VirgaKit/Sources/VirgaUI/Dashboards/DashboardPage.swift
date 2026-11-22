@@ -167,6 +167,9 @@ struct DashboardPage: View {
         }
         .buttonStyle(.virga)
         .accessibilityIdentifier("library-open")
+        // `.library-open { margin-bottom: calc(16px - var(--section-gap)) }`:
+        // closer to the cards it adds to than the next band would be.
+        .padding(.bottom, Measure.Dashboard.libraryOpenSpaceBelow - theme.sectionGap)
         if dashboard.widgets.isEmpty {
           empty
         } else {
@@ -392,7 +395,11 @@ struct WidgetCard: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         if !under, let chartModes { chartModes }
+        // On a phone the 44-point tools are pulled in over the title's line
+        // (`.card-head:has(> :nth-child(2)) > .head-tools { margin-block:
+        // -12px }`), so the head stays the title's height.
         tools(title: title)
+          .padding(.vertical, theme.isPhone ? -Measure.Section.iconToolLift : 0)
       }
       if under, let chartModes {
         chartModes.padding(.top, Measure.Dashboard.headModesSpaceAbove)

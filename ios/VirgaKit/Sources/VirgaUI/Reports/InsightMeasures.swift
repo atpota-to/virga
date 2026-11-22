@@ -148,6 +148,9 @@ extension Measure.Dashboard {
   static let libraryOnIcon: CGFloat = 13
   /// `.library-text { line-height: 1.35 }`
   static let libraryLineHeight: Double = 1.35
+  /// `.library-open { margin-bottom: calc(16px - var(--section-gap)) }`:
+  /// Add a report from the library 16 over the list it adds to.
+  static let libraryOpenSpaceBelow: CGFloat = 16
 }
 
 extension Measure.Chart {
