@@ -157,3 +157,28 @@ final class SignallingStore: KeyValueStore, Sendable {
   func removeItem(_ key: String) { inner.removeItem(key) }
   func allKeys() -> [String] { inner.allKeys() }
 }
+
+@Suite @MainActor struct ComposerStateModelBehaviour {
+  @Test func dispatchesAndKeepsEachChange() throws {
+    let store = InMemoryKeyValueStore()
+    let timers = ManualTimers()
+    let saver = Autosaver(store: store, now: { 1_000 }, setTimer: timers.set, clearTimer: timers.clear)
+    let model = ComposerStateModel(asDid: "did:plc:mira", autosaver: saver)
+    #expect(model.isEmpty)
+    model.dispatch(.setText(index: 0, text: "hello"))
+    #expect(model.state.posts.first?.text == "hello")
+    #expect(!model.isEmpty)
+    #expect(saver.pending() == "did:plc:mira")
+    timers.run(upTo: Autosave.autosaveDebounceMs)
+    let kept = Autosave.readAutosave("did:plc:mira", store: store, now: 2_000)
+    #expect(kept?.state["posts"]?[0]?["text"] == "hello")
+    model.dispatch(.addPost())
+    #expect(model.state.posts.count == 2)
+    let actions = model.actions(defaultAction: "post", queue: nil, caps: ComposerCaps(canSchedule: false))
+    #expect(actions.primary == "post")
+    model.dispatch(.setText(index: 0, text: String(repeating: "x", count: 301)))
+    #expect(model.problems(now: Date(timeIntervalSince1970: 0)).contains { $0.postIndex == 0 })
+    model.cancelAutosave()
+    #expect(saver.pending() == nil)
+  }
+}
