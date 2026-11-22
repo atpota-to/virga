@@ -434,7 +434,7 @@ COMPOSER TIMER (Composer/ComposerController+Timer.swift, Composer/LifespanDialog
 - `LifespanDialog(value:fit:publishAt:limits:did:holds:note:transport:onSave:onClose:)` is ComposerDialogs.jsx's
   LifespanDialog over THE POSTING PAGES' `LifespanRuleEditor`: the rule is a `@State` set from the post's as
   the sheet is presented (useResetOnOpen: the composer redrawing underneath doesn't reset it), the note a warn
-  Callout over the editor, Cancel, and Done (`saveTimer`: touched, then setLifespan). The sheet takes the whole
+  Callout over the editor, Cancel, and Done (`saveTimer`, below). The sheet takes the whole
   height (`ComposerDialog.timer.isTall`). Identifiers: `lifespan-dialog`, `lifespan-dialog-note`,
   `lifespan-dialog-cancel`, `lifespan-dialog-done`, and the editor's own (`lifespan-editor`,
   `lifespan-sentence`); the editor's switch is found by its label, "Put a timer on this post".
@@ -455,9 +455,8 @@ COMPOSER TIMER (Composer/ComposerController+Timer.swift, Composer/LifespanDialog
   `composer-timer-dialog`, `composer-timer-editor`, `composer-timer-set`, `composer-timer-posted`,
   `composer-timer-on-timers`; `composer-timer-no-free-timer` and `composer-timer-not-armed` if the demo says
   so), each `-ipad` on the iPad.
-- Deliberate difference: Done on a rule left as it was sets `lifespanTouched` but writes nothing, since the
-  model keeps a state only when it changes (the web's reducer always makes a new state, so its autosave writes
-  the touched flag at once); the flag is written with the next change.
+- Done is ComposerStateModel's `chooseLifespan(rule)`: touched, the rule set, and the post kept at once even
+  when the rule is the one it had, as the web's reducer hands its autosave a new state either way.
 
 SHELL, ROUND 6
 - `ShellActions` (in the shell's environment): `creatingDashboard` opens the shell's

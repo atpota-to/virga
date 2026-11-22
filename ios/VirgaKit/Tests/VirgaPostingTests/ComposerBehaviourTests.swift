@@ -240,6 +240,24 @@ final class SignallingStore: KeyValueStore, Sendable {
     #expect(draft?.savedAt == 5)
   }
 
+  @Test func choosingTheTimerIsKeptEvenWhenTheRuleStaysTheSame() {
+    let session = AutosaveSession()
+    let model = ComposerStateModel(asDid: "did:plc:mira", now: { 9 }, session: session)
+    model.dispatch(.setText(index: 0, text: "words"))
+    #expect(Autosave.loadSessionDraft("did:plc:mira", session: session)?.lifespanTouched != true)
+    // Done on the timer's dialog with the rule left as it was.
+    let before = model.state
+    model.chooseLifespan(model.state.lifespan)
+    #expect(model.lifespanTouched)
+    #expect(model.state == before)
+    #expect(Autosave.loadSessionDraft("did:plc:mira", session: session)?.lifespanTouched == true)
+    // A new rule goes on the post, chosen.
+    let rule: JSONValue = ["enabled": true, "lifespanSeconds": 21_600]
+    model.chooseLifespan(rule)
+    #expect(model.state.lifespan == rule)
+    #expect(Autosave.loadSessionDraft("did:plc:mira", session: session)?.state["lifespan"] == rule)
+  }
+
   @Test func aStateWithWordsIsKeptOnceItOpens() {
     let session = AutosaveSession()
     var state = ComposerModel.emptyComposerState(asDid: "did:plc:mira")

@@ -94,10 +94,10 @@ extension ComposerController {
   /// The timer a scheduled post being edited already holds, else none.
   var timerDialogHolds: JSONValue? { state.source?.kind == "scheduled" ? heldTimer : nil }
 
-  /// Done in the dialog: the writer has chosen this post's timer.
+  /// Done in the dialog: the writer has chosen this post's timer, kept with
+  /// the post even when the rule is the one it had.
   func saveTimer(_ rule: JSONValue) {
-    model.lifespanTouched = true
-    dispatch(.setLifespan(rule))
+    model.chooseLifespan(rule)
   }
 
   // MARK: Posting now (submitPost's timer)

@@ -33,7 +33,7 @@ COMPOSER STATE
   - validateComposer(state, now:, forSchedule:, requireAltText:, lifespanProblem:, timeZone:) -> [ComposerProblem{postIndex, code, message}].
   - resolvePostTexts.
 - Composer/ComposerStateModel.swift: `@MainActor @Observable ComposerStateModel(ComposerState | asDid:defaults:, autosaver: Autosaver?, now: () -> Double, session: AutosaveSession = .shared)`.
-  - dispatch(_:), load(_:touched:), problems(now:…), actions(defaultAction:queue:caps:…), isEmpty, lifespanTouched, cancelAutosave().
+  - dispatch(_:), load(_:touched:), chooseLifespan(_:) (the writer's timer: touched, set, and kept at once even when unchanged, as the web's reducer always makes a new state), problems(now:…), actions(defaultAction:queue:caps:…), isEmpty, lifespanTouched, cancelAutosave().
   - It follows Composer.jsx's autosave effect. A change with content is debounced to the autosaver and kept in the session layer. An empty state only clears an account this composer wrote for (wroteFor). load cancels the waiting write and forgets wroteFor.
 
 SCHEDULE (Schedule/)

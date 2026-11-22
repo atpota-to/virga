@@ -64,6 +64,17 @@ public final class ComposerStateModel {
     for action in actions { dispatch(action) }
   }
 
+  /// The writer chose this post's timer (Composer.jsx's
+  /// `lifespanTouched.current = true` then `setLifespan`). The choice is kept
+  /// with the post at once even when the rule is the one it had, as the web's
+  /// reducer hands its autosave a new state either way.
+  public func chooseLifespan(_ rule: JSONValue) {
+    lifespanTouched = true
+    let next = ComposerModel.composerReducer(state, .setLifespan(rule))
+    if next != state { state = next }
+    keep()
+  }
+
   /// Puts `next` on screen in place of what is there (Composer.jsx's
   /// `loadState`): whatever was waiting to be written belonged to the state
   /// it replaces, which the caller has kept, set aside or cleared by now.
