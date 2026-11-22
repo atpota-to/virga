@@ -186,6 +186,13 @@ struct RemotePicture: View {
   }
 }
 
+/// `view ? null : record`: what PostPreviewCard is given to show a post
+/// that has no view of its own.
+func composerRecord(_ record: JSONValue, unless view: JSONValue?) -> JSONValue? {
+  if let view, view.isTruthy { return nil }
+  return record
+}
+
 /// The site a card's address is on, without "www.".
 func composerHostOf(_ url: String) -> String {
   guard let host = URLComponents(string: url)?.host, !host.isEmpty else { return url }
@@ -449,7 +456,8 @@ struct ReplyContext: View {
           .accessibilityLabel("Don’t reply: make this a new post")
       }
       PostPreviewCard(
-        view: reply.view, record: reply.view == nil ? ["text": .string(reply.text ?? "")] : nil, uri: reply.uri, compact: true)
+        view: reply.view, record: composerRecord(["text": .string(reply.text ?? "")], unless: reply.view), uri: reply.uri,
+        compact: true)
     }
     .accessibilityElement(children: .contain)
     .accessibilityLabel("Replying to \(who)")

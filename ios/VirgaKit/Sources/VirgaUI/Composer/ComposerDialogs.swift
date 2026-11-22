@@ -383,9 +383,9 @@ struct ContinueThreadDialog: View {
     return Button {
       onPick(item)
     } label: {
-      let view = item["view"].flatMap { $0.isNull ? nil : $0 }
+      let view: JSONValue? = (item["view"]?.isTruthy ?? false) ? item["view"] : nil
       PostPreviewCard(
-        view: view, record: view == nil ? ["text": .string(text), "createdAt": item["at"] ?? .null] : nil,
+        view: view, record: composerRecord(["text": .string(text), "createdAt": item["at"] ?? .null], unless: view),
         uri: item["uri"]?.stringValue, compact: true)
         .contentShape(RoundedRectangle(cornerRadius: theme.radiusLg))
     }
