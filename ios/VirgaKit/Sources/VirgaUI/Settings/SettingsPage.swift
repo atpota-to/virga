@@ -200,7 +200,7 @@ enum SettingsControlKind {
   case button
   /// A Segmented: its keys are 44.
   case segmented
-  /// A switch: 24, centred in its 44-point target.
+  /// A switch: its capsule is 24, in the middle of its 44-point target.
   case toggle
   /// A badge, or a word or two of state: already on the name's line.
   case state
@@ -261,7 +261,7 @@ struct SettingsRow<Control: View>: View {
           HStack(alignment: .top, spacing: Measure.Settings.compactColumnGap) {
             name
             Spacer(minLength: 0)
-            control.padding(.top, rise)
+            placedControl
           }
           if let hint {
             hintView(hint)
@@ -272,7 +272,7 @@ struct SettingsRow<Control: View>: View {
         HStack(alignment: .top, spacing: Measure.Settings.rowColumnGap) {
           words
           Spacer(minLength: 0)
-          control.padding(.top, rise)
+          placedControl
         }
       }
     }
@@ -292,10 +292,23 @@ struct SettingsRow<Control: View>: View {
     switch kind {
     case .button: return (nameLine - theme.points(ThemeKit.touchButtonHeight)) / 2
     case .segmented: return (nameLine - theme.points(ThemeKit.touchSegmentedKeyHeight)) / 2
-    // The 24-point switch is laid out in its 44-point target, centred.
-    case .toggle: return (nameLine - Measure.Touch.target) / 2
+    case .toggle: return (nameLine - theme.points(ThemeKit.switchHeight)) / 2 - overhang
     case .state, .prose: return 0
     }
+  }
+
+  /// How far a switch's 44-point target reaches past its 24-point capsule,
+  /// above and below. The row is laid out round the capsule, as the web's
+  /// is, so a phone's line under the name and the switch isn't pushed down.
+  private var overhang: CGFloat {
+    kind == .toggle ? max(0, (Measure.Touch.target - theme.points(ThemeKit.switchHeight)) / 2) : 0
+  }
+
+  /// The control where the row puts it: drawn up onto the name's line.
+  private var placedControl: some View {
+    control
+      .padding(.top, rise)
+      .padding(.bottom, -overhang)
   }
 
   private var name: some View {
@@ -435,7 +448,7 @@ struct AppearanceSection: View {
     let sample = AppLocale.localeSample(active)
     let regionStart = Self.weekStartNames[AppLocale.regionWeekStart(active)] ?? ""
     let system = AppLocale.systemLocale(Locale.preferredLanguages)
-    let regions: [(Preferences.LocaleChoice, String)] = AppLocale.localeChoices.compactMap { tag in
+    let regions: [(Preferences.LocaleChoice, String)] = AppLocale.localeChoices.compactMap { (tag: String) -> (Preferences.LocaleChoice, String)? in
       guard let choice = Preferences.LocaleChoice(rawValue: tag) else { return nil }
       return (choice, "\(Self.regionName(tag)): \(AppLocale.localeSample(tag))")
     }

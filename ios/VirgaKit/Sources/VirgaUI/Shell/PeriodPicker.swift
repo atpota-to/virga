@@ -5,7 +5,8 @@
 // preference): one of the presets, or a range of dates. The picker sits in
 // a page's header: the presets and Custom, which opens a dialog of two days,
 // checked as they are picked. Custom says its range once there is one;
-// from 560 down the key is its calendar alone, its words kept as its name. The days are the active time zone's (Periods.dayKey).
+// from 560 down the key is its calendar alone, its words kept as its name.
+// The days are the active time zone's (Periods.dayKey).
 
 #if canImport(UIKit)
 import SwiftUI

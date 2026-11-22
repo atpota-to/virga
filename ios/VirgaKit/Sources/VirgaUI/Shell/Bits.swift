@@ -152,7 +152,7 @@ public struct ToastStack: View {
           .virgaShadow(theme.shadow(theme.tokens.shadowLg))
           // `toast-in`: in from 6 points down as it fades in.
           .transition(
-            .asymmetric(
+            AnyTransition.asymmetric(
               insertion: AnyTransition.opacity.combined(with: AnyTransition.offset(y: Measure.Toast.rise)),
               removal: AnyTransition.opacity))
       }
