@@ -474,18 +474,24 @@ import VirgaTestSupport
     #expect(try await AsyncPool.mapWithConcurrency([Int](), 4) { item, _ in item }.isEmpty)
   }
 
+  /// The calls sleep for an hour, so only cancelling ends them; the caller
+  /// is cancelled once the first two are running, not after a fixed wait a
+  /// loaded machine could outlast.
   @Test func cancellingTheCallerCancelsTheCalls() async {
     let started = Locked(0)
     let finished = Locked(0)
     let task = Task {
       try await AsyncPool.mapWithConcurrency(Array(0..<6), 2) { item, _ -> Int in
         started.withLock { $0 += 1 }
-        try await Task.sleep(nanoseconds: 2_000_000_000)
+        try await Task.sleep(for: .seconds(3600))
         finished.withLock { $0 += 1 }
         return item
       }
     }
-    try? await Task.sleep(nanoseconds: 50_000_000)
+    let deadline = Date().addingTimeInterval(60)
+    while started.withLock({ $0 }) < 2, Date() < deadline {
+      try? await Task.sleep(for: .milliseconds(10))
+    }
     task.cancel()
     _ = try? await task.value
     #expect(finished.withLock { $0 } == 0)
