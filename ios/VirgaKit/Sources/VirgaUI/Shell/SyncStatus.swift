@@ -53,6 +53,7 @@ enum SyncStatus {
   }
 
   /// `syncWhen(archive)`: "Synced 12m ago", "Archive incomplete", "Not built yet".
+  @MainActor
   static func when(_ archive: ArchiveModel, now: Double = SyncStatus.now()) -> String {
     guard let posts = archive.data.meta.posts else { return "Not built yet" }
     if posts.complete != true { return "Archive incomplete" }
@@ -68,6 +69,7 @@ enum SyncStatus {
     var blockedBy: Int
   }
 
+  @MainActor
   static func counts(_ archive: ArchiveModel) -> Counts {
     let data = archive.data
     return Counts(
@@ -76,12 +78,14 @@ enum SyncStatus {
   }
 
   /// `runFor(archive)`: a first build, a top-up, or the rest of a build.
+  @MainActor
   static func mode(_ archive: ArchiveModel) -> SyncMode {
     guard let posts = archive.data.meta.posts else { return .full }
     return posts.complete == true ? .incremental : .resume
   }
 
   /// "Sync now", "Resume the build", or "Build your archive".
+  @MainActor
   static func runLabel(_ archive: ArchiveModel) -> String {
     guard let posts = archive.data.meta.posts else { return "Build your archive" }
     return posts.complete == true ? "Sync now" : "Resume the build"
