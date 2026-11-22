@@ -5,16 +5,36 @@
   "summary": "The composer's model and actions, autosave, posting settings, the queue's settings, repeats, images and video.",
   "files": {
     "src/lib/pendingCompose.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/PendingCompose.swift"
+      ],
+      "fixtures": [
+        "composer.storage"
+      ],
+      "note": "sessionStorage is a KeyValueStore the app clears at launch.",
+      "synced": "bc0b96db9d73"
     },
     "src/posting/adviser/setup.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Adviser/Setup.swift"
+      ],
+      "fixtures": [
+        "composer.adviser"
+      ],
+      "synced": "92d358ae4d57"
     },
     "src/posting/autosave.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Autosave.swift"
+      ],
+      "fixtures": [
+        "composer.storage"
+      ],
+      "note": "The web's module-level Maps are AutosaveSession (.shared, or one per test). createAutosaver's pagehide/visibilitychange listeners have no logic-side equivalent: the app calls Autosaver.flush() when its scene goes to the background.",
+      "synced": "109d5e4a65d5"
     },
     "src/posting/composer/actions.js": {
       "status": "ported",
@@ -103,8 +123,14 @@
       "synced": "46c632f17b11"
     },
     "src/posting/composer/restore.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerRestore.swift"
+      ],
+      "fixtures": [
+        "composer.storage"
+      ],
+      "synced": "b389db5cdc2a"
     },
     "src/posting/composer/submit.js": {
       "status": "ported",
@@ -178,8 +204,15 @@
       "synced": "7b14ef887b3a"
     },
     "src/posting/settings.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Settings.swift"
+      ],
+      "fixtures": [
+        "composer.storage"
+      ],
+      "note": "usePostingSettings is PostingSettingsModel (@MainActor @Observable; the hook's reset is PostingSettingsStore.resetPostingSettings). The web's cross-tab 'storage' listener has no counterpart: one app, and every write goes out on the posting events bus.",
+      "synced": "cf681ec54392"
     }
   }
 }

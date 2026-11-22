@@ -17,8 +17,14 @@
       "swift": []
     },
     "src/posting/adviser/analysis.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Adviser/Analysis.swift"
+      ],
+      "fixtures": [
+        "composer.adviser"
+      ],
+      "synced": "9d082ad3a196"
     },
     "src/posting/adviser/context.js": {
       "status": "pending",
