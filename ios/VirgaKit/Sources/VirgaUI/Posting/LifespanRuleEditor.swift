@@ -68,11 +68,13 @@ struct LifespanRuleEditor: View {
             .virgaText(.textSm, lineHeight: Measure.Lifespan.sentenceLineHeight)
             .foregroundStyle(notes.summary.isEmpty ? theme.muted : theme.ink2)
             .fixedSize(horizontal: false, vertical: true)
-            .accessibilityIdentifier("lifespan-sentence")
           if !notes.thread.isEmpty { FieldHint(notes.thread) }
         }
+        // One element read as a whole: the identifier goes on that element,
+        // not on a child the combining folds into it.
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.updatesFrequently)
+        .accessibilityIdentifier("lifespan-sentence")
         ForEach([notes.fitNote, notes.unavailable, notes.pin, notes.room].filter { !$0.isEmpty }, id: \.self) { note in
           Callout(tone: .warn) { Text(note) }
         }
