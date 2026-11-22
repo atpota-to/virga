@@ -1,7 +1,6 @@
 // Ports src/posting/PostingSettingsSection.jsx
 // Ports src/posting/ui/ComposerDefaults.jsx
 // Ports src/posting/ui/QueueSettings.jsx
-// Ports src/posting/ui/LifespanDefaults.jsx
 // Ports src/posting/pages/scheduleParts.jsx (TimezoneSelect, SwitchButton: as Settings › Posting uses them)
 // Ports src/settings/SettingsPage.jsx (its Posting section)
 //
@@ -23,11 +22,7 @@
 // account without a long session sees NeedsBackendNotice in the server's
 // cards' place.
 //
-// The default timer's rule is LifespanRuleEditor (LifespanEditor.jsx).
-//
-// Not yet: how many timers the account has in use (scheduleService.js's
-// getLimits), so the default timer's caption starts at its second sentence,
-// as the web's does when the limits can't be read.
+// The default timer is LifespanDefaultsCard (Posting/LifespanDefaults.swift).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -383,117 +378,4 @@ struct TimezonePicker: View {
   }
 }
 
-// MARK: - The default timer
-
-/// `LifespanDefaults`: the timer new posts start with, a length, never a set time.
-struct LifespanDefaultsCard: View {
-  @Environment(\.virgaTheme) private var theme
-  @Environment(\.navigate) private var navigate
-  @Environment(AppModel.self) private var app
-  let did: String?
-  let model: PostingSettingsModel
-  @State private var error: String?
-
-  var body: some View {
-    let lifespan = SelfDestruct.normalizeTimer(model.settings.lifespan)
-    let rule = Self.ruleSentence(lifespan)
-    SettingsSectionView(title: "Default timer", sub: "A timer every new post starts with. Each post can change it or take it off.") {
-      SettingsRow(
-        label: "Start new posts with a timer",
-        hint: lifespan.enabled ? nil as String? : "New posts start without one. The rule is kept for when you turn this on.",
-        compactControl: true
-      ) {
-        SettingsSwitch(label: "Start new posts with a timer", isOn: lifespan.enabled) { enabled in
-          var next = lifespan
-          next.enabled = enabled
-          save(next)
-        }
-        .accessibilityIdentifier("default-timer-on")
-      }
-      if lifespan.enabled {
-        // A block row with no label: the editor alone, as a row.
-        editor(lifespan)
-          .padding(.vertical, theme.rowPadLg)
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
-      } else {
-        Disclosure("The rule it will use: \(Self.sentenceClause(rule))") { editor(lifespan) }
-          .padding(.vertical, theme.rowPadLg)
-          .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
-      }
-      if let error {
-        Callout(tone: .danger) { Text(error) }
-          .padding(.top, Measure.Settings.calloutSpaceAbove)
-      }
-      caption
-    }
-    .accessibilityElement(children: .contain)
-    .accessibilityIdentifier("posting-default-timer")
-  }
-
-  /// The rule's editor (LifespanRuleEditor), always on, a length never a
-  /// set time; what it changes keeps the timer on or off as it is.
-  private func editor(_ lifespan: TimerRule) -> some View {
-    var on = lifespan
-    on.enabled = true
-    return LifespanRuleEditor(
-      value: on,
-      onChange: { next in
-        var kept = next
-        kept.enabled = lifespan.enabled
-        save(kept)
-      },
-      did: did, allowExactTime: false, showToggle: false, transport: app.archiveEnvironment.transport)
-  }
-
-  private var caption: some View {
-    var words = AttributedString(
-      "When the account has no free timer of the kind this rule needs, a new post starts without it, and the composer says why. ")
-    var link = AttributedString("See posts on a timer")
-    link.link = URL(string: "virga-route:timers")
-    words += link
-    words += AttributedString(".")
-    return Text(words)
-      .virgaText(.textSm)
-      .foregroundStyle(theme.muted)
-      .tint(theme.ink)
-      .fixedSize(horizontal: false, vertical: true)
-      .frame(maxWidth: theme.measure, alignment: .leading)
-      .padding(.top, theme.points(ThemeKit.cardCaptionSpaceAbove))
-      .environment(
-        \.openURL,
-        OpenURLAction { _ in
-          navigate(PostingRoutes.postingPageByKey["timers"]?.path ?? PostingRoutes.postingBase)
-          return .handled
-        })
-  }
-
-  /// `save(next)`: the rule normalized, never pinned to a time.
-  private func save(_ next: TimerRule) {
-    do {
-      var rule = SelfDestruct.normalizeTimer(next)
-      rule.deleteAt = nil
-      try model.update(["lifespan": rule.json])
-      error = nil
-    } catch {
-      self.error = PostingSettingsSave.message(error)
-    }
-  }
-
-  /// `describeTimer({ ...lifespan, enabled: true })`.
-  static func ruleSentence(_ lifespan: TimerRule) -> String {
-    var on = lifespan
-    on.enabled = true
-    return SelfDestruct.describeTimer(on, now: SyncStatus.now())
-  }
-
-  /// `sentenceClause(text)`: "Deletes itself 24 hours after it goes up."
-  /// as the end of a sentence.
-  static func sentenceClause(_ text: String) -> String {
-    guard let first = text.first else { return text }
-    var rest = String(text.dropFirst())
-    if rest.hasSuffix(".") { rest.removeLast() }
-    return first.lowercased() + rest
-  }
-}
 #endif
