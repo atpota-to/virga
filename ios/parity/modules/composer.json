@@ -127,7 +127,7 @@
       "fixtures": [
         "composer.editor"
       ],
-      "note": "pastedImageFiles reads the clipboard's DataTransfer on the web; the port takes the pasteboard's items (PastedItem) and its text, which VirgaUI reads from UIPasteboard. The sorting, notes and names are held to the fixture.",
+      "note": "pastedImageFiles reads the clipboard's DataTransfer on the web; the port takes the pasteboard's items (PastedItem: kind, type, the file it gives) and its text, which VirgaUI reads from UIPasteboard. Which items are taken, their names and types, the sorting and the notes are held to the fixture.",
       "synced": "46c632f17b11"
     },
     "src/posting/composer/restore.js": {
@@ -181,7 +181,7 @@
       "fixtures": [
         "composer.images"
       ],
-      "note": "The pixel work (browser-image-compression's re-encode and decodeImageSize's createImageBitmap/<img> decode) is the ImageEncoder protocol, which VirgaUI implements over ImageIO; prepareImage's decisions (budgets, options, refusals, name, type, aspect ratio, the timeout) and uploadImage are ported and held to the fixture over a scripted encoder.",
+      "note": "The pixel work (browser-image-compression's re-encode and decodeImageSize's createImageBitmap/<img> decode) is the ImageEncoder protocol, which VirgaUI implements over ImageIO; prepareImage's decisions (budgets, options, refusals, name, type, aspect ratio, the timeout) and uploadImage are ported and held to the fixture over a scripted encoder. The prepared file keeps the encoder's lastModified, where the web's new File takes the clock's.",
       "synced": "1b22cd163a1e"
     },
     "src/posting/lib/video.js": {
@@ -203,7 +203,8 @@
       "fixtures": [
         "composer.queue"
       ],
-      "synced": "b6fb386df68a"
+      "synced": "b6fb386df68a",
+      "note": "The wall-clock offset reads the year back as the web's formatToParts and Date.UTC do (an era year without its era, 0-99 as 19xx), so instants before the year 100 land where the web's do. One thing isn't reproduced: an instant whose wall clock in its zone is past the end of time (within a day of 8.64e15, east of UTC), which the web shows as 'NaN-NaN-NaN' and zonedWallTime here gives as nil."
     },
     "src/posting/schedule/publishActions.js": {
       "status": "ported",
