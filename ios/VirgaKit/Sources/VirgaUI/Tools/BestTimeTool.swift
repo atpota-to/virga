@@ -26,7 +26,7 @@ struct BestTimeTool: View {
     let window = WidgetParts.bestTimeWindow(preferences.period())
     let effective = window.isCustom ? PeriodPicker.customKey : window.key
     VirgaPage(
-      header: ToolHeader.header(tool, actions: AnyView(PeriodPicker(options: ["90d", "1y", "all", PeriodPicker.customKey], effective: effective)))
+      header: ToolHeader.header(tool, period: AnyView(PeriodPicker(options: ["90d", "1y", "all", PeriodPicker.customKey], effective: effective)))
     ) {
       if let archive {
         BestTimeBody(archive: ReportArchive(archive), window: window, block: $block)
