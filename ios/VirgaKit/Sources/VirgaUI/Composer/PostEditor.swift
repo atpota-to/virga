@@ -21,11 +21,14 @@
 // Tab takes it; Escape closes the list, which stays closed until the
 // mention or shortcut changes. The text view asks for them only while a
 // list is up, and leaves them to an input method that is composing. The
-// software keyboard's Return takes the marked row too, as Safari sends
-// keydown Enter for it.
+// web hears every key once, at keydown; UIKit can hand a hardware key in
+// by a key command or by its press, so the text view takes Return, Tab and
+// Escape by whichever comes first and never twice. The software keyboard's
+// Return takes the marked row too, as Safari sends keydown Enter for it.
 
 #if canImport(UIKit)
 import CoreText
+import QuartzCore
 import SwiftUI
 import UIKit
 import UniformTypeIdentifiers
@@ -788,6 +791,24 @@ final class ComposerTextView: UITextView {
   var sendHandler: (() -> Void)?
   /// The "@" and "/" lists' keys (PostEditor.jsx's onKeyDown).
   var suggestionKeys: SuggestionKeyHandler?
+  /// The hardware presses of Return, Tab and Escape a list took in
+  /// pressesBegan (and a key-less twin UIKit sends beside some keys in the
+  /// same set), until each ends: no phase of them goes on to the text view,
+  /// and while one is down its key command and insertText don't take the
+  /// key again.
+  private var heldListPresses: [UIPress: SuggestionKeys.Key] = [:]
+  /// The list key a key command last acted on, and when (CACurrentMediaTime,
+  /// the clock of a press's timestamp). A press of that key stamped no later
+  /// is the one the command took, should UIKit hand it to pressesBegan too.
+  /// Forgotten when a press of that key ends or is cancelled: a key's press
+  /// ends before its next press begins, so a press that begins after that
+  /// is a new one, even one stamped before a command that waited on a busy
+  /// main thread.
+  private var commandTook: (key: SuggestionKeys.Key, at: CFTimeInterval)?
+  /// True while insertText hands a letter to UIKit's own insertText: the
+  /// typing probe's way of telling a new line that came that way from one
+  /// that reached the delegate by another.
+  private(set) var insertingThrough = false
 
   override func paste(_ sender: Any?) {
     if pasteHandler?(selectedRange) == true { return }
@@ -812,8 +833,17 @@ final class ComposerTextView: UITextView {
   /// has rows (⇧⇥ too: the web's Tab is taken with anything held but ⌘ or
   /// ⌃), Escape while it is up. Only then, so every other key reaches the
   /// text view as before, and none while an input method is composing.
+  /// Return, Tab and Escape are taken from their press as well
+  /// (pressesBegan), should UIKit not hand them to these.
   private func listCommands() -> [UIKeyCommand] {
-    guard markedTextRange == nil, let lists = suggestionKeys?.lists() else { return [] }
+    guard let handler = suggestionKeys else { return [] }
+    guard markedTextRange == nil else {
+      if TypingProbe.isOn, let id = accessibilityIdentifier {
+        TypingProbe.commands(id, handler.lists().takesEscape ? "composing" : "none")
+      }
+      return []
+    }
+    let lists = handler.lists()
     var commands: [UIKeyCommand] = []
     if lists.takesArrows {
       for flags in Self.arrowModifiers {
@@ -827,6 +857,9 @@ final class ComposerTextView: UITextView {
     if lists.takesEscape {
       commands.append(Self.listCommand(UIKeyCommand.inputEscape, [], #selector(listEscape)))
     }
+    if TypingProbe.isOn, let id = accessibilityIdentifier {
+      TypingProbe.commands(id, commands.isEmpty ? "none" : lists.takesArrows ? "rows" : "escape")
+    }
     return commands
   }
 
@@ -838,22 +871,42 @@ final class ComposerTextView: UITextView {
     return command
   }
 
-  @objc func listUp() { takeListKey(.up) }
-  @objc func listDown() { takeListKey(.down) }
-  @objc func listEscape() { takeListKey(.escape) }
+  @objc func listUp() { commandKey(.up, "up") }
+  @objc func listDown() { commandKey(.down, "down") }
+  @objc func listEscape() { commandKey(.escape, "esc") }
   // Should the list have gone between the key and its command, the key is
   // typed as it would have been.
-  @objc func listReturn() { if !takeListKey(.enter) { insertText("\n") } }
-  @objc func listTab() { if !takeListKey(.tab) { insertText("\t") } }
+  @objc func listReturn() { commandKey(.enter, "ret", typing: "\n") }
+  @objc func listTab() { commandKey(.tab, "tab", typing: "\t") }
   // ⇧⇥ has no letter to type, so should the list have gone it does nothing.
-  @objc func listBackTab() { takeListKey(.tab) }
+  @objc func listBackTab() { commandKey(.tab, "btab") }
+
+  /// A list key from its key command: nothing while its press, taken in
+  /// pressesBegan, is still down (that was this key); otherwise the key
+  /// goes to the lists as they are now, or is typed. Noted, so that its
+  /// press goes no further should UIKit hand that on to pressesBegan after
+  /// the command.
+  private func commandKey(_ key: SuggestionKeys.Key, _ name: String, typing: String? = nil) {
+    if isHeld(key) {
+      noteListKey("c", name, "dup")
+      return
+    }
+    if !takeListKey(key, "c", name), let typing { insertText(typing) }
+    commandTook = (key, CACurrentMediaTime())
+  }
 
   /// The key's action on the lists as they are now (SuggestionKeys); true
-  /// when the key was theirs.
+  /// when the key was theirs. `command` and `control` are what the press
+  /// held, where it came by its press; `route` and `name` are for the
+  /// typing probe.
   @discardableResult
-  private func takeListKey(_ key: SuggestionKeys.Key) -> Bool {
+  private func takeListKey(
+    _ key: SuggestionKeys.Key, _ route: String, _ name: String, command: Bool = false, control: Bool = false
+  ) -> Bool {
     guard let handler = suggestionKeys else { return false }
-    let action = SuggestionKeys.action(key, lists: handler.lists(), composing: markedTextRange != nil)
+    let lists = handler.lists()
+    let action = SuggestionKeys.action(key, lists: lists, composing: markedTextRange != nil, command: command, control: control)
+    if TypingProbe.isOn { noteListKey(route, name, probeResult(action, lists)) }
     if action == .field { return false }
     handler.act(action)
     return true
@@ -869,20 +922,192 @@ final class ComposerTextView: UITextView {
 
   // A Return or Tab a list with rows takes goes no further: the software
   // keyboard's Return on a phone (Safari sends keydown Enter for it, so
-  // the web takes the marked row too) and a hardware key its command
-  // missed. Every other key, and these with no list, as before. Then the
-  // UI tests' typing probe (TypingProbe): what reached the field.
+  // the web takes the marked row too) and a hardware key that came this
+  // way. One that comes while the list's own press of that key is still
+  // down is that key, taken already. Every other key, and these with no
+  // list, as before. Then the UI tests' typing probe (TypingProbe): what
+  // reached the field.
   override func insertText(_ text: String) {
-    if text == "\n" || text == "\t", takeListKey(text == "\n" ? .enter : .tab) { return }
+    if text == "\n" || text == "\t" {
+      let key: SuggestionKeys.Key = text == "\n" ? .enter : .tab
+      let name = text == "\n" ? "ret" : "tab"
+      if isHeld(key) {
+        noteListKey("i", name, "dup")
+        return
+      }
+      if takeListKey(key, "i", name) { return }
+    }
     if TypingProbe.isOn, let id = accessibilityIdentifier { TypingProbe.insert(id, text, in: self) }
+    let through = insertingThrough
+    insertingThrough = true
     super.insertText(text)
+    insertingThrough = through
   }
 
+  // MARK: Presses
+
+  /// A hardware keyboard's Return (the keypad's Enter too), Tab and Escape,
+  /// taken from the press as it comes in when the lists take the key
+  /// (SuggestionKeys, with the ⌘ and ⌃ it holds), so they reach the lists
+  /// however UIKit would have handed them on. A press its key command took
+  /// already goes no further and does nothing more. Every other press, and
+  /// these when the lists don't take them, go on to the text view as before.
   override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
     if TypingProbe.isOn, let id = accessibilityIdentifier {
       TypingProbe.press(id, presses.compactMap { $0.key?.characters }.joined())
     }
-    super.pressesBegan(presses, with: event)
+    var taken: [UIPress: SuggestionKeys.Key] = [:]
+    for press in presses {
+      // A press that begins now isn't one held before, should UIKit ever
+      // hand a press object on to a new press.
+      heldListPresses[press] = nil
+      guard let uiKey = press.key else { continue }
+      if TypingProbe.isOn { noteArrow(uiKey, press) }
+      guard let key = Self.pressKey(uiKey) else { continue }
+      let flags = uiKey.modifierFlags
+      let name = key == .tab && flags.contains(.shift) ? "btab" : Self.probeName(key)
+      // A new press of the key: one of it still held ended out of sight.
+      heldListPresses = heldListPresses.filter { $0.value != key }
+      if let took = commandTook, took.key == key, took.at >= press.timestamp {
+        commandTook = nil
+        noteListKey("p", name, "dup")
+        taken[press] = key
+      } else if takeListKey(key, "p", name, command: flags.contains(.command), control: flags.contains(.control)) {
+        taken[press] = key
+      }
+    }
+    let twinOf = taken.values.first
+    if TypingProbe.isOn {
+      for press in presses where press.key == nil {
+        noteListKey("p", "keyless\(press.type.rawValue)", twinOf == nil ? "passed" : "held")
+      }
+    }
+    guard let key = twinOf else {
+      super.pressesBegan(presses, with: event)
+      return
+    }
+    // The key-less twin of a key taken (its semantic press, a select or a
+    // menu) goes no further either, when it comes in the same set. One that
+    // comes in a set of its own goes on, as it did before.
+    for press in presses where press.key == nil { taken[press] = key }
+    heldListPresses.merge(taken) { _, new in new }
+    let rest = presses.filter { taken[$0] == nil }
+    if !rest.isEmpty { super.pressesBegan(rest, with: event) }
+  }
+
+  override func pressesChanged(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+    guard !heldListPresses.isEmpty else { return super.pressesChanged(presses, with: event) }
+    let rest = presses.filter { heldListPresses[$0] == nil }
+    if !rest.isEmpty { super.pressesChanged(rest, with: event) }
+  }
+
+  override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+    if TypingProbe.isOn { noteEnded(presses, "") }
+    forgetCommand(presses)
+    guard !heldListPresses.isEmpty else { return super.pressesEnded(presses, with: event) }
+    let rest = release(presses)
+    if !rest.isEmpty { super.pressesEnded(rest, with: event) }
+  }
+
+  override func pressesCancelled(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+    if TypingProbe.isOn { noteEnded(presses, "cancel-") }
+    forgetCommand(presses)
+    guard !heldListPresses.isEmpty else { return super.pressesCancelled(presses, with: event) }
+    let rest = release(presses)
+    if !rest.isEmpty { super.pressesCancelled(rest, with: event) }
+  }
+
+  /// A press of the key a key command last took has ended, so the press
+  /// that command took is over (a key's press ends before its next press
+  /// begins): the next press of that key is a new one, whatever its stamp.
+  private func forgetCommand(_ presses: Set<UIPress>) {
+    guard let took = commandTook else { return }
+    if presses.contains(where: { $0.key.flatMap(Self.listKey) == took.key }) { commandTook = nil }
+  }
+
+  /// The presses not held, once those held are let go.
+  private func release(_ presses: Set<UIPress>) -> Set<UIPress> {
+    var rest = Set<UIPress>()
+    for press in presses {
+      if heldListPresses.removeValue(forKey: press) == nil { rest.insert(press) }
+    }
+    return rest
+  }
+
+  /// Whether a press of `key` a list took is down now.
+  private func isHeld(_ key: SuggestionKeys.Key) -> Bool {
+    heldListPresses.contains { $0.value == key && $0.key.phase != .ended && $0.key.phase != .cancelled }
+  }
+
+  /// The list key a hardware key is when it is taken from its press. The
+  /// arrows are left to their key commands, which take them.
+  private static func pressKey(_ key: UIKey) -> SuggestionKeys.Key? {
+    switch key.keyCode {
+    case .keyboardReturnOrEnter, .keyboardReturn, .keypadEnter: return .enter
+    case .keyboardTab: return .tab
+    case .keyboardEscape: return .escape
+    default: return nil
+    }
+  }
+
+  /// The list key a hardware key is, the arrows included.
+  private static func listKey(_ key: UIKey) -> SuggestionKeys.Key? {
+    if let key = pressKey(key) { return key }
+    switch key.keyCode {
+    case .keyboardUpArrow: return .up
+    case .keyboardDownArrow: return .down
+    default: return nil
+    }
+  }
+
+  // MARK: Typing probe
+
+  /// A list key in the typing probe: how it came in (c, a key command; p,
+  /// its press; i, insertText), which, and what came of it.
+  private func noteListKey(_ route: String, _ name: String, _ result: String) {
+    guard TypingProbe.isOn, let id = accessibilityIdentifier else { return }
+    TypingProbe.listKey(id, route: route, key: name, result: result)
+  }
+
+  private static func probeName(_ key: SuggestionKeys.Key) -> String {
+    switch key {
+    case .up: return "up"
+    case .down: return "down"
+    case .enter: return "ret"
+    case .tab: return "tab"
+    case .escape: return "esc"
+    }
+  }
+
+  /// What a list key came to: the action, "field" with whether a list was
+  /// up, or "composing" with the length of the marked text.
+  private func probeResult(_ action: SuggestionKeys.Action, _ lists: SuggestionKeys.Lists) -> String {
+    if let marked = markedTextRange { return "composing\(offset(from: marked.start, to: marked.end))" }
+    switch action {
+    case .field: return lists.takesEscape ? "field-listup" : "field-nolist"
+    case .markMention(let row): return "markMention\(row)"
+    case .pickMention(let row): return "pickMention\(row)"
+    case .markSlash(let row): return "markSlash\(row)"
+    case .pickSlash(let row): return "pickSlash\(row)"
+    case .close(let mention, let slash): return "close\(mention ? "M" : "")\(slash ? "S" : "")"
+    }
+  }
+
+  /// An arrow's press, which always goes on: "after-command" when its key
+  /// command took it first.
+  private func noteArrow(_ key: UIKey, _ press: UIPress) {
+    guard let arrow = Self.listKey(key), arrow == .up || arrow == .down else { return }
+    let after = commandTook.map { $0.key == arrow && $0.at >= press.timestamp } ?? false
+    noteListKey("p", Self.probeName(arrow), after ? "after-command" : "passed")
+  }
+
+  /// The end of a press of Return, Tab or Escape: "held" when its list took
+  /// it, "passed" when not, after `prefix` ("cancel-" for a cancelled one).
+  private func noteEnded(_ presses: Set<UIPress>, _ prefix: String) {
+    for press in presses {
+      guard let uiKey = press.key, let key = Self.pressKey(uiKey) else { continue }
+      noteListKey("u", Self.probeName(key), prefix + (heldListPresses[press] != nil ? "held" : "passed"))
+    }
   }
 }
 
@@ -1071,6 +1296,13 @@ struct HighlightedTextView: UIViewRepresentable {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
       editing = true
       TypingProbe.shouldChange(parent.identifier, in: textView, range: range, text: text)
+      if TypingProbe.isOn, text == "\n" || text == "\t" {
+        // A new line or tab that reaches the delegate without coming through
+        // ComposerTextView.insertText never met the lists.
+        let through = (textView as? ComposerTextView)?.insertingThrough ?? false
+        TypingProbe.listKey(
+          parent.identifier, route: "d", key: text == "\n" ? "ret" : "tab", result: through ? "via-insert" : "bypassed")
+      }
       return true
     }
 

@@ -27,6 +27,25 @@
 //   X<loc>,<len>="..."  the keyboard asked for a replacement (a correction)
 //   D!<asked>><got>     after UIKit's edit the field isn't what it asked
 //                       for (lengths)
+//   Q<way>-<key>=<what>  a key of the "@" and "/" lists (ret, tab, btab
+//                 for ⇧⇥, esc, up, down) as it came in: c by its key
+//                 command, p by its press (pressesBegan), u its press's
+//                 end, i by insertText, d at the delegate (via-insert, or
+//                 bypassed when insertText never saw it). <what> is the
+//                 lists' action (pickMention1, markMention1, closeM, ...),
+//                 field-listup or field-nolist when the field kept it,
+//                 composing<n> while an input method held n letters
+//                 marked, dup when another way had taken that press,
+//                 passed or after-command for an arrow's press, and held
+//                 or passed for a press's end (cancel-held, cancel-passed
+//                 for one cancelled). Qp-keyless<type>=held or passed: a
+//                 press with no key (UIPress.PressType's number), held
+//                 when it came in a set with a list key taken
+//   C<offered>    the list key commands the field offered as UIKit asked
+//                 for its key commands, noted as it changes: rows (the
+//                 arrows, Return, Tab and Escape), escape (Escape alone),
+//                 composing (none, an input method composing over a list),
+//                 none (no list)
 // Its `totals` are kept since launch. The y, h and o events are looked for
 // as each key comes in: h@12 is a height the field took after its 12th key
 // and before its 13th.
@@ -64,6 +83,8 @@ enum TypingProbe {
     var lastY: Int?
     var lastH: Int?
     var lastO: Int?
+    /// The list key commands last offered (C events).
+    var commands: String?
     // Since launch.
     var totals: [String: Int] = [:]
 
@@ -82,6 +103,7 @@ enum TypingProbe {
       lastY = nil
       lastH = nil
       lastO = nil
+      commands = nil
     }
 
     mutating func bump(_ key: String, by n: Int = 1) { totals[key, default: 0] += n }
@@ -107,6 +129,28 @@ enum TypingProbe {
   static func press(_ id: String, _ characters: String) {
     guard isOn, !characters.isEmpty else { return }
     fields[id, default: Field()].presses += characters
+  }
+
+  /// A key of the "@" and "/" lists: `route` the way it came in, `key`
+  /// which, `result` what came of it (the Q events above).
+  static func listKey(_ id: String, route: String, key: String, result: String) {
+    guard isOn else { return }
+    var field = fields[id, default: Field()]
+    field.note("Q\(route)-\(key)=\(result)")
+    field.bump("listKeys-\(route)")
+    fields[id] = field
+  }
+
+  /// The list key commands the field offered as UIKit asked (C events).
+  static func commands(_ id: String, _ offered: String) {
+    guard isOn else { return }
+    var field = fields[id, default: Field()]
+    field.bump("commandsAsked")
+    if field.commands != offered {
+      field.commands = offered
+      field.note("C\(offered)")
+    }
+    fields[id] = field
   }
 
   /// UITextInput's insertText, the way typed letters come in.
