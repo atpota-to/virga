@@ -1,0 +1,244 @@
+{
+  "domain": "composer",
+  "target": "VirgaPosting",
+  "wave": 2,
+  "summary": "The composer's model and actions, autosave, posting settings, the queue's settings, repeats, images and video.",
+  "files": {
+    "src/lib/pendingCompose.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/PendingCompose.swift"
+      ],
+      "fixtures": [
+        "composer.storage"
+      ],
+      "note": "sessionStorage is a KeyValueStore the app clears at launch.",
+      "synced": "bc0b96db9d73"
+    },
+    "src/posting/adviser/setup.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Adviser/Setup.swift"
+      ],
+      "fixtures": [
+        "composer.adviser"
+      ],
+      "synced": "92d358ae4d57"
+    },
+    "src/posting/autosave.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Autosave.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Autosave+Files.swift"
+      ],
+      "fixtures": [
+        "composer.storage"
+      ],
+      "note": "The web's module-level Maps are AutosaveSession (.shared, or one per test). createAutosaver's pagehide/visibilitychange listeners have no logic-side equivalent: the app calls Autosaver.flush() when its scene goes to the background. collectPreviewUrls and previewUrlIsHeld also come as collectFileRefs and fileRefIsHeld over the local files a state holds (Autosave+Files.swift), the test VirgaUI's composer deletes its temporary files by. Autosaver.mainActorTimers() gives timers that run the debounced write on the main actor; the composer's autosaver uses them.",
+      "synced": "109d5e4a65d5"
+    },
+    "src/posting/composer/actions.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerActions.swift"
+      ],
+      "fixtures": [
+        "composer.flow"
+      ],
+      "synced": "582e55dcb293"
+    },
+    "src/posting/composer/defaults.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerDefaults.swift"
+      ],
+      "fixtures": [
+        "composer.flow"
+      ],
+      "synced": "60da69a8f6ff"
+    },
+    "src/posting/composer/editing.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerEditing.swift"
+      ],
+      "fixtures": [
+        "composer.editor"
+      ],
+      "synced": "a85d0ff38802"
+    },
+    "src/posting/composer/gatesModel.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/GatesModel.swift"
+      ],
+      "fixtures": [
+        "composer.flow"
+      ],
+      "synced": "78b57746f95b"
+    },
+    "src/posting/composer/highlight.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/Highlight.swift"
+      ],
+      "fixtures": [
+        "composer.editor"
+      ],
+      "synced": "3d57bf4e589d"
+    },
+    "src/posting/composer/intent.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerIntent.swift"
+      ],
+      "fixtures": [
+        "composer.flow"
+      ],
+      "synced": "3c360151f168"
+    },
+    "src/posting/composer/languages.js": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerLanguages.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerLanguages+Names.swift"
+      ],
+      "fixtures": [
+        "composer.editor"
+      ],
+      "note": "Intl.DisplayNames' English names are tables taken from Node 22's ICU (78.3), held to the fixture: every two- and three-letter code it names, CLDR's names for a language in a region or script (pt-BR 'Brazilian Portuguese'), and the script and region names it puts after a language ('English (Latin, United States)'). Not reproduced: a variant ICU knows by name ('de-AT-1996' is 'Austrian German (German orthography of 1996)'; the port writes the variant's code), the dialect names of three-letter or numeric aliases ('eng-US', 'en-840') and deprecated regions ('ab-SU'), and extlang tags ('zh-yue'). A locale that isn't English names through Foundation, which can differ from ICU. Sorting goes through VirgaPosting's LocaleCompare (ComposerLanguages.compareNames), to move to VirgaCore's consolidated localeCompare at the merge.",
+      "synced": "fac34e76eafd"
+    },
+    "src/posting/composer/loaders.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerLoaders.swift"
+      ],
+      "fixtures": [
+        "composer.loaders"
+      ],
+      "note": "Reads posts through VirgaNetwork's ports of library/sources.js's network helpers; isOwnThreadRow is the library's (Library.isOwnThreadRow), since the merge of the two chains.",
+      "synced": "71bbc3c3937b"
+    },
+    "src/posting/composer/media.js": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerMedia.swift"
+      ],
+      "fixtures": [
+        "composer.editor"
+      ],
+      "note": "pastedImageFiles reads the clipboard's DataTransfer on the web; the port takes the pasteboard's items (PastedItem: kind, type, the file it gives) and its text, which VirgaUI reads from UIPasteboard. Which items are taken, their names and types, the sorting and the notes are held to the fixture.",
+      "synced": "46c632f17b11"
+    },
+    "src/posting/composer/restore.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerRestore.swift"
+      ],
+      "fixtures": [
+        "composer.storage"
+      ],
+      "synced": "b389db5cdc2a"
+    },
+    "src/posting/composer/submit.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ComposerSubmit.swift"
+      ],
+      "fixtures": [
+        "composer.flow"
+      ],
+      "synced": "a5c847b33831"
+    },
+    "src/posting/composer/threadEdits.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/ThreadEdits.swift"
+      ],
+      "fixtures": [
+        "composer.editor"
+      ],
+      "synced": "bf7e454e1634"
+    },
+    "src/posting/lib/composerModel.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/ComposerModel.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/ComposerModel+Types.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/ComposerModel+Reducer.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/ComposerJS.swift"
+      ],
+      "fixtures": [
+        "composer.composerModel"
+      ],
+      "synced": "c34d64024c05"
+    },
+    "src/posting/lib/images.js": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/Images.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/Images+Compress.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Platform/ImageIOEncoder.swift"
+      ],
+      "fixtures": [
+        "composer.images"
+      ],
+      "note": "The pixel work (browser-image-compression's re-encode and decodeImageSize's createImageBitmap/<img> decode) is the ImageEncoder protocol, which VirgaUI implements over ImageIO; browser-image-compression 2.0.2's compress loop (the side always capped, the first render kept when it fits and is no larger, then at most 10 tries at the quality × 0.95, × 0.85 for PNG, shrinking only when alwaysKeepResolution is off and the first render was over, the last render returned) is Images.compress (Lib/Images+Compress.swift), which ImageIOEncoder walks; prepareImage's decisions (budgets, options, refusals, name, type, aspect ratio, the timeout) and uploadImage are ported and held to the fixture over a scripted encoder. The prepared file keeps the encoder's lastModified, where the web's new File takes the clock's.",
+      "synced": "1b22cd163a1e"
+    },
+    "src/posting/lib/video.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/Video.swift"
+      ],
+      "fixtures": [
+        "composer.video"
+      ],
+      "note": "Nothing here needs AVFoundation: the bytes are the app's, sent through HTTPTransport, tokens minted by VideoServiceAuthAgent (XRPCAgent). videoServiceUrl prefixes a route without its '/' as the pathname setter does; other pathname-setter escaping isn't reproduced (routes are constants).",
+      "synced": "d1fa5b3f987a"
+    },
+    "src/posting/schedule/postingQueue.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/PostingQueue.swift"
+      ],
+      "fixtures": [
+        "composer.queue"
+      ],
+      "synced": "b6fb386df68a",
+      "note": "The wall-clock offset reads the year back as the web's formatToParts and Date.UTC do (an era year without its era, 0-99 as 19xx), so instants before the year 100 land where the web's do. One thing isn't reproduced: an instant whose wall clock in its zone is past the end of time (within a day of 8.64e15, east of UTC), which the web shows as 'NaN-NaN-NaN' and zonedWallTime here gives as nil."
+    },
+    "src/posting/schedule/publishActions.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/PublishActions.swift"
+      ],
+      "fixtures": [
+        "composer.queue"
+      ],
+      "synced": "a343e1593f12"
+    },
+    "src/posting/schedule/repeat.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Schedule/Repeat.swift"
+      ],
+      "fixtures": [
+        "composer.repeat"
+      ],
+      "synced": "7b14ef887b3a"
+    },
+    "src/posting/settings.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Settings.swift"
+      ],
+      "fixtures": [
+        "composer.storage"
+      ],
+      "note": "usePostingSettings is PostingSettingsModel (@MainActor @Observable; the hook's reset is PostingSettingsStore.resetPostingSettings). The web's cross-tab 'storage' listener has no counterpart: one app, and every write goes out on the posting events bus.",
+      "synced": "cf681ec54392"
+    }
+  }
+}

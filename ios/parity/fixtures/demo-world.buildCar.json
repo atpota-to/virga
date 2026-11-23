@@ -1,0 +1,244 @@
+{
+  "name": "demo-world.buildCar",
+  "sources": [
+    "harness/buildCar.js"
+  ],
+  "cases": [
+    {
+      "id": "handful",
+      "fn": "buildRepoCar",
+      "input": {
+        "did": "did:plc:carparity",
+        "records": [
+          [
+            "app.bsky.actor.profile/self",
+            {
+              "$type": "app.bsky.actor.profile",
+              "displayName": "Car"
+            }
+          ],
+          [
+            "app.bsky.feed.post/3kaaaaaaaaaa2",
+            {
+              "$type": "app.bsky.feed.post",
+              "text": "one",
+              "createdAt": "2026-03-15T12:00:00.000Z"
+            }
+          ],
+          [
+            "app.bsky.feed.post/3kaaaaaaaaab2",
+            {
+              "$type": "app.bsky.feed.post",
+              "text": "two 😀",
+              "langs": [
+                "en"
+              ]
+            }
+          ],
+          [
+            "app.bsky.feed.post/3kbbbbbbbbbb2",
+            {
+              "$type": "app.bsky.feed.post",
+              "text": "é",
+              "facets": [
+                {
+                  "index": {
+                    "byteStart": 0,
+                    "byteEnd": 2
+                  },
+                  "features": []
+                }
+              ]
+            }
+          ],
+          [
+            "app.bsky.feed.post/3kccccccccc22",
+            {
+              "$type": "app.bsky.feed.post",
+              "text": "with a picture",
+              "embed": {
+                "$type": "app.bsky.embed.images",
+                "images": [
+                  {
+                    "alt": "",
+                    "image": {
+                      "$type": "blob",
+                      "ref": {
+                        "$link": "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+                      },
+                      "mimeType": "image/png",
+                      "size": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          [
+            "zz.bytes/one",
+            {
+              "$type": "zz.bytes",
+              "data": {
+                "$bytes": "AQID"
+              },
+              "n": -7,
+              "f": 1.5,
+              "ok": true,
+              "none": null
+            }
+          ]
+        ]
+      },
+      "output": {
+        "length": 1423,
+        "sha256": "406176cd135a608a3be22546cdf575a1d0f5e7d9984f1c4c086f8776f1785b4a",
+        "base64": "OqJlcm9vdHOB2CpYJQABcRIgEQJgjMqjlze/4PZnYdWUasXPz884R4eIssPTkg58+v1ndmVyc2lvbgHRAQFxEiARAmCMyqOXN7/g9mdh1ZRqxc/PzzhHh4iyw9OSDnz6/aZjZGlkcWRpZDpwbGM6Y2FycGFyaXR5Y3Jldm4zbWhhcm5lc3NyZXYyMmNzaWdYQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkZGF0YdgqWCUAAXESIHlyZiJHBb2jZJS6uUYh2e3Ic5WAIDmFLQjwrHcYujOOZHByZXb2Z3ZlcnNpb24DwQMBcRIgeXJmIkcFvaNklLq5RiHZ7chzlYAgOYUtCPCsdxi6M46iYWWGpGFrWBthcHAuYnNreS5hY3Rvci5wcm9maWxlL3NlbGZhcABhdPZhdtgqWCUAAXESIBRKF790Kbcj3GOxKuVPMLchaprM0W8rEbtF4F+mfy84pGFrV2ZlZWQucG9zdC8za2FhYWFhYWFhYWEyYXAJYXT2YXbYKlglAAFxEiC7RasTyYUIxk4J7kf/QOPKp+sSNs5inrSCc+NkapKyIKRha0JiMmFwGB5hdPZhdtgqWCUAAXESICc8Kj4cTo+XhORIYkaeTLzF/CpDw1w9peG5AqG0+1vypGFrS2JiYmJiYmJiYmIyYXAVYXT2YXbYKlglAAFxEiDSqVhOYDLu9eyphaFjUq6+Wok8RJ1vdG8wWxnh/FaAeaRha0tjY2NjY2NjY2MyMmFwFWF09mF22CpYJQABcRIg32JHjt+VIsA+n6u/qDwnTOE7FOrbKtKUwotNX6iGE22kYWtMenouYnl0ZXMvb25lYXAAYXT2YXbYKlglAAFxEiCmsXwMmBE7uxVy5Y0JQ8yKb0xdSLx69GYI9NqF0zTwN2Fs9lIBcRIgFEoXv3QptyPcY7Eq5U8wtyFqmszRbysRu0XgX6Z/LziiZSR0eXBldmFwcC5ic2t5LmFjdG9yLnByb2ZpbGVrZGlzcGxheU5hbWVjQ2FyawFxEiC7RasTyYUIxk4J7kf/QOPKp+sSNs5inrSCc+NkapKyIKNkdGV4dGNvbmVlJHR5cGVyYXBwLmJza3kuZmVlZC5wb3N0aWNyZWF0ZWRBdHgYMjAyNi0wMy0xNVQxMjowMDowMC4wMDBaVgFxEiAnPCo+HE6Pl4TkSGJGnky8xfwqQ8NcPaXhuQKhtPtb8qNkdGV4dGh0d28g8J+YgGUkdHlwZXJhcHAuYnNreS5mZWVkLnBvc3RlbGFuZ3OBYmVudAFxEiDSqVhOYDLu9eyphaFjUq6+Wok8RJ1vdG8wWxnh/FaAeaNkdGV4dGLDqWUkdHlwZXJhcHAuYnNreS5mZWVkLnBvc3RmZmFjZXRzgaJlaW5kZXiiZ2J5dGVFbmQCaWJ5dGVTdGFydABoZmVhdHVyZXOA2wEBcRIg32JHjt+VIsA+n6u/qDwnTOE7FOrbKtKUwotNX6iGE22jZHRleHRud2l0aCBhIHBpY3R1cmVlJHR5cGVyYXBwLmJza3kuZmVlZC5wb3N0ZWVtYmVkomUkdHlwZXVhcHAuYnNreS5lbWJlZC5pbWFnZXNmaW1hZ2VzgaJjYWx0YGVpbWFnZaRjcmVm2CpYJQABVRIg47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFVkc2l6ZQBlJHR5cGVkYmxvYmhtaW1lVHlwZWlpbWFnZS9wbmdVAXESIKaxfAyYETu7FXLljQlDzIpvTF1IvHr0Zgj02oXTNPA3pmFm+z/4AAAAAAAAYW4mYm9r9WRkYXRhQwECA2Rub25l9mUkdHlwZWh6ei5ieXRlcw=="
+      }
+    },
+    {
+      "id": "custom-rev",
+      "fn": "buildRepoCar",
+      "input": {
+        "did": "did:web:example.com",
+        "rev": "3zzzzzzzzzzzz",
+        "records": [
+          [
+            "a.b/c",
+            {
+              "$type": "a.b"
+            }
+          ]
+        ]
+      },
+      "output": {
+        "length": 421,
+        "sha256": "f440c245f138c02fb4fc2ba5434bb39e86f0a58933a244638591607971c886a2",
+        "base64": "OqJlcm9vdHOB2CpYJQABcRIgVuqjysIqZDT0ctAu4CwGrTjsI4Haeg/0geRwUJnIcitndmVyc2lvbgHSAQFxEiBW6qPKwipkNPRy0C7gLAatOOwjgdp6D/SB5HBQmchyK6ZjZGlkc2RpZDp3ZWI6ZXhhbXBsZS5jb21jcmV2bTN6enp6enp6enp6enpjc2lnWEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZGRhdGHYKlglAAFxEiAvurJTS+xWUk3FwH9N1kmX0Lb+bHq+1T5RLzSS3xNllWRwcmV29md2ZXJzaW9uA2UBcRIgL7qyU0vsVlJNxcB/TdZJl9C2/mx6vtU+US80kt8TZZWiYWWBpGFrRWEuYi9jYXAAYXT2YXbYKlglAAFxEiARENtWlghheWRiKIWW5WjwCNSigxv2fjAYyjae++X1dWFs9i8BcRIgERDbVpYIYXlkYiiFluVo8AjUooMb9n4wGMo2nvvl9XWhZSR0eXBlY2EuYg=="
+      }
+    },
+    {
+      "id": "empty",
+      "fn": "buildRepoCar",
+      "input": {
+        "did": "did:plc:empty",
+        "records": []
+      },
+      "output": {
+        "length": 310,
+        "sha256": "6d7e501e28f3807e67a41661cc0de5274964d39197007f05c30732fd10f29515",
+        "base64": "OqJlcm9vdHOB2CpYJQABcRIgOR7etgbbqMbZDZxweJEaqnIAttxnyxJ3mR9wbdyzP4hndmVyc2lvbgHNAQFxEiA5Ht62BtuoxtkNnHB4kRqqcgC23GfLEneZH3Bt3LM/iKZjZGlkbWRpZDpwbGM6ZW1wdHljcmV2bjNtaGFybmVzc3JldjIyY3NpZ1hAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGRkYXRh2CpYJQABcRIgnf7+Yd126j3K5QI4gLCDedV63yBILW/b4nWSifZHZ3tkcHJldvZndmVyc2lvbgMrAXESIJ3+/mHdduo9yuUCOICwg3nVet8gSC1v2+J1kon2R2d7omFlgGFs9g=="
+      }
+    },
+    {
+      "id": "same-record-twice",
+      "fn": "buildRepoCar",
+      "input": {
+        "did": "did:plc:twice",
+        "records": [
+          [
+            "a.b/1",
+            {
+              "$type": "a.b",
+              "n": 1
+            }
+          ],
+          [
+            "a.b/2",
+            {
+              "$type": "a.b",
+              "n": 1
+            }
+          ]
+        ]
+      },
+      "output": {
+        "length": 525,
+        "sha256": "83fe29a0cb43893e7d6f2f2fdffe5d303e4903b1b40fbaca1274b7ddfc78f805",
+        "base64": "OqJlcm9vdHOB2CpYJQABcRIgvj0/xIk/AtcBHXvBi5Zyoc9G+S2UJfRjJqhZOOjjZ49ndmVyc2lvbgHNAQFxEiC+PT/EiT8C1wEde8GLlnKhz0b5LZQl9GMmqFk46ONnj6ZjZGlkbWRpZDpwbGM6dHdpY2VjcmV2bjNtaGFybmVzc3JldjIyY3NpZ1hAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGRkYXRh2CpYJQABcRIg0WGpI4l+/Jh9apHwcrmYhUex2l9U2FTl/uudFM/5V09kcHJldvZndmVyc2lvbgObAQFxEiDRYakjiX78mH1qkfByuZiFR7HaX1TYVOX+650Uz/lXT6JhZYKkYWtFYS5iLzFhcABhdPZhdtgqWCUAAXESIO8lsGmEJtvJHC8YfBoBDEDzkI8Oz74til2hTzJjlCcapGFrQTJhcARhdPZhdtgqWCUAAXESIO8lsGmEJtvJHC8YfBoBDEDzkI8Oz74til2hTzJjlCcaYWz2MgFxEiDvJbBphCbbyRwvGHwaAQxA85CPDs++LYpdoU8yY5QnGqJhbgFlJHR5cGVjYS5iMgFxEiDvJbBphCbbyRwvGHwaAQxA85CPDs++LYpdoU8yY5QnGqJhbgFlJHR5cGVjYS5i"
+      }
+    },
+    {
+      "id": "keys-past-ascii",
+      "fn": "buildRepoCar",
+      "input": {
+        "did": "did:plc:unicode",
+        "records": [
+          [
+            "a.b/é1",
+            {
+              "$type": "a.b"
+            }
+          ],
+          [
+            "a.b/é2",
+            {
+              "$type": "a.b"
+            }
+          ],
+          [
+            "a.b/😀",
+            {
+              "$type": "a.b"
+            }
+          ],
+          [
+            "a.b/😁",
+            {
+              "$type": "a.b"
+            }
+          ]
+        ]
+      },
+      "output": {
+        "length": 732,
+        "sha256": "e0d4d842b19d46e738c33f7a61f35aa4f68527ce43365edf086bf56571f01c43",
+        "base64": "OqJlcm9vdHOB2CpYJQABcRIgr/4LWyk7OytoVGAYxsLFeg/YagwF16RnhlrK/kzs2uRndmVyc2lvbgHPAQFxEiCv/gtbKTs7K2hUYBjGwsV6D9hqDAXXpGeGWsr+TOza5KZjZGlkb2RpZDpwbGM6dW5pY29kZWNyZXZuM21oYXJuZXNzcmV2MjJjc2lnWEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZGRhdGHYKlglAAFxEiBCugSv4MZTcSnMm/5JfXawcA7XR0jOAqQdLOvBuW9tKWRwcmV29md2ZXJzaW9uA44CAXESIEK6BK/gxlNxKcyb/kl9drBwDtdHSM4CpB0s68G5b20pomFlhKRha0dhLmIvw6kxYXAAYXT2YXbYKlglAAFxEiARENtWlghheWRiKIWW5WjwCNSigxv2fjAYyjae++X1daRha0EyYXAFYXT2YXbYKlglAAFxEiARENtWlghheWRiKIWW5WjwCNSigxv2fjAYyjae++X1daRha0Twn5iAYXAEYXT2YXbYKlglAAFxEiARENtWlghheWRiKIWW5WjwCNSigxv2fjAYyjae++X1daRha0Pvv71hcAVhdPZhdtgqWCUAAXESIBEQ21aWCGF5ZGIohZblaPAI1KKDG/Z+MBjKNp775fV1YWz2LwFxEiARENtWlghheWRiKIWW5WjwCNSigxv2fjAYyjae++X1daFlJHR5cGVjYS5iLwFxEiARENtWlghheWRiKIWW5WjwCNSigxv2fjAYyjae++X1daFlJHR5cGVjYS5iLwFxEiARENtWlghheWRiKIWW5WjwCNSigxv2fjAYyjae++X1daFlJHR5cGVjYS5iLwFxEiARENtWlghheWRiKIWW5WjwCNSigxv2fjAYyjae++X1daFlJHR5cGVjYS5i"
+      }
+    },
+    {
+      "id": "bad-link",
+      "fn": "buildRepoCar",
+      "input": {
+        "did": "did:plc:bad",
+        "records": [
+          [
+            "a.b/c",
+            {
+              "$type": "a.b",
+              "ref": {
+                "$link": "not a cid"
+              }
+            }
+          ]
+        ]
+      },
+      "output": {
+        "$throws": "not a valid cid string"
+      }
+    },
+    {
+      "id": "mira",
+      "fn": "buildRepoCar-world",
+      "input": {
+        "account": "me"
+      },
+      "output": {
+        "records": 9733,
+        "length": 2391593,
+        "sha256": "d0a0b6ab5726a84f012f9b12f636ded799777f515d5cb8c44a3005ab57f532dc"
+      }
+    },
+    {
+      "id": "lab",
+      "fn": "buildRepoCar-world",
+      "input": {
+        "account": "lab"
+      },
+      "output": {
+        "records": 184,
+        "length": 47436,
+        "sha256": "d82d3d7895a08e2e5f81c7b4fd885307097e20bfa03e00609cc1995f9552322e"
+      }
+    }
+  ]
+}

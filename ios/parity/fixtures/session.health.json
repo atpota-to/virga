@@ -1,0 +1,1360 @@
+{
+  "name": "session.health",
+  "sources": [
+    "src/session/sessionHealth.js"
+  ],
+  "cases": [
+    {
+      "id": "constants",
+      "fn": "constants",
+      "input": {},
+      "output": {
+        "LITE_CHECK_TTL_MS": 60000,
+        "LITE_CHECK_TIMEOUT_MS": 8000,
+        "CONFIRM_ROUNDS": 3,
+        "CONFIRM_GAP_MS": 2500,
+        "REAUTH_LOOP_MAX": 3,
+        "REAUTH_LOOP_WINDOW_MS": 300000,
+        "REAUTH_ATTEMPTS_KEY": "virga:reauth-attempts",
+        "SESSION_CHECK_STATUS": {
+          "VALID": "valid",
+          "EXPIRED": "expired",
+          "UNKNOWN": "unknown"
+        }
+      }
+    },
+    {
+      "id": "interpretLiteSessionResponse#1",
+      "fn": "interpretLiteSessionResponse",
+      "input": {
+        "ok": true,
+        "status": 200,
+        "data": {
+          "success": true,
+          "authenticated": true,
+          "lite": true,
+          "oauthSessionMissing": false
+        }
+      },
+      "output": {
+        "status": "valid",
+        "definitive": false
+      }
+    },
+    {
+      "id": "interpretLiteSessionResponse#2",
+      "fn": "interpretLiteSessionResponse",
+      "input": {
+        "ok": false,
+        "status": 401,
+        "data": {
+          "success": false,
+          "code": "FRONTEND_SESSION_INVALID"
+        }
+      },
+      "output": {
+        "status": "expired",
+        "definitive": true
+      }
+    },
+    {
+      "id": "interpretLiteSessionResponse#3",
+      "fn": "interpretLiteSessionResponse",
+      "input": {
+        "ok": false,
+        "status": 403,
+        "data": {
+          "code": "FRONTEND_SESSION_INVALID"
+        }
+      },
+      "output": {
+        "status": "expired",
+        "definitive": true
+      }
+    },
+    {
+      "id": "interpretLiteSessionResponse#4",
+      "fn": "interpretLiteSessionResponse",
+      "input": {
+        "ok": false,
+        "status": 401,
+        "data": null
+      },
+      "output": {
+        "status": "expired",
+        "definitive": false
+      }
+    },
+    {
+      "id": "interpretLiteSessionResponse#5",
+      "fn": "interpretLiteSessionResponse",
+      "input": {
+        "ok": false,
+        "status": 403,
+        "data": null
+      },
+      "output": {
+        "status": "expired",
+        "definitive": false
+      }
+    },
+    {
+      "id": "interpretLiteSessionResponse#6",
+      "fn": "interpretLiteSessionResponse",
+      "input": {
+        "ok": false,
+        "status": 401,
+        "data": {
+          "code": "OAUTH_SESSION_MISSING"
+        }
+      },
+      "output": {
+        "status": "expired",
+        "definitive": false
+      }
+    },
+    {
+      "id": "interpretLiteSessionResponse#7",
+      "fn": "interpretLiteSessionResponse",
+      "input": {
+        "ok": false,
+        "status": 401,
+        "data": {
+          "code": "frontend_session_invalid"
+        }
+      },
+      "output": {
+        "status": "expired",
+        "definitive": false
+      }
+    },
+    {
+      "id": "interpretLiteSessionResponse#8",
+      "fn": "interpretLiteSessionResponse",
+      "input": {
+        "ok": true,
+        "status": 200,
+        "data": {
+          "success": true,
+          "authenticated": true,
+          "oauthSessionMissing": true
+        }
+      },
+      "output": {
+        "status": "expired",
+        "definitive": false
+      }
+    },
+    {
+      "id": "interpretLiteSessionResponse#9",
+      "fn": "interpretLiteSessionResponse",
+      "input": {
+        "ok": true,
+        "status": 200,
+        "data": {
+          "success": true,
+          "authenticated": true,
+          "oauthSessionMissing": 1
+        }
+      },
+      "output": {
+        "status": "expired",
+        "definitive": false
+      }
+    },
+    {
+      "id": "interpretLiteSessionResponse#10",
+      "fn": "interpretLiteSessionResponse",
+      "input": {
+        "ok": false,
+        "status": 503,
+        "data": {
+          "code": "VALIDATION_TRANSIENT_ERROR"
+        }
+      },
+      "output": {
+        "status": "unknown",
+        "definitive": false
+      }
+    },
+    {
+      "id": "interpretLiteSessionResponse#11",
+      "fn": "interpretLiteSessionResponse",
+      "input": {
+        "ok": false,
+        "status": 500,
+        "data": null
+      },
+      "output": {
+        "status": "unknown",
+        "definitive": false
+      }
+    },
+    {
+      "id": "interpretLiteSessionResponse#12",
+      "fn": "interpretLiteSessionResponse",
+      "input": {
+        "ok": false,
+        "status": 502,
+        "data": null
+      },
+      "output": {
+        "status": "unknown",
+        "definitive": false
+      }
+    },
+    {
+      "id": "interpretLiteSessionResponse#13",
+      "fn": "interpretLiteSessionResponse",
+      "input": {
+        "ok": false,
+        "status": 0,
+        "data": null
+      },
+      "output": {
+        "status": "unknown",
+        "definitive": false
+      }
+    },
+    {
+      "id": "interpretLiteSessionResponse#14",
+      "fn": "interpretLiteSessionResponse",
+      "input": {
+        "ok": true,
+        "status": 200,
+        "data": null
+      },
+      "output": {
+        "status": "unknown",
+        "definitive": false
+      }
+    },
+    {
+      "id": "interpretLiteSessionResponse#15",
+      "fn": "interpretLiteSessionResponse",
+      "input": {
+        "ok": true,
+        "status": 200,
+        "data": {
+          "success": true,
+          "authenticated": false
+        }
+      },
+      "output": {
+        "status": "unknown",
+        "definitive": false
+      }
+    },
+    {
+      "id": "interpretLiteSessionResponse#16",
+      "fn": "interpretLiteSessionResponse",
+      "input": {
+        "ok": true,
+        "status": 200,
+        "data": {
+          "success": 1,
+          "authenticated": "yes"
+        }
+      },
+      "output": {
+        "status": "valid",
+        "definitive": false
+      }
+    },
+    {
+      "id": "interpretLiteSessionResponse#17",
+      "fn": "interpretLiteSessionResponse",
+      "input": {
+        "ok": true,
+        "status": 204,
+        "data": {
+          "success": true
+        }
+      },
+      "output": {
+        "status": "unknown",
+        "definitive": false
+      }
+    },
+    {
+      "id": "statusFromCheck#1",
+      "fn": "statusFromCheck",
+      "input": {
+        "status": "expired",
+        "definitive": true
+      },
+      "output": "needsSignIn"
+    },
+    {
+      "id": "statusFromCheck#2",
+      "fn": "statusFromCheck",
+      "input": {
+        "status": "valid",
+        "definitive": false
+      },
+      "output": "ready"
+    },
+    {
+      "id": "statusFromCheck#3",
+      "fn": "statusFromCheck",
+      "input": {
+        "status": "unknown",
+        "definitive": false
+      },
+      "output": "unknown"
+    },
+    {
+      "id": "statusFromCheck#4",
+      "fn": "statusFromCheck",
+      "input": {
+        "status": "expired",
+        "definitive": false
+      },
+      "output": "unknown"
+    },
+    {
+      "id": "statusFromCheck#5",
+      "fn": "statusFromCheck",
+      "input": {
+        "status": "valid",
+        "definitive": true
+      },
+      "output": "ready"
+    },
+    {
+      "id": "statusFromCheck#6",
+      "fn": "statusFromCheck",
+      "input": {
+        "status": "unknown",
+        "definitive": true
+      },
+      "output": "unknown"
+    },
+    {
+      "id": "dead",
+      "fn": "confirmSessionDead",
+      "input": {
+        "answers": [
+          {
+            "status": "expired",
+            "definitive": true
+          }
+        ]
+      },
+      "output": {
+        "verdict": "dead",
+        "log": [
+          [
+            "probe",
+            null
+          ],
+          [
+            "sleep",
+            2500
+          ],
+          [
+            "probe",
+            null
+          ],
+          [
+            "sleep",
+            2500
+          ],
+          [
+            "probe",
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "id": "healed",
+      "fn": "confirmSessionDead",
+      "input": {
+        "answers": [
+          {
+            "status": "expired",
+            "definitive": true
+          },
+          {
+            "status": "valid",
+            "definitive": false
+          }
+        ]
+      },
+      "output": {
+        "verdict": "alive",
+        "log": [
+          [
+            "probe",
+            null
+          ],
+          [
+            "sleep",
+            2500
+          ],
+          [
+            "probe",
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "id": "unsure-second",
+      "fn": "confirmSessionDead",
+      "input": {
+        "answers": [
+          {
+            "status": "expired",
+            "definitive": true
+          },
+          {
+            "status": "unknown",
+            "definitive": false
+          }
+        ]
+      },
+      "output": {
+        "verdict": "unknown",
+        "log": [
+          [
+            "probe",
+            null
+          ],
+          [
+            "sleep",
+            2500
+          ],
+          [
+            "probe",
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "id": "not-definitive",
+      "fn": "confirmSessionDead",
+      "input": {
+        "answers": [
+          {
+            "status": "expired",
+            "definitive": false
+          }
+        ]
+      },
+      "output": {
+        "verdict": "unknown",
+        "log": [
+          [
+            "probe",
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "id": "throws",
+      "fn": "confirmSessionDead",
+      "input": {
+        "answers": [
+          "throw"
+        ]
+      },
+      "output": {
+        "verdict": "unknown",
+        "log": [
+          [
+            "probe",
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "id": "throws-later",
+      "fn": "confirmSessionDead",
+      "input": {
+        "answers": [
+          {
+            "status": "expired",
+            "definitive": true
+          },
+          {
+            "status": "expired",
+            "definitive": true
+          },
+          "throw"
+        ]
+      },
+      "output": {
+        "verdict": "unknown",
+        "log": [
+          [
+            "probe",
+            null
+          ],
+          [
+            "sleep",
+            2500
+          ],
+          [
+            "probe",
+            null
+          ],
+          [
+            "sleep",
+            2500
+          ],
+          [
+            "probe",
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "id": "one-round",
+      "fn": "confirmSessionDead",
+      "input": {
+        "answers": [
+          {
+            "status": "expired",
+            "definitive": true
+          }
+        ],
+        "rounds": 1
+      },
+      "output": {
+        "verdict": "dead",
+        "log": [
+          [
+            "probe",
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "id": "no-rounds",
+      "fn": "confirmSessionDead",
+      "input": {
+        "answers": [
+          {
+            "status": "valid",
+            "definitive": false
+          }
+        ],
+        "rounds": 0
+      },
+      "output": {
+        "verdict": "dead",
+        "log": []
+      }
+    },
+    {
+      "id": "five-rounds",
+      "fn": "confirmSessionDead",
+      "input": {
+        "answers": [
+          {
+            "status": "expired",
+            "definitive": true
+          }
+        ],
+        "rounds": 5,
+        "gapMs": 10
+      },
+      "output": {
+        "verdict": "dead",
+        "log": [
+          [
+            "probe",
+            null
+          ],
+          [
+            "sleep",
+            10
+          ],
+          [
+            "probe",
+            null
+          ],
+          [
+            "sleep",
+            10
+          ],
+          [
+            "probe",
+            null
+          ],
+          [
+            "sleep",
+            10
+          ],
+          [
+            "probe",
+            null
+          ],
+          [
+            "sleep",
+            10
+          ],
+          [
+            "probe",
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "id": "null-answer",
+      "fn": "confirmSessionDead",
+      "input": {
+        "answers": [
+          null
+        ]
+      },
+      "output": {
+        "verdict": "unknown",
+        "log": [
+          [
+            "probe",
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "id": "ttl-and-sharing",
+      "fn": "createSessionChecker",
+      "input": {
+        "answers": [
+          {
+            "status": "valid",
+            "definitive": false
+          }
+        ],
+        "steps": [
+          {
+            "check": "did:plc:a",
+            "together": 2
+          },
+          {
+            "advance": 59999
+          },
+          {
+            "check": "did:plc:a"
+          },
+          {
+            "advance": 2
+          },
+          {
+            "check": "did:plc:a"
+          },
+          {
+            "check": "did:plc:a",
+            "force": true
+          },
+          {
+            "check": "did:plc:b"
+          }
+        ]
+      },
+      "output": [
+        [
+          "probe",
+          "did:plc:a"
+        ],
+        [
+          "result",
+          "did:plc:a",
+          {
+            "status": "valid",
+            "definitive": false
+          }
+        ],
+        [
+          "checked",
+          "did:plc:a",
+          [
+            {
+              "status": "valid",
+              "definitive": false
+            },
+            {
+              "status": "valid",
+              "definitive": false
+            }
+          ]
+        ],
+        [
+          "checked",
+          "did:plc:a",
+          [
+            {
+              "status": "valid",
+              "definitive": false
+            }
+          ]
+        ],
+        [
+          "probe",
+          "did:plc:a"
+        ],
+        [
+          "result",
+          "did:plc:a",
+          {
+            "status": "valid",
+            "definitive": false
+          }
+        ],
+        [
+          "checked",
+          "did:plc:a",
+          [
+            {
+              "status": "valid",
+              "definitive": false
+            }
+          ]
+        ],
+        [
+          "probe",
+          "did:plc:a"
+        ],
+        [
+          "result",
+          "did:plc:a",
+          {
+            "status": "valid",
+            "definitive": false
+          }
+        ],
+        [
+          "checked",
+          "did:plc:a",
+          [
+            {
+              "status": "valid",
+              "definitive": false
+            }
+          ]
+        ],
+        [
+          "probe",
+          "did:plc:b"
+        ],
+        [
+          "result",
+          "did:plc:b",
+          {
+            "status": "valid",
+            "definitive": false
+          }
+        ],
+        [
+          "checked",
+          "did:plc:b",
+          [
+            {
+              "status": "valid",
+              "definitive": false
+            }
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "confirmed-dead",
+      "fn": "createSessionChecker",
+      "input": {
+        "answers": [
+          {
+            "status": "expired",
+            "definitive": true
+          }
+        ],
+        "steps": [
+          {
+            "check": "did:plc:a"
+          }
+        ]
+      },
+      "output": [
+        [
+          "probe",
+          "did:plc:a"
+        ],
+        [
+          "sleep",
+          2500
+        ],
+        [
+          "probe",
+          "did:plc:a"
+        ],
+        [
+          "sleep",
+          2500
+        ],
+        [
+          "probe",
+          "did:plc:a"
+        ],
+        [
+          "result",
+          "did:plc:a",
+          {
+            "status": "expired",
+            "definitive": true
+          }
+        ],
+        [
+          "checked",
+          "did:plc:a",
+          [
+            {
+              "status": "expired",
+              "definitive": true
+            }
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "did-not-hold",
+      "fn": "createSessionChecker",
+      "input": {
+        "answers": [
+          {
+            "status": "expired",
+            "definitive": true
+          },
+          {
+            "status": "unknown",
+            "definitive": false
+          }
+        ],
+        "steps": [
+          {
+            "check": "did:plc:a"
+          }
+        ]
+      },
+      "output": [
+        [
+          "probe",
+          "did:plc:a"
+        ],
+        [
+          "sleep",
+          2500
+        ],
+        [
+          "probe",
+          "did:plc:a"
+        ],
+        [
+          "result",
+          "did:plc:a",
+          {
+            "status": "expired",
+            "definitive": false
+          }
+        ],
+        [
+          "checked",
+          "did:plc:a",
+          [
+            {
+              "status": "expired",
+              "definitive": false
+            }
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "healed",
+      "fn": "createSessionChecker",
+      "input": {
+        "answers": [
+          {
+            "status": "expired",
+            "definitive": true
+          },
+          {
+            "status": "valid",
+            "definitive": false
+          }
+        ],
+        "steps": [
+          {
+            "check": "did:plc:a"
+          }
+        ]
+      },
+      "output": [
+        [
+          "probe",
+          "did:plc:a"
+        ],
+        [
+          "sleep",
+          2500
+        ],
+        [
+          "probe",
+          "did:plc:a"
+        ],
+        [
+          "result",
+          "did:plc:a",
+          {
+            "status": "valid",
+            "definitive": false
+          }
+        ],
+        [
+          "checked",
+          "did:plc:a",
+          [
+            {
+              "status": "valid",
+              "definitive": false
+            }
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "throws",
+      "fn": "createSessionChecker",
+      "input": {
+        "answers": [
+          "throw"
+        ],
+        "steps": [
+          {
+            "check": "did:plc:a"
+          }
+        ]
+      },
+      "output": [
+        [
+          "probe",
+          "did:plc:a"
+        ],
+        [
+          "result",
+          "did:plc:a",
+          {
+            "status": "unknown",
+            "definitive": false
+          }
+        ],
+        [
+          "checked",
+          "did:plc:a",
+          [
+            {
+              "status": "unknown",
+              "definitive": false
+            }
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "forget-and-peek",
+      "fn": "createSessionChecker",
+      "input": {
+        "answers": [
+          {
+            "status": "valid",
+            "definitive": false
+          },
+          {
+            "status": "expired",
+            "definitive": false
+          }
+        ],
+        "steps": [
+          {
+            "peek": "did:plc:a"
+          },
+          {
+            "check": "did:plc:a"
+          },
+          {
+            "peek": "did:plc:a"
+          },
+          {
+            "forget": "did:plc:a"
+          },
+          {
+            "peek": "did:plc:a"
+          },
+          {
+            "check": "did:plc:a"
+          },
+          {
+            "peek": "did:plc:a"
+          }
+        ]
+      },
+      "output": [
+        [
+          "peek",
+          "did:plc:a",
+          null
+        ],
+        [
+          "probe",
+          "did:plc:a"
+        ],
+        [
+          "result",
+          "did:plc:a",
+          {
+            "status": "valid",
+            "definitive": false
+          }
+        ],
+        [
+          "checked",
+          "did:plc:a",
+          [
+            {
+              "status": "valid",
+              "definitive": false
+            }
+          ]
+        ],
+        [
+          "peek",
+          "did:plc:a",
+          {
+            "status": "valid",
+            "definitive": false
+          }
+        ],
+        [
+          "peek",
+          "did:plc:a",
+          null
+        ],
+        [
+          "probe",
+          "did:plc:a"
+        ],
+        [
+          "result",
+          "did:plc:a",
+          {
+            "status": "expired",
+            "definitive": false
+          }
+        ],
+        [
+          "checked",
+          "did:plc:a",
+          [
+            {
+              "status": "expired",
+              "definitive": false
+            }
+          ]
+        ],
+        [
+          "peek",
+          "did:plc:a",
+          {
+            "status": "expired",
+            "definitive": false
+          }
+        ]
+      ]
+    },
+    {
+      "id": "own-ttl-and-rounds",
+      "fn": "createSessionChecker",
+      "input": {
+        "answers": [
+          {
+            "status": "expired",
+            "definitive": true
+          }
+        ],
+        "ttlMs": 10,
+        "rounds": 2,
+        "gapMs": 100,
+        "steps": [
+          {
+            "check": "did:plc:a"
+          },
+          {
+            "advance": 9
+          },
+          {
+            "check": "did:plc:a"
+          },
+          {
+            "advance": 1
+          },
+          {
+            "check": "did:plc:a"
+          }
+        ]
+      },
+      "output": [
+        [
+          "probe",
+          "did:plc:a"
+        ],
+        [
+          "sleep",
+          100
+        ],
+        [
+          "probe",
+          "did:plc:a"
+        ],
+        [
+          "result",
+          "did:plc:a",
+          {
+            "status": "expired",
+            "definitive": true
+          }
+        ],
+        [
+          "checked",
+          "did:plc:a",
+          [
+            {
+              "status": "expired",
+              "definitive": true
+            }
+          ]
+        ],
+        [
+          "checked",
+          "did:plc:a",
+          [
+            {
+              "status": "expired",
+              "definitive": true
+            }
+          ]
+        ],
+        [
+          "probe",
+          "did:plc:a"
+        ],
+        [
+          "sleep",
+          100
+        ],
+        [
+          "probe",
+          "did:plc:a"
+        ],
+        [
+          "result",
+          "did:plc:a",
+          {
+            "status": "expired",
+            "definitive": true
+          }
+        ],
+        [
+          "checked",
+          "did:plc:a",
+          [
+            {
+              "status": "expired",
+              "definitive": true
+            }
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "trips-and-resets",
+      "fn": "reauthLoop",
+      "input": {
+        "steps": [
+          [
+            "record",
+            1000000
+          ],
+          [
+            "record",
+            1000001
+          ],
+          [
+            "looping",
+            1000010
+          ],
+          [
+            "record",
+            1000002
+          ],
+          [
+            "looping",
+            1000010
+          ],
+          [
+            "looping",
+            1300005
+          ],
+          [
+            "record",
+            1300001
+          ],
+          [
+            "clear"
+          ],
+          [
+            "looping",
+            1000010
+          ]
+        ]
+      },
+      "output": [
+        {
+          "answer": null,
+          "stored": "{\"attempts\":[1000000]}"
+        },
+        {
+          "answer": null,
+          "stored": "{\"attempts\":[1000000,1000001]}"
+        },
+        {
+          "answer": false,
+          "stored": "{\"attempts\":[1000000,1000001]}"
+        },
+        {
+          "answer": null,
+          "stored": "{\"attempts\":[1000000,1000001,1000002]}"
+        },
+        {
+          "answer": true,
+          "stored": "{\"attempts\":[1000000,1000001,1000002]}"
+        },
+        {
+          "answer": false,
+          "stored": "{\"attempts\":[1000000,1000001,1000002]}"
+        },
+        {
+          "answer": null,
+          "stored": "{\"attempts\":[1000002,1300001]}"
+        },
+        {
+          "answer": null,
+          "stored": null
+        },
+        {
+          "answer": false,
+          "stored": null
+        }
+      ]
+    },
+    {
+      "id": "bad-json",
+      "fn": "reauthLoop",
+      "input": {
+        "stored": "{oops",
+        "steps": [
+          [
+            "looping",
+            5
+          ],
+          [
+            "record",
+            5
+          ]
+        ]
+      },
+      "output": [
+        {
+          "answer": false,
+          "stored": "{oops"
+        },
+        {
+          "answer": null,
+          "stored": "{\"attempts\":[5]}"
+        }
+      ]
+    },
+    {
+      "id": "odd-attempts",
+      "fn": "reauthLoop",
+      "input": {
+        "stored": "{\"attempts\":[1,\"2\",null,3,1e400]}",
+        "steps": [
+          [
+            "record",
+            4
+          ]
+        ]
+      },
+      "output": [
+        {
+          "answer": null,
+          "stored": "{\"attempts\":[1,3,4]}"
+        }
+      ]
+    },
+    {
+      "id": "not-a-list",
+      "fn": "reauthLoop",
+      "input": {
+        "stored": "{\"attempts\":5}",
+        "steps": [
+          [
+            "looping",
+            5
+          ],
+          [
+            "record",
+            6
+          ]
+        ]
+      },
+      "output": [
+        {
+          "answer": false,
+          "stored": "{\"attempts\":5}"
+        },
+        {
+          "answer": null,
+          "stored": "{\"attempts\":[6]}"
+        }
+      ]
+    },
+    {
+      "id": "future",
+      "fn": "reauthLoop",
+      "input": {
+        "stored": "{\"attempts\":[100,200,300]}",
+        "steps": [
+          [
+            "looping",
+            50
+          ]
+        ]
+      },
+      "output": [
+        {
+          "answer": true,
+          "stored": "{\"attempts\":[100,200,300]}"
+        }
+      ]
+    }
+  ]
+}

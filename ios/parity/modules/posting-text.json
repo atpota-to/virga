@@ -1,0 +1,169 @@
+{
+  "domain": "posting-text",
+  "target": "VirgaPosting",
+  "wave": 1,
+  "summary": "Rich text: facets, mentions, hashtags, inline links, URL matching, tags, thread splitting, post links, embeds, gates, compose intents and the posting events.",
+  "files": {
+    "src/posting/events.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Events.swift"
+      ],
+      "fixtures": [
+        "posting-text.events"
+      ],
+      "synced": "2cb0543f21c2"
+    },
+    "src/posting/lib/composeIntent.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/ComposeIntent.swift"
+      ],
+      "fixtures": [
+        "posting-text.composeIntent",
+        "posting-text.url",
+        "posting-text.idna"
+      ],
+      "note": "ComposeIntent.composeLinkSearch(url), iOS's, gives the query of virga://compose?… or https://<host>/intent/compose?… (a trailing slash allowed) and nil for any other address; the app opens compose links through it (ComposeLinkBehaviourTests).",
+      "synced": "de71012badf2"
+    },
+    "src/posting/lib/embeds.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/Embeds.swift"
+      ],
+      "fixtures": [
+        "posting-text.embeds"
+      ],
+      "synced": "5de68286bc6e"
+    },
+    "src/posting/lib/facets.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/Facets.swift"
+      ],
+      "fixtures": [
+        "posting-text.facets"
+      ],
+      "synced": "5fdf6de5eb90"
+    },
+    "src/posting/lib/gates.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/Gates.swift"
+      ],
+      "fixtures": [
+        "posting-text.gates"
+      ],
+      "synced": "40a9b68be001"
+    },
+    "src/posting/lib/hashtags.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/Hashtags.swift"
+      ],
+      "fixtures": [
+        "posting-text.hashtags"
+      ],
+      "synced": "c284befbf6c4"
+    },
+    "src/posting/lib/inlineLinks.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/InlineLinks.swift"
+      ],
+      "fixtures": [
+        "posting-text.inlineLinks",
+        "posting-text.url",
+        "posting-text.idna"
+      ],
+      "synced": "20eb1b1e6a73"
+    },
+    "src/posting/lib/linkShortening.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/LinkShortening.swift"
+      ],
+      "fixtures": [
+        "posting-text.linkShortening",
+        "posting-text.url",
+        "posting-text.idna"
+      ],
+      "synced": "901bd9bdd936"
+    },
+    "src/posting/lib/mentions.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/Mentions.swift"
+      ],
+      "fixtures": [
+        "posting-text.mentions"
+      ],
+      "synced": "2d5d18862697",
+      "note": "The shared resolver reads Mentions.defaultFetch, which the app sets once at launch, in AppModel.init (device and demo), with Mentions.useNetwork(transport:) (VirgaPosting/Wiring.swift, over VirgaNetwork's HTTPTransport)."
+    },
+    "src/posting/lib/postLink.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/PostLink.swift"
+      ],
+      "fixtures": [
+        "posting-text.postLink",
+        "posting-text.url"
+      ],
+      "synced": "2d07d31bb57d"
+    },
+    "src/posting/lib/richText.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/RichText.swift"
+      ],
+      "fixtures": [
+        "posting-text.richText",
+        "posting-text.url",
+        "posting-text.idna"
+      ],
+      "synced": "b8f5221acdf7"
+    },
+    "src/posting/lib/tags.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/Tags.swift"
+      ],
+      "fixtures": [
+        "posting-text.tags"
+      ],
+      "synced": "14c50f92c72a"
+    },
+    "src/posting/lib/threadBatch.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/ThreadBatch.swift"
+      ],
+      "fixtures": [
+        "posting-text.threadBatch"
+      ],
+      "synced": "b5f0d0cbf04b"
+    },
+    "src/posting/lib/threadSplit.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/ThreadSplit.swift"
+      ],
+      "fixtures": [
+        "posting-text.threadSplit"
+      ],
+      "synced": "e7ad12b8b5ab"
+    },
+    "src/posting/lib/urlMatching.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/UrlMatching.swift"
+      ],
+      "fixtures": [
+        "posting-text.urlMatching"
+      ],
+      "synced": "aa9eb6ce2334"
+    }
+  }
+}

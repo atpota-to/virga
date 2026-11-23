@@ -1,0 +1,82 @@
+{
+  "domain": "templates",
+  "target": "VirgaPosting",
+  "wave": 3,
+  "summary": "Post templates: records, filling, the service and usage.",
+  "files": {
+    "src/posting/library/templateEditorModel.js": {
+      "status": "ported",
+      "note": "editorHasChanges compares what saving would write by value (JSONStringify, sorted keys), where the web compares JSON.stringify text, so an attached record rebuilt with its keys in another order is no change here and a change on the web (a behaviour test pins it). Typed forms over TemplateDraft beside the JSONValue ones.",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Library/TemplateEditorModel.swift"
+      ],
+      "fixtures": [
+        "templates.editorModel",
+        "templates.random"
+      ],
+      "synced": "0db1094dd00a"
+    },
+    "src/posting/templates/editorDrafts.js": {
+      "status": "ported",
+      "note": "Each function works on the web's objects (JSONValue), with typed forms over TemplateDraft, DraftVariable and PostTemplate that go through them. `{ ...value }` copies an array's or a string's indexes as the web's spreads do. As in postTemplates, a shape the web throws a TypeError on (variables or choices that aren't arrays where the web calls .filter or .map, keywords that are a string where it joins them, a keyword that isn't a string where it calls toLowerCase) reads as absent; those inputs are kept out of the fixtures. JSONValue objects don't keep key order, which nothing here shows.",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Templates/EditorDrafts.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Templates/EditorDrafts+Typed.swift"
+      ],
+      "fixtures": [
+        "templates.editorDrafts",
+        "templates.random"
+      ],
+      "synced": "78aa9d52d76e"
+    },
+    "src/posting/templates/postTemplates.js": {
+      "status": "ported",
+      "note": "Templates are read loosely through TemplateFields (JSONValue, PostTemplate, TemplateDraft), member by member as the web reads its objects. Two deliberate differences, kept out of the fixtures: where the web throws a TypeError on a malformed shape (a null in variables, variables or keywords that aren't arrays, a null template in a list) the port reads the value as absent; and a label, hint, choice, keyword, handle, URI or CID that isn't a string, which the web passes through raw, comes out as its String form. buildTemplateContext's `today` is formatted in the given (or active) locale and zone, where the web uses the runtime's.",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Templates/PostTemplates.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Templates/PostTemplates+Types.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Templates/TemplateJS.swift"
+      ],
+      "fixtures": [
+        "templates.postTemplates",
+        "templates.fill",
+        "templates.random"
+      ],
+      "synced": "87238481a9e9"
+    },
+    "src/posting/templates/templateService.js": {
+      "status": "ported",
+      "note": "A @MainActor class (TemplateService, with `shared` the app gives its store at launch). The agent is TemplateRepoAgent, which VirgaNetwork's XRPCAgent conforms to, so the session's agentFor serves it; a load in flight is a shared Task. Held to templates.templateService by recorded exchanges through BackendFetchHandler (every one-call-after-another case of templateService.test.js); the races (writes and resets while a load is held open) are Swift behaviour tests. Differences: the cache is the web's JSON with each record's keys sorted; listeners are closures that can't throw, so 'one reader's failure' has no counterpart; the SDK's lexicon check of answers isn't ported (VirgaNetwork's gap), so a malformed listRecords answer the web refuses as InvalidResponse is read leniently here. list() sorts with VirgaCore's JSCollation.localeCompare, plain and at base strength (held to Node by core.collation); `locale` is the web's `undefined` and doesn't change the order in any locale the app offers.",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Templates/TemplateService.swift"
+      ],
+      "fixtures": [
+        "templates.templateService",
+        "core.collation"
+      ],
+      "synced": "275be3b0a702"
+    },
+    "src/posting/templates/templateUsage.js": {
+      "status": "ported",
+      "note": "The store is passed in (`store:`), as the web's optional `{ store }`; nil is no localStorage. The stored JSON is the web's byte for byte, keys in JS object order; a `__proto__` rkey is counted and returned but never stored, and a stored `__proto__` member is read back, as setting that key on a JS object sets its prototype. localeCompare, plain and at base strength, is VirgaCore's JSCollation.localeCompare (held to Node by core.collation); the `locale` parameter is the web's `undefined` (every locale the app offers collates in CLDR's root order).",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Templates/TemplateUsage.swift"
+      ],
+      "fixtures": [
+        "templates.templateUsage",
+        "templates.random",
+        "core.collation"
+      ],
+      "synced": "0004a0a028e3"
+    },
+    "src/posting/templates/useTemplates.js": {
+      "status": "ported",
+      "note": "TemplatesModel, a @MainActor @Observable class over TemplatesSession (SessionModel conforms: its agentFor, asked at call time) and TemplateService (.shared by default). The hook's lifetime is calls the view makes: init is the first render (the cached copy, loading), start() the effect (subscribe, load unless confirmed), setAccount(_:enabled:) a new did or enabled (the effect runs again at once, so the PENDING state lasts no longer than that call), stop() the unmount. Held by behaviour tests: the hook's own two, plus the effect's load, a failed load over the cache, following the service, an account switch with the old load landing late, writes for the open account, and a read through a SessionModel signed in through Virga's server.",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Templates/TemplatesModel.swift"
+      ],
+      "fixtures": [],
+      "synced": "7224c05355b0"
+    }
+  }
+}

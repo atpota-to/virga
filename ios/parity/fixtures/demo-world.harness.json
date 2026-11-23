@@ -1,0 +1,939 @@
+{
+  "name": "demo-world.harness",
+  "sources": [
+    "harness/harness.js"
+  ],
+  "cases": [
+    {
+      "id": "READ_ONLY_SCOPE",
+      "fn": "READ_ONLY_SCOPE",
+      "input": {},
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete"
+    },
+    {
+      "id": "withDefense#1",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "level": false
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+    },
+    {
+      "id": "withDefense#2",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "level": true
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#3",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "level": "scan"
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#4",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "level": "lists"
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete"
+    },
+    {
+      "id": "withDefense#5",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "level": "on"
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#6",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "level": ""
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+    },
+    {
+      "id": "withDefense#7",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "level": null
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+    },
+    {
+      "id": "withDefense#8",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "level": 0
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+    },
+    {
+      "id": "withDefense#9",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+        "level": false
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete"
+    },
+    {
+      "id": "withDefense#10",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+        "level": true
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#11",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+        "level": "scan"
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#12",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+        "level": "lists"
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete"
+    },
+    {
+      "id": "withDefense#13",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+        "level": "on"
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#14",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+        "level": ""
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete"
+    },
+    {
+      "id": "withDefense#15",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+        "level": null
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete"
+    },
+    {
+      "id": "withDefense#16",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+        "level": 0
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete"
+    },
+    {
+      "id": "withDefense#17",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+        "level": false
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+    },
+    {
+      "id": "withDefense#18",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+        "level": true
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#19",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+        "level": "scan"
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#20",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+        "level": "lists"
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete"
+    },
+    {
+      "id": "withDefense#21",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+        "level": "on"
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#22",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+        "level": ""
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+    },
+    {
+      "id": "withDefense#23",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+        "level": null
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+    },
+    {
+      "id": "withDefense#24",
+      "fn": "withDefense",
+      "input": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+        "level": 0
+      },
+      "output": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+    },
+    {
+      "id": "withDefense#25",
+      "fn": "withDefense",
+      "input": {
+        "scope": "rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete atproto",
+        "level": false
+      },
+      "output": "atproto"
+    },
+    {
+      "id": "withDefense#26",
+      "fn": "withDefense",
+      "input": {
+        "scope": "rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete atproto",
+        "level": true
+      },
+      "output": "atproto rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#27",
+      "fn": "withDefense",
+      "input": {
+        "scope": "rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete atproto",
+        "level": "scan"
+      },
+      "output": "atproto rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#28",
+      "fn": "withDefense",
+      "input": {
+        "scope": "rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete atproto",
+        "level": "lists"
+      },
+      "output": "atproto rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete"
+    },
+    {
+      "id": "withDefense#29",
+      "fn": "withDefense",
+      "input": {
+        "scope": "rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete atproto",
+        "level": "on"
+      },
+      "output": "atproto rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#30",
+      "fn": "withDefense",
+      "input": {
+        "scope": "rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete atproto",
+        "level": ""
+      },
+      "output": "atproto"
+    },
+    {
+      "id": "withDefense#31",
+      "fn": "withDefense",
+      "input": {
+        "scope": "rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete atproto",
+        "level": null
+      },
+      "output": "atproto"
+    },
+    {
+      "id": "withDefense#32",
+      "fn": "withDefense",
+      "input": {
+        "scope": "rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete atproto",
+        "level": 0
+      },
+      "output": "atproto"
+    },
+    {
+      "id": "withDefense#33",
+      "fn": "withDefense",
+      "input": {
+        "scope": "repo:app.bsky.graph.listitem?action=create&action=delete repo:app.bsky.graph.listitem?action=create&action=delete atproto atproto",
+        "level": false
+      },
+      "output": "atproto atproto"
+    },
+    {
+      "id": "withDefense#34",
+      "fn": "withDefense",
+      "input": {
+        "scope": "repo:app.bsky.graph.listitem?action=create&action=delete repo:app.bsky.graph.listitem?action=create&action=delete atproto atproto",
+        "level": true
+      },
+      "output": "atproto atproto rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#35",
+      "fn": "withDefense",
+      "input": {
+        "scope": "repo:app.bsky.graph.listitem?action=create&action=delete repo:app.bsky.graph.listitem?action=create&action=delete atproto atproto",
+        "level": "scan"
+      },
+      "output": "atproto atproto rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#36",
+      "fn": "withDefense",
+      "input": {
+        "scope": "repo:app.bsky.graph.listitem?action=create&action=delete repo:app.bsky.graph.listitem?action=create&action=delete atproto atproto",
+        "level": "lists"
+      },
+      "output": "atproto atproto rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete"
+    },
+    {
+      "id": "withDefense#37",
+      "fn": "withDefense",
+      "input": {
+        "scope": "repo:app.bsky.graph.listitem?action=create&action=delete repo:app.bsky.graph.listitem?action=create&action=delete atproto atproto",
+        "level": "on"
+      },
+      "output": "atproto atproto rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#38",
+      "fn": "withDefense",
+      "input": {
+        "scope": "repo:app.bsky.graph.listitem?action=create&action=delete repo:app.bsky.graph.listitem?action=create&action=delete atproto atproto",
+        "level": ""
+      },
+      "output": "atproto atproto"
+    },
+    {
+      "id": "withDefense#39",
+      "fn": "withDefense",
+      "input": {
+        "scope": "repo:app.bsky.graph.listitem?action=create&action=delete repo:app.bsky.graph.listitem?action=create&action=delete atproto atproto",
+        "level": null
+      },
+      "output": "atproto atproto"
+    },
+    {
+      "id": "withDefense#40",
+      "fn": "withDefense",
+      "input": {
+        "scope": "repo:app.bsky.graph.listitem?action=create&action=delete repo:app.bsky.graph.listitem?action=create&action=delete atproto atproto",
+        "level": 0
+      },
+      "output": "atproto atproto"
+    },
+    {
+      "id": "withDefense#41",
+      "fn": "withDefense",
+      "input": {
+        "scope": "  atproto   repo:x  ",
+        "level": false
+      },
+      "output": "atproto repo:x"
+    },
+    {
+      "id": "withDefense#42",
+      "fn": "withDefense",
+      "input": {
+        "scope": "  atproto   repo:x  ",
+        "level": true
+      },
+      "output": "atproto repo:x rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#43",
+      "fn": "withDefense",
+      "input": {
+        "scope": "  atproto   repo:x  ",
+        "level": "scan"
+      },
+      "output": "atproto repo:x rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#44",
+      "fn": "withDefense",
+      "input": {
+        "scope": "  atproto   repo:x  ",
+        "level": "lists"
+      },
+      "output": "atproto repo:x rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete"
+    },
+    {
+      "id": "withDefense#45",
+      "fn": "withDefense",
+      "input": {
+        "scope": "  atproto   repo:x  ",
+        "level": "on"
+      },
+      "output": "atproto repo:x rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#46",
+      "fn": "withDefense",
+      "input": {
+        "scope": "  atproto   repo:x  ",
+        "level": ""
+      },
+      "output": "atproto repo:x"
+    },
+    {
+      "id": "withDefense#47",
+      "fn": "withDefense",
+      "input": {
+        "scope": "  atproto   repo:x  ",
+        "level": null
+      },
+      "output": "atproto repo:x"
+    },
+    {
+      "id": "withDefense#48",
+      "fn": "withDefense",
+      "input": {
+        "scope": "  atproto   repo:x  ",
+        "level": 0
+      },
+      "output": "atproto repo:x"
+    },
+    {
+      "id": "withDefense#49",
+      "fn": "withDefense",
+      "input": {
+        "scope": "",
+        "level": false
+      },
+      "output": ""
+    },
+    {
+      "id": "withDefense#50",
+      "fn": "withDefense",
+      "input": {
+        "scope": "",
+        "level": true
+      },
+      "output": "rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#51",
+      "fn": "withDefense",
+      "input": {
+        "scope": "",
+        "level": "scan"
+      },
+      "output": "rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#52",
+      "fn": "withDefense",
+      "input": {
+        "scope": "",
+        "level": "lists"
+      },
+      "output": "rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete"
+    },
+    {
+      "id": "withDefense#53",
+      "fn": "withDefense",
+      "input": {
+        "scope": "",
+        "level": "on"
+      },
+      "output": "rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#54",
+      "fn": "withDefense",
+      "input": {
+        "scope": "",
+        "level": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "withDefense#55",
+      "fn": "withDefense",
+      "input": {
+        "scope": "",
+        "level": null
+      },
+      "output": ""
+    },
+    {
+      "id": "withDefense#56",
+      "fn": "withDefense",
+      "input": {
+        "scope": "",
+        "level": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "withDefense#57",
+      "fn": "withDefense",
+      "input": {
+        "scope": null,
+        "level": false
+      },
+      "output": ""
+    },
+    {
+      "id": "withDefense#58",
+      "fn": "withDefense",
+      "input": {
+        "scope": null,
+        "level": true
+      },
+      "output": "rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#59",
+      "fn": "withDefense",
+      "input": {
+        "scope": null,
+        "level": "scan"
+      },
+      "output": "rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#60",
+      "fn": "withDefense",
+      "input": {
+        "scope": null,
+        "level": "lists"
+      },
+      "output": "rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete"
+    },
+    {
+      "id": "withDefense#61",
+      "fn": "withDefense",
+      "input": {
+        "scope": null,
+        "level": "on"
+      },
+      "output": "rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+    },
+    {
+      "id": "withDefense#62",
+      "fn": "withDefense",
+      "input": {
+        "scope": null,
+        "level": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "withDefense#63",
+      "fn": "withDefense",
+      "input": {
+        "scope": null,
+        "level": null
+      },
+      "output": ""
+    },
+    {
+      "id": "withDefense#64",
+      "fn": "withDefense",
+      "input": {
+        "scope": null,
+        "level": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "createHarness#1",
+      "fn": "createHarness",
+      "input": {
+        "search": "",
+        "accounts": null,
+        "scope": null,
+        "defense": null
+      },
+      "output": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "worlds": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+            "pdsUrl": "https://pds.harness.example"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+            "pdsUrl": "https://pds.harness.example"
+          }
+        ],
+        "grants": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+        ],
+        "regrants": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          {
+            "$throws": "harness: no account did:plc:nobody"
+          }
+        ],
+        "grantsAfter": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+        ]
+      }
+    },
+    {
+      "id": "createHarness#2",
+      "fn": "createHarness",
+      "input": {
+        "search": "?accounts=1",
+        "accounts": "1",
+        "scope": null,
+        "defense": null
+      },
+      "output": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "worlds": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+            "pdsUrl": "https://pds.harness.example"
+          }
+        ],
+        "grants": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+        ],
+        "regrants": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+          {
+            "$throws": "harness: no account did:plc:virgaharnesslab7k2pq"
+          },
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          {
+            "$throws": "harness: no account did:plc:nobody"
+          }
+        ],
+        "grantsAfter": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+        ]
+      }
+    },
+    {
+      "id": "createHarness#3",
+      "fn": "createHarness",
+      "input": {
+        "search": "?scope=read",
+        "accounts": null,
+        "scope": "read",
+        "defense": null
+      },
+      "output": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+        "worlds": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+            "pdsUrl": "https://pds.harness.example"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+            "pdsUrl": "https://pds.harness.example"
+          }
+        ],
+        "grants": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete"
+        ],
+        "regrants": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+          {
+            "$throws": "harness: no account did:plc:nobody"
+          }
+        ],
+        "grantsAfter": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete"
+        ]
+      }
+    },
+    {
+      "id": "createHarness#4",
+      "fn": "createHarness",
+      "input": {
+        "search": "?defense=on",
+        "accounts": null,
+        "scope": null,
+        "defense": "on"
+      },
+      "output": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+        "worlds": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+            "pdsUrl": "https://pds.harness.example"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+            "pdsUrl": "https://pds.harness.example"
+          }
+        ],
+        "grants": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+        ],
+        "regrants": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          {
+            "$throws": "harness: no account did:plc:nobody"
+          }
+        ],
+        "grantsAfter": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview"
+        ]
+      }
+    },
+    {
+      "id": "createHarness#5",
+      "fn": "createHarness",
+      "input": {
+        "search": "?defense=lists",
+        "accounts": null,
+        "scope": null,
+        "defense": "lists"
+      },
+      "output": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+        "worlds": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+            "pdsUrl": "https://pds.harness.example"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+            "pdsUrl": "https://pds.harness.example"
+          }
+        ],
+        "grants": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete"
+        ],
+        "regrants": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          {
+            "$throws": "harness: no account did:plc:nobody"
+          }
+        ],
+        "grantsAfter": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete"
+        ]
+      }
+    },
+    {
+      "id": "createHarness#6",
+      "fn": "createHarness",
+      "input": {
+        "search": "?scope=read&defense=lists",
+        "accounts": null,
+        "scope": "read",
+        "defense": "lists"
+      },
+      "output": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+        "worlds": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+            "pdsUrl": "https://pds.harness.example"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+            "pdsUrl": "https://pds.harness.example"
+          }
+        ],
+        "grants": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete"
+        ],
+        "regrants": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+          {
+            "$throws": "harness: no account did:plc:nobody"
+          }
+        ],
+        "grantsAfter": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete"
+        ]
+      }
+    },
+    {
+      "id": "createHarness#7",
+      "fn": "createHarness",
+      "input": {
+        "search": "?defense=yes&scope=write",
+        "accounts": null,
+        "scope": "write",
+        "defense": "yes"
+      },
+      "output": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "worlds": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+            "pdsUrl": "https://pds.harness.example"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+            "pdsUrl": "https://pds.harness.example"
+          }
+        ],
+        "grants": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+        ],
+        "regrants": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          {
+            "$throws": "harness: no account did:plc:nobody"
+          }
+        ],
+        "grantsAfter": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+        ]
+      }
+    },
+    {
+      "id": "createHarness#8",
+      "fn": "createHarness",
+      "input": {
+        "search": "?scope=READ&defense=ON",
+        "accounts": null,
+        "scope": "READ",
+        "defense": "ON"
+      },
+      "output": {
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "worlds": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+            "pdsUrl": "https://pds.harness.example"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+            "pdsUrl": "https://pds.harness.example"
+          }
+        ],
+        "grants": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+        ],
+        "regrants": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          {
+            "$throws": "harness: no account did:plc:nobody"
+          }
+        ],
+        "grantsAfter": [
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+          "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+        ]
+      }
+    }
+  ]
+}

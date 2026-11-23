@@ -1,0 +1,1088 @@
+{
+  "name": "library.ui",
+  "sources": [
+    "src/posting/library/libraryUi.js"
+  ],
+  "cases": [
+    {
+      "id": "SHELF_EMPTY",
+      "fn": "SHELF_EMPTY",
+      "input": {},
+      "output": {
+        "suggested": "Nothing here matches the post you’re replying to. Look through the other shelves.",
+        "templates": "No templates yet. Make one on the Templates page, then use it here.",
+        "posts": "No posts of yours yet. Once you’ve posted, they’re here to quote.",
+        "replies": "No replies of yours yet.",
+        "saved": "Nothing saved. Posts you save on Bluesky are here to quote.",
+        "links": "No links in your recent posts. Paste a link in the search box to attach one.",
+        "feeds": "No feeds of your own or saved. Paste a feed’s link in the search box to attach it.",
+        "lists": "No lists of your own. Paste a list’s link in the search box to attach it.",
+        "search": "Type at least two letters to search Bluesky."
+      }
+    },
+    {
+      "id": "SHELF_HINT",
+      "fn": "SHELF_HINT",
+      "input": {},
+      "output": {
+        "suggested": "Picked for the post you’re replying to.",
+        "templates": "Posts and replies to start from.",
+        "posts": "Your own posts, to quote.",
+        "replies": "Your replies, to quote.",
+        "saved": "Posts you saved on Bluesky.",
+        "links": "Links from your recent posts, as cards.",
+        "feeds": "Feeds you made or saved.",
+        "lists": "Lists you made.",
+        "search": "Posts from all of Bluesky."
+      }
+    },
+    {
+      "id": "looksLikeLink#1",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "https://bsky.app/profile/a.example/post/3abc"
+      },
+      "output": true
+    },
+    {
+      "id": "looksLikeLink#2",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": " http://example.com "
+      },
+      "output": true
+    },
+    {
+      "id": "looksLikeLink#3",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "at://did:plc:abc/app.bsky.feed.post/3abc"
+      },
+      "output": true
+    },
+    {
+      "id": "looksLikeLink#4",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "AT://DID:PLC:abc/APP.bsky.feed.post/3abc"
+      },
+      "output": true
+    },
+    {
+      "id": "looksLikeLink#5",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "at://did:web:a.example/app.bsky.graph.list/x"
+      },
+      "output": true
+    },
+    {
+      "id": "looksLikeLink#6",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "at://did:plc:abc/app.bsky.feed.post/"
+      },
+      "output": false
+    },
+    {
+      "id": "looksLikeLink#7",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "at://did:plc:abc/app.bsky.feed.post/a/b"
+      },
+      "output": false
+    },
+    {
+      "id": "looksLikeLink#8",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "at://did:9:abc/app.bsky.feed.post/a"
+      },
+      "output": false
+    },
+    {
+      "id": "looksLikeLink#9",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "at://did:plc:abc/app_bsky/a"
+      },
+      "output": false
+    },
+    {
+      "id": "looksLikeLink#10",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "at://handle.example/app.bsky.feed.post/a"
+      },
+      "output": false
+    },
+    {
+      "id": "looksLikeLink#11",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "river walk"
+      },
+      "output": false
+    },
+    {
+      "id": "looksLikeLink#12",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "example.com"
+      },
+      "output": false
+    },
+    {
+      "id": "looksLikeLink#13",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "https://localhost"
+      },
+      "output": false
+    },
+    {
+      "id": "looksLikeLink#14",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "mailto:a@b.c"
+      },
+      "output": false
+    },
+    {
+      "id": "looksLikeLink#15",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "ftp://files.example/x"
+      },
+      "output": false
+    },
+    {
+      "id": "looksLikeLink#16",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "https://a.example/with space"
+      },
+      "output": false
+    },
+    {
+      "id": "looksLikeLink#17",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "https://a.example/ x"
+      },
+      "output": false
+    },
+    {
+      "id": "looksLikeLink#18",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "https://bücher.example"
+      },
+      "output": true
+    },
+    {
+      "id": "looksLikeLink#19",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "https://1.2.3.4/x"
+      },
+      "output": true
+    },
+    {
+      "id": "looksLikeLink#20",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": "https://[::1]/x"
+      },
+      "output": false
+    },
+    {
+      "id": "looksLikeLink#21",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": ""
+      },
+      "output": false
+    },
+    {
+      "id": "looksLikeLink#22",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": null
+      },
+      "output": false
+    },
+    {
+      "id": "looksLikeLink#23",
+      "fn": "looksLikeLink",
+      "input": {
+        "text": 5
+      },
+      "output": false
+    },
+    {
+      "id": "moveActive#1",
+      "fn": "moveActive",
+      "input": {
+        "ids": [
+          "a",
+          "b",
+          "c"
+        ],
+        "activeId": "a",
+        "delta": 1
+      },
+      "output": "b"
+    },
+    {
+      "id": "moveActive#2",
+      "fn": "moveActive",
+      "input": {
+        "ids": [
+          "a",
+          "b",
+          "c"
+        ],
+        "activeId": "c",
+        "delta": 1
+      },
+      "output": "a"
+    },
+    {
+      "id": "moveActive#3",
+      "fn": "moveActive",
+      "input": {
+        "ids": [
+          "a",
+          "b",
+          "c"
+        ],
+        "activeId": "a",
+        "delta": -1
+      },
+      "output": "c"
+    },
+    {
+      "id": "moveActive#4",
+      "fn": "moveActive",
+      "input": {
+        "ids": [
+          "a",
+          "b",
+          "c"
+        ],
+        "activeId": null,
+        "delta": 1
+      },
+      "output": "a"
+    },
+    {
+      "id": "moveActive#5",
+      "fn": "moveActive",
+      "input": {
+        "ids": [
+          "a",
+          "b",
+          "c"
+        ],
+        "activeId": "gone",
+        "delta": -1
+      },
+      "output": "c"
+    },
+    {
+      "id": "moveActive#6",
+      "fn": "moveActive",
+      "input": {
+        "ids": [
+          "a",
+          "b",
+          "c"
+        ],
+        "activeId": "b",
+        "delta": "first"
+      },
+      "output": "a"
+    },
+    {
+      "id": "moveActive#7",
+      "fn": "moveActive",
+      "input": {
+        "ids": [
+          "a",
+          "b",
+          "c"
+        ],
+        "activeId": "b",
+        "delta": "last"
+      },
+      "output": "c"
+    },
+    {
+      "id": "moveActive#8",
+      "fn": "moveActive",
+      "input": {
+        "ids": [],
+        "activeId": "a",
+        "delta": 1
+      },
+      "output": null
+    },
+    {
+      "id": "moveActive#9",
+      "fn": "moveActive",
+      "input": {
+        "ids": null,
+        "activeId": "a",
+        "delta": 1
+      },
+      "output": null
+    },
+    {
+      "id": "moveActive#10",
+      "fn": "moveActive",
+      "input": {
+        "ids": [
+          "a",
+          "",
+          null,
+          "b"
+        ],
+        "activeId": "b",
+        "delta": 1
+      },
+      "output": "a"
+    },
+    {
+      "id": "moveActive#11",
+      "fn": "moveActive",
+      "input": {
+        "ids": [
+          "a",
+          "b",
+          "c"
+        ],
+        "activeId": "b",
+        "delta": 2
+      },
+      "output": "a"
+    },
+    {
+      "id": "moveActive#12",
+      "fn": "moveActive",
+      "input": {
+        "ids": [
+          "a",
+          "b",
+          "c"
+        ],
+        "activeId": "a",
+        "delta": -5
+      },
+      "output": null
+    },
+    {
+      "id": "moveActive#13",
+      "fn": "moveActive",
+      "input": {
+        "ids": [
+          "a",
+          "b",
+          "c"
+        ],
+        "activeId": "a",
+        "delta": 0.5
+      },
+      "output": null
+    },
+    {
+      "id": "moveActive#14",
+      "fn": "moveActive",
+      "input": {
+        "ids": [
+          "a",
+          "b",
+          "c"
+        ],
+        "activeId": "a",
+        "delta": 0
+      },
+      "output": "a"
+    },
+    {
+      "id": "moveActive#15",
+      "fn": "moveActive",
+      "input": {
+        "ids": [
+          "é",
+          "é"
+        ],
+        "activeId": "é",
+        "delta": 1
+      },
+      "output": "é"
+    },
+    {
+      "id": "passes",
+      "fn": "templateContextFrom",
+      "input": {
+        "context": {
+          "today": "November 12",
+          "my": {
+            "handle": "@a"
+          }
+        }
+      },
+      "output": {
+        "today": "November 12",
+        "my": {
+          "handle": "@a"
+        }
+      }
+    },
+    {
+      "id": "real",
+      "fn": "templateContextFrom",
+      "input": {
+        "context": {
+          "their": {
+            "name": "Moss Hollow",
+            "firstName": "Moss",
+            "handle": "moss.example"
+          },
+          "my": {
+            "handle": "you.example"
+          },
+          "today": "October 14"
+        }
+      },
+      "output": {
+        "their": {
+          "name": "Moss Hollow",
+          "firstName": "Moss",
+          "handle": "moss.example"
+        },
+        "my": {
+          "handle": "you.example"
+        },
+        "today": "October 14"
+      }
+    },
+    {
+      "id": "state-reply",
+      "fn": "templateContextFrom",
+      "input": {
+        "context": {
+          "state": {
+            "reply": {
+              "uri": "at://did:plc:other/app.bsky.feed.post/1",
+              "author": {
+                "handle": "wren.example",
+                "displayName": "🌿 Wren Okafor"
+              },
+              "text": "hi"
+            }
+          }
+        },
+        "selfHandle": "mira.example.com"
+      },
+      "output": {
+        "their": {
+          "name": "🌿 Wren Okafor",
+          "firstName": "Wren",
+          "handle": "wren.example"
+        },
+        "my": {
+          "handle": "mira.example.com"
+        },
+        "today": "October 14"
+      }
+    },
+    {
+      "id": "reply-wins",
+      "fn": "templateContextFrom",
+      "input": {
+        "context": {
+          "reply": {
+            "author": {
+              "handle": "a.example",
+              "displayName": "Ada"
+            }
+          },
+          "state": {
+            "reply": {
+              "author": {
+                "handle": "b.example",
+                "displayName": "Bo"
+              }
+            }
+          }
+        }
+      },
+      "output": {
+        "their": {
+          "name": "Ada",
+          "firstName": "Ada",
+          "handle": "a.example"
+        },
+        "my": {
+          "handle": null
+        },
+        "today": "October 14"
+      }
+    },
+    {
+      "id": "null-reply-falls-back",
+      "fn": "templateContextFrom",
+      "input": {
+        "context": {
+          "reply": null,
+          "state": {
+            "reply": {
+              "author": {
+                "handle": "b.example",
+                "displayName": "Bo"
+              }
+            }
+          }
+        }
+      },
+      "output": {
+        "their": {
+          "name": "Bo",
+          "firstName": "Bo",
+          "handle": "b.example"
+        },
+        "my": {
+          "handle": null
+        },
+        "today": "October 14"
+      }
+    },
+    {
+      "id": "nothing",
+      "fn": "templateContextFrom",
+      "input": {
+        "selfHandle": "a.example"
+      },
+      "output": {
+        "their": null,
+        "my": {
+          "handle": "a.example"
+        },
+        "today": "October 14"
+      }
+    },
+    {
+      "id": "today-not-string",
+      "fn": "templateContextFrom",
+      "input": {
+        "context": {
+          "today": 5,
+          "my": {
+            "handle": "x"
+          }
+        }
+      },
+      "output": {
+        "their": null,
+        "my": {
+          "handle": null
+        },
+        "today": "October 14"
+      }
+    },
+    {
+      "id": "initialShelf#1",
+      "fn": "initialShelf",
+      "input": {
+        "context": {
+          "shelf": "saved"
+        },
+        "replying": false
+      },
+      "output": "saved"
+    },
+    {
+      "id": "initialShelf#2",
+      "fn": "initialShelf",
+      "input": {
+        "context": {
+          "shelf": "suggested"
+        },
+        "replying": false
+      },
+      "output": "templates"
+    },
+    {
+      "id": "initialShelf#3",
+      "fn": "initialShelf",
+      "input": {
+        "context": {
+          "shelf": "suggested"
+        },
+        "replying": true
+      },
+      "output": "suggested"
+    },
+    {
+      "id": "initialShelf#4",
+      "fn": "initialShelf",
+      "input": {
+        "context": {},
+        "replying": true
+      },
+      "output": "suggested"
+    },
+    {
+      "id": "initialShelf#5",
+      "fn": "initialShelf",
+      "input": {
+        "context": null,
+        "replying": false
+      },
+      "output": "templates"
+    },
+    {
+      "id": "initialShelf#6",
+      "fn": "initialShelf",
+      "input": {
+        "context": {
+          "shelf": ""
+        },
+        "replying": true
+      },
+      "output": "suggested"
+    },
+    {
+      "id": "initialShelf#7",
+      "fn": "initialShelf",
+      "input": {
+        "context": {
+          "shelf": 5
+        },
+        "replying": false
+      },
+      "output": "templates"
+    },
+    {
+      "id": "initialShelf#8",
+      "fn": "initialShelf",
+      "input": {
+        "context": {
+          "shelf": "nonsense"
+        },
+        "replying": false
+      },
+      "output": "nonsense"
+    },
+    {
+      "id": "templates",
+      "fn": "sectionsFor",
+      "input": {
+        "shelfId": "templates",
+        "items": [],
+        "templateSections": [
+          {
+            "id": "g",
+            "heading": "G",
+            "muted": false,
+            "items": [
+              {
+                "id": "link:https://a.example/",
+                "kind": "link",
+                "shelf": "links",
+                "title": "https://a.example/",
+                "excerpt": "a.example",
+                "label": "Link · a.example",
+                "shortcut": "",
+                "reason": "",
+                "source": {
+                  "url": "https://a.example/"
+                },
+                "media": null,
+                "uri": null,
+                "cid": null,
+                "url": "https://a.example/",
+                "view": null,
+                "template": null,
+                "at": null,
+                "score": null,
+                "key": "link:https://a.example/",
+                "subtitle": "Link · a.example"
+              }
+            ]
+          }
+        ]
+      },
+      "output": [
+        {
+          "id": "g",
+          "heading": "G",
+          "muted": false,
+          "items": [
+            "link:https://a.example/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "templates-none",
+      "fn": "sectionsFor",
+      "input": {
+        "shelfId": "templates",
+        "items": [
+          {
+            "id": "link:https://a.example/",
+            "kind": "link",
+            "shelf": "links",
+            "title": "https://a.example/",
+            "excerpt": "a.example",
+            "label": "Link · a.example",
+            "shortcut": "",
+            "reason": "",
+            "source": {
+              "url": "https://a.example/"
+            },
+            "media": null,
+            "uri": null,
+            "cid": null,
+            "url": "https://a.example/",
+            "view": null,
+            "template": null,
+            "at": null,
+            "score": null,
+            "key": "link:https://a.example/",
+            "subtitle": "Link · a.example"
+          }
+        ]
+      },
+      "output": [
+        {
+          "id": "templates",
+          "heading": null,
+          "muted": false,
+          "items": [
+            "link:https://a.example/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "feeds-both",
+      "fn": "sectionsFor",
+      "input": {
+        "shelfId": "feeds",
+        "items": [
+          {
+            "id": "feed:at://did:plc:self/app.bsky.feed.generator/moths",
+            "kind": "feed",
+            "shelf": "feeds",
+            "title": "Moth photos",
+            "excerpt": "Posts tagged #mothing",
+            "label": "Feed · yours",
+            "shortcut": "",
+            "reason": "",
+            "source": {
+              "uri": "at://did:plc:self/app.bsky.feed.generator/moths",
+              "cid": "cf1",
+              "displayName": "Moth photos",
+              "description": "Posts tagged #mothing",
+              "creator": {
+                "did": "did:plc:self",
+                "handle": "you.example"
+              },
+              "indexedAt": "2026-10-01T00:00:00.000Z"
+            },
+            "media": null,
+            "uri": "at://did:plc:self/app.bsky.feed.generator/moths",
+            "cid": "cf1",
+            "url": null,
+            "view": {
+              "uri": "at://did:plc:self/app.bsky.feed.generator/moths",
+              "cid": "cf1",
+              "displayName": "Moth photos",
+              "description": "Posts tagged #mothing",
+              "creator": {
+                "did": "did:plc:self",
+                "handle": "you.example"
+              },
+              "indexedAt": "2026-10-01T00:00:00.000Z"
+            },
+            "template": null,
+            "at": "2026-10-01T00:00:00.000Z",
+            "score": null,
+            "group": "yours",
+            "key": "feed:at://did:plc:self/app.bsky.feed.generator/moths",
+            "subtitle": "Feed · yours"
+          },
+          {
+            "id": "feed:at://did:plc:other/app.bsky.feed.generator/quiet",
+            "kind": "feed",
+            "shelf": "feeds",
+            "title": "Quiet hours",
+            "excerpt": "Slower posts from people you follow",
+            "label": "Feed · saved",
+            "shortcut": "",
+            "reason": "",
+            "source": {
+              "uri": "at://did:plc:other/app.bsky.feed.generator/quiet",
+              "cid": "cf2",
+              "displayName": "  Quiet\n hours ",
+              "description": "Slower posts\nfrom people you follow",
+              "creator": {
+                "did": "did:plc:other",
+                "handle": "luna.example"
+              }
+            },
+            "media": null,
+            "uri": "at://did:plc:other/app.bsky.feed.generator/quiet",
+            "cid": "cf2",
+            "url": null,
+            "view": {
+              "uri": "at://did:plc:other/app.bsky.feed.generator/quiet",
+              "cid": "cf2",
+              "displayName": "  Quiet\n hours ",
+              "description": "Slower posts\nfrom people you follow",
+              "creator": {
+                "did": "did:plc:other",
+                "handle": "luna.example"
+              }
+            },
+            "template": null,
+            "at": null,
+            "score": null,
+            "group": "saved",
+            "key": "feed:at://did:plc:other/app.bsky.feed.generator/quiet",
+            "subtitle": "Feed · saved"
+          },
+          {
+            "id": "feed:at://x/app.bsky.feed.generator/f",
+            "kind": "feed",
+            "shelf": "feeds",
+            "title": "Untitled feed",
+            "excerpt": "",
+            "label": "Feed · yours",
+            "shortcut": "",
+            "reason": "",
+            "source": {
+              "group": "saved"
+            },
+            "media": null,
+            "uri": "at://x/app.bsky.feed.generator/f",
+            "cid": null,
+            "url": null,
+            "view": {
+              "uri": "at://x/app.bsky.feed.generator/f"
+            },
+            "template": null,
+            "at": null,
+            "score": null,
+            "group": "yours",
+            "key": "feed:at://x/app.bsky.feed.generator/f",
+            "subtitle": "Feed · yours"
+          }
+        ]
+      },
+      "output": [
+        {
+          "id": "yours",
+          "heading": "Yours",
+          "muted": false,
+          "items": [
+            "feed:at://did:plc:self/app.bsky.feed.generator/moths"
+          ]
+        },
+        {
+          "id": "saved",
+          "heading": "Saved",
+          "muted": false,
+          "items": [
+            "feed:at://did:plc:other/app.bsky.feed.generator/quiet",
+            "feed:at://x/app.bsky.feed.generator/f"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "feeds-yours",
+      "fn": "sectionsFor",
+      "input": {
+        "shelfId": "feeds",
+        "items": [
+          {
+            "id": "feed:at://did:plc:self/app.bsky.feed.generator/moths",
+            "kind": "feed",
+            "shelf": "feeds",
+            "title": "Moth photos",
+            "excerpt": "Posts tagged #mothing",
+            "label": "Feed · yours",
+            "shortcut": "",
+            "reason": "",
+            "source": {
+              "uri": "at://did:plc:self/app.bsky.feed.generator/moths",
+              "cid": "cf1",
+              "displayName": "Moth photos",
+              "description": "Posts tagged #mothing",
+              "creator": {
+                "did": "did:plc:self",
+                "handle": "you.example"
+              },
+              "indexedAt": "2026-10-01T00:00:00.000Z"
+            },
+            "media": null,
+            "uri": "at://did:plc:self/app.bsky.feed.generator/moths",
+            "cid": "cf1",
+            "url": null,
+            "view": {
+              "uri": "at://did:plc:self/app.bsky.feed.generator/moths",
+              "cid": "cf1",
+              "displayName": "Moth photos",
+              "description": "Posts tagged #mothing",
+              "creator": {
+                "did": "did:plc:self",
+                "handle": "you.example"
+              },
+              "indexedAt": "2026-10-01T00:00:00.000Z"
+            },
+            "template": null,
+            "at": "2026-10-01T00:00:00.000Z",
+            "score": null,
+            "group": "yours",
+            "key": "feed:at://did:plc:self/app.bsky.feed.generator/moths",
+            "subtitle": "Feed · yours"
+          }
+        ]
+      },
+      "output": [
+        {
+          "id": "yours",
+          "heading": null,
+          "muted": false,
+          "items": [
+            "feed:at://did:plc:self/app.bsky.feed.generator/moths"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "feeds-saved",
+      "fn": "sectionsFor",
+      "input": {
+        "shelfId": "feeds",
+        "items": [
+          {
+            "id": "feed:at://did:plc:other/app.bsky.feed.generator/quiet",
+            "kind": "feed",
+            "shelf": "feeds",
+            "title": "Quiet hours",
+            "excerpt": "Slower posts from people you follow",
+            "label": "Feed · saved",
+            "shortcut": "",
+            "reason": "",
+            "source": {
+              "uri": "at://did:plc:other/app.bsky.feed.generator/quiet",
+              "cid": "cf2",
+              "displayName": "  Quiet\n hours ",
+              "description": "Slower posts\nfrom people you follow",
+              "creator": {
+                "did": "did:plc:other",
+                "handle": "luna.example"
+              }
+            },
+            "media": null,
+            "uri": "at://did:plc:other/app.bsky.feed.generator/quiet",
+            "cid": "cf2",
+            "url": null,
+            "view": {
+              "uri": "at://did:plc:other/app.bsky.feed.generator/quiet",
+              "cid": "cf2",
+              "displayName": "  Quiet\n hours ",
+              "description": "Slower posts\nfrom people you follow",
+              "creator": {
+                "did": "did:plc:other",
+                "handle": "luna.example"
+              }
+            },
+            "template": null,
+            "at": null,
+            "score": null,
+            "group": "saved",
+            "key": "feed:at://did:plc:other/app.bsky.feed.generator/quiet",
+            "subtitle": "Feed · saved"
+          }
+        ]
+      },
+      "output": [
+        {
+          "id": "saved",
+          "heading": "Saved",
+          "muted": false,
+          "items": [
+            "feed:at://did:plc:other/app.bsky.feed.generator/quiet"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "feeds-none",
+      "fn": "sectionsFor",
+      "input": {
+        "shelfId": "feeds",
+        "items": []
+      },
+      "output": []
+    },
+    {
+      "id": "links",
+      "fn": "sectionsFor",
+      "input": {
+        "shelfId": "links",
+        "items": [
+          {
+            "id": "link:https://a.example/",
+            "kind": "link",
+            "shelf": "links",
+            "title": "https://a.example/",
+            "excerpt": "a.example",
+            "label": "Link · a.example",
+            "shortcut": "",
+            "reason": "",
+            "source": {
+              "url": "https://a.example/"
+            },
+            "media": null,
+            "uri": null,
+            "cid": null,
+            "url": "https://a.example/",
+            "view": null,
+            "template": null,
+            "at": null,
+            "score": null,
+            "key": "link:https://a.example/",
+            "subtitle": "Link · a.example"
+          }
+        ]
+      },
+      "output": [
+        {
+          "id": "links",
+          "heading": null,
+          "muted": false,
+          "items": [
+            "link:https://a.example/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "links-none",
+      "fn": "sectionsFor",
+      "input": {
+        "shelfId": "links",
+        "items": []
+      },
+      "output": []
+    }
+  ]
+}

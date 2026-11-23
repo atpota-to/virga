@@ -1,0 +1,370 @@
+// Ports src/main.jsx (what the app is built from)
+// Ports src/App.jsx (useProfile)
+//
+// Everything the app is made of, made once for the process (every window
+// shares one session, so the web's "another tab switched accounts" notice
+// has no counterpart here): the stores, the preferences, the session with
+// its environment, the agreement's model, the open account's profile, the
+// session notices, and the lookups the sign-in makes. VirgaRootView puts
+// each in the environment. The open account's archive (ArchiveProvider's
+// useAnalyticsArchive) is made here too, one for each shell, and held by
+// the view around it (App/ArchiveHost.swift).
+//
+// The session's two hooks into the stores are wired here: deleting an
+// account's data deletes its archive's store and its drafts' kept media,
+// and the handles of every other account are left as they are (see
+// resetArchiveStores).
+//
+// Demo mode (`-VirgaDemo YES`, read from UserDefaults' argument domain)
+// runs the app on VirgaDemo's DemoSession: the made-up world's two
+// accounts (Mira, with the full archive, and Field Lab) signed in on this
+// device as long sessions, over in-memory stores, with the demo network
+// (DemoTransport) in front of the fake Virga server. The first build reads
+// Mira's whole archive from it. The harness's flags come in the web's
+// address form: `-VirgaDemoFlags "<query>"` for any of them (accounts=1,
+// signedout, expired=<handle>, scope=read, defense=on, terms=ask,
+// latency=<ms>, now=<time>, appview=…), and the two kept from before,
+// `-VirgaDemoTerms YES` (terms=ask: the agreement screen first) and
+// `-VirgaDemoSignedOut YES` (signedout: the front page, both accounts
+// remembered). `-VirgaDemoSky <night|day|dawn|dusk|clock>` and
+// `-VirgaDemoLiveSky YES` start it with those preferences stored, as a
+// browser's localStorage would hold them.
+
+#if canImport(UIKit)
+import Foundation
+import Observation
+import SwiftUI
+import VirgaArchive
+import VirgaCore
+import VirgaDemo
+import VirgaPosting
+import VirgaNetwork
+import VirgaSession
+
+/// The lookups the sign-in makes before it leaves: who a handle is, where
+/// an account signs in, and the accounts a half-typed handle may be.
+public struct SignInLookups: Sendable {
+  public var identity: @Sendable (String) async throws -> SignInIdentityAnswer
+  public var host: @Sendable (String) async throws -> SignInHost
+  public var suggest: @Sendable (String) async throws -> [SignInSuggestion]
+
+  public init(
+    identity: @escaping @Sendable (String) async throws -> SignInIdentityAnswer,
+    host: @escaping @Sendable (String) async throws -> SignInHost,
+    suggest: @escaping @Sendable (String) async throws -> [SignInSuggestion]
+  ) {
+    self.identity = identity
+    self.host = host
+    self.suggest = suggest
+  }
+
+  /// The public network's: Bluesky's API, the PLC directory, the host.
+  public static let network = SignInLookups(
+    identity: { try await SignInIdentity.resolveSignInIdentity($0) },
+    host: { try await SignInIdentity.resolveSignInHost($0) },
+    suggest: { try await SignInSuggest.searchAccounts($0) })
+}
+
+/// The open account's public profile: what the account list remembers
+/// stands in until the fresh read arrives, so a switch doesn't flash a DID.
+public struct AccountProfile: Hashable, Sendable {
+  public var handle: String?
+  public var displayName: String?
+  public var avatar: String?
+  public var followersCount: Int?
+  public var followsCount: Int?
+  public var postsCount: Int?
+  public var createdAt: String?
+}
+
+/// `useProfile(did, remembered)`.
+@MainActor
+@Observable
+public final class ProfileModel {
+  public private(set) var profile: AccountProfile?
+  /// The account `profile` is of: the DID of the last load. A view drawn
+  /// for a new account before its load has started still sees the last
+  /// account's profile, so what it reads is checked against this.
+  public private(set) var did: String?
+  @ObservationIgnored private let fetch: @Sendable (String) async throws -> JSONValue?
+
+  public init(fetch: @escaping @Sendable (String) async throws -> JSONValue?) {
+    self.fetch = fetch
+  }
+
+  /// Only a change of account starts a fresh read; `remembered` is the
+  /// stand-in at that moment. Call it from `.task(id: did)`, which calls an
+  /// earlier read off.
+  public func load(did: String?, remembered: SessionAccount?) async {
+    self.did = did
+    profile = remembered.map {
+      AccountProfile(handle: $0.handle, displayName: $0.displayName, avatar: $0.avatar)
+    }
+    guard let did, !did.isEmpty else { return }
+    guard let read = try? await fetch(did), !Task.isCancelled, read.isTruthy else { return }
+    // An account whose handle no longer points at it reads as
+    // "handle.invalid", which is not something to print as a name.
+    let handle = read["handle"]?.stringValue
+    let name = read["displayName"]?.stringValue?.jsTrimmed()
+    profile = AccountProfile(
+      handle: handle.flatMap { $0.isEmpty || $0 == "handle.invalid" ? nil : $0 },
+      displayName: name.flatMap { $0.isEmpty ? nil : $0 },
+      avatar: read["avatar"]?.stringValue.flatMap { $0.isEmpty ? nil : $0 },
+      followersCount: read["followersCount"]?.intValue,
+      followsCount: read["followsCount"]?.intValue,
+      postsCount: read["postsCount"]?.intValue,
+      createdAt: read["createdAt"]?.stringValue.flatMap { $0.isEmpty ? nil : $0 })
+  }
+}
+
+@MainActor
+@Observable
+public final class AppModel {
+  public let flags: AppConfig.Flags
+  public let isDemo: Bool
+  @ObservationIgnored public let stores: AppStores
+  public let preferences: PreferencesModel
+  public let session: SessionModel
+  public let terms: TermsAcceptanceModel
+  public let profile: ProfileModel
+  public let notices: SessionNoticesModel
+  @ObservationIgnored public let lookups: SignInLookups
+  /// The posting services a sign-out reads waiting work through
+  /// (pendingWork.js): VirgaPosting's listScheduled and listTimers over the
+  /// account's VirgaBackend, so a long session's sign-out and removal say
+  /// what is scheduled or on a timer. Nil only where nothing can be read
+  /// (a long session's sign-out then says it couldn't check, as the web
+  /// does when the read fails).
+  @ObservationIgnored public let pendingWork: PendingWorkServices?
+  /// What every account's archive is read through (its file store, the
+  /// public network, the clock), less the account itself.
+  @ObservationIgnored let archiveEnvironment: ArchiveEnvironment
+  /// The demo's session, held for as long as the app runs on its network.
+  @ObservationIgnored let demoSession: DemoSession?
+  @ObservationIgnored private var started = false
+
+  init(
+    flags: AppConfig.Flags, isDemo: Bool, stores: AppStores, environment: SessionEnvironment, lookups: SignInLookups,
+    fetchProfile: @escaping @Sendable (String) async throws -> JSONValue?, reporterTransport: any HTTPTransport,
+    archiveEnvironment: ArchiveEnvironment, demoSession: DemoSession? = nil
+  ) {
+    self.flags = flags
+    self.isDemo = isDemo
+    self.stores = stores
+    self.lookups = lookups
+    self.pendingWork = PendingWorkServices.posting()
+    self.archiveEnvironment = archiveEnvironment
+    self.demoSession = demoSession
+    preferences = PreferencesModel(
+      store: stores.keyValue, languages: Locale.preferredLanguages, timeZone: .current, systemDark: SystemAppearance.isDark())
+    let session = SessionModel(env: environment)
+    self.session = session
+    terms = TermsAcceptanceModel(
+      did: nil, mode: nil, storage: stores.keyValue, backendFor: { [weak session] did in session?.backendFor(did) },
+      reporter: TermsAcceptanceModel.reporter(backendUrl: environment.backendUrl, transport: reporterTransport))
+    profile = ProfileModel(fetch: fetchProfile)
+    notices = SessionNoticesModel(session: session, tabStorage: stores.tab)
+    // The templates' cache, in the app's own store (templateService.js's
+    // localStorage), for every TemplatesModel the screens make.
+    TemplateService.shared = TemplateService(store: stores.keyValue)
+    // Mentions are resolved as a post goes out, through the session's
+    // network (the web's global fetch), from the first send on: Drafts' and
+    // Scheduled posts' Post now and Schedule as well as the composer's.
+    Mentions.useNetwork(transport: archiveEnvironment.transport)
+  }
+
+  /// The session's start, once for the process.
+  public func start() async {
+    guard !started else { return }
+    started = true
+    await session.start()
+  }
+
+  // MARK: The archive
+
+  /// An account's archive, as ArchiveProvider makes it: the account's
+  /// agent and handle (the profile's, or what the account list remembers),
+  /// over the app's file store, read through the session's transport and
+  /// clock. Each shell's ArchiveHost makes its own and starts and stops it,
+  /// as each tab of the web mounts its own provider, so one window leaving
+  /// its shell (a legal page, or the window closed) never stops the archive
+  /// another window is showing. They share the account's one store handle.
+  ///
+  /// Posts made in the app reach it through VirgaPosting's posting events
+  /// (`PostingEvents.postsChangedListener`): the composer emits
+  /// virga:posts-changed after a send, and the archive adds the posts.
+  func makeArchive(did: String) -> ArchiveModel {
+    var environment = archiveEnvironment
+    environment.postsChanged = PostingEvents.postsChangedListener()
+    return ArchiveModel(
+      agent: session.did.jsEquals(did) ? session.agent : nil, did: did, handle: archiveHandle(for: did), environment: environment)
+  }
+
+  /// The handle an account's archive is given (ArchiveProvider's
+  /// `profile?.handle || null`, read on every render): the profile's once
+  /// it is this account's, and until then what the account list remembers.
+  /// Right after a switch the view is drawn for the new account while the
+  /// profile is still the last one's, which mustn't lend it its handle.
+  public func archiveHandle(for did: String) -> String? {
+    if profile.did.jsEquals(did) {
+      guard let handle = profile.profile?.handle, !handle.isEmpty else { return nil }
+      return handle
+    }
+    let remembered = session.accounts.first { $0.did.jsEquals(did) }
+    guard let handle = remembered?.handle, !handle.isEmpty else { return nil }
+    return handle
+  }
+
+  /// The session's `resetAnalyticsStore`: nothing more to do. The web drops
+  /// every memoized connection, and a page still holding one goes on
+  /// reading and writing the one database through it. Here a handle holds
+  /// its store's rows and next segment number, so a second handle over the
+  /// same folder (made after a reset, while the open archive keeps the
+  /// first) would write over the first's segments. The deleted account's
+  /// handle has already been forgotten and closed (`deleteDatabase`), and
+  /// every other account keeps the one it has.
+  static let resetArchiveStores: @Sendable (String?) async -> Void = { _ in }
+
+  /// The session's `deleteDatabase`, over the app's file store:
+  /// `virga-posting:<did>` is the posting store (the drafts' kept pictures
+  /// and videos, DraftMedia's), and any other name goes to the archive's
+  /// (`virga-analytics:<did>`), which says whether it was one of its own.
+  static func deleteDatabase(files: any FileStore) -> @Sendable (String) async -> Bool {
+    { name in
+      if DraftMedia.isPostingDbName(name) { return await DraftMedia.deleteDatabase(name, files: files) }
+      return await AnalyticsStore.deleteDatabase(name, files: files)
+    }
+  }
+
+  // MARK: Building it
+
+  /// The one the app runs: the demo when launched with `-VirgaDemo YES`.
+  public static let shared: AppModel = {
+    VirgaTypeface.registerIfNeeded()
+    let defaults = UserDefaults.standard
+    var flags = AppConfig.Flags(infoDictionary: Bundle.main.infoDictionary ?? [:])
+    if defaults.bool(forKey: "VirgaDemo") {
+      // Defense and its moderator are on in the demo whatever the build
+      // says, as the web's harness has them (vite.harness.config.js:
+      // VITE_DEFENSE ??= 'on'); `-VirgaDefense off` or
+      // `-VirgaDefenseModerator off` turns one off. The grant is the
+      // harness's (`-VirgaDemoFlags "defense=on"`).
+      flags = demoFlags(flags, defense: defaults.string(forKey: "VirgaDefense"), moderator: defaults.string(forKey: "VirgaDefenseModerator"))
+      return demo(
+        flags: flags,
+        search: demoSearch(
+          flags: defaults.string(forKey: "VirgaDemoFlags"), askTerms: defaults.bool(forKey: "VirgaDemoTerms"),
+          signedOut: defaults.bool(forKey: "VirgaDemoSignedOut")),
+        prefs: demoPreferences(sky: defaults.string(forKey: "VirgaDemoSky"), liveSky: defaults.bool(forKey: "VirgaDemoLiveSky")))
+    }
+    return device(flags: flags)
+  }()
+
+  /// The build's flags with the demo's own say on Defense, as the web's
+  /// harness sets VITE_DEFENSE and VITE_DEFENSE_MODERATOR: on when not
+  /// given, on for "on", off for anything else.
+  static func demoFlags(_ flags: AppConfig.Flags, defense: String?, moderator: String?) -> AppConfig.Flags {
+    AppConfig.Flags(
+      authMode: flags.authMode, backendURL: flags.backendURL, defenseEnabled: (defense ?? "on") == "on",
+      defenseModeratorEnabled: (moderator ?? "on") == "on")
+  }
+
+  /// Signed in through Virga's server, over the device's stores.
+  static func device(flags: AppConfig.Flags) -> AppModel {
+    let stores = AppStores.device()
+    let environment = SessionEnvironment(
+      storage: stores.keyValue, tabStorage: stores.tab, secrets: stores.secrets, backendUrl: flags.backendURL,
+      authMode: flags.authMode, resetAnalyticsStore: resetArchiveStores, deleteDatabase: deleteDatabase(files: stores.files),
+      authenticator: SystemWebAuthenticator())
+    return AppModel(
+      flags: flags, isDemo: false, stores: stores, environment: environment, lookups: .network,
+      fetchProfile: { did in try await Atproto.getProfile(did) }, reporterTransport: HTTP.transport,
+      archiveEnvironment: ArchiveEnvironment(files: stores.files, transport: environment.transport, clock: environment.clock))
+  }
+
+  /// The preferences the demo's launch arguments ask it to start with, as
+  /// stored, or nil when they ask for none.
+  static func demoPreferences(sky: String?, liveSky: Bool) -> String? {
+    guard sky != nil || liveSky else { return nil }
+    var prefs = Preferences()
+    if let sky, let choice = SkyChoice(rawValue: sky) { prefs.sky = choice }
+    prefs.liveSky = liveSky
+    return prefs.jsonString()
+  }
+
+  /// The harness's address for the demo's launch arguments: `?` and the
+  /// flags given, with `terms=ask` and `signedout` for the two kept switches.
+  static func demoSearch(flags: String?, askTerms: Bool, signedOut: Bool) -> String {
+    var parts: [String] = []
+    if let flags {
+      let given = flags.hasPrefix("?") ? String(flags.dropFirst()) : flags
+      if !given.isEmpty { parts.append(given) }
+    }
+    if askTerms { parts.append("terms=ask") }
+    if signedOut { parts.append("signedout") }
+    return "?" + parts.joined(separator: "&")
+  }
+
+  /// The made-up world (VirgaDemo's DemoSession), signed in, nothing
+  /// persisted. The app's own session model runs over the demo session's
+  /// environment, with the archive's two hooks wired as on a device.
+  static func demo(flags: AppConfig.Flags, search: String, prefs: String? = nil) -> AppModel {
+    let stores = AppStores.inMemory()
+    if let prefs { try? stores.keyValue.setItem(Preferences.preferencesKey, prefs) }
+    let demo = DemoSession(
+      options: DemoOptions.read(search), timeZone: .current, storage: stores.keyValue, tabStorage: stores.tab,
+      secrets: stores.secrets)
+    // The demo server's workers (scheduled posts, timers, Defense's list
+    // writes), every `?cron=` seconds (20 unless the flags say), as the web
+    // harness's install() starts them.
+    demo.startCron()
+    var environment = demo.environment
+    environment.resetAnalyticsStore = resetArchiveStores
+    environment.deleteDatabase = deleteDatabase(files: stores.files)
+    let world = demo.world
+    return AppModel(
+      flags: flags, isDemo: true, stores: stores, environment: environment, lookups: DemoNetwork.lookups(world),
+      fetchProfile: { did in world.views.person(did) }, reporterTransport: demo.transport,
+      archiveEnvironment: demo.archiveEnvironment(files: stores.files, registry: .shared), demoSession: demo)
+  }
+}
+
+/// The sign-in's lookups in the demo: the made-up world's accounts, by
+/// handle, without leaving the device.
+enum DemoNetwork {
+  /// The two accounts of the world, by handle; any other handle isn't found.
+  static func lookups(_ world: DemoWorld) -> SignInLookups {
+    let people = [World.me, World.lab]
+    func answer(_ account: WorldAccount) -> SignInIdentityAnswer {
+      SignInIdentityAnswer(
+        did: account.did, handle: account.handle, displayName: account.displayName, avatar: account.avatar,
+        host: SignInIdentity.hostLabelForPds(World.pds), pds: World.pds)
+    }
+    return SignInLookups(
+      identity: { input in
+        let wanted = Handle.normalize(input)
+        guard let account = people.first(where: { $0.handle.jsEquals(wanted) || $0.did.jsEquals(input) }) else {
+          throw DemoLookupError()
+        }
+        return answer(account)
+      },
+      host: { _ in
+        // Read from the web's shape, `{ host, pds }`, as the lookup answers it.
+        let host: JSONValue = SignInIdentity.hostLabelForPds(World.pds).map(JSONValue.string) ?? .null
+        return try JSONValue.object(["host": host, "pds": .string(World.pds)]).decode(SignInHost.self)
+      },
+      suggest: { query in
+        let wanted = query.jsLowercased()
+        return try people.filter { $0.handle.jsLowercased().hasPrefix(wanted) }.map { account in
+          let avatar: JSONValue = account.avatar.map(JSONValue.string) ?? .null
+          let row = JSONValue.object([
+            "did": .string(account.did), "handle": .string(account.handle), "displayName": .string(account.displayName), "avatar": avatar,
+          ])
+          return try row.decode(SignInSuggestion.self)
+        }
+      })
+  }
+
+  struct DemoLookupError: Error {}
+}
+#endif

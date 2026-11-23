@@ -1,0 +1,57 @@
+{
+  "domain": "ui-defense",
+  "target": "VirgaUI",
+  "wave": 4,
+  "summary": "Defense's screens and the radar in SwiftUI.",
+  "files": {
+    "src/defense/AddToList.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Defense/AddToListCard.swift"
+      ],
+      "note": "whyNot (vouches, a long session, the lists' error, Reading your lists…, writes off, the lists permission) with Let Defense make lists; the form: Who (each approvable band to tick with its mark, count and meaning, a band with none disabled; the protected never added), To (the lists, a list made here kept for a retry, A new list…), its name and For when making one, Why in your words (held to 500) with its hint, the plan limit's warning, Add n… with the estimate at Virga’s pace, the error; the confirm dialog's title and paragraphs; approving (createList when making, then planAndApprove with the rows not kept, the totals with their bands, the ticked bands and cleanNote) and the done line with Follow it on Lists and Add more from this post. The lists are read again without waiting, so the dialog closes once the plan is approved.",
+      "synced": "cf47fbcd225f"
+    },
+    "src/defense/DefenseHistory.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Defense/DefenseHistoryPage.swift"
+      ],
+      "note": "The long session's warning, Reading the history…, the error; Approvals (the note or From a scan, its date, the list it went to, its bands in lower case, the way to the post, planOutcome's line, Undo while any are live) and Everyone (a person row each with decisionPhrase, the list, the date and the note, Take off for a live add), Show older past 200, the read again every 15 seconds while anything is queued or sent, and the Take off dialog (undoAdds by plan or by ids, then a fresh read).",
+      "synced": "e5732fdce94b"
+    },
+    "src/defense/DefenseLists.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Defense/DefenseListsPage.swift"
+      ],
+      "note": "The header with Defense in the crumbs; whyNot without a scan; Your lists (the count, New list with its name and For, Make the list / Making it…, Cancel, the error; each list's name as the way to it on Bluesky, To block or To mute, on it by Virga, being written, Made, and the held line in the warning colour), the moderator when the build turns it on, and Kept by hand (Keep @handle, resolved through the public AppView on the session's transport, or a DID; Why, held to 200; each kept person's row with their reason and Stop keeping). DefenseListsModel reads and polls the lists. Making a list, Keep and Stop keeping read the lists again without waiting, as the web's do.",
+      "synced": "4e2035efa2d7"
+    },
+    "src/defense/DefensePage.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Defense/DefensePage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Defense/DefenseScanResult.swift"
+      ],
+      "note": "DefensePage routes scan, lists and history (behind the Defense build flag, which the demo can turn on with -VirgaDefense on). The scan page over DefenseAccountModel (caps, askFor) and ScanStore.shared: Turn on Defense (both paragraphs, the refused line, Opening the sign-in…, the error) while the grant is missing or a scan was refused for it; the form (a link, Scan, and PageModel.postsToScan's posts of yours with their replies and quotes); a scan begun as the page does (Scan.runScan over Scan.signedInProfiles(agent), Scan.canaryCandidates from the archive, the session's transport for Constellation and the public AppView); Scanning with its stage, count, Stop and bar (VoiceOver hears the count as the line's value; only the stage is announced); the failure with Try again unless the link was the trouble; the result (Who engaged with the post's words or address, Open the post, Scan again, the four figures, ScanNotes' callouts, the radar, Show as table with the band × slice counts and Export 'defense-scan' of PageModel.scanCsvRows, the near list with its band filter, a person row each led by its band mark and PageModel.rowFacts, Show 40 more, and the no-connection count); How a scan sorts people before any scan; Defense is on with Turn off. A mark picked on the radar is marked in the list and shown in it, but the page doesn't scroll to it. Turning Defense on or off drops the account's scan once the sign-in comes back, as the web's reload does; Let Defense make lists keeps it, where the web's reload drops it too.",
+      "synced": "20776ae6ca59"
+    },
+    "src/defense/ModeratorCard.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Defense/ModeratorCard.swift"
+      ],
+      "note": "Reading…, the error, the server without a moderator, Link the moderator / Making a code…, the code to send with the moderator's profile link (read again every five seconds until it lands or expires), the linked line with Unlink, and “block @someone” adds to (Ask me which, or one of the lists, sent as chosen).",
+      "synced": "8a464b0ea2fe"
+    },
+    "src/defense/Radar.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Defense/RadarView.swift"
+      ],
+      "note": "Radar.jsx's SVG drawn in a Canvas in the same 1000-unit square (scaled to the stage, at most 600 wide): the far ring's tint and the inner ground, the rings' edges with the protected one dashed, the slices' axes, the strangers' texture (Radar.texture), the marks (Radar.place; the protected a ring, the connected larger and drawn last, the notable a diamond), the picked and pointed rings and You. Over it the slices' names and totals (in the corners for four slices), the strangers' counts on the page's ground and You; the callout (PageModel.describeRow) to the side with more room; the legend with each band's count; BandMark. A press is the pointer: on a mark (within 12 points × 1.4) it shows the callout and picks it, elsewhere it clears. VoiceOver reads the summary label; swiping up and down walks Radar.walkOrder and says each account, a double tap picks it and says \"Marked <account> in the list below.\"; the hint names swiping up or down and double-tapping (the web's says arrow keys and Enter). Not here: a hardware keyboard's arrow keys (the web's focusable stage).",
+      "synced": "8d86152d960d"
+    }
+  }
+}

@@ -1,0 +1,641 @@
+{
+  "name": "repo.car",
+  "sources": [
+    "src/lib/carRepo.js"
+  ],
+  "cases": [
+    {
+      "id": "harness repo",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgpd2K9G1MOwNbbfEd/SIPjU0autML+06dkba2UNWWC8VndmVyc2lvbgHRAQFxEiCl3Yr0bUw7A1tt8R39Ig+NTRq60wv7Tp2RtrZQ1ZYLxaZjZGlkcWRpZDpwbGM6Y2FycGFyaXR5Y3Jldm4zbWhhcm5lc3NyZXYyMmNzaWdYQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkZGF0YdgqWCUAAXESIH5AdCyDmjQtgvz5umSCc8YcOpwE9LxFPz2FKUvO6DsmZHByZXb2Z3ZlcnNpb24DuQEBcRIgfkB0LIOaNC2C/Pm6ZIJzxhw6nAT0vEU/PYUpS87oOyaiYWWCpGFrWCBhcHAuYnNreS5mZWVkLnBvc3QvM2thYWFhYWFhYWFhMmFwAGF09mF22CpYJQABcRIgHOult/S4HePqp7s9lrmUwNJk4e1/Tm4o6yi4xtmhNs2kYWtCYjJhcBgeYXT2YXbYKlglAAFxEiBBnksOW0cuIS5wulrWqcEi+e3iNqYsqDzbZk+3uJLalmFs9kcBcRIgHOult/S4HePqp7s9lrmUwNJk4e1/Tm4o6yi4xtmhNs2iZHRleHRjb25lZSR0eXBlcmFwcC5ic2t5LmZlZWQucG9zdEcBcRIgQZ5LDltHLiEucLpa1qnBIvnt4jamLKg822ZPt7iS2paiZHRleHRjdHdvZSR0eXBlcmFwcC5ic2t5LmZlZWQucG9zdA=="
+      },
+      "output": {
+        "roots": [
+          "bafyreiff3wfpi3kmhmbvw3prdx6sed4njunlvuyl7nhj3enwwzinlfqlyu"
+        ],
+        "blocks": [
+          {
+            "cid": "bafyreiff3wfpi3kmhmbvw3prdx6sed4njunlvuyl7nhj3enwwzinlfqlyu",
+            "bytesStart": 97,
+            "bytesEnd": 270,
+            "entryStart": 59,
+            "entryEnd": 270,
+            "cidStart": 61,
+            "cidEnd": 97
+          },
+          {
+            "cid": "bafyreid6ib2cza42gqwyf7hzxjsie46gdq5jybhuxrct6pmffff452b3ey",
+            "bytesStart": 308,
+            "bytesEnd": 457,
+            "entryStart": 270,
+            "entryEnd": 457,
+            "cidStart": 272,
+            "cidEnd": 308
+          },
+          {
+            "cid": "bafyreia45os3p5fydxr6vj53hwlltfga2jsod3l7jzxcr2zixddntijwzu",
+            "bytesStart": 494,
+            "bytesEnd": 529,
+            "entryStart": 457,
+            "entryEnd": 529,
+            "cidStart": 458,
+            "cidEnd": 494
+          },
+          {
+            "cid": "bafyreicbtzfq4w2hfyqs44f2lllktqjc7hw6envgfsudzw3gj633rew2sy",
+            "bytesStart": 566,
+            "bytesEnd": 601,
+            "entryStart": 529,
+            "entryEnd": 601,
+            "cidStart": 530,
+            "cidEnd": 566
+          }
+        ]
+      }
+    },
+    {
+      "id": "two blocks",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbgE8AXESIA/+tx7kUgCkWQUDMJMCj+ZjKNKNl0LFsg5pwac9DB3ZomR0ZXh0ZWZpcnN0ZSR0eXBlZXgueS56QAFxEiBCZwe56vnKoV5fG0/sCWWatkNMQe8yBIpmRnRsthWth6NhbgJkdGV4dGZzZWNvbmRlJHR5cGVleC55Lno="
+      },
+      "output": {
+        "roots": [
+          "bafyreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e"
+        ],
+        "blocks": [
+          {
+            "cid": "bafyreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e",
+            "bytesStart": 96,
+            "bytesEnd": 120,
+            "entryStart": 59,
+            "entryEnd": 120,
+            "cidStart": 60,
+            "cidEnd": 96
+          },
+          {
+            "cid": "bafyreiccm4d3t2xzzkqv4xy3j7waszm2wzbuyqppgiciuzsgorwlmfnnq4",
+            "bytesStart": 157,
+            "bytesEnd": 185,
+            "entryStart": 120,
+            "entryEnd": 185,
+            "cidStart": 121,
+            "cidEnd": 157
+          }
+        ]
+      }
+    },
+    {
+      "id": "no roots",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "EaJlcm9vdHOAZ3ZlcnNpb24BPAFxEiAP/rce5FIApFkFAzCTAo/mYyjSjZdCxbIOacGnPQwd2aJkdGV4dGVmaXJzdGUkdHlwZWV4Lnkueg=="
+      },
+      "output": {
+        "roots": [],
+        "blocks": [
+          {
+            "cid": "bafyreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e",
+            "bytesStart": 55,
+            "bytesEnd": 79,
+            "entryStart": 18,
+            "entryEnd": 79,
+            "cidStart": 19,
+            "cidEnd": 55
+          }
+        ]
+      }
+    },
+    {
+      "id": "two roots",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "Y6Jlcm9vdHOC2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdnYKlglAAFxEiBCZwe56vnKoV5fG0/sCWWatkNMQe8yBIpmRnRsthWth2d2ZXJzaW9uAUABcRIgQmcHuer5yqFeXxtP7AllmrZDTEHvMgSKZkZ0bLYVrYejYW4CZHRleHRmc2Vjb25kZSR0eXBlZXgueS56PAFxEiAP/rce5FIApFkFAzCTAo/mYyjSjZdCxbIOacGnPQwd2aJkdGV4dGVmaXJzdGUkdHlwZWV4Lnkueg=="
+      },
+      "output": {
+        "roots": [
+          "bafyreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e",
+          "bafyreiccm4d3t2xzzkqv4xy3j7waszm2wzbuyqppgiciuzsgorwlmfnnq4"
+        ],
+        "blocks": [
+          {
+            "cid": "bafyreiccm4d3t2xzzkqv4xy3j7waszm2wzbuyqppgiciuzsgorwlmfnnq4",
+            "bytesStart": 137,
+            "bytesEnd": 165,
+            "entryStart": 100,
+            "entryEnd": 165,
+            "cidStart": 101,
+            "cidEnd": 137
+          },
+          {
+            "cid": "bafyreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e",
+            "bytesStart": 202,
+            "bytesEnd": 226,
+            "entryStart": 165,
+            "entryEnd": 226,
+            "cidStart": 166,
+            "cidEnd": 202
+          }
+        ]
+      }
+    },
+    {
+      "id": "header only",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbgE="
+      },
+      "output": {
+        "roots": [
+          "bafyreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e"
+        ],
+        "blocks": []
+      }
+    },
+    {
+      "id": "empty block",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABVRIg47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFVndmVyc2lvbgEkAVUSIOOwxEKY/BwUmvv0yJlvuSQnrkHkZJuTTKSVmRt4UrhVJAFVEiDjsMRCmPwcFJr79MiZb7kkJ65B5GSbk0yklZkbeFK4VQ=="
+      },
+      "output": {
+        "roots": [
+          "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+        ],
+        "blocks": [
+          {
+            "cid": "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku",
+            "bytesStart": 96,
+            "bytesEnd": 96,
+            "entryStart": 59,
+            "entryEnd": 96,
+            "cidStart": 60,
+            "cidEnd": 96
+          },
+          {
+            "cid": "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku",
+            "bytesStart": 133,
+            "bytesEnd": 133,
+            "entryStart": 96,
+            "entryEnd": 133,
+            "cidStart": 97,
+            "cidEnd": 133
+          }
+        ]
+      }
+    },
+    {
+      "id": "null block",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgsLKYi2u+ckus2l6eUkc23gvH2uQcRrQhPFDh011OXxNndmVyc2lvbgElAXESILCymItrvnJLrNpenlJHNt4Lx9rkHEa0ITxQ4dNdTl8T9g=="
+      },
+      "output": {
+        "roots": [
+          "bafyreifqwkmiw256ojf2zws6tzjeonw6bpd5vza4i22ccpcq4hjv2ts7cm"
+        ],
+        "blocks": [
+          {
+            "cid": "bafyreifqwkmiw256ojf2zws6tzjeonw6bpd5vza4i22ccpcq4hjv2ts7cm",
+            "bytesStart": 96,
+            "bytesEnd": 97,
+            "entryStart": 59,
+            "entryEnd": 97,
+            "cidStart": 60,
+            "cidEnd": 96
+          }
+        ]
+      }
+    },
+    {
+      "id": "duplicate blocks",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbgE8AXESIA/+tx7kUgCkWQUDMJMCj+ZjKNKNl0LFsg5pwac9DB3ZomR0ZXh0ZWZpcnN0ZSR0eXBlZXgueS56PAFxEiAP/rce5FIApFkFAzCTAo/mYyjSjZdCxbIOacGnPQwd2aJkdGV4dGVmaXJzdGUkdHlwZWV4LnkuekABcRIgQmcHuer5yqFeXxtP7AllmrZDTEHvMgSKZkZ0bLYVrYejYW4CZHRleHRmc2Vjb25kZSR0eXBlZXgueS56PAFxEiAP/rce5FIApFkFAzCTAo/mYyjSjZdCxbIOacGnPQwd2aJkdGV4dGVmaXJzdGUkdHlwZWV4Lnkueg=="
+      },
+      "output": {
+        "roots": [
+          "bafyreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e"
+        ],
+        "blocks": [
+          {
+            "cid": "bafyreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e",
+            "bytesStart": 96,
+            "bytesEnd": 120,
+            "entryStart": 59,
+            "entryEnd": 120,
+            "cidStart": 60,
+            "cidEnd": 96
+          },
+          {
+            "cid": "bafyreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e",
+            "bytesStart": 157,
+            "bytesEnd": 181,
+            "entryStart": 120,
+            "entryEnd": 181,
+            "cidStart": 121,
+            "cidEnd": 157
+          },
+          {
+            "cid": "bafyreiccm4d3t2xzzkqv4xy3j7waszm2wzbuyqppgiciuzsgorwlmfnnq4",
+            "bytesStart": 218,
+            "bytesEnd": 246,
+            "entryStart": 181,
+            "entryEnd": 246,
+            "cidStart": 182,
+            "cidEnd": 218
+          },
+          {
+            "cid": "bafyreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e",
+            "bytesStart": 283,
+            "bytesEnd": 307,
+            "entryStart": 246,
+            "entryEnd": 307,
+            "cidStart": 247,
+            "cidEnd": 283
+          }
+        ]
+      }
+    },
+    {
+      "id": "empty input",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": ""
+      },
+      "output": {
+        "$throws": "could not decode varint"
+      }
+    },
+    {
+      "id": "not a car",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "AQIDBA=="
+      },
+      "output": {
+        "$throws": "expected a car v1 archive"
+      }
+    },
+    {
+      "id": "header length zero",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "AA=="
+      },
+      "output": {
+        "$throws": "invalid car header; length=0"
+      }
+    },
+    {
+      "id": "header cut short",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgD/4="
+      },
+      "output": {
+        "$throws": "unexpected end of data"
+      }
+    },
+    {
+      "id": "header varint cut",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "gA=="
+      },
+      "output": {
+        "$throws": "could not decode varint"
+      }
+    },
+    {
+      "id": "header varint nine bytes",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "gICAgICAgIAB"
+      },
+      "output": {
+        "$throws": "could not decode varint"
+      }
+    },
+    {
+      "id": "header not cbor",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "Av//"
+      },
+      "output": {
+        "$throws": "invalid simple value; got 31"
+      }
+    },
+    {
+      "id": "header remainder",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "AqAA"
+      },
+      "output": {
+        "$throws": "decoded value contains remainder"
+      }
+    },
+    {
+      "id": "header an array",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "A4IBgA=="
+      },
+      "output": {
+        "$throws": "expected a car v1 archive"
+      }
+    },
+    {
+      "id": "header version 2",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbgI="
+      },
+      "output": {
+        "$throws": "expected a car v1 archive"
+      }
+    },
+    {
+      "id": "header version string",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "O6Jlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbmEx"
+      },
+      "output": {
+        "$throws": "expected a car v1 archive"
+      }
+    },
+    {
+      "id": "header version float",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "QqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbvs/+AAAAAAAAA=="
+      },
+      "output": {
+        "$throws": "expected a car v1 archive"
+      }
+    },
+    {
+      "id": "header no roots key",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "CqFndmVyc2lvbgE="
+      },
+      "output": {
+        "$throws": "expected a car v1 archive"
+      }
+    },
+    {
+      "id": "header roots not array",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OaJlcm9vdHPYKlglAAFxEiAP/rce5FIApFkFAzCTAo/mYyjSjZdCxbIOacGnPQwd2Wd2ZXJzaW9uAQ=="
+      },
+      "output": {
+        "$throws": "expected a car v1 archive"
+      }
+    },
+    {
+      "id": "header root a map",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "WKJlcm9vdHOBomF4AWUkbGlua3g7YmFmeXJlaWFwNzIzcjV6Y3NhY3Nmc2JpZGdjanFmZDdnbW11bmZkbXhpbGMzZWR0anlndHQyZGE1M2VndmVyc2lvbgE="
+      },
+      "output": {
+        "$throws": "expected a car v1 archive"
+      }
+    },
+    {
+      "id": "header root a string",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "TqJlcm9vdHOBeDtiYWZ5cmVpYXA3MjNyNXpjc2Fjc2ZzYmlkZ2NqcWZkN2dtbXVuZmRteGlsYzNlZHRqeWd0dDJkYTUzZWd2ZXJzaW9uAQ=="
+      },
+      "output": {
+        "$throws": "expected a car v1 archive"
+      }
+    },
+    {
+      "id": "header extra keys",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "QqNkbm90ZWJoaWVyb290c4HYKlglAAFxEiAP/rce5FIApFkFAzCTAo/mYyjSjZdCxbIOacGnPQwd2Wd2ZXJzaW9uATwBcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdmiZHRleHRlZmlyc3RlJHR5cGVleC55Lno="
+      },
+      "output": {
+        "roots": [
+          "bafyreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e"
+        ],
+        "blocks": [
+          {
+            "cid": "bafyreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e",
+            "bytesStart": 104,
+            "bytesEnd": 128,
+            "entryStart": 67,
+            "entryEnd": 128,
+            "cidStart": 68,
+            "cidEnd": 104
+          }
+        ]
+      }
+    },
+    {
+      "id": "block length 35",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbgEj"
+      },
+      "output": {
+        "$throws": "invalid car block; length=35"
+      }
+    },
+    {
+      "id": "block length 5",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbgE8AXESIA/+tx7kUgCkWQUDMJMCj+ZjKNKNl0LFsg5pwac9DB3ZomR0ZXh0ZWZpcnN0ZSR0eXBlZXgueS56BQ=="
+      },
+      "output": {
+        "$throws": "invalid car block; length=5"
+      }
+    },
+    {
+      "id": "block data cut",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbgE8AXESIA/+tx7kUgCkWQUDMJMCj+ZjKNKNl0LFsg5pwac9DB3ZomR0ZXh0ZWZpcnN0ZQ=="
+      },
+      "output": {
+        "$throws": "unexpected end of data"
+      }
+    },
+    {
+      "id": "block cid cut",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbgE8AXESIA/+tx7kUgCkWQUDMJMCj+Y="
+      },
+      "output": {
+        "$throws": "unexpected end of data"
+      }
+    },
+    {
+      "id": "block length varint long",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbgH//////////wE="
+      },
+      "output": {
+        "$throws": "could not decode varint"
+      }
+    },
+    {
+      "id": "block cid v0",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbgE8EnESIA/+tx7kUgCkWQUDMJMCj+ZjKNKNl0LFsg5pwac9DB3ZomR0ZXh0ZWZpcnN0ZSR0eXBlZXgueS56"
+      },
+      "output": {
+        "$throws": "incorrect cid version (got v18)"
+      }
+    },
+    {
+      "id": "block cid codec",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbgE8AXASIA/+tx7kUgCkWQUDMJMCj+ZjKNKNl0LFsg5pwac9DB3ZomR0ZXh0ZWZpcnN0ZSR0eXBlZXgueS56"
+      },
+      "output": {
+        "$throws": "incorrect cid codec (got 0x70)"
+      }
+    },
+    {
+      "id": "block cid hash",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbgE8AXETIA/+tx7kUgCkWQUDMJMCj+ZjKNKNl0LFsg5pwac9DB3ZomR0ZXh0ZWZpcnN0ZSR0eXBlZXgueS56"
+      },
+      "output": {
+        "$throws": "incorrect cid digest type (got 0x13)"
+      }
+    },
+    {
+      "id": "block cid size",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbgE8AXESHw/+tx7kUgCkWQUDMJMCj+ZjKNKNl0LFsg5pwac9DB3ZomR0ZXh0ZWZpcnN0ZSR0eXBlZXgueS56"
+      },
+      "output": {
+        "$throws": "incorrect cid digest size (got 31)"
+      }
+    },
+    {
+      "id": "block tampered",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbgE8AXESIA/+tx7kUgCkWQUDMJMCj+ZjKNKNl0LFsg5pwac9DB3ZomR0ZXh0ZWZpcnN0ZSR0eXBlZXgueS57"
+      },
+      "output": {
+        "$throws": "car block does not match its cid; expected=bafyreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e; actual=bafyreibvaijmdmky5m4hzi5ajazarr7s4czayt6pvjxmnwq4xepuphx5o4"
+      }
+    },
+    {
+      "id": "block raw codec mismatch",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbgEnAVUSIA/+tx7kUgCkWQUDMJMCj+ZjKNKNl0LFsg5pwac9DB3ZAQID"
+      },
+      "output": {
+        "$throws": "car block does not match its cid; expected=bafkreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e; actual=bafkreiadsbmmn4waznesyuz3bjgrj33xzqhxrk6mz3ksq7meugrachh3qe"
+      }
+    },
+    {
+      "id": "second block tampered",
+      "fn": "fromUint8Array",
+      "input": {
+        "car": "OqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbgE8AXESIA/+tx7kUgCkWQUDMJMCj+ZjKNKNl0LFsg5pwac9DB3ZomR0ZXh0ZWZpcnN0ZSR0eXBlZXgueS56PAFxEiBCZwe56vnKoV5fG0/sCWWatkNMQe8yBIpmRnRsthWth6JkdGV4dGVmaXJzdGUkdHlwZWV4Lnkuew=="
+      },
+      "output": {
+        "$throws": "car block does not match its cid; expected=bafyreiccm4d3t2xzzkqv4xy3j7waszm2wzbuyqppgiciuzsgorwlmfnnq4; actual=bafyreibvaijmdmky5m4hzi5ajazarr7s4czayt6pvjxmnwq4xepuphx5o4"
+      }
+    },
+    {
+      "id": "one root two blocks",
+      "fn": "writeCarStream",
+      "input": {
+        "roots": [
+          "bafyreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e"
+        ],
+        "blocks": [
+          {
+            "cid": "bafyreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e",
+            "data": "omR0ZXh0ZWZpcnN0ZSR0eXBlZXgueS56"
+          },
+          {
+            "cid": "bafyreiccm4d3t2xzzkqv4xy3j7waszm2wzbuyqppgiciuzsgorwlmfnnq4",
+            "data": "o2FuAmR0ZXh0ZnNlY29uZGUkdHlwZWV4Lnkueg=="
+          }
+        ]
+      },
+      "output": "OqJlcm9vdHOB2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdlndmVyc2lvbgE8AXESIA/+tx7kUgCkWQUDMJMCj+ZjKNKNl0LFsg5pwac9DB3ZomR0ZXh0ZWZpcnN0ZSR0eXBlZXgueS56QAFxEiBCZwe56vnKoV5fG0/sCWWatkNMQe8yBIpmRnRsthWth6NhbgJkdGV4dGZzZWNvbmRlJHR5cGVleC55Lno="
+    },
+    {
+      "id": "no roots",
+      "fn": "writeCarStream",
+      "input": {
+        "roots": [],
+        "blocks": [
+          {
+            "cid": "bafyreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e",
+            "data": "omR0ZXh0ZWZpcnN0ZSR0eXBlZXgueS56"
+          }
+        ]
+      },
+      "output": "EaJlcm9vdHOAZ3ZlcnNpb24BPAFxEiAP/rce5FIApFkFAzCTAo/mYyjSjZdCxbIOacGnPQwd2aJkdGV4dGVmaXJzdGUkdHlwZWV4Lnkueg=="
+    },
+    {
+      "id": "two roots no blocks",
+      "fn": "writeCarStream",
+      "input": {
+        "roots": [
+          "bafyreiap723r5zcsacsfsbidgcjqfd7gmmunfdmxilc3edtjygtt2da53e",
+          "bafyreiccm4d3t2xzzkqv4xy3j7waszm2wzbuyqppgiciuzsgorwlmfnnq4"
+        ],
+        "blocks": []
+      },
+      "output": "Y6Jlcm9vdHOC2CpYJQABcRIgD/63HuRSAKRZBQMwkwKP5mMo0o2XQsWyDmnBpz0MHdnYKlglAAFxEiBCZwe56vnKoV5fG0/sCWWatkNMQe8yBIpmRnRsthWth2d2ZXJzaW9uAQ=="
+    },
+    {
+      "id": "empty block",
+      "fn": "writeCarStream",
+      "input": {
+        "roots": [
+          "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+        ],
+        "blocks": [
+          {
+            "cid": "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku",
+            "data": ""
+          }
+        ]
+      },
+      "output": "OqJlcm9vdHOB2CpYJQABVRIg47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFVndmVyc2lvbgEkAVUSIOOwxEKY/BwUmvv0yJlvuSQnrkHkZJuTTKSVmRt4UrhV"
+    },
+    {
+      "id": "big block",
+      "fn": "writeCarStream",
+      "input": {
+        "roots": [],
+        "blocks": [
+          {
+            "cid": "bafkreiax235ng2t3y4rm4jfkd47oruwzv3wltu7c53dwbkahv3kwyfvuz4",
+            "data": "CQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJ"
+          }
+        ]
+      },
+      "output": "EaJlcm9vdHOAZ3ZlcnNpb24B0AIBVRIgF9b602p7xyLOJKofPujS2a7sudPi7sdgqAeu1WwWtM8JCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQk="
+    }
+  ]
+}

@@ -1,0 +1,201 @@
+{
+  "name": "hillside.style",
+  "sources": [
+    "src/hillside/hillside.css",
+    "src/shell/bits.jsx"
+  ],
+  "cases": [
+    {
+      "id": "style",
+      "fn": "style",
+      "input": {},
+      "output": {
+        "flat": {
+          "day": [
+            {
+              "color": "#1c54cc",
+              "crest": 0,
+              "offset": 0
+            },
+            {
+              "color": "#3a7fe2",
+              "crest": 0.5,
+              "offset": 0
+            },
+            {
+              "color": "#8bbaf0",
+              "crest": 1,
+              "offset": -0.06
+            },
+            {
+              "color": "#d4e7f8",
+              "crest": 1,
+              "offset": -0.005
+            },
+            {
+              "color": "#94d43c",
+              "crest": 1,
+              "offset": 0
+            },
+            {
+              "color": "#4fa624",
+              "crest": 1,
+              "offset": 0.1
+            },
+            {
+              "color": "#236617",
+              "crest": 0,
+              "offset": 1
+            }
+          ],
+          "dawn": [
+            {
+              "color": "#3b5aa8",
+              "crest": 0,
+              "offset": 0
+            },
+            {
+              "color": "#7890cf",
+              "crest": 0.5,
+              "offset": 0
+            },
+            {
+              "color": "#e7b7a6",
+              "crest": 1,
+              "offset": -0.06
+            },
+            {
+              "color": "#ffd59e",
+              "crest": 1,
+              "offset": -0.005
+            },
+            {
+              "color": "#9cb04a",
+              "crest": 1,
+              "offset": 0
+            },
+            {
+              "color": "#557c2c",
+              "crest": 1,
+              "offset": 0.1
+            },
+            {
+              "color": "#22431e",
+              "crest": 0,
+              "offset": 1
+            }
+          ],
+          "dusk": [
+            {
+              "color": "#262a66",
+              "crest": 0,
+              "offset": 0
+            },
+            {
+              "color": "#5d4a8f",
+              "crest": 0.5,
+              "offset": 0
+            },
+            {
+              "color": "#c9796b",
+              "crest": 1,
+              "offset": -0.06
+            },
+            {
+              "color": "#ffb070",
+              "crest": 1,
+              "offset": -0.005
+            },
+            {
+              "color": "#7c8440",
+              "crest": 1,
+              "offset": 0
+            },
+            {
+              "color": "#3c5429",
+              "crest": 1,
+              "offset": 0.1
+            },
+            {
+              "color": "#172b1e",
+              "crest": 0,
+              "offset": 1
+            }
+          ],
+          "night": [
+            {
+              "color": "#050a1d",
+              "crest": 0,
+              "offset": 0
+            },
+            {
+              "color": "#0c1838",
+              "crest": 0.5,
+              "offset": 0
+            },
+            {
+              "color": "#182c55",
+              "crest": 1,
+              "offset": -0.06
+            },
+            {
+              "color": "#2a4470",
+              "crest": 1,
+              "offset": -0.005
+            },
+            {
+              "color": "#24463a",
+              "crest": 1,
+              "offset": 0
+            },
+            {
+              "color": "#143026",
+              "crest": 1,
+              "offset": 0.1
+            },
+            {
+              "color": "#081712",
+              "crest": 0,
+              "offset": 1
+            }
+          ]
+        },
+        "defaultCrest": 0.5,
+        "canvas": {
+          "hillBlur": 6,
+          "bleedPerBlur": 2.5,
+          "fadeIn": 0.9,
+          "focusDuration": 1.6,
+          "focusDelay": 0.6
+        },
+        "liveSky": {
+          "height": "var(--sky-end)",
+          "blend": "screen",
+          "sceneHeight": 1100,
+          "crest": 0.96,
+          "opacity": 0.8,
+          "opacityAtNight": 0.45,
+          "grayscale": 1,
+          "brightness": 0.62,
+          "contrast": 2.4,
+          "mask": [
+            1,
+            0.6,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "id": "skyTaps",
+      "fn": "skyTaps",
+      "input": {},
+      "output": {
+        "window": 1500,
+        "needed": 5,
+        "putAway": "The live sky is put away.",
+        "out": "The live sky is out. Settings › Appearance puts it away again."
+      }
+    }
+  ]
+}

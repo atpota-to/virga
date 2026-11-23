@@ -1,0 +1,300 @@
+{
+  "name": "network.asyncPool",
+  "sources": [
+    "src/posting/lib/asyncPool.js"
+  ],
+  "cases": [
+    {
+      "id": "mapWithConcurrency#1",
+      "fn": "mapWithConcurrency",
+      "input": {
+        "items": [
+          "a",
+          "b",
+          "c",
+          "d"
+        ],
+        "limit": 2
+      },
+      "output": {
+        "results": [
+          "0:a",
+          "1:b",
+          "2:c",
+          "3:d"
+        ],
+        "peak": 2,
+        "called": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "id": "mapWithConcurrency#2",
+      "fn": "mapWithConcurrency",
+      "input": {
+        "items": [
+          "a",
+          "b",
+          "c"
+        ],
+        "limit": 10
+      },
+      "output": {
+        "results": [
+          "0:a",
+          "1:b",
+          "2:c"
+        ],
+        "peak": 3,
+        "called": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "mapWithConcurrency#3",
+      "fn": "mapWithConcurrency",
+      "input": {
+        "items": [
+          "a",
+          "b",
+          "c"
+        ],
+        "limit": 0
+      },
+      "output": {
+        "results": [
+          "0:a",
+          "1:b",
+          "2:c"
+        ],
+        "peak": 1,
+        "called": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "mapWithConcurrency#4",
+      "fn": "mapWithConcurrency",
+      "input": {
+        "items": [
+          "a",
+          "b",
+          "c"
+        ],
+        "limit": -3
+      },
+      "output": {
+        "results": [
+          "0:a",
+          "1:b",
+          "2:c"
+        ],
+        "peak": 1,
+        "called": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "mapWithConcurrency#5",
+      "fn": "mapWithConcurrency",
+      "input": {
+        "items": [
+          "a",
+          "b",
+          "c"
+        ],
+        "limit": 2.9
+      },
+      "output": {
+        "results": [
+          "0:a",
+          "1:b",
+          "2:c"
+        ],
+        "peak": 2,
+        "called": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "mapWithConcurrency#6",
+      "fn": "mapWithConcurrency",
+      "input": {
+        "items": [
+          "a",
+          "b",
+          "c"
+        ],
+        "limit": 0.5
+      },
+      "output": {
+        "results": [
+          "0:a",
+          "1:b",
+          "2:c"
+        ],
+        "peak": 1,
+        "called": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "mapWithConcurrency#7",
+      "fn": "mapWithConcurrency",
+      "input": {
+        "items": [
+          "a",
+          "b",
+          "c"
+        ],
+        "limit": null
+      },
+      "output": {
+        "results": [
+          "0:a",
+          "1:b",
+          "2:c"
+        ],
+        "peak": 1,
+        "called": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "mapWithConcurrency#8",
+      "fn": "mapWithConcurrency",
+      "input": {
+        "items": [
+          "a",
+          "b",
+          "c"
+        ],
+        "limit": "x"
+      },
+      "output": {
+        "results": [
+          "0:a",
+          "1:b",
+          "2:c"
+        ],
+        "peak": 1,
+        "called": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "mapWithConcurrency#9",
+      "fn": "mapWithConcurrency",
+      "input": {
+        "items": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f",
+          "g"
+        ],
+        "limit": 3
+      },
+      "output": {
+        "results": [
+          "0:a",
+          "1:b",
+          "2:c",
+          "3:d",
+          "4:e",
+          "5:f",
+          "6:g"
+        ],
+        "peak": 3,
+        "called": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      }
+    },
+    {
+      "id": "mapWithConcurrency#10",
+      "fn": "mapWithConcurrency",
+      "input": {
+        "items": [],
+        "limit": 4
+      },
+      "output": {
+        "results": [],
+        "peak": 0,
+        "called": []
+      }
+    },
+    {
+      "id": "mapWithConcurrency#11",
+      "fn": "mapWithConcurrency",
+      "input": {
+        "items": [
+          "a",
+          "fail-b",
+          "c",
+          "fail-d",
+          "e"
+        ],
+        "limit": 2
+      },
+      "output": {
+        "error": "boom fail-b",
+        "called": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "id": "mapWithConcurrency#12",
+      "fn": "mapWithConcurrency",
+      "input": {
+        "items": [
+          "fail-a"
+        ],
+        "limit": 1
+      },
+      "output": {
+        "error": "boom fail-a",
+        "called": [
+          0
+        ]
+      }
+    }
+  ]
+}

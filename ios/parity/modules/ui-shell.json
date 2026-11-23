@@ -1,0 +1,676 @@
+{
+  "domain": "ui-shell",
+  "target": "VirgaUI",
+  "wave": 4,
+  "summary": "The SwiftUI shell: the sky and theme, components, navigation, sign-in, the agreement, legal pages, accounts and settings.",
+  "files": {
+    "src/App.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/App/AppRoot.swift",
+        "ios/VirgaKit/Sources/VirgaUI/App/AppModel.swift",
+        "ios/VirgaKit/Sources/VirgaUI/App/ArchiveHost.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerHost.swift"
+      ],
+      "note": "The app's states (the legal pages, restoring with \"Signing you in…\" while a sign-in that came back is finished, a sign-in that came back without a session, the agreement screen and its checking line, the front page, the shell, remade per account), useProfile, and the providers above and below the per-account identity: the composer's (ComposerHost, held by AppRoot above the account, whose ToastCenter is the app's one, App.jsx's ToastProvider, the shell's toasts and the composer's in one column; Composer/ComposerHost.swift, ComposerContext.jsx's entry), the archive's (ArchiveHost(did:), one ArchiveModel per shell made with AppModel.makeArchive, so each window has its own, as each tab does, over the account's one store in the app's file store, its handle the profile's once the profile is that account's, else the remembered one's; deleting an account's data deletes its archive and its drafts' kept media, and leaves every other account's store handle as it is) and the dashboards' (ShellDashboards, made by ShellView per account). A compose link, virga://compose?… or the universal link https://<virga>/intent/compose?…, opens the composer filled in; one opened while signed out is kept in the tab store for after the sign-in (PendingCompose) and the front page says so. A removed account's unsent post is forgotten from AppRoot's body, whichever state is drawn. An account switched to in place is decided for the agreement afresh in the same pass, from its stored note, so nothing of it is drawn on the last account's answer. A Defense scan goes when its account is signed out or forgotten (ScanStore's keepScansFor over the accounts not needing a sign-in), and the shell is made again when the number and date formats or the device's zone change (keyed by formats and zone identifier, the web's `<Shell key={formats}>`; the zone is read again when the system says it changed and whenever the scene becomes active; the dashboards are read again from the store, which every change is written to at once). On iOS a sign-in comes back into the running app, so a failed one is the session's error on whatever page is up. A legal page is keyed by its document, so Terms to Privacy starts the new page at its top.",
+      "synced": "cb6343e81939"
+    },
+    "src/accounts/AccountMenu.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Accounts/AccountMenu.swift"
+      ],
+      "note": "All of it, with the compact menu's Sync now once there is an archive to sync. A native Menu: an account's row carries a person glyph, since a native menu item can't show the picture. The pending-work read before a long session's sign-out (useSignOutGuard, and Sign out of all's usePendingWork) goes through AppModel.pendingWork, VirgaPosting's listScheduled and listTimers over the account's VirgaBackend (PendingWorkServices.posting, VirgaPosting/Wiring.swift); a read that fails says it couldn't check, as the web's does.",
+      "synced": "4612f9ce83da"
+    },
+    "src/accounts/AccountsSettings.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Accounts/AccountsSettings.swift"
+      ],
+      "note": "All of it; the pending-work warnings in Remove … from this browser read through AppModel.pendingWork (VirgaPosting's listScheduled and listTimers, PendingWorkServices.posting). Refocusing the next row's ⋯ after a removal is the system's.",
+      "synced": "b301e04cd6f1"
+    },
+    "src/accounts/AddAccountDialog.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Accounts/AccountMenu.swift"
+      ],
+      "synced": "0ada88bd6be9"
+    },
+    "src/accounts/PostingPermissionNotice.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Accounts/AccountsSettings.swift"
+      ],
+      "synced": "b7aa0ed9314e"
+    },
+    "src/accounts/SessionNotices.jsx": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Accounts/SessionNotices.swift"
+      ],
+      "note": "The hand-off before a sign-in again (with Cancel), the stuck account's button and the sign-in's notices. Deliberately not: 'another tab switched accounts', since every window of the app shares one session (AppModel).",
+      "synced": "476cf8c14316"
+    },
+    "src/accounts/accounts.css": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Accounts/AccountsSettings.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Accounts/SessionNotices.swift",
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/SignInFlowView.swift"
+      ],
+      "note": "The rows of Settings › Account, the front page's remembered accounts and the session notices. The account menu's list styles are the native Menu's on iOS.",
+      "synced": "7ca79d039daf"
+    },
+    "src/charts/charts.css": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Charts/SeriesChart.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Charts/ChartTable.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Charts/BarList.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Charts/Heatmap.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Charts/Sparkline.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Table.swift"
+      ],
+      "note": "The chart tokens (--chart-1/2, --chart-area, --chart-grid, --chart-ghost, --heat-0 to 6, --second-tip), the series chart's strokes, dashes, dots and marks, the tooltip's own grounds, the table view (TableScroll: at least the column or 28rem, whichever is less, at the column's start, its head held over the rows as they scroll, as `thead th { position: sticky }` has it, and straight under the chart foot's 44-point line on touch; a row's head in --ink-2), the bar list, the heatmap and the sparkline. Not as the web: the plot's margins and the rules' numbers are Swift Charts' own layout, and the widget's hidden marks list (.widget .an-chart-marks) waits for the dashboards.",
+      "synced": "4ee043069325"
+    },
+    "src/components/AccessBadge.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/AccessLine.swift"
+      ],
+      "synced": "d7ece2c4fe32"
+    },
+    "src/components/Avatar.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/Avatar.swift"
+      ],
+      "synced": "a68860ddcd81"
+    },
+    "src/components/Button.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/Buttons.swift"
+      ],
+      "synced": "9ac3b99eb983"
+    },
+    "src/components/Delta.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/Figures.swift"
+      ],
+      "note": "DeltaView(pct:title:plain:) draws ChartFormat.deltaText(pct) (charts/format.js, VirgaArchive): nil is \"new\"; a caller with no comparison at all (the web's undefined) draws none. The title is read by VoiceOver as a hint.",
+      "synced": "1b9ce44616e4"
+    },
+    "src/components/Dialog.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/Dialog.swift"
+      ],
+      "synced": "f4405d5f2771",
+      "note": "DialogFrame and .virgaDialog (a sheet): the title, Close, the content, the foot in equal halves on a phone; `stackActions` (.dialog--stack-actions: one under the other, the confirm first) and `autofocus: true` with `.dialogAutofocus()` on the field ([data-autofocus]: the dialog's own focus, inside its sheet, set when it opens). The card settings, rename, New dashboard and Add to dashboard dialogs use the actions slot (Add to dashboard stacked), and the first three open on their field. Add to dashboard's [data-autofocus] is on the chosen radio, a keyboard's focus; on iOS a button takes focus only from a hardware keyboard, so nothing is focused there."
+    },
+    "src/components/Figures.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/Figures.swift"
+      ],
+      "synced": "8a7899d53770",
+      "note": "FiguresView over FigureItem: each line of cells shares its label, number and note rows (the stylesheet's subgrid), the number at line height 1, wrapping rather than shrinking. A note of a change and words is FigureNote (Delta.jsx's figure, the faint dot, the words) as one line of text"
+    },
+    "src/components/InfoTip.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/InfoTip.swift"
+      ],
+      "synced": "4a762c518957"
+    },
+    "src/components/Menu.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/Menu.swift"
+      ],
+      "synced": "63739bdce0e1",
+      "note": "A native Menu (MoreMenu, VirgaMenu) over MenuEntry; each item's icon is drawn already coloured, in --ink-2 (a destructive one in the system red its words take), since a native menu tints a plain image with the window's accent"
+    },
+    "src/components/Segmented.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/Segmented.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Layouts.swift"
+      ],
+      "synced": "687b1614c445",
+      "note": "Segmented and useOverflowEdge (Layouts.swift's ScrollRow: the pressed key scrolled into view only when it is under the fade, and only by enough to clear it by 24). An option's `title` is SegmentedOption's `hint` (read by VoiceOver after the key's name), and a key's least width is its `minWidth` (the kind filters' glyph-only keys, 32 at 760 and under)"
+    },
+    "src/dashboards/dashboards.css": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Dashboards/DashboardPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Dashboards/Widgets.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift"
+      ],
+      "note": "The grid's twelve columns and gaps with the container rules (860 and 620), the card's spans, the figure (.stat), the arrange list and the library. Not yet: the customizing grid's dashed outlines, handles and floating tools, the drop marks, and the library beside the grid.",
+      "synced": "c7dcc1d90849"
+    },
+    "src/defense/defense.css": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Defense/DefenseMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Defense/RadarView.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Defense/DefensePage.swift"
+      ],
+      "note": "Measure.Defense names its measures (the 44rem column, the bands' 10rem, the marks, the confirm's 34rem, the new list's 12rem, the keep form's 14rem, the link code, and the radar's: its 600, its 1000-unit square, the rings' and marks' widths, the labels' places, the callout and the legend); the views draw its rules (prose, the field, your posts, the progress, the failure, the result, the radar's colours in the page's tokens, the ticks, the lists, the plans). Its forced-colours rules never apply on iOS, and the hover rules have no pointer.",
+      "synced": "d06f1fa302bc"
+    },
+    "src/hillside/Hillside.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Sky/HillsideView.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Sky/HillsideCanvas.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Sky/HillsideDriver.swift"
+      ],
+      "note": "HillsideView(phase:day:active:intro:depth:soft:crest:blur:): the flat picture under the canvas until the first picture is up (and for good with no Metal device or shaders that don't compile, the reason logged after \"[Virga hillside]\"), the canvas a bleed past each edge, fading in, then out of focus by blur when soft; --crest is `crest`, in points from the top, and --hill-blur is `blur`. The box against the window is IntersectionObserver's in view; the canvas's scene being active is the page's visibility. One deliberate difference: Hillside.jsx starts a scene the page has covered when the page is idle; here every scene starts once the GPU, made off the main thread, is ready.",
+      "synced": "07cf3c535c52"
+    },
+    "src/hillside/LiveSky.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Sky/LiveSky.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/SkyWash.swift"
+      ],
+      "note": "The band, as tall as the wash (--sky-end), over the top of the wash wherever the wash is drawn (PageSky on every page of the shell, and the front page's sky), moved with it as the page scrolls, in PreferencesModel's effective sky, at depth 0.55 and never soft, and nothing in high contrast. Every page's band draws from one scene (LiveSkyDrivers), as the shell keeps one LiveSky while its pages change.",
+      "synced": "14fe3276271d"
+    },
+    "src/hillside/clouds.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Hillside/HillsideClouds.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Hillside/HillsideClouds+Kinds.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Hillside/HillsideClouds+Batch.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Hillside/HillsideShaders.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Sky/HillsideRenderer.swift"
+      ],
+      "fixtures": [
+        "hillside.clouds",
+        "hillside.scene"
+      ],
+      "note": "mulberry (HillsideRandom), makeNoise's bytes (uploaded as one channel of a mipmapped texture, since r, g and b are the same), the cloud kinds (TYPES), the cumulus, stratus and cirrus generators (GEN), makeCloud, measureTop and the fair day's layout (read from clouds.js's own source by the generator, since it doesn't export them), createClouds' batch with its drift round the back, its staging in Float32 and its stable back-to-front sort (HillsideCloudBatch, with Math.hypot as V8 works it out), and puffMaterial in Metal (HillsideShaders' hill_puff_*), instanced from a buffer of sixteen floats a puff.",
+      "synced": "ad25ab032cd9"
+    },
+    "src/hillside/hillside.css": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Hillside/HillsideStyle.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Sky/HillsideView.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Sky/LiveSky.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Hillside/HillsideShaders.swift"
+      ],
+      "fixtures": [
+        "hillside.style"
+      ],
+      "note": "The four flat pictures (laid out as a browser lays a gradient out: HillsideStyle.flatGradient), the crest, the canvas's bleed, its fade and its focus (still with Reduce Motion), and the live sky's band: the scene 1,100 tall with its crest at 96%, its filter (grayscale, brightness, contrast, each step clamped, in sRGB), its opacity (0.45 at night), its mask and its screen blend, which are the band's own pass in the shaders, drawing the wash too, so the band comes out opaque. iOS's own: on a phone's front page of a part, the strip held over the status bar is clear at rest over the live sky and comes in as the page scrolls under it (LiveSky.stripFade), since the web has no status bar.",
+      "synced": "6f9221726474"
+    },
+    "src/hillside/land.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Hillside/HillsideLand.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Hillside/HillsideShaders.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Sky/HillsideRenderer.swift"
+      ],
+      "fixtures": [
+        "hillside.land"
+      ],
+      "note": "height and createLand's mesh (uploaded with its positions and normals interleaved and 16-bit indices, as it has 60,800 vertices), and the land's ShaderMaterial in Metal (HillsideShaders' hill_land_*). The mesh is made, off the main thread, only for a hill's view: the live sky's band never reaches the hill.",
+      "synced": "13e2d87169cf"
+    },
+    "src/hillside/scene.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Hillside/HillsideScene.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Hillside/HillsideScene+State.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Hillside/HillsideMath.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Hillside/HillsideShaders.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Sky/HillsideRenderer.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Sky/HillsideDriver.swift"
+      ],
+      "fixtures": [
+        "hillside.scene"
+      ],
+      "note": "PALETTES, phaseOf, TURN, COLOR_KEYS and the helpers (HillsideScene, read from scene.js's own source by the generator, since it exports only createHillside), and createHillside's closure as HillsideSceneState: the light turning from one sky to another (the sun the short way round), aim and place (the crest where the page wants it, the intro, the pointer's lean and the sway), the wind, the clouds' update, and the frame loop (30 pictures a second unless the view is on the move, a turn under way finished out of view, nothing while hidden, the pace check lowering the pixel ratio, Reduce Motion's still pictures), held step by step to the web's own createHillside run over a recording stand-in for WebGL and requestAnimationFrame (hillside.scene); the sky's dome (SphereGeometry(30000, 48, 24)) and three.js's sums in HillsideMath. The sky's ShaderMaterial is Metal (HillsideShaders, compiled at run time), drawn by VirgaUI/Sky (HillsideRenderer; HillsideDriver is requestAnimationFrame, a display link at 30 or 60 a second, the visibility, an active scene's, and the pointer, a hovering one only: an iPad's trackpad or mouse, never a finger or a pencil). WebGL's context loss has no Metal counterpart: HillsideSceneState keeps contextLost for the cases, and nothing on iOS calls it. antialias is off, as the web has it at 2 pixels a point and more, which every iOS screen is.",
+      "synced": "18012c8aeb04"
+    },
+    "src/legal/LegalDialog.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Legal/LegalPageView.swift"
+      ],
+      "synced": "a8ca52842713",
+      "note": "All of it. Open as a page is the web's new tab: the page over the screen the dialog is on (LegalPageCover), which stays as it was; Back to Virga closes it. After a link to the other document VoiceOver goes to the dialog's title."
+    },
+    "src/legal/LegalDocument.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Legal/LegalDocumentView.swift"
+      ],
+      "synced": "7ca0c1aac250"
+    },
+    "src/legal/LegalPage.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Legal/LegalPageView.swift"
+      ],
+      "note": "AppRoot keys the page by its document, so going from Terms to Privacy starts the new page at its top and then goes to the address's section, as the web's navigate and the [docKey] effect do.",
+      "synced": "a413b760d9c8"
+    },
+    "src/legal/TermsGate.jsx": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Legal/TermsGateView.swift"
+      ],
+      "note": "All of it but the Reload link after TERMS_VERSION_MISMATCH: the app's documents are bundled, so loading them again can't bring newer ones; the words still say so.",
+      "synced": "403b7da844ac"
+    },
+    "src/legal/legal.css": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Legal/LegalDocumentView.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Legal/LegalPageView.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Legal/TermsGateView.swift"
+      ],
+      "synced": "a3bbe4b9044d"
+    },
+    "src/main.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/VirgaUI.swift",
+        "ios/VirgaKit/Sources/VirgaUI/App/AppModel.swift"
+      ],
+      "synced": "f49094544f98"
+    },
+    "src/pages/Landing.jsx": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Pages/LandingView.swift"
+      ],
+      "note": "All of it. The live sky is over the front page's sky when it is on (LandingFrame's skyBackground(live:)), and five taps on its mark turn it on or off, with the toasts the web's ToastProvider shows (the front page has a ToastCenter of its own). The compose link's callout (composing) shows on the page variant, from AppRoot's signInComposing while a compose link is kept.",
+      "synced": "a34c5deb6fb9"
+    },
+    "src/pages/SignInReturn.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Pages/SignInReturnView.swift"
+      ],
+      "synced": "3cc815112e2b"
+    },
+    "src/posting/composer/composer.css": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerMeasure.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/PostEditor.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/MediaGrid.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/EmbedCards.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/PostBlock.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerSheet.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerOptions.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerWhenPanel.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerDrop.swift"
+      ],
+      "note": "The composer's sheet (the body 6 under the head, 8 under a phone's bar, 20 at the foot), posts (the line down a post's side, .post-block::before), editor (its type and highlights), media (the one- and three-picture grids, the ALT pill's two looks, the video's own shape), embed cards, the settings row (.composer-option's muted words, Tags pressed in ink, .composer-more in the row's corner; a phone's 52-point rows, More's rows 28 in, the tags field under its own row), busy line and foot (no rule over it; a phone's why on a line of its own, Save as draft's words alone, Schedule without its picture in a foot of 350 or less, the tools on the dialog's edge), the suggestion lists (.suggest-pop: the mention and \"/\" lists and the languages'), the language picker, tags, post as (its list a popover) and the send button (one pill with a seam, .publish-split's dimming), the notices' buttons at their right, and the skeleton, from the measures in ComposerMeasure.swift. The drop target (.composer-drop) is ComposerDrop.swift's. Not yet: the skeletons' pulse (composer-pulse), the adviser's places, hover (a pointer's) and the pictures' own focus ring. A phone's Save as draft and Schedule are the kit's 40, pressed through 44, where .composer-also .btn draws them 44. The when panel (.when-panel, .when-panel-head with Post now instead at its right; a phone's panel under the rows without a rule), the queue's line (.composer-timer-note) and .link-button are ComposerWhenPanel.swift's.",
+      "synced": "4eb1a3099c0c"
+    },
+    "src/posting/library/library.css": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateEditor.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateQuestions.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Library/LibraryPanel.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Library/LibraryDialog.swift"
+      ],
+      "note": "The template editor (.tpl-form, the text's foot, a new blank's rule, the questions between hairlines and their two columns from 640, the attach rows and the posts to quote with the accent's rule, the grid, the shortcut's slash, and its own foot, .tpl-actions: a hairline over it on the dialog's ground, Delete apart at its start, the buttons at their own widths), the questions and the preview (.lib-questions, .lib-answers with a long answer wrapping in its chip, .lib-preview, the parts, the attachment's card, the bones; .lib-questions-actions the column's width from 760 down, held at the sheet's foot in the dialog). Measure.Templates names them. The library panel (LibraryMeasure): its columns by its own width (`container: lib`: 340, 360 on the page, 28 and 40 apart; 300 from 800, and from 960 on the page; halves 24 apart from 640), the dialog's columns each scrolling by themselves (the list let out 12 for the chosen row's rule) and the page's detail held 24 under its top; .lib-search with its clear button; the shelves as a row of words with their counts, running out to the edges from 760; .lib-list-head over its rule in ink and as tall as the item's head; .lib-status beside its Try again; the section heads; the rows (text-md on two lines, the reason in ink-2 at 500, the thumb 40 on --tint, 48 tall from 760) between hairlines with the accent's rule 12 outside the chosen one; .lib-empty; the item's head over its rule in ink; .lib-card; the bones (rows between hairlines, and the bone card); the dialog's body (4 24 20; 0 16 12 from 760 down). Not yet: the three-column grid with the shelves down a rail, the hover rules and the keyboard's active row. A blank still to answer is in brackets in the run of words, where the web draws a dashed chip.",
+      "synced": "9ce1436bac34"
+    },
+    "src/posting/pages/hub.css": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/TemplatesPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostingParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduledPage+Rows.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/HubMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/HubParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/HubPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/DraftsPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostedPage.swift"
+      ],
+      "note": "The Templates page (.hub-row, .tpl-row-item with Use and the ⋯ on the name's line, .tpl-name, .tpl-shortcut-chip, .tpl-chip as a tint, .tpl-group-head), the notice, the empty block, the bones (.hub-skeleton, .hub-bone) and the error, in Measure.Templates; the overview (.posting-nav and its counts, .hub-columns one column from 1180 down, .hub-card's notice, the timed rows' day over hour in the time column and their phone line, the failed day in red, .hub-inline-action with a finger's reach, .hub-row--open), the posts' and drafts' rows (.hub-row-text two lines, a draft's three, .hub-row-link, .hub-row-why and .hub-row-note, the corner ⋯ on a phone), .hub-quote, .hub-confirm and .hub-spinner, in Measure.Hub. The scheduled posts' rows use .hub-row-main and .hub-row-text (ScheduledPage+Rows.swift, in Measure.Schedule), and their questions .hub-quote through HubQuote.",
+      "synced": "428ed1747963"
+    },
+    "src/posting/pages/schedule.css": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/LifespanRuleEditor.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduleMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduleParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduledPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduledPage+Rows.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/WeeklySchedulePage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/WhenPicker.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/HubMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/TimersPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/TimerDialog.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/DraftsPage.swift"
+      ],
+      "note": "The timer's rule editor (.lifespan-editor, .lse-*: the switch row, the blocks and their legends, the chips, Other…'s fields, the sub-questions, the condition rows (from 560 down two lines as the grid lays them, LifespanPhoneCondition, 16 apart, the ✕ let out 14), the checks, a comparison that can't be changed yet on the field's own ground (.lse-op:disabled, VirgaSelect's keepingFillWhenDisabled), the chips at 50% while disabled, the spare row, the sentence at 0.875rem), in Measure.Lifespan. In Measure.Schedule (ScheduleMeasures.swift): the scheduled posts' page (.sched-page, .sched-message with its glyph, words and button centred, .sched-groups, .sched-group-label, .sched-row and its lit, moving and busy states, .sched-handle in the row and in the page's margin from 900 with its --focus ring, .sched-when-cell, .sched-time, .sched-rel, .sched-when-past, .sched-row-why, .sched-row-note, .sched-row-reply, .sched-steps, and the phone's rows: the when cell as one line with its dot, the timer notes' too, the ⋯ or ✕ centred on it out of the row's flow), the week ahead (.sched-cal-*: the grid, the times, the days and their heads, the marks open, filled, dashed and lit, the pick's reach and its focus outline round the mark, the caption, the skeleton, pulsing), the weekly schedule (.sched-week-layout's two columns from 1181 with the headings' rules in line, .sched-tz-field, .sched-days, .sched-day and the phone's, the + and the ⋯ let out past their line on a touch screen, .sched-copy-days, .sched-add, .sched-week-foot, .sched-suggest*), the shared bits (.sched-tz, .sched-switch, .sched-confirm) and the time picker (.when-picker, .sched-when-fields and .sched-repeat-fields one under the other when the picker itself is 440 or narrower, .sched-picks, .sched-when-zone, .when-at, .sched-problem, .sched-repeat, .sched-when-queue with its button wrapping under words that would get less than 200). In Measure.Hub (HubMeasures.swift): the Timers page and the timer dialog (.sched-page's closing lines, .sched-timer rows, .sched-rule, .sched-row-why, .sched-acted and its marks, .sched-settled under a rule in ink; .timer-dialog full height on a phone, .timer-dialog-body, .sched-quote, .sched-dialog-skeleton, .lse-sub) and Schedule this draft's buttons one under another on a phone (.when-dialog). Forced colours have no counterpart; the hover ring on a taken time is the system's pointer effect.",
+      "synced": "6e4ceba4938b"
+    },
+    "src/posting/posting.css": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerMeasure.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostPreviewCard.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/NeedsBackendNotice.swift"
+      ],
+      "note": "`.composer-dialog`'s width (ComposerMeasure), the long-session notice (.needs-backend) and a post shown small (.post-preview, its compact form, head, words, foot and counts, the link pushed to its line's end and underlined), in Measure.Posting; the gates editor follows GatesEditor.jsx's own layout. The rest comes with the posting pages.",
+      "synced": "37fd5c2d457d"
+    },
+    "src/posting/ui/adviser.css": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserBusyLine.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserReadSheet.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserStyleDialog.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserSettingsCard.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AltTextDialog.swift"
+      ],
+      "note": "Measure.Adviser names every measure: the busy line (the accent's rule, the goals' pills, the actions, equal shares 44 tall from 640 down), the sheet (the verdict in its tone, the draft under a rule in ink with its meta spread to the line's ends, the marks underlined in their tone, the fixes on --surface-3, the tally, the notes and their markers on the washes, Fine against, the context and usage lines, the notices, the skeleton), the style dialog (the stages and their dots, the sample's select at least 112 wide, Forget in red at the foot's start and on a line of its own from 640 down), and the settings' stacks, checks, indent, style row and What’s sent. The dialogs are the system's sheets, full height on a phone. The alt-text dialog's picture (whole, its edge round it, 240 tall at most, 180 from 640), kinds, revise row (a column from 640), chips and field tools too. The phone's own paddings for the three dialogs' head, body and foot (640 and under) are the kit's dialog's.",
+      "synced": "6623ef1f063c"
+    },
+    "src/reports/reports.css": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Reports/ReportPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift"
+      ],
+      "note": "The index's tiles (at least 220 wide, each under a 2-point rule) and a report's cards in one column. Not yet: the report's split columns, the post rows, the content report and the notes.",
+      "synced": "872665d7bd83"
+    },
+    "src/settings/SettingsPage.jsx": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Settings/SettingsPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Settings/DataSection.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Settings/DashboardsSection.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
+      ],
+      "note": "The index (a phone's), Account, Data and sync (the archive's line, the sync's steps and Cancel, what failed, Sync now or the rest of a build, Rebuild posts and its dialog, the JSON and CSV exports through the system's exporter, where it is kept with the app folder's size for the web's storage estimate, and Delete the archive… as the quiet outline in red, with its dialog, the toast and the way home), Dashboards (Your dashboards with New dashboard at its head, each dashboard's name as the way to it with its count of reports, its ⋯ with Rename…, Move up, Move down and Delete while there is more than one, its dialogs, Reset to the three starting dashboards with its dialog and toast, and Where they’re kept; the focus after a move or a delete is the system's to place), Appearance (the sky and the accent with its swatches, each a radio group whose arrows, Home and End choose on a hardware keyboard, each choice saying its place and the clock's tile what it comes to now; contrast, density, the sidebar; numbers and dates, two selects in the system's menu; and the live sky's switch), Permissions and About (with the Terms and the Privacy Policy, the agreement's date, and when the repo was last read). Posting is PostingSettingsSection (ui-posting.json says what of it is there). Data's \"Keep it when space runs low\" is shown only where the browser can be asked (navigator.storage.persist), which iOS has no counterpart for, so it isn't drawn.",
+      "synced": "f20273b17b6a"
+    },
+    "src/settings/settings.css": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Settings/SettingsPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Settings/DashboardsSection.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/LifespanDefaults.swift"
+      ],
+      "note": "The index, the section, the row (its control drawn up to centre on the name's first line by what it is, a button or field, a Segmented, a switch's 24-point capsule, a badge or state, or prose; from 760 down a switch or state stays on the name's line with the line about it under both), a select (flex 1 1 220px up to 320, the whole line from 760 down), a callout's 16 above and 4 below (Settings › Posting's refusals too), the sync under way as a row with its hairline, the archive line's dot and \"synced 4m ago\" kept whole, the permissions and sources lists, the sky's tiles and the accent's choices (auto-fill columns counted from the grid's own width, three from 560 down), the sync's lines and the dashboards' list (each name ending in an ellipsis with its count on its baseline, the ⋯ let out to the column's edge on a phone). The default timer (LifespanDefaults.swift): the rule's editor held to 640 (.settings-rule-editor), 16 under its sentence when opened, its legends at --text-md, 500 (.settings-section .lse-legend), and a disclosure that is a row of its own (the default timer's rule, What’s sent) with its arrow on the first line and its sentence's 44-point reach in the row's air (Components/Notes.swift's Disclosure, settingsRow).",
+      "synced": "849c73e6565e"
+    },
+    "src/share/share.css": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Tools/ToolMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Share/ShareDialog.swift"
+      ],
+      "note": "Measure.Share (the dialog's 640, the 16 between its parts, the description's 110 and 1.45); the picture's box with its --line edge, --radius-lg and --bg in ShareDialog. A phone's dialog is a sheet like any other.",
+      "synced": "5c001a7a1f56"
+    },
+    "src/shell/CommandPalette.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/CommandPalette.swift"
+      ],
+      "note": "The palette as a full-height sheet, over VirgaInsights' Commands (buildCommands with CommandContext.app, paletteGroups, rememberRecent and parseRecent under virga:palette-recent, moveActive): the field on its line with Close, the groups, each option's icon (the account's picture for another account), title, hint (under the title on a phone, once there is a search) and tick, the empty line, the foot beside the sidebar, the result count read out, and the arrows, Home, End, Return and Escape on a hardware keyboard. Search in the app bar, the sidebar and the rail opens it, and ⌘K. Running: an address through the navigator, Sync, the period (with the web's toast), the sky, another account, Customize this dashboard (?edit=1 and the dashboard's page made again, so it opens customizing: the shell's ShellActions) and New dashboard (the shell's dialog, once the palette's sheet has gone). On an iPad the option under the pointer is the highlighted one, and a title keeps its words where a hint gives way. New post opens the composer in place, over the page (ComposerHost), once the palette's sheet has gone; with no host (a preview) it goes to /posting/compose.",
+      "synced": "5138c6649f81"
+    },
+    "src/shell/FirstRun.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/FirstRun.swift"
+      ],
+      "note": "The first build's page, word for word: what a build reads and where it goes, the store's warning when the archive would only last the session, Build your archive (a full sync), the steps while it runs (SyncSteps), and what failed. Shown by RoutedPage where a route needs the archive and it isn't built.",
+      "synced": "4a80158934c6"
+    },
+    "src/shell/MobileNav.jsx": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/MobileNav.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/AppBarBack.swift"
+      ],
+      "note": "The tab bar and the app bar: on a part's front page the mark, Search and the account in the page's content, scrolling away with the sky; inside a part ‹ and the name of the page above (AppBarBack, drawn in place of the system's back button, whose swipe back from the edge is kept), Search and the account, in the navigation bar; Search opens the command palette, and the account's menu holds Sync now once there is an archive. New post opens the composer in place, over the page. Five taps on the mark turn the live sky on or off (Sky/SkyTapsButton.swift); over the live sky, the strip held over the status bar is clear at rest and comes in as the page scrolls.",
+      "synced": "25b2e5064862"
+    },
+    "src/shell/Shell.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/Shell.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/RoutedPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/ShellNavigator.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/ShellDashboards.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/NewPostShortcut.swift"
+      ],
+      "note": "The shell by the window's width (from 900 Virga's own sidebar beside the page, held to --shell-max and centred, with one sky behind both that the page's scroll moves; under it a stack with the app bar and tab bar), the address as its state, every route to a page (a page not ported yet shows its header and says so), NotFound, the dashboard redirect and the last dashboard looked at, the titles, the archive's opening line and the first build's page where a route needs it, and the sync's places (the sidebar's card, or the strip at the top of the page, neither while the first build's page is up). The command palette (from Search, and ⌘K on a hardware keyboard, which is held back while the composer or another sheet is up, except to close the palette) and NewDashboardDialog (from the sidebar and the palette; one made empty opens with ?edit=1) are mounted here; the toasts are the composer host's one ToastCenter, above the account (App.jsx's ToastProvider), and the palette's onCustomize (ShellActions: ?edit=1, and the `customizing` key the dashboard's page is made again by). New post opens the composer in place, over the page (ComposerHost). A sync that fails is read out once where the web has a role=alert line (SyncStatus.jsx). The live sky (prefs.liveSky) is drawn with the page's sky, in PageSky (Theme/SkyWash.swift), so it is behind every page of the shell. N on a hardware keyboard opens a new post outside a field and with nothing presented (NewPostShortcut.swift, useNewPostShortcut).",
+      "synced": "2463a24deec2"
+    },
+    "src/shell/Sidebar.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/Sidebar.swift"
+      ],
+      "note": "The parts as words with the open one's pages (the dashboards' ending with New dashboard, which opens the shell's dialog), the account, New post, folding to the rail, the list scrolling on a short screen with the edge that has more behind it faded (useOverflowEdge), and the archive's lines at the foot (SyncCard, brief beside the first build's page; on the rail Sync now is in the account's menu). Search or jump to… with its shortcut (a search glyph on the rail) opens the command palette. New post opens the composer in place, over the page. The Dashboards word goes to the dashboard shown, else the first (the tab bar's to the last looked at). Search's glass on the rail is 18, in ink. Five taps on the mark, open or folded, turn the live sky on or off (Sky/SkyTapsButton.swift). Not as the web: the fold button is the system's one sidebar glyph, 16 open and 18 folded, where the web draws PanelLeftClose and PanelLeftOpen.",
+      "synced": "908f8b702854"
+    },
+    "src/shell/SyncStatus.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/SyncStatus.swift"
+      ],
+      "note": "overallFraction, syncHeadline, syncStepText, syncWhen, useArchiveCounts and runFor (SyncStatus), SyncCard at the sidebar's foot, SyncBanner at the top of a phone's page and beside the folded rail (drawn by VirgaPage), and SyncSteps on the first build's page. The steps' names and lines are VirgaArchive's SyncProgress. The role=status lines are read as updating frequently; the role=alert ones (the strip's \"The last sync had problems.\", the first build's error, Settings › Data's callout) are read out once when a sync fails, by ShellView, as an announcement in the words of the page that is up (nothing beside the open sidebar, whose card has no alert). The strip's progress runs under the column's words beside the rail, and See what failed is pressed through 44 points.",
+      "synced": "9359b4bab20c"
+    },
+    "src/shell/bits.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/Bits.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/PageHeader.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/PeriodPicker.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Sky/SkyTapsButton.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Hillside/SkyTaps.swift"
+      ],
+      "note": "The mark, the page header, toasts (ToastCenter and ToastStack: one center for the app, the composer host's, which it puts in the environment and draws, under a presented sheet, as the web's are under a modal dialog; a toast may end in a link, ToastLink, the one thing in the stack that takes a press, as the posted toast's View it on Bluesky; at most three, each in from 6 points down and gone after 4.2 seconds, read out by VoiceOver as the web's polite live region is; pushed by the share dialog, Customize and the dashboard's menu, Settings › Dashboards and Data, the palette's period and the tools), useIsNarrow (the theme's hasSidebar), usePeriod (PreferencesModel.period(), setPeriod, setCustomPeriod over VirgaArchive's Periods), PeriodPicker (the presets and Custom; from 560 down Custom is its calendar alone) and RangeDialog (two days on the system's date picker in the active time zone, checked as they are picked, with the web's three problems and its line on what the range covers). useSkyTaps: VirgaCore's SkyTaps counts the taps (each within 1.5 seconds of the last, five to turn it, its two toasts, held to bits.jsx by hillside.style), and Sky/SkyTapsButton.swift is the mark as a button in the app bar, the sidebar (open and folded) and the front page.",
+      "synced": "a49f9d2a00e7",
+      "fixtures": [
+        "hillside.style"
+      ]
+    },
+    "src/shell/commandPalette.css": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/CommandPalette.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift"
+      ],
+      "note": "The field (no box, a 2-point rule in ink, 52 tall, --text-lg and 16 from 374 down), Close on its line, the list's groups and options (40 tall, 48 on a phone, the highlighted one on --hover), the tick, the empty line, the foot and the keys (.kbd), a phone's hints under the titles and waiting for a search. The sheet is the system's at every width: the web's dialog near the top of a wide screen (620 wide, 12vh down) has no counterpart.",
+      "synced": "68cfeed12a57"
+    },
+    "src/shell/shell.css": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/Shell.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/Sidebar.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/MobileNav.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/PageHeader.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Dialog.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/Bits.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/SyncStatus.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/FirstRun.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/PeriodPicker.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/AppBarBack.swift"
+      ],
+      "note": "The shell, its figure size, the sidebar and rail (the list's overflow fades, 24 at the edge with more behind it; a short screen's closer parts and the card without its counts), the page header (on a phone the period first in one row 12 under the words and the rest at its far end, 16 apart, or a lone Done beside the title; from 561 the controls beside the words until the words would have less than 320, centred on the title's 1.1 line; beside the rail the crumbs over the title) and body, the app bar and tab bar, dialogs (stacked actions), choices (a radio, or a check, sharing one hairline between rows) and toasts, the sync's places, the first run, the period picker and the range dialog's fields. The sidebar's search row and the app bar's Search button (in ink) too, the phone's ‹ and the page above (.appbar-back), the sync strip's progress held to the column, and the toast's rise.",
+      "synced": "e21d87c5ffe7"
+    },
+    "src/signin/HandleField.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/HandleField.swift"
+      ],
+      "note": "All of it, a combobox on a hardware keyboard as on the web: ↑ and ↓ open the suggestions on the first or the last, then move through them round through the field itself (SignInSuggest.moveActive); the marked one on --hover with 2 points of ink at its edge, the pointer's only shaded; Return takes the marked one (or, with none marked, submits as the field always does); Escape puts the list away (the dialog it may be in stays) and Tab leaves it closed. The marked one is read out as it is marked (aria-activedescendant). The field is named by its label and a notice about what was typed is its hint. On the front page the list floats over what follows the field, and on a phone the page brings the field to its top when suggestions come up, so the list has room above the keyboard. A press picks one.",
+      "synced": "1a818727b82b"
+    },
+    "src/signin/HowSigningInWorks.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/HowSigningInWorks.swift"
+      ],
+      "synced": "2f9a631f258a"
+    },
+    "src/signin/SignInFlow.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/SignInFlowView.swift",
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/WebAuthenticationSession.swift"
+      ],
+      "synced": "6271897a4e36",
+      "note": "All of it. VoiceOver hears the live regions' words as announcements (\"Looking you up…\", \"Found {name}, {meta}.\", a notice as it comes up, \"Still here?\", which covers only the wait for Virga's server to give the host's address, never the system's sheet: SignInOptions.onAuthorizing stops the stall as the sheet opens), and focus goes where the web sends it (the field, the way on while the account is looked up and found, else the card's title). The compose link's callout shows while one waits for the sign-in (AppRoot's \\.signInComposing). On iOS the trip is ASWebAuthenticationSession: going again calls the one under way off and waits for it first, and closing Add an account calls the trip off with its sheet (not once the sign-in has come back and is being finished, which takes the page down itself)."
+    },
+    "src/signin/parts.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/IdentityParts.swift"
+      ],
+      "synced": "dead86f68368"
+    },
+    "src/signin/signin.css": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/SignInFlowView.swift",
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/HandleField.swift",
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/IdentityParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/HowSigningInWorks.swift"
+      ],
+      "synced": "71ee45fb816d"
+    },
+    "src/styles/app.css": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeKit+Values.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Pages/LandingView.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Pages/SignInReturnView.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift"
+      ],
+      "fixtures": [
+        "ui.themeKit"
+      ],
+      "note": "a few of its measures (the landing page's bar, title, lede and points, the return screen's title, the restoring message and its animation) are in ThemeKit (VirgaCore/Theme, from ios/parity/cases/_themeKit.js); it sets no theme tokens. The pages are VirgaUI's: the front page, its hero, points, foot and sketch (Pages/LandingView.swift), the narrow column and the restoring line (Pages/SignInReturnView.swift), with the measures ThemeKit doesn't read named in Theme/Measures.swift until _themeKit.js reads them; the live sky under the front page's content (.landing > :not(.live-sky)) is LandingFrame's sky, skyBackground(live:)",
+      "synced": "989bc46fd9c1"
+    },
+    "src/styles/base.css": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeKit+Values.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/VirgaTheme.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Typography.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/SkyWash.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Motion.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Focus.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/TitleLines.swift"
+      ],
+      "fixtures": [
+        "ui.themeKit"
+      ],
+      "note": "the page's type (body size, line height, numerals, headings, links, code), focus outline, selection and the sky's wash are measures in ThemeKit (VirgaCore/Theme); it sets no theme tokens. VirgaUI draws them: the type in Instrument Sans with tabular figures, the body's 1.45 between lines unless a text says otherwise (headings 1.25) and, where a single line's box lays it out, the half-leading above and below (Theme/Typography.swift), the sky from the window's top behind the page, moved by its scroll, and once behind the sidebar and the page together beside the sidebar (Theme/SkyWash.swift), a title whose line-height is under the face's own set a word at a time, a line every line-height, its lines balanced as h1's text-wrap: balance balances them (Components/TitleLines.swift: the front page's title, and a page's title once it wraps), the focus outline, on the control it is put on (Components/Focus.swift), a Segmented key's inside it from 2 in out to the edge, Reduce Motion (Theme/Motion.swift). The element resets, ::selection and the helper classes (.visually-hidden, .skip-link) have no counterpart on iOS",
+      "synced": "25a6fa774758"
+    },
+    "src/styles/controls.css": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeKit+Values.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Buttons.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Segmented.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Marks.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Switch.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Field.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Menu.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Notes.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Table.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Section.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Figures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Avatar.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/InfoTip.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/AccessLine.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Layouts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Touch.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Charts/ChartTable.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Tools/ArchiveSearchTool.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Motion.swift"
+      ],
+      "fixtures": [
+        "ui.themeKit"
+      ],
+      "note": "246 of its declarations, the kit's measures, are in ThemeKit (VirgaCore/Theme, listed in ios/parity/cases/_themeKit.js); the measures it doesn't read yet (the touch block's reaches, the line-heights of .btn, .segmented-key, .link-action and .token, a few of the table's and the select's) are in Theme/Measures.swift. The components are VirgaUI's (Components/): the button's tiers and sizes, the link action (its 1-point line at a 3-point offset, 2 while open or pressed) and the more link, Segmented and the sideways row (scrolled only far enough to clear its fade), the section and its head (the title's column beside the tools, and on a phone the small Segmented on a row of its own), foot (a ghost first let out to the edge) and caption, figures (the cells sharing their rows, the number at line height 1) and the delta, the figure note's faint dot (FigureNote), the menu (native, its icons in --ink-2), fields and the text area, the placeholder in --muted (VirgaTextField), select.input (VirgaSelect), the check (16, the terms page's 18 apart), the radio and the choice (Dialog.swift), the switch, badges, the meta line (the dot 6 after its word), chips, tokens, avatars, the dot, the table (a row read as one, with its heads), the empty state (16 under a flush head), the note, the callout, the disclosure (its arrow drawn and not read), progress, the info tip, and the touch block's sizes. The chart foot is Charts/ChartTable.swift's ShowAsTable and the list toolbar Tools/ArchiveSearchTool.swift's; the transitions are Theme/Motion.swift's. Not yet: .meta-group and .meta > .meta (ThemeKit.metaGroupGap is unread); .has-corner-menu (a phone row's ⋯ in its top corner; VirgaRow has no callers yet); the posting pages' fields, selects and danger callouts, still to move onto VirgaTextField, VirgaSelect and Callout(tone: .danger, words); and in Settings › Posting, the time zone (scheduleParts' TimezoneSelect, a menu Picker) and the composer's pickers it shows (LanguagePicker's and GatesEditor's fields). The chart foot's touch rules (44-point link actions, no gap between wrapped lines, a phone's ⋯ at the line's end) are ShowAsTable's (Charts/ChartTable.swift); every other field is VirgaTextField and every other select.input VirgaSelect (Settings, Settings › Posting's own cards and the timer's rule editor, the card settings, Defense); the dashboards' .stat-note, a dot after each of several parts, is FigureNote(deltaText:parts:) (Dashboards/Widgets.swift), as a figure's note is FigureNote",
+      "synced": "68853fcaa0a5"
+    },
+    "src/styles/theme.css": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Values.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Cascade.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Blocks.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/VirgaTheme.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/VirgaTheme+Tokens.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Switch.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Segmented.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/MobileNav.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Focus.swift"
+      ],
+      "fixtures": [
+        "ui.theme",
+        "ui.themeKit"
+      ],
+      "note": "every token it sets on <html> and the cascade that picks them, in VirgaCore/Theme, resolved at a window's root and read as @Environment(\\.virgaTheme) (Theme/VirgaTheme.swift). Its high-contrast rules for components are drawn in VirgaUI: the focus outline (Components/Focus.swift), a pressed key's line (Components/Segmented.swift), the switch, its knob at 70% (Components/Switch.swift), the narrow tab bar's disc's ring (Shell/MobileNav.swift); not yet heat cells and bar tracks (the charts), the current page's underline and the image labels. Its forced-colours rules are recorded but never apply: no device the app runs on has them.",
+      "synced": "6fa7f1283fe1"
+    },
+    "src/tools/tools.css": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Tools/ToolMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Tools/ToolParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Tools/ToolPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Tools/FollowCleanupTool.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Tools/ListsTool.swift"
+      ],
+      "note": "Measure.Tools names every measure the tool pages use (the list of tools, the statement, the filter figures, the line over a table, the inline select, the activity check, the large search, the unfollow log's groups, the queue's ✕, the best slots, identity, the facts and the timeline, the lookup's field, its suggestions floating over the page, pair counts, legend, totals and events), and dashboards.css's person and post rows as the tools list them; each view draws its rules from them. The cleanup and lists tables are tables from 641 wide (the tick box's 36, the cleanup table's account at 36% of the table and the lists table's name taking what the rest leave, their words ending in an ellipsis, a ticked row's tint 10 past the sides, a row's own Unfollow stepping back while rows are ticked) and set as the web's phone sets them narrower. The hover rules are the pointer's on an iPad: a suggestion under the pointer becomes the active one; a name's underline on hover is left to the system's pointer effect.",
+      "synced": "6eb307ebfd93"
+    }
+  }
+}

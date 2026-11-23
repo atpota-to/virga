@@ -1,0 +1,340 @@
+{
+  "name": "insights-early.registries",
+  "sources": [
+    "src/reports/registry.js",
+    "src/tools/registry.js",
+    "src/components/AccessBadge.jsx"
+  ],
+  "cases": [
+    {
+      "id": "REPORTS",
+      "fn": "REPORTS",
+      "input": {},
+      "output": [
+        {
+          "key": "followers",
+          "label": "Followers",
+          "icon": "UsersRound",
+          "desc": "Growth over time, new followers, and who is newest."
+        },
+        {
+          "key": "blocks",
+          "label": "Blocks",
+          "icon": "Ban",
+          "desc": "Who blocks you, directly or through moderation lists."
+        },
+        {
+          "key": "posts",
+          "label": "Posts",
+          "icon": "PenLine",
+          "desc": "How often you post, and how much of it is replies and media."
+        },
+        {
+          "key": "content",
+          "label": "Content",
+          "icon": "Shapes",
+          "desc": "What your posts are made of, and which kinds do best: format, length, tags and links."
+        },
+        {
+          "key": "engagement",
+          "label": "Engagement",
+          "icon": "Heart",
+          "desc": "What your posts earn, the rate per post, and what you give."
+        },
+        {
+          "key": "people",
+          "label": "People",
+          "icon": "MessagesSquare",
+          "desc": "Who engages with you, and who you engage with."
+        },
+        {
+          "key": "atmosphere",
+          "label": "Atmosphere",
+          "icon": "Cloud",
+          "desc": "Every record every app has written to your repo."
+        }
+      ]
+    },
+    {
+      "id": "REPORT_BY_KEY",
+      "fn": "REPORT_BY_KEY",
+      "input": {},
+      "output": {
+        "followers": {
+          "key": "followers",
+          "label": "Followers",
+          "icon": "UsersRound",
+          "desc": "Growth over time, new followers, and who is newest."
+        },
+        "blocks": {
+          "key": "blocks",
+          "label": "Blocks",
+          "icon": "Ban",
+          "desc": "Who blocks you, directly or through moderation lists."
+        },
+        "posts": {
+          "key": "posts",
+          "label": "Posts",
+          "icon": "PenLine",
+          "desc": "How often you post, and how much of it is replies and media."
+        },
+        "content": {
+          "key": "content",
+          "label": "Content",
+          "icon": "Shapes",
+          "desc": "What your posts are made of, and which kinds do best: format, length, tags and links."
+        },
+        "engagement": {
+          "key": "engagement",
+          "label": "Engagement",
+          "icon": "Heart",
+          "desc": "What your posts earn, the rate per post, and what you give."
+        },
+        "people": {
+          "key": "people",
+          "label": "People",
+          "icon": "MessagesSquare",
+          "desc": "Who engages with you, and who you engage with."
+        },
+        "atmosphere": {
+          "key": "atmosphere",
+          "label": "Atmosphere",
+          "icon": "Cloud",
+          "desc": "Every record every app has written to your repo."
+        }
+      }
+    },
+    {
+      "id": "TOOL_SECTIONS",
+      "fn": "TOOL_SECTIONS",
+      "input": {},
+      "output": [
+        {
+          "key": "tidy",
+          "title": "Tidy up",
+          "desc": "Keep your follows and followers in order."
+        },
+        {
+          "key": "understand",
+          "title": "Understand",
+          "desc": "Answers to the questions the charts raise."
+        },
+        {
+          "key": "data",
+          "title": "Your data",
+          "desc": "What Virga keeps in this browser, and how to take it with you."
+        },
+        {
+          "key": "later",
+          "title": "Later",
+          "desc": "Ideas that need more than Virga asks for today. Each would ask you first."
+        }
+      ]
+    },
+    {
+      "id": "TOOLS",
+      "fn": "TOOLS",
+      "input": {},
+      "output": [
+        {
+          "key": "follow-cleanup",
+          "name": "Follow cleanup",
+          "icon": "UserMinus",
+          "section": "tidy",
+          "access": "follow",
+          "desc": "Find accounts you follow that went quiet, are gone, or don’t follow back, and unfollow in bulk."
+        },
+        {
+          "key": "unfollow-tracker",
+          "name": "Unfollow tracker",
+          "icon": "UserX",
+          "section": "tidy",
+          "access": "read",
+          "desc": "See who unfollowed you between two syncs, and who arrived."
+        },
+        {
+          "key": "follow-back",
+          "name": "Follow-back queue",
+          "icon": "UserPlus",
+          "section": "tidy",
+          "access": "follow",
+          "desc": "People who follow you and engage with your posts, that you don’t follow yet."
+        },
+        {
+          "key": "best-time",
+          "name": "Best time to post",
+          "icon": "Clock",
+          "section": "understand",
+          "access": "read",
+          "desc": "When your posts earn the most, by weekday and hour, from your own history."
+        },
+        {
+          "key": "lists",
+          "name": "Lists you’re on",
+          "icon": "Shield",
+          "section": "understand",
+          "access": "read",
+          "desc": "Every list that includes you, with moderation lists and their subscribers flagged."
+        },
+        {
+          "key": "interaction-lookup",
+          "name": "Interaction lookup",
+          "icon": "UsersRound",
+          "section": "understand",
+          "access": "read",
+          "desc": "Your whole history with one account: likes, replies and follows, both ways."
+        },
+        {
+          "key": "archive",
+          "name": "Archive search and export",
+          "icon": "Archive",
+          "section": "data",
+          "access": "read",
+          "desc": "Search every post you’ve made and download it as JSON or CSV."
+        },
+        {
+          "key": "identity",
+          "name": "Identity inspector",
+          "icon": "FingerprintPattern",
+          "section": "data",
+          "access": "read",
+          "desc": "Your DID, your PDS, your handle history and what each app writes to your repo."
+        },
+        {
+          "key": "list-manager",
+          "name": "List manager",
+          "icon": "List",
+          "section": "later",
+          "access": "ask",
+          "planned": true,
+          "desc": "Keep a Bluesky list in step with a filter, such as mutuals you talk to every week."
+        }
+      ]
+    },
+    {
+      "id": "TOOL_BY_KEY",
+      "fn": "TOOL_BY_KEY",
+      "input": {},
+      "output": {
+        "follow-cleanup": {
+          "key": "follow-cleanup",
+          "name": "Follow cleanup",
+          "icon": "UserMinus",
+          "section": "tidy",
+          "access": "follow",
+          "desc": "Find accounts you follow that went quiet, are gone, or don’t follow back, and unfollow in bulk."
+        },
+        "unfollow-tracker": {
+          "key": "unfollow-tracker",
+          "name": "Unfollow tracker",
+          "icon": "UserX",
+          "section": "tidy",
+          "access": "read",
+          "desc": "See who unfollowed you between two syncs, and who arrived."
+        },
+        "follow-back": {
+          "key": "follow-back",
+          "name": "Follow-back queue",
+          "icon": "UserPlus",
+          "section": "tidy",
+          "access": "follow",
+          "desc": "People who follow you and engage with your posts, that you don’t follow yet."
+        },
+        "best-time": {
+          "key": "best-time",
+          "name": "Best time to post",
+          "icon": "Clock",
+          "section": "understand",
+          "access": "read",
+          "desc": "When your posts earn the most, by weekday and hour, from your own history."
+        },
+        "lists": {
+          "key": "lists",
+          "name": "Lists you’re on",
+          "icon": "Shield",
+          "section": "understand",
+          "access": "read",
+          "desc": "Every list that includes you, with moderation lists and their subscribers flagged."
+        },
+        "interaction-lookup": {
+          "key": "interaction-lookup",
+          "name": "Interaction lookup",
+          "icon": "UsersRound",
+          "section": "understand",
+          "access": "read",
+          "desc": "Your whole history with one account: likes, replies and follows, both ways."
+        },
+        "archive": {
+          "key": "archive",
+          "name": "Archive search and export",
+          "icon": "Archive",
+          "section": "data",
+          "access": "read",
+          "desc": "Search every post you’ve made and download it as JSON or CSV."
+        },
+        "identity": {
+          "key": "identity",
+          "name": "Identity inspector",
+          "icon": "FingerprintPattern",
+          "section": "data",
+          "access": "read",
+          "desc": "Your DID, your PDS, your handle history and what each app writes to your repo."
+        },
+        "list-manager": {
+          "key": "list-manager",
+          "name": "List manager",
+          "icon": "List",
+          "section": "later",
+          "access": "ask",
+          "planned": true,
+          "desc": "Keep a Bluesky list in step with a filter, such as mutuals you talk to every week."
+        }
+      }
+    },
+    {
+      "id": "ACCESS",
+      "fn": "ACCESS",
+      "input": {},
+      "output": {
+        "read": {
+          "label": "Read only",
+          "icon": "Eye"
+        },
+        "follow": {
+          "label": "Can follow and unfollow",
+          "icon": "UserCheck"
+        },
+        "post": {
+          "label": "Can post and delete posts",
+          "icon": "PenLine"
+        },
+        "server": {
+          "label": "Uses Virga’s server",
+          "icon": "Server"
+        },
+        "lists": {
+          "label": "Can add people to your lists, when you approve it",
+          "icon": "ListPlus"
+        },
+        "ask": {
+          "label": "Would ask for a new permission",
+          "tone": "warn",
+          "icon": "Lock"
+        }
+      }
+    },
+    {
+      "id": "ACCESS.keys",
+      "fn": "ACCESS.keys",
+      "input": {},
+      "output": [
+        "read",
+        "follow",
+        "post",
+        "server",
+        "lists",
+        "ask"
+      ]
+    }
+  ]
+}

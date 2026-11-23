@@ -1,0 +1,3479 @@
+{
+  "name": "demo-network.fakeServer",
+  "sources": [
+    "harness/fakeServer.js",
+    "server/oauth/handlers/proxy.js",
+    "server/oauth/handlers/uploadBlob.js",
+    "server/oauth/xrpcErrors.js",
+    "server/oauth/blobPayload.js"
+  ],
+  "cases": [
+    {
+      "id": "sessions",
+      "fn": "server",
+      "input": {
+        "name": "sessions",
+        "steps": [
+          {
+            "mint": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "mint": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "mint": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session",
+            "headers": {
+              "authorization": "Bearer $t1"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session?lite=1",
+            "headers": {
+              "authorization": "Bearer $t1"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session?lite=true",
+            "headers": {
+              "authorization": "bearer   $t0"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session?lite=yes",
+            "headers": {
+              "authorization": "BEARER $t0"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session"
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session",
+            "headers": {
+              "authorization": "Bearer"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session",
+            "headers": {
+              "authorization": "Bearer $t0 extra"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session",
+            "headers": {
+              "authorization": "Bearer vg_1111111111111111111111111111111111111111111111111111111111111111"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session",
+            "headers": {
+              "authorization": "Basic $t0"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session/",
+            "method": "POST",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/logout",
+            "method": "POST",
+            "headers": {
+              "authorization": "Bearer $t1",
+              "Content-Type": "application/json"
+            },
+            "text": "{}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session?lite=1",
+            "headers": {
+              "authorization": "Bearer $t1"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session?lite=1",
+            "headers": {
+              "authorization": "Bearer $t2"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/logout",
+            "method": "POST",
+            "headers": {
+              "authorization": "Bearer $t2",
+              "Content-Type": "application/json"
+            },
+            "text": "{\"keepGrant\":true}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session?lite=1",
+            "headers": {
+              "authorization": "Bearer $t2"
+            }
+          },
+          {
+            "mint": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/logout",
+            "method": "POST",
+            "headers": {
+              "authorization": "Bearer $t3",
+              "Content-Type": "application/json"
+            },
+            "text": "{\"keepGrant\":\"yes\"}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/logout",
+            "method": "POST",
+            "headers": {
+              "authorization": "Bearer $t3"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/logout",
+            "method": "POST",
+            "text": "{}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/logout",
+            "method": "POST",
+            "headers": {
+              "authorization": "Bearer vg_2222222222222222222222222222222222222222222222222222222222222222"
+            },
+            "text": "{}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/logout",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/logout",
+            "method": "POST",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "text": "{not json"
+          },
+          {
+            "url": "https://server.harness.invalid/api/schedule/list",
+            "method": "OPTIONS"
+          },
+          {
+            "url": "https://server.harness.invalid/oauth/session",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/virga/oauth/login",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/nothing-here"
+          },
+          {
+            "url": "https://server.harness.invalid/api/schedule/list",
+            "method": "POST",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/schedule/list"
+          },
+          {
+            "url": "https://server.harness.invalid/api/defense/lists",
+            "headers": {
+              "authorization": "Bearer vg_3333333333333333333333333333333333333333333333333333333333333333"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/limits/status",
+            "headers": {
+              "authorization": "Bearer nope"
+            }
+          },
+          {
+            "url": "http://127.0.0.1:5701/api/oauth/session",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/proxy",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.getRecord"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/proxy",
+            "headers": {
+              "authorization": "Bearer vg_4444444444444444444444444444444444444444444444444444444444444444",
+              "x-xrpc-method": "com.atproto.repo.getRecord"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/proxy",
+            "method": "PUT",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/upload-blob",
+            "method": "POST",
+            "headers": {
+              "content-type": "image/png"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/upload-blob",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          }
+        ]
+      },
+      "output": [
+        {
+          "token": "vg_0b30557a9fc4e90e33587da2c7ec11365b80a5caef14395e83a8cdf2173c6186"
+        },
+        {
+          "token": "vg_abd0f51a3f6489aed3f81d42678cb1d6fb20456a8fb4d9fe23486d92b7dc0126"
+        },
+        {
+          "token": "vg_4b7095badf04294e7398bde2072c51769bc0e50a2f54799ec3e80d32577ca1c6"
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "authenticated": true,
+            "client": "virga",
+            "oauthSessionMissing": false,
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+            "pds": "https://pds.harness.example",
+            "user": {
+              "did": "did:plc:virgaharnesslab7k2pq"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "authenticated": true,
+            "lite": true,
+            "client": "virga",
+            "oauthSessionMissing": false,
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+            "user": {
+              "did": "did:plc:virgaharnesslab7k2pq"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "authenticated": true,
+            "lite": true,
+            "client": "virga",
+            "oauthSessionMissing": false,
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+            "user": {
+              "did": "did:plc:virgaharnessmira2zq4x"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "authenticated": true,
+            "client": "virga",
+            "oauthSessionMissing": false,
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+            "pds": "https://pds.harness.example",
+            "user": {
+              "did": "did:plc:virgaharnessmira2zq4x"
+            }
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Missing or invalid authorization header",
+            "authenticated": false
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Missing or invalid authorization header",
+            "authenticated": false
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Missing or invalid authorization header",
+            "authenticated": false
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Invalid or expired session",
+            "authenticated": false,
+            "code": "FRONTEND_SESSION_INVALID"
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Missing or invalid authorization header",
+            "authenticated": false
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "authenticated": true,
+            "client": "virga",
+            "oauthSessionMissing": false,
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+            "pds": "https://pds.harness.example",
+            "user": {
+              "did": "did:plc:virgaharnessmira2zq4x"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "message": "Logged out successfully",
+            "grantRevoked": false
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Invalid or expired session",
+            "authenticated": false,
+            "code": "FRONTEND_SESSION_INVALID"
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "authenticated": true,
+            "lite": true,
+            "client": "virga",
+            "oauthSessionMissing": false,
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+            "user": {
+              "did": "did:plc:virgaharnesslab7k2pq"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "message": "Logged out successfully",
+            "grantRevoked": false
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Invalid or expired session",
+            "authenticated": false,
+            "code": "FRONTEND_SESSION_INVALID"
+          }
+        },
+        {
+          "token": "vg_eb10355a7fa4c9ee13385d82a7ccf1163b6085aacff4193e6388add2f71c4166"
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "message": "Logged out successfully",
+            "grantRevoked": true
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "message": "Logged out successfully",
+            "grantRevoked": false
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "message": "No session to logout"
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "message": "Logged out successfully",
+            "grantRevoked": false
+          }
+        },
+        {
+          "status": 404,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Not found"
+          }
+        },
+        {
+          "status": 400,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Invalid JSON body"
+          }
+        },
+        {
+          "status": 204,
+          "type": null
+        },
+        {
+          "status": 404,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Not found"
+          }
+        },
+        {
+          "status": 404,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Not found"
+          }
+        },
+        {
+          "status": 404,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Not found"
+          }
+        },
+        {
+          "status": 405,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Method not allowed"
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Missing or invalid authorization header",
+            "code": "FRONTEND_SESSION_INVALID"
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Invalid or expired session",
+            "code": "FRONTEND_SESSION_INVALID"
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Invalid or expired session",
+            "code": "FRONTEND_SESSION_INVALID"
+          }
+        },
+        null,
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Missing or invalid authorization header"
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Invalid or expired session",
+            "code": "FRONTEND_SESSION_INVALID"
+          }
+        },
+        {
+          "status": 404,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Not found"
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Missing or invalid authorization header"
+          }
+        },
+        {
+          "status": 404,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Not found"
+          }
+        }
+      ]
+    },
+    {
+      "id": "refused",
+      "fn": "server",
+      "input": {
+        "name": "refused",
+        "steps": [
+          {
+            "mint": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "refuse": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session?lite=1",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/proxy",
+            "headers": {
+              "authorization": "Bearer $t0",
+              "x-xrpc-method": "com.atproto.repo.getRecord"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session?lite=1",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/upload-blob?encoding=image/png",
+            "method": "POST",
+            "headers": {
+              "authorization": "Bearer $t0",
+              "content-type": "application/octet-stream"
+            }
+          },
+          {
+            "mint": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session?lite=1",
+            "headers": {
+              "authorization": "Bearer $t1"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          },
+          {
+            "refuse": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "mint": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session",
+            "headers": {
+              "authorization": "Bearer $t2"
+            }
+          },
+          {
+            "expire": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session",
+            "headers": {
+              "authorization": "Bearer $t1"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/logout",
+            "method": "POST",
+            "headers": {
+              "authorization": "Bearer $t2"
+            },
+            "text": "{}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/oauth/session?lite=1",
+            "headers": {
+              "authorization": "Bearer $t2"
+            }
+          }
+        ]
+      },
+      "output": [
+        {
+          "token": "vg_0b30557a9fc4e90e33587da2c7ec11365b80a5caef14395e83a8cdf2173c6186"
+        },
+        null,
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "authenticated": true,
+            "lite": true,
+            "client": "virga",
+            "oauthSessionMissing": false,
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+            "user": {
+              "did": "did:plc:virgaharnessmira2zq4x"
+            }
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "OAuth session missing. Automatic re-authentication required.",
+            "code": "OAUTH_SESSION_MISSING"
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "authenticated": true,
+            "lite": true,
+            "client": "virga",
+            "oauthSessionMissing": true,
+            "user": {
+              "did": "did:plc:virgaharnessmira2zq4x"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "authenticated": true,
+            "client": "virga",
+            "oauthSessionMissing": true,
+            "user": {
+              "did": "did:plc:virgaharnessmira2zq4x"
+            }
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "OAuth session missing. Automatic re-authentication required.",
+            "code": "OAUTH_SESSION_MISSING"
+          }
+        },
+        {
+          "token": "vg_abd0f51a3f6489aed3f81d42678cb1d6fb20456a8fb4d9fe23486d92b7dc0126"
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "authenticated": true,
+            "lite": true,
+            "client": "virga",
+            "oauthSessionMissing": false,
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+            "user": {
+              "did": "did:plc:virgaharnessmira2zq4x"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "authenticated": true,
+            "client": "virga",
+            "oauthSessionMissing": false,
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+            "pds": "https://pds.harness.example",
+            "user": {
+              "did": "did:plc:virgaharnessmira2zq4x"
+            }
+          }
+        },
+        null,
+        {
+          "token": "vg_4b7095badf04294e7398bde2072c51769bc0e50a2f54799ec3e80d32577ca1c6"
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "authenticated": true,
+            "client": "virga",
+            "oauthSessionMissing": false,
+            "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+            "pds": "https://pds.harness.example",
+            "user": {
+              "did": "did:plc:virgaharnesslab7k2pq"
+            }
+          }
+        },
+        null,
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Invalid or expired session",
+            "authenticated": false,
+            "code": "FRONTEND_SESSION_INVALID"
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Invalid or expired session",
+            "authenticated": false,
+            "code": "FRONTEND_SESSION_INVALID"
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "message": "Logged out successfully",
+            "grantRevoked": true
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Invalid or expired session",
+            "authenticated": false,
+            "code": "FRONTEND_SESSION_INVALID"
+          }
+        }
+      ]
+    },
+    {
+      "id": "terms-agreed",
+      "fn": "server",
+      "input": {
+        "name": "terms-agreed",
+        "steps": [
+          {
+            "mint": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "advance": 86400000
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/status",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "authorization": "Bearer $t0",
+              "Content-Type": "application/json"
+            },
+            "text": "{\"version\":1}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/status"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/status",
+            "method": "POST",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          }
+        ]
+      },
+      "output": [
+        {
+          "token": "vg_0b30557a9fc4e90e33587da2c7ec11365b80a5caef14395e83a8cdf2173c6186"
+        },
+        null,
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "version": 1,
+            "effectiveDate": "2026-11-15",
+            "accepted": true,
+            "acceptedAt": "2026-10-15T23:46:40.000Z"
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "version": 1,
+            "effectiveDate": "2026-11-15",
+            "identity": "session",
+            "acceptedAt": "2026-10-15T23:46:40.000Z",
+            "created": false
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Missing or invalid authorization header",
+            "code": "FRONTEND_SESSION_INVALID"
+          }
+        },
+        {
+          "status": 405,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Method not allowed"
+          }
+        },
+        {
+          "status": 405,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Method not allowed"
+          }
+        }
+      ]
+    },
+    {
+      "id": "terms-ask",
+      "fn": "server",
+      "input": {
+        "name": "terms-ask",
+        "terms": "ask",
+        "steps": [
+          {
+            "mint": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "mint": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/status",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          },
+          {
+            "advance": 5000
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "authorization": "Bearer $t0",
+              "Content-Type": "application/json",
+              "user-agent": "Virga"
+            },
+            "text": "{\"version\":1}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/status",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          },
+          {
+            "advance": 5000
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "authorization": "Bearer $t0",
+              "Content-Type": "application/json"
+            },
+            "text": "{\"version\":1}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/status",
+            "headers": {
+              "authorization": "Bearer $t1"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "text": "{\"version\":1,\"did\":\"did:plc:virgaharnesslab7k2pq\"}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/status",
+            "headers": {
+              "authorization": "Bearer $t1"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "text": "{\"version\":1,\"did\":\"did:plc:virgaharnesslab7k2pq\"}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "text": "{\"version\":2,\"did\":\"did:plc:virgaharnessmira2zq4x\"}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "text": "{\"version\":\"1\",\"did\":\"did:plc:virgaharnessmira2zq4x\"}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "text": "{\"version\":1,\"did\":\"mira.example.com\"}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "text": "{\"version\":1,\"did\":\"did:key:z6Mk\"}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "text": "{\"version\":1,\"did\":\"did:web:café.example\"}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "text": "{\"version\":1,\"did\":5}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "text": "{\"version\":1}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "text": "null"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "authorization": "Bearer vg_0000000000000000000000000000000000000000000000000000000000000000",
+              "Content-Type": "application/json"
+            },
+            "text": "{\"version\":1}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "authorization": "Bearer $t1",
+              "Content-Type": "application/json"
+            },
+            "text": "[1]"
+          }
+        ]
+      },
+      "output": [
+        {
+          "token": "vg_0b30557a9fc4e90e33587da2c7ec11365b80a5caef14395e83a8cdf2173c6186"
+        },
+        {
+          "token": "vg_abd0f51a3f6489aed3f81d42678cb1d6fb20456a8fb4d9fe23486d92b7dc0126"
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "version": 1,
+            "effectiveDate": "2026-11-15",
+            "accepted": false,
+            "acceptedAt": null
+          }
+        },
+        null,
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "version": 1,
+            "effectiveDate": "2026-11-15",
+            "identity": "session",
+            "acceptedAt": "2026-11-14T23:46:45.000Z",
+            "created": true
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "version": 1,
+            "effectiveDate": "2026-11-15",
+            "accepted": true,
+            "acceptedAt": "2026-11-14T23:46:45.000Z"
+          }
+        },
+        null,
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "version": 1,
+            "effectiveDate": "2026-11-15",
+            "identity": "session",
+            "acceptedAt": "2026-11-14T23:46:45.000Z",
+            "created": false
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "version": 1,
+            "effectiveDate": "2026-11-15",
+            "accepted": false,
+            "acceptedAt": null
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "version": 1,
+            "effectiveDate": "2026-11-15",
+            "identity": "claimed"
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "version": 1,
+            "effectiveDate": "2026-11-15",
+            "accepted": false,
+            "acceptedAt": null
+          }
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "version": 1,
+            "effectiveDate": "2026-11-15",
+            "identity": "claimed"
+          }
+        },
+        {
+          "status": 409,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "the Terms of Service and Privacy Policy have changed. reload to read the current ones.",
+            "code": "TERMS_VERSION_MISMATCH",
+            "version": 1,
+            "effectiveDate": "2026-11-15"
+          }
+        },
+        {
+          "status": 409,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "the Terms of Service and Privacy Policy have changed. reload to read the current ones.",
+            "code": "TERMS_VERSION_MISMATCH",
+            "version": 1,
+            "effectiveDate": "2026-11-15"
+          }
+        },
+        {
+          "status": 400,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "that isn't an account's DID.",
+            "code": "DID_INVALID"
+          }
+        },
+        {
+          "status": 400,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "that isn't an account's DID.",
+            "code": "DID_INVALID"
+          }
+        },
+        {
+          "status": 400,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "that isn't an account's DID.",
+            "code": "DID_INVALID"
+          }
+        },
+        {
+          "status": 400,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "that isn't an account's DID.",
+            "code": "DID_INVALID"
+          }
+        },
+        {
+          "status": 400,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "that isn't an account's DID.",
+            "code": "DID_INVALID"
+          }
+        },
+        {
+          "status": 409,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "the Terms of Service and Privacy Policy have changed. reload to read the current ones.",
+            "code": "TERMS_VERSION_MISMATCH",
+            "version": 1,
+            "effectiveDate": "2026-11-15"
+          }
+        },
+        {
+          "status": 500,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "something went wrong. please try again.",
+            "code": "INTERNAL"
+          }
+        },
+        {
+          "status": 401,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "Invalid or expired session",
+            "code": "FRONTEND_SESSION_INVALID"
+          }
+        },
+        {
+          "status": 409,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "the Terms of Service and Privacy Policy have changed. reload to read the current ones.",
+            "code": "TERMS_VERSION_MISMATCH",
+            "version": 1,
+            "effectiveDate": "2026-11-15"
+          }
+        }
+      ]
+    },
+    {
+      "id": "terms-down",
+      "fn": "server",
+      "input": {
+        "name": "terms-down",
+        "terms": "down",
+        "steps": [
+          {
+            "mint": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/status",
+            "headers": {
+              "authorization": "Bearer $t0"
+            }
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "authorization": "Bearer $t0",
+              "Content-Type": "application/json"
+            },
+            "text": "{\"version\":1}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "text": "{\"version\":1,\"did\":\"did:plc:virgaharnessmira2zq4x\"}"
+          },
+          {
+            "url": "https://server.harness.invalid/api/terms/accept",
+            "method": "POST",
+            "headers": {
+              "authorization": "Bearer nope",
+              "Content-Type": "application/json"
+            },
+            "text": "{\"version\":1}"
+          }
+        ]
+      },
+      "output": [
+        {
+          "token": "vg_0b30557a9fc4e90e33587da2c7ec11365b80a5caef14395e83a8cdf2173c6186"
+        },
+        {
+          "status": 200,
+          "type": "application/json",
+          "json": {
+            "success": true,
+            "version": 1,
+            "effectiveDate": "2026-11-15",
+            "accepted": false,
+            "acceptedAt": null
+          }
+        },
+        {
+          "status": 503,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "agreements can't be recorded on Virga's server yet.",
+            "code": "UNAVAILABLE"
+          }
+        },
+        {
+          "status": 503,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "agreements can't be recorded on Virga's server yet.",
+            "code": "UNAVAILABLE"
+          }
+        },
+        {
+          "status": 503,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "agreements can't be recorded on Virga's server yet.",
+            "code": "UNAVAILABLE"
+          }
+        }
+      ]
+    },
+    {
+      "id": "full",
+      "fn": "forward",
+      "input": {
+        "steps": [
+          {
+            "headers": {}
+          },
+          {
+            "headers": {
+              "x-xrpc-method": "getRecord"
+            }
+          },
+          {
+            "headers": {
+              "x-xrpc-method": "com.atproto.__proto__.x"
+            }
+          },
+          {
+            "headers": {
+              "x-xrpc-method": "Com.atproto.repo.getRecord"
+            }
+          },
+          {
+            "headers": {
+              "x-xrpc-method": "com.atproto.sync.getRepo"
+            }
+          },
+          {
+            "query": "repo=did:plc:virgaharnessmira2zq4x&collection=app.bsky.actor.profile&rkey=self",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.getRecord"
+            }
+          },
+          {
+            "query": "collection=app.bsky.graph.follow&limit=2&reverse=true",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.listRecords"
+            }
+          },
+          {
+            "query": "collection=app.bsky.graph.follow&limit=2&reverse=1",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.listRecords"
+            }
+          },
+          {
+            "query": "collection=app.bsky.feed.post&limit=abc&cursor=2",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.listRecords"
+            }
+          },
+          {
+            "query": "limit=2&limit=3",
+            "headers": {
+              "x-xrpc-method": "app.bsky.notification.listNotifications"
+            }
+          },
+          {
+            "query": "actor=did:plc:virgaharnessmira2zq4x&limit=2&method=x&action=proxy",
+            "headers": {
+              "x-xrpc-method": "app.bsky.graph.getFollowers"
+            }
+          },
+          {
+            "query": "actors=did:plc:virgaharnesslab7k2pq,%20ana.example.com,,&actors=nobody",
+            "headers": {
+              "x-xrpc-method": "app.bsky.actor.getProfiles"
+            }
+          },
+          {
+            "query": "actors=did:plc:virgaharnesslab7k2pq",
+            "headers": {
+              "x-xrpc-method": "app.bsky.actor.getProfiles"
+            }
+          },
+          {
+            "query": "actors=",
+            "headers": {
+              "x-xrpc-method": "app.bsky.actor.getProfiles"
+            }
+          },
+          {
+            "headers": {
+              "x-xrpc-method": "app.bsky.actor.getPreferences"
+            }
+          },
+          {
+            "headers": {
+              "x-xrpc-method": "app.bsky.draft.getDrafts"
+            }
+          },
+          {
+            "headers": {
+              "x-xrpc-method": "app.bsky.draft.getDrafts",
+              "x-atproto-proxy": "did:web:api.bsky.app#bsky_appview"
+            }
+          },
+          {
+            "headers": {
+              "x-xrpc-method": "app.bsky.draft.getDrafts",
+              "x-atproto-proxy": "did:web:api.bsky.app"
+            }
+          },
+          {
+            "query": "limit=1",
+            "headers": {
+              "x-xrpc-method": "app.bsky.bookmark.getBookmarks",
+              "x-atproto-proxy": "did:web:api.bsky.app#bsky_appview"
+            }
+          },
+          {
+            "query": "q=garden&limit=2",
+            "headers": {
+              "x-xrpc-method": "app.bsky.feed.searchPosts"
+            }
+          },
+          {
+            "headers": {
+              "x-xrpc-method": "app.bsky.draft.getDrafts",
+              "x-atproto-proxy": "did:web:appview.example#bsky_appview"
+            }
+          },
+          {
+            "query": "limit=1",
+            "headers": {
+              "x-xrpc-method": "app.bsky.bookmark.getBookmarks",
+              "x-atproto-proxy": "did:web:appview.example"
+            }
+          },
+          {
+            "headers": {
+              "x-xrpc-method": "app.bsky.unspecced.getSomething",
+              "x-atproto-proxy": "did:web:appview.example#bsky_appview"
+            }
+          },
+          {
+            "query": "q=garden&author=a&author=b",
+            "headers": {
+              "x-xrpc-method": "app.bsky.feed.searchPosts",
+              "x-atproto-proxy": "did:web:appview.example#bsky_appview"
+            }
+          },
+          {
+            "query": "limit=1",
+            "headers": {
+              "x-xrpc-method": "app.bsky.feed.searchPosts",
+              "x-atproto-proxy": "did:web:appview.example#bsky_appview"
+            }
+          },
+          {
+            "query": "q=garden&author=a&author=b",
+            "headers": {
+              "x-xrpc-method": "app.bsky.feed.searchPosts"
+            }
+          },
+          {
+            "method": "POST",
+            "headers": {
+              "x-xrpc-method": "app.bsky.draft.createDraft",
+              "x-atproto-proxy": "did:web:appview.example#bsky_appview"
+            },
+            "text": "{\"draft\":{\"posts\":[{\"text\":\"x\"}]}}"
+          },
+          {
+            "query": "toString=x&limit=1",
+            "headers": {
+              "x-xrpc-method": "app.bsky.notification.listNotifications"
+            }
+          },
+          {
+            "query": "aud=did:web:x&lxm=a.b.c&constructor=y",
+            "headers": {
+              "x-xrpc-method": "com.atproto.server.getServiceAuth"
+            }
+          },
+          {
+            "query": "__proto__=z&collection=app.bsky.graph.follow&limit=1",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.listRecords"
+            }
+          },
+          {
+            "headers": {
+              "x-xrpc-method": "app.bsky.unspecced.getSomething"
+            }
+          },
+          {
+            "headers": {
+              "x-xrpc-method": "com.atproto.server.getServiceAuth"
+            }
+          },
+          {
+            "query": "aud=did:web:video.bsky.app&lxm=app.bsky.video.getUploadLimits&exp=1794700600",
+            "headers": {
+              "x-xrpc-method": "com.atproto.server.getServiceAuth"
+            }
+          },
+          {
+            "method": "POST",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.createRecord"
+            },
+            "text": "{\"repo\":\"did:plc:virgaharnessmira2zq4x\",\"collection\":\"app.bsky.feed.post\",\"rkey\":\"3mproxypost22\",\"record\":{\"$type\":\"app.bsky.feed.post\",\"text\":\"Through the proxy\",\"createdAt\":\"2026-11-14T23:46:40.000Z\"}}"
+          },
+          {
+            "method": "POST",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.createRecord"
+            },
+            "text": "{\"repo\":\"did:plc:virgaharnessmira2zq4x\",\"collection\":\"app.bsky.feed.post\",\"rkey\":\"3mproxypost22\",\"record\":{\"$type\":\"app.bsky.feed.post\",\"text\":\"Again\",\"createdAt\":\"2026-11-14T23:46:40.000Z\"}}"
+          },
+          {
+            "method": "POST",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.createRecord"
+            },
+            "text": "{\"repo\":\"did:plc:virgaharnesslab7k2pq\",\"collection\":\"x\",\"rkey\":\"a\",\"record\":{}}"
+          },
+          {
+            "method": "POST",
+            "query": "collection=app.bsky.feed.post&limit=1",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.listRecords"
+            },
+            "text": "{}"
+          },
+          {
+            "method": "POST",
+            "query": "collection=app.bsky.feed.post&limit=1",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.listRecords"
+            },
+            "text": "[1,2]"
+          },
+          {
+            "method": "POST",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.deleteRecord"
+            },
+            "text": "{\"repo\":\"did:plc:virgaharnessmira2zq4x\",\"collection\":\"app.bsky.feed.post\",\"rkey\":\"3mproxypost22\"}"
+          },
+          {
+            "method": "POST",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.applyWrites"
+            },
+            "text": "{\"writes\":\"abc\"}"
+          },
+          {
+            "method": "POST",
+            "headers": {
+              "x-xrpc-method": "app.bsky.actor.putPreferences"
+            },
+            "text": "{\"preferences\":[{\"$type\":\"x\"}]}"
+          },
+          {
+            "headers": {
+              "x-xrpc-method": "app.bsky.actor.getPreferences"
+            }
+          },
+          {
+            "upload": true,
+            "query": "encoding=image/png",
+            "bytes": [
+              137,
+              80,
+              78,
+              71
+            ]
+          },
+          {
+            "upload": true,
+            "query": "encoding=application/octet-stream",
+            "bytes": [
+              1,
+              2
+            ]
+          },
+          {
+            "upload": true,
+            "query": "encoding=image/png",
+            "bytes": []
+          },
+          {
+            "upload": true,
+            "query": "",
+            "bytes": [
+              1
+            ]
+          }
+        ]
+      },
+      "output": [
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Missing X-XRPC-Method header"
+          }
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Invalid or unsupported XRPC method"
+          }
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Invalid or unsupported XRPC method"
+          }
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Invalid or unsupported XRPC method"
+          }
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "com.atproto.sync.getRepo answers in bytes and can't go through Virga's server; read it from the PDS directly."
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.actor.profile/self",
+              "cid": "bafyharness",
+              "value": {
+                "$type": "app.bsky.actor.profile",
+                "displayName": "Mira Okafor"
+              }
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "records": [
+                {
+                  "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.follow/3kwdldnya22kr",
+                  "cid": "bafyharness",
+                  "value": {
+                    "$type": "app.bsky.graph.follow",
+                    "subject": "did:plc:virgaharnessfol0035",
+                    "createdAt": "2024-07-02T23:46:40.000Z"
+                  }
+                },
+                {
+                  "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.follow/3ky5g2tli22kq",
+                  "cid": "bafyharness",
+                  "value": {
+                    "$type": "app.bsky.graph.follow",
+                    "subject": "did:plc:virgaharnessfol0034",
+                    "createdAt": "2024-07-25T23:46:40.000Z"
+                  }
+                }
+              ],
+              "cursor": "2"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "records": [
+                {
+                  "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.follow/3mzyqiesnj222",
+                  "cid": "bafyharness",
+                  "value": {
+                    "$type": "app.bsky.graph.follow",
+                    "subject": "did:plc:virgaharnesscast0000",
+                    "createdAt": "2026-11-11T00:52:40.428Z"
+                  }
+                },
+                {
+                  "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.follow/3mxxxl2yvdc23",
+                  "cid": "bafyharness",
+                  "value": {
+                    "$type": "app.bsky.graph.follow",
+                    "subject": "did:plc:virgaharnesscast0001",
+                    "createdAt": "2026-10-16T06:36:24.009Z"
+                  }
+                }
+              ],
+              "cursor": "2"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "$sha256": "7fff6b0d7a8a2b5a96da8fdd096eeeb7a19cfef9eb6daf85735c48190ef7be08",
+            "success": true,
+            "data": {
+              "$sha256": "e71614712228d741c78ef8d2e6f849af9d065c7ed323b1dd6fc0ccf3c05777c8"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "$sha256": "9dea32326b8c81c3ad06767259ca2fb1b10a9d7c8f7e796a7378767627f29e76",
+            "success": true,
+            "data": {
+              "$sha256": "8744e3fec0d1ce603d965e60e4305bf7274ef85aa3abd4096948232c0fdb7f57"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "subject": {
+                "did": "did:plc:virgaharnessmira2zq4x",
+                "handle": "mira.example.com",
+                "displayName": "Mira Okafor",
+                "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E"
+              },
+              "followers": [
+                {
+                  "did": "did:plc:virgaharnessfan04809",
+                  "handle": "reader4809.example.com",
+                  "displayName": "Viktor Yilmaz",
+                  "avatar": "",
+                  "viewer": {
+                    "followedBy": "at://did:plc:virgaharnessfan04809/app.bsky.graph.follow/3n2brsndy52qd"
+                  }
+                },
+                {
+                  "did": "did:plc:virgaharnessfan04808",
+                  "handle": "reader4808.example.com",
+                  "displayName": "",
+                  "avatar": "",
+                  "viewer": {
+                    "followedBy": "at://did:plc:virgaharnessfan04808/app.bsky.graph.follow/3n2bxn3ax2cqc"
+                  }
+                }
+              ],
+              "cursor": "2"
+            }
+          }
+        },
+        {
+          "status": 403,
+          "body": {
+            "success": false,
+            "error": "Missing required scope \"rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview\"",
+            "code": "ScopeMissingError"
+          }
+        },
+        {
+          "status": 403,
+          "body": {
+            "success": false,
+            "error": "Missing required scope \"rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview\"",
+            "code": "ScopeMissingError"
+          }
+        },
+        {
+          "status": 403,
+          "body": {
+            "success": false,
+            "error": "Missing required scope \"rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview\"",
+            "code": "ScopeMissingError"
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "preferences": [
+                {
+                  "$type": "app.bsky.actor.defs#savedFeedsPrefV2",
+                  "items": [
+                    {
+                      "id": "following",
+                      "type": "timeline",
+                      "value": "following",
+                      "pinned": true
+                    },
+                    {
+                      "id": "saved-0",
+                      "type": "feed",
+                      "value": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.generator/allotments",
+                      "pinned": true
+                    },
+                    {
+                      "id": "saved-1",
+                      "type": "feed",
+                      "value": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.generator/street-trees",
+                      "pinned": false
+                    }
+                  ]
+                },
+                {
+                  "$type": "app.bsky.actor.defs#postInteractionSettingsPref",
+                  "threadgateAllowRules": [
+                    {
+                      "$type": "app.bsky.feed.threadgate#followingRule"
+                    },
+                    {
+                      "$type": "app.bsky.feed.threadgate#mentionRule"
+                    }
+                  ],
+                  "postgateEmbeddingRules": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "status": 501,
+          "body": {
+            "success": false,
+            "error": "app.bsky.draft.getDrafts is only answered by Bluesky's AppView; call it through withProxy('bsky_appview', 'did:web:api.bsky.app')",
+            "code": "MethodNotImplemented"
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "drafts": [
+                {
+                  "id": "3n25nq6ri223c",
+                  "draft": {
+                    "posts": [
+                      {
+                        "text": "Half-finished thought about bus shelters and who they are really for."
+                      }
+                    ],
+                    "langs": [
+                      "en"
+                    ]
+                  },
+                  "createdAt": "2026-11-12T23:46:40.000Z",
+                  "updatedAt": "2026-11-12T23:46:40.000Z"
+                },
+                {
+                  "id": "3mztluiwi223d",
+                  "draft": {
+                    "posts": [
+                      {
+                        "text": "A short thread on the repair café numbers from this year."
+                      },
+                      {
+                        "text": "412 things came in. 301 went home working."
+                      },
+                      {
+                        "text": "Lamps were the most common. Toasters were the most stubborn."
+                      }
+                    ],
+                    "langs": [
+                      "en"
+                    ]
+                  },
+                  "createdAt": "2026-11-08T23:46:40.000Z",
+                  "updatedAt": "2026-11-08T23:46:40.000Z"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "drafts": [
+                {
+                  "id": "3n25nq6ri223c",
+                  "draft": {
+                    "posts": [
+                      {
+                        "text": "Half-finished thought about bus shelters and who they are really for."
+                      }
+                    ],
+                    "langs": [
+                      "en"
+                    ]
+                  },
+                  "createdAt": "2026-11-12T23:46:40.000Z",
+                  "updatedAt": "2026-11-12T23:46:40.000Z"
+                },
+                {
+                  "id": "3mztluiwi223d",
+                  "draft": {
+                    "posts": [
+                      {
+                        "text": "A short thread on the repair café numbers from this year."
+                      },
+                      {
+                        "text": "412 things came in. 301 went home working."
+                      },
+                      {
+                        "text": "Lamps were the most common. Toasters were the most stubborn."
+                      }
+                    ],
+                    "langs": [
+                      "en"
+                    ]
+                  },
+                  "createdAt": "2026-11-08T23:46:40.000Z",
+                  "updatedAt": "2026-11-08T23:46:40.000Z"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "bookmarks": [
+                {
+                  "subject": {
+                    "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2a674aa223w",
+                    "cid": "bafyharness"
+                  },
+                  "createdAt": "2026-11-14T00:46:40.000Z",
+                  "item": {
+                    "$type": "app.bsky.feed.defs#postView",
+                    "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2a674aa223w",
+                    "cid": "bafyharness",
+                    "author": {
+                      "did": "did:plc:virgaharnesscast0000",
+                      "handle": "ana.example.com",
+                      "displayName": "Ana Nakamura",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EA%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    "record": {
+                      "$type": "app.bsky.feed.post",
+                      "text": "New zine about local wildflowers is out. Free at the café while copies last.",
+                      "createdAt": "2026-11-13T23:46:40.000Z",
+                      "langs": [
+                        "en"
+                      ]
+                    },
+                    "likeCount": 76,
+                    "repostCount": 7,
+                    "replyCount": 1,
+                    "quoteCount": 1,
+                    "indexedAt": "2026-11-13T23:46:40.000Z",
+                    "labels": [],
+                    "viewer": {}
+                  }
+                }
+              ],
+              "cursor": "1"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "posts": [
+                {
+                  "$type": "app.bsky.feed.defs#postView",
+                  "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2awdlhu22dg",
+                  "cid": "bafyharness",
+                  "author": {
+                    "did": "did:plc:virgaharnesscast0000",
+                    "handle": "ana.example.com",
+                    "displayName": "Ana Nakamura",
+                    "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EA%3C%2Ftext%3E%3C%2Fsvg%3E"
+                  },
+                  "record": {
+                    "$type": "app.bsky.feed.post",
+                    "text": "Question for gardeners: what do you do with forty green tomatoes in November?",
+                    "createdAt": "2026-11-14T06:58:40.000Z",
+                    "langs": [
+                      "en"
+                    ]
+                  },
+                  "likeCount": 44,
+                  "repostCount": 6,
+                  "replyCount": 0,
+                  "quoteCount": 2,
+                  "indexedAt": "2026-11-14T06:58:40.000Z",
+                  "labels": [],
+                  "viewer": {}
+                },
+                {
+                  "$type": "app.bsky.feed.defs#postView",
+                  "uri": "at://did:plc:virgaharnesscast0001/app.bsky.feed.post/3n23neasi22dj",
+                  "cid": "bafyharness",
+                  "author": {
+                    "did": "did:plc:virgaharnesscast0001",
+                    "handle": "bo.example.com",
+                    "displayName": "Bo Underhill",
+                    "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(28%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(28%2060%25%2024%25)%22%3EB%3C%2Ftext%3E%3C%2Fsvg%3E"
+                  },
+                  "record": {
+                    "$type": "app.bsky.feed.post",
+                    "text": "Question for gardeners: what do you do with forty green tomatoes in November?",
+                    "createdAt": "2026-11-12T04:34:40.000Z",
+                    "langs": [
+                      "en"
+                    ]
+                  },
+                  "likeCount": 59,
+                  "repostCount": 4,
+                  "replyCount": 4,
+                  "quoteCount": 2,
+                  "indexedAt": "2026-11-12T04:34:40.000Z",
+                  "labels": [],
+                  "viewer": {}
+                }
+              ],
+              "cursor": "2",
+              "hitsTotal": 114
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "drafts": [
+                {
+                  "id": "3n25nq6ri223c",
+                  "draft": {
+                    "posts": [
+                      {
+                        "text": "Half-finished thought about bus shelters and who they are really for."
+                      }
+                    ],
+                    "langs": [
+                      "en"
+                    ]
+                  },
+                  "createdAt": "2026-11-12T23:46:40.000Z",
+                  "updatedAt": "2026-11-12T23:46:40.000Z"
+                },
+                {
+                  "id": "3mztluiwi223d",
+                  "draft": {
+                    "posts": [
+                      {
+                        "text": "A short thread on the repair café numbers from this year."
+                      },
+                      {
+                        "text": "412 things came in. 301 went home working."
+                      },
+                      {
+                        "text": "Lamps were the most common. Toasters were the most stubborn."
+                      }
+                    ],
+                    "langs": [
+                      "en"
+                    ]
+                  },
+                  "createdAt": "2026-11-08T23:46:40.000Z",
+                  "updatedAt": "2026-11-08T23:46:40.000Z"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "bookmarks": [
+                {
+                  "subject": {
+                    "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2a674aa223w",
+                    "cid": "bafyharness"
+                  },
+                  "createdAt": "2026-11-14T00:46:40.000Z",
+                  "item": {
+                    "$type": "app.bsky.feed.defs#postView",
+                    "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2a674aa223w",
+                    "cid": "bafyharness",
+                    "author": {
+                      "did": "did:plc:virgaharnesscast0000",
+                      "handle": "ana.example.com",
+                      "displayName": "Ana Nakamura",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EA%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    "record": {
+                      "$type": "app.bsky.feed.post",
+                      "text": "New zine about local wildflowers is out. Free at the café while copies last.",
+                      "createdAt": "2026-11-13T23:46:40.000Z",
+                      "langs": [
+                        "en"
+                      ]
+                    },
+                    "likeCount": 76,
+                    "repostCount": 7,
+                    "replyCount": 1,
+                    "quoteCount": 1,
+                    "indexedAt": "2026-11-13T23:46:40.000Z",
+                    "labels": [],
+                    "viewer": {}
+                  }
+                }
+              ],
+              "cursor": "1"
+            }
+          }
+        },
+        {
+          "status": 501,
+          "body": {
+            "success": false,
+            "error": "Method Not Implemented: app.bsky.unspecced.getSomething",
+            "code": "MethodNotImplemented"
+          }
+        },
+        {
+          "status": 500,
+          "body": {
+            "success": false,
+            "error": "author.startsWith is not a function"
+          }
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "q is required",
+            "code": "InvalidRequest"
+          }
+        },
+        {
+          "status": 500,
+          "body": {
+            "success": false,
+            "error": "author.startsWith is not a function"
+          }
+        },
+        {
+          "status": 501,
+          "body": {
+            "success": false,
+            "error": "app.bsky.draft.createDraft is only answered by Bluesky's AppView; call it through withProxy('bsky_appview', 'did:web:api.bsky.app')",
+            "code": "MethodNotImplemented"
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "notifications": [
+                {
+                  "uri": "at://did:plc:virgaharnesscast0018/app.bsky.harness.repost/3n2conhiifc6t",
+                  "reason": "repost",
+                  "reasonSubject": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3mjjyaoqddcnq",
+                  "author": {
+                    "did": "did:plc:virgaharnesscast0018",
+                    "handle": "sami.example.com",
+                    "displayName": "Sami Tanaka",
+                    "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(96%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(96%2060%25%2024%25)%22%3ES%3C%2Ftext%3E%3C%2Fsvg%3E"
+                  },
+                  "record": {
+                    "createdAt": "2026-11-14T23:46:20.913Z"
+                  },
+                  "indexedAt": "2026-11-14T23:46:21.813Z"
+                }
+              ],
+              "cursor": "1"
+            }
+          }
+        },
+        {
+          "status": 403,
+          "body": {
+            "success": false,
+            "error": "Missing required scope \"rpc:a.b.c?aud=*\"",
+            "code": "ScopeMissingError"
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "records": [
+                {
+                  "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.follow/3mzyqiesnj222",
+                  "cid": "bafyharness",
+                  "value": {
+                    "$type": "app.bsky.graph.follow",
+                    "subject": "did:plc:virgaharnesscast0000",
+                    "createdAt": "2026-11-11T00:52:40.428Z"
+                  }
+                }
+              ],
+              "cursor": "1"
+            }
+          }
+        },
+        {
+          "status": 501,
+          "body": {
+            "success": false,
+            "error": "Method Not Implemented: app.bsky.unspecced.getSomething",
+            "code": "MethodNotImplemented"
+          }
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "aud is required",
+            "code": "InvalidRequest"
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "token": "harness.eyJpc3MiOiJkaWQ6cGxjOnZpcmdhaGFybmVzc21pcmEyenE0eCIsImF1ZCI6ImRpZDp3ZWI6dmlkZW8uYnNreS5hcHAiLCJseG0iOiJhcHAuYnNreS52aWRlby5nZXRVcGxvYWRMaW1pdHMiLCJleHAiOjE3OTQ3MDA2MDB9.unsigned"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3mproxypost22",
+              "cid": "bafyreigbxzqv2qep6ufplfzxex6chvuutyfcvsw7r22dgd5fmv5p5dnbby",
+              "commit": {
+                "cid": "bafyharnesscommit",
+                "rev": "3n2conzoy2222"
+              },
+              "validationStatus": "valid"
+            }
+          }
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Record already exists at app.bsky.feed.post/3mproxypost22",
+            "code": "InvalidRequest"
+          }
+        },
+        {
+          "status": 403,
+          "body": {
+            "success": false,
+            "error": "This account can only write to its own repo",
+            "code": "InvalidRequest"
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "records": [
+                {
+                  "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2chq77mc22a",
+                  "cid": "bafyharness",
+                  "value": {
+                    "$type": "app.bsky.feed.post",
+                    "text": "Three weeks of rain and the shed roof has finally told us where it leaks.",
+                    "createdAt": "2026-11-14T21:42:36.704Z",
+                    "langs": [
+                      "en"
+                    ],
+                    "reply": {
+                      "parent": {
+                        "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2chq77mc22a",
+                        "cid": "bafyharness"
+                      },
+                      "root": {
+                        "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2chq77mc22a",
+                        "cid": "bafyharness"
+                      }
+                    }
+                  }
+                }
+              ],
+              "cursor": "1"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "records": [
+                {
+                  "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2chq77mc22a",
+                  "cid": "bafyharness",
+                  "value": {
+                    "$type": "app.bsky.feed.post",
+                    "text": "Three weeks of rain and the shed roof has finally told us where it leaks.",
+                    "createdAt": "2026-11-14T21:42:36.704Z",
+                    "langs": [
+                      "en"
+                    ],
+                    "reply": {
+                      "parent": {
+                        "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2chq77mc22a",
+                        "cid": "bafyharness"
+                      },
+                      "root": {
+                        "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2chq77mc22a",
+                        "cid": "bafyharness"
+                      }
+                    }
+                  }
+                }
+              ],
+              "cursor": "1"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "commit": {
+                "cid": "bafyharnesscommit",
+                "rev": "3n2conzoy2222"
+              }
+            }
+          }
+        },
+        {
+          "status": 500,
+          "body": {
+            "success": false,
+            "error": "((intermediate value) || []).map is not a function"
+          }
+        },
+        {
+          "status": 403,
+          "body": {
+            "success": false,
+            "error": "Missing required scope \"rpc:app.bsky.actor.putPreferences?aud=did:web:api.bsky.app%23bsky_appview\"",
+            "code": "ScopeMissingError"
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "preferences": [
+                {
+                  "$type": "app.bsky.actor.defs#savedFeedsPrefV2",
+                  "items": [
+                    {
+                      "id": "following",
+                      "type": "timeline",
+                      "value": "following",
+                      "pinned": true
+                    },
+                    {
+                      "id": "saved-0",
+                      "type": "feed",
+                      "value": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.generator/allotments",
+                      "pinned": true
+                    },
+                    {
+                      "id": "saved-1",
+                      "type": "feed",
+                      "value": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.generator/street-trees",
+                      "pinned": false
+                    }
+                  ]
+                },
+                {
+                  "$type": "app.bsky.actor.defs#postInteractionSettingsPref",
+                  "threadgateAllowRules": [
+                    {
+                      "$type": "app.bsky.feed.threadgate#followingRule"
+                    },
+                    {
+                      "$type": "app.bsky.feed.threadgate#mentionRule"
+                    }
+                  ],
+                  "postgateEmbeddingRules": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "blob": {
+                "$type": "blob",
+                "ref": {
+                  "$link": "bafkreiapiy3mpd3f2nrz5ts2azfvvz2t4naimffbj6yyvngxkqgsyjefim"
+                },
+                "mimeType": "image/png",
+                "size": 4
+              }
+            }
+          }
+        },
+        {
+          "status": 403,
+          "body": {
+            "success": false,
+            "error": "Missing required scope \"blob:application/octet-stream\""
+          }
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Missing blob data"
+          }
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Missing encoding/content-type"
+          }
+        }
+      ]
+    },
+    {
+      "id": "read-only",
+      "fn": "forward",
+      "input": {
+        "search": "?scope=read",
+        "steps": [
+          {
+            "method": "POST",
+            "headers": {
+              "x-xrpc-method": "app.bsky.draft.createDraft",
+              "x-atproto-proxy": "did:web:appview.example#bsky_appview"
+            },
+            "text": "{\"draft\":{\"posts\":[{\"text\":\"x\"}]}}"
+          },
+          {
+            "method": "POST",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.createRecord"
+            },
+            "text": "{\"repo\":\"did:plc:virgaharnessmira2zq4x\",\"collection\":\"app.bsky.feed.post\",\"rkey\":\"3mproxypost22\",\"record\":{\"$type\":\"app.bsky.feed.post\",\"text\":\"Through the proxy\",\"createdAt\":\"2026-11-14T23:46:40.000Z\"}}"
+          },
+          {
+            "method": "POST",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.createRecord"
+            },
+            "text": "{\"repo\":\"did:plc:virgaharnessmira2zq4x\",\"collection\":\"app.bsky.feed.post\",\"rkey\":\"3mproxypost22\",\"record\":{\"$type\":\"app.bsky.feed.post\",\"text\":\"Again\",\"createdAt\":\"2026-11-14T23:46:40.000Z\"}}"
+          },
+          {
+            "method": "POST",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.createRecord"
+            },
+            "text": "{\"repo\":\"did:plc:virgaharnesslab7k2pq\",\"collection\":\"x\",\"rkey\":\"a\",\"record\":{}}"
+          },
+          {
+            "method": "POST",
+            "query": "collection=app.bsky.feed.post&limit=1",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.listRecords"
+            },
+            "text": "{}"
+          },
+          {
+            "method": "POST",
+            "query": "collection=app.bsky.feed.post&limit=1",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.listRecords"
+            },
+            "text": "[1,2]"
+          },
+          {
+            "method": "POST",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.deleteRecord"
+            },
+            "text": "{\"repo\":\"did:plc:virgaharnessmira2zq4x\",\"collection\":\"app.bsky.feed.post\",\"rkey\":\"3mproxypost22\"}"
+          },
+          {
+            "method": "POST",
+            "headers": {
+              "x-xrpc-method": "com.atproto.repo.applyWrites"
+            },
+            "text": "{\"writes\":\"abc\"}"
+          },
+          {
+            "method": "POST",
+            "headers": {
+              "x-xrpc-method": "app.bsky.actor.putPreferences"
+            },
+            "text": "{\"preferences\":[{\"$type\":\"x\"}]}"
+          },
+          {
+            "upload": true,
+            "query": "encoding=image/png",
+            "bytes": [
+              137,
+              80,
+              78,
+              71
+            ]
+          },
+          {
+            "upload": true,
+            "query": "encoding=application/octet-stream",
+            "bytes": [
+              1,
+              2
+            ]
+          },
+          {
+            "upload": true,
+            "query": "encoding=image/png",
+            "bytes": []
+          },
+          {
+            "upload": true,
+            "query": "",
+            "bytes": [
+              1
+            ]
+          }
+        ]
+      },
+      "output": [
+        {
+          "status": 501,
+          "body": {
+            "success": false,
+            "error": "app.bsky.draft.createDraft is only answered by Bluesky's AppView; call it through withProxy('bsky_appview', 'did:web:api.bsky.app')",
+            "code": "MethodNotImplemented"
+          }
+        },
+        {
+          "status": 403,
+          "body": {
+            "success": false,
+            "error": "Missing required scope \"repo:app.bsky.feed.post?action=create\"",
+            "code": "ScopeMissingError"
+          }
+        },
+        {
+          "status": 403,
+          "body": {
+            "success": false,
+            "error": "Missing required scope \"repo:app.bsky.feed.post?action=create\"",
+            "code": "ScopeMissingError"
+          }
+        },
+        {
+          "status": 403,
+          "body": {
+            "success": false,
+            "error": "This account can only write to its own repo",
+            "code": "InvalidRequest"
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "records": [
+                {
+                  "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2chq77mc22a",
+                  "cid": "bafyharness",
+                  "value": {
+                    "$type": "app.bsky.feed.post",
+                    "text": "Three weeks of rain and the shed roof has finally told us where it leaks.",
+                    "createdAt": "2026-11-14T21:42:36.704Z",
+                    "langs": [
+                      "en"
+                    ],
+                    "reply": {
+                      "parent": {
+                        "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2chq77mc22a",
+                        "cid": "bafyharness"
+                      },
+                      "root": {
+                        "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2chq77mc22a",
+                        "cid": "bafyharness"
+                      }
+                    }
+                  }
+                }
+              ],
+              "cursor": "1"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "data": {
+              "records": [
+                {
+                  "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3n2chq77mc22a",
+                  "cid": "bafyharness",
+                  "value": {
+                    "$type": "app.bsky.feed.post",
+                    "text": "Three weeks of rain and the shed roof has finally told us where it leaks.",
+                    "createdAt": "2026-11-14T21:42:36.704Z",
+                    "langs": [
+                      "en"
+                    ],
+                    "reply": {
+                      "parent": {
+                        "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2chq77mc22a",
+                        "cid": "bafyharness"
+                      },
+                      "root": {
+                        "uri": "at://did:plc:virgaharnesscast0000/app.bsky.feed.post/3n2chq77mc22a",
+                        "cid": "bafyharness"
+                      }
+                    }
+                  }
+                }
+              ],
+              "cursor": "1"
+            }
+          }
+        },
+        {
+          "status": 403,
+          "body": {
+            "success": false,
+            "error": "Missing required scope \"repo:app.bsky.feed.post?action=delete\"",
+            "code": "ScopeMissingError"
+          }
+        },
+        {
+          "status": 500,
+          "body": {
+            "success": false,
+            "error": "((intermediate value) || []).map is not a function"
+          }
+        },
+        {
+          "status": 403,
+          "body": {
+            "success": false,
+            "error": "Missing required scope \"rpc:app.bsky.actor.putPreferences?aud=did:web:api.bsky.app%23bsky_appview\"",
+            "code": "ScopeMissingError"
+          }
+        },
+        {
+          "status": 403,
+          "body": {
+            "success": false,
+            "error": "Missing required scope \"blob:image/png\""
+          }
+        },
+        {
+          "status": 403,
+          "body": {
+            "success": false,
+            "error": "Missing required scope \"blob:application/octet-stream\""
+          }
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Missing blob data"
+          }
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Missing encoding/content-type"
+          }
+        }
+      ]
+    },
+    {
+      "id": "empty",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": ""
+      },
+      "output": {}
+    },
+    {
+      "id": "a=1",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "a=1"
+      },
+      "output": {
+        "a": "1"
+      }
+    },
+    {
+      "id": "a=1&a=2&a=3",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "a=1&a=2&a=3"
+      },
+      "output": {
+        "a": [
+          "1",
+          "2",
+          "3"
+        ]
+      }
+    },
+    {
+      "id": "limit=10&depth=x&parentHeight=2.5",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "limit=10&depth=x&parentHeight=2.5"
+      },
+      "output": {
+        "limit": 10,
+        "depth": null,
+        "parentHeight": 2.5
+      }
+    },
+    {
+      "id": "limit=1&limit=2",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "limit=1&limit=2"
+      },
+      "output": {
+        "limit": null
+      }
+    },
+    {
+      "id": "reverse=true&validate=false&includePins=TRUE&includeTakedowns=",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "reverse=true&validate=false&includePins=TRUE&includeTakedowns="
+      },
+      "output": {
+        "reverse": true,
+        "validate": false,
+        "includePins": false,
+        "includeTakedowns": false
+      }
+    },
+    {
+      "id": "reverse=true&reverse=true",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "reverse=true&reverse=true"
+      },
+      "output": {
+        "reverse": false
+      }
+    },
+    {
+      "id": "uris=a,%20b,,c&feeds=&actors=x&actors=y&dids=,&handles=%20",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "uris=a,%20b,,c&feeds=&actors=x&actors=y&dids=,&handles=%20"
+      },
+      "output": {
+        "uris": [
+          "a",
+          "b",
+          "c"
+        ],
+        "feeds": "",
+        "actors": [
+          "x",
+          "y"
+        ],
+        "dids": [],
+        "handles": []
+      }
+    },
+    {
+      "id": "method=x&action=proxy&action=other",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "method=x&action=proxy&action=other"
+      },
+      "output": {
+        "action": [
+          "proxy",
+          "other"
+        ]
+      }
+    },
+    {
+      "id": "action=proxy",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "action=proxy"
+      },
+      "output": {}
+    },
+    {
+      "id": "action=x",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "action=x"
+      },
+      "output": {
+        "action": "x"
+      }
+    },
+    {
+      "id": "q=a+b%20c&cursor=%E0%A4",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "q=a+b%20c&cursor=%E0%A4"
+      },
+      "output": {
+        "q": "a b c",
+        "cursor": "�"
+      }
+    },
+    {
+      "id": "%E2%80%A8=1&=2&x",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "%E2%80%A8=1&=2&x"
+      },
+      "output": {
+        " ": "1",
+        "": "2",
+        "x": ""
+      }
+    },
+    {
+      "id": "toString=x",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "toString=x"
+      },
+      "output": {
+        "toString": [
+          null,
+          "x"
+        ]
+      }
+    },
+    {
+      "id": "constructor=y&a=1",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "constructor=y&a=1"
+      },
+      "output": {
+        "constructor": [
+          null,
+          "y"
+        ],
+        "a": "1"
+      }
+    },
+    {
+      "id": "valueOf=1&valueOf=2&hasOwnProperty=3",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "valueOf=1&valueOf=2&hasOwnProperty=3"
+      },
+      "output": {
+        "valueOf": [
+          null,
+          "1",
+          "2"
+        ],
+        "hasOwnProperty": [
+          null,
+          "3"
+        ]
+      }
+    },
+    {
+      "id": "__defineGetter__=a&__lookupSetter__=b&isPrototypeOf=c&propertyIsEnumerable=d&toLocaleString=e",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "__defineGetter__=a&__lookupSetter__=b&isPrototypeOf=c&propertyIsEnumerable=d&toLocaleString=e"
+      },
+      "output": {
+        "__defineGetter__": [
+          null,
+          "a"
+        ],
+        "__lookupSetter__": [
+          null,
+          "b"
+        ],
+        "isPrototypeOf": [
+          null,
+          "c"
+        ],
+        "propertyIsEnumerable": [
+          null,
+          "d"
+        ],
+        "toLocaleString": [
+          null,
+          "e"
+        ]
+      }
+    },
+    {
+      "id": "limit=1&toString=x&toString=y",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "limit=1&toString=x&toString=y"
+      },
+      "output": {
+        "limit": 1,
+        "toString": [
+          null,
+          "x",
+          "y"
+        ]
+      }
+    },
+    {
+      "id": "__proto__=z&a=1",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "__proto__=z&a=1"
+      },
+      "output": {
+        "a": "1",
+        "reverse": false
+      }
+    },
+    {
+      "id": "a=1&__proto__=z",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "a=1&__proto__=z"
+      },
+      "output": {
+        "a": "1",
+        "reverse": false
+      }
+    },
+    {
+      "id": "__proto__=z&length=5&0=a&1=b&2=c&map=m&reverse=true",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "__proto__=z&length=5&0=a&1=b&2=c&map=m&reverse=true"
+      },
+      "output": {
+        "0": [
+          {},
+          "a"
+        ],
+        "1": [
+          "z",
+          "b"
+        ],
+        "2": "c",
+        "length": [
+          2,
+          "5"
+        ],
+        "map": [
+          null,
+          "m"
+        ],
+        "reverse": false
+      }
+    },
+    {
+      "id": "__proto__=z&__proto__=w&length=5&2=c&01=d&-0=e",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "__proto__=z&__proto__=w&length=5&2=c&01=d&-0=e"
+      },
+      "output": {
+        "2": [
+          "w",
+          "c"
+        ],
+        "length": [
+          3,
+          "5"
+        ],
+        "01": "d",
+        "-0": "e",
+        "reverse": false
+      }
+    },
+    {
+      "id": "__proto__=z&limit=3&uris=a,b&feeds=x&with=1&flatMap=2&toSorted=3&push=4",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "__proto__=z&limit=3&uris=a,b&feeds=x&with=1&flatMap=2&toSorted=3&push=4"
+      },
+      "output": {
+        "limit": 3,
+        "uris": [
+          "a",
+          "b"
+        ],
+        "feeds": [
+          "x"
+        ],
+        "with": [
+          null,
+          "1"
+        ],
+        "flatMap": [
+          null,
+          "2"
+        ],
+        "toSorted": [
+          null,
+          "3"
+        ],
+        "push": [
+          null,
+          "4"
+        ],
+        "reverse": false
+      }
+    },
+    {
+      "id": "__proto__=z&reverse=false&reverse=true",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "__proto__=z&reverse=false&reverse=true"
+      },
+      "output": {
+        "reverse": false
+      }
+    },
+    {
+      "id": "reverse=x&__proto__=z",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "reverse=x&__proto__=z"
+      },
+      "output": {
+        "reverse": false
+      }
+    },
+    {
+      "id": "__proto__=z&method=x&action=proxy",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "__proto__=z&method=x&action=proxy"
+      },
+      "output": {
+        "reverse": false
+      }
+    },
+    {
+      "id": "length=3&map=x&0=y",
+      "fn": "forwardedQuery",
+      "input": {
+        "query": "length=3&map=x&0=y"
+      },
+      "output": {
+        "0": "y",
+        "length": "3",
+        "map": "x"
+      }
+    },
+    {
+      "id": "method#0",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": "com.atproto.repo.getRecord"
+      },
+      "output": true
+    },
+    {
+      "id": "method#1",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": "app.bsky.feed.getPostThread"
+      },
+      "output": true
+    },
+    {
+      "id": "method#2",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": "a.b.c"
+      },
+      "output": true
+    },
+    {
+      "id": "method#3",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": "a.b"
+      },
+      "output": false
+    },
+    {
+      "id": "method#4",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": "A.b.c"
+      },
+      "output": false
+    },
+    {
+      "id": "method#5",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": "1a.b.c"
+      },
+      "output": false
+    },
+    {
+      "id": "method#6",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": "a1.B2.C3"
+      },
+      "output": true
+    },
+    {
+      "id": "method#7",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": "a.b."
+      },
+      "output": false
+    },
+    {
+      "id": "method#8",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": "a..b.c"
+      },
+      "output": false
+    },
+    {
+      "id": "method#9",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": "a.b.c.d.e"
+      },
+      "output": true
+    },
+    {
+      "id": "method#10",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": "com.atproto.__proto__"
+      },
+      "output": false
+    },
+    {
+      "id": "method#11",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": "com.constructor.x"
+      },
+      "output": false
+    },
+    {
+      "id": "method#12",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": "com.x.prototype"
+      },
+      "output": false
+    },
+    {
+      "id": "method#13",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": "com.x.y-z"
+      },
+      "output": false
+    },
+    {
+      "id": "method#14",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": "com.x.y_z"
+      },
+      "output": false
+    },
+    {
+      "id": "method#15",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": "com.x.é"
+      },
+      "output": false
+    },
+    {
+      "id": "method#16",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": ""
+      },
+      "output": false
+    },
+    {
+      "id": "method#17",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": null
+      },
+      "output": false
+    },
+    {
+      "id": "method#18",
+      "fn": "isSafeXrpcMethod",
+      "input": {
+        "method": 5
+      },
+      "output": false
+    },
+    {
+      "id": "status#0",
+      "fn": "httpStatusForXrpcError",
+      "input": {},
+      "output": 500
+    },
+    {
+      "id": "status#1",
+      "fn": "httpStatusForXrpcError",
+      "input": {
+        "status": 0
+      },
+      "output": 500
+    },
+    {
+      "id": "status#2",
+      "fn": "httpStatusForXrpcError",
+      "input": {
+        "status": 1
+      },
+      "output": 502
+    },
+    {
+      "id": "status#3",
+      "fn": "httpStatusForXrpcError",
+      "input": {
+        "status": 2
+      },
+      "output": 502
+    },
+    {
+      "id": "status#4",
+      "fn": "httpStatusForXrpcError",
+      "input": {
+        "status": 3
+      },
+      "output": 500
+    },
+    {
+      "id": "status#5",
+      "fn": "httpStatusForXrpcError",
+      "input": {
+        "status": 200
+      },
+      "output": 500
+    },
+    {
+      "id": "status#6",
+      "fn": "httpStatusForXrpcError",
+      "input": {
+        "status": 399
+      },
+      "output": 500
+    },
+    {
+      "id": "status#7",
+      "fn": "httpStatusForXrpcError",
+      "input": {
+        "status": 400
+      },
+      "output": 400
+    },
+    {
+      "id": "status#8",
+      "fn": "httpStatusForXrpcError",
+      "input": {
+        "status": 401
+      },
+      "output": 401
+    },
+    {
+      "id": "status#9",
+      "fn": "httpStatusForXrpcError",
+      "input": {
+        "status": 404
+      },
+      "output": 404
+    },
+    {
+      "id": "status#10",
+      "fn": "httpStatusForXrpcError",
+      "input": {
+        "status": 501
+      },
+      "output": 501
+    },
+    {
+      "id": "status#11",
+      "fn": "httpStatusForXrpcError",
+      "input": {
+        "status": 599
+      },
+      "output": 599
+    },
+    {
+      "id": "status#12",
+      "fn": "httpStatusForXrpcError",
+      "input": {
+        "status": 600
+      },
+      "output": 500
+    },
+    {
+      "id": "status#13",
+      "fn": "httpStatusForXrpcError",
+      "input": {
+        "status": 400.5
+      },
+      "output": 500
+    },
+    {
+      "id": "status#14",
+      "fn": "httpStatusForXrpcError",
+      "input": {
+        "status": "400"
+      },
+      "output": 500
+    }
+  ]
+}

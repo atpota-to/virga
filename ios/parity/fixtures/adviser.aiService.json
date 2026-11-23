@@ -1,0 +1,4383 @@
+{
+  "name": "adviser.aiService",
+  "sources": [
+    "src/posting/adviser/aiService.js"
+  ],
+  "cases": [
+    {
+      "id": "aiConstants",
+      "fn": "aiConstants",
+      "input": {},
+      "output": {
+        "AI_REQUEST_TIMEOUT_MS": 30000,
+        "ALT_TEXT_MIME_TYPES": [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/gif"
+        ],
+        "MAX_ALT_TEXT_BASE64": 4000000
+      }
+    },
+    {
+      "id": "the-whole-read",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "a draft",
+          "goals": {
+            "presets": {
+              "reduceNegativity": true
+            },
+            "customText": ""
+          },
+          "scenario": "reply",
+          "context": {
+            "kind": "reply",
+            "thread": [],
+            "target": null
+          },
+          "writingChecks": {
+            "typos": true
+          }
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "overallStatus": "ok",
+              "checks": []
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "a draft",
+                  "goals": {
+                    "presets": {
+                      "reduceNegativity": true
+                    },
+                    "customText": ""
+                  },
+                  "scenario": "reply",
+                  "context": {
+                    "kind": "reply",
+                    "thread": [],
+                    "target": null
+                  },
+                  "writingChecks": {
+                    "typos": true
+                  }
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"overallStatus\":\"ok\",\"checks\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "overallStatus": "ok",
+            "checks": []
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "only-the-text",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {}
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {},
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "falsy-parts-left-out",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": " hi ",
+          "goals": null,
+          "scenario": "",
+          "context": 0,
+          "writingChecks": false
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "overallStatus": "ok"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": " hi "
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"overallStatus\":\"ok\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "overallStatus": "ok"
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "keeps-the-months-count",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "overallStatus": "ok",
+              "usage": {
+                "used": 7,
+                "limit": 30
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"overallStatus\":\"ok\",\"usage\":{\"used\":7,\"limit\":30}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "overallStatus": "ok",
+            "usage": {
+              "used": 7,
+              "limit": 30
+            }
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 7,
+                "limit": 30
+              }
+            }
+          },
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "monthly-limit",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "error": "monthly_limit",
+              "limit": 30,
+              "used": 30
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"monthly_limit\",\"limit\":30,\"used\":30}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "This month’s free uses of this are used up. They start again on the first of the month.",
+            "status": 429,
+            "code": "monthly_limit",
+            "detail": "monthly_limit",
+            "payload": {
+              "error": "monthly_limit",
+              "limit": 30,
+              "used": 30
+            }
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          },
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "monthly-limit-without-a-limit",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "initial": {
+          "virga:adviser-usage:did:plc:writer": "{\"month\":\"2026-11\",\"used\":3,\"limit\":50}"
+        },
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "error": "monthly_limit"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"monthly_limit\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "This month’s free uses of this are used up. They start again on the first of the month.",
+            "status": 429,
+            "code": "monthly_limit",
+            "detail": "monthly_limit",
+            "payload": {
+              "error": "monthly_limit"
+            }
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 50,
+                "limit": 50
+              }
+            }
+          },
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "monthly-limit-as-a-code",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "code": "monthly_limit",
+              "error": "Used up.",
+              "limit": 12
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"code\":\"monthly_limit\",\"error\":\"Used up.\",\"limit\":12}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "This month’s free uses of this are used up. They start again on the first of the month.",
+            "status": 429,
+            "code": "monthly_limit",
+            "detail": "Used up.",
+            "payload": {
+              "code": "monthly_limit",
+              "error": "Used up.",
+              "limit": 12
+            }
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 12,
+                "limit": 12
+              }
+            }
+          },
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "unlimited-now",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "initial": {
+          "virga:adviser-usage:did:plc:writer": "{\"month\":\"2026-11\",\"used\":30,\"limit\":30,\"style\":{\"month\":\"2026-11\",\"used\":2,\"limit\":3}}"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "overallStatus": "ok",
+              "checks": []
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"overallStatus\":\"ok\",\"checks\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "overallStatus": "ok",
+            "checks": []
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "style": {
+                  "month": "2026-11",
+                  "used": 2,
+                  "limit": 3
+                }
+              }
+            }
+          },
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "unlimited-now-nothing-else-kept",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "initial": {
+          "virga:adviser-usage:did:plc:writer": "{\"month\":\"2026-11\",\"used\":30,\"limit\":30}"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "overallStatus": "ok"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"overallStatus\":\"ok\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "overallStatus": "ok"
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "keeps-the-count-on-another-failure",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "initial": {
+          "virga:adviser-usage:did:plc:writer": "{\"month\":\"2026-11\",\"used\":30,\"limit\":30}"
+        },
+        "answers": [
+          {
+            "status": 503,
+            "json": {
+              "error": "AI unavailable"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"AI unavailable\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "AI help isn’t available right now.",
+            "status": 503,
+            "code": null,
+            "detail": "AI unavailable",
+            "payload": {
+              "error": "AI unavailable"
+            }
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          },
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "rate-limited",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "error": "rate_limited"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"rate_limited\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "That’s the limit on AI requests for now. Try again later.",
+            "status": 429,
+            "code": "rate_limited",
+            "detail": "rate_limited",
+            "payload": {
+              "error": "rate_limited"
+            }
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "busy",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "error": "Slow down."
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"Slow down.\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "The AI service is busy. Try again in a moment.",
+            "status": 429,
+            "code": null,
+            "detail": "Slow down.",
+            "payload": {
+              "error": "Slow down."
+            }
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "signed-out",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "answers": [
+          {
+            "status": 401,
+            "json": {
+              "error": "Unauthorized",
+              "code": "AUTH_REQUIRED"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 401,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"Unauthorized\",\"code\":\"AUTH_REQUIRED\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "This account needs to sign in again to use AI help.",
+            "status": 401,
+            "code": "AUTH_REQUIRED",
+            "detail": "Unauthorized",
+            "payload": {
+              "error": "Unauthorized",
+              "code": "AUTH_REQUIRED"
+            }
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "too-large",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "answers": [
+          {
+            "status": 413,
+            "text": "Request Entity Too Large"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 413,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "Request Entity Too Large"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "That’s too large to send for AI help.",
+            "status": 413,
+            "code": null,
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "detail",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "answers": [
+          {
+            "status": 400,
+            "json": {
+              "error": "Missing \"text\""
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"Missing \\\"text\\\"\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Missing \"text\"",
+            "status": 400,
+            "code": null,
+            "detail": "Missing \"text\"",
+            "payload": {
+              "error": "Missing \"text\""
+            }
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "bare-502",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "answers": [
+          {
+            "status": 502,
+            "text": "<html>Bad gateway</html>"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 502,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "<html>Bad gateway</html>"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "The AI request didn’t work (502). Try again.",
+            "status": 502,
+            "code": null,
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "client-unavailable",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "answers": [
+          {
+            "status": 500,
+            "json": {
+              "code": "VIRGA_CLIENT_UNAVAILABLE",
+              "message": "x"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"code\":\"VIRGA_CLIENT_UNAVAILABLE\",\"message\":\"x\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "AI help isn’t available right now.",
+            "status": 500,
+            "code": "VIRGA_CLIENT_UNAVAILABLE",
+            "detail": null,
+            "payload": {
+              "code": "VIRGA_CLIENT_UNAVAILABLE",
+              "message": "x"
+            }
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "success-false",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": false,
+              "error": "The read failed."
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"The read failed.\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "The read failed.",
+            "status": 200,
+            "code": null,
+            "detail": "The read failed.",
+            "payload": {
+              "success": false,
+              "error": "The read failed."
+            }
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "success-false-bare",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": false
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "The AI request didn’t work (200). Try again.",
+            "status": 200,
+            "code": null,
+            "detail": null,
+            "payload": {
+              "success": false
+            }
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "answers": [
+          "offline"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Couldn’t reach Virga’s server. Check the connection and try again.",
+            "status": 0,
+            "code": "NETWORK_ERROR",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "not-json",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "text": "not json"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "not json"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": null,
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "null-answer",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": null
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "null"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": null,
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "usage-not-counted",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "initial": {
+          "virga:adviser-usage:did:plc:writer": "{\"month\":\"2026-11\",\"used\":30,\"limit\":30}"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "overallStatus": "ok",
+              "usage": {
+                "used": "x",
+                "limit": 30
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"overallStatus\":\"ok\",\"usage\":{\"used\":\"x\",\"limit\":30}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "overallStatus": "ok",
+            "usage": {
+              "used": "x",
+              "limit": 30
+            }
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "unicode",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "naïve 👩‍👩‍👧 café",
+          "scenario": "thread"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "overallStatus": "caution",
+              "checks": [
+                {
+                  "status": "caution"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "naïve 👩‍👩‍👧 café",
+                  "scenario": "thread"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"overallStatus\":\"caution\",\"checks\":[{\"status\":\"caution\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "overallStatus": "caution",
+            "checks": [
+              {
+                "status": "caution"
+              }
+            ]
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "already-ended",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "aborted": true,
+        "answers": [
+          {
+            "status": 200,
+            "json": {}
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "AbortError",
+            "message": "Cancelled.",
+            "status": null,
+            "code": null,
+            "detail": null,
+            "payload": null,
+            "canceled": true
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "needs-a-draft",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "  "
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Write something first.",
+            "status": 0,
+            "code": "EMPTY",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "needs-text",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": 5
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Write something first.",
+            "status": 0,
+            "code": "EMPTY",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "no-payload",
+      "fn": "analyzePost",
+      "input": {},
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Write something first.",
+            "status": 0,
+            "code": "EMPTY",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "needs-the-server",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "requester": "none"
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "AI help needs this account signed in through Virga’s server.",
+            "status": 0,
+            "code": "NEEDS_BACKEND",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "empty-before-the-server",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": ""
+        },
+        "requester": "none"
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Write something first.",
+            "status": 0,
+            "code": "EMPTY",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "an-account-it-does-not-know",
+      "fn": "analyzePost",
+      "input": {
+        "payload": {
+          "text": "hi"
+        },
+        "did": "",
+        "initial": {
+          "virga:adviser-usage:did:plc:writer": "{\"month\":\"2026-11\",\"used\":30,\"limit\":30}"
+        },
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "error": "monthly_limit",
+              "limit": 30
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "hi"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"monthly_limit\",\"limit\":30}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "This month’s free uses of this are used up. They start again on the first of the month.",
+            "status": 429,
+            "code": "monthly_limit",
+            "detail": "monthly_limit",
+            "payload": {
+              "error": "monthly_limit",
+              "limit": 30
+            }
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          },
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "the-reading",
+      "fn": "synthesizeStyle",
+      "input": {
+        "payload": {
+          "posts": [
+            "a"
+          ],
+          "guidance": ""
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "summary": " Lowercase. ",
+              "analyzedCount": 40,
+              "usage": {
+                "used": 1,
+                "limit": 3
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/synthesize-style",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "posts": [
+                    "a"
+                  ]
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"summary\":\" Lowercase. \",\"analyzedCount\":40,\"usage\":{\"used\":1,\"limit\":3}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "summary": "Lowercase.",
+            "analyzedCount": 40,
+            "usage": {
+              "used": 1,
+              "limit": 3
+            }
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "style": {
+                  "month": "2026-11",
+                  "used": 1,
+                  "limit": 3
+                }
+              }
+            }
+          },
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "with-the-note-and-the-last-reading",
+      "fn": "synthesizeStyle",
+      "input": {
+        "payload": {
+          "posts": [
+            "a",
+            "b"
+          ],
+          "guidance": "  i capitalize names  ",
+          "previousSummary": " Old reading. "
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "summary": "New.",
+              "analyzedCount": 2
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/synthesize-style",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "posts": [
+                    "a",
+                    "b"
+                  ],
+                  "guidance": "i capitalize names",
+                  "previousSummary": "Old reading."
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"summary\":\"New.\",\"analyzedCount\":2}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "summary": "New.",
+            "analyzedCount": 2
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "loose-payload",
+      "fn": "synthesizeStyle",
+      "input": {
+        "payload": {
+          "posts": "a",
+          "guidance": 5,
+          "previousSummary": "   "
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "summary": 5,
+              "analyzedCount": "40",
+              "usage": 0
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/synthesize-style",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "posts": []
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"summary\":5,\"analyzedCount\":\"40\",\"usage\":0}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "summary": "",
+            "analyzedCount": 0
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "fractional-count",
+      "fn": "synthesizeStyle",
+      "input": {
+        "payload": {
+          "posts": [
+            {
+              "text": "x"
+            }
+          ]
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "summary": "S",
+              "analyzedCount": 12.5,
+              "usage": null
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/synthesize-style",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "posts": [
+                    {
+                      "text": "x"
+                    }
+                  ]
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"summary\":\"S\",\"analyzedCount\":12.5,\"usage\":null}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "summary": "S",
+            "analyzedCount": 12.5
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "not-enough-posts",
+      "fn": "synthesizeStyle",
+      "input": {
+        "payload": {
+          "posts": []
+        },
+        "answers": [
+          {
+            "status": 400,
+            "json": {
+              "error": "not_enough_posts",
+              "minimum": 5
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/synthesize-style",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "posts": []
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"not_enough_posts\",\"minimum\":5}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "There aren’t enough posts to learn from yet. It needs at least 5.",
+            "status": 400,
+            "code": "not_enough_posts",
+            "detail": "not_enough_posts",
+            "payload": {
+              "error": "not_enough_posts",
+              "minimum": 5
+            }
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "monthly-limit",
+      "fn": "synthesizeStyle",
+      "input": {
+        "payload": {
+          "posts": [
+            "a"
+          ]
+        },
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "error": "monthly_limit",
+              "limit": 3,
+              "used": 3
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/synthesize-style",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "posts": [
+                    "a"
+                  ]
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"monthly_limit\",\"limit\":3,\"used\":3}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "This month’s free uses of this are used up. They start again on the first of the month.",
+            "status": 429,
+            "code": "monthly_limit",
+            "detail": "monthly_limit",
+            "payload": {
+              "error": "monthly_limit",
+              "limit": 3,
+              "used": 3
+            }
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "style": {
+                  "month": "2026-11",
+                  "used": 3,
+                  "limit": 3
+                }
+              }
+            }
+          },
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "unlimited-now",
+      "fn": "synthesizeStyle",
+      "input": {
+        "payload": {
+          "posts": [
+            "a"
+          ]
+        },
+        "initial": {
+          "virga:adviser-usage:did:plc:writer": "{\"month\":\"2026-11\",\"used\":30,\"limit\":30,\"style\":{\"month\":\"2026-11\",\"used\":3,\"limit\":3}}"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "summary": "S",
+              "analyzedCount": 1
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/synthesize-style",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "posts": [
+                    "a"
+                  ]
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"summary\":\"S\",\"analyzedCount\":1}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "summary": "S",
+            "analyzedCount": 1
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "month": "2026-11",
+                "used": 30,
+                "limit": 30
+              }
+            }
+          },
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "no-payload",
+      "fn": "synthesizeStyle",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": {}
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/synthesize-style",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "posts": []
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "summary": "",
+            "analyzedCount": 0
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "needs-the-server",
+      "fn": "synthesizeStyle",
+      "input": {
+        "payload": {
+          "posts": [
+            "a"
+          ]
+        },
+        "requester": "none"
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "AI help needs this account signed in through Virga’s server.",
+            "status": 0,
+            "code": "NEEDS_BACKEND",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "notes-and-kind",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "AAAA",
+          "mimeType": "image/png",
+          "followUp": "Make it shorter.",
+          "previousAltText": "Settings.",
+          "presets": [
+            "shorter"
+          ],
+          "kind": "interface"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "altText": "x"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "AAAA",
+                  "mimeType": "image/png",
+                  "followUp": "Make it shorter.",
+                  "previousAltText": "Settings.",
+                  "presets": [
+                    "shorter"
+                  ],
+                  "kind": "interface"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"altText\":\"x\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "x",
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "none-of-either",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "AAAA",
+          "mimeType": "image/png",
+          "presets": [],
+          "kind": null
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "altText": "x"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "AAAA",
+                  "mimeType": "image/png"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"altText\":\"x\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "x",
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "blank-words-left-out",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "AAAA",
+          "mimeType": "image/png",
+          "context": "  ",
+          "followUp": "",
+          "previousAltText": 7,
+          "presets": "shorter",
+          "kind": 0
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "altText": "x"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "AAAA",
+                  "mimeType": "image/png"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"altText\":\"x\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "x",
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "words-kept-as-written",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "AAAA",
+          "mimeType": "image/png",
+          "context": " my post ",
+          "kind": "photo",
+          "presets": [
+            "detail",
+            "plain"
+          ]
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "altText": "x"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "AAAA",
+                  "mimeType": "image/png",
+                  "context": " my post ",
+                  "presets": [
+                    "detail",
+                    "plain"
+                  ],
+                  "kind": "photo"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"altText\":\"x\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "x",
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "reports-the-count",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "AAAA",
+          "mimeType": "image/png"
+        },
+        "withOnUsage": true,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "altText": " A settings screen. ",
+              "usage": {
+                "used": 4,
+                "limit": 15
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "AAAA",
+                  "mimeType": "image/png"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"altText\":\" A settings screen. \",\"usage\":{\"used\":4,\"limit\":15}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "A settings screen.",
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "altText": {
+                  "month": "2026-11",
+                  "used": 4,
+                  "limit": 15
+                }
+              }
+            }
+          },
+          "usages": [
+            {
+              "used": 4,
+              "limit": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "no-count",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "AAAA",
+          "mimeType": "image/png"
+        },
+        "withOnUsage": true,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "altText": "A heron."
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "AAAA",
+                  "mimeType": "image/png"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"altText\":\"A heron.\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "A heron.",
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "count-not-numbers",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "AAAA",
+          "mimeType": "image/png"
+        },
+        "withOnUsage": true,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "altText": "A heron.",
+              "usage": {
+                "used": "4",
+                "limit": 15
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "AAAA",
+                  "mimeType": "image/png"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"altText\":\"A heron.\",\"usage\":{\"used\":\"4\",\"limit\":15}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "A heron.",
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "count-kept-without-a-listener",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "AAAA",
+          "mimeType": "image/png"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "altText": "A heron.",
+              "usage": {
+                "used": 2,
+                "limit": 15
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "AAAA",
+                  "mimeType": "image/png"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"altText\":\"A heron.\",\"usage\":{\"used\":2,\"limit\":15}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "A heron.",
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "altText": {
+                  "month": "2026-11",
+                  "used": 2,
+                  "limit": 15
+                }
+              }
+            }
+          },
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "not-text",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "AAAA",
+          "mimeType": "image/png"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "altText": [
+                "a"
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "AAAA",
+                  "mimeType": "image/png"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"altText\":[\"a\"]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "",
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "monthly-limit",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "AAAA",
+          "mimeType": "image/png"
+        },
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "error": "monthly_limit",
+              "limit": 15
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "AAAA",
+                  "mimeType": "image/png"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"monthly_limit\",\"limit\":15}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "This month’s free uses of this are used up. They start again on the first of the month.",
+            "status": 429,
+            "code": "monthly_limit",
+            "detail": "monthly_limit",
+            "payload": {
+              "error": "monthly_limit",
+              "limit": 15
+            }
+          },
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "altText": {
+                  "month": "2026-11",
+                  "used": 15,
+                  "limit": 15
+                }
+              }
+            }
+          },
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "every-type",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "AAAA",
+          "mimeType": "image/webp"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "altText": "w"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "AAAA",
+                  "mimeType": "image/webp"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"altText\":\"w\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "w",
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "gif",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "AAAA",
+          "mimeType": "image/gif"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "altText": "g"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "AAAA",
+                  "mimeType": "image/gif"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"altText\":\"g\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "g",
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "jpeg",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "AAAA",
+          "mimeType": "image/jpeg"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "altText": "j"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "AAAA",
+                  "mimeType": "image/jpeg"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"altText\":\"j\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "j",
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "heic",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "AAAA",
+          "mimeType": "image/heic"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "This kind of image can’t be described. Try a JPEG, PNG, WebP or GIF.",
+            "status": 0,
+            "code": "UNSUPPORTED_IMAGE",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "upper-case-type",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "AAAA",
+          "mimeType": "IMAGE/PNG"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "This kind of image can’t be described. Try a JPEG, PNG, WebP or GIF.",
+            "status": 0,
+            "code": "UNSUPPORTED_IMAGE",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "no-type",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "AAAA"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "This kind of image can’t be described. Try a JPEG, PNG, WebP or GIF.",
+            "status": 0,
+            "code": "UNSUPPORTED_IMAGE",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "no-image",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "mimeType": "image/png"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "There’s no image to describe.",
+            "status": 0,
+            "code": "NO_IMAGE",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "empty-image",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "",
+          "mimeType": "image/png"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "There’s no image to describe.",
+            "status": 0,
+            "code": "NO_IMAGE",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "image-not-text",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": 42,
+          "mimeType": "image/png"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "There’s no image to describe.",
+            "status": 0,
+            "code": "NO_IMAGE",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "too-large",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "image": {
+            "repeat": "A",
+            "count": 4000004
+          },
+          "mimeType": "image/png"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "That image is too large to describe.",
+            "status": 0,
+            "code": "IMAGE_TOO_LARGE",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "just-too-large",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "image": {
+            "repeat": "A",
+            "count": 4000001
+          },
+          "mimeType": "image/png"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "That image is too large to describe.",
+            "status": 0,
+            "code": "IMAGE_TOO_LARGE",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "largest-allowed",
+      "fn": "generateAltText",
+      "input": {
+        "requester": "none",
+        "payload": {
+          "image": {
+            "repeat": "A",
+            "count": 4000000
+          },
+          "mimeType": "image/png"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "AI help needs this account signed in through Virga’s server.",
+            "status": 0,
+            "code": "NEEDS_BACKEND",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "needs-the-server",
+      "fn": "generateAltText",
+      "input": {
+        "payload": {
+          "imageBase64": "AAAA",
+          "mimeType": "image/png"
+        },
+        "requester": "none"
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "AI help needs this account signed in through Virga’s server.",
+            "status": 0,
+            "code": "NEEDS_BACKEND",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "no-payload",
+      "fn": "generateAltText",
+      "input": {},
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "There’s no image to describe.",
+            "status": 0,
+            "code": "NO_IMAGE",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "the-files-bytes-and-type",
+      "fn": "generateAltTextForFile",
+      "input": {
+        "file": {
+          "bytes": [
+            97,
+            98,
+            99
+          ],
+          "name": "p.jpg",
+          "type": "image/jpeg"
+        },
+        "payload": {
+          "context": "my post"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "altText": "A photo."
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "YWJj",
+                  "mimeType": "image/jpeg",
+                  "context": "my post"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"altText\":\"A photo.\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "A photo.",
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "a-file-without-a-type",
+      "fn": "generateAltTextForFile",
+      "input": {
+        "file": {
+          "bytes": [
+            0,
+            1,
+            2,
+            253,
+            254,
+            255
+          ],
+          "name": "blob",
+          "type": ""
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "altText": "Bytes."
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "AAEC/f7/",
+                  "mimeType": "image/jpeg"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"altText\":\"Bytes.\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "Bytes.",
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "every-byte",
+      "fn": "generateAltTextForFile",
+      "input": {
+        "file": {
+          "bytes": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75,
+            76,
+            77,
+            78,
+            79,
+            80,
+            81,
+            82,
+            83,
+            84,
+            85,
+            86,
+            87,
+            88,
+            89,
+            90,
+            91,
+            92,
+            93,
+            94,
+            95,
+            96,
+            97,
+            98,
+            99,
+            100,
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            116,
+            117,
+            118,
+            119,
+            120,
+            121,
+            122,
+            123,
+            124,
+            125,
+            126,
+            127,
+            128,
+            129,
+            130,
+            131,
+            132,
+            133,
+            134,
+            135,
+            136,
+            137,
+            138,
+            139,
+            140,
+            141,
+            142,
+            143,
+            144,
+            145,
+            146,
+            147,
+            148,
+            149,
+            150,
+            151,
+            152,
+            153,
+            154,
+            155,
+            156,
+            157,
+            158,
+            159,
+            160,
+            161,
+            162,
+            163,
+            164,
+            165,
+            166,
+            167,
+            168,
+            169,
+            170,
+            171,
+            172,
+            173,
+            174,
+            175,
+            176,
+            177,
+            178,
+            179,
+            180,
+            181,
+            182,
+            183,
+            184,
+            185,
+            186,
+            187,
+            188,
+            189,
+            190,
+            191,
+            192,
+            193,
+            194,
+            195,
+            196,
+            197,
+            198,
+            199,
+            200,
+            201,
+            202,
+            203,
+            204,
+            205,
+            206,
+            207,
+            208,
+            209,
+            210,
+            211,
+            212,
+            213,
+            214,
+            215,
+            216,
+            217,
+            218,
+            219,
+            220,
+            221,
+            222,
+            223,
+            224,
+            225,
+            226,
+            227,
+            228,
+            229,
+            230,
+            231,
+            232,
+            233,
+            234,
+            235,
+            236,
+            237,
+            238,
+            239,
+            240,
+            241,
+            242,
+            243,
+            244,
+            245,
+            246,
+            247,
+            248,
+            249,
+            250,
+            251,
+            252,
+            253,
+            254,
+            255
+          ],
+          "name": "b.png",
+          "type": "image/png"
+        },
+        "payload": {
+          "kind": "chart",
+          "presets": [
+            "detail"
+          ],
+          "followUp": "More.",
+          "previousAltText": "A chart."
+        },
+        "withOnUsage": true,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "altText": "A chart.",
+              "usage": {
+                "used": 1,
+                "limit": 15
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w==",
+                  "mimeType": "image/png",
+                  "followUp": "More.",
+                  "previousAltText": "A chart.",
+                  "presets": [
+                    "detail"
+                  ],
+                  "kind": "chart"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"altText\":\"A chart.\",\"usage\":{\"used\":1,\"limit\":15}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "A chart.",
+          "store": {
+            "virga:adviser-usage:did:plc:writer": {
+              "json": {
+                "altText": {
+                  "month": "2026-11",
+                  "used": 1,
+                  "limit": 15
+                }
+              }
+            }
+          },
+          "usages": [
+            {
+              "used": 1,
+              "limit": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "a-type-it-cannot-describe",
+      "fn": "generateAltTextForFile",
+      "input": {
+        "file": {
+          "bytes": [
+            1
+          ],
+          "name": "p.heic",
+          "type": "image/heic"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "This kind of image can’t be described. Try a JPEG, PNG, WebP or GIF.",
+            "status": 0,
+            "code": "UNSUPPORTED_IMAGE",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "an-empty-file",
+      "fn": "generateAltTextForFile",
+      "input": {
+        "file": {
+          "bytes": [],
+          "name": "empty.png",
+          "type": "image/png"
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "There’s no image to describe.",
+            "status": 0,
+            "code": "NO_IMAGE",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "the-files-image-wins",
+      "fn": "generateAltTextForFile",
+      "input": {
+        "file": {
+          "bytes": [
+            1,
+            2,
+            3
+          ],
+          "name": "p.png",
+          "type": "image/png"
+        },
+        "payload": {
+          "imageBase64": "ZZZZ",
+          "mimeType": "image/heic",
+          "context": "c"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "altText": "Mine."
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/alt-text",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "imageBase64": "AQID",
+                  "mimeType": "image/png",
+                  "context": "c"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"altText\":\"Mine.\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": "Mine.",
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "needs-a-file",
+      "fn": "generateAltTextForFile",
+      "input": {
+        "file": null
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "There’s no image to describe.",
+            "status": 0,
+            "code": "NO_IMAGE",
+            "detail": null,
+            "payload": null
+          },
+          "store": {},
+          "usages": []
+        }
+      }
+    },
+    {
+      "id": "aiErrorMessage#1",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "code": "rate_limited",
+          "status": 429
+        }
+      },
+      "output": {
+        "message": "That’s the limit on AI requests for now. Try again later."
+      }
+    },
+    {
+      "id": "aiErrorMessage#2",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "status": 429
+        }
+      },
+      "output": {
+        "message": "The AI service is busy. Try again in a moment."
+      }
+    },
+    {
+      "id": "aiErrorMessage#3",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "status": 401
+        }
+      },
+      "output": {
+        "message": "This account needs to sign in again to use AI help."
+      }
+    },
+    {
+      "id": "aiErrorMessage#4",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "status": 503
+        }
+      },
+      "output": {
+        "message": "AI help isn’t available right now."
+      }
+    },
+    {
+      "id": "aiErrorMessage#5",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "status": 413
+        }
+      },
+      "output": {
+        "message": "That’s too large to send for AI help."
+      }
+    },
+    {
+      "id": "aiErrorMessage#6",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "code": "TIMEOUT"
+        }
+      },
+      "output": {
+        "message": "That took too long. Try again."
+      }
+    },
+    {
+      "id": "aiErrorMessage#7",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "code": "NETWORK_ERROR"
+        }
+      },
+      "output": {
+        "message": "Couldn’t reach Virga’s server. Check the connection and try again."
+      }
+    },
+    {
+      "id": "aiErrorMessage#8",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "status": 400,
+          "detail": "Missing \"imageBase64\""
+        }
+      },
+      "output": {
+        "message": "Missing \"imageBase64\""
+      }
+    },
+    {
+      "id": "aiErrorMessage#9",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "status": 502
+        }
+      },
+      "output": {
+        "message": "The AI request didn’t work (502). Try again."
+      }
+    },
+    {
+      "id": "aiErrorMessage#10",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "code": "monthly_limit",
+          "status": 429
+        }
+      },
+      "output": {
+        "message": "This month’s free uses of this are used up. They start again on the first of the month."
+      }
+    },
+    {
+      "id": "aiErrorMessage#11",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "code": "not_enough_posts",
+          "status": 400,
+          "detail": "not_enough_posts"
+        }
+      },
+      "output": {
+        "message": "There aren’t enough posts to learn from yet. It needs at least 5."
+      }
+    },
+    {
+      "id": "aiErrorMessage#12",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "code": "VIRGA_CLIENT_UNAVAILABLE",
+          "status": 500
+        }
+      },
+      "output": {
+        "message": "AI help isn’t available right now."
+      }
+    },
+    {
+      "id": "aiErrorMessage#13",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "code": "NEEDS_BACKEND",
+          "message": "Sign in through Virga."
+        }
+      },
+      "output": {
+        "message": "Sign in through Virga."
+      }
+    },
+    {
+      "id": "aiErrorMessage#14",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "code": "NEEDS_BACKEND"
+        }
+      },
+      "output": {
+        "message": null
+      }
+    },
+    {
+      "id": "aiErrorMessage#15",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "code": "EMPTY",
+          "message": "Write something first."
+        }
+      },
+      "output": {
+        "message": "Write something first."
+      }
+    },
+    {
+      "id": "aiErrorMessage#16",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "code": "",
+          "status": 418
+        }
+      },
+      "output": {
+        "message": "The AI request didn’t work (418). Try again."
+      }
+    },
+    {
+      "id": "aiErrorMessage#17",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "code": null,
+          "status": 0,
+          "message": "Plain."
+        }
+      },
+      "output": {
+        "message": "Plain."
+      }
+    },
+    {
+      "id": "aiErrorMessage#18",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "status": "503"
+        }
+      },
+      "output": {
+        "message": "The AI request didn’t work (503). Try again."
+      }
+    },
+    {
+      "id": "aiErrorMessage#19",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "status": true
+        }
+      },
+      "output": {
+        "message": "The AI request didn’t work (true). Try again."
+      }
+    },
+    {
+      "id": "aiErrorMessage#20",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "status": 500,
+          "detail": 7,
+          "message": "Server error"
+        }
+      },
+      "output": {
+        "message": "The AI request didn’t work (500). Try again."
+      }
+    },
+    {
+      "id": "aiErrorMessage#21",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "status": 500,
+          "detail": ""
+        }
+      },
+      "output": {
+        "message": "The AI request didn’t work (500). Try again."
+      }
+    },
+    {
+      "id": "aiErrorMessage#22",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "message": ""
+        }
+      },
+      "output": {
+        "message": "The AI request didn’t work. Try again."
+      }
+    },
+    {
+      "id": "aiErrorMessage#23",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {}
+      },
+      "output": {
+        "message": "The AI request didn’t work. Try again."
+      }
+    },
+    {
+      "id": "aiErrorMessage#24",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": null
+      },
+      "output": {
+        "message": "The AI request didn’t work. Try again."
+      }
+    },
+    {
+      "id": "aiErrorMessage#25",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "code": "monthly_limit ",
+          "status": 429
+        }
+      },
+      "output": {
+        "message": "The AI service is busy. Try again in a moment."
+      }
+    },
+    {
+      "id": "aiErrorMessage#26",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "code": "TIMEOUT",
+          "status": 401
+        }
+      },
+      "output": {
+        "message": "That took too long. Try again."
+      }
+    },
+    {
+      "id": "aiErrorMessage#27",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "status": 401,
+          "detail": "Expired."
+        }
+      },
+      "output": {
+        "message": "This account needs to sign in again to use AI help."
+      }
+    },
+    {
+      "id": "aiErrorMessage#28",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "status": 2.5
+        }
+      },
+      "output": {
+        "message": "The AI request didn’t work (2.5). Try again."
+      }
+    },
+    {
+      "id": "aiErrorMessage#29",
+      "fn": "aiErrorMessage",
+      "input": {
+        "err": {
+          "status": -1
+        }
+      },
+      "output": {
+        "message": "The AI request didn’t work (-1). Try again."
+      }
+    }
+  ]
+}

@@ -1,0 +1,4105 @@
+{
+  "name": "network.agent",
+  "sources": [
+    "src/session/backendClient.js"
+  ],
+  "cases": [
+    {
+      "id": "query-through-proxy",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.graph.getFollowers",
+        "params": {
+          "actor": "did:plc:virgaharnessmira2zq4x",
+          "limit": 50
+        },
+        "proxy": [
+          "bsky_appview",
+          "did:web:api.bsky.app"
+        ],
+        "kind": "query",
+        "typedParams": [
+          [
+            "actor",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ],
+          [
+            "limit",
+            "integer",
+            50
+          ]
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "followers": [],
+                "subject": {
+                  "did": "did:plc:virgaharnessmira2zq4x",
+                  "handle": "mira.example.com"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?actor=did%3Aplc%3Avirgaharnessmira2zq4x&limit=50",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-atproto-proxy": "did:web:api.bsky.app#bsky_appview",
+                "x-xrpc-method": "app.bsky.graph.getFollowers"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"followers\":[],\"subject\":{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":\"mira.example.com\"}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": {
+            "followers": [],
+            "subject": {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": "mira.example.com"
+            }
+          },
+          "headers": {
+            "content-type": "application/json"
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "procedure-body",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "com.atproto.repo.createRecord",
+        "input": {
+          "json": {
+            "repo": "did:plc:virgaharnessmira2zq4x",
+            "collection": "app.bsky.graph.follow",
+            "record": {
+              "$type": "app.bsky.graph.follow",
+              "subject": "did:plc:other",
+              "createdAt": "2026-11-12T00:00:00.000Z"
+            }
+          }
+        },
+        "kind": "procedure",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.follow/3k",
+                "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp2aXJnYWhhcm5lc3NtaXJhMnpxNHgiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZ3JhcGguZm9sbG93IiwicmVjb3JkIjp7IiR0eXBlIjoiYXBwLmJza3kuZ3JhcGguZm9sbG93Iiwic3ViamVjdCI6ImRpZDpwbGM6b3RoZXIiLCJjcmVhdGVkQXQiOiIyMDI2LTExLTEyVDAwOjAwOjAwLjAwMFoifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.follow/3k\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": {
+            "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.follow/3k",
+            "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+          },
+          "headers": {
+            "content-type": "application/json"
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "procedure-unicode",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "com.atproto.repo.putRecord",
+        "input": {
+          "json": {
+            "repo": "did:plc:virgaharnessmira2zq4x",
+            "collection": "app.bsky.actor.profile",
+            "rkey": "self",
+            "record": {
+              "$type": "app.bsky.actor.profile",
+              "displayName": "Mïra 😀 \"quoted\" \\ /slash\n",
+              "description": " "
+            }
+          }
+        },
+        "kind": "procedure",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.actor.profile/self",
+                "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.putRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp2aXJnYWhhcm5lc3NtaXJhMnpxNHgiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuYWN0b3IucHJvZmlsZSIsInJrZXkiOiJzZWxmIiwicmVjb3JkIjp7IiR0eXBlIjoiYXBwLmJza3kuYWN0b3IucHJvZmlsZSIsImRpc3BsYXlOYW1lIjoiTcOvcmEg8J+YgCBcInF1b3RlZFwiIFxcIC9zbGFzaFxuIiwiZGVzY3JpcHRpb24iOiLigKgifX0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:virgaharnessmira2zq4x/app.bsky.actor.profile/self\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": {
+            "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.actor.profile/self",
+            "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+          },
+          "headers": {
+            "content-type": "application/json"
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "params-typed",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.feed.getAuthorFeed",
+        "params": {
+          "actor": "mira.example.com",
+          "limit": 50.7,
+          "filter": "posts_with_replies",
+          "includePins": true
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "actor",
+            "string",
+            "mira.example.com"
+          ],
+          [
+            "limit",
+            "integer",
+            50.7
+          ],
+          [
+            "cursor",
+            "string",
+            null
+          ],
+          [
+            "filter",
+            "string",
+            "posts_with_replies"
+          ],
+          [
+            "includePins",
+            "boolean",
+            true
+          ]
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "feed": []
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?actor=mira.example.com&limit=50&filter=posts_with_replies&includePins=true",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.feed.getAuthorFeed"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"feed\":[]}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": {
+            "feed": []
+          },
+          "headers": {
+            "content-type": "application/json"
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "params-array",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.feed.getPosts",
+        "params": {
+          "uris": [
+            "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3k",
+            "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3l?x=1&y"
+          ]
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "uris",
+            "array:string",
+            [
+              "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3k",
+              "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3l?x=1&y"
+            ]
+          ]
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "posts": []
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?uris=at%3A%2F%2Fdid%3Aplc%3Avirgaharnessmira2zq4x%2Fapp.bsky.feed.post%2F3k&uris=at%3A%2F%2Fdid%3Aplc%3Avirgaharnessmira2zq4x%2Fapp.bsky.feed.post%2F3l%3Fx%3D1%26y",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.feed.getPosts"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"posts\":[]}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": {
+            "posts": []
+          },
+          "headers": {
+            "content-type": "application/json"
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "params-false-and-unicode",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "com.atproto.repo.listRecords",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x",
+          "collection": "app.bsky.feed.post",
+          "limit": 100,
+          "cursor": "c é+&=",
+          "reverse": false
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ],
+          [
+            "collection",
+            "string",
+            "app.bsky.feed.post"
+          ],
+          [
+            "limit",
+            "integer",
+            100
+          ],
+          [
+            "cursor",
+            "string",
+            "c é+&="
+          ],
+          [
+            "reverse",
+            "boolean",
+            false
+          ]
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "records": [],
+                "cursor": "next"
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Avirgaharnessmira2zq4x&collection=app.bsky.feed.post&limit=100&cursor=c+%C3%A9%2B%26%3D&reverse=false",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.listRecords"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"records\":[],\"cursor\":\"next\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": {
+            "records": [],
+            "cursor": "next"
+          },
+          "headers": {
+            "content-type": "application/json"
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "params-search",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.feed.searchPosts",
+        "params": {
+          "q": "é 😀 a+b #tag",
+          "sort": "latest",
+          "lang": "en",
+          "limit": 25
+        },
+        "proxy": [
+          "bsky_appview",
+          "did:web:api.bsky.app"
+        ],
+        "kind": "query",
+        "typedParams": [
+          [
+            "q",
+            "string",
+            "é 😀 a+b #tag"
+          ],
+          [
+            "sort",
+            "string",
+            "latest"
+          ],
+          [
+            "lang",
+            "string",
+            "en"
+          ],
+          [
+            "limit",
+            "integer",
+            25
+          ]
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "posts": []
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?q=%C3%A9+%F0%9F%98%80+a%2Bb+%23tag&sort=latest&lang=en&limit=25",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-atproto-proxy": "did:web:api.bsky.app#bsky_appview",
+                "x-xrpc-method": "app.bsky.feed.searchPosts"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"posts\":[]}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": {
+            "posts": []
+          },
+          "headers": {
+            "content-type": "application/json"
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "params-integer-overflow",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getSuggestions",
+        "params": {
+          "limit": 4294967297
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "limit",
+            "integer",
+            4294967297
+          ]
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "actors": []
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?limit=1",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getSuggestions"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"actors\":[]}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": {
+            "actors": []
+          },
+          "headers": {
+            "content-type": "application/json"
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "labelers",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "labelers": [
+          "did:plc:labelerone",
+          "did:web:labeler.example"
+        ],
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "preferences": []
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact, did:plc:labelerone, did:web:labeler.example",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"preferences\":[]}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": {
+            "preferences": []
+          },
+          "headers": {
+            "content-type": "application/json"
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "own-proxy-header",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "opts": {
+          "headers": {
+            "atproto-proxy": "did:web:other.example#bsky_appview",
+            "atproto-accept-labelers": " did:plc:extra "
+          }
+        },
+        "proxy": [
+          "bsky_appview",
+          "did:web:api.bsky.app"
+        ],
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "preferences": []
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact, did:plc:extra",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-atproto-proxy": "did:web:other.example#bsky_appview",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"preferences\":[]}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": {
+            "preferences": []
+          },
+          "headers": {
+            "content-type": "application/json"
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "procedure-no-input",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "com.atproto.server.refreshSession",
+        "kind": "procedure",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "accessJwt": "a",
+                "refreshJwt": "r",
+                "handle": "mira.example.com",
+                "did": "did:plc:virgaharnessmira2zq4x"
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.server.refreshSession"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"accessJwt\":\"a\",\"refreshJwt\":\"r\",\"handle\":\"mira.example.com\",\"did\":\"did:plc:virgaharnessmira2zq4x\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": {
+            "accessJwt": "a",
+            "refreshJwt": "r",
+            "handle": "mira.example.com",
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          "headers": {
+            "content-type": "application/json"
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "record-not-found",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "com.atproto.repo.getRecord",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x",
+          "collection": "app.bsky.feed.post",
+          "rkey": "x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ],
+          [
+            "collection",
+            "string",
+            "app.bsky.feed.post"
+          ],
+          [
+            "rkey",
+            "string",
+            "x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 400,
+            "json": {
+              "success": false,
+              "error": "Could not locate record",
+              "code": "RecordNotFound"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Avirgaharnessmira2zq4x&collection=app.bsky.feed.post&rkey=x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 400,
+            "error": "RecordNotFound",
+            "message": "Could not locate record",
+            "headers": {
+              "content-type": "application/json"
+            }
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "rate-limited",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "com.atproto.repo.createRecord",
+        "input": {
+          "json": {
+            "repo": "did:plc:virgaharnessmira2zq4x",
+            "collection": "app.bsky.feed.like",
+            "record": {
+              "$type": "app.bsky.feed.like"
+            }
+          }
+        },
+        "kind": "procedure",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "success": false,
+              "error": "Slow down",
+              "code": "RateLimitExceeded",
+              "ratelimit": {
+                "ratelimit-reset": 1763000000,
+                "ratelimit-remaining": 0,
+                "ratelimit-policy": null
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp2aXJnYWhhcm5lc3NtaXJhMnpxNHgiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5saWtlIiwicmVjb3JkIjp7IiR0eXBlIjoiYXBwLmJza3kuZmVlZC5saWtlIn19"
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Slow down\",\"code\":\"RateLimitExceeded\",\"ratelimit\":{\"ratelimit-reset\":1763000000,\"ratelimit-remaining\":0,\"ratelimit-policy\":null}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 429,
+            "error": "RateLimitExceeded",
+            "message": "Slow down",
+            "headers": {
+              "content-type": "application/json",
+              "ratelimit-remaining": "0",
+              "ratelimit-reset": "1763000000"
+            }
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "failure-as-200",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": false,
+              "error": "odd"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"odd\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 502,
+            "error": "BackendError",
+            "message": "odd",
+            "headers": {
+              "content-type": "application/json"
+            }
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "unauthorized",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 401,
+            "json": {
+              "success": false,
+              "error": "gone",
+              "code": "FRONTEND_SESSION_INVALID"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 401,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"gone\",\"code\":\"FRONTEND_SESSION_INVALID\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 401,
+            "error": "FRONTEND_SESSION_INVALID",
+            "message": "gone",
+            "headers": {
+              "content-type": "application/json"
+            }
+          },
+          "unauthorized": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "code": "FRONTEND_SESSION_INVALID"
+            }
+          ],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "unauthorized-no-code",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 401,
+            "json": {
+              "success": false,
+              "error": "Missing or invalid authorization header"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 401,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Missing or invalid authorization header\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 401,
+            "error": "AuthenticationRequired",
+            "message": "Missing or invalid authorization header",
+            "headers": {
+              "content-type": "application/json"
+            }
+          },
+          "unauthorized": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "code": null
+            }
+          ],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "grant-missing",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 401,
+            "json": {
+              "success": false,
+              "error": "OAuth session missing. Automatic re-authentication required.",
+              "code": "OAUTH_SESSION_MISSING"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 401,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"OAuth session missing. Automatic re-authentication required.\",\"code\":\"OAUTH_SESSION_MISSING\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 401,
+            "error": "OAUTH_SESSION_MISSING",
+            "message": "OAuth session missing. Automatic re-authentication required.",
+            "headers": {
+              "content-type": "application/json"
+            }
+          },
+          "unauthorized": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "code": "OAUTH_SESSION_MISSING"
+            }
+          ],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "transient",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 503,
+            "json": {
+              "success": false,
+              "error": "Session validation temporarily unavailable, please retry",
+              "code": "VALIDATION_TRANSIENT_ERROR"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Session validation temporarily unavailable, please retry\",\"code\":\"VALIDATION_TRANSIENT_ERROR\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 503,
+            "error": "VALIDATION_TRANSIENT_ERROR",
+            "message": "Session validation temporarily unavailable, please retry",
+            "headers": {
+              "content-type": "application/json"
+            }
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "not-json",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 502,
+            "text": "Bad Gateway"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 502,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "Bad Gateway"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 502,
+            "error": "BackendError",
+            "message": "The request failed",
+            "headers": {
+              "content-type": "application/json"
+            }
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "not-json-200",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 200,
+            "text": "<html>"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "<html>"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 502,
+            "error": "BackendError",
+            "message": "The request failed",
+            "headers": {
+              "content-type": "application/json"
+            }
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "code-not-string",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 500,
+            "json": {
+              "success": false,
+              "error": "x",
+              "code": 5
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"x\",\"code\":5}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 500,
+            "error": "InternalServerError",
+            "message": "InternalServerError",
+            "headers": {
+              "content-type": "application/json"
+            }
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "error-not-string",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 400,
+            "json": {
+              "success": false,
+              "error": {
+                "a": 1
+              },
+              "code": "Odd"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":{\"a\":1},\"code\":\"Odd\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 400,
+            "error": "InvalidRequest",
+            "message": "InvalidRequest",
+            "headers": {
+              "content-type": "application/json"
+            }
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "status-unusual",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 418,
+            "json": {
+              "success": false,
+              "error": "teapot",
+              "code": "Teapot"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 418,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"teapot\",\"code\":\"Teapot\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 400,
+            "error": "Teapot",
+            "message": "teapot",
+            "headers": {
+              "content-type": "application/json"
+            }
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "status-5xx",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 507,
+            "json": {
+              "success": false
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 507,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 500,
+            "error": "BackendError",
+            "message": "The request failed",
+            "headers": {
+              "content-type": "application/json"
+            }
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "status-not-modified",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 304
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 304,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": null
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 1,
+            "error": "Unknown",
+            "message": "Response constructor: Invalid response status code 304",
+            "headers": null
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "status-no-content",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 204
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 204,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": null
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 502,
+            "error": "BackendError",
+            "message": "The request failed",
+            "headers": {
+              "content-type": "application/json"
+            }
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          "offline"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 1,
+            "error": "Unknown",
+            "message": "fetch failed",
+            "headers": null
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "no-token",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "token": null,
+        "kind": "query",
+        "typedParams": [],
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 401,
+            "error": "FRONTEND_SESSION_INVALID",
+            "message": "Not signed in through Virga’s server",
+            "headers": {
+              "content-type": "application/json"
+            }
+          },
+          "unauthorized": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "code": "FRONTEND_SESSION_INVALID"
+            }
+          ],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "binary-output",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "com.atproto.sync.getRepo",
+        "params": {
+          "did": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "did",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 1,
+            "error": "Unknown",
+            "message": "com.atproto.sync.getRepo answers in bytes and can't go through Virga’s server; read it from the PDS directly.",
+            "headers": null
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "binary-blob",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "com.atproto.sync.getBlob",
+        "params": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "cid": "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "did",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ],
+          [
+            "cid",
+            "string",
+            "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+          ]
+        ],
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 1,
+            "error": "Unknown",
+            "message": "com.atproto.sync.getBlob answers in bytes and can't go through Virga’s server; read it from the PDS directly.",
+            "headers": null
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "upload",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "com.atproto.repo.uploadBlob",
+        "input": {
+          "bytes": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        "opts": {
+          "encoding": "image/png"
+        },
+        "kind": "procedure",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "blob": {
+                  "$type": "blob",
+                  "ref": {
+                    "$link": "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+                  },
+                  "mimeType": "image/png",
+                  "size": 4
+                }
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=image%2Fpng",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "AQIDBA=="
+              },
+              "timeoutMs": 600000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},\"mimeType\":\"image/png\",\"size\":4}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": {
+            "blob": {
+              "$type": "blob",
+              "ref": {
+                "$link": "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+              },
+              "mimeType": "image/png",
+              "size": 4
+            }
+          },
+          "headers": {
+            "content-type": "application/json"
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "upload-type-parameters",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "com.atproto.repo.uploadBlob",
+        "input": {
+          "bytes": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        "opts": {
+          "encoding": "image/jpeg; charset=binary"
+        },
+        "kind": "procedure",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "blob": {
+                  "$type": "blob",
+                  "ref": {
+                    "$link": "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+                  },
+                  "mimeType": "image/jpeg",
+                  "size": 4
+                },
+                "extra": 1
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=image%2Fjpeg",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "AQIDBA=="
+              },
+              "timeoutMs": 600000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},\"mimeType\":\"image/jpeg\",\"size\":4},\"extra\":1}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": {
+            "blob": {
+              "$type": "blob",
+              "ref": {
+                "$link": "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+              },
+              "mimeType": "image/jpeg",
+              "size": 4
+            }
+          },
+          "headers": {
+            "content-type": "application/json"
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "upload-untyped",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "com.atproto.repo.uploadBlob",
+        "input": {
+          "bytes": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        "kind": "procedure",
+        "typedParams": [],
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 1,
+            "error": "Unknown",
+            "message": "uploadBlob needs the blob’s real type (pass an encoding such as image/jpeg)",
+            "headers": null
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "upload-octet-stream",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "com.atproto.repo.uploadBlob",
+        "input": {
+          "bytes": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        "opts": {
+          "encoding": "application/octet-stream"
+        },
+        "kind": "procedure",
+        "typedParams": [],
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 1,
+            "error": "Unknown",
+            "message": "uploadBlob needs the blob’s real type (pass an encoding such as image/jpeg)",
+            "headers": null
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "upload-failed",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "com.atproto.repo.uploadBlob",
+        "input": {
+          "bytes": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        "opts": {
+          "encoding": "video/mp4"
+        },
+        "kind": "procedure",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 504,
+            "json": {
+              "success": false,
+              "error": "The PDS took too long to accept the upload. Please try again.",
+              "code": "PDS_UPLOAD_TIMEOUT"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=video%2Fmp4",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "AQIDBA=="
+              },
+              "timeoutMs": 600000
+            },
+            "response": {
+              "status": 504,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"The PDS took too long to accept the upload. Please try again.\",\"code\":\"PDS_UPLOAD_TIMEOUT\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 504,
+            "error": "PDS_UPLOAD_TIMEOUT",
+            "message": "The PDS took too long to accept the upload. Please try again.",
+            "headers": {
+              "content-type": "application/json"
+            }
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "prefix-server",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "backendUrl": "https://other.example/prefix/",
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "preferences": []
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://other.example/prefix/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"preferences\":[]}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": {
+            "preferences": []
+          },
+          "headers": {
+            "content-type": "application/json"
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "empty-encoding",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "com.atproto.repo.createRecord",
+        "input": {
+          "json": {
+            "repo": "did:plc:virgaharnessmira2zq4x",
+            "collection": "app.bsky.feed.post",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "hi",
+              "createdAt": "2026-11-12T00:00:00.000Z"
+            }
+          }
+        },
+        "opts": {
+          "encoding": ""
+        },
+        "kind": "procedure",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3k",
+                "cid": "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzp2aXJnYWhhcm5lc3NtaXJhMnpxNHgiLCJjb2xsZWN0aW9uIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwicmVjb3JkIjp7IiR0eXBlIjoiYXBwLmJza3kuZmVlZC5wb3N0IiwidGV4dCI6ImhpIiwiY3JlYXRlZEF0IjoiMjAyNi0xMS0xMlQwMDowMDowMC4wMDBaIn19"
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3k\",\"cid\":\"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": {
+            "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3k",
+            "cid": "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+          },
+          "headers": {
+            "content-type": "application/json"
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "drops-headers",
+      "fn": "fetchHandler",
+      "input": {
+        "url": "/xrpc/app.bsky.actor.getPreferences",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {}
+            }
+          }
+        ],
+        "init": {
+          "method": "GET",
+          "headers": {
+            "X-Custom": "no",
+            "accept-language": "en",
+            "atproto-accept-labelers": " "
+          }
+        },
+        "$init": {
+          "method": "GET",
+          "headers": {
+            "X-Custom": "no",
+            "accept-language": "en",
+            "atproto-accept-labelers": " "
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "status": 200,
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": {},
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "text-body",
+      "fn": "fetchHandler",
+      "input": {
+        "url": "/xrpc/com.atproto.repo.createRecord",
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "success": false,
+              "error": "Slow down",
+              "code": "RateLimitExceeded",
+              "ratelimit": {
+                "ratelimit-reset": 1763000000
+              }
+            }
+          }
+        ],
+        "init": {
+          "method": "POST",
+          "body": "{}"
+        },
+        "$init": {
+          "method": "POST",
+          "body": "{}"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.createRecord"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Slow down\",\"code\":\"RateLimitExceeded\",\"ratelimit\":{\"ratelimit-reset\":1763000000}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "status": 429,
+          "headers": {
+            "content-type": "application/json",
+            "ratelimit-reset": "1763000000"
+          },
+          "body": {
+            "error": "RateLimitExceeded",
+            "message": "Slow down"
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "head-drops-body",
+      "fn": "fetchHandler",
+      "input": {
+        "url": "/xrpc/app.bsky.actor.getPreferences?a=1",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "preferences": []
+              }
+            }
+          }
+        ],
+        "init": {
+          "method": "head",
+          "body": "{\"x\":1}"
+        },
+        "$init": {
+          "method": "head",
+          "body": "{\"x\":1}"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?a=1",
+              "method": "HEAD",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"preferences\":[]}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "status": 200,
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": {
+            "preferences": []
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "pick-blob",
+      "fn": "fetchHandler",
+      "input": {
+        "url": "/xrpc/com.atproto.repo.uploadBlob",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "blob": "x",
+                "other": 1
+              }
+            }
+          }
+        ],
+        "init": {
+          "method": "POST",
+          "headers": {
+            "content-type": " image/png ;q=1"
+          },
+          "body": {
+            "$bytes": "CQ=="
+          }
+        },
+        "$init": {
+          "method": "POST",
+          "headers": {
+            "content-type": " image/png ;q=1"
+          },
+          "body": [
+            9
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=image%2Fpng",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "CQ=="
+              },
+              "timeoutMs": 600000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"blob\":\"x\",\"other\":1}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "status": 200,
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": {
+            "blob": "x"
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "pick-no-blob",
+      "fn": "fetchHandler",
+      "input": {
+        "url": "/xrpc/com.atproto.repo.uploadBlob",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "other": 1
+              }
+            }
+          }
+        ],
+        "init": {
+          "method": "POST",
+          "headers": {
+            "content-type": "image/png"
+          },
+          "body": {
+            "$bytes": "CQ=="
+          }
+        },
+        "$init": {
+          "method": "POST",
+          "headers": {
+            "content-type": "image/png"
+          },
+          "body": [
+            9
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=image%2Fpng",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "CQ=="
+              },
+              "timeoutMs": 600000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"other\":1}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "status": 200,
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": {
+            "other": 1
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ratelimit-array",
+      "fn": "fetchHandler",
+      "input": {
+        "url": "/xrpc/app.bsky.actor.getPreferences",
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "success": false,
+              "ratelimit": [
+                "a",
+                null,
+                3
+              ]
+            }
+          }
+        ],
+        "init": {},
+        "$init": {}
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"ratelimit\":[\"a\",null,3]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "status": 429,
+          "headers": {
+            "0": "a",
+            "2": "3",
+            "content-type": "application/json"
+          },
+          "body": {
+            "error": "BackendError",
+            "message": "The request failed"
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "success-data-string",
+      "fn": "fetchHandler",
+      "input": {
+        "url": "/xrpc/app.bsky.actor.getPreferences",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": "text"
+            }
+          }
+        ],
+        "init": {},
+        "$init": {}
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":\"text\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "status": 200,
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "text",
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "success-truthy",
+      "fn": "fetchHandler",
+      "input": {
+        "url": "/xrpc/app.bsky.actor.getPreferences",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": 1,
+              "data": false
+            }
+          }
+        ],
+        "init": {},
+        "$init": {}
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":1,\"data\":false}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "status": 200,
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": false,
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "binary-record",
+      "fn": "fetchHandler",
+      "input": {
+        "url": "/xrpc/com.atproto.sync.getRecord?did=x",
+        "answers": [],
+        "init": {},
+        "$init": {}
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "$throws": "com.atproto.sync.getRecord answers in bytes and can't go through Virga’s server; read it from the PDS directly."
+      }
+    },
+    {
+      "id": "ratelimit-string",
+      "fn": "fetchHandler",
+      "input": {
+        "url": "/xrpc/app.bsky.actor.getPreferences",
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "success": false,
+              "ratelimit": "ab"
+            }
+          }
+        ],
+        "init": {},
+        "$init": {}
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"ratelimit\":\"ab\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "status": 429,
+          "headers": {
+            "0": "a",
+            "1": "b",
+            "content-type": "application/json"
+          },
+          "body": {
+            "error": "BackendError",
+            "message": "The request failed"
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "no-deadline",
+      "fn": "fetchHandler",
+      "input": {
+        "url": "/xrpc/app.bsky.actor.getPreferences",
+        "options": {
+          "timeoutMs": 0
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "preferences": []
+              }
+            }
+          }
+        ],
+        "init": {},
+        "$init": {}
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"preferences\":[]}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "status": 200,
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": {
+            "preferences": []
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "own-deadline",
+      "fn": "fetchHandler",
+      "input": {
+        "url": "/xrpc/app.bsky.actor.getPreferences",
+        "options": {
+          "timeoutMs": 5000
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "preferences": []
+              }
+            }
+          }
+        ],
+        "init": {},
+        "$init": {}
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 5000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"preferences\":[]}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "status": 200,
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": {
+            "preferences": []
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "upload-own-signal",
+      "fn": "fetchHandler",
+      "input": {
+        "url": "/xrpc/com.atproto.repo.uploadBlob",
+        "withSignal": true,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "blob": {
+                  "$type": "blob",
+                  "ref": {
+                    "$link": "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+                  },
+                  "mimeType": "image/png",
+                  "size": 4
+                }
+              }
+            }
+          }
+        ],
+        "init": {
+          "method": "POST",
+          "headers": {
+            "content-type": "image/png"
+          },
+          "body": {
+            "$bytes": "CQ=="
+          }
+        },
+        "$init": {
+          "method": "POST",
+          "headers": {
+            "content-type": "image/png"
+          },
+          "body": [
+            9
+          ]
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=image%2Fpng",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "CQ=="
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},\"mimeType\":\"image/png\",\"size\":4}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "status": 200,
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": {
+            "blob": {
+              "$type": "blob",
+              "ref": {
+                "$link": "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+              },
+              "mimeType": "image/png",
+              "size": 4
+            }
+          },
+          "unauthorized": [],
+          "authorized": [
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        }
+      }
+    },
+    {
+      "id": "pds",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example/",
+        "nsid": "com.atproto.repo.describeRepo",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "handle": "mira.example.com",
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "didDoc": {},
+              "collections": [],
+              "handleIsCorrect": true
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.describeRepo?repo=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"handle\":\"mira.example.com\",\"did\":\"did:plc:virgaharnessmira2zq4x\",\"didDoc\":{},\"collections\":[],\"handleIsCorrect\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": {
+            "handle": "mira.example.com",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "didDoc": {},
+            "collections": [],
+            "handleIsCorrect": true
+          },
+          "headers": {
+            "content-type": "application/json"
+          }
+        }
+      }
+    },
+    {
+      "id": "pds-error",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example/base/",
+        "nsid": "com.atproto.repo.getRecord",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x",
+          "collection": "app.bsky.feed.post",
+          "rkey": "gone"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ],
+          [
+            "collection",
+            "string",
+            "app.bsky.feed.post"
+          ],
+          [
+            "rkey",
+            "string",
+            "gone"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 400,
+            "json": {
+              "error": "RecordNotFound",
+              "message": "Could not locate record: at://x"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.getRecord?repo=did%3Aplc%3Avirgaharnessmira2zq4x&collection=app.bsky.feed.post&rkey=gone",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"RecordNotFound\",\"message\":\"Could not locate record: at://x\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 400,
+            "error": "RecordNotFound",
+            "message": "Could not locate record: at://x",
+            "headers": {
+              "content-type": "application/json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "bytes",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.sync.getBlob",
+        "params": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "cid": "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "did",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ],
+          [
+            "cid",
+            "string",
+            "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "bytes": [
+              1,
+              2,
+              3
+            ],
+            "contentType": "image/png"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.sync.getBlob?did=did%3Aplc%3Avirgaharnessmira2zq4x&cid=bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png"
+              },
+              "body": {
+                "$bytes": "AQID"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": {
+            "$bytes": "AQID"
+          },
+          "headers": {
+            "content-type": "image/png"
+          }
+        }
+      }
+    },
+    {
+      "id": "text",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.sync.getBlob",
+        "params": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "cid": "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "did",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ],
+          [
+            "cid",
+            "string",
+            "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "text": "plain words"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.sync.getBlob?did=did%3Aplc%3Avirgaharnessmira2zq4x&cid=bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "plain words"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "data": "plain words",
+          "headers": {
+            "content-type": "text/plain"
+          }
+        }
+      }
+    },
+    {
+      "id": "error-without-body",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.repo.describeRepo",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 404,
+            "text": ""
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.describeRepo?repo=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": ""
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 404,
+            "error": "XRPCNotSupported",
+            "message": "XRPCNotSupported",
+            "headers": {
+              "content-type": "text/plain"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "redirect-status",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.repo.describeRepo",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 302,
+            "json": {
+              "error": "Moved"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.describeRepo?repo=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 302,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"Moved\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 404,
+            "error": "Moved",
+            "message": "Moved",
+            "headers": {
+              "content-type": "application/json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "proto-key",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.sync.getCheckout",
+        "params": {
+          "did": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "did",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "text": "{\"a\":[{\"b\":{\"__proto__\":{\"x\":1}}}]}",
+            "headers": {
+              "content-type": "application/json"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.sync.getCheckout?did=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"a\":[{\"b\":{\"__proto__\":{\"x\":1}}}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 2,
+            "error": "InvalidResponse",
+            "message": "Failed to parse response body: TypeError: Invalid key: __proto__",
+            "headers": null
+          }
+        }
+      }
+    },
+    {
+      "id": "proto-key-error",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.repo.describeRepo",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 400,
+            "text": "{\"error\":\"E\",\"__proto__\":{\"message\":\"m\"}}",
+            "headers": {
+              "content-type": "application/json"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.describeRepo?repo=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"E\",\"__proto__\":{\"message\":\"m\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 2,
+            "error": "InvalidResponse",
+            "message": "Failed to parse response body: TypeError: Invalid key: __proto__",
+            "headers": null
+          }
+        }
+      }
+    },
+    {
+      "id": "json-not-json",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.repo.describeRepo",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 502,
+            "text": "<html><head><title>502 Bad Gateway</title></head></html>",
+            "headers": {
+              "content-type": "application/json"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.describeRepo?repo=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 502,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "<html><head><title>502 Bad Gateway</title></head></html>"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 2,
+            "error": "InvalidResponse",
+            "message": "Failed to parse response body: SyntaxError: Unexpected token '<', \"<html><hea\"... is not valid JSON",
+            "headers": null
+          }
+        }
+      }
+    },
+    {
+      "id": "json-type-variants",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.repo.describeRepo",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 404,
+            "text": "{\"error\":\"NotFound\",\"message\":\"m\"}",
+            "headers": {
+              "content-type": "Application/JSON"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.describeRepo?repo=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "Application/JSON"
+              },
+              "body": {
+                "$text": "{\"error\":\"NotFound\",\"message\":\"m\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 404,
+            "error": "XRPCNotSupported",
+            "message": "XRPCNotSupported",
+            "headers": {
+              "content-type": "Application/JSON"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "json-type-suffix",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.repo.describeRepo",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 404,
+            "text": "{\"error\":\"NotFound\",\"message\":\"m\"}",
+            "headers": {
+              "content-type": "xapplication/jsonx; charset=utf-8"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.describeRepo?repo=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "xapplication/jsonx; charset=utf-8"
+              },
+              "body": {
+                "$text": "{\"error\":\"NotFound\",\"message\":\"m\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 404,
+            "error": "NotFound",
+            "message": "m",
+            "headers": {
+              "content-type": "xapplication/jsonx; charset=utf-8"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "error-null-message",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.repo.describeRepo",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 400,
+            "json": {
+              "error": "E",
+              "message": null
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.describeRepo?repo=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"E\",\"message\":null}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 400,
+            "error": "InvalidRequest",
+            "message": "InvalidRequest",
+            "headers": {
+              "content-type": "application/json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "error-array-body",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.repo.describeRepo",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 500,
+            "json": [
+              {
+                "error": "E"
+              }
+            ]
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.describeRepo?repo=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "[{\"error\":\"E\"}]"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 500,
+            "error": "InternalServerError",
+            "message": "InternalServerError",
+            "headers": {
+              "content-type": "application/json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "error-bom-body",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.repo.describeRepo",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 429,
+            "text": "﻿{\"error\":\"RateLimitExceeded\"}",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "ratelimit-remaining": "0"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.describeRepo?repo=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json; charset=utf-8",
+                "ratelimit-remaining": "0"
+              },
+              "body": {
+                "$text": "﻿{\"error\":\"RateLimitExceeded\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 429,
+            "error": "RateLimitExceeded",
+            "message": "RateLimitExceeded",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "ratelimit-remaining": "0"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

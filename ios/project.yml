@@ -1,0 +1,140 @@
+# XcodeGen spec for the iOS app: `xcodegen generate` (in ios/) writes
+# Virga.xcodeproj, which is not committed. See ios/README.md.
+#
+# The app target is a thin shell: everything else is the VirgaKit package
+# (VirgaKit/), whose logic targets also build and test on Linux.
+
+name: Virga
+
+options:
+  bundleIdPrefix: app.virga
+  deploymentTarget:
+    iOS: "17.4"
+  createIntermediateGroups: true
+  developmentLanguage: en
+  xcodeVersion: "16.0"
+
+configFiles:
+  Debug: Config/Debug.xcconfig
+  Release: Config/Release.xcconfig
+
+settings:
+  base:
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.0"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    DEAD_CODE_STRIPPING: YES
+
+packages:
+  VirgaKit:
+    path: VirgaKit
+
+targets:
+  Virga:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+      # The Terms of Service and the Privacy Policy, from the repository
+      # root, so the app shows exactly the documents the web app does.
+      - path: ../TERMS_OF_SERVICE.md
+        buildPhase: resources
+      - path: ../PRIVACY_POLICY.md
+        buildPhase: resources
+    dependencies:
+      - package: VirgaKit
+        product: VirgaUI
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Virga
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSRequiresIPhoneOS: true
+        ITSAppUsesNonExemptEncryption: false
+        UILaunchScreen:
+          UIColorName: AccentColor
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: true
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        # virga://compose?text=…&url=…&tags=… opens the composer filled in,
+        # like the web app's /intent/compose.
+        CFBundleURLTypes:
+          - CFBundleURLName: app.virga.intent
+            CFBundleURLSchemes: [virga]
+        # The web app's build flags (src/config.js), from Config/*.xcconfig.
+        VirgaBackendURL: $(VIRGA_BACKEND_URL)
+        VirgaDefense: $(VIRGA_DEFENSE)
+        VirgaDefenseModerator: $(VIRGA_DEFENSE_MODERATOR)
+        NSPhotoLibraryAddUsageDescription: Virga saves a chart's picture to your photos when you ask it to.
+    entitlements:
+      path: App/Virga.entitlements
+      properties:
+        # The sign-in comes back to https://<host>/oauth/return, which
+        # ASWebAuthenticationSession can only catch for an associated domain
+        # (public/.well-known/apple-app-site-association on the web app).
+        com.apple.developer.associated-domains:
+          - webcredentials:$(VIRGA_HOST)
+          - applinks:$(VIRGA_HOST)
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(VIRGA_BUNDLE_ID)
+        PRODUCT_NAME: Virga
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: $(VIRGA_TEAM_ID)
+        SUPPORTS_MACCATALYST: NO
+
+  VirgaAppTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [AppTests]
+    dependencies:
+      - target: Virga
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(VIRGA_BUNDLE_ID).tests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/Virga.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Virga
+        BUNDLE_LOADER: $(TEST_HOST)
+
+  VirgaUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [AppUITests]
+    dependencies:
+      - target: Virga
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(VIRGA_BUNDLE_ID).uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: Virga
+
+schemes:
+  Virga:
+    build:
+      targets:
+        Virga: all
+        VirgaAppTests: [test]
+        VirgaUITests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      gatherCoverageData: true
+      targets:
+        - VirgaAppTests
+        - VirgaUITests
+    archive:
+      config: Release

@@ -1,0 +1,15 @@
+{
+  "webcredentials": {
+    "apps": ["TEAMID.app.virga.Virga"]
+  },
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["TEAMID.app.virga.Virga"],
+        "components": [
+          { "/": "/intent/compose", "comment": "Opens the iOS app's composer, filled in, like the web's compose link." }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,2448 @@
+{
+  "name": "network.constellation",
+  "sources": [
+    "src/lib/constellation.js"
+  ],
+  "cases": [
+    {
+      "id": "backlinkRows#1",
+      "fn": "backlinkRows",
+      "input": {
+        "page": {
+          "total": 2,
+          "records": [
+            {
+              "did": "did:plc:a",
+              "rkey": "3l"
+            }
+          ],
+          "cursor": null
+        }
+      },
+      "output": [
+        {
+          "did": "did:plc:a",
+          "rkey": "3l"
+        }
+      ]
+    },
+    {
+      "id": "backlinkRows#2",
+      "fn": "backlinkRows",
+      "input": {
+        "page": {
+          "linking_records": [
+            {
+              "did": "did:plc:a"
+            },
+            {
+              "did": "did:plc:b"
+            }
+          ]
+        }
+      },
+      "output": [
+        {
+          "did": "did:plc:a"
+        },
+        {
+          "did": "did:plc:b"
+        }
+      ]
+    },
+    {
+      "id": "backlinkRows#3",
+      "fn": "backlinkRows",
+      "input": {
+        "page": {
+          "records": []
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "backlinkRows#4",
+      "fn": "backlinkRows",
+      "input": {
+        "page": {
+          "records": [],
+          "linking_records": [
+            {
+              "did": "x"
+            }
+          ]
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "backlinkRows#5",
+      "fn": "backlinkRows",
+      "input": {
+        "page": {
+          "records": "odd"
+        }
+      },
+      "output": "odd"
+    },
+    {
+      "id": "backlinkRows#6",
+      "fn": "backlinkRows",
+      "input": {
+        "page": null
+      },
+      "output": []
+    },
+    {
+      "id": "backlinkRows#7",
+      "fn": "backlinkRows",
+      "input": {
+        "page": {}
+      },
+      "output": []
+    },
+    {
+      "id": "typical",
+      "fn": "flattenSources",
+      "input": {
+        "text": "{\"links\":{\"app.bsky.feed.like\":{\".subject.uri\":{\"records\":3,\"distinct_dids\":2}},\"app.bsky.feed.post\":{\".reply.root.uri\":{\"records\":29,\"distinct_dids\":11},\".reply.parent.uri\":{\"records\":5}},\"app.bsky.feed.repost\":{\".subject.uri\":{\"records\":3,\"distinct_dids\":3}},\"app.bsky.graph.block\":{\"subject\":{\"count\":7,\"distinctDids\":7}}}}"
+      },
+      "output": [
+        {
+          "collection": "app.bsky.feed.post",
+          "path": ".reply.root.uri",
+          "source": "app.bsky.feed.post:reply.root.uri",
+          "count": 29,
+          "distinctDids": 11
+        },
+        {
+          "collection": "app.bsky.graph.block",
+          "path": "subject",
+          "source": "app.bsky.graph.block:subject",
+          "count": 7,
+          "distinctDids": 7
+        },
+        {
+          "collection": "app.bsky.feed.post",
+          "path": ".reply.parent.uri",
+          "source": "app.bsky.feed.post:reply.parent.uri",
+          "count": 5,
+          "distinctDids": null
+        },
+        {
+          "collection": "app.bsky.feed.like",
+          "path": ".subject.uri",
+          "source": "app.bsky.feed.like:subject.uri",
+          "count": 3,
+          "distinctDids": 2
+        },
+        {
+          "collection": "app.bsky.feed.repost",
+          "path": ".subject.uri",
+          "source": "app.bsky.feed.repost:subject.uri",
+          "count": 3,
+          "distinctDids": 3
+        }
+      ]
+    },
+    {
+      "id": "ties",
+      "fn": "flattenSources",
+      "input": {
+        "text": "{\"links\":{\"z.coll\":{\".a\":{\"records\":1}},\"a.coll\":{\".b\":{\"records\":1},\".a\":{\"records\":1}},\"m.coll\":{\".c\":{\"records\":1}}}}"
+      },
+      "output": [
+        {
+          "collection": "z.coll",
+          "path": ".a",
+          "source": "z.coll:a",
+          "count": 1,
+          "distinctDids": null
+        },
+        {
+          "collection": "a.coll",
+          "path": ".b",
+          "source": "a.coll:b",
+          "count": 1,
+          "distinctDids": null
+        },
+        {
+          "collection": "a.coll",
+          "path": ".a",
+          "source": "a.coll:a",
+          "count": 1,
+          "distinctDids": null
+        },
+        {
+          "collection": "m.coll",
+          "path": ".c",
+          "source": "m.coll:c",
+          "count": 1,
+          "distinctDids": null
+        }
+      ]
+    },
+    {
+      "id": "bare",
+      "fn": "flattenSources",
+      "input": {
+        "text": "{\"app.bsky.feed.like\":{\".subject.uri\":{\"records\":1}}}"
+      },
+      "output": [
+        {
+          "collection": "app.bsky.feed.like",
+          "path": ".subject.uri",
+          "source": "app.bsky.feed.like:subject.uri",
+          "count": 1,
+          "distinctDids": null
+        }
+      ]
+    },
+    {
+      "id": "integerKeys",
+      "fn": "flattenSources",
+      "input": {
+        "text": "{\"links\":{\"2\":{\".z\":{\"records\":1}},\"10\":{\".y\":{\"records\":1}},\"b\":{\".x\":{\"records\":1}}}}"
+      },
+      "output": [
+        {
+          "collection": "2",
+          "path": ".z",
+          "source": "2:z",
+          "count": 1,
+          "distinctDids": null
+        },
+        {
+          "collection": "10",
+          "path": ".y",
+          "source": "10:y",
+          "count": 1,
+          "distinctDids": null
+        },
+        {
+          "collection": "b",
+          "path": ".x",
+          "source": "b:x",
+          "count": 1,
+          "distinctDids": null
+        }
+      ]
+    },
+    {
+      "id": "oddCounts",
+      "fn": "flattenSources",
+      "input": {
+        "text": "{\"links\":{\"c1\":{\".a\":{\"records\":null,\"count\":4},\".b\":{},\".c\":null,\".d\":{\"records\":\"7\"},\".e\":{\"records\":\"x\"}},\"c2\":\"skip me\",\"c3\":null,\"c4\":[{\"records\":9},{\"records\":[2]}],\"c5\":{\".f\":{\"records\":0,\"distinct_dids\":null,\"distinctDids\":3}}}}"
+      },
+      "output": [
+        {
+          "collection": "c4",
+          "path": "0",
+          "source": "c4:0",
+          "count": 9,
+          "distinctDids": null
+        },
+        {
+          "collection": "c1",
+          "path": ".d",
+          "source": "c1:d",
+          "count": "7",
+          "distinctDids": null
+        },
+        {
+          "collection": "c1",
+          "path": ".a",
+          "source": "c1:a",
+          "count": 4,
+          "distinctDids": null
+        },
+        {
+          "collection": "c4",
+          "path": "1",
+          "source": "c4:1",
+          "count": [
+            2
+          ],
+          "distinctDids": null
+        },
+        {
+          "collection": "c1",
+          "path": ".b",
+          "source": "c1:b",
+          "count": 0,
+          "distinctDids": null
+        },
+        {
+          "collection": "c1",
+          "path": ".c",
+          "source": "c1:c",
+          "count": 0,
+          "distinctDids": null
+        },
+        {
+          "collection": "c1",
+          "path": ".e",
+          "source": "c1:e",
+          "count": "x",
+          "distinctDids": null
+        },
+        {
+          "collection": "c5",
+          "path": ".f",
+          "source": "c5:f",
+          "count": 0,
+          "distinctDids": 3
+        }
+      ]
+    },
+    {
+      "id": "nanCounts",
+      "fn": "flattenSources",
+      "input": {
+        "text": "{\"links\":{\"a\":{\".1\":{\"records\":1},\".2\":{\"records\":\"x\"},\".3\":{\"records\":3},\".4\":{\"records\":2}}}}"
+      },
+      "output": [
+        {
+          "collection": "a",
+          "path": ".1",
+          "source": "a:1",
+          "count": 1,
+          "distinctDids": null
+        },
+        {
+          "collection": "a",
+          "path": ".2",
+          "source": "a:2",
+          "count": "x",
+          "distinctDids": null
+        },
+        {
+          "collection": "a",
+          "path": ".3",
+          "source": "a:3",
+          "count": 3,
+          "distinctDids": null
+        },
+        {
+          "collection": "a",
+          "path": ".4",
+          "source": "a:4",
+          "count": 2,
+          "distinctDids": null
+        }
+      ]
+    },
+    {
+      "id": "emptyLinks",
+      "fn": "flattenSources",
+      "input": {
+        "text": "{\"links\":{}}"
+      },
+      "output": []
+    },
+    {
+      "id": "linksFalsy",
+      "fn": "flattenSources",
+      "input": {
+        "text": "{\"links\":0,\"x.coll\":{\".p\":{\"records\":1}}}"
+      },
+      "output": [
+        {
+          "collection": "x.coll",
+          "path": ".p",
+          "source": "x.coll:p",
+          "count": 1,
+          "distinctDids": null
+        }
+      ]
+    },
+    {
+      "id": "codeUnits",
+      "fn": "flattenSources",
+      "input": {
+        "text": "{\"links\":{\"café\":{\".́subject\":{\"records\":2}},\"café\":{\".x\":{\"records\":1}}}}"
+      },
+      "output": [
+        {
+          "collection": "café",
+          "path": ".́subject",
+          "source": "café:́subject",
+          "count": 2,
+          "distinctDids": null
+        },
+        {
+          "collection": "café",
+          "path": ".x",
+          "source": "café:x",
+          "count": 1,
+          "distinctDids": null
+        }
+      ]
+    },
+    {
+      "id": "arrayRaw",
+      "fn": "flattenSources",
+      "input": {
+        "text": "[{\".a\":{\"records\":2}},\"x\"]"
+      },
+      "output": [
+        {
+          "collection": "0",
+          "path": ".a",
+          "source": "0:a",
+          "count": 2,
+          "distinctDids": null
+        }
+      ]
+    },
+    {
+      "id": "stringRaw",
+      "fn": "flattenSources",
+      "input": {
+        "text": "\"abc\""
+      },
+      "output": []
+    },
+    {
+      "id": "numberRaw",
+      "fn": "flattenSources",
+      "input": {
+        "text": "5"
+      },
+      "output": []
+    },
+    {
+      "id": "duplicate-keys",
+      "fn": "flattenSources",
+      "input": {
+        "text": "{\"links\":{\"b\":{\".x\":{\"records\":1}},\"a\":{\".y\":{\"records\":1}},\"b\":{\".z\":{\"records\":1}}}}"
+      },
+      "output": [
+        {
+          "collection": "b",
+          "path": ".z",
+          "source": "b:z",
+          "count": 1,
+          "distinctDids": null
+        },
+        {
+          "collection": "a",
+          "path": ".y",
+          "source": "a:y",
+          "count": 1,
+          "distinctDids": null
+        }
+      ]
+    },
+    {
+      "id": "null",
+      "fn": "flattenSources",
+      "input": {
+        "text": "null"
+      },
+      "output": null
+    },
+    {
+      "id": "false",
+      "fn": "flattenSources",
+      "input": {
+        "text": "false"
+      },
+      "output": null
+    },
+    {
+      "id": "ok",
+      "fn": "getBacklinkSources",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "answers": [
+          {
+            "status": 200,
+            "text": "{\"links\":{\"z.coll\":{\".a\":{\"records\":1}},\"a.coll\":{\".b\":{\"records\":1},\".a\":{\"records\":1}},\"m.coll\":{\".c\":{\"records\":1}}}}"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/links/all?target=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "{\"links\":{\"z.coll\":{\".a\":{\"records\":1}},\"a.coll\":{\".b\":{\"records\":1},\".a\":{\"records\":1}},\"m.coll\":{\".c\":{\"records\":1}}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "raw": {
+            "links": {
+              "z.coll": {
+                ".a": {
+                  "records": 1
+                }
+              },
+              "a.coll": {
+                ".b": {
+                  "records": 1
+                },
+                ".a": {
+                  "records": 1
+                }
+              },
+              "m.coll": {
+                ".c": {
+                  "records": 1
+                }
+              }
+            }
+          },
+          "flat": [
+            {
+              "collection": "z.coll",
+              "path": ".a",
+              "source": "z.coll:a",
+              "count": 1,
+              "distinctDids": null
+            },
+            {
+              "collection": "a.coll",
+              "path": ".b",
+              "source": "a.coll:b",
+              "count": 1,
+              "distinctDids": null
+            },
+            {
+              "collection": "a.coll",
+              "path": ".a",
+              "source": "a.coll:a",
+              "count": 1,
+              "distinctDids": null
+            },
+            {
+              "collection": "m.coll",
+              "path": ".c",
+              "source": "m.coll:c",
+              "count": 1,
+              "distinctDids": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "did",
+      "fn": "getBacklinkSources",
+      "input": {
+        "target": "did:plc:me",
+        "answers": [
+          {
+            "status": 200,
+            "text": "{\"links\":{\"app.bsky.feed.like\":{\".subject.uri\":{\"records\":3,\"distinct_dids\":2}},\"app.bsky.feed.post\":{\".reply.root.uri\":{\"records\":29,\"distinct_dids\":11},\".reply.parent.uri\":{\"records\":5}},\"app.bsky.feed.repost\":{\".subject.uri\":{\"records\":3,\"distinct_dids\":3}},\"app.bsky.graph.block\":{\"subject\":{\"count\":7,\"distinctDids\":7}}}}"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/links/all?target=did%3Aplc%3Ame",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "{\"links\":{\"app.bsky.feed.like\":{\".subject.uri\":{\"records\":3,\"distinct_dids\":2}},\"app.bsky.feed.post\":{\".reply.root.uri\":{\"records\":29,\"distinct_dids\":11},\".reply.parent.uri\":{\"records\":5}},\"app.bsky.feed.repost\":{\".subject.uri\":{\"records\":3,\"distinct_dids\":3}},\"app.bsky.graph.block\":{\"subject\":{\"count\":7,\"distinctDids\":7}}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "raw": {
+            "links": {
+              "app.bsky.feed.like": {
+                ".subject.uri": {
+                  "records": 3,
+                  "distinct_dids": 2
+                }
+              },
+              "app.bsky.feed.post": {
+                ".reply.root.uri": {
+                  "records": 29,
+                  "distinct_dids": 11
+                },
+                ".reply.parent.uri": {
+                  "records": 5
+                }
+              },
+              "app.bsky.feed.repost": {
+                ".subject.uri": {
+                  "records": 3,
+                  "distinct_dids": 3
+                }
+              },
+              "app.bsky.graph.block": {
+                "subject": {
+                  "count": 7,
+                  "distinctDids": 7
+                }
+              }
+            }
+          },
+          "flat": [
+            {
+              "collection": "app.bsky.feed.post",
+              "path": ".reply.root.uri",
+              "source": "app.bsky.feed.post:reply.root.uri",
+              "count": 29,
+              "distinctDids": 11
+            },
+            {
+              "collection": "app.bsky.graph.block",
+              "path": "subject",
+              "source": "app.bsky.graph.block:subject",
+              "count": 7,
+              "distinctDids": 7
+            },
+            {
+              "collection": "app.bsky.feed.post",
+              "path": ".reply.parent.uri",
+              "source": "app.bsky.feed.post:reply.parent.uri",
+              "count": 5,
+              "distinctDids": null
+            },
+            {
+              "collection": "app.bsky.feed.like",
+              "path": ".subject.uri",
+              "source": "app.bsky.feed.like:subject.uri",
+              "count": 3,
+              "distinctDids": 2
+            },
+            {
+              "collection": "app.bsky.feed.repost",
+              "path": ".subject.uri",
+              "source": "app.bsky.feed.repost:subject.uri",
+              "count": 3,
+              "distinctDids": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "empty-target",
+      "fn": "getBacklinkSources",
+      "input": {
+        "target": "",
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "raw": null,
+          "flat": null
+        }
+      }
+    },
+    {
+      "id": "not-json",
+      "fn": "getBacklinkSources",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "answers": [
+          {
+            "status": 200,
+            "text": "oops"
+          },
+          {
+            "status": 200,
+            "text": "{\"app.bsky.feed.like\":{\".subject.uri\":{\"records\":1}}}"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/links/all?target=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "oops"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/links/all?target=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "{\"app.bsky.feed.like\":{\".subject.uri\":{\"records\":1}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          1000
+        ],
+        "result": {
+          "raw": {
+            "app.bsky.feed.like": {
+              ".subject.uri": {
+                "records": 1
+              }
+            }
+          },
+          "flat": [
+            {
+              "collection": "app.bsky.feed.like",
+              "path": ".subject.uri",
+              "source": "app.bsky.feed.like:subject.uri",
+              "count": 1,
+              "distinctDids": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ok",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "source": "app.bsky.feed.like:subject.uri",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "total": 3
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=app.bsky.feed.like%3Asubject.uri",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"total\":3}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "total": 3
+        }
+      }
+    },
+    {
+      "id": "retry-after-seconds",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "source": "app.bsky.feed.like:subject.uri",
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "error": "RateLimitExceeded"
+            },
+            "headers": {
+              "Retry-After": "2"
+            }
+          },
+          {
+            "status": 200,
+            "json": {
+              "total": 3
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=app.bsky.feed.like%3Asubject.uri",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json",
+                "retry-after": "2"
+              },
+              "body": {
+                "$text": "{\"error\":\"RateLimitExceeded\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=app.bsky.feed.like%3Asubject.uri",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"total\":3}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          2000
+        ],
+        "result": {
+          "total": 3
+        }
+      }
+    },
+    {
+      "id": "retry-after-capped",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "source": "app.bsky.feed.like:subject.uri",
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "error": "RateLimitExceeded"
+            },
+            "headers": {
+              "Retry-After": "600"
+            }
+          },
+          {
+            "status": 200,
+            "json": {
+              "total": 3
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=app.bsky.feed.like%3Asubject.uri",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json",
+                "retry-after": "600"
+              },
+              "body": {
+                "$text": "{\"error\":\"RateLimitExceeded\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=app.bsky.feed.like%3Asubject.uri",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"total\":3}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          15000
+        ],
+        "result": {
+          "total": 3
+        }
+      }
+    },
+    {
+      "id": "retry-after-fraction",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "source": "x:y",
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "error": "RateLimitExceeded"
+            },
+            "headers": {
+              "Retry-After": "0.25"
+            }
+          },
+          {
+            "status": 200,
+            "json": {
+              "total": 1
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json",
+                "retry-after": "0.25"
+              },
+              "body": {
+                "$text": "{\"error\":\"RateLimitExceeded\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"total\":1}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          250
+        ],
+        "result": {
+          "total": 1
+        }
+      }
+    },
+    {
+      "id": "retry-after-negative",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "source": "x:y",
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "error": "RateLimitExceeded"
+            },
+            "headers": {
+              "Retry-After": "-5"
+            }
+          },
+          {
+            "status": 200,
+            "json": {
+              "total": 1
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json",
+                "retry-after": "-5"
+              },
+              "body": {
+                "$text": "{\"error\":\"RateLimitExceeded\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"total\":1}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          0
+        ],
+        "result": {
+          "total": 1
+        }
+      }
+    },
+    {
+      "id": "retry-after-space",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "source": "x:y",
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "error": "RateLimitExceeded"
+            },
+            "headers": {
+              "Retry-After": " "
+            }
+          },
+          {
+            "status": 200,
+            "json": {
+              "total": 1
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json",
+                "retry-after": ""
+              },
+              "body": {
+                "$text": "{\"error\":\"RateLimitExceeded\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"total\":1}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          1000
+        ],
+        "result": {
+          "total": 1
+        }
+      }
+    },
+    {
+      "id": "retry-after-date",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "source": "x:y",
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "error": "RateLimitExceeded"
+            },
+            "headers": {
+              "Retry-After": "Sun, 15 Mar 2026 12:00:03 GMT"
+            }
+          },
+          {
+            "status": 200,
+            "json": {
+              "total": 1
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json",
+                "retry-after": "Sun, 15 Mar 2026 12:00:03 GMT"
+              },
+              "body": {
+                "$text": "{\"error\":\"RateLimitExceeded\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"total\":1}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          3000
+        ],
+        "result": {
+          "total": 1
+        }
+      }
+    },
+    {
+      "id": "retry-after-past-date",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "source": "x:y",
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "error": "RateLimitExceeded"
+            },
+            "headers": {
+              "Retry-After": "Sun, 15 Mar 2026 11:59:00 GMT"
+            }
+          },
+          {
+            "status": 200,
+            "json": {
+              "total": 1
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json",
+                "retry-after": "Sun, 15 Mar 2026 11:59:00 GMT"
+              },
+              "body": {
+                "$text": "{\"error\":\"RateLimitExceeded\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"total\":1}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          0
+        ],
+        "result": {
+          "total": 1
+        }
+      }
+    },
+    {
+      "id": "retry-after-garbage",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "source": "x:y",
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "error": "RateLimitExceeded"
+            },
+            "headers": {
+              "Retry-After": "soon"
+            }
+          },
+          {
+            "status": 200,
+            "json": {
+              "total": 1
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json",
+                "retry-after": "soon"
+              },
+              "body": {
+                "$text": "{\"error\":\"RateLimitExceeded\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"total\":1}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          1000
+        ],
+        "result": {
+          "total": 1
+        }
+      }
+    },
+    {
+      "id": "backoff-503",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "source": "x:y",
+        "answers": [
+          {
+            "status": 503,
+            "text": ""
+          },
+          {
+            "status": 502,
+            "text": ""
+          },
+          {
+            "status": 504,
+            "text": ""
+          },
+          {
+            "status": 200,
+            "json": {
+              "total": 1
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": ""
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 502,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": ""
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 504,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": ""
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"total\":1}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          1000,
+          2500,
+          5000
+        ],
+        "result": {
+          "total": 1
+        }
+      }
+    },
+    {
+      "id": "gives-up",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "source": "x:y",
+        "answers": [
+          {
+            "status": 503,
+            "text": ""
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": ""
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": ""
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": ""
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": ""
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": ""
+              }
+            }
+          }
+        ],
+        "waits": [
+          1000,
+          2500,
+          5000,
+          10000
+        ],
+        "result": null
+      }
+    },
+    {
+      "id": "offline-retries",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "source": "x:y",
+        "answers": [
+          "offline",
+          "offline",
+          {
+            "status": 200,
+            "json": {
+              "total": 2
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"total\":2}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          1000,
+          2500
+        ],
+        "result": {
+          "total": 2
+        }
+      }
+    },
+    {
+      "id": "offline-gives-up",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "source": "x:y",
+        "answers": [
+          "offline"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [
+          1000,
+          2500,
+          5000,
+          10000
+        ],
+        "result": null
+      }
+    },
+    {
+      "id": "not-retried",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "source": "x:y",
+        "answers": [
+          {
+            "status": 400,
+            "json": {
+              "error": "BadRequest"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"BadRequest\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "server-error",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "source": "x:y",
+        "answers": [
+          {
+            "status": 500,
+            "text": "boom"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "boom"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "bad-json-retried",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "source": "x:y",
+        "answers": [
+          {
+            "status": 200,
+            "text": "{bad"
+          },
+          {
+            "status": 200,
+            "json": {
+              "total": 5
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "{bad"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3Ame%2Fapp.bsky.feed.post%2F3k&source=x%3Ay",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"total\":5}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          1000
+        ],
+        "result": {
+          "total": 5
+        }
+      }
+    },
+    {
+      "id": "missing-source",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:me/app.bsky.feed.post/3k",
+        "source": "",
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "encoding",
+      "fn": "getBacklinkCount",
+      "input": {
+        "target": "at://did:plc:é/a b/c&d",
+        "source": "a+b:c d",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "total": 0
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinksCount?subject=at%3A%2F%2Fdid%3Aplc%3A%C3%A9%2Fa+b%2Fc%26d&source=a%2Bb%3Ac+d",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"total\":0}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "total": 0
+        }
+      }
+    },
+    {
+      "id": "defaults",
+      "fn": "getBacklinks",
+      "input": {
+        "target": "did:plc:me",
+        "source": "app.bsky.graph.block:subject",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "records": [
+                {
+                  "did": "did:plc:a",
+                  "collection": "app.bsky.feed.like",
+                  "rkey": "3l"
+                }
+              ],
+              "cursor": "c2"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinks?subject=did%3Aplc%3Ame&source=app.bsky.graph.block%3Asubject&limit=25",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"records\":[{\"did\":\"did:plc:a\",\"collection\":\"app.bsky.feed.like\",\"rkey\":\"3l\"}],\"cursor\":\"c2\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "records": [
+            {
+              "did": "did:plc:a",
+              "collection": "app.bsky.feed.like",
+              "rkey": "3l"
+            }
+          ],
+          "cursor": "c2"
+        }
+      }
+    },
+    {
+      "id": "cursor-and-dids",
+      "fn": "getBacklinks",
+      "input": {
+        "target": "did:plc:me",
+        "source": "app.bsky.graph.block:subject",
+        "options": {
+          "limit": 100,
+          "cursor": "c1",
+          "dids": [
+            "did:plc:a",
+            "did:plc:b"
+          ]
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "records": [
+                {
+                  "did": "did:plc:a",
+                  "collection": "app.bsky.feed.like",
+                  "rkey": "3l"
+                }
+              ],
+              "cursor": "c2"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinks?subject=did%3Aplc%3Ame&source=app.bsky.graph.block%3Asubject&limit=100&cursor=c1&did=did%3Aplc%3Aa&did=did%3Aplc%3Ab",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"records\":[{\"did\":\"did:plc:a\",\"collection\":\"app.bsky.feed.like\",\"rkey\":\"3l\"}],\"cursor\":\"c2\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "records": [
+            {
+              "did": "did:plc:a",
+              "collection": "app.bsky.feed.like",
+              "rkey": "3l"
+            }
+          ],
+          "cursor": "c2"
+        }
+      }
+    },
+    {
+      "id": "empty-cursor",
+      "fn": "getBacklinks",
+      "input": {
+        "target": "did:plc:me",
+        "source": "s:p",
+        "options": {
+          "cursor": "",
+          "dids": []
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "records": [
+                {
+                  "did": "did:plc:a",
+                  "collection": "app.bsky.feed.like",
+                  "rkey": "3l"
+                }
+              ],
+              "cursor": "c2"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinks?subject=did%3Aplc%3Ame&source=s%3Ap&limit=25",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"records\":[{\"did\":\"did:plc:a\",\"collection\":\"app.bsky.feed.like\",\"rkey\":\"3l\"}],\"cursor\":\"c2\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "records": [
+            {
+              "did": "did:plc:a",
+              "collection": "app.bsky.feed.like",
+              "rkey": "3l"
+            }
+          ],
+          "cursor": "c2"
+        }
+      }
+    },
+    {
+      "id": "rate-limited",
+      "fn": "getBacklinks",
+      "input": {
+        "target": "did:plc:me",
+        "source": "s:p",
+        "answers": [
+          {
+            "status": 429,
+            "json": {
+              "error": "RateLimitExceeded"
+            },
+            "headers": {
+              "Retry-After": "2"
+            }
+          },
+          {
+            "status": 200,
+            "json": {
+              "records": [
+                {
+                  "did": "did:plc:a",
+                  "collection": "app.bsky.feed.like",
+                  "rkey": "3l"
+                }
+              ],
+              "cursor": "c2"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinks?subject=did%3Aplc%3Ame&source=s%3Ap&limit=25",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json",
+                "retry-after": "2"
+              },
+              "body": {
+                "$text": "{\"error\":\"RateLimitExceeded\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinks?subject=did%3Aplc%3Ame&source=s%3Ap&limit=25",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"records\":[{\"did\":\"did:plc:a\",\"collection\":\"app.bsky.feed.like\",\"rkey\":\"3l\"}],\"cursor\":\"c2\"}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          2000
+        ],
+        "result": {
+          "records": [
+            {
+              "did": "did:plc:a",
+              "collection": "app.bsky.feed.like",
+              "rkey": "3l"
+            }
+          ],
+          "cursor": "c2"
+        }
+      }
+    },
+    {
+      "id": "missing-target",
+      "fn": "getBacklinks",
+      "input": {
+        "target": null,
+        "source": "s:p",
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "defaults",
+      "fn": "getManyToMany",
+      "input": {
+        "subject": "did:plc:me",
+        "source": "app.bsky.graph.listitem:subject",
+        "pathToOther": "list",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "items": [
+                {
+                  "linkRecord": {
+                    "did": "did:plc:o",
+                    "collection": "app.bsky.graph.listitem",
+                    "rkey": "3l"
+                  },
+                  "otherSubject": "at://did/list/key"
+                }
+              ],
+              "cursor": null
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getManyToMany?subject=did%3Aplc%3Ame&source=app.bsky.graph.listitem%3Asubject&pathToOther=list&limit=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"items\":[{\"linkRecord\":{\"did\":\"did:plc:o\",\"collection\":\"app.bsky.graph.listitem\",\"rkey\":\"3l\"},\"otherSubject\":\"at://did/list/key\"}],\"cursor\":null}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "items": [
+            {
+              "linkRecord": {
+                "did": "did:plc:o",
+                "collection": "app.bsky.graph.listitem",
+                "rkey": "3l"
+              },
+              "otherSubject": "at://did/list/key"
+            }
+          ],
+          "cursor": null
+        }
+      }
+    },
+    {
+      "id": "all-options",
+      "fn": "getManyToMany",
+      "input": {
+        "subject": "did:plc:me",
+        "source": "app.bsky.graph.listitem:subject",
+        "pathToOther": "list",
+        "options": {
+          "limit": 10,
+          "cursor": "c",
+          "otherSubject": "at://did:plc:o/app.bsky.graph.list/1"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "items": []
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getManyToMany?subject=did%3Aplc%3Ame&source=app.bsky.graph.listitem%3Asubject&pathToOther=list&limit=10&otherSubject=at%3A%2F%2Fdid%3Aplc%3Ao%2Fapp.bsky.graph.list%2F1&cursor=c",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"items\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "items": []
+        }
+      }
+    },
+    {
+      "id": "missing-path",
+      "fn": "getManyToMany",
+      "input": {
+        "subject": "did:plc:me",
+        "source": "s:p",
+        "pathToOther": "",
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": null
+      }
+    }
+  ]
+}

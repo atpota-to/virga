@@ -1,0 +1,2281 @@
+{
+  "name": "core.jscompat",
+  "sources": [
+    "ios/VirgaKit/Sources/VirgaCore/Support/JSCompat.swift"
+  ],
+  "cases": [
+    {
+      "id": "length#1",
+      "fn": "length",
+      "input": {
+        "s": ""
+      },
+      "output": 0
+    },
+    {
+      "id": "length#2",
+      "fn": "length",
+      "input": {
+        "s": "hello world"
+      },
+      "output": 11
+    },
+    {
+      "id": "length#3",
+      "fn": "length",
+      "input": {
+        "s": "naïve café"
+      },
+      "output": 10
+    },
+    {
+      "id": "length#4",
+      "fn": "length",
+      "input": {
+        "s": "👍🏽 thumbs"
+      },
+      "output": 11
+    },
+    {
+      "id": "length#5",
+      "fn": "length",
+      "input": {
+        "s": "a👨‍👩‍👧b"
+      },
+      "output": 10
+    },
+    {
+      "id": "length#6",
+      "fn": "length",
+      "input": {
+        "s": "🇬🇧 flag"
+      },
+      "output": 9
+    },
+    {
+      "id": "length#7",
+      "fn": "length",
+      "input": {
+        "s": "﻿ bom "
+      },
+      "output": 7
+    },
+    {
+      "id": "length#8",
+      "fn": "length",
+      "input": {
+        "s": "   spaced\t\n"
+      },
+      "output": 11
+    },
+    {
+      "id": "length#9",
+      "fn": "length",
+      "input": {
+        "s": "x"
+      },
+      "output": 1
+    },
+    {
+      "id": "slice#1",
+      "fn": "slice",
+      "input": {
+        "s": "",
+        "start": 0,
+        "end": null
+      },
+      "output": ""
+    },
+    {
+      "id": "slice#2",
+      "fn": "slice",
+      "input": {
+        "s": "",
+        "start": 1,
+        "end": 4
+      },
+      "output": ""
+    },
+    {
+      "id": "slice#3",
+      "fn": "slice",
+      "input": {
+        "s": "",
+        "start": -3,
+        "end": null
+      },
+      "output": ""
+    },
+    {
+      "id": "slice#4",
+      "fn": "slice",
+      "input": {
+        "s": "",
+        "start": 2,
+        "end": -1
+      },
+      "output": ""
+    },
+    {
+      "id": "slice#5",
+      "fn": "slice",
+      "input": {
+        "s": "",
+        "start": 5,
+        "end": 2
+      },
+      "output": ""
+    },
+    {
+      "id": "slice#6",
+      "fn": "slice",
+      "input": {
+        "s": "",
+        "start": 0,
+        "end": 100
+      },
+      "output": ""
+    },
+    {
+      "id": "slice#7",
+      "fn": "slice",
+      "input": {
+        "s": "hello world",
+        "start": 0,
+        "end": null
+      },
+      "output": "hello world"
+    },
+    {
+      "id": "slice#8",
+      "fn": "slice",
+      "input": {
+        "s": "hello world",
+        "start": 1,
+        "end": 4
+      },
+      "output": "ell"
+    },
+    {
+      "id": "slice#9",
+      "fn": "slice",
+      "input": {
+        "s": "hello world",
+        "start": -3,
+        "end": null
+      },
+      "output": "rld"
+    },
+    {
+      "id": "slice#10",
+      "fn": "slice",
+      "input": {
+        "s": "hello world",
+        "start": 2,
+        "end": -1
+      },
+      "output": "llo worl"
+    },
+    {
+      "id": "slice#11",
+      "fn": "slice",
+      "input": {
+        "s": "hello world",
+        "start": 5,
+        "end": 2
+      },
+      "output": ""
+    },
+    {
+      "id": "slice#12",
+      "fn": "slice",
+      "input": {
+        "s": "hello world",
+        "start": 0,
+        "end": 100
+      },
+      "output": "hello world"
+    },
+    {
+      "id": "slice#13",
+      "fn": "slice",
+      "input": {
+        "s": "naïve café",
+        "start": 0,
+        "end": null
+      },
+      "output": "naïve café"
+    },
+    {
+      "id": "slice#14",
+      "fn": "slice",
+      "input": {
+        "s": "naïve café",
+        "start": 1,
+        "end": 4
+      },
+      "output": "aïv"
+    },
+    {
+      "id": "slice#15",
+      "fn": "slice",
+      "input": {
+        "s": "naïve café",
+        "start": -3,
+        "end": null
+      },
+      "output": "afé"
+    },
+    {
+      "id": "slice#16",
+      "fn": "slice",
+      "input": {
+        "s": "naïve café",
+        "start": 2,
+        "end": -1
+      },
+      "output": "ïve caf"
+    },
+    {
+      "id": "slice#17",
+      "fn": "slice",
+      "input": {
+        "s": "naïve café",
+        "start": 5,
+        "end": 2
+      },
+      "output": ""
+    },
+    {
+      "id": "slice#18",
+      "fn": "slice",
+      "input": {
+        "s": "naïve café",
+        "start": 0,
+        "end": 100
+      },
+      "output": "naïve café"
+    },
+    {
+      "id": "slice#19",
+      "fn": "slice",
+      "input": {
+        "s": "👍🏽 thumbs",
+        "start": 0,
+        "end": null
+      },
+      "output": "👍🏽 thumbs"
+    },
+    {
+      "id": "slice#20",
+      "fn": "slice",
+      "input": {
+        "s": "👍🏽 thumbs",
+        "start": 1,
+        "end": 4
+      },
+      "output": "�🏽"
+    },
+    {
+      "id": "slice#21",
+      "fn": "slice",
+      "input": {
+        "s": "👍🏽 thumbs",
+        "start": -3,
+        "end": null
+      },
+      "output": "mbs"
+    },
+    {
+      "id": "slice#22",
+      "fn": "slice",
+      "input": {
+        "s": "👍🏽 thumbs",
+        "start": 2,
+        "end": -1
+      },
+      "output": "🏽 thumb"
+    },
+    {
+      "id": "slice#23",
+      "fn": "slice",
+      "input": {
+        "s": "👍🏽 thumbs",
+        "start": 5,
+        "end": 2
+      },
+      "output": ""
+    },
+    {
+      "id": "slice#24",
+      "fn": "slice",
+      "input": {
+        "s": "👍🏽 thumbs",
+        "start": 0,
+        "end": 100
+      },
+      "output": "👍🏽 thumbs"
+    },
+    {
+      "id": "slice#25",
+      "fn": "slice",
+      "input": {
+        "s": "a👨‍👩‍👧b",
+        "start": 0,
+        "end": null
+      },
+      "output": "a👨‍👩‍👧b"
+    },
+    {
+      "id": "slice#26",
+      "fn": "slice",
+      "input": {
+        "s": "a👨‍👩‍👧b",
+        "start": 1,
+        "end": 4
+      },
+      "output": "👨‍"
+    },
+    {
+      "id": "slice#27",
+      "fn": "slice",
+      "input": {
+        "s": "a👨‍👩‍👧b",
+        "start": -3,
+        "end": null
+      },
+      "output": "👧b"
+    },
+    {
+      "id": "slice#28",
+      "fn": "slice",
+      "input": {
+        "s": "a👨‍👩‍👧b",
+        "start": 2,
+        "end": -1
+      },
+      "output": "�‍👩‍👧"
+    },
+    {
+      "id": "slice#29",
+      "fn": "slice",
+      "input": {
+        "s": "a👨‍👩‍👧b",
+        "start": 5,
+        "end": 2
+      },
+      "output": ""
+    },
+    {
+      "id": "slice#30",
+      "fn": "slice",
+      "input": {
+        "s": "a👨‍👩‍👧b",
+        "start": 0,
+        "end": 100
+      },
+      "output": "a👨‍👩‍👧b"
+    },
+    {
+      "id": "slice#31",
+      "fn": "slice",
+      "input": {
+        "s": "🇬🇧 flag",
+        "start": 0,
+        "end": null
+      },
+      "output": "🇬🇧 flag"
+    },
+    {
+      "id": "slice#32",
+      "fn": "slice",
+      "input": {
+        "s": "🇬🇧 flag",
+        "start": 1,
+        "end": 4
+      },
+      "output": "�🇧"
+    },
+    {
+      "id": "slice#33",
+      "fn": "slice",
+      "input": {
+        "s": "🇬🇧 flag",
+        "start": -3,
+        "end": null
+      },
+      "output": "lag"
+    },
+    {
+      "id": "slice#34",
+      "fn": "slice",
+      "input": {
+        "s": "🇬🇧 flag",
+        "start": 2,
+        "end": -1
+      },
+      "output": "🇧 fla"
+    },
+    {
+      "id": "slice#35",
+      "fn": "slice",
+      "input": {
+        "s": "🇬🇧 flag",
+        "start": 5,
+        "end": 2
+      },
+      "output": ""
+    },
+    {
+      "id": "slice#36",
+      "fn": "slice",
+      "input": {
+        "s": "🇬🇧 flag",
+        "start": 0,
+        "end": 100
+      },
+      "output": "🇬🇧 flag"
+    },
+    {
+      "id": "slice#37",
+      "fn": "slice",
+      "input": {
+        "s": "﻿ bom ",
+        "start": 0,
+        "end": null
+      },
+      "output": "﻿ bom "
+    },
+    {
+      "id": "slice#38",
+      "fn": "slice",
+      "input": {
+        "s": "﻿ bom ",
+        "start": 1,
+        "end": 4
+      },
+      "output": " bo"
+    },
+    {
+      "id": "slice#39",
+      "fn": "slice",
+      "input": {
+        "s": "﻿ bom ",
+        "start": -3,
+        "end": null
+      },
+      "output": "m "
+    },
+    {
+      "id": "slice#40",
+      "fn": "slice",
+      "input": {
+        "s": "﻿ bom ",
+        "start": 2,
+        "end": -1
+      },
+      "output": "bom"
+    },
+    {
+      "id": "slice#41",
+      "fn": "slice",
+      "input": {
+        "s": "﻿ bom ",
+        "start": 5,
+        "end": 2
+      },
+      "output": ""
+    },
+    {
+      "id": "slice#42",
+      "fn": "slice",
+      "input": {
+        "s": "﻿ bom ",
+        "start": 0,
+        "end": 100
+      },
+      "output": "﻿ bom "
+    },
+    {
+      "id": "slice#43",
+      "fn": "slice",
+      "input": {
+        "s": "   spaced\t\n",
+        "start": 0,
+        "end": null
+      },
+      "output": "   spaced\t\n"
+    },
+    {
+      "id": "slice#44",
+      "fn": "slice",
+      "input": {
+        "s": "   spaced\t\n",
+        "start": 1,
+        "end": 4
+      },
+      "output": "  s"
+    },
+    {
+      "id": "slice#45",
+      "fn": "slice",
+      "input": {
+        "s": "   spaced\t\n",
+        "start": -3,
+        "end": null
+      },
+      "output": "d\t\n"
+    },
+    {
+      "id": "slice#46",
+      "fn": "slice",
+      "input": {
+        "s": "   spaced\t\n",
+        "start": 2,
+        "end": -1
+      },
+      "output": " spaced\t"
+    },
+    {
+      "id": "slice#47",
+      "fn": "slice",
+      "input": {
+        "s": "   spaced\t\n",
+        "start": 5,
+        "end": 2
+      },
+      "output": ""
+    },
+    {
+      "id": "slice#48",
+      "fn": "slice",
+      "input": {
+        "s": "   spaced\t\n",
+        "start": 0,
+        "end": 100
+      },
+      "output": "   spaced\t\n"
+    },
+    {
+      "id": "slice#49",
+      "fn": "slice",
+      "input": {
+        "s": "x",
+        "start": 0,
+        "end": null
+      },
+      "output": "x"
+    },
+    {
+      "id": "slice#50",
+      "fn": "slice",
+      "input": {
+        "s": "x",
+        "start": 1,
+        "end": 4
+      },
+      "output": ""
+    },
+    {
+      "id": "slice#51",
+      "fn": "slice",
+      "input": {
+        "s": "x",
+        "start": -3,
+        "end": null
+      },
+      "output": "x"
+    },
+    {
+      "id": "slice#52",
+      "fn": "slice",
+      "input": {
+        "s": "x",
+        "start": 2,
+        "end": -1
+      },
+      "output": ""
+    },
+    {
+      "id": "slice#53",
+      "fn": "slice",
+      "input": {
+        "s": "x",
+        "start": 5,
+        "end": 2
+      },
+      "output": ""
+    },
+    {
+      "id": "slice#54",
+      "fn": "slice",
+      "input": {
+        "s": "x",
+        "start": 0,
+        "end": 100
+      },
+      "output": "x"
+    },
+    {
+      "id": "substring#1",
+      "fn": "substring",
+      "input": {
+        "s": "",
+        "start": 0,
+        "end": null
+      },
+      "output": ""
+    },
+    {
+      "id": "substring#2",
+      "fn": "substring",
+      "input": {
+        "s": "",
+        "start": 4,
+        "end": 1
+      },
+      "output": ""
+    },
+    {
+      "id": "substring#3",
+      "fn": "substring",
+      "input": {
+        "s": "",
+        "start": -2,
+        "end": 3
+      },
+      "output": ""
+    },
+    {
+      "id": "substring#4",
+      "fn": "substring",
+      "input": {
+        "s": "",
+        "start": 2,
+        "end": 100
+      },
+      "output": ""
+    },
+    {
+      "id": "substring#5",
+      "fn": "substring",
+      "input": {
+        "s": "hello world",
+        "start": 0,
+        "end": null
+      },
+      "output": "hello world"
+    },
+    {
+      "id": "substring#6",
+      "fn": "substring",
+      "input": {
+        "s": "hello world",
+        "start": 4,
+        "end": 1
+      },
+      "output": "ell"
+    },
+    {
+      "id": "substring#7",
+      "fn": "substring",
+      "input": {
+        "s": "hello world",
+        "start": -2,
+        "end": 3
+      },
+      "output": "hel"
+    },
+    {
+      "id": "substring#8",
+      "fn": "substring",
+      "input": {
+        "s": "hello world",
+        "start": 2,
+        "end": 100
+      },
+      "output": "llo world"
+    },
+    {
+      "id": "substring#9",
+      "fn": "substring",
+      "input": {
+        "s": "naïve café",
+        "start": 0,
+        "end": null
+      },
+      "output": "naïve café"
+    },
+    {
+      "id": "substring#10",
+      "fn": "substring",
+      "input": {
+        "s": "naïve café",
+        "start": 4,
+        "end": 1
+      },
+      "output": "aïv"
+    },
+    {
+      "id": "substring#11",
+      "fn": "substring",
+      "input": {
+        "s": "naïve café",
+        "start": -2,
+        "end": 3
+      },
+      "output": "naï"
+    },
+    {
+      "id": "substring#12",
+      "fn": "substring",
+      "input": {
+        "s": "naïve café",
+        "start": 2,
+        "end": 100
+      },
+      "output": "ïve café"
+    },
+    {
+      "id": "substring#13",
+      "fn": "substring",
+      "input": {
+        "s": "👍🏽 thumbs",
+        "start": 0,
+        "end": null
+      },
+      "output": "👍🏽 thumbs"
+    },
+    {
+      "id": "substring#14",
+      "fn": "substring",
+      "input": {
+        "s": "👍🏽 thumbs",
+        "start": 4,
+        "end": 1
+      },
+      "output": "�🏽"
+    },
+    {
+      "id": "substring#15",
+      "fn": "substring",
+      "input": {
+        "s": "👍🏽 thumbs",
+        "start": -2,
+        "end": 3
+      },
+      "output": "👍�"
+    },
+    {
+      "id": "substring#16",
+      "fn": "substring",
+      "input": {
+        "s": "👍🏽 thumbs",
+        "start": 2,
+        "end": 100
+      },
+      "output": "🏽 thumbs"
+    },
+    {
+      "id": "substring#17",
+      "fn": "substring",
+      "input": {
+        "s": "a👨‍👩‍👧b",
+        "start": 0,
+        "end": null
+      },
+      "output": "a👨‍👩‍👧b"
+    },
+    {
+      "id": "substring#18",
+      "fn": "substring",
+      "input": {
+        "s": "a👨‍👩‍👧b",
+        "start": 4,
+        "end": 1
+      },
+      "output": "👨‍"
+    },
+    {
+      "id": "substring#19",
+      "fn": "substring",
+      "input": {
+        "s": "a👨‍👩‍👧b",
+        "start": -2,
+        "end": 3
+      },
+      "output": "a👨"
+    },
+    {
+      "id": "substring#20",
+      "fn": "substring",
+      "input": {
+        "s": "a👨‍👩‍👧b",
+        "start": 2,
+        "end": 100
+      },
+      "output": "�‍👩‍👧b"
+    },
+    {
+      "id": "substring#21",
+      "fn": "substring",
+      "input": {
+        "s": "🇬🇧 flag",
+        "start": 0,
+        "end": null
+      },
+      "output": "🇬🇧 flag"
+    },
+    {
+      "id": "substring#22",
+      "fn": "substring",
+      "input": {
+        "s": "🇬🇧 flag",
+        "start": 4,
+        "end": 1
+      },
+      "output": "�🇧"
+    },
+    {
+      "id": "substring#23",
+      "fn": "substring",
+      "input": {
+        "s": "🇬🇧 flag",
+        "start": -2,
+        "end": 3
+      },
+      "output": "🇬�"
+    },
+    {
+      "id": "substring#24",
+      "fn": "substring",
+      "input": {
+        "s": "🇬🇧 flag",
+        "start": 2,
+        "end": 100
+      },
+      "output": "🇧 flag"
+    },
+    {
+      "id": "substring#25",
+      "fn": "substring",
+      "input": {
+        "s": "﻿ bom ",
+        "start": 0,
+        "end": null
+      },
+      "output": "﻿ bom "
+    },
+    {
+      "id": "substring#26",
+      "fn": "substring",
+      "input": {
+        "s": "﻿ bom ",
+        "start": 4,
+        "end": 1
+      },
+      "output": " bo"
+    },
+    {
+      "id": "substring#27",
+      "fn": "substring",
+      "input": {
+        "s": "﻿ bom ",
+        "start": -2,
+        "end": 3
+      },
+      "output": "﻿ b"
+    },
+    {
+      "id": "substring#28",
+      "fn": "substring",
+      "input": {
+        "s": "﻿ bom ",
+        "start": 2,
+        "end": 100
+      },
+      "output": "bom "
+    },
+    {
+      "id": "substring#29",
+      "fn": "substring",
+      "input": {
+        "s": "   spaced\t\n",
+        "start": 0,
+        "end": null
+      },
+      "output": "   spaced\t\n"
+    },
+    {
+      "id": "substring#30",
+      "fn": "substring",
+      "input": {
+        "s": "   spaced\t\n",
+        "start": 4,
+        "end": 1
+      },
+      "output": "  s"
+    },
+    {
+      "id": "substring#31",
+      "fn": "substring",
+      "input": {
+        "s": "   spaced\t\n",
+        "start": -2,
+        "end": 3
+      },
+      "output": "   "
+    },
+    {
+      "id": "substring#32",
+      "fn": "substring",
+      "input": {
+        "s": "   spaced\t\n",
+        "start": 2,
+        "end": 100
+      },
+      "output": " spaced\t\n"
+    },
+    {
+      "id": "substring#33",
+      "fn": "substring",
+      "input": {
+        "s": "x",
+        "start": 0,
+        "end": null
+      },
+      "output": "x"
+    },
+    {
+      "id": "substring#34",
+      "fn": "substring",
+      "input": {
+        "s": "x",
+        "start": 4,
+        "end": 1
+      },
+      "output": ""
+    },
+    {
+      "id": "substring#35",
+      "fn": "substring",
+      "input": {
+        "s": "x",
+        "start": -2,
+        "end": 3
+      },
+      "output": "x"
+    },
+    {
+      "id": "substring#36",
+      "fn": "substring",
+      "input": {
+        "s": "x",
+        "start": 2,
+        "end": 100
+      },
+      "output": ""
+    },
+    {
+      "id": "indexOf#1",
+      "fn": "indexOf",
+      "input": {
+        "s": "hello world",
+        "search": "o",
+        "from": 0
+      },
+      "output": 4
+    },
+    {
+      "id": "indexOf#2",
+      "fn": "indexOf",
+      "input": {
+        "s": "hello world",
+        "search": "o",
+        "from": 5
+      },
+      "output": 7
+    },
+    {
+      "id": "indexOf#3",
+      "fn": "indexOf",
+      "input": {
+        "s": "hello world",
+        "search": "z",
+        "from": 0
+      },
+      "output": -1
+    },
+    {
+      "id": "indexOf#4",
+      "fn": "indexOf",
+      "input": {
+        "s": "👍🏽 thumbs",
+        "search": "th",
+        "from": 0
+      },
+      "output": 5
+    },
+    {
+      "id": "indexOf#5",
+      "fn": "indexOf",
+      "input": {
+        "s": "a👨‍👩‍👧b",
+        "search": "b",
+        "from": 0
+      },
+      "output": 9
+    },
+    {
+      "id": "indexOf#6",
+      "fn": "indexOf",
+      "input": {
+        "s": "abc",
+        "search": "",
+        "from": 2
+      },
+      "output": 2
+    },
+    {
+      "id": "indexOf#7",
+      "fn": "indexOf",
+      "input": {
+        "s": "abc",
+        "search": "",
+        "from": 9
+      },
+      "output": 3
+    },
+    {
+      "id": "lastIndexOf#1",
+      "fn": "lastIndexOf",
+      "input": {
+        "s": "a.b.c",
+        "search": "."
+      },
+      "output": 3
+    },
+    {
+      "id": "lastIndexOf#2",
+      "fn": "lastIndexOf",
+      "input": {
+        "s": "abc",
+        "search": "z"
+      },
+      "output": -1
+    },
+    {
+      "id": "lastIndexOf#3",
+      "fn": "lastIndexOf",
+      "input": {
+        "s": "abc",
+        "search": ""
+      },
+      "output": 3
+    },
+    {
+      "id": "trim#1",
+      "fn": "trim",
+      "input": {
+        "s": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "trim#2",
+      "fn": "trim",
+      "input": {
+        "s": "hello world"
+      },
+      "output": "hello world"
+    },
+    {
+      "id": "trim#3",
+      "fn": "trim",
+      "input": {
+        "s": "naïve café"
+      },
+      "output": "naïve café"
+    },
+    {
+      "id": "trim#4",
+      "fn": "trim",
+      "input": {
+        "s": "👍🏽 thumbs"
+      },
+      "output": "👍🏽 thumbs"
+    },
+    {
+      "id": "trim#5",
+      "fn": "trim",
+      "input": {
+        "s": "a👨‍👩‍👧b"
+      },
+      "output": "a👨‍👩‍👧b"
+    },
+    {
+      "id": "trim#6",
+      "fn": "trim",
+      "input": {
+        "s": "🇬🇧 flag"
+      },
+      "output": "🇬🇧 flag"
+    },
+    {
+      "id": "trim#7",
+      "fn": "trim",
+      "input": {
+        "s": "﻿ bom "
+      },
+      "output": "bom"
+    },
+    {
+      "id": "trim#8",
+      "fn": "trim",
+      "input": {
+        "s": "   spaced\t\n"
+      },
+      "output": "spaced"
+    },
+    {
+      "id": "trim#9",
+      "fn": "trim",
+      "input": {
+        "s": "x"
+      },
+      "output": "x"
+    },
+    {
+      "id": "trimStart#1",
+      "fn": "trimStart",
+      "input": {
+        "s": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "trimStart#2",
+      "fn": "trimStart",
+      "input": {
+        "s": "hello world"
+      },
+      "output": "hello world"
+    },
+    {
+      "id": "trimStart#3",
+      "fn": "trimStart",
+      "input": {
+        "s": "naïve café"
+      },
+      "output": "naïve café"
+    },
+    {
+      "id": "trimStart#4",
+      "fn": "trimStart",
+      "input": {
+        "s": "👍🏽 thumbs"
+      },
+      "output": "👍🏽 thumbs"
+    },
+    {
+      "id": "trimStart#5",
+      "fn": "trimStart",
+      "input": {
+        "s": "a👨‍👩‍👧b"
+      },
+      "output": "a👨‍👩‍👧b"
+    },
+    {
+      "id": "trimStart#6",
+      "fn": "trimStart",
+      "input": {
+        "s": "🇬🇧 flag"
+      },
+      "output": "🇬🇧 flag"
+    },
+    {
+      "id": "trimStart#7",
+      "fn": "trimStart",
+      "input": {
+        "s": "﻿ bom "
+      },
+      "output": "bom "
+    },
+    {
+      "id": "trimStart#8",
+      "fn": "trimStart",
+      "input": {
+        "s": "   spaced\t\n"
+      },
+      "output": "spaced\t\n"
+    },
+    {
+      "id": "trimStart#9",
+      "fn": "trimStart",
+      "input": {
+        "s": "x"
+      },
+      "output": "x"
+    },
+    {
+      "id": "trimEnd#1",
+      "fn": "trimEnd",
+      "input": {
+        "s": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "trimEnd#2",
+      "fn": "trimEnd",
+      "input": {
+        "s": "hello world"
+      },
+      "output": "hello world"
+    },
+    {
+      "id": "trimEnd#3",
+      "fn": "trimEnd",
+      "input": {
+        "s": "naïve café"
+      },
+      "output": "naïve café"
+    },
+    {
+      "id": "trimEnd#4",
+      "fn": "trimEnd",
+      "input": {
+        "s": "👍🏽 thumbs"
+      },
+      "output": "👍🏽 thumbs"
+    },
+    {
+      "id": "trimEnd#5",
+      "fn": "trimEnd",
+      "input": {
+        "s": "a👨‍👩‍👧b"
+      },
+      "output": "a👨‍👩‍👧b"
+    },
+    {
+      "id": "trimEnd#6",
+      "fn": "trimEnd",
+      "input": {
+        "s": "🇬🇧 flag"
+      },
+      "output": "🇬🇧 flag"
+    },
+    {
+      "id": "trimEnd#7",
+      "fn": "trimEnd",
+      "input": {
+        "s": "﻿ bom "
+      },
+      "output": "﻿ bom"
+    },
+    {
+      "id": "trimEnd#8",
+      "fn": "trimEnd",
+      "input": {
+        "s": "   spaced\t\n"
+      },
+      "output": "   spaced"
+    },
+    {
+      "id": "trimEnd#9",
+      "fn": "trimEnd",
+      "input": {
+        "s": "x"
+      },
+      "output": "x"
+    },
+    {
+      "id": "utf8Offset#1",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "",
+        "index": 0
+      },
+      "output": 0
+    },
+    {
+      "id": "utf8Offset#2",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "",
+        "index": 1
+      },
+      "output": 0
+    },
+    {
+      "id": "utf8Offset#3",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "",
+        "index": 3
+      },
+      "output": 0
+    },
+    {
+      "id": "utf8Offset#4",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "",
+        "index": 0
+      },
+      "output": 0
+    },
+    {
+      "id": "utf8Offset#5",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "hello world",
+        "index": 0
+      },
+      "output": 0
+    },
+    {
+      "id": "utf8Offset#6",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "hello world",
+        "index": 1
+      },
+      "output": 1
+    },
+    {
+      "id": "utf8Offset#7",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "hello world",
+        "index": 3
+      },
+      "output": 3
+    },
+    {
+      "id": "utf8Offset#8",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "hello world",
+        "index": 11
+      },
+      "output": 11
+    },
+    {
+      "id": "utf8Offset#9",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "naïve café",
+        "index": 0
+      },
+      "output": 0
+    },
+    {
+      "id": "utf8Offset#10",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "naïve café",
+        "index": 1
+      },
+      "output": 1
+    },
+    {
+      "id": "utf8Offset#11",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "naïve café",
+        "index": 3
+      },
+      "output": 4
+    },
+    {
+      "id": "utf8Offset#12",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "naïve café",
+        "index": 10
+      },
+      "output": 12
+    },
+    {
+      "id": "utf8Offset#13",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "👍🏽 thumbs",
+        "index": 0
+      },
+      "output": 0
+    },
+    {
+      "id": "utf8Offset#14",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "👍🏽 thumbs",
+        "index": 1
+      },
+      "output": 3
+    },
+    {
+      "id": "utf8Offset#15",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "👍🏽 thumbs",
+        "index": 3
+      },
+      "output": 7
+    },
+    {
+      "id": "utf8Offset#16",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "👍🏽 thumbs",
+        "index": 11
+      },
+      "output": 15
+    },
+    {
+      "id": "utf8Offset#17",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "a👨‍👩‍👧b",
+        "index": 0
+      },
+      "output": 0
+    },
+    {
+      "id": "utf8Offset#18",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "a👨‍👩‍👧b",
+        "index": 1
+      },
+      "output": 1
+    },
+    {
+      "id": "utf8Offset#19",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "a👨‍👩‍👧b",
+        "index": 3
+      },
+      "output": 5
+    },
+    {
+      "id": "utf8Offset#20",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "a👨‍👩‍👧b",
+        "index": 10
+      },
+      "output": 20
+    },
+    {
+      "id": "utf8Offset#21",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "🇬🇧 flag",
+        "index": 0
+      },
+      "output": 0
+    },
+    {
+      "id": "utf8Offset#22",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "🇬🇧 flag",
+        "index": 1
+      },
+      "output": 3
+    },
+    {
+      "id": "utf8Offset#23",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "🇬🇧 flag",
+        "index": 3
+      },
+      "output": 7
+    },
+    {
+      "id": "utf8Offset#24",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "🇬🇧 flag",
+        "index": 9
+      },
+      "output": 13
+    },
+    {
+      "id": "utf8Offset#25",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "﻿ bom ",
+        "index": 0
+      },
+      "output": 0
+    },
+    {
+      "id": "utf8Offset#26",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "﻿ bom ",
+        "index": 1
+      },
+      "output": 3
+    },
+    {
+      "id": "utf8Offset#27",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "﻿ bom ",
+        "index": 3
+      },
+      "output": 5
+    },
+    {
+      "id": "utf8Offset#28",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "﻿ bom ",
+        "index": 7
+      },
+      "output": 10
+    },
+    {
+      "id": "utf8Offset#29",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "   spaced\t\n",
+        "index": 0
+      },
+      "output": 0
+    },
+    {
+      "id": "utf8Offset#30",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "   spaced\t\n",
+        "index": 1
+      },
+      "output": 2
+    },
+    {
+      "id": "utf8Offset#31",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "   spaced\t\n",
+        "index": 3
+      },
+      "output": 6
+    },
+    {
+      "id": "utf8Offset#32",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "   spaced\t\n",
+        "index": 11
+      },
+      "output": 14
+    },
+    {
+      "id": "utf8Offset#33",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "x",
+        "index": 0
+      },
+      "output": 0
+    },
+    {
+      "id": "utf8Offset#34",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "x",
+        "index": 1
+      },
+      "output": 1
+    },
+    {
+      "id": "utf8Offset#35",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "x",
+        "index": 3
+      },
+      "output": 1
+    },
+    {
+      "id": "utf8Offset#36",
+      "fn": "utf8Offset",
+      "input": {
+        "s": "x",
+        "index": 1
+      },
+      "output": 1
+    },
+    {
+      "id": "toFixed#1",
+      "fn": "toFixed",
+      "input": {
+        "n": 0,
+        "digits": 0
+      },
+      "output": "0"
+    },
+    {
+      "id": "toFixed#2",
+      "fn": "toFixed",
+      "input": {
+        "n": 0,
+        "digits": 1
+      },
+      "output": "0.0"
+    },
+    {
+      "id": "toFixed#3",
+      "fn": "toFixed",
+      "input": {
+        "n": 0,
+        "digits": 2
+      },
+      "output": "0.00"
+    },
+    {
+      "id": "toFixed#4",
+      "fn": "toFixed",
+      "input": {
+        "n": 0,
+        "digits": 0
+      },
+      "output": "0"
+    },
+    {
+      "id": "toFixed#5",
+      "fn": "toFixed",
+      "input": {
+        "n": 0,
+        "digits": 1
+      },
+      "output": "0.0"
+    },
+    {
+      "id": "toFixed#6",
+      "fn": "toFixed",
+      "input": {
+        "n": 0,
+        "digits": 2
+      },
+      "output": "0.00"
+    },
+    {
+      "id": "toFixed#7",
+      "fn": "toFixed",
+      "input": {
+        "n": 1.005,
+        "digits": 0
+      },
+      "output": "1"
+    },
+    {
+      "id": "toFixed#8",
+      "fn": "toFixed",
+      "input": {
+        "n": 1.005,
+        "digits": 1
+      },
+      "output": "1.0"
+    },
+    {
+      "id": "toFixed#9",
+      "fn": "toFixed",
+      "input": {
+        "n": 1.005,
+        "digits": 2
+      },
+      "output": "1.00"
+    },
+    {
+      "id": "toFixed#10",
+      "fn": "toFixed",
+      "input": {
+        "n": 2.5,
+        "digits": 0
+      },
+      "output": "3"
+    },
+    {
+      "id": "toFixed#11",
+      "fn": "toFixed",
+      "input": {
+        "n": 2.5,
+        "digits": 1
+      },
+      "output": "2.5"
+    },
+    {
+      "id": "toFixed#12",
+      "fn": "toFixed",
+      "input": {
+        "n": 2.5,
+        "digits": 2
+      },
+      "output": "2.50"
+    },
+    {
+      "id": "toFixed#13",
+      "fn": "toFixed",
+      "input": {
+        "n": -2.5,
+        "digits": 0
+      },
+      "output": "-3"
+    },
+    {
+      "id": "toFixed#14",
+      "fn": "toFixed",
+      "input": {
+        "n": -2.5,
+        "digits": 1
+      },
+      "output": "-2.5"
+    },
+    {
+      "id": "toFixed#15",
+      "fn": "toFixed",
+      "input": {
+        "n": -2.5,
+        "digits": 2
+      },
+      "output": "-2.50"
+    },
+    {
+      "id": "toFixed#16",
+      "fn": "toFixed",
+      "input": {
+        "n": 0.125,
+        "digits": 0
+      },
+      "output": "0"
+    },
+    {
+      "id": "toFixed#17",
+      "fn": "toFixed",
+      "input": {
+        "n": 0.125,
+        "digits": 1
+      },
+      "output": "0.1"
+    },
+    {
+      "id": "toFixed#18",
+      "fn": "toFixed",
+      "input": {
+        "n": 0.125,
+        "digits": 2
+      },
+      "output": "0.13"
+    },
+    {
+      "id": "toFixed#19",
+      "fn": "toFixed",
+      "input": {
+        "n": 1234.5678,
+        "digits": 0
+      },
+      "output": "1235"
+    },
+    {
+      "id": "toFixed#20",
+      "fn": "toFixed",
+      "input": {
+        "n": 1234.5678,
+        "digits": 1
+      },
+      "output": "1234.6"
+    },
+    {
+      "id": "toFixed#21",
+      "fn": "toFixed",
+      "input": {
+        "n": 1234.5678,
+        "digits": 2
+      },
+      "output": "1234.57"
+    },
+    {
+      "id": "toFixed#22",
+      "fn": "toFixed",
+      "input": {
+        "n": 0.30000000000000004,
+        "digits": 0
+      },
+      "output": "0"
+    },
+    {
+      "id": "toFixed#23",
+      "fn": "toFixed",
+      "input": {
+        "n": 0.30000000000000004,
+        "digits": 1
+      },
+      "output": "0.3"
+    },
+    {
+      "id": "toFixed#24",
+      "fn": "toFixed",
+      "input": {
+        "n": 0.30000000000000004,
+        "digits": 2
+      },
+      "output": "0.30"
+    },
+    {
+      "id": "toFixed#25",
+      "fn": "toFixed",
+      "input": {
+        "n": -0.0001,
+        "digits": 0
+      },
+      "output": "-0"
+    },
+    {
+      "id": "toFixed#26",
+      "fn": "toFixed",
+      "input": {
+        "n": -0.0001,
+        "digits": 1
+      },
+      "output": "-0.0"
+    },
+    {
+      "id": "toFixed#27",
+      "fn": "toFixed",
+      "input": {
+        "n": -0.0001,
+        "digits": 2
+      },
+      "output": "-0.00"
+    },
+    {
+      "id": "toFixed#28",
+      "fn": "toFixed",
+      "input": {
+        "n": 99.995,
+        "digits": 0
+      },
+      "output": "100"
+    },
+    {
+      "id": "toFixed#29",
+      "fn": "toFixed",
+      "input": {
+        "n": 99.995,
+        "digits": 1
+      },
+      "output": "100.0"
+    },
+    {
+      "id": "toFixed#30",
+      "fn": "toFixed",
+      "input": {
+        "n": 99.995,
+        "digits": 2
+      },
+      "output": "100.00"
+    },
+    {
+      "id": "toFixed#31",
+      "fn": "toFixed",
+      "input": {
+        "n": 1e-7,
+        "digits": 0
+      },
+      "output": "0"
+    },
+    {
+      "id": "toFixed#32",
+      "fn": "toFixed",
+      "input": {
+        "n": 1e-7,
+        "digits": 1
+      },
+      "output": "0.0"
+    },
+    {
+      "id": "toFixed#33",
+      "fn": "toFixed",
+      "input": {
+        "n": 1e-7,
+        "digits": 2
+      },
+      "output": "0.00"
+    },
+    {
+      "id": "toFixed#34",
+      "fn": "toFixed",
+      "input": {
+        "n": 9.995,
+        "digits": 0
+      },
+      "output": "10"
+    },
+    {
+      "id": "toFixed#35",
+      "fn": "toFixed",
+      "input": {
+        "n": 9.995,
+        "digits": 1
+      },
+      "output": "10.0"
+    },
+    {
+      "id": "toFixed#36",
+      "fn": "toFixed",
+      "input": {
+        "n": 9.995,
+        "digits": 2
+      },
+      "output": "9.99"
+    },
+    {
+      "id": "toFixed#37",
+      "fn": "toFixed",
+      "input": {
+        "n": 0.045,
+        "digits": 0
+      },
+      "output": "0"
+    },
+    {
+      "id": "toFixed#38",
+      "fn": "toFixed",
+      "input": {
+        "n": 0.045,
+        "digits": 1
+      },
+      "output": "0.0"
+    },
+    {
+      "id": "toFixed#39",
+      "fn": "toFixed",
+      "input": {
+        "n": 0.045,
+        "digits": 2
+      },
+      "output": "0.04"
+    },
+    {
+      "id": "toFixed#40",
+      "fn": "toFixed",
+      "input": {
+        "n": 1.45,
+        "digits": 0
+      },
+      "output": "1"
+    },
+    {
+      "id": "toFixed#41",
+      "fn": "toFixed",
+      "input": {
+        "n": 1.45,
+        "digits": 1
+      },
+      "output": "1.4"
+    },
+    {
+      "id": "toFixed#42",
+      "fn": "toFixed",
+      "input": {
+        "n": 1.45,
+        "digits": 2
+      },
+      "output": "1.45"
+    },
+    {
+      "id": "toFixed#43",
+      "fn": "toFixed",
+      "input": {
+        "n": 999.9999,
+        "digits": 0
+      },
+      "output": "1000"
+    },
+    {
+      "id": "toFixed#44",
+      "fn": "toFixed",
+      "input": {
+        "n": 999.9999,
+        "digits": 1
+      },
+      "output": "1000.0"
+    },
+    {
+      "id": "toFixed#45",
+      "fn": "toFixed",
+      "input": {
+        "n": 999.9999,
+        "digits": 2
+      },
+      "output": "1000.00"
+    },
+    {
+      "id": "toFixed#46",
+      "fn": "toFixed",
+      "input": {
+        "n": 123456789.987,
+        "digits": 0
+      },
+      "output": "123456790"
+    },
+    {
+      "id": "toFixed#47",
+      "fn": "toFixed",
+      "input": {
+        "n": 123456789.987,
+        "digits": 1
+      },
+      "output": "123456790.0"
+    },
+    {
+      "id": "toFixed#48",
+      "fn": "toFixed",
+      "input": {
+        "n": 123456789.987,
+        "digits": 2
+      },
+      "output": "123456789.99"
+    },
+    {
+      "id": "round#1",
+      "fn": "round",
+      "input": {
+        "n": 0.5
+      },
+      "output": 1
+    },
+    {
+      "id": "round#2",
+      "fn": "round",
+      "input": {
+        "n": 1.5
+      },
+      "output": 2
+    },
+    {
+      "id": "round#3",
+      "fn": "round",
+      "input": {
+        "n": 2.5
+      },
+      "output": 3
+    },
+    {
+      "id": "round#4",
+      "fn": "round",
+      "input": {
+        "n": -0.5
+      },
+      "output": 0
+    },
+    {
+      "id": "round#5",
+      "fn": "round",
+      "input": {
+        "n": -1.5
+      },
+      "output": -1
+    },
+    {
+      "id": "round#6",
+      "fn": "round",
+      "input": {
+        "n": -2.5
+      },
+      "output": -2
+    },
+    {
+      "id": "round#7",
+      "fn": "round",
+      "input": {
+        "n": 2.4999
+      },
+      "output": 2
+    },
+    {
+      "id": "round#8",
+      "fn": "round",
+      "input": {
+        "n": -2.5001
+      },
+      "output": -3
+    },
+    {
+      "id": "round#9",
+      "fn": "round",
+      "input": {
+        "n": 7
+      },
+      "output": 7
+    },
+    {
+      "id": "numberString#1",
+      "fn": "numberString",
+      "input": {
+        "n": 0
+      },
+      "output": "0"
+    },
+    {
+      "id": "numberString#2",
+      "fn": "numberString",
+      "input": {
+        "n": 0
+      },
+      "output": "0"
+    },
+    {
+      "id": "numberString#3",
+      "fn": "numberString",
+      "input": {
+        "n": 1
+      },
+      "output": "1"
+    },
+    {
+      "id": "numberString#4",
+      "fn": "numberString",
+      "input": {
+        "n": -3
+      },
+      "output": "-3"
+    },
+    {
+      "id": "numberString#5",
+      "fn": "numberString",
+      "input": {
+        "n": 1.5
+      },
+      "output": "1.5"
+    },
+    {
+      "id": "numberString#6",
+      "fn": "numberString",
+      "input": {
+        "n": 0.30000000000000004
+      },
+      "output": "0.30000000000000004"
+    },
+    {
+      "id": "numberString#7",
+      "fn": "numberString",
+      "input": {
+        "n": 1e+21
+      },
+      "output": "1e+21"
+    },
+    {
+      "id": "numberString#8",
+      "fn": "numberString",
+      "input": {
+        "n": 1.5e+22
+      },
+      "output": "1.5e+22"
+    },
+    {
+      "id": "numberString#9",
+      "fn": "numberString",
+      "input": {
+        "n": 123456789
+      },
+      "output": "123456789"
+    },
+    {
+      "id": "numberString#10",
+      "fn": "numberString",
+      "input": {
+        "n": 0.3333333333333333
+      },
+      "output": "0.3333333333333333"
+    },
+    {
+      "id": "numberString#11",
+      "fn": "numberString",
+      "input": {
+        "n": 2.5e-7
+      },
+      "output": "2.5e-7"
+    },
+    {
+      "id": "numberString#12",
+      "fn": "numberString",
+      "input": {
+        "n": 1e-7
+      },
+      "output": "1e-7"
+    },
+    {
+      "id": "numberString#13",
+      "fn": "numberString",
+      "input": {
+        "n": 0.000001234
+      },
+      "output": "0.000001234"
+    },
+    {
+      "id": "numberString#14",
+      "fn": "numberString",
+      "input": {
+        "n": 0.000001
+      },
+      "output": "0.000001"
+    },
+    {
+      "id": "numberString#15",
+      "fn": "numberString",
+      "input": {
+        "n": 100
+      },
+      "output": "100"
+    },
+    {
+      "id": "numberString#16",
+      "fn": "numberString",
+      "input": {
+        "n": 100000000000000000000
+      },
+      "output": "100000000000000000000"
+    },
+    {
+      "id": "numberString#17",
+      "fn": "numberString",
+      "input": {
+        "n": 123.456
+      },
+      "output": "123.456"
+    },
+    {
+      "id": "numberString#18",
+      "fn": "numberString",
+      "input": {
+        "n": -0.5
+      },
+      "output": "-0.5"
+    },
+    {
+      "id": "numberString#19",
+      "fn": "numberString",
+      "input": {
+        "n": 5e-324
+      },
+      "output": "5e-324"
+    },
+    {
+      "id": "numberString#20",
+      "fn": "numberString",
+      "input": {
+        "n": 1.7976931348623157e+308
+      },
+      "output": "1.7976931348623157e+308"
+    }
+  ]
+}

@@ -1,0 +1,4956 @@
+{
+  "name": "scheduling.postedModel",
+  "sources": [
+    "src/posting/pages/postedModel.js"
+  ],
+  "cases": [
+    {
+      "id": "POSTED_FILTERS",
+      "fn": "POSTED_FILTERS",
+      "input": {},
+      "output": [
+        {
+          "value": "all",
+          "label": "All"
+        },
+        {
+          "value": "posts",
+          "label": "Posts"
+        },
+        {
+          "value": "replies",
+          "label": "Replies"
+        },
+        {
+          "value": "media",
+          "label": "With media"
+        }
+      ]
+    },
+    {
+      "id": "isReplyRow#1",
+      "fn": "isReplyRow",
+      "input": {
+        "row": {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isReplyRow#2",
+      "fn": "isReplyRow",
+      "input": {
+        "row": {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isReplyRow#3",
+      "fn": "isReplyRow",
+      "input": {
+        "row": {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/3",
+          "text": "continuing my thread",
+          "replyTo": "did:plc:mira",
+          "hasMedia": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isReplyRow#4",
+      "fn": "isReplyRow",
+      "input": {
+        "row": {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isReplyRow#5",
+      "fn": "isReplyRow",
+      "input": {
+        "row": {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/5",
+          "text": 42
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isReplyRow#6",
+      "fn": "isReplyRow",
+      "input": {
+        "row": {
+          "text": "no uri"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isReplyRow#7",
+      "fn": "isReplyRow",
+      "input": {
+        "row": null
+      },
+      "output": false
+    },
+    {
+      "id": "filterPostRows#1",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "all",
+        "query": ""
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/3",
+          "text": "continuing my thread",
+          "replyTo": "did:plc:mira",
+          "hasMedia": false
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/5",
+          "text": 42
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#2",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "all",
+        "query": " RIVER "
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#3",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "all",
+        "query": "river"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#4",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "all",
+        "query": "οδος"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#5",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "all",
+        "query": "odos"
+      },
+      "output": []
+    },
+    {
+      "id": "filterPostRows#6",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "all",
+        "query": "i̇stanbul"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#7",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "all",
+        "query": "STRASSE"
+      },
+      "output": []
+    },
+    {
+      "id": "filterPostRows#8",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "all",
+        "query": "straße"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#9",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "all",
+        "query": "42"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/5",
+          "text": 42
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#10",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "all",
+        "query": null
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/3",
+          "text": "continuing my thread",
+          "replyTo": "did:plc:mira",
+          "hasMedia": false
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/5",
+          "text": 42
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#11",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "posts",
+        "query": ""
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/3",
+          "text": "continuing my thread",
+          "replyTo": "did:plc:mira",
+          "hasMedia": false
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/5",
+          "text": 42
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#12",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "posts",
+        "query": " RIVER "
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#13",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "posts",
+        "query": "river"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#14",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "posts",
+        "query": "οδος"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#15",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "posts",
+        "query": "odos"
+      },
+      "output": []
+    },
+    {
+      "id": "filterPostRows#16",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "posts",
+        "query": "i̇stanbul"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#17",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "posts",
+        "query": "STRASSE"
+      },
+      "output": []
+    },
+    {
+      "id": "filterPostRows#18",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "posts",
+        "query": "straße"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#19",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "posts",
+        "query": "42"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/5",
+          "text": 42
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#20",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "posts",
+        "query": null
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/3",
+          "text": "continuing my thread",
+          "replyTo": "did:plc:mira",
+          "hasMedia": false
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/5",
+          "text": 42
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#21",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "replies",
+        "query": ""
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#22",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "replies",
+        "query": " RIVER "
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#23",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "replies",
+        "query": "river"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#24",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "replies",
+        "query": "οδος"
+      },
+      "output": []
+    },
+    {
+      "id": "filterPostRows#25",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "replies",
+        "query": "odos"
+      },
+      "output": []
+    },
+    {
+      "id": "filterPostRows#26",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "replies",
+        "query": "i̇stanbul"
+      },
+      "output": []
+    },
+    {
+      "id": "filterPostRows#27",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "replies",
+        "query": "STRASSE"
+      },
+      "output": []
+    },
+    {
+      "id": "filterPostRows#28",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "replies",
+        "query": "straße"
+      },
+      "output": []
+    },
+    {
+      "id": "filterPostRows#29",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "replies",
+        "query": "42"
+      },
+      "output": []
+    },
+    {
+      "id": "filterPostRows#30",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "replies",
+        "query": null
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#31",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "media",
+        "query": ""
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#32",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "media",
+        "query": " RIVER "
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#33",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "media",
+        "query": "river"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#34",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "media",
+        "query": "οδος"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#35",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "media",
+        "query": "odos"
+      },
+      "output": []
+    },
+    {
+      "id": "filterPostRows#36",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "media",
+        "query": "i̇stanbul"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#37",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "media",
+        "query": "STRASSE"
+      },
+      "output": []
+    },
+    {
+      "id": "filterPostRows#38",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "media",
+        "query": "straße"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#39",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "media",
+        "query": "42"
+      },
+      "output": []
+    },
+    {
+      "id": "filterPostRows#40",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "media",
+        "query": null
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#41",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "bogus",
+        "query": ""
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/3",
+          "text": "continuing my thread",
+          "replyTo": "did:plc:mira",
+          "hasMedia": false
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/5",
+          "text": 42
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#42",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "bogus",
+        "query": " RIVER "
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#43",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "bogus",
+        "query": "river"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#44",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "bogus",
+        "query": "οδος"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#45",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "bogus",
+        "query": "odos"
+      },
+      "output": []
+    },
+    {
+      "id": "filterPostRows#46",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "bogus",
+        "query": "i̇stanbul"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#47",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "bogus",
+        "query": "STRASSE"
+      },
+      "output": []
+    },
+    {
+      "id": "filterPostRows#48",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "bogus",
+        "query": "straße"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#49",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "bogus",
+        "query": "42"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/5",
+          "text": 42
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#50",
+      "fn": "filterPostRows",
+      "input": {
+        "filter": "bogus",
+        "query": null
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/3",
+          "text": "continuing my thread",
+          "replyTo": "did:plc:mira",
+          "hasMedia": false
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/5",
+          "text": 42
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#51",
+      "fn": "filterPostRows",
+      "input": {
+        "query": ""
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/3",
+          "text": "continuing my thread",
+          "replyTo": "did:plc:mira",
+          "hasMedia": false
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/5",
+          "text": 42
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#52",
+      "fn": "filterPostRows",
+      "input": {
+        "query": " RIVER "
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#53",
+      "fn": "filterPostRows",
+      "input": {
+        "query": "river"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#54",
+      "fn": "filterPostRows",
+      "input": {
+        "query": "οδος"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#55",
+      "fn": "filterPostRows",
+      "input": {
+        "query": "odos"
+      },
+      "output": []
+    },
+    {
+      "id": "filterPostRows#56",
+      "fn": "filterPostRows",
+      "input": {
+        "query": "i̇stanbul"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#57",
+      "fn": "filterPostRows",
+      "input": {
+        "query": "STRASSE"
+      },
+      "output": []
+    },
+    {
+      "id": "filterPostRows#58",
+      "fn": "filterPostRows",
+      "input": {
+        "query": "straße"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#59",
+      "fn": "filterPostRows",
+      "input": {
+        "query": "42"
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/5",
+          "text": 42
+        }
+      ]
+    },
+    {
+      "id": "filterPostRows#60",
+      "fn": "filterPostRows",
+      "input": {
+        "query": null
+      },
+      "output": [
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/3",
+          "text": "continuing my thread",
+          "replyTo": "did:plc:mira",
+          "hasMedia": false
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/4",
+          "text": "ΟΔΟΣ İstanbul Straße",
+          "hasMedia": 1
+        },
+        {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/5",
+          "text": 42
+        }
+      ]
+    },
+    {
+      "id": "textForComposer#1",
+      "fn": "textForComposer",
+      "input": {
+        "record": {
+          "text": "read this",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 9
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/x"
+                }
+              ]
+            }
+          ],
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://did:plc:x/app.bsky.feed.post/1",
+              "cid": "c"
+            }
+          }
+        }
+      },
+      "output": "read [this](https://example.com/x)"
+    },
+    {
+      "id": "textForComposer#2",
+      "fn": "textForComposer",
+      "input": {
+        "record": {}
+      },
+      "output": ""
+    },
+    {
+      "id": "textForComposer#3",
+      "fn": "textForComposer",
+      "input": {
+        "record": {
+          "text": "",
+          "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+              "uri": "https://a.example",
+              "title": "A"
+            }
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "textForComposer#4",
+      "fn": "textForComposer",
+      "input": {
+        "record": {
+          "text": "",
+          "embed": {
+            "$type": "app.bsky.embed.recordWithMedia",
+            "record": {
+              "record": {
+                "uri": "at://x/app.bsky.feed.post/1",
+                "cid": "c"
+              }
+            },
+            "media": {
+              "$type": "app.bsky.embed.images",
+              "images": []
+            }
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "textForComposer#5",
+      "fn": "textForComposer",
+      "input": {
+        "record": {
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.images",
+            "images": []
+          }
+        }
+      },
+      "output": "x"
+    },
+    {
+      "id": "textForComposer#6",
+      "fn": "textForComposer",
+      "input": {
+        "record": {
+          "text": "Read example.co… today",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 15
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/a-long-page"
+                }
+              ]
+            }
+          ],
+          "tags": [
+            "Gardens",
+            "gardens",
+            "seeds"
+          ],
+          "langs": [
+            "en",
+            "fr",
+            "",
+            5
+          ]
+        }
+      },
+      "output": "Read [example.co](https://example.com/a-long-page)… today"
+    },
+    {
+      "id": "textForComposer#7",
+      "fn": "textForComposer",
+      "input": {
+        "record": {
+          "text": "q",
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://did:plc:other/app.bsky.feed.post/3q",
+              "cid": "c"
+            }
+          }
+        }
+      },
+      "output": "q"
+    },
+    {
+      "id": "textForComposer#8",
+      "fn": "textForComposer",
+      "input": {
+        "record": {
+          "text": "q",
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://did:plc:other/app.bsky.feed.post/3q"
+            }
+          }
+        }
+      },
+      "output": "q"
+    },
+    {
+      "id": "textForComposer#9",
+      "fn": "textForComposer",
+      "input": {
+        "record": {
+          "text": "l",
+          "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+              "uri": "https://example.com/x",
+              "title": "T",
+              "description": "D",
+              "thumb": {
+                "$type": "blob",
+                "ref": {
+                  "$link": "bafthumb"
+                },
+                "mimeType": "image/jpeg",
+                "size": 10
+              }
+            }
+          }
+        }
+      },
+      "output": "l"
+    },
+    {
+      "id": "textForComposer#10",
+      "fn": "textForComposer",
+      "input": {
+        "record": {
+          "text": "both",
+          "embed": {
+            "$type": "app.bsky.embed.recordWithMedia",
+            "record": {
+              "$type": "app.bsky.embed.record",
+              "record": {
+                "uri": "at://did:plc:other/app.bsky.feed.post/3q",
+                "cid": "c"
+              }
+            },
+            "media": {
+              "$type": "app.bsky.embed.images",
+              "images": [
+                {
+                  "image": {
+                    "$type": "blob",
+                    "ref": {
+                      "$link": "bafone"
+                    },
+                    "mimeType": "image/jpeg",
+                    "size": 10
+                  },
+                  "alt": "a lamp"
+                },
+                {
+                  "image": {
+                    "$type": "blob",
+                    "ref": {
+                      "$link": "baftwo"
+                    },
+                    "mimeType": "image/png",
+                    "size": 10
+                  }
+                },
+                {
+                  "image": null,
+                  "alt": "no blob"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "output": "both"
+    },
+    {
+      "id": "textForComposer#11",
+      "fn": "textForComposer",
+      "input": {
+        "record": {
+          "text": "card and quote",
+          "embed": {
+            "$type": "app.bsky.embed.recordWithMedia",
+            "record": {
+              "record": {
+                "uri": "at://did:plc:other/app.bsky.feed.post/3q",
+                "cid": "c"
+              }
+            },
+            "media": {
+              "$type": "app.bsky.embed.external",
+              "external": {
+                "uri": "https://e.example",
+                "title": 5
+              }
+            }
+          }
+        }
+      },
+      "output": "card and quote"
+    },
+    {
+      "id": "textForComposer#12",
+      "fn": "textForComposer",
+      "input": {
+        "record": {
+          "embed": {
+            "$type": "app.bsky.embed.gallery",
+            "items": [
+              {
+                "image": {
+                  "$type": "blob",
+                  "ref": {
+                    "$link": "bafg"
+                  },
+                  "mimeType": "image/jpeg",
+                  "size": 10
+                },
+                "alt": "g"
+              },
+              {
+                "image": {
+                  "cid": "bafcid",
+                  "mimeType": 7
+                }
+              }
+            ]
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "textForComposer#13",
+      "fn": "textForComposer",
+      "input": {
+        "record": {
+          "embed": {
+            "$type": "app.bsky.embed.video",
+            "video": {
+              "$type": "blob",
+              "ref": {
+                "$link": "bafv"
+              },
+              "mimeType": "video/mp4",
+              "size": 10
+            }
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "textForComposer#14",
+      "fn": "textForComposer",
+      "input": {
+        "record": {
+          "labels": {
+            "$type": "com.atproto.label.defs#selfLabels",
+            "values": [
+              {
+                "val": "nudity"
+              }
+            ]
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "textForComposer#15",
+      "fn": "textForComposer",
+      "input": {
+        "record": {
+          "labels": {
+            "values": []
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "textForComposer#16",
+      "fn": "textForComposer",
+      "input": {
+        "record": {
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+              "title": "no uri"
+            }
+          }
+        }
+      },
+      "output": "x"
+    },
+    {
+      "id": "textForComposer#17",
+      "fn": "textForComposer",
+      "input": {
+        "record": {
+          "text": 7,
+          "facets": "nope"
+        }
+      },
+      "output": "7"
+    },
+    {
+      "id": "textForComposer#18",
+      "fn": "textForComposer",
+      "input": {
+        "record": null
+      },
+      "output": ""
+    },
+    {
+      "id": "templateSeedFrom#1",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": {
+          "text": "read this",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 9
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/x"
+                }
+              ]
+            }
+          ],
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://did:plc:x/app.bsky.feed.post/1",
+              "cid": "c"
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "read [this](https://example.com/x)",
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://did:plc:x/app.bsky.feed.post/1",
+            "cid": "c"
+          }
+        }
+      }
+    },
+    {
+      "id": "templateSeedFrom#2",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": {}
+      },
+      "output": {
+        "text": "",
+        "embed": null
+      }
+    },
+    {
+      "id": "templateSeedFrom#3",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": {
+          "text": "",
+          "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+              "uri": "https://a.example",
+              "title": "A"
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "https://a.example",
+            "title": "A",
+            "description": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "templateSeedFrom#4",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": {
+          "text": "",
+          "embed": {
+            "$type": "app.bsky.embed.recordWithMedia",
+            "record": {
+              "record": {
+                "uri": "at://x/app.bsky.feed.post/1",
+                "cid": "c"
+              }
+            },
+            "media": {
+              "$type": "app.bsky.embed.images",
+              "images": []
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "",
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://x/app.bsky.feed.post/1",
+            "cid": "c"
+          }
+        }
+      }
+    },
+    {
+      "id": "templateSeedFrom#5",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": {
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.images",
+            "images": []
+          }
+        }
+      },
+      "output": {
+        "text": "x",
+        "embed": null
+      }
+    },
+    {
+      "id": "templateSeedFrom#6",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": {
+          "text": "Read example.co… today",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 15
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/a-long-page"
+                }
+              ]
+            }
+          ],
+          "tags": [
+            "Gardens",
+            "gardens",
+            "seeds"
+          ],
+          "langs": [
+            "en",
+            "fr",
+            "",
+            5
+          ]
+        }
+      },
+      "output": {
+        "text": "Read [example.co](https://example.com/a-long-page)… today",
+        "embed": null
+      }
+    },
+    {
+      "id": "templateSeedFrom#7",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": {
+          "text": "q",
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://did:plc:other/app.bsky.feed.post/3q",
+              "cid": "c"
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "q",
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://did:plc:other/app.bsky.feed.post/3q",
+            "cid": "c"
+          }
+        }
+      }
+    },
+    {
+      "id": "templateSeedFrom#8",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": {
+          "text": "q",
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://did:plc:other/app.bsky.feed.post/3q"
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "q",
+        "embed": null
+      }
+    },
+    {
+      "id": "templateSeedFrom#9",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": {
+          "text": "l",
+          "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+              "uri": "https://example.com/x",
+              "title": "T",
+              "description": "D",
+              "thumb": {
+                "$type": "blob",
+                "ref": {
+                  "$link": "bafthumb"
+                },
+                "mimeType": "image/jpeg",
+                "size": 10
+              }
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "l",
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "https://example.com/x",
+            "title": "T",
+            "description": "D"
+          }
+        }
+      }
+    },
+    {
+      "id": "templateSeedFrom#10",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": {
+          "text": "both",
+          "embed": {
+            "$type": "app.bsky.embed.recordWithMedia",
+            "record": {
+              "$type": "app.bsky.embed.record",
+              "record": {
+                "uri": "at://did:plc:other/app.bsky.feed.post/3q",
+                "cid": "c"
+              }
+            },
+            "media": {
+              "$type": "app.bsky.embed.images",
+              "images": [
+                {
+                  "image": {
+                    "$type": "blob",
+                    "ref": {
+                      "$link": "bafone"
+                    },
+                    "mimeType": "image/jpeg",
+                    "size": 10
+                  },
+                  "alt": "a lamp"
+                },
+                {
+                  "image": {
+                    "$type": "blob",
+                    "ref": {
+                      "$link": "baftwo"
+                    },
+                    "mimeType": "image/png",
+                    "size": 10
+                  }
+                },
+                {
+                  "image": null,
+                  "alt": "no blob"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "both",
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://did:plc:other/app.bsky.feed.post/3q",
+            "cid": "c"
+          }
+        }
+      }
+    },
+    {
+      "id": "templateSeedFrom#11",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": {
+          "text": "card and quote",
+          "embed": {
+            "$type": "app.bsky.embed.recordWithMedia",
+            "record": {
+              "record": {
+                "uri": "at://did:plc:other/app.bsky.feed.post/3q",
+                "cid": "c"
+              }
+            },
+            "media": {
+              "$type": "app.bsky.embed.external",
+              "external": {
+                "uri": "https://e.example",
+                "title": 5
+              }
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "card and quote",
+        "embed": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://did:plc:other/app.bsky.feed.post/3q",
+            "cid": "c"
+          }
+        }
+      }
+    },
+    {
+      "id": "templateSeedFrom#12",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": {
+          "embed": {
+            "$type": "app.bsky.embed.gallery",
+            "items": [
+              {
+                "image": {
+                  "$type": "blob",
+                  "ref": {
+                    "$link": "bafg"
+                  },
+                  "mimeType": "image/jpeg",
+                  "size": 10
+                },
+                "alt": "g"
+              },
+              {
+                "image": {
+                  "cid": "bafcid",
+                  "mimeType": 7
+                }
+              }
+            ]
+          }
+        }
+      },
+      "output": {
+        "text": "",
+        "embed": null
+      }
+    },
+    {
+      "id": "templateSeedFrom#13",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": {
+          "embed": {
+            "$type": "app.bsky.embed.video",
+            "video": {
+              "$type": "blob",
+              "ref": {
+                "$link": "bafv"
+              },
+              "mimeType": "video/mp4",
+              "size": 10
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "",
+        "embed": null
+      }
+    },
+    {
+      "id": "templateSeedFrom#14",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": {
+          "labels": {
+            "$type": "com.atproto.label.defs#selfLabels",
+            "values": [
+              {
+                "val": "nudity"
+              }
+            ]
+          }
+        }
+      },
+      "output": {
+        "text": "",
+        "embed": null
+      }
+    },
+    {
+      "id": "templateSeedFrom#15",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": {
+          "labels": {
+            "values": []
+          }
+        }
+      },
+      "output": {
+        "text": "",
+        "embed": null
+      }
+    },
+    {
+      "id": "templateSeedFrom#16",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": {
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+              "title": "no uri"
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "x",
+        "embed": null
+      }
+    },
+    {
+      "id": "templateSeedFrom#17",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": {
+          "text": 7,
+          "facets": "nope"
+        }
+      },
+      "output": {
+        "text": "7",
+        "embed": null
+      }
+    },
+    {
+      "id": "templateSeedFrom#18",
+      "fn": "templateSeedFrom",
+      "input": {
+        "record": null
+      },
+      "output": {
+        "text": "",
+        "embed": null
+      }
+    },
+    {
+      "id": "postAgainSeed#1",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": {
+          "text": "read this",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 9
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/x"
+                }
+              ]
+            }
+          ],
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://did:plc:x/app.bsky.feed.post/1",
+              "cid": "c"
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "read [this](https://example.com/x)",
+        "tags": [],
+        "langs": [],
+        "quote": "at://did:plc:x/app.bsky.feed.post/1",
+        "link": null,
+        "images": [],
+        "video": false,
+        "labelled": false
+      }
+    },
+    {
+      "id": "postAgainSeed#2",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": {}
+      },
+      "output": {
+        "text": "",
+        "tags": [],
+        "langs": [],
+        "quote": null,
+        "link": null,
+        "images": [],
+        "video": false,
+        "labelled": false
+      }
+    },
+    {
+      "id": "postAgainSeed#3",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": {
+          "text": "",
+          "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+              "uri": "https://a.example",
+              "title": "A"
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "",
+        "tags": [],
+        "langs": [],
+        "quote": null,
+        "link": {
+          "url": "https://a.example",
+          "title": "A",
+          "description": ""
+        },
+        "images": [],
+        "video": false,
+        "labelled": false
+      }
+    },
+    {
+      "id": "postAgainSeed#4",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": {
+          "text": "",
+          "embed": {
+            "$type": "app.bsky.embed.recordWithMedia",
+            "record": {
+              "record": {
+                "uri": "at://x/app.bsky.feed.post/1",
+                "cid": "c"
+              }
+            },
+            "media": {
+              "$type": "app.bsky.embed.images",
+              "images": []
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "",
+        "tags": [],
+        "langs": [],
+        "quote": "at://x/app.bsky.feed.post/1",
+        "link": null,
+        "images": [],
+        "video": false,
+        "labelled": false
+      }
+    },
+    {
+      "id": "postAgainSeed#5",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": {
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.images",
+            "images": []
+          }
+        }
+      },
+      "output": {
+        "text": "x",
+        "tags": [],
+        "langs": [],
+        "quote": null,
+        "link": null,
+        "images": [],
+        "video": false,
+        "labelled": false
+      }
+    },
+    {
+      "id": "postAgainSeed#6",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": {
+          "text": "Read example.co… today",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 15
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/a-long-page"
+                }
+              ]
+            }
+          ],
+          "tags": [
+            "Gardens",
+            "gardens",
+            "seeds"
+          ],
+          "langs": [
+            "en",
+            "fr",
+            "",
+            5
+          ]
+        }
+      },
+      "output": {
+        "text": "Read [example.co](https://example.com/a-long-page)… today",
+        "tags": [
+          "Gardens",
+          "seeds"
+        ],
+        "langs": [
+          "en",
+          "fr"
+        ],
+        "quote": null,
+        "link": null,
+        "images": [],
+        "video": false,
+        "labelled": false
+      }
+    },
+    {
+      "id": "postAgainSeed#7",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": {
+          "text": "q",
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://did:plc:other/app.bsky.feed.post/3q",
+              "cid": "c"
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "q",
+        "tags": [],
+        "langs": [],
+        "quote": "at://did:plc:other/app.bsky.feed.post/3q",
+        "link": null,
+        "images": [],
+        "video": false,
+        "labelled": false
+      }
+    },
+    {
+      "id": "postAgainSeed#8",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": {
+          "text": "q",
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "uri": "at://did:plc:other/app.bsky.feed.post/3q"
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "q",
+        "tags": [],
+        "langs": [],
+        "quote": "at://did:plc:other/app.bsky.feed.post/3q",
+        "link": null,
+        "images": [],
+        "video": false,
+        "labelled": false
+      }
+    },
+    {
+      "id": "postAgainSeed#9",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": {
+          "text": "l",
+          "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+              "uri": "https://example.com/x",
+              "title": "T",
+              "description": "D",
+              "thumb": {
+                "$type": "blob",
+                "ref": {
+                  "$link": "bafthumb"
+                },
+                "mimeType": "image/jpeg",
+                "size": 10
+              }
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "l",
+        "tags": [],
+        "langs": [],
+        "quote": null,
+        "link": {
+          "url": "https://example.com/x",
+          "title": "T",
+          "description": "D"
+        },
+        "images": [],
+        "video": false,
+        "labelled": false
+      }
+    },
+    {
+      "id": "postAgainSeed#10",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": {
+          "text": "both",
+          "embed": {
+            "$type": "app.bsky.embed.recordWithMedia",
+            "record": {
+              "$type": "app.bsky.embed.record",
+              "record": {
+                "uri": "at://did:plc:other/app.bsky.feed.post/3q",
+                "cid": "c"
+              }
+            },
+            "media": {
+              "$type": "app.bsky.embed.images",
+              "images": [
+                {
+                  "image": {
+                    "$type": "blob",
+                    "ref": {
+                      "$link": "bafone"
+                    },
+                    "mimeType": "image/jpeg",
+                    "size": 10
+                  },
+                  "alt": "a lamp"
+                },
+                {
+                  "image": {
+                    "$type": "blob",
+                    "ref": {
+                      "$link": "baftwo"
+                    },
+                    "mimeType": "image/png",
+                    "size": 10
+                  }
+                },
+                {
+                  "image": null,
+                  "alt": "no blob"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "both",
+        "tags": [],
+        "langs": [],
+        "quote": "at://did:plc:other/app.bsky.feed.post/3q",
+        "link": null,
+        "images": [
+          {
+            "cid": "bafone",
+            "mime": "image/jpeg",
+            "alt": "a lamp"
+          },
+          {
+            "cid": "baftwo",
+            "mime": "image/png",
+            "alt": ""
+          }
+        ],
+        "video": false,
+        "labelled": false
+      }
+    },
+    {
+      "id": "postAgainSeed#11",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": {
+          "text": "card and quote",
+          "embed": {
+            "$type": "app.bsky.embed.recordWithMedia",
+            "record": {
+              "record": {
+                "uri": "at://did:plc:other/app.bsky.feed.post/3q",
+                "cid": "c"
+              }
+            },
+            "media": {
+              "$type": "app.bsky.embed.external",
+              "external": {
+                "uri": "https://e.example",
+                "title": 5
+              }
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "card and quote",
+        "tags": [],
+        "langs": [],
+        "quote": "at://did:plc:other/app.bsky.feed.post/3q",
+        "link": {
+          "url": "https://e.example",
+          "title": "5",
+          "description": ""
+        },
+        "images": [],
+        "video": false,
+        "labelled": false
+      }
+    },
+    {
+      "id": "postAgainSeed#12",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": {
+          "embed": {
+            "$type": "app.bsky.embed.gallery",
+            "items": [
+              {
+                "image": {
+                  "$type": "blob",
+                  "ref": {
+                    "$link": "bafg"
+                  },
+                  "mimeType": "image/jpeg",
+                  "size": 10
+                },
+                "alt": "g"
+              },
+              {
+                "image": {
+                  "cid": "bafcid",
+                  "mimeType": 7
+                }
+              }
+            ]
+          }
+        }
+      },
+      "output": {
+        "text": "",
+        "tags": [],
+        "langs": [],
+        "quote": null,
+        "link": null,
+        "images": [
+          {
+            "cid": "bafg",
+            "mime": "image/jpeg",
+            "alt": "g"
+          },
+          {
+            "cid": "bafcid",
+            "mime": "image/jpeg",
+            "alt": ""
+          }
+        ],
+        "video": false,
+        "labelled": false
+      }
+    },
+    {
+      "id": "postAgainSeed#13",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": {
+          "embed": {
+            "$type": "app.bsky.embed.video",
+            "video": {
+              "$type": "blob",
+              "ref": {
+                "$link": "bafv"
+              },
+              "mimeType": "video/mp4",
+              "size": 10
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "",
+        "tags": [],
+        "langs": [],
+        "quote": null,
+        "link": null,
+        "images": [],
+        "video": true,
+        "labelled": false
+      }
+    },
+    {
+      "id": "postAgainSeed#14",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": {
+          "labels": {
+            "$type": "com.atproto.label.defs#selfLabels",
+            "values": [
+              {
+                "val": "nudity"
+              }
+            ]
+          }
+        }
+      },
+      "output": {
+        "text": "",
+        "tags": [],
+        "langs": [],
+        "quote": null,
+        "link": null,
+        "images": [],
+        "video": false,
+        "labelled": true
+      }
+    },
+    {
+      "id": "postAgainSeed#15",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": {
+          "labels": {
+            "values": []
+          }
+        }
+      },
+      "output": {
+        "text": "",
+        "tags": [],
+        "langs": [],
+        "quote": null,
+        "link": null,
+        "images": [],
+        "video": false,
+        "labelled": false
+      }
+    },
+    {
+      "id": "postAgainSeed#16",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": {
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+              "title": "no uri"
+            }
+          }
+        }
+      },
+      "output": {
+        "text": "x",
+        "tags": [],
+        "langs": [],
+        "quote": null,
+        "link": null,
+        "images": [],
+        "video": false,
+        "labelled": false
+      }
+    },
+    {
+      "id": "postAgainSeed#17",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": {
+          "text": 7,
+          "facets": "nope"
+        }
+      },
+      "output": {
+        "text": "7",
+        "tags": [],
+        "langs": [],
+        "quote": null,
+        "link": null,
+        "images": [],
+        "video": false,
+        "labelled": false
+      }
+    },
+    {
+      "id": "postAgainSeed#18",
+      "fn": "postAgainSeed",
+      "input": {
+        "record": null
+      },
+      "output": {
+        "text": "",
+        "tags": [],
+        "langs": [],
+        "quote": null,
+        "link": null,
+        "images": [],
+        "video": false,
+        "labelled": false
+      }
+    },
+    {
+      "id": "postAgainIntent#1",
+      "fn": "postAgainIntent",
+      "input": {
+        "seed": {
+          "text": "Hello again",
+          "tags": [
+            "seeds"
+          ],
+          "langs": [
+            "en"
+          ],
+          "quote": "at://did:plc:other/app.bsky.feed.post/3q",
+          "link": null,
+          "images": [
+            {
+              "cid": "a",
+              "mime": "image/jpeg",
+              "alt": "x"
+            },
+            {
+              "cid": "b",
+              "mime": "image/jpeg",
+              "alt": ""
+            }
+          ],
+          "video": false,
+          "labelled": false
+        },
+        "files": [
+          {
+            "file": {
+              "$file": true,
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 1
+            },
+            "alt": "x"
+          }
+        ],
+        "missing": 1
+      },
+      "output": {
+        "intent": {
+          "asDid": "did:plc:mira",
+          "text": "Hello again",
+          "tags": [
+            "seeds"
+          ],
+          "langs": [
+            "en"
+          ],
+          "quote": {
+            "uri": "at://did:plc:other/app.bsky.feed.post/3q"
+          },
+          "images": [
+            {
+              "file": {
+                "$file": true,
+                "name": "a.jpg",
+                "type": "image/jpeg",
+                "size": 1
+              },
+              "alt": "x"
+            }
+          ]
+        },
+        "notes": [
+          "One of its pictures couldn’t be fetched. Add it again."
+        ]
+      }
+    },
+    {
+      "id": "postAgainIntent#2",
+      "fn": "postAgainIntent",
+      "input": {
+        "seed": {
+          "text": "Hello again",
+          "tags": [
+            "seeds"
+          ],
+          "langs": [
+            "en"
+          ],
+          "quote": "at://did:plc:other/app.bsky.feed.post/3q",
+          "link": null,
+          "images": [
+            {
+              "cid": "a",
+              "mime": "image/jpeg",
+              "alt": "x"
+            },
+            {
+              "cid": "b",
+              "mime": "image/jpeg",
+              "alt": ""
+            }
+          ],
+          "video": false,
+          "labelled": false
+        },
+        "files": [],
+        "missing": 2
+      },
+      "output": {
+        "intent": {
+          "asDid": "did:plc:mira",
+          "text": "Hello again",
+          "tags": [
+            "seeds"
+          ],
+          "langs": [
+            "en"
+          ],
+          "quote": {
+            "uri": "at://did:plc:other/app.bsky.feed.post/3q"
+          }
+        },
+        "notes": [
+          "2 of its pictures couldn’t be fetched. Add them again."
+        ]
+      }
+    },
+    {
+      "id": "postAgainIntent#3",
+      "fn": "postAgainIntent",
+      "input": {
+        "seed": {
+          "text": "Hello again",
+          "tags": [
+            "seeds"
+          ],
+          "langs": [
+            "en"
+          ],
+          "quote": "at://did:plc:other/app.bsky.feed.post/3q",
+          "link": null,
+          "images": [
+            {
+              "cid": "a",
+              "mime": "image/jpeg",
+              "alt": "x"
+            },
+            {
+              "cid": "b",
+              "mime": "image/jpeg",
+              "alt": ""
+            }
+          ],
+          "video": false,
+          "labelled": false
+        },
+        "files": [],
+        "missing": 0
+      },
+      "output": {
+        "intent": {
+          "asDid": "did:plc:mira",
+          "text": "Hello again",
+          "tags": [
+            "seeds"
+          ],
+          "langs": [
+            "en"
+          ],
+          "quote": {
+            "uri": "at://did:plc:other/app.bsky.feed.post/3q"
+          }
+        },
+        "notes": []
+      }
+    },
+    {
+      "id": "postAgainIntent#4",
+      "fn": "postAgainIntent",
+      "input": {
+        "seed": {
+          "text": "x",
+          "tags": [],
+          "langs": [],
+          "quote": null,
+          "images": [],
+          "video": false,
+          "labelled": false,
+          "link": {
+            "url": "https://example.com/x",
+            "title": "T",
+            "description": "D"
+          }
+        },
+        "files": []
+      },
+      "output": {
+        "intent": {
+          "asDid": "did:plc:mira",
+          "text": "x",
+          "attach": {
+            "attach": {
+              "kind": "link",
+              "url": "https://example.com/x",
+              "title": "T",
+              "description": "D"
+            }
+          }
+        },
+        "notes": []
+      }
+    },
+    {
+      "id": "postAgainIntent#5",
+      "fn": "postAgainIntent",
+      "input": {
+        "seed": {
+          "text": "x",
+          "tags": [],
+          "langs": [],
+          "quote": null,
+          "images": [],
+          "video": false,
+          "labelled": false,
+          "link": {
+            "url": "https://example.com/x",
+            "title": "T",
+            "description": "D"
+          }
+        },
+        "files": [
+          {
+            "file": {
+              "$file": true,
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 1
+            },
+            "alt": ""
+          }
+        ]
+      },
+      "output": {
+        "intent": {
+          "asDid": "did:plc:mira",
+          "text": "x",
+          "images": [
+            {
+              "file": {
+                "$file": true,
+                "name": "a.jpg",
+                "type": "image/jpeg",
+                "size": 1
+              },
+              "alt": ""
+            }
+          ]
+        },
+        "notes": []
+      }
+    },
+    {
+      "id": "postAgainIntent#6",
+      "fn": "postAgainIntent",
+      "input": {
+        "seed": {
+          "text": "  ",
+          "tags": [],
+          "langs": [],
+          "quote": null,
+          "images": [
+            {
+              "cid": "a",
+              "mime": "image/jpeg",
+              "alt": ""
+            }
+          ],
+          "video": false,
+          "labelled": false
+        },
+        "files": [],
+        "missing": 1
+      },
+      "output": {
+        "intent": null,
+        "notes": [
+          "One of its pictures couldn’t be fetched. Add it again."
+        ]
+      }
+    },
+    {
+      "id": "postAgainIntent#7",
+      "fn": "postAgainIntent",
+      "input": {
+        "seed": {
+          "text": "",
+          "tags": [],
+          "langs": [],
+          "quote": null,
+          "images": [
+            {
+              "cid": "a",
+              "mime": "image/jpeg",
+              "alt": ""
+            }
+          ],
+          "video": false,
+          "labelled": true
+        },
+        "files": [
+          {
+            "file": {
+              "$file": true,
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 1
+            },
+            "alt": ""
+          }
+        ]
+      },
+      "output": {
+        "intent": null,
+        "notes": [
+          "It had a content warning, so its pictures weren’t brought over. Add them again and set the warning."
+        ]
+      }
+    },
+    {
+      "id": "postAgainIntent#8",
+      "fn": "postAgainIntent",
+      "input": {
+        "seed": {
+          "text": "",
+          "tags": [],
+          "langs": [],
+          "quote": null,
+          "images": [],
+          "video": false,
+          "labelled": true
+        },
+        "files": []
+      },
+      "output": {
+        "intent": null,
+        "notes": []
+      }
+    },
+    {
+      "id": "postAgainIntent#9",
+      "fn": "postAgainIntent",
+      "input": {
+        "seed": {
+          "text": "",
+          "tags": [],
+          "langs": [],
+          "quote": null,
+          "images": [],
+          "video": true,
+          "labelled": false
+        },
+        "files": []
+      },
+      "output": {
+        "intent": null,
+        "notes": [
+          "Its video isn’t carried over. Add it again."
+        ]
+      }
+    },
+    {
+      "id": "postAgainIntent#10",
+      "fn": "postAgainIntent",
+      "input": {
+        "seed": {
+          "text": "",
+          "tags": [
+            "only"
+          ],
+          "langs": [],
+          "quote": null,
+          "images": [],
+          "video": false,
+          "labelled": false
+        },
+        "files": []
+      },
+      "output": {
+        "intent": {
+          "asDid": "did:plc:mira",
+          "text": "",
+          "tags": [
+            "only"
+          ]
+        },
+        "notes": []
+      }
+    },
+    {
+      "id": "postAgainIntent#11",
+      "fn": "postAgainIntent",
+      "input": {
+        "seed": {
+          "text": "",
+          "tags": [],
+          "langs": [],
+          "quote": "at://did:plc:other/app.bsky.feed.post/3q",
+          "images": [],
+          "video": false,
+          "labelled": false
+        },
+        "files": []
+      },
+      "output": {
+        "intent": {
+          "asDid": "did:plc:mira",
+          "text": "",
+          "quote": {
+            "uri": "at://did:plc:other/app.bsky.feed.post/3q"
+          }
+        },
+        "notes": []
+      }
+    },
+    {
+      "id": "postRowActions#1",
+      "fn": "postRowActions",
+      "input": {
+        "row": {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/1",
+          "text": "A walk by the river",
+          "replyTo": null,
+          "hasMedia": true
+        },
+        "canPost": true,
+        "canSchedule": false
+      },
+      "output": {
+        "reply": true,
+        "quote": true,
+        "again": true,
+        "gates": true,
+        "gatesQuotesOnly": false,
+        "timer": false,
+        "template": true,
+        "delete": true
+      }
+    },
+    {
+      "id": "postRowActions#2",
+      "fn": "postRowActions",
+      "input": {
+        "row": {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/2",
+          "text": "Agreed, the river",
+          "replyTo": "did:plc:other",
+          "hasMedia": false
+        },
+        "canPost": false,
+        "canSchedule": true
+      },
+      "output": {
+        "reply": false,
+        "quote": false,
+        "again": false,
+        "gates": false,
+        "gatesQuotesOnly": true,
+        "timer": true,
+        "template": true,
+        "delete": false
+      }
+    },
+    {
+      "id": "postRowActions#3",
+      "fn": "postRowActions",
+      "input": {
+        "row": {
+          "uri": "at://did:plc:mira/app.bsky.feed.post/3",
+          "text": "continuing my thread",
+          "replyTo": "did:plc:mira",
+          "hasMedia": false
+        },
+        "canPost": true,
+        "canSchedule": true
+      },
+      "output": {
+        "reply": true,
+        "quote": true,
+        "again": true,
+        "gates": true,
+        "gatesQuotesOnly": true,
+        "timer": true,
+        "template": true,
+        "delete": true
+      }
+    },
+    {
+      "id": "postRowActions#4",
+      "fn": "postRowActions",
+      "input": {
+        "row": null,
+        "canPost": false,
+        "canSchedule": false
+      },
+      "output": {
+        "reply": false,
+        "quote": false,
+        "again": false,
+        "gates": false,
+        "gatesQuotesOnly": false,
+        "timer": false,
+        "template": true,
+        "delete": false
+      }
+    },
+    {
+      "id": "gatesQuotesOnlyFor#1",
+      "fn": "gatesQuotesOnlyFor",
+      "input": {
+        "offer": {
+          "gatesQuotesOnly": true
+        },
+        "record": {}
+      },
+      "output": true
+    },
+    {
+      "id": "gatesQuotesOnlyFor#2",
+      "fn": "gatesQuotesOnlyFor",
+      "input": {
+        "offer": {
+          "gatesQuotesOnly": false
+        },
+        "record": {
+          "reply": {
+            "root": {}
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesQuotesOnlyFor#3",
+      "fn": "gatesQuotesOnlyFor",
+      "input": {
+        "offer": {
+          "gatesQuotesOnly": false
+        },
+        "record": {}
+      },
+      "output": false
+    },
+    {
+      "id": "gatesQuotesOnlyFor#4",
+      "fn": "gatesQuotesOnlyFor",
+      "input": {
+        "offer": null,
+        "record": null
+      },
+      "output": false
+    },
+    {
+      "id": "public-view",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.post%2F3abc",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[{\"uri\":\"at://did:plc:mira/app.bsky.feed.post/3abc\",\"cid\":\"bafy1\",\"record\":{\"text\":\"hi\"},\"author\":{\"did\":\"did:plc:mira\"}}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/3abc",
+            "cid": "bafy1",
+            "record": {
+              "text": "hi"
+            },
+            "view": {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/3abc",
+              "cid": "bafy1",
+              "record": {
+                "text": "hi"
+              },
+              "author": {
+                "did": "did:plc:mira"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "repo-fallback",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.post%2F3abc",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.post&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:mira/app.bsky.feed.post/3abc\",\"cid\":\"bafkreig4s2kw6edj2yprthf5eq2u4sjeb6gnawxhir6cqspkxnaosyiroq\",\"value\":{\"text\":\"repo\"}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/3abc",
+            "cid": "bafkreig4s2kw6edj2yprthf5eq2u4sjeb6gnawxhir6cqspkxnaosyiroq",
+            "record": {
+              "text": "repo"
+            },
+            "view": null
+          }
+        }
+      }
+    },
+    {
+      "id": "gone",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.post%2F3abc",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.post&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "This post isn’t there any more. It may have been deleted somewhere else.",
+            "code": "GONE"
+          }
+        }
+      }
+    },
+    {
+      "id": "read-failed",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.post%2F3abc",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 502,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"UpstreamFailure\",\"message\":\"upstream said 502\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.post&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "upstream said 502",
+            "code": null
+          }
+        }
+      }
+    },
+    {
+      "id": "read-failed-then-gone",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.post%2F3abc",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 502,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"UpstreamFailure\",\"message\":\"upstream said 502\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.post&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "This post isn’t there any more. It may have been deleted somewhere else.",
+            "code": "GONE"
+          }
+        }
+      }
+    },
+    {
+      "id": "appview-offline-repo-ok",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.post%2F3abc",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.post&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:mira/app.bsky.feed.post/3abc\",\"cid\":\"bafkreig4s2kw6edj2yprthf5eq2u4sjeb6gnawxhir6cqspkxnaosyiroq\",\"value\":{\"text\":\"r\"}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/3abc",
+            "cid": "bafkreig4s2kw6edj2yprthf5eq2u4sjeb6gnawxhir6cqspkxnaosyiroq",
+            "record": {
+              "text": "r"
+            },
+            "view": null
+          }
+        }
+      }
+    },
+    {
+      "id": "view-without-cid",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.post%2F3abc",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[{\"uri\":\"at://did:plc:mira/app.bsky.feed.post/3abc\",\"record\":{}}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.post&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:mira/app.bsky.feed.post/3abc\",\"cid\":\"bafkreig4s2kw6edj2yprthf5eq2u4sjeb6gnawxhir6cqspkxnaosyiroq\",\"value\":{\"text\":\"r\"}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/3abc",
+            "cid": "bafkreig4s2kw6edj2yprthf5eq2u4sjeb6gnawxhir6cqspkxnaosyiroq",
+            "record": {
+              "text": "r"
+            },
+            "view": null
+          }
+        }
+      }
+    },
+    {
+      "id": "view-without-record",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.post%2F3abc",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[{\"uri\":\"at://did:plc:mira/app.bsky.feed.post/3abc\",\"cid\":\"c\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/3abc",
+            "cid": "c",
+            "record": {},
+            "view": {
+              "uri": "at://did:plc:mira/app.bsky.feed.post/3abc",
+              "cid": "c"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "other-view",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.post%2F3abc",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[{\"uri\":\"at://did:plc:mira/app.bsky.feed.post/3abcx\",\"cid\":\"bafy1\",\"record\":{\"text\":\"hi\"},\"author\":{\"did\":\"did:plc:mira\"}}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.post&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:mira/app.bsky.feed.post/3abc\",\"cid\":\"bafkreig4s2kw6edj2yprthf5eq2u4sjeb6gnawxhir6cqspkxnaosyiroq\",\"value\":{\"text\":\"r\"}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "uri": "at://did:plc:mira/app.bsky.feed.post/3abc",
+            "cid": "bafkreig4s2kw6edj2yprthf5eq2u4sjeb6gnawxhir6cqspkxnaosyiroq",
+            "record": {
+              "text": "r"
+            },
+            "view": null
+          }
+        }
+      }
+    },
+    {
+      "id": "repo-no-cid",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.post%2F3abc",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.post&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:mira/app.bsky.feed.post/3abc\",\"value\":{\"text\":\"no cid\"}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "This post isn’t there any more. It may have been deleted somewhere else.",
+            "code": "GONE"
+          }
+        }
+      }
+    },
+    {
+      "id": "repo-500",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.post%2F3abc",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.post&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Internal error\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "Internal error",
+            "code": null
+          }
+        }
+      }
+    },
+    {
+      "id": "repo-404",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.post%2F3abc",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.post&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Nope\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "This post isn’t there any more. It may have been deleted somewhere else.",
+            "code": "GONE"
+          }
+        }
+      }
+    },
+    {
+      "id": "repo-message",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.post%2F3abc",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.post&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "This post isn’t there any more. It may have been deleted somewhere else.",
+            "code": "GONE"
+          }
+        }
+      }
+    },
+    {
+      "id": "repo-message-case",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.post%2F3abc",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.post&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Thing NOT FOUND here\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "This post isn’t there any more. It may have been deleted somewhere else.",
+            "code": "GONE"
+          }
+        }
+      }
+    },
+    {
+      "id": "not-a-post",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.repost/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.repost%2F3abc",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "This post isn’t there any more. It may have been deleted somewhere else.",
+            "code": "GONE"
+          }
+        }
+      }
+    },
+    {
+      "id": "rkey-with-query",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc?x"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.post%2F3abc%3Fx",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "This post isn’t there any more. It may have been deleted somewhere else.",
+            "code": "GONE"
+          }
+        }
+      }
+    },
+    {
+      "id": "no-agent",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc",
+        "noAgent": true
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.post%2F3abc",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "This post isn’t there any more. It may have been deleted somewhere else.",
+            "code": "GONE"
+          }
+        }
+      }
+    },
+    {
+      "id": "no-agent-failed",
+      "fn": "readPostNow",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc",
+        "noAgent": true
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Amira%2Fapp.bsky.feed.post%2F3abc",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"UpstreamFailure\",\"message\":\"upstream said 503\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "upstream said 503",
+            "code": null
+          }
+        }
+      }
+    },
+    {
+      "id": "everyone",
+      "fn": "readPostGates",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.threadgate&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.postgate&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "reply": null,
+            "quotes": true
+          }
+        }
+      }
+    },
+    {
+      "id": "rules",
+      "fn": "readPostGates",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.threadgate&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:mira/app.bsky.feed.threadgate/3abc\",\"cid\":\"bafkreicoztpg2otwccrauen3dtsppnu4bwypvsrgxvdu64dantldemxcxm\",\"value\":{\"allow\":[{\"$type\":\"app.bsky.feed.threadgate#followingRule\"}]}}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.postgate&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:mira/app.bsky.feed.postgate/3abc\",\"cid\":\"bafkreiha4ugxrxb4voymbnpljefu3fwvwlgn6uiiwl64zpfqsbbpiv7bce\",\"value\":{\"embeddingRules\":[{\"$type\":\"app.bsky.feed.postgate#disableRule\"}]}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "reply": [
+              {
+                "type": "following"
+              }
+            ],
+            "quotes": false
+          }
+        }
+      }
+    },
+    {
+      "id": "nobody",
+      "fn": "readPostGates",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.threadgate&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:mira/app.bsky.feed.threadgate/3abc\",\"cid\":\"bafkreicoztpg2otwccrauen3dtsppnu4bwypvsrgxvdu64dantldemxcxm\",\"value\":{\"allow\":[]}}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.postgate&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "reply": [],
+            "quotes": true
+          }
+        }
+      }
+    },
+    {
+      "id": "no-allow",
+      "fn": "readPostGates",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.threadgate&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"uri\":\"at://did:plc:mira/app.bsky.feed.threadgate/3abc\",\"cid\":\"bafkreicoztpg2otwccrauen3dtsppnu4bwypvsrgxvdu64dantldemxcxm\",\"value\":{\"hiddenReplies\":[\"x\"]}}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.postgate&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "reply": null,
+            "quotes": true
+          }
+        }
+      }
+    },
+    {
+      "id": "fails",
+      "fn": "readPostGates",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.threadgate&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 500\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy?repo=did%3Aplc%3Amira&collection=app.bsky.feed.postgate&rkey=3abc",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.getRecord"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "failed with 500",
+            "code": null
+          }
+        }
+      }
+    },
+    {
+      "id": "not-a-post",
+      "fn": "readPostGates",
+      "input": {
+        "uri": "https://bsky.app/x"
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "Not a post.",
+            "code": null
+          }
+        }
+      }
+    },
+    {
+      "id": "all",
+      "fn": "deletePost",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.deleteRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzptaXJhIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInJrZXkiOiIzYWJjIn0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"}}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.deleteRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzptaXJhIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQudGhyZWFkZ2F0ZSIsInJrZXkiOiIzYWJjIn0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"}}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.deleteRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzptaXJhIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdGdhdGUiLCJya2V5IjoiM2FiYyJ9"
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"commit\":{\"cid\":\"bafkreievaxfmw7drb3ixcjp4y3ftm2pi3xfgzdgyv5vdd5vtzvsgatbqta\",\"rev\":\"3lcommitrev22\"}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": null
+        }
+      }
+    },
+    {
+      "id": "refused",
+      "fn": "deletePost",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.deleteRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzptaXJhIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInJrZXkiOiIzYWJjIn0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 403,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Missing required scope\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "Missing required scope",
+            "code": null
+          }
+        }
+      }
+    },
+    {
+      "id": "already-gone",
+      "fn": "deletePost",
+      "input": {
+        "uri": "at://did:plc:mira/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.deleteRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzptaXJhIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdCIsInJrZXkiOiIzYWJjIn0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Could not locate record\",\"code\":\"RecordNotFound\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.deleteRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzptaXJhIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQudGhyZWFkZ2F0ZSIsInJrZXkiOiIzYWJjIn0="
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"failed with 500\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "POST",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "com.atproto.repo.deleteRecord"
+              },
+              "body": {
+                "$bytes": "eyJyZXBvIjoiZGlkOnBsYzptaXJhIiwiY29sbGVjdGlvbiI6ImFwcC5ic2t5LmZlZWQucG9zdGdhdGUiLCJya2V5IjoiM2FiYyJ9"
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": null
+        }
+      }
+    },
+    {
+      "id": "not-a-post",
+      "fn": "deletePost",
+      "input": {
+        "uri": "nope"
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "$error": {
+            "message": "Not a post.",
+            "code": null
+          }
+        }
+      }
+    },
+    {
+      "id": "one-missing",
+      "fn": "fetchPostImages",
+      "input": {
+        "images": [
+          {
+            "cid": "bafone",
+            "mime": "image/jpeg",
+            "alt": "a lamp"
+          },
+          {
+            "cid": "bafgone",
+            "mime": "image/jpeg",
+            "alt": ""
+          }
+        ],
+        "pdsUrl": "https://pds.example/"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.sync.getBlob?did=did%3Aplc%3Amira&cid=bafone",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png"
+              },
+              "body": {
+                "$bytes": "AQID"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.sync.getBlob?did=did%3Aplc%3Amira&cid=bafgone",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"BlobNotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "files": [
+              {
+                "file": {
+                  "$file": true,
+                  "name": "posted-image-1.png",
+                  "type": "image/png",
+                  "size": 3
+                },
+                "alt": "a lamp"
+              }
+            ],
+            "missing": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "no-pds",
+      "fn": "fetchPostImages",
+      "input": {
+        "images": [
+          {
+            "cid": "bafone",
+            "mime": "image/jpeg",
+            "alt": ""
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "value": {
+            "files": [],
+            "missing": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "types",
+      "fn": "fetchPostImages",
+      "input": {
+        "images": [
+          {
+            "cid": "a",
+            "mime": "image/webp",
+            "alt": "1"
+          },
+          {
+            "cid": "b",
+            "mime": "image/jpeg",
+            "alt": "2"
+          },
+          {
+            "cid": "c",
+            "mime": "image/gif",
+            "alt": "3"
+          },
+          {
+            "cid": "d",
+            "mime": "IMAGE/PNG",
+            "alt": "4"
+          },
+          {
+            "cid": "e",
+            "mime": "image/jpeg",
+            "alt": "5"
+          },
+          {
+            "cid": "f/g h",
+            "mime": "image/jpeg",
+            "alt": "6"
+          },
+          {
+            "cid": "i",
+            "mime": "image/jpeg",
+            "alt": "7"
+          }
+        ],
+        "pdsUrl": "https://pds.example///",
+        "did": "did:web:a b"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.sync.getBlob?did=did%3Aweb%3Aa%20b&cid=a",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "CQ=="
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.sync.getBlob?did=did%3Aweb%3Aa%20b&cid=b",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/svg+xml"
+              },
+              "body": {
+                "$bytes": "AQI="
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.sync.getBlob?did=did%3Aweb%3Aa%20b&cid=c",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "IMAGE/GIF; charset=x"
+              },
+              "body": {
+                "$bytes": "Aw=="
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.sync.getBlob?did=did%3Aweb%3Aa%20b&cid=d",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$bytes": "BA=="
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.sync.getBlob?did=did%3Aweb%3Aa%20b&cid=e",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png"
+              },
+              "body": {
+                "$bytes": ""
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.sync.getBlob?did=did%3Aweb%3Aa%20b&cid=f%2Fg%20h",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "image/png"
+              },
+              "body": {
+                "$bytes": "AQID"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.sync.getBlob?did=did%3Aweb%3Aa%20b&cid=i",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "files": [
+              {
+                "file": {
+                  "$file": true,
+                  "name": "posted-image-1.webp",
+                  "type": "image/webp",
+                  "size": 1
+                },
+                "alt": "1"
+              },
+              {
+                "file": {
+                  "$file": true,
+                  "name": "posted-image-2.svg",
+                  "type": "image/svg+xml",
+                  "size": 2
+                },
+                "alt": "2"
+              },
+              {
+                "file": {
+                  "$file": true,
+                  "name": "posted-image-3.gif;charset=x",
+                  "type": "image/gif;charset=x",
+                  "size": 1
+                },
+                "alt": "3"
+              },
+              {
+                "file": {
+                  "$file": true,
+                  "name": "posted-image-4.PNG",
+                  "type": "image/png",
+                  "size": 1
+                },
+                "alt": "4"
+              },
+              {
+                "file": {
+                  "$file": true,
+                  "name": "posted-image-6.png",
+                  "type": "image/png",
+                  "size": 3
+                },
+                "alt": "6"
+              }
+            ],
+            "missing": 2
+          }
+        }
+      }
+    }
+  ]
+}

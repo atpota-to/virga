@@ -1,0 +1,783 @@
+{
+  "name": "posting-text.hashtags",
+  "sources": [
+    "src/posting/lib/hashtags.js"
+  ],
+  "cases": [
+    {
+      "id": "MAX_HASHTAG_GRAPHEMES",
+      "fn": "MAX_HASHTAG_GRAPHEMES",
+      "input": {},
+      "output": 64
+    },
+    {
+      "id": "findHashtags#1",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#owl and #cats"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 4,
+          "tag": "owl"
+        },
+        {
+          "start": 9,
+          "end": 14,
+          "tag": "cats"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#2",
+      "fn": "findHashtags",
+      "input": {
+        "text": "line\n#one\t#two"
+      },
+      "output": [
+        {
+          "start": 5,
+          "end": 9,
+          "tag": "one"
+        },
+        {
+          "start": 10,
+          "end": 14,
+          "tag": "two"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#3",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#café time"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 5,
+          "tag": "café"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#4",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#日本 #Ünïcödé"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 3,
+          "tag": "日本"
+        },
+        {
+          "start": 4,
+          "end": 12,
+          "tag": "Ünïcödé"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#5",
+      "fn": "findHashtags",
+      "input": {
+        "text": "hi #café"
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 8,
+          "tag": "café"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#6",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#123 #1st #2024"
+      },
+      "output": [
+        {
+          "start": 5,
+          "end": 9,
+          "tag": "1st"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#7",
+      "fn": "findHashtags",
+      "input": {
+        "text": "so #good!"
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 8,
+          "tag": "good"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#8",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#one, #two. #three?!"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 4,
+          "tag": "one"
+        },
+        {
+          "start": 6,
+          "end": 10,
+          "tag": "two"
+        },
+        {
+          "start": 12,
+          "end": 18,
+          "tag": "three"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#9",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#a.b #x-y #under_score"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 4,
+          "tag": "a.b"
+        },
+        {
+          "start": 5,
+          "end": 9,
+          "tag": "x-y"
+        },
+        {
+          "start": 10,
+          "end": 22,
+          "tag": "under_score"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#10",
+      "fn": "findHashtags",
+      "input": {
+        "text": "C#sharp https://example.com/#anchor a#b"
+      },
+      "output": []
+    },
+    {
+      "id": "findHashtags#11",
+      "fn": "findHashtags",
+      "input": {
+        "text": "＃tag"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 4,
+          "tag": "tag"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#12",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#️⃣ # alone"
+      },
+      "output": []
+    },
+    {
+      "id": "findHashtags#13",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 65,
+          "tag": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#14",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "output": []
+    },
+    {
+      "id": "findHashtags#15",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 257,
+          "tag": "👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#16",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽"
+      },
+      "output": []
+    },
+    {
+      "id": "findHashtags#17",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#one​two"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 4,
+          "tag": "one"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#18",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#one‌two #a‍b #x⁠y #s­t #h j #k⃢l"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 4,
+          "tag": "one"
+        },
+        {
+          "start": 9,
+          "end": 11,
+          "tag": "a"
+        },
+        {
+          "start": 14,
+          "end": 16,
+          "tag": "x"
+        },
+        {
+          "start": 19,
+          "end": 21,
+          "tag": "s"
+        },
+        {
+          "start": 24,
+          "end": 26,
+          "tag": "h"
+        },
+        {
+          "start": 29,
+          "end": 31,
+          "tag": "k"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#19",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#🦋"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 3,
+          "tag": "🦋"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#20",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#🦋🦋 #👩‍🔬"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 5,
+          "tag": "🦋🦋"
+        },
+        {
+          "start": 6,
+          "end": 9,
+          "tag": "👩"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#21",
+      "fn": "findHashtags",
+      "input": {
+        "text": "##double"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 8,
+          "tag": "#double"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#22",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#a#b#c"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 6,
+          "tag": "a#b#c"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#23",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#tag、next"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 9,
+          "tag": "tag、next"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#24",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#tag」"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 4,
+          "tag": "tag"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#25",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#١٢٣"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 4,
+          "tag": "١٢٣"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#26",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#１２"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 3,
+          "tag": "１２"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#27",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#!!!"
+      },
+      "output": []
+    },
+    {
+      "id": "findHashtags#28",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#a!!!b!!!"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 6,
+          "tag": "a!!!b"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#29",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#\"quoted\""
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 8,
+          "tag": "\"quoted"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#30",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#(paren)"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 7,
+          "tag": "(paren"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#31",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#́mark"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 6,
+          "tag": "́mark"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#32",
+      "fn": "findHashtags",
+      "input": {
+        "text": "　#ideographic"
+      },
+      "output": [
+        {
+          "start": 1,
+          "end": 13,
+          "tag": "ideographic"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#33",
+      "fn": "findHashtags",
+      "input": {
+        "text": " #nbsp"
+      },
+      "output": [
+        {
+          "start": 1,
+          "end": 6,
+          "tag": "nbsp"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#34",
+      "fn": "findHashtags",
+      "input": {
+        "text": " #ls"
+      },
+      "output": [
+        {
+          "start": 1,
+          "end": 4,
+          "tag": "ls"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#35",
+      "fn": "findHashtags",
+      "input": {
+        "text": "﻿#bom"
+      },
+      "output": [
+        {
+          "start": 1,
+          "end": 5,
+          "tag": "bom"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#36",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#nel"
+      },
+      "output": []
+    },
+    {
+      "id": "findHashtags#37",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#tagafter"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 10,
+          "tag": "tagafter"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#38",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#éte"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 5,
+          "tag": "éte"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#39",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#😀😀😀!"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 7,
+          "tag": "😀😀😀"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#40",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#$money"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 7,
+          "tag": "$money"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#41",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#+plus"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 6,
+          "tag": "+plus"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#42",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#"
+      },
+      "output": []
+    },
+    {
+      "id": "findHashtags#43",
+      "fn": "findHashtags",
+      "input": {
+        "text": "#  "
+      },
+      "output": []
+    },
+    {
+      "id": "findHashtags#44",
+      "fn": "findHashtags",
+      "input": {
+        "text": ""
+      },
+      "output": []
+    },
+    {
+      "id": "findHashtags#45",
+      "fn": "findHashtags",
+      "input": {
+        "text": "no tags"
+      },
+      "output": []
+    },
+    {
+      "id": "findHashtags#46",
+      "fn": "findHashtags",
+      "input": {
+        "text": "\t#tab"
+      },
+      "output": [
+        {
+          "start": 1,
+          "end": 5,
+          "tag": "tab"
+        }
+      ]
+    },
+    {
+      "id": "findHashtags#47",
+      "fn": "findHashtags",
+      "input": {
+        "text": null
+      },
+      "output": []
+    },
+    {
+      "id": "isValidHashtag#1",
+      "fn": "isValidHashtag",
+      "input": {
+        "tag": "café"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHashtag#2",
+      "fn": "isValidHashtag",
+      "input": {
+        "tag": "123"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHashtag#3",
+      "fn": "isValidHashtag",
+      "input": {
+        "tag": ""
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHashtag#4",
+      "fn": "isValidHashtag",
+      "input": {
+        "tag": "two words"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHashtag#5",
+      "fn": "isValidHashtag",
+      "input": {
+        "tag": 7
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHashtag#6",
+      "fn": "isValidHashtag",
+      "input": {
+        "tag": null
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHashtag#7",
+      "fn": "isValidHashtag",
+      "input": {
+        "tag": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHashtag#8",
+      "fn": "isValidHashtag",
+      "input": {
+        "tag": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHashtag#9",
+      "fn": "isValidHashtag",
+      "input": {
+        "tag": "👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHashtag#10",
+      "fn": "isValidHashtag",
+      "input": {
+        "tag": "tab\there"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHashtag#11",
+      "fn": "isValidHashtag",
+      "input": {
+        "tag": "nbsp here"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHashtag#12",
+      "fn": "isValidHashtag",
+      "input": {
+        "tag": "１"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHashtag#13",
+      "fn": "isValidHashtag",
+      "input": {
+        "tag": "1st"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHashtag#14",
+      "fn": "isValidHashtag",
+      "input": {
+        "tag": "."
+      },
+      "output": true
+    }
+  ]
+}

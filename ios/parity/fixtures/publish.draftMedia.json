@@ -1,0 +1,2978 @@
+{
+  "name": "publish.draftMedia",
+  "sources": [
+    "src/posting/drafts/draftMedia.js"
+  ],
+  "cases": [
+    {
+      "id": "draftMediaConstants",
+      "fn": "draftMediaConstants",
+      "input": {},
+      "output": {
+        "POSTING_DB_PREFIX": "virga-posting:",
+        "LOCAL_REF_PREFIX": "virga-media:"
+      }
+    },
+    {
+      "id": "postingDbName#1",
+      "fn": "postingDbName",
+      "input": {
+        "did": "did:plc:alice"
+      },
+      "output": "virga-posting:did:plc:alice"
+    },
+    {
+      "id": "postingDbName#2",
+      "fn": "postingDbName",
+      "input": {
+        "did": "did:web:café.example"
+      },
+      "output": "virga-posting:did:web:café.example"
+    },
+    {
+      "id": "postingDbName#3",
+      "fn": "postingDbName",
+      "input": {
+        "did": ""
+      },
+      "output": "virga-posting:"
+    },
+    {
+      "id": "postingDbName#4",
+      "fn": "postingDbName",
+      "input": {
+        "did": "did:plc:a/b"
+      },
+      "output": "virga-posting:did:plc:a/b"
+    },
+    {
+      "id": "isVirgaLocalRef#1",
+      "fn": "isVirgaLocalRef",
+      "input": {
+        "path": "virga-media:1"
+      },
+      "output": true
+    },
+    {
+      "id": "isVirgaLocalRef#2",
+      "fn": "isVirgaLocalRef",
+      "input": {
+        "path": "virga-media:"
+      },
+      "output": true
+    },
+    {
+      "id": "isVirgaLocalRef#3",
+      "fn": "isVirgaLocalRef",
+      "input": {
+        "path": "VIRGA-MEDIA:1"
+      },
+      "output": false
+    },
+    {
+      "id": "isVirgaLocalRef#4",
+      "fn": "isVirgaLocalRef",
+      "input": {
+        "path": " virga-media:1"
+      },
+      "output": false
+    },
+    {
+      "id": "isVirgaLocalRef#5",
+      "fn": "isVirgaLocalRef",
+      "input": {
+        "path": "file:///var/mobile/photo.jpg"
+      },
+      "output": false
+    },
+    {
+      "id": "isVirgaLocalRef#6",
+      "fn": "isVirgaLocalRef",
+      "input": {
+        "path": ""
+      },
+      "output": false
+    },
+    {
+      "id": "isVirgaLocalRef#7",
+      "fn": "isVirgaLocalRef",
+      "input": {
+        "path": null
+      },
+      "output": false
+    },
+    {
+      "id": "isVirgaLocalRef#8",
+      "fn": "isVirgaLocalRef",
+      "input": {
+        "path": 5
+      },
+      "output": false
+    },
+    {
+      "id": "isVirgaLocalRef#9",
+      "fn": "isVirgaLocalRef",
+      "input": {
+        "path": [
+          "virga-media:1"
+        ]
+      },
+      "output": false
+    },
+    {
+      "id": "two",
+      "fn": "newLocalRef",
+      "input": {},
+      "output": [
+        "virga-media:00000000-0000-4000-8000-000000000001",
+        "virga-media:00000000-0000-4000-8000-000000000002"
+      ]
+    },
+    {
+      "id": "images-and-video",
+      "fn": "stateLocalRefs",
+      "input": {
+        "state": {
+          "asDid": "did:plc:alice",
+          "posts": [
+            {
+              "id": "p1",
+              "images": [
+                {
+                  "id": "i1",
+                  "localRef": "virga-media:1"
+                },
+                {
+                  "id": "i2",
+                  "localRef": "file:///phone/2.jpg",
+                  "alt": "two"
+                },
+                {
+                  "id": "i3"
+                },
+                {
+                  "id": "i4",
+                  "localRef": ""
+                }
+              ]
+            },
+            {
+              "id": "p2",
+              "images": [],
+              "video": {
+                "localRef": "virga-media:v"
+              }
+            },
+            {
+              "id": "p3",
+              "video": {
+                "localRef": 5
+              }
+            }
+          ]
+        }
+      },
+      "output": [
+        "virga-media:1",
+        "file:///phone/2.jpg",
+        "virga-media:v"
+      ]
+    },
+    {
+      "id": "files-and-blobs",
+      "fn": "stateLocalRefs",
+      "input": {
+        "state": {
+          "asDid": "did:plc:alice",
+          "posts": [
+            {
+              "id": "p",
+              "images": [
+                {
+                  "id": "a",
+                  "localRef": "virga-media:gone",
+                  "alt": "first"
+                },
+                {
+                  "id": "b",
+                  "localRef": "file:///phone/photo.jpg",
+                  "alt": "from the phone"
+                },
+                {
+                  "id": "c",
+                  "localRef": "file:///phone/2.jpg",
+                  "blob": {
+                    "ref": {
+                      "$link": "b"
+                    },
+                    "mimeType": "image/jpeg"
+                  }
+                },
+                {
+                  "id": "d",
+                  "localRef": "virga-media:here",
+                  "file": {
+                    "name": "d.jpg",
+                    "type": "image/jpeg",
+                    "size": 3
+                  }
+                },
+                {
+                  "id": "e",
+                  "localRef": "virga-media:marker",
+                  "file": {
+                    "$file": true,
+                    "name": "e.jpg",
+                    "type": "image/jpeg",
+                    "size": 3,
+                    "lastModified": 0
+                  }
+                },
+                {
+                  "id": "f",
+                  "localRef": "virga-media:not-a-file",
+                  "file": {
+                    "name": "f"
+                  }
+                }
+              ],
+              "video": {
+                "localRef": "virga-media:v",
+                "alt": 0
+              }
+            }
+          ]
+        }
+      },
+      "output": [
+        "virga-media:gone",
+        "file:///phone/photo.jpg",
+        "file:///phone/2.jpg",
+        "virga-media:here",
+        "virga-media:marker",
+        "virga-media:not-a-file",
+        "virga-media:v"
+      ]
+    },
+    {
+      "id": "empty",
+      "fn": "stateLocalRefs",
+      "input": {
+        "state": {
+          "asDid": "did:plc:alice",
+          "posts": []
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "no-posts",
+      "fn": "stateLocalRefs",
+      "input": {
+        "state": {}
+      },
+      "output": []
+    },
+    {
+      "id": "null",
+      "fn": "stateLocalRefs",
+      "input": {
+        "state": null
+      },
+      "output": []
+    },
+    {
+      "id": "loose-posts",
+      "fn": "stateLocalRefs",
+      "input": {
+        "state": {
+          "posts": [
+            null,
+            {
+              "video": null
+            },
+            5,
+            {
+              "images": [
+                null,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "images-and-video",
+      "fn": "missingDraftMedia",
+      "input": {
+        "state": {
+          "asDid": "did:plc:alice",
+          "posts": [
+            {
+              "id": "p1",
+              "images": [
+                {
+                  "id": "i1",
+                  "localRef": "virga-media:1"
+                },
+                {
+                  "id": "i2",
+                  "localRef": "file:///phone/2.jpg",
+                  "alt": "two"
+                },
+                {
+                  "id": "i3"
+                },
+                {
+                  "id": "i4",
+                  "localRef": ""
+                }
+              ]
+            },
+            {
+              "id": "p2",
+              "images": [],
+              "video": {
+                "localRef": "virga-media:v"
+              }
+            },
+            {
+              "id": "p3",
+              "video": {
+                "localRef": 5
+              }
+            }
+          ]
+        }
+      },
+      "output": [
+        {
+          "kind": "image",
+          "postIndex": 0,
+          "imageIndex": 0,
+          "localRef": "virga-media:1",
+          "alt": ""
+        },
+        {
+          "kind": "image",
+          "postIndex": 0,
+          "imageIndex": 1,
+          "localRef": "file:///phone/2.jpg",
+          "alt": "two"
+        },
+        {
+          "kind": "video",
+          "postIndex": 1,
+          "localRef": "virga-media:v",
+          "alt": ""
+        },
+        {
+          "kind": "video",
+          "postIndex": 2,
+          "localRef": 5,
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "files-and-blobs",
+      "fn": "missingDraftMedia",
+      "input": {
+        "state": {
+          "asDid": "did:plc:alice",
+          "posts": [
+            {
+              "id": "p",
+              "images": [
+                {
+                  "id": "a",
+                  "localRef": "virga-media:gone",
+                  "alt": "first"
+                },
+                {
+                  "id": "b",
+                  "localRef": "file:///phone/photo.jpg",
+                  "alt": "from the phone"
+                },
+                {
+                  "id": "c",
+                  "localRef": "file:///phone/2.jpg",
+                  "blob": {
+                    "ref": {
+                      "$link": "b"
+                    },
+                    "mimeType": "image/jpeg"
+                  }
+                },
+                {
+                  "id": "d",
+                  "localRef": "virga-media:here",
+                  "file": {
+                    "name": "d.jpg",
+                    "type": "image/jpeg",
+                    "size": 3
+                  }
+                },
+                {
+                  "id": "e",
+                  "localRef": "virga-media:marker",
+                  "file": {
+                    "$file": true,
+                    "name": "e.jpg",
+                    "type": "image/jpeg",
+                    "size": 3,
+                    "lastModified": 0
+                  }
+                },
+                {
+                  "id": "f",
+                  "localRef": "virga-media:not-a-file",
+                  "file": {
+                    "name": "f"
+                  }
+                }
+              ],
+              "video": {
+                "localRef": "virga-media:v",
+                "alt": 0
+              }
+            }
+          ]
+        }
+      },
+      "output": [
+        {
+          "kind": "image",
+          "postIndex": 0,
+          "imageIndex": 0,
+          "localRef": "virga-media:gone",
+          "alt": "first"
+        },
+        {
+          "kind": "image",
+          "postIndex": 0,
+          "imageIndex": 1,
+          "localRef": "file:///phone/photo.jpg",
+          "alt": "from the phone"
+        },
+        {
+          "kind": "image",
+          "postIndex": 0,
+          "imageIndex": 5,
+          "localRef": "virga-media:not-a-file",
+          "alt": ""
+        },
+        {
+          "kind": "video",
+          "postIndex": 0,
+          "localRef": "virga-media:v",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "empty",
+      "fn": "missingDraftMedia",
+      "input": {
+        "state": {
+          "asDid": "did:plc:alice",
+          "posts": []
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "no-posts",
+      "fn": "missingDraftMedia",
+      "input": {
+        "state": {}
+      },
+      "output": []
+    },
+    {
+      "id": "null",
+      "fn": "missingDraftMedia",
+      "input": {
+        "state": null
+      },
+      "output": []
+    },
+    {
+      "id": "loose-posts",
+      "fn": "missingDraftMedia",
+      "input": {
+        "state": {
+          "posts": [
+            null,
+            {
+              "video": null
+            },
+            5,
+            {
+              "images": [
+                null,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "new-files",
+      "fn": "storeDraftMedia",
+      "input": {
+        "state": {
+          "asDid": "did:plc:alice",
+          "posts": [
+            {
+              "id": "p1",
+              "images": [
+                {
+                  "id": "i1",
+                  "file": {
+                    "name": "a.jpg",
+                    "type": "image/jpeg",
+                    "size": 3
+                  },
+                  "mime": "image/jpeg",
+                  "alt": "a moth",
+                  "previewUrl": "blob:1"
+                }
+              ]
+            },
+            {
+              "id": "p2",
+              "images": [],
+              "video": {
+                "file": {
+                  "name": "v.mp4",
+                  "type": "video/mp4",
+                  "size": 9
+                },
+                "mime": "video/mp4",
+                "status": "idle"
+              }
+            }
+          ]
+        },
+        "now": 5
+      },
+      "output": {
+        "result": {
+          "state": {
+            "asDid": "did:plc:alice",
+            "posts": [
+              {
+                "id": "p1",
+                "images": [
+                  {
+                    "id": "i1",
+                    "file": {
+                      "name": "a.jpg",
+                      "type": "image/jpeg",
+                      "size": 3
+                    },
+                    "mime": "image/jpeg",
+                    "alt": "a moth",
+                    "previewUrl": "blob:1",
+                    "localRef": "virga-media:00000000-0000-4000-8000-000000000001"
+                  }
+                ]
+              },
+              {
+                "id": "p2",
+                "images": [],
+                "video": {
+                  "file": {
+                    "name": "v.mp4",
+                    "type": "video/mp4",
+                    "size": 9
+                  },
+                  "mime": "video/mp4",
+                  "status": "idle",
+                  "localRef": "virga-media:00000000-0000-4000-8000-000000000002"
+                }
+              }
+            ]
+          },
+          "refs": [
+            "virga-media:00000000-0000-4000-8000-000000000001",
+            "virga-media:00000000-0000-4000-8000-000000000002"
+          ]
+        },
+        "refs": [
+          "virga-media:00000000-0000-4000-8000-000000000001",
+          "virga-media:00000000-0000-4000-8000-000000000002"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:00000000-0000-4000-8000-000000000001",
+            "file": {
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "name": "a.jpg",
+            "type": "image/jpeg",
+            "size": 3,
+            "savedAt": 5
+          },
+          {
+            "ref": "virga-media:00000000-0000-4000-8000-000000000002",
+            "file": {
+              "name": "v.mp4",
+              "type": "video/mp4",
+              "size": 9
+            },
+            "name": "v.mp4",
+            "type": "video/mp4",
+            "size": 9,
+            "savedAt": 5
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "path-or-no-file",
+      "fn": "storeDraftMedia",
+      "input": {
+        "state": {
+          "asDid": "did:plc:alice",
+          "posts": [
+            {
+              "id": "p",
+              "images": [
+                {
+                  "id": "i",
+                  "localRef": "virga-media:kept"
+                },
+                {
+                  "id": "j",
+                  "blob": {
+                    "ref": {
+                      "$link": "b"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": {
+        "result": {
+          "state": {
+            "asDid": "did:plc:alice",
+            "posts": [
+              {
+                "id": "p",
+                "images": [
+                  {
+                    "id": "i",
+                    "localRef": "virga-media:kept"
+                  },
+                  {
+                    "id": "j",
+                    "blob": {
+                      "ref": {
+                        "$link": "b"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "refs": [
+            "virga-media:kept"
+          ]
+        },
+        "refs": [],
+        "entries": [],
+        "persistent": false
+      }
+    },
+    {
+      "id": "held-already",
+      "fn": "storeDraftMedia",
+      "input": {
+        "seed": [
+          {
+            "ref": "virga-media:held",
+            "file": {
+              "name": "h.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          }
+        ],
+        "state": {
+          "asDid": "did:plc:alice",
+          "posts": [
+            {
+              "id": "p",
+              "images": [
+                {
+                  "id": "i",
+                  "localRef": "virga-media:held",
+                  "file": {
+                    "name": "h.jpg",
+                    "type": "image/jpeg",
+                    "size": 3
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "now": 7
+      },
+      "output": {
+        "result": {
+          "state": {
+            "asDid": "did:plc:alice",
+            "posts": [
+              {
+                "id": "p",
+                "images": [
+                  {
+                    "id": "i",
+                    "localRef": "virga-media:held",
+                    "file": {
+                      "name": "h.jpg",
+                      "type": "image/jpeg",
+                      "size": 3
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "refs": [
+            "virga-media:held"
+          ]
+        },
+        "refs": [
+          "virga-media:held"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:held",
+            "file": {
+              "name": "h.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "virga-path-not-here",
+      "fn": "storeDraftMedia",
+      "input": {
+        "state": {
+          "asDid": "did:plc:alice",
+          "posts": [
+            {
+              "id": "p",
+              "images": [
+                {
+                  "id": "i",
+                  "localRef": "virga-media:other",
+                  "file": {
+                    "name": "o.jpg",
+                    "type": "image/jpeg",
+                    "size": 3
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "now": 8
+      },
+      "output": {
+        "result": {
+          "state": {
+            "asDid": "did:plc:alice",
+            "posts": [
+              {
+                "id": "p",
+                "images": [
+                  {
+                    "id": "i",
+                    "localRef": "virga-media:other",
+                    "file": {
+                      "name": "o.jpg",
+                      "type": "image/jpeg",
+                      "size": 3
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "refs": [
+            "virga-media:other"
+          ]
+        },
+        "refs": [
+          "virga-media:other"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:other",
+            "file": {
+              "name": "o.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "name": "o.jpg",
+            "type": "image/jpeg",
+            "size": 3,
+            "savedAt": 8
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "other-apps-path",
+      "fn": "storeDraftMedia",
+      "input": {
+        "state": {
+          "asDid": "did:plc:alice",
+          "posts": [
+            {
+              "id": "p",
+              "images": [
+                {
+                  "id": "i",
+                  "localRef": "file:///phone/photo.jpg",
+                  "file": {
+                    "name": "a.jpg",
+                    "type": "image/jpeg",
+                    "size": 3
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "now": 9
+      },
+      "output": {
+        "result": {
+          "state": {
+            "asDid": "did:plc:alice",
+            "posts": [
+              {
+                "id": "p",
+                "images": [
+                  {
+                    "id": "i",
+                    "localRef": "virga-media:00000000-0000-4000-8000-000000000001",
+                    "file": {
+                      "name": "a.jpg",
+                      "type": "image/jpeg",
+                      "size": 3
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "refs": [
+            "virga-media:00000000-0000-4000-8000-000000000001"
+          ]
+        },
+        "refs": [
+          "virga-media:00000000-0000-4000-8000-000000000001"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:00000000-0000-4000-8000-000000000001",
+            "file": {
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "name": "a.jpg",
+            "type": "image/jpeg",
+            "size": 3,
+            "savedAt": 9
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "file-shapes",
+      "fn": "storeDraftMedia",
+      "input": {
+        "state": {
+          "asDid": "did:plc:alice",
+          "posts": [
+            {
+              "id": "p",
+              "images": [
+                {
+                  "id": "a",
+                  "file": {
+                    "$file": true,
+                    "name": "m.png",
+                    "type": "image/png",
+                    "size": 4,
+                    "lastModified": 0
+                  }
+                },
+                {
+                  "id": "b",
+                  "file": {
+                    "type": "image/png",
+                    "size": 2
+                  }
+                },
+                {
+                  "id": "c",
+                  "file": {
+                    "name": "n",
+                    "size": "2",
+                    "type": "image/png"
+                  }
+                },
+                {
+                  "id": "d",
+                  "file": {
+                    "name": 5,
+                    "type": "",
+                    "size": 1
+                  },
+                  "mime": "image/gif"
+                },
+                {
+                  "id": "e",
+                  "file": {
+                    "name": "e",
+                    "type": "",
+                    "size": 1
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "now": 10
+      },
+      "output": {
+        "result": {
+          "state": {
+            "asDid": "did:plc:alice",
+            "posts": [
+              {
+                "id": "p",
+                "images": [
+                  {
+                    "id": "a",
+                    "file": {
+                      "$file": true,
+                      "name": "m.png",
+                      "type": "image/png",
+                      "size": 4,
+                      "lastModified": 0
+                    },
+                    "localRef": "virga-media:00000000-0000-4000-8000-000000000001"
+                  },
+                  {
+                    "id": "b",
+                    "file": {
+                      "type": "image/png",
+                      "size": 2
+                    },
+                    "localRef": "virga-media:00000000-0000-4000-8000-000000000002"
+                  },
+                  {
+                    "id": "c",
+                    "file": {
+                      "name": "n",
+                      "size": "2",
+                      "type": "image/png"
+                    }
+                  },
+                  {
+                    "id": "d",
+                    "file": {
+                      "name": 5,
+                      "type": "",
+                      "size": 1
+                    },
+                    "mime": "image/gif",
+                    "localRef": "virga-media:00000000-0000-4000-8000-000000000003"
+                  },
+                  {
+                    "id": "e",
+                    "file": {
+                      "name": "e",
+                      "type": "",
+                      "size": 1
+                    },
+                    "localRef": "virga-media:00000000-0000-4000-8000-000000000004"
+                  }
+                ]
+              }
+            ]
+          },
+          "refs": [
+            "virga-media:00000000-0000-4000-8000-000000000001",
+            "virga-media:00000000-0000-4000-8000-000000000002",
+            "virga-media:00000000-0000-4000-8000-000000000003",
+            "virga-media:00000000-0000-4000-8000-000000000004"
+          ]
+        },
+        "refs": [
+          "virga-media:00000000-0000-4000-8000-000000000001",
+          "virga-media:00000000-0000-4000-8000-000000000002",
+          "virga-media:00000000-0000-4000-8000-000000000003",
+          "virga-media:00000000-0000-4000-8000-000000000004"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:00000000-0000-4000-8000-000000000001",
+            "file": {
+              "$file": true,
+              "name": "m.png",
+              "type": "image/png",
+              "size": 4,
+              "lastModified": 0
+            },
+            "name": "m.png",
+            "type": "image/png",
+            "size": 4,
+            "savedAt": 10
+          },
+          {
+            "ref": "virga-media:00000000-0000-4000-8000-000000000002",
+            "file": {
+              "type": "image/png",
+              "size": 2
+            },
+            "name": "",
+            "type": "image/png",
+            "size": 2,
+            "savedAt": 10
+          },
+          {
+            "ref": "virga-media:00000000-0000-4000-8000-000000000003",
+            "file": {
+              "name": 5,
+              "type": "",
+              "size": 1
+            },
+            "name": "",
+            "type": "image/gif",
+            "size": 1,
+            "savedAt": 10
+          },
+          {
+            "ref": "virga-media:00000000-0000-4000-8000-000000000004",
+            "file": {
+              "name": "e",
+              "type": "",
+              "size": 1
+            },
+            "name": "e",
+            "type": "",
+            "size": 1,
+            "savedAt": 10
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "nothing",
+      "fn": "storeDraftMedia",
+      "input": {
+        "state": {
+          "asDid": "did:plc:alice",
+          "posts": [
+            {
+              "id": "p",
+              "images": []
+            }
+          ]
+        }
+      },
+      "output": {
+        "result": {
+          "state": {
+            "asDid": "did:plc:alice",
+            "posts": [
+              {
+                "id": "p",
+                "images": []
+              }
+            ]
+          },
+          "refs": []
+        },
+        "refs": [],
+        "entries": [],
+        "persistent": false
+      }
+    },
+    {
+      "id": "preview-none",
+      "fn": "loadDraftMedia",
+      "input": {
+        "preview": "none",
+        "seed": [
+          {
+            "ref": "virga-media:1",
+            "file": {
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "type": "image/jpeg",
+            "size": 3
+          },
+          {
+            "ref": "virga-media:v",
+            "file": {
+              "name": "v.mp4",
+              "type": "video/mp4",
+              "size": 9
+            },
+            "type": "video/mp4"
+          },
+          {
+            "ref": "virga-media:untyped",
+            "file": {
+              "name": "u.png",
+              "type": "image/png",
+              "size": 4
+            }
+          },
+          {
+            "ref": "virga-media:no-file"
+          },
+          {
+            "ref": "virga-media:sized",
+            "file": {
+              "name": "s.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "type": "",
+            "size": 0
+          }
+        ]
+      },
+      "output": {
+        "result": {
+          "state": {
+            "asDid": "did:plc:alice",
+            "posts": [
+              {
+                "id": "p1",
+                "images": [
+                  {
+                    "id": "x",
+                    "localRef": "virga-media:1",
+                    "alt": "a moth",
+                    "file": {
+                      "name": "a.jpg",
+                      "type": "image/jpeg",
+                      "size": 3
+                    },
+                    "mime": "image/jpeg",
+                    "size": 3
+                  },
+                  {
+                    "id": "y",
+                    "localRef": "virga-media:untyped",
+                    "mime": "image/webp",
+                    "file": {
+                      "name": "u.png",
+                      "type": "image/png",
+                      "size": 4
+                    },
+                    "size": 4
+                  },
+                  {
+                    "id": "z",
+                    "localRef": "virga-media:no-file",
+                    "alt": "gone"
+                  },
+                  {
+                    "id": "w",
+                    "localRef": "virga-media:sized",
+                    "previewUrl": "blob:kept",
+                    "file": {
+                      "name": "s.jpg",
+                      "type": "image/jpeg",
+                      "size": 3
+                    },
+                    "mime": "",
+                    "size": 0
+                  },
+                  {
+                    "id": "u",
+                    "localRef": "virga-media:missing",
+                    "blob": {
+                      "ref": {
+                        "$link": "b"
+                      }
+                    }
+                  },
+                  {
+                    "id": "t",
+                    "localRef": "file:///phone/1.jpg"
+                  },
+                  {
+                    "id": "s",
+                    "localRef": "virga-media:1",
+                    "file": {
+                      "name": "already.jpg",
+                      "type": "image/jpeg",
+                      "size": 3
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "p2",
+                "images": [],
+                "video": {
+                  "localRef": "virga-media:v",
+                  "status": "idle",
+                  "file": {
+                    "name": "v.mp4",
+                    "type": "video/mp4",
+                    "size": 9
+                  },
+                  "mime": "video/mp4",
+                  "size": 9
+                }
+              }
+            ]
+          },
+          "missing": [
+            "virga-media:no-file",
+            "file:///phone/1.jpg"
+          ]
+        },
+        "refs": [
+          "virga-media:1",
+          "virga-media:v",
+          "virga-media:untyped",
+          "virga-media:no-file",
+          "virga-media:sized"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:1",
+            "file": {
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "type": "image/jpeg",
+            "size": 3
+          },
+          {
+            "ref": "virga-media:v",
+            "file": {
+              "name": "v.mp4",
+              "type": "video/mp4",
+              "size": 9
+            },
+            "type": "video/mp4"
+          },
+          {
+            "ref": "virga-media:untyped",
+            "file": {
+              "name": "u.png",
+              "type": "image/png",
+              "size": 4
+            }
+          },
+          {
+            "ref": "virga-media:no-file"
+          },
+          {
+            "ref": "virga-media:sized",
+            "file": {
+              "name": "s.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "type": "",
+            "size": 0
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "preview-named",
+      "fn": "loadDraftMedia",
+      "input": {
+        "preview": "named",
+        "seed": [
+          {
+            "ref": "virga-media:1",
+            "file": {
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "type": "image/jpeg",
+            "size": 3
+          },
+          {
+            "ref": "virga-media:v",
+            "file": {
+              "name": "v.mp4",
+              "type": "video/mp4",
+              "size": 9
+            },
+            "type": "video/mp4"
+          },
+          {
+            "ref": "virga-media:untyped",
+            "file": {
+              "name": "u.png",
+              "type": "image/png",
+              "size": 4
+            }
+          },
+          {
+            "ref": "virga-media:no-file"
+          },
+          {
+            "ref": "virga-media:sized",
+            "file": {
+              "name": "s.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "type": "",
+            "size": 0
+          }
+        ]
+      },
+      "output": {
+        "result": {
+          "state": {
+            "asDid": "did:plc:alice",
+            "posts": [
+              {
+                "id": "p1",
+                "images": [
+                  {
+                    "id": "x",
+                    "localRef": "virga-media:1",
+                    "alt": "a moth",
+                    "file": {
+                      "name": "a.jpg",
+                      "type": "image/jpeg",
+                      "size": 3
+                    },
+                    "mime": "image/jpeg",
+                    "size": 3,
+                    "previewUrl": "blob:a.jpg"
+                  },
+                  {
+                    "id": "y",
+                    "localRef": "virga-media:untyped",
+                    "mime": "image/webp",
+                    "file": {
+                      "name": "u.png",
+                      "type": "image/png",
+                      "size": 4
+                    },
+                    "size": 4,
+                    "previewUrl": "blob:u.png"
+                  },
+                  {
+                    "id": "z",
+                    "localRef": "virga-media:no-file",
+                    "alt": "gone"
+                  },
+                  {
+                    "id": "w",
+                    "localRef": "virga-media:sized",
+                    "previewUrl": "blob:kept",
+                    "file": {
+                      "name": "s.jpg",
+                      "type": "image/jpeg",
+                      "size": 3
+                    },
+                    "mime": "",
+                    "size": 0
+                  },
+                  {
+                    "id": "u",
+                    "localRef": "virga-media:missing",
+                    "blob": {
+                      "ref": {
+                        "$link": "b"
+                      }
+                    }
+                  },
+                  {
+                    "id": "t",
+                    "localRef": "file:///phone/1.jpg"
+                  },
+                  {
+                    "id": "s",
+                    "localRef": "virga-media:1",
+                    "file": {
+                      "name": "already.jpg",
+                      "type": "image/jpeg",
+                      "size": 3
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "p2",
+                "images": [],
+                "video": {
+                  "localRef": "virga-media:v",
+                  "status": "idle",
+                  "file": {
+                    "name": "v.mp4",
+                    "type": "video/mp4",
+                    "size": 9
+                  },
+                  "mime": "video/mp4",
+                  "size": 9
+                }
+              }
+            ]
+          },
+          "missing": [
+            "virga-media:no-file",
+            "file:///phone/1.jpg"
+          ]
+        },
+        "refs": [
+          "virga-media:1",
+          "virga-media:v",
+          "virga-media:untyped",
+          "virga-media:no-file",
+          "virga-media:sized"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:1",
+            "file": {
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "type": "image/jpeg",
+            "size": 3
+          },
+          {
+            "ref": "virga-media:v",
+            "file": {
+              "name": "v.mp4",
+              "type": "video/mp4",
+              "size": 9
+            },
+            "type": "video/mp4"
+          },
+          {
+            "ref": "virga-media:untyped",
+            "file": {
+              "name": "u.png",
+              "type": "image/png",
+              "size": 4
+            }
+          },
+          {
+            "ref": "virga-media:no-file"
+          },
+          {
+            "ref": "virga-media:sized",
+            "file": {
+              "name": "s.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "type": "",
+            "size": 0
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "preview-throws",
+      "fn": "loadDraftMedia",
+      "input": {
+        "preview": "throws",
+        "seed": [
+          {
+            "ref": "virga-media:1",
+            "file": {
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "type": "image/jpeg",
+            "size": 3
+          },
+          {
+            "ref": "virga-media:v",
+            "file": {
+              "name": "v.mp4",
+              "type": "video/mp4",
+              "size": 9
+            },
+            "type": "video/mp4"
+          },
+          {
+            "ref": "virga-media:untyped",
+            "file": {
+              "name": "u.png",
+              "type": "image/png",
+              "size": 4
+            }
+          },
+          {
+            "ref": "virga-media:no-file"
+          },
+          {
+            "ref": "virga-media:sized",
+            "file": {
+              "name": "s.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "type": "",
+            "size": 0
+          }
+        ]
+      },
+      "output": {
+        "result": {
+          "state": {
+            "asDid": "did:plc:alice",
+            "posts": [
+              {
+                "id": "p1",
+                "images": [
+                  {
+                    "id": "x",
+                    "localRef": "virga-media:1",
+                    "alt": "a moth",
+                    "file": {
+                      "name": "a.jpg",
+                      "type": "image/jpeg",
+                      "size": 3
+                    },
+                    "mime": "image/jpeg",
+                    "size": 3
+                  },
+                  {
+                    "id": "y",
+                    "localRef": "virga-media:untyped",
+                    "mime": "image/webp",
+                    "file": {
+                      "name": "u.png",
+                      "type": "image/png",
+                      "size": 4
+                    },
+                    "size": 4
+                  },
+                  {
+                    "id": "z",
+                    "localRef": "virga-media:no-file",
+                    "alt": "gone"
+                  },
+                  {
+                    "id": "w",
+                    "localRef": "virga-media:sized",
+                    "previewUrl": "blob:kept",
+                    "file": {
+                      "name": "s.jpg",
+                      "type": "image/jpeg",
+                      "size": 3
+                    },
+                    "mime": "",
+                    "size": 0
+                  },
+                  {
+                    "id": "u",
+                    "localRef": "virga-media:missing",
+                    "blob": {
+                      "ref": {
+                        "$link": "b"
+                      }
+                    }
+                  },
+                  {
+                    "id": "t",
+                    "localRef": "file:///phone/1.jpg"
+                  },
+                  {
+                    "id": "s",
+                    "localRef": "virga-media:1",
+                    "file": {
+                      "name": "already.jpg",
+                      "type": "image/jpeg",
+                      "size": 3
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "p2",
+                "images": [],
+                "video": {
+                  "localRef": "virga-media:v",
+                  "status": "idle",
+                  "file": {
+                    "name": "v.mp4",
+                    "type": "video/mp4",
+                    "size": 9
+                  },
+                  "mime": "video/mp4",
+                  "size": 9
+                }
+              }
+            ]
+          },
+          "missing": [
+            "virga-media:no-file",
+            "file:///phone/1.jpg"
+          ]
+        },
+        "refs": [
+          "virga-media:1",
+          "virga-media:v",
+          "virga-media:untyped",
+          "virga-media:no-file",
+          "virga-media:sized"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:1",
+            "file": {
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "type": "image/jpeg",
+            "size": 3
+          },
+          {
+            "ref": "virga-media:v",
+            "file": {
+              "name": "v.mp4",
+              "type": "video/mp4",
+              "size": 9
+            },
+            "type": "video/mp4"
+          },
+          {
+            "ref": "virga-media:untyped",
+            "file": {
+              "name": "u.png",
+              "type": "image/png",
+              "size": 4
+            }
+          },
+          {
+            "ref": "virga-media:no-file"
+          },
+          {
+            "ref": "virga-media:sized",
+            "file": {
+              "name": "s.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "type": "",
+            "size": 0
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "preview-empty",
+      "fn": "loadDraftMedia",
+      "input": {
+        "preview": "empty",
+        "seed": [
+          {
+            "ref": "virga-media:1",
+            "file": {
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "type": "image/jpeg",
+            "size": 3
+          },
+          {
+            "ref": "virga-media:v",
+            "file": {
+              "name": "v.mp4",
+              "type": "video/mp4",
+              "size": 9
+            },
+            "type": "video/mp4"
+          },
+          {
+            "ref": "virga-media:untyped",
+            "file": {
+              "name": "u.png",
+              "type": "image/png",
+              "size": 4
+            }
+          },
+          {
+            "ref": "virga-media:no-file"
+          },
+          {
+            "ref": "virga-media:sized",
+            "file": {
+              "name": "s.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "type": "",
+            "size": 0
+          }
+        ]
+      },
+      "output": {
+        "result": {
+          "state": {
+            "asDid": "did:plc:alice",
+            "posts": [
+              {
+                "id": "p1",
+                "images": [
+                  {
+                    "id": "x",
+                    "localRef": "virga-media:1",
+                    "alt": "a moth",
+                    "file": {
+                      "name": "a.jpg",
+                      "type": "image/jpeg",
+                      "size": 3
+                    },
+                    "mime": "image/jpeg",
+                    "size": 3,
+                    "previewUrl": null
+                  },
+                  {
+                    "id": "y",
+                    "localRef": "virga-media:untyped",
+                    "mime": "image/webp",
+                    "file": {
+                      "name": "u.png",
+                      "type": "image/png",
+                      "size": 4
+                    },
+                    "size": 4,
+                    "previewUrl": null
+                  },
+                  {
+                    "id": "z",
+                    "localRef": "virga-media:no-file",
+                    "alt": "gone"
+                  },
+                  {
+                    "id": "w",
+                    "localRef": "virga-media:sized",
+                    "previewUrl": "blob:kept",
+                    "file": {
+                      "name": "s.jpg",
+                      "type": "image/jpeg",
+                      "size": 3
+                    },
+                    "mime": "",
+                    "size": 0
+                  },
+                  {
+                    "id": "u",
+                    "localRef": "virga-media:missing",
+                    "blob": {
+                      "ref": {
+                        "$link": "b"
+                      }
+                    }
+                  },
+                  {
+                    "id": "t",
+                    "localRef": "file:///phone/1.jpg"
+                  },
+                  {
+                    "id": "s",
+                    "localRef": "virga-media:1",
+                    "file": {
+                      "name": "already.jpg",
+                      "type": "image/jpeg",
+                      "size": 3
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "p2",
+                "images": [],
+                "video": {
+                  "localRef": "virga-media:v",
+                  "status": "idle",
+                  "file": {
+                    "name": "v.mp4",
+                    "type": "video/mp4",
+                    "size": 9
+                  },
+                  "mime": "video/mp4",
+                  "size": 9
+                }
+              }
+            ]
+          },
+          "missing": [
+            "virga-media:no-file",
+            "file:///phone/1.jpg"
+          ]
+        },
+        "refs": [
+          "virga-media:1",
+          "virga-media:v",
+          "virga-media:untyped",
+          "virga-media:no-file",
+          "virga-media:sized"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:1",
+            "file": {
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "type": "image/jpeg",
+            "size": 3
+          },
+          {
+            "ref": "virga-media:v",
+            "file": {
+              "name": "v.mp4",
+              "type": "video/mp4",
+              "size": 9
+            },
+            "type": "video/mp4"
+          },
+          {
+            "ref": "virga-media:untyped",
+            "file": {
+              "name": "u.png",
+              "type": "image/png",
+              "size": 4
+            }
+          },
+          {
+            "ref": "virga-media:no-file"
+          },
+          {
+            "ref": "virga-media:sized",
+            "file": {
+              "name": "s.jpg",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "type": "",
+            "size": 0
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "sizes-unknown",
+      "fn": "loadDraftMedia",
+      "input": {
+        "preview": "none",
+        "seed": [
+          {
+            "ref": "virga-media:nosize",
+            "file": {
+              "name": "q.jpg",
+              "type": ""
+            }
+          },
+          {
+            "ref": "virga-media:nullsize",
+            "file": {
+              "name": "n.jpg",
+              "size": null
+            },
+            "size": null
+          }
+        ],
+        "state": {
+          "asDid": "did:plc:alice",
+          "posts": [
+            {
+              "id": "p1",
+              "images": [
+                {
+                  "id": "q",
+                  "localRef": "virga-media:nosize",
+                  "size": 12,
+                  "mime": "image/png"
+                },
+                {
+                  "id": "n",
+                  "localRef": "virga-media:nullsize",
+                  "size": 13
+                }
+              ],
+              "video": {
+                "localRef": "virga-media:nosize",
+                "size": 7,
+                "alt": "v"
+              }
+            }
+          ]
+        }
+      },
+      "output": {
+        "result": {
+          "state": {
+            "asDid": "did:plc:alice",
+            "posts": [
+              {
+                "id": "p1",
+                "images": [
+                  {
+                    "id": "q",
+                    "localRef": "virga-media:nosize",
+                    "mime": "image/png",
+                    "file": {
+                      "name": "q.jpg",
+                      "type": ""
+                    }
+                  },
+                  {
+                    "id": "n",
+                    "localRef": "virga-media:nullsize",
+                    "size": null,
+                    "file": {
+                      "name": "n.jpg",
+                      "size": null
+                    },
+                    "mime": ""
+                  }
+                ],
+                "video": {
+                  "localRef": "virga-media:nosize",
+                  "alt": "v",
+                  "file": {
+                    "name": "q.jpg",
+                    "type": ""
+                  },
+                  "mime": ""
+                }
+              }
+            ]
+          },
+          "missing": []
+        },
+        "refs": [
+          "virga-media:nosize",
+          "virga-media:nullsize"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:nosize",
+            "file": {
+              "name": "q.jpg",
+              "type": ""
+            }
+          },
+          {
+            "ref": "virga-media:nullsize",
+            "file": {
+              "name": "n.jpg",
+              "size": null
+            },
+            "size": null
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "only-virgas",
+      "fn": "removeDraftMedia",
+      "input": {
+        "refs": [
+          "virga-media:a",
+          "file:///x"
+        ],
+        "seed": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          }
+        ]
+      },
+      "output": {
+        "refs": [
+          "virga-media:b"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "none",
+      "fn": "removeDraftMedia",
+      "input": {
+        "refs": [],
+        "seed": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          }
+        ]
+      },
+      "output": {
+        "refs": [
+          "virga-media:a",
+          "virga-media:b"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "null",
+      "fn": "removeDraftMedia",
+      "input": {
+        "refs": null,
+        "seed": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          }
+        ]
+      },
+      "output": {
+        "refs": [
+          "virga-media:a",
+          "virga-media:b"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "not-held",
+      "fn": "removeDraftMedia",
+      "input": {
+        "refs": [
+          "virga-media:zzz"
+        ],
+        "seed": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          }
+        ]
+      },
+      "output": {
+        "refs": [
+          "virga-media:a",
+          "virga-media:b"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "non-strings",
+      "fn": "removeDraftMedia",
+      "input": {
+        "refs": [
+          5,
+          null,
+          "virga-media:b"
+        ],
+        "seed": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          }
+        ]
+      },
+      "output": {
+        "refs": [
+          "virga-media:a"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "keep-one",
+      "fn": "pruneDraftMedia",
+      "input": {
+        "keep": [
+          "virga-media:b"
+        ],
+        "seed": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:c",
+            "file": {
+              "name": "c",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:old",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 100
+          },
+          {
+            "ref": "virga-media:new",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 200
+          },
+          {
+            "ref": "virga-media:string-time",
+            "file": {
+              "name": "s",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": "300"
+          }
+        ]
+      },
+      "output": {
+        "result": [
+          "virga-media:a",
+          "virga-media:c",
+          "virga-media:old",
+          "virga-media:new",
+          "virga-media:string-time"
+        ],
+        "refs": [
+          "virga-media:b"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "keep-none",
+      "fn": "pruneDraftMedia",
+      "input": {
+        "keep": [],
+        "seed": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:c",
+            "file": {
+              "name": "c",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:old",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 100
+          },
+          {
+            "ref": "virga-media:new",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 200
+          },
+          {
+            "ref": "virga-media:string-time",
+            "file": {
+              "name": "s",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": "300"
+          }
+        ]
+      },
+      "output": {
+        "result": [
+          "virga-media:a",
+          "virga-media:b",
+          "virga-media:c",
+          "virga-media:old",
+          "virga-media:new",
+          "virga-media:string-time"
+        ],
+        "refs": [],
+        "entries": [],
+        "persistent": false
+      }
+    },
+    {
+      "id": "keep-null",
+      "fn": "pruneDraftMedia",
+      "input": {
+        "keep": null,
+        "seed": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:c",
+            "file": {
+              "name": "c",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:old",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 100
+          },
+          {
+            "ref": "virga-media:new",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 200
+          },
+          {
+            "ref": "virga-media:string-time",
+            "file": {
+              "name": "s",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": "300"
+          }
+        ]
+      },
+      "output": {
+        "result": [
+          "virga-media:a",
+          "virga-media:b",
+          "virga-media:c",
+          "virga-media:old",
+          "virga-media:new",
+          "virga-media:string-time"
+        ],
+        "refs": [],
+        "entries": [],
+        "persistent": false
+      }
+    },
+    {
+      "id": "keep-all",
+      "fn": "pruneDraftMedia",
+      "input": {
+        "keep": [
+          "virga-media:a",
+          "virga-media:b",
+          "virga-media:c"
+        ],
+        "seed": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:c",
+            "file": {
+              "name": "c",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:old",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 100
+          },
+          {
+            "ref": "virga-media:new",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 200
+          },
+          {
+            "ref": "virga-media:string-time",
+            "file": {
+              "name": "s",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": "300"
+          }
+        ]
+      },
+      "output": {
+        "result": [
+          "virga-media:old",
+          "virga-media:new",
+          "virga-media:string-time"
+        ],
+        "refs": [
+          "virga-media:a",
+          "virga-media:b",
+          "virga-media:c"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:c",
+            "file": {
+              "name": "c",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "saved-before",
+      "fn": "pruneDraftMedia",
+      "input": {
+        "keep": [],
+        "savedBefore": 200,
+        "seed": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:c",
+            "file": {
+              "name": "c",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:old",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 100
+          },
+          {
+            "ref": "virga-media:new",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 200
+          },
+          {
+            "ref": "virga-media:string-time",
+            "file": {
+              "name": "s",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": "300"
+          }
+        ]
+      },
+      "output": {
+        "result": [
+          "virga-media:a",
+          "virga-media:b",
+          "virga-media:c",
+          "virga-media:old"
+        ],
+        "refs": [
+          "virga-media:new",
+          "virga-media:string-time"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:new",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 200
+          },
+          {
+            "ref": "virga-media:string-time",
+            "file": {
+              "name": "s",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": "300"
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "saved-before-keep",
+      "fn": "pruneDraftMedia",
+      "input": {
+        "keep": [
+          "virga-media:old"
+        ],
+        "savedBefore": 200,
+        "seed": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:c",
+            "file": {
+              "name": "c",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:old",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 100
+          },
+          {
+            "ref": "virga-media:new",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 200
+          },
+          {
+            "ref": "virga-media:string-time",
+            "file": {
+              "name": "s",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": "300"
+          }
+        ]
+      },
+      "output": {
+        "result": [
+          "virga-media:a",
+          "virga-media:b",
+          "virga-media:c"
+        ],
+        "refs": [
+          "virga-media:old",
+          "virga-media:new",
+          "virga-media:string-time"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:old",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 100
+          },
+          {
+            "ref": "virga-media:new",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 200
+          },
+          {
+            "ref": "virga-media:string-time",
+            "file": {
+              "name": "s",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": "300"
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "saved-before-zero",
+      "fn": "pruneDraftMedia",
+      "input": {
+        "keep": [],
+        "savedBefore": 0,
+        "seed": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:c",
+            "file": {
+              "name": "c",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:old",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 100
+          },
+          {
+            "ref": "virga-media:new",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 200
+          },
+          {
+            "ref": "virga-media:string-time",
+            "file": {
+              "name": "s",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": "300"
+          }
+        ]
+      },
+      "output": {
+        "result": [
+          "virga-media:a",
+          "virga-media:b",
+          "virga-media:c"
+        ],
+        "refs": [
+          "virga-media:old",
+          "virga-media:new",
+          "virga-media:string-time"
+        ],
+        "entries": [
+          {
+            "ref": "virga-media:old",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 100
+          },
+          {
+            "ref": "virga-media:new",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 200
+          },
+          {
+            "ref": "virga-media:string-time",
+            "file": {
+              "name": "s",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": "300"
+          }
+        ],
+        "persistent": false
+      }
+    },
+    {
+      "id": "other-account",
+      "fn": "pruneDraftMedia",
+      "input": {
+        "did": "did:plc:bob",
+        "keep": [],
+        "seed": [
+          {
+            "ref": "virga-media:a",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:b",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:c",
+            "file": {
+              "name": "c",
+              "type": "image/jpeg",
+              "size": 3
+            }
+          },
+          {
+            "ref": "virga-media:old",
+            "file": {
+              "name": "a",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 100
+          },
+          {
+            "ref": "virga-media:new",
+            "file": {
+              "name": "b",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": 200
+          },
+          {
+            "ref": "virga-media:string-time",
+            "file": {
+              "name": "s",
+              "type": "image/jpeg",
+              "size": 3
+            },
+            "savedAt": "300"
+          }
+        ]
+      },
+      "output": {
+        "result": [
+          "virga-media:a",
+          "virga-media:b",
+          "virga-media:c",
+          "virga-media:old",
+          "virga-media:new",
+          "virga-media:string-time"
+        ],
+        "refs": [],
+        "entries": [],
+        "persistent": false
+      }
+    }
+  ]
+}

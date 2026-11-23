@@ -1,0 +1,175 @@
+# The iOS app (ios/) and its parity with the web app.
+#
+# - parity: the fixtures written by the web code are current, and every web
+#   source file is mapped to its Swift port (npx vitest run ios/parity).
+#   Also reports web files changed since their Swift port was last synced.
+# - swift-linux: VirgaKit's logic and parity tests on Linux.
+# - ios: the SwiftUI app and every test on an iOS Simulator, with Xcode.
+#
+# A web change that alters behaviour fails `parity` until the fixtures are
+# regenerated (npm run parity:write), and then fails `swift-linux` and `ios`
+# until the Swift port follows. See ios/parity/README.md.
+
+name: iOS
+
+on:
+  pull_request:
+    paths:
+      - 'ios/**'
+      - 'src/**'
+      - 'api/**'
+      - 'server/**'
+      - 'harness/**'
+      - 'TERMS_OF_SERVICE.md'
+      - 'PRIVACY_POLICY.md'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vitest.config.js'
+      - '.github/workflows/ios.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ios/**'
+      - 'src/**'
+      - 'api/**'
+      - 'server/**'
+      - 'harness/**'
+      - 'TERMS_OF_SERVICE.md'
+      - 'PRIVACY_POLICY.md'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vitest.config.js'
+      - '.github/workflows/ios.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  parity:
+    name: Parity with the web app
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Fixtures are current and every web file is mapped
+        run: npx vitest run ios/parity
+      - name: Web files changed since their Swift port was synced
+        run: node ios/parity/sync.mjs drift --github
+
+  swift-linux:
+    name: VirgaKit on Linux
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - name: Restore the Swift toolchain
+        uses: actions/cache@v4
+        with:
+          path: ~/.swift-toolchain
+          key: swift-${{ runner.os }}-${{ hashFiles('ios/.swift-version') }}
+      - name: Install Swift
+        run: echo "$(ios/scripts/install-swift-linux.sh)" >> "$GITHUB_PATH"
+      - name: Restore the build
+        uses: actions/cache@v4
+        with:
+          path: ios/VirgaKit/.build
+          key: spm-linux-${{ hashFiles('ios/.swift-version', 'ios/VirgaKit/Package.swift') }}-${{ github.sha }}
+          restore-keys: spm-linux-${{ hashFiles('ios/.swift-version', 'ios/VirgaKit/Package.swift') }}-
+      - run: swift --version
+      - name: Test
+        run: swift test --package-path ios/VirgaKit
+
+  ios:
+    name: iOS app
+    runs-on: macos-latest
+    # The package tests and then every UI test on the iPhone: about 45
+    # minutes on a usual runner, past 60 on a slow one (run 78).
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v5
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - run: xcodebuild -version && swift --version
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate the project
+        run: cd ios && xcodegen generate
+      - name: VirgaKit tests on iOS
+        run: ios/scripts/xcodebuild.sh package-test
+      - name: App, unit and UI tests
+        run: ios/scripts/xcodebuild.sh app-test
+      # The UI tests keep a screenshot of each screen worth looking at
+      # (XCTAttachment, kept always). Exported whatever the tests did, and
+      # skipped quietly when there is no result bundle.
+      - name: Export the screenshots
+        if: always()
+        run: ios/scripts/export-screenshots.sh app-test iphone
+      - name: Keep the screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-iphone
+          path: ios/build/screenshots
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Why it failed
+        if: failure()
+        run: ios/scripts/ci-failure-report.sh
+      - name: Keep the results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcresults-iphone
+          path: ios/build/*.xcresult
+          retention-days: 7
+
+  # The UI tests again on an iPad, where the app has its sidebar: a job of
+  # its own, beside the iPhone's, so the two run at the same time.
+  ipad:
+    name: iOS app on an iPad
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v5
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - run: xcodebuild -version && swift --version
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate the project
+        run: cd ios && xcodegen generate
+      - name: UI tests on an iPad
+        run: ios/scripts/xcodebuild.sh ipad-test
+      - name: Export the screenshots
+        if: always()
+        run: ios/scripts/export-screenshots.sh ipad-test ipad
+      - name: Keep the screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-ipad
+          path: ios/build/screenshots
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Why it failed
+        if: failure()
+        run: ios/scripts/ci-failure-report.sh
+      - name: Keep the results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcresults-ipad
+          path: ios/build/*.xcresult
+          retention-days: 7

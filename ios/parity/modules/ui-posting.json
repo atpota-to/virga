@@ -1,0 +1,378 @@
+{
+  "domain": "ui-posting",
+  "target": "VirgaUI",
+  "wave": 4,
+  "summary": "The composer and the posting pages as SwiftUI screens.",
+  "files": {
+    "src/posting/PostingPage.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/RoutedPage.swift"
+      ],
+      "note": "RoutedPage's posting case: a page that needs Virga's server (needsBackend: Scheduled, the weekly schedule, Timers) shows NeedsBackend under its header without its access line for an account that can't schedule; otherwise the page, keyed by the open account, with the part of the address after it where it takes one: the overview (HubPage), Drafts, Scheduled posts (ScheduledPage), the weekly schedule (WeeklySchedulePage), Timers, Posted, Templates and the Library. A key with no page draws nothing, as the web's null.",
+      "synced": "bef217b0e836"
+    },
+    "src/posting/PostingSettingsSection.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
+      ],
+      "note": "Whose settings (every signed-in account, and the open one even when it needs a sign-in, by accountName with its @handle) when there is more than one, as SettingsSelect (the kit's VirgaSelect, 220 to 320 wide, the whole line from 760 down), then the cards over that account's PostingSettingsModel (usePostingSettings), made again for another account: New posts, and with a long session the Weekly queue, the Default timer (LifespanDefaultsCard, Posting/LifespanDefaults.swift) and the Post adviser (AdviserSettingsCard); without one, NeedsBackend in their place. A refused change in any card is the words-alone danger Callout, read out as the web's role=\"alert\" is, 16 above and 4 below (PostingSettingsRefusal).",
+      "synced": "981c47d09ca4"
+    },
+    "src/posting/composer/Composer.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController+Actions.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController+Library.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController+Drafts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerSheet.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerOptions.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerServices.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController+Adviser.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController+Schedule.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerWhenPanel.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController+Timer.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerDrop.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/BlueskyGatesCache.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerController+Files.swift"
+      ],
+      "note": "Ported: opening from an intent (normalizeIntent, seedFromIntent, setting aside what was being written, the notices), restoring what was kept (keptPostFor, takeSetAside, openAside, elsewhereNotices), loading a reply or a quote, posting as another account (changeAsDid, gatesForAccount), the default reply settings (read through a per-account cache, BlueskyGatesCache: a good read kept 5 minutes, a failed one 30 seconds, for both the Replies row and ensureGates, so a post goes out with the settings the row showed), adding pictures (picked, pasted, an intent's described ones) and a video (uploaded as soon as it's added), quotes and link cards found in the text, splitting, renumbering and its undo, removing and adding posts, the settings row (tags, language, replies, timer, More › Continue a thread, Save as a template and Start over), a \"/\" template applied over its shortcut (applyTemplate, applyPlan: its text and what it attaches), one with blanks through the library's dialog on it, the library's dialog from a post's tools and the slash list (its plan back through applyPlan), Save as a template (the template editor, a reply's through draftFromReply), an intent's attach (the Library page's Use in a new post), Continue a thread (the archive's posts, else the author feed), the phone's bar at the top (Close, the title and the send button, 640 and under), the busy line, the slow and hard publish watch, publishErrorView, the posted toast and resetting after a send, the autosave (flushed on Close and when the app goes to the background; its debounced write on the main actor, Autosaver.mainActorTimers). Publishing goes through ComposerPublisher (VirgaUI/Composer/ComposerServices.swift): the app's is PostingPublisher, VirgaPosting's Publish.publish over TemporaryComposerFiles (VirgaUI/Platform), ImageIO and the session's transport, mentions resolved through the shared resolver, which AppModel.init points at the network (Mentions.useNetwork). Save as draft (Drafts.createDraft or updateDraft, DraftMedia over the app's file store), opening an intent's draft (loadDraftTarget, openDraft, its media and the post it answers read again), a restored post's media read back (fillMedia), and a posted draft deleted (finishSource's draft half) are here. Link cards are LinkCard.fetchLinkCard. Scheduling (ComposerController+Schedule.swift, its state ComposerScheduling, and ComposerWhenPanel.swift): the limits read as it opens and for each account (refreshLimits) with a full allowance said on Schedule and Add to queue and the usage line at the send menu's foot; Schedule opening the when panel at the next hour (openWhen, an intent's mode schedule or queue) and sending the post for the time picked; Add to queue through the queue's next open time; submitSchedule (the room, No free timer, the post checked as one going out later, the gates, serializeForSchedule with the repeat's zone and occurrence and a draft's images, createScheduled or updateScheduled, a scheduled draft's draft deleted, scheduledMessage with the move note, the warnings, the limits read again); the when panel (Schedule for later with the WhenPicker, Into your weekly queue with the next open time and Pick a time instead, Post now instead) and Goes into your weekly queue. with Change; an intent's scheduledId opened (loadScheduledTarget, the images read back as files, the when panel open for a time, the reply read again) with its skeleton; a post that went out from a scheduled row taking it off (finishSource's scheduled half) or saying so with Cancel the scheduled copy (retryCancelSource) and Close. The timer (ComposerController+Timer.swift, marked TIMER where it reaches the rest): the fit (composerTimerFit), the default timer (defaultTimerFor over the settings' lifespan and the limits) applied to a post whose timer the writer hasn't chosen (lifespanTouched, ComposerStateModel's) by ComposerBody's onChange on the default and the generation, as the web's effect on [defaultTimer, generation]; timerNote under the post's settings while it has no timer and as the Timer button's hint; LifespanDialog (Done marks the timer chosen); submitPost's lifespanProblem (immediateTimerProblem where a timer can be set), the No free timer question with the limits read again (Keep editing, Post without it), a passed set time thrown just before it goes and the timer turned off without a server; armAfterPublish after the post went out (the root's account's VirgaBackend, the fit as it is then, the snippet and the first record's createdAt), not waited for, with Your post went out, but without its timer. and the limits read again; and saveDraft's draftTimerNote. A scheduled post's timer is submitSchedule's (No free timer, scheduledTimerProblem, serializeForSchedule's fit). An intent's templateId (Templates › Use) reads the account's templates (TemplateService.load), marks the post as made from it (setSource) and applies it to the first post as a \"/\" shortcut's is (its questions in the library), the seed taken again once it's on screen; a template that's gone, or templates that can't be read, say so in a warn callout over the post. Draft media that isn't on this device holds sending back (missingDraftMedia, MEDIA_MISSING_HINT). The duplicate guard (Publish.defaultDuplicateGuard, publishSignature) is asked before anything else, with DUPLICATE's words. The posted toast ends in View it on Bluesky (the shell's ToastLink). The post's source (a scheduled copy cancelled, a draft deleted) is settled in a task the Cancel can't reach and awaited before the composer stops being busy; Cancel is ignored once the busy line no longer offers it. Each send (a post, a schedule, a draft, a video's upload) holds background time while it runs (BackgroundSend, VirgaUI/Composer/BackgroundSend.swift). The temporary file behind a preview is deleted where the web revokes the preview, once nothing on screen, kept or set aside holds it (ComposerController+Files.swift, Autosave.fileRefIsHeld): an image or the video removed, after a send, Start over, an account gone, and the originals once addFiles or addDescribedImages has prepared them. A removed account's post is forgotten as the accounts change, the sheet up or not (AppRoot runs forgetGoneAccounts on the accounts and the open one, whichever state is drawn), and before an intent reads the screen. An idle video with a file starts uploading whichever way it arrived (ComposerBody's onChange on videoUploadKey, the web's effect on [open, state.posts, state.asDid]), a video added carrying its aspectRatio. Don't reply reads the default reply settings again. What the library inserts goes at the post's selection as its editor last had it (selectionOf). Focus: the first post takes the caret 40 ms after the sheet opens or a state loads on a wide screen, a split and its undo refocus only off a phone, and Keep editing after the adviser puts the caret back (refocusAfterAdviser). The error is brought into view as it's shown; what the web marks role=\"alert\", role=\"status\" or aria-live (the error, the load, reply and template errors, the source warning, the notices, the busy line, the why, the media hint, the video's status, a post's problems, the skeleton) is posted to VoiceOver as it appears or changes. A tag being typed is committed before the post goes out. The foot: no rule over it; on a phone a why that has to be read on a line of its own over the tools and the buttons (the stylesheet's stated intent: its flex order would put it between them), passing reasons hidden from 760 down, Schedule in words alone in a foot of 350 or less; the foot's tools gone while a draft or scheduled post opens or when it couldn't be. Files dropped on the composer go to the post being written, the active one else the first (ComposerDrop.swift: dropProps, dropFiles through addFiles with allowVideo false, so a video or other file gets the web's note; not while it is busy). The post adviser (ComposerController+Adviser.swift): useAdviserGate configured for the posting account while the composer is open, the check before sending (its busy line in the composer's, then Getting it ready; Keep editing, Save as draft, a fix taken checked again), Check this post among the post's settings, the month's checks its title (help and VoiceOver hint), AdviserBusyLine over the post, the post held still and the send button busy while a read runs, and the adviser's sheet.",
+      "synced": "9be49b62b520"
+    },
+    "src/posting/composer/ComposerContext.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerHost.swift"
+      ],
+      "synced": "dabf2324bec8"
+    },
+    "src/posting/composer/ComposerDialogs.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerDialogs.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/LifespanDialog.swift"
+      ],
+      "note": "ConfirmDialog, MetaDialog, GatesDialog, VideoAltDialog and ContinueThreadDialog (its rows PostPreviewCard's compact form, its error a role=\"alert\" callout) are in ComposerDialogs.swift; LifespanDialog is LifespanDialog.swift, over the posting pages' LifespanRuleEditor (LifespanEditor.jsx): the post's rule taken as it opens and kept while it's up (useResetOnOpen: a sheet's @State, set from the rule when it is presented), the composer's timerNote as a warning over the editor, Cancel, and Done handing the rule to the composer (saveTimer). The timer's dialog takes the sheet's whole height, as the posting pages' timer dialog does.",
+      "synced": "65d002b47fa1"
+    },
+    "src/posting/composer/EmbedCards.jsx": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/EmbedCards.swift"
+      ],
+      "synced": "89b1c9d312b2",
+      "note": "RecordCard: a quoted post is PostPreviewCard's compact form (the preview is the card, its ✕ at the top right); a feed, list or starter pack shows its own picture (else its glyph) in a 40-point box, its name and kind line on one line each. LinkCardView: a picture that won't load is left out (TransportImage's onFailure), 56 at 420 and under; title and site on one line. LinkCardDialog: the picture's box 160 × 84, centred, a missing picture drawn for one that won't load. Not yet: the quoted post's ✕ inside its preview's edge (`.embed-card--post .post-preview { padding-right: 44px }`): PostPreviewCard draws its own edge and takes no room inside it, so the ✕ sits in a 44-point room beside the preview."
+    },
+    "src/posting/composer/LanguagePicker.jsx": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerParts.swift"
+      ],
+      "note": "The suggestions open as the field takes focus, is pressed or is typed in, and close once one is added (and 120 ms after the field loses focus); Return adds the first suggestion. Not yet: a hardware keyboard's arrows through them.",
+      "synced": "c409955cb92e"
+    },
+    "src/posting/composer/MediaGrid.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/MediaGrid.swift"
+      ],
+      "synced": "9dee6592d05c",
+      "note": "ImageGrid laid out by count (ComposerImageGridLayout: one picture a 16:9 tile, the first of three as tall as the two beside it, else 4:3 in two columns, at least 96), the ALT pill (the scrim and white until described, then the surface and ink with a tick; 36 under a finger and the tools 36, each pressed through 44), the media hint read out as it changes. VideoAttachment: the player made once per file, at the video's own shape up to 320 tall on an edge; its status (ink-2, read out), bar, error and actions on one wrapping line, the actions at its end. An http(s) preview (a draft's image kept only as a posted blob) is loaded through the composer's transport (LocalPicture.picture(_:transport:))."
+    },
+    "src/posting/composer/PostAsPicker.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerParts.swift"
+      ],
+      "synced": "0891fb0836b4",
+      "note": "One line of small type (a 26 avatar, Posting as, the name, the handle), pressed as 44. Its list is a popover (presentationCompactAdaptation(.popover), so a phone's too): the hint, then rows 48 on the radius with no rules between, closed by a press outside it. Deliberate difference: the popover's arrow, which the system draws."
+    },
+    "src/posting/composer/PostBlock.jsx": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/PostBlock.swift"
+      ],
+      "note": "Pictures and a video come from PhotosPicker; Quote or attach from your library opens the library's dialog on the post. The post's line runs in the gutter (quiet down a thread, the focus ring's colour while it has the caret); its problems are a bulleted list; the split offer's box and buttons share the line under its sentence. Picked images count as processing from the moment they're chosen, so their placeholders and Preparing… show while they load; a pick that can't be read says so in the media note (An image couldn’t be added., or the iOS-only The video couldn’t be added.).",
+      "synced": "5593d9cac230"
+    },
+    "src/posting/composer/PostEditor.jsx": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/PostEditor.swift"
+      ],
+      "note": "The highlights are attributes on a UITextView's own text rather than a layer under a transparent textarea; the words are in the face's own figures (not the app's tabular ones) and the caret in ink (a text view's selection follows its tint, so the selection is ink where the web's is the accent at 28%). The editor reports its whole selection to the composer (selectionOf), and its focus (the post's line). The \"/\" templates come from Library.detectSlashCommand, rankTemplatesForSlash and PostTemplates.matchShortcut; the slash list's Open the library opens the library's dialog over the shortcut. Who to mention closes 150 ms after the editor loses focus. A paste takes one picture per pasteboard item. Not yet: a hardware keyboard's arrows (and Escape) through the mention and template suggestions.",
+      "synced": "e2081a195f8b"
+    },
+    "src/posting/composer/PublishButton.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerParts.swift"
+      ],
+      "synced": "f2a126c3d792",
+      "note": "One ink pill: the main half (its right corners square before the caret, 14 of padding there; no least width at 640 and under) and the 40-wide caret, a seam of on-btn at 28% between them. A half that can't run keeps the ink and fades its words to 55%; when neither can, the pill dims to 45% as one. The caret's menu lists the other ways, with the footnote (the allowance in use, scheduledUsageLine) at its foot."
+    },
+    "src/posting/composer/ReplyContext.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/EmbedCards.swift"
+      ],
+      "synced": "234392054cc0",
+      "note": "The post being answered is PostPreviewCard's compact form (its record `{ text }` when there's no view). The reply's error is a role=\"alert\" callout with Try again and Post it on its own at its right."
+    },
+    "src/posting/composer/TagsField.jsx": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerParts.swift"
+      ],
+      "note": "The tag being typed is the composer's (tagDraft), committed on Return, a comma, the field losing focus, and before the post is sent (runAction, ⌘↩), as the web's blur and flushSync are. On a phone it opens under its own row, its name kept for VoiceOver. Not yet: Backspace in an empty field doesn't take the last tag off (SwiftUI's TextField doesn't say when it's pressed).",
+      "synced": "8f62ce7d6bc0"
+    },
+    "src/posting/library/LibraryDialog.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Library/LibraryDialog.swift"
+      ],
+      "synced": "5241620d8b40"
+    },
+    "src/posting/library/LibraryPanel.jsx": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Library/LibraryPanel.swift"
+      ],
+      "note": "The shelves (a row of words, each with its icon and its count, muted and small, the current one in ink with a line under it, scrolling sideways and from 760 down running out to the sheet's or the screen's edges), the search that also reads a pasted link (From the link, In your library, On Bluesky or Your posts on Bluesky, Only my posts, Templates with that shortcut.), with Clear the search while there's a query, a first Escape clearing it, the keyboard in it as the dialog opens and when the Search shelf is chosen; each shelf's hint and its control (the order, Newest or Most engagement, for posts and replies; New template on the page) over the rule in ink that opens the list, as tall as the chosen item's head; the empty line, the error with Try again (read out) and Show more; the list's sections (the other kind of post's templates under their own heading, not faded), its rows (the title on two lines at most with a template's /shortcut after it, the reason, the meta line, the excerpt, the thumb) and the bones; a post, feed or list hydrated when it's shown (a post's bones, then the full PostPreview card, or why it couldn't be read); the chosen item's head (its title on one line, what it does, the rule in ink), its card (Open the link underlined), TemplateQuestions for a template with blanks, the preview (Library.previewFor) and the use button with its verb, Adding… and the error under it (read out); a template asked for by its rkey opened on. Wider than 760 the list and the detail side by side, the detail's column chosen by the panel's own width (340, 360 on the page; 300 from 800, and from 960 on the page; halves from 640); narrower the detail in the list's place with Back to the list, the focus moved into it, and the use button the column's width. In the dialog the list and the detail each scroll by themselves under the search and the shelves, the phone's use button held at the sheet's foot; on the page the page scrolls and the detail is held 24 under its top beside the list. Not yet: the arrow keys, Home, End and Enter through the list and ⌘↩ (a hardware keyboard), and the shelves down a rail beside the list (they're always the row of words over it); a detail taller than the window doesn't scroll by itself on the page.",
+      "synced": "b690f1729486"
+    },
+    "src/posting/library/TemplateEditor.jsx": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateEditor.swift"
+      ],
+      "note": "The editor as a full-height sheet: the note, a seed's note, Name, Text with Insert (a link action's words: A blank… and the four context inserts) and its count against 300, naming a new blank in place (Add, Don’t add a blank), the hint; Questions for each blank asked (its key, Question and Example or hint side by side from 640 wide, Typed answer or Pick from a list, the choices one per line, Optional) and what fills itself; Attach (Nothing, One of your posts with the recent ones five at a time and Show more, A link with Read the link; what it attaches named, Gone, the other kind kept with Remove it); Offer it when; Group and Shortcut; Suggest it when a post mentions; the server's refusal (with Sign in again for a permission) and the fields' own, read out; and the editor's own foot (.tpl-actions), held under the form on the dialog's ground under a hairline: Delete apart at its start, Cancel and Save template at their own widths, or Discard your changes? / Delete … for good? in its place, Escape putting a prompt away. Saved through TemplatesModel with its toasts; a failure that says nothing reads The template couldn’t be saved. Try again. The editor's reads are the library's (LibrarySources.fetchOwnPosts, hydrateEmbedViews, resolveRecordLink, resolveExternalLink), a web page's card linkCard.js's fetchLinkCard (VirgaPosting's LinkCard). Not yet: the caret (SwiftUI's text editor doesn't give it on iOS 17, so Insert and a blank go at the end of the text); the groups already used offered under Group (a datalist). A swipe down is held while there are changes.",
+      "synced": "aa70d34f4580"
+    },
+    "src/posting/library/TemplateQuestions.jsx": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Templates/TemplateQuestions.swift"
+      ],
+      "note": "TemplateQuestions (a field per typed question, ChoiceGroup per choice question with the arrows, Home and End and choosing again to clear an optional one, · optional, the hint and note, Answer this one first., Return going to the next unanswered question, the count of those still to answer read out as it changes once Use it has been tried; the use button the column's width from 760 down and held at the sheet's foot in the phone's dialog), ChoiceGroup (a long answer wrapping inside its chip) and TemplatePreview (Your post / Your reply will read, the count against 300, added words, what fills itself underlined, answers on the accent's tint, blanks to answer, the attachment's card, the notes and what stops it, read out as it changes). The preview is the caller's, or the library's previewFor (VirgaPosting's Library.previewFor) for a template on its own (its words into an empty post, nothing attached); the composer's library passes its own, within the post under way.",
+      "synced": "8e7bb01d7704"
+    },
+    "src/posting/pages/DraftsPage.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/DraftsPage.swift"
+      ],
+      "note": "The account's drafts a page at a time (DraftsPageList, useDraftList: Show more, read again on the drafts' event), the count and its line, each row's words (three lines, No text yet), draftMeta, the line about pictures saved elsewhere or why it can't be posted or scheduled, Open and the row's menu (Post now, Schedule…, Delete draft; a spinner while it works), the notices after an action (warnings, failures, the permission notice on a missing scope), No drafts yet with New post, the failure with Try again, the captions (Bluesky's limit past 50, a long session for scheduling), the delete question with the draft's words, and Schedule this draft (the queue's next open time on its button from nextOpenSlot, the usage line and the room problem, the hints, the deleted-after note, a refusal's words) over DraftActions.postDraftNow and scheduleDraft with DraftActionDeps.live (the account's target, its long session's requester and timers, the composer's files and ImageIO, this device's draft media). /posting/drafts/<id> opens the draft and goes back to /posting/drafts; stray draft files are pruned once a launch while the composer is closed. The time is WhenPicker (Posting/WhenPicker.swift) over the account's settings.queue and its server session. iOS: the focus after a row goes is the system's to place. Post now and Schedule hold background time while they run (BackgroundSend), as the composer's sends do.",
+      "synced": "a03ba8db66b8"
+    },
+    "src/posting/pages/HubPage.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/HubPage.swift"
+      ],
+      "note": "HubPage over its own reads (PostingLoad, the web's useLoad, each read again on its posting event): Going out next with All scheduled (scheduledOverview's next four, each led by its day over its hour and how it goes out, Queue or Going out now; then those that didn't go out, the status in red over when they were due, and why in a sentence with Retry (retryScheduled, its toasts) and see what happened; NeedsBackend without a long session; the bones, the failure with Try again, Scheduling isn't available, and Nothing is scheduled), Latest drafts with All drafts (the latest three, their words or No text yet, their first three facts and Open, which opens the draft in the composer; the permission notice or its sentence on a missing scope; No drafts), Recently posted with All posts (mergePostRows of the archive's posts and the author feed's latest ten, five shown, each the way to it on Bluesky with PostMeta, a post in a thread of the account's own not called a reply; Nothing posted yet), two columns wider than 1180 and one narrower, and without the sidebar the row of posting pages (PostingNav) with their counts (drafts with +, scheduled waiting, timers counting down, templates). The overview's timers are read only for that row. iOS: Retry and see what happened are words in the sentence, each pressed through a finger's reach.",
+      "synced": "4203620a867d"
+    },
+    "src/posting/pages/LibraryPage.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Library/LibraryDialog.swift"
+      ],
+      "synced": "651aefa9c328"
+    },
+    "src/posting/pages/PostedPage.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostedPage.swift"
+      ],
+      "note": "The archive's posts with the author feed's newer ones laid over them (mergePostRows, Not in the archive yet once built), Only your latest posts are listed with Build your archive before it is, the search and the filter (postedFilters) over the count (countPhrase) and Newest first., the bones while the archive opens or the feed is first read, Show 30 more and the feed's next page with 30 of 1,031 when the whole is known, the empty sentences, the caption about a long session; each row's words as the way to it on Bluesky with PostMeta and its menu over postRowActions, every action reading the post as it is now (readPostNow, GONE leaving the list): Reply, Quote, Post again (postAgainSeed, fetchPostImages from the account's PDS, postAgainIntent and its notes in a toast), Who can reply and quote or Who can quote (readPostGates, PostedGatesDialog over the composer's GatesEditor or Allow quote posts, updatePostGates), Put on a timer (PostTimerDialog), Save as a template (templateSeedFrom into the template editor), Open on Bluesky, Delete (its question; deletePost, the archive told through emitPostsChanged). iOS: the focus after a post goes is the system's to place.",
+      "synced": "bb83a8860a95"
+    },
+    "src/posting/pages/ScheduledPage.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduledPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduledPage+Model.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduledPage+Rows.swift"
+      ],
+      "note": "Scheduled posts over scheduleModel (ScheduledPageModel holds the page's state): the read (listScheduled with getLimits, read again on a scheduling or timer event, ScheduledListLoad), the clock once a minute, from now each time the page comes back (a post whose time has come read again, never mid-drag), the load failure with Try again, the unavailable server's callout, the message (role=\"alert\", its glyph centred on the words) with Dismiss; A timer couldn't be set (Went out over the day and hour, a phone's one line with its dot and the ✕ in the corner, the note, Set a timer opening TimerDialog over the note's arm (PostTimerDialog) with The timer is set. Posting › Timers shows it. and the note dismissed once it is set, Dismiss through acknowledgeTimerNote); Didn't go out (the day over the hour); Your queue with Add to queue (the composer in queue mode), the week ahead (QueueCalendarView with Change the times, a taken time pressed brings its row into view and its first button the focus, a keyboard's and VoiceOver's, lit for two seconds), the empty lines and Set posting times, the rows grouped by zoned day in one run so a row keeps its view as it moves, and Saving the new order…; At a set time with Schedule a post; the allowance line (scheduledLimitsLine) and its bone. A row: its time column (or a phone's first line, its dot 6 either side and kept with the part before it), its words (two lines), Replying to, the meta line (going out now a step louder, part of it out as a badge, the series with its progress and the last one, From a repeating post, From the queue, rowTags, the timer with its sentence read out), the reason (red for a failure), Retry (Retry the rest) or Edit, the ⋯ (on a phone out of the row's flow, centred on the time's line; Edit, Post now, Skip this one, Stop repeating with their hints, then Dismiss / Remove from the schedule / Remove, and stop repeating). Reordering (planQueueReorder, applyAssignment while it moves, reorderScheduled with the fallback's second try, the refusals and REORDER_PARTIAL): wider than a phone a handle (in the page's margin from 900) dragged over the others, a drag the system cancels putting the row back (onPointerCancel), or the keys (Space or Return, the arrows, Escape) with the web's announcements, and VoiceOver's adjust (the handle's value is its place, each step says where it went, none while an order saves); a phone's Move earlier and Move later; a row that keeps its time shows the lock. The four questions (Remove or Dismiss, Post now through postScheduledNow over the app's publish and timer services, Skip it, Stop repeating) with their sentences and the quoted post, each keeping its words while its sheet slides away, and the toasts. Coming back to the page, the message, the lit row and a row picked up are gone, as from the web's fresh page; the account's settings listen only while the page is up (made in start()). useFocusAfterRemoval is the system's: VoiceOver moves on to what took the row's place. Post now holds background time while it runs (BackgroundSend), as the composer's sends do.",
+      "synced": "68f5738826af"
+    },
+    "src/posting/pages/TemplatesPage.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/TemplatesPage.swift"
+      ],
+      "note": "The page over the account's own TemplatesModel (useTemplates) and TemplateUsage (readTemplateUsage, sortTemplatesForShelf): the permission notice with Sign in again when the sign-in can't write templates; the read-again failure over the last ones seen; the bones while the first read runs; the failure with Try again; No templates yet with New template; then the count and its line with New template, the groups (Other templates for those without one), and each row: the name as the way into the editor (44 to press) with its /shortcut, Use and the ⋯ (Edit, Delete with its dialog and toast) on the name's line, the words with each blank marked (named as it is asked, or as it fills itself; No text: it only attaches something), and the facts (who it's for, the questions, what it attaches, the words that suggest it, how often it was used here). The editor is TemplateEditor, opened on its template until it has gone (sheet(item:)). Use opens the composer (ComposerHost) with the web's intent, { asDid, templateId }; the composer reads the account's templates, marks the post as made from it (its source) and applies it to the first post, as Composer.jsx does (ComposerController.loadTemplate; one with questions opens the library over the composer once its sheet is up, and a template that has gone says so over the post). iOS additions: /posting/templates/new and /posting/templates/<rkey> open the editor. A blank's chip is drawn on a tint in the run of words; the focus after a delete is the system's.",
+      "synced": "8c1a4a3607f8"
+    },
+    "src/posting/pages/TimersPage.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/TimersPage.swift"
+      ],
+      "note": "The full buckets' warnings (fullTimerBuckets), the timers counting down, the scheduled posts that start one when they go out (waitingTimerRows, their facts, rule and Edit) and the timers that gave up (timerSections over groupTimers), each headed by its count with the first's line; each timer row (timerRowModel: its words as the way to the post, when it acts as the key fact with the time, its kind, extensions, rule, failure in red, resolution, what it did), Call off or Dismiss with its question (TimersCancelDialog, the page's words over scheduleParts' ActionDialog, .scheduleActionDialog: Keep it, the refusal's words, NOT_CANCELLABLE or 409 said plainly, the list read again); Show settled timers, read while open; the limits line (timerLimitsLine with timerUsage); the unreadable, unavailable, loading and empty states (Posted as a link, New post); countdowns every 30 seconds and a due timer read again; posts a timer deleted handed to the archive once a launch (the settled list read once a visit and when a live timer drops off). iOS: the focus after a row goes is the system's to place; a row whose model throws (a corrupt acted step) is left out.",
+      "synced": "805b5d8e8d3e"
+    },
+    "src/posting/pages/WeeklySchedulePage.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/WeeklySchedulePage.swift"
+      ],
+      "note": "The header with Posting › Scheduled posts as its crumbs; the error (role=\"alert\"); the notice when the week's zone isn't this device's, with Use <zone> (moveToZone) beside its words; Times your posts have done well (useSuggestions over the archive's year of best times, worked out again only when the archive, the week or the switch change, block 1, sorted by the reader's week, each day and time unbroken) with Use these times (scheduleFromSuggestions) or Add these times (mergeSuggestionsIntoSchedule) and Stop suggesting; Posting times (weeklyCount, weekSummary), the time zone (TimezoneSelect), the days in the reader's week order (DayRow: the name, the times as tokens with Remove <time> on <days>, No posting times, the + (its 44-point box reaching past the tokens' line) with its form of a time picker, which takes the focus, Add and Cancel, which give it back to the +, the ⋯ (as far past its line) with the three Copy to … targets, Copy to other days… and its dialog of checkboxes (the kit's dialog), and Clear this day), Saved as you go, in this browser. and Start again from the default at the line's end, or under it when the two don't fit (its question, back to the shipped week in the week's zone); The week ahead (QueueCalendarView with the queue's counts and See them, or No posting times yet., and the line when the list couldn't be read); the queued posts off these times with Move them onto these times (planQueueReorder, reorderScheduled, the toast or the refusal); and the switch that brings suggestions back. Two columns from 1181 wide (ScheduleSplit, 1.25 to 1), the two headings one height so their rules line up (the web's subgrid). The account's settings listen only while the page is up (made in .task). Deliberate differences: the focus after a time is taken off or a day cleared is the system's; the new time is the system's time picker (no 5-minute step).",
+      "synced": "44f7531586a4"
+    },
+    "src/posting/pages/hubParts.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostingParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/HubParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduleParts.swift"
+      ],
+      "note": "RowSkeleton (an odd row one line of bones, the action bones under them on a phone, pulsing), LoadError (role=\"alert\", read out; its triangle centred with the sentence and Try again) and ConfirmDialog (opening on Cancel, data-autofocus; busy, not swiped away while it is, and a refusal's message kept in the dialog and read out) in PostingParts; useLoad as PostingLoad (HubParts): a read for a key, again when the key changes or one of its posting events arrives for the account, loading only until the first answer, a failed reload keeping what's on screen, idle when not enabled; the scheduling pages read their list through their own useLoad, ScheduledListLoad (ScheduleParts), over listScheduled with the limits.",
+      "synced": "7e2519aca49f"
+    },
+    "src/posting/pages/scheduleParts.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduleParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
+      ],
+      "note": "TimezoneSelect (the kit's VirgaSelect, select.input: this device's zone first, then every zone the device knows sorted by code unit, an unknown stored zone kept), SwitchButton (Settings' SettingsSwitch), Switch (ScheduleSwitch: the words press it too), QueueCalendar (QueueCalendarView over buildCalendarDays: calendarRows' rows with rowLabel, a column a day with today in ink, the marks open, taken, off the week's times and lit, a taken one pressed with onPick and its keyboard focus a ring 2 outside the mark, each mark's label, VoiceOver reading day by day, the caption with lead and after, links followed by the navigator), ActionDialog (scheduleActionDialog: opening on Keep it, neither Close nor a swipe taking it away while it runs, the busy label, a failure kept in the dialog and read out (role=\"alert\"); Scheduled posts' four questions and Timers' call-off, each quoting its post with HubQuote) and hubParts' useLoad as the pages read the list (ScheduledListLoad). useFocusAfterRemoval is the system's; RowTime, which no page draws, isn't ported.",
+      "synced": "ac722e1dce2e"
+    },
+    "src/posting/ui/AdviserBusy.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserBusyLine.swift"
+      ],
+      "note": "Reading your draft with readExpectation's line (slower than usual after SLOW_READ_AFTER_MS, read out as it changes), the bar, the goals it is checking, and Keep editing and Publish anyway (the gate's) as small buttons, from 640 down equal shares of their line, 44 tall; read out as it appears. Brought into view by the composer rather than scrolled to.",
+      "synced": "ce0c10db929e"
+    },
+    "src/posting/ui/AdviserSettings.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserSettingsCard.swift"
+      ],
+      "note": "Post adviser in Settings › Posting, over the account's PostingSettingsModel: NeedsBackend for an account that can't use AI; Use the post adviser (nextPostingAdviserState, the recommended setup the first time), Check before posting, Stop me (the Segmented's own medium keys, in a row drawn up for them), Which posts, Read replies with their conversation (the switches' names press them), Your goals (the two presets, Post less about some topics with its topics, VirgaTextField with its muted example, Goals in your own words with its example placeholder and its count), Proofread (the three checks, Notes for the proofread with its example placeholder, Your writing style with Learn my style or See or change it, which opens StyleDialog), the month's three usage lines, What’s sent, and to whom (a Settings disclosure row), and a refused change's message, read out. Which posts is a radio group: each scope a button with the round radio mark, selected when it's the scope, its place ('1 of 3') as its value; the arrows move the choice, and choosing the chosen one does nothing.",
+      "synced": "b625e1f7a742"
+    },
+    "src/posting/ui/AdviserSheet.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserReadSheet.swift"
+      ],
+      "note": "The sheet over AdviserGateModel's read (sheetActions, sheetTitle, sheetContextLine, adviserSheetModel, adviserWritingTally, adviserDraftLabel): the notices (error, read out; limit, empty, needsText), the verdict, the kind of post with its tone at the line's end, the marked post (each post's index, a fix struck through with its replacement, a link in the words that takes it, the replacement underlined in the ok colour once taken, a flagged passage underlined in its tone with its numbers raised; VoiceOver hears Post 1/2, Change “x” to “y”, Fixed: and note 1 as the web's hidden words say, each fix to take an action of its own), the tally (read out as it changes) with Fix all, the notes (a numbered note lights its passage for a moment; others with their tone's glyph), Fine against, the context line, the usage line, the skeleton while busy, and its foot (Keep editing, Save as draft, Publish or Publish anyway, or Close), wrapping as the dialog's foot does. A numbered note lights its passage instead of scrolling to it.",
+      "synced": "35d71f3a93a7"
+    },
+    "src/posting/ui/AltTextDialog.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AltTextDialog.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerDialogs.swift"
+      ],
+      "note": "With a requester that can use AI (the posting account's backendFor, canUseAi), AltTextDialog: the image (whole, its edge and ground round it, at most 240 tall, 180 from 640 down), What kind of image is it? (optional) and Describe it for me before a first description, the description with its count (altTextCount, · too long), the cursor in it as it opens, Undo of the last answer, the busy line (Describing the image…, revisingLine…, read out), the monthly limit and the failures (read out), Revise it (rankQuickNotes' notes, It’s a…, the note, Revise; a column from 640 down, Revise its width), the usage line and what describing sends, and Cancel and Save (⌘↩). Over AIService.generateAltTextForFile with the composer's prepared file (for a draft's image kept only as a posted blob, its CDN preview fetched as fileFromPreview does, through the transport the dialog reads from AppModel), AltTextModel and AltTextFollowUp. Without a requester, the composer's own DescribeDialog (the writer's part, given the composer's transport so that picture shows too), counted by AltTextModel.altTextCount.",
+      "synced": "238c2db53cce"
+    },
+    "src/posting/ui/ComposerDefaults.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
+      ],
+      "note": "New posts: Languages (the composer's LanguagePicker, bare: its label VoiceOver's alone, no hint, under the row's own name), Who can reply and quote (My Bluesky setting or Choose here, with the composer's GatesEditor over the stored gates), the two stacked 12 apart and each held to 420 (composer.css's .settings-row-control--stack), Main button (PublishActions' four, normalized, as SettingsSelect), Require alt text, Offer to split long posts and Number the posts of a split thread as switches whose names press them (the label's htmlFor), each saved as it changes, with a refused change's message under them, read out.",
+      "synced": "648efd59b070"
+    },
+    "src/posting/ui/GatesEditor.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerDialogs.swift"
+      ],
+      "synced": "e2152ec2eb90",
+      "note": "Who can reply (the medium Segmented, 6 under its label), Some people's groups hung on a hairline under it (14 in, 14 apart), a list's name in bold, the lists read publicly, and Allow quote posts; the editor's groups 14 apart."
+    },
+    "src/posting/ui/LifespanDefaults.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/LifespanDefaults.swift"
+      ],
+      "note": "LifespanDefaultsCard in Settings › Posting: Start new posts with a timer (its hint when off; its name presses the switch), the rule's editor (LifespanRuleEditor, a length and never a set time, its changes keeping the timer on or off as it is, checked against the account's limits, held to 640 and its parts named like Settings' rows) as a label-less block row when on, and behind The rule it will use: … when off (a Settings disclosure row: its arrow on the sentence's first line, the sentence pressed through 44 points that reach into the row's air, the editor 16 under it and kept while closed, as a closed <details> keeps its children), saved never pinned to a time, the refusal read out, and the caption: with a long session the timers in use (getLimits, timerLimitsLine) first, then the rest with See posts on a timer, a link in ink and underlined that the navigator follows to postingPath('timers') (ScheduleLinkedText).",
+      "synced": "ae76e34b01e2"
+    },
+    "src/posting/ui/LifespanEditor.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/LifespanRuleEditor.swift"
+      ],
+      "note": "LifespanRuleEditor over LifespanModel and SelfDestruct: the switch with its line (showToggle; the switch named by its label and described by its line, the words pressing it), Delete it after or Act on it after (the five shown lengths, Other… with Length and Unit and its hint, Other… saying it is expanded, and Or a set time: an empty field while there is no pin, pressing it sets the earliest time allowed at the next whole minute, which the system's date and time picker within pinBounds then changes, with Clear), What happens then (the effects, Limit replies closed to a reply, a disabled chip at 50%), Who can still reply (Nobody, the three groups, the writer's curation lists read through PublicAppView, and the most Bluesky takes), Conditions (optional) with Unless or Only if it reaches, a row per condition (what it counts, how it compares, how many with its muted off, Remove let out 14; from 560 down two lines as the web's grid lays them, LifespanPhoneCondition, 16 apart) and Add a condition, Count quotes from (Followers, at least on the field's own ground while it's off, as .lse-op:disabled keeps it), When there’s more than one, If it does or doesn’t (keep, or another window with At most), the rule in a sentence (editorNotes' summary at 0.875rem, This post gets no timer. or No timer.) read out politely as it changes (aria-live), and its notes, the pin and room ones read out as they arrive (role=\"status\"). Each part's legend is 8 over what it names; in Settings (settingsLegends) at --text-md, 500. The selects are VirgaSelect and the fields VirgaTextField; what it counts offers only the metrics no other row holds, where the web shows those disabled. The time is read again every thirty seconds. A row added or removed leaves the focus where the system puts it.",
+      "synced": "4088289d3846"
+    },
+    "src/posting/ui/NeedsBackend.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/NeedsBackendNotice.swift"
+      ],
+      "note": "BackendAccess's four cases: nothing when ready or for no account; The long session has ended with Sign back in; Needs a long session with Reconnect for a longer session (AccountActions.lengthen), or with the line that this copy offers none. The title takes a heading's line height; its server glyph, grown with Dynamic Type, goes on a phone, as the web's does.",
+      "synced": "731af4254f94"
+    },
+    "src/posting/ui/PostPreview.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostPreviewCard.swift"
+      ],
+      "note": "PostPreviewCard over VirgaPosting's postPreviewModel: who wrote it (the picture, the name, the handle), when (relative, the date on the pointer's tip), its words or No text, what's attached, the counts (replies, reposts, quotes, likes) and the way to it on Bluesky (at the end of its line, underlined, 44 to press), and the compact form; a hairline round it, the glyphs grown with Dynamic Type. The library's chosen post is the full card. The composer draws its compact form (PostPreviewCard(compact: true)) for what a post replies to, a quoted post and Continue a thread's rows.",
+      "synced": "961de3ed1b7a"
+    },
+    "src/posting/ui/PostingHeader.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostingParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/RoutedPage.swift"
+      ],
+      "note": "PostingHeader.model and .header: Posting in the crumbs (except on the overview) or the caller's own, the page's title and line or the caller's, what it touches or not (showAccess, false where NeedsBackend stands in for the page), and the caller's actions and what goes under the header (children), drawn only when given.",
+      "synced": "37014d77c200"
+    },
+    "src/posting/ui/QueueSettings.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
+      ],
+      "note": "Weekly queue: the posting times a week with the week in a line and Edit the week (a Link drawn as a button: read as a link, to postingPath('schedule'), Posting › Weekly schedule), the time zone (scheduleParts' TimezoneSelect: this device's first, then every zone the device knows; the whole line from 760 down) with the device's zone named when it differs, and Suggest posting times (its name presses its switch), over VirgaPosting's ScheduleModel (weeklyCount, weekSummary, zoneLabel, moveToZone); a refused change read out. TimeZone.knownTimeZoneIdentifiers stands in for Intl.supportedValuesOf('timeZone').",
+      "synced": "a81e7aff21f3"
+    },
+    "src/posting/ui/SettingsParts.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Settings/SettingsPage.swift"
+      ],
+      "note": "SettingsCard and SettingsRow are Settings' own SettingsSectionView and SettingsRow (a block row's control on a line of its own; a short control kept on the label's line on a phone). A label with htmlFor is SettingsRow's pressingName: a press on the name presses its control (a switch's row), the name not read twice. A block row with no label is SettingsRow(block:), the control alone with a row's air and hairline.",
+      "synced": "e35a7f8135dc"
+    },
+    "src/posting/ui/StyleDialog.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserStyleDialog.swift"
+      ],
+      "note": "A full-height sheet with one StyleSession per opening over the account's requester: NeedsBackend without AI, the intro, how many posts to read and Read my posts, the three stages with the posts gathered (the one under way read out), the failure (a warning for the monthly limit; read out), How you write (editable) with its line and · not kept yet, What should change?, Refine with my note and Read my posts again (medium), the count to read again (the kit's select, at least 112 wide), the usage line, and Forget my style (red, at the foot's start; from 640 down a line of its own), Close or Cancel, Keep this (styleProfileFrom, forgetStyleProfile), a refused save's message, read out.",
+      "synced": "fe2c9d7e0bd4"
+    },
+    "src/posting/ui/TimerDialog.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/TimerDialog.swift"
+      ],
+      "note": "PostTimerDialog (named apart from the composer's own timer dialog, LifespanDialog), presented by .postTimerDialog($post, did:onArmed:) with a PostTimerTarget (also made from a timer note's TimerNoteArm): the owner from the post's URI, Change this post's timer or Put this post on a timer, the post's words or A post with no words of its own, NeedsBackend with Close without a long session, the bones while the limits, the timers and (when not given) the post's reply and createdAt are read, the timer it already has (its rule taking the editor's place), Start counting From now or From when it went up (relative), the rule's editor (LifespanRuleEditor with the fit, limits and holds, no toggle, counting from timerStart), when it first acts (firstActAt, the elapsed and floor leads), Set the timer or Replace the timer through createTimer (Setting…, Checking… while a lost answer is confirmed), and every refusal's words.",
+      "synced": "9eb426ca841a"
+    },
+    "src/posting/ui/WhenPicker.jsx": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/WhenPicker.swift"
+      ],
+      "note": "The date and the time on the queue's clock (the system's pickers in its zone, the date held to min and max), the clock every 30 seconds, the fields one under another when the picker itself is 440 or narrower (its own width, @container when), the quick picks (chips, one sideways row at 760 and under, the pressed one brought clear of the fade), the zone line with Goes out <when>, whenProblem's sentence (read out as it appears and as it changes), the date and the time described by the zone line and the problem, Repeat (the kit's select: its options, off with repeatBlock), Ends (the kit's select: Never, On a date with its default last day, After a number of times with its default count), Last day, Times in all (no placeholder), the fields described by the note (repeatBlock, repeatProblem, read out when it is one, or repeatSummary with the occurrence's sentence), and with queue the next open time (listScheduled's queued rows, nextOpenSlot) with Set some, the error's aside and Use this time, which goes under the words when they would get less than 200 beside it. Differences: the caller passes the weekly schedule and the account's server session (the web reads them from the did); the pickers always hold a time, so a date can't be typed without one; the fields share their row evenly.",
+      "synced": "821923a84f82"
+    }
+  }
+}
