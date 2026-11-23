@@ -491,7 +491,8 @@ struct SlashList: View {
 }
 
 /// The editor's type: composer.css's `.post-editor-input`, in UIKit's terms.
-struct EditorStyle {
+/// Two are equal when they draw the same letters in the same colours.
+struct EditorStyle: Equatable {
   var font: UIFont
   var ink: UIColor
   var faint: UIColor
@@ -621,6 +622,13 @@ struct HighlightedTextView: UIViewRepresentable {
   var onPaste: (NSRange) -> Bool
   var onSend: () -> Void
 
+  /// What the field's attributes were last set from.
+  struct Drawn: Equatable {
+    var text: String
+    var segments: [HighlightSegment]
+    var style: EditorStyle
+  }
+
   func makeCoordinator() -> Coordinator { Coordinator(self) }
 
   func makeUIView(context: Context) -> ComposerTextView {
@@ -636,11 +644,19 @@ struct HighlightedTextView: UIViewRepresentable {
     view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     view.attributedText = style.attributed(segments, text: text)
     view.typingAttributes = style.base
+    context.coordinator.synced = text
+    context.coordinator.drawn = Drawn(text: text, segments: segments, style: style)
     return view
   }
 
+  /// Runs on every redraw while typing (the text, the caret, a lookup, the
+  /// highlights), several times a keystroke, so it changes the field only
+  /// where something changed: the attributes when what they're drawn from
+  /// did, the selection when it moved. Either is an edit the keyboard didn't
+  /// make, landing between its keys.
   func updateUIView(_ view: ComposerTextView, context: Context) {
-    context.coordinator.parent = self
+    let coordinator = context.coordinator
+    coordinator.parent = self
     view.pasteHandler = onPaste
     view.sendHandler = onSend
     view.isEditable = !disabled
@@ -648,19 +664,38 @@ struct HighlightedTextView: UIViewRepresentable {
     view.accessibilityLabel = label
     view.accessibilityIdentifier = identifier
     view.accessibilityHint = text.isEmpty ? placeholder : nil
-    if view.text != text {
+    let drawn = Drawn(text: text, segments: segments, style: style)
+    // While UIKit is part way through an edit (its delegate asked, not yet
+    // told), a field whose text differs from a post that still has the text
+    // they last agreed on is ahead, not wrong: putting the post's text back
+    // would take out the letter just typed. The change is on its way, and
+    // the redraw that follows it does the rest.
+    let ahead = coordinator.editing && text == coordinator.synced
+    if view.text == text {
+      coordinator.synced = text
+      if view.markedTextRange == nil {
+        let keep = view.selectedRange
+        if coordinator.drawn != drawn {
+          let storage = view.textStorage
+          storage.beginEditing()
+          style.apply(segments, to: storage)
+          storage.endEditing()
+          coordinator.drawn = drawn
+        }
+        var caret = keep
+        if let caretRequest, caretRequest <= text.utf16.count {
+          caret = NSRange(location: caretRequest, length: 0)
+        }
+        if view.selectedRange != caret { view.selectedRange = caret }
+      }
+    } else if !ahead {
       let keep = view.selectedRange
       view.attributedText = style.attributed(segments, text: text)
+      coordinator.synced = text
+      coordinator.drawn = drawn
       let length = text.utf16.count
       let caret = min(caretRequest ?? keep.location, length)
       view.selectedRange = NSRange(location: caret, length: 0)
-    } else if view.markedTextRange == nil {
-      let keep = view.selectedRange
-      style.apply(segments, to: view.textStorage)
-      view.selectedRange = keep
-      if let caretRequest, caretRequest <= text.utf16.count {
-        view.selectedRange = NSRange(location: caretRequest, length: 0)
-      }
     }
     view.typingAttributes = style.base
     if caretRequest != nil || focusRequest {
@@ -681,12 +716,26 @@ struct HighlightedTextView: UIViewRepresentable {
 
   final class Coordinator: NSObject, UITextViewDelegate {
     var parent: HighlightedTextView
+    /// The text the field and the post last agreed on: the post's, as it
+    /// was put in the field or found there, or the field's, as handed on.
+    var synced = ""
+    /// UIKit has asked to change the text and not yet said it did.
+    var editing = false
+    /// What the field's attributes were last set from.
+    var drawn: Drawn?
 
     init(_ parent: HighlightedTextView) {
       self.parent = parent
     }
 
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+      editing = true
+      return true
+    }
+
     func textViewDidChange(_ textView: UITextView) {
+      editing = false
+      synced = textView.text
       parent.text = textView.text
       parent.onCaret(textView.selectedRange.location + textView.selectedRange.length)
       parent.onSelection(textView.selectedRange)
