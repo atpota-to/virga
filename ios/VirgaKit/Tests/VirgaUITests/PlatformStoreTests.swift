@@ -96,6 +96,40 @@ final class FileStoreTests: XCTestCase {
     XCTAssertNil(gone)
   }
 
+  func testTheFolderIsBackedUpUntilThatIsTurnedOff() async throws {
+    let kv = InMemoryKeyValueStore()
+    let folder = AppStores.fileStoreDirectory(directory)
+    XCTAssertTrue(AppStores.backsUp(kv), "backups are on before anyone chooses")
+    XCTAssertTrue(AppStores.markBackup(AppStores.backsUp(kv), directory: folder))
+    XCTAssertEqual(AppStores.isExcludedFromBackup(folder), false)
+
+    AppStores.setBacksUp(false, store: kv, directory: folder)
+    XCTAssertEqual(kv.getItem(AppStores.backupKey), "off")
+    XCTAssertFalse(AppStores.backsUp(kv))
+    XCTAssertEqual(AppStores.isExcludedFromBackup(folder), true)
+    // What the store writes afterwards lands in the folder that's left out.
+    try await DiskFileStore(baseURL: folder).write(Data("{}".utf8), to: "analytics/did:plc:abc/posts.json")
+    XCTAssertEqual(AppStores.isExcludedFromBackup(folder), true)
+
+    AppStores.setBacksUp(true, store: kv, directory: folder)
+    XCTAssertEqual(kv.getItem(AppStores.backupKey), "on")
+    XCTAssertEqual(AppStores.isExcludedFromBackup(folder), false)
+  }
+
+  func testWithNoFolderOnlyTheChoiceIsKept() {
+    let kv = InMemoryKeyValueStore()
+    AppStores.setBacksUp(false, store: kv, directory: nil)
+    XCTAssertFalse(AppStores.backsUp(kv))
+    XCTAssertFalse(AppStores.markBackup(false, directory: nil))
+    XCTAssertNil(AppStores.isExcludedFromBackup(nil))
+  }
+
+  func testAnUnknownStoredValueStillBacksUp() throws {
+    let kv = InMemoryKeyValueStore()
+    try kv.setItem(AppStores.backupKey, "maybe")
+    XCTAssertTrue(AppStores.backsUp(kv))
+  }
+
   func testRefusesAPathOutsideTheStore() async {
     let store = AppStores.fileStore(directory: directory)
     do {

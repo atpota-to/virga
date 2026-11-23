@@ -17,7 +17,7 @@
       "id": "TERMS_EFFECTIVE_DATE",
       "fn": "TERMS_EFFECTIVE_DATE",
       "input": {},
-      "output": "2026-11-15"
+      "output": "2026-11-23"
     },
     {
       "id": "TERMS_PATH",
@@ -93,9 +93,9 @@
       "id": "formatLegalDate#3",
       "fn": "formatLegalDate",
       "input": {
-        "isoDate": "2026-11-15"
+        "isoDate": "2026-11-23"
       },
-      "output": "November 15, 2026"
+      "output": "November 23, 2026"
     },
     {
       "id": "formatLegalDate#4",

@@ -14,6 +14,10 @@
 // "Keep it when space runs low" row is shown only where the browser can be
 // asked (navigator.storage.persist); iOS has no such thing to ask, so it
 // isn't drawn.
+//
+// The app's own row, with no web counterpart: whether the device's backups
+// (iCloud's, or a computer's) take the archive and drafts' media, on unless
+// it was turned off (AppStores' `backupKey`). A browser backs nothing up.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -30,6 +34,7 @@ struct DataSection: View {
   @State private var confirm: Confirm?
   @State private var exporting: ExportFile?
   @State private var usage: Int?
+  @State private var backsUp = true
 
   enum Confirm: Identifiable {
     case rebuild, delete
@@ -39,6 +44,7 @@ struct DataSection: View {
   var body: some View {
     if let archive {
       sections(archive)
+        .onAppear { backsUp = AppStores.backsUp(app.stores.keyValue) }
         .task { usage = await AppStores.bytesUsed(at: app.stores.filesDirectory) }
         .virgaDialog(isPresented: confirming(.rebuild), title: "Rebuild the post archive?") {
           Text(
@@ -172,6 +178,20 @@ struct DataSection: View {
             Badge("This session only", tone: .warn)
           }
         }
+        SettingsRow(label: "iCloud Backup", hint: Self.backupHint, compactControl: true) {
+          Toggle(
+            "Include the archive in backups",
+            isOn: Binding(
+              get: { backsUp },
+              set: { on in
+                backsUp = on
+                AppStores.setBacksUp(on, store: app.stores.keyValue, directory: app.stores.filesDirectory)
+              })
+          )
+          .labelsHidden()
+          .toggleStyle(.virgaSwitch)
+          .accessibilityIdentifier("data-backup")
+        }
       }
 
       SettingsSectionView(title: "Delete this archive", sub: nil, danger: true) {
@@ -207,6 +227,10 @@ struct DataSection: View {
   }
 
   // MARK: The words
+
+  /// What the backup switch decides. The app's own words.
+  static let backupHint =
+    "On, this device’s backups, to iCloud or to a computer, include the archive and your drafts’ pictures and video. Off, they stay on this device only: after a restore, the archive is built again from your accounts with its unfollow log starting over, and drafts come back without their pictures and video. Settings and dashboards are backed up either way. Sign-ins never are, so after a restore you sign in again."
 
   /// `megabytes(bytes)`: "3.4 MB", "128 MB".
   static func megabytes(_ bytes: Int?) -> String {

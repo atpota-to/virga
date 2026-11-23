@@ -14,7 +14,7 @@ public enum LegalVersion {
   public static let termsVersion = 1
 
   /// The "Last updated" date both documents carry, as YYYY-MM-DD.
-  public static let termsEffectiveDate = "2026-11-15"
+  public static let termsEffectiveDate = "2026-11-23"
 
   /// Where the documents are read on the site (and in the app's routes).
   public static let termsPath = "/terms"
