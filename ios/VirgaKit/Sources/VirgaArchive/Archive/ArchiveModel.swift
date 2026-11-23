@@ -407,8 +407,17 @@ public final class ArchiveModel {
     }
     if missing.isEmpty { return }
     for did in missing { attemptedActors.insert(JSKey(did)) }
-    let fresh = await AnalyticsSync.hydrateActors(
-      missing, cache: held.byDid, now: clockNow(), transport: env.transport, clock: env.clock)
+    // The read is never called off (the web's hydrateActors takes no
+    // signal): a list left before it answers, or a `.task(id:)` started
+    // again, would otherwise cancel requests for DIDs now marked as tried,
+    // and those cards would never come.
+    let cache = held.byDid
+    let now = clockNow()
+    let transport = env.transport
+    let clock = env.clock
+    let fresh = await Task {
+      await AnalyticsSync.hydrateActors(missing, cache: cache, now: now, transport: transport, clock: clock)
+    }.value
     if fresh.isEmpty { return }
     // A card keeps what the tools learned about the account.
     let merged = fresh.map { ActorCards.merge(held[$0.did], $0) }

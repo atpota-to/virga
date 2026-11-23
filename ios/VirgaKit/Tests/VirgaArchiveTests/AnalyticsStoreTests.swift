@@ -216,13 +216,34 @@ actor FailingFileStore: FileStore {
     #expect(await store.all("posts").isEmpty)
     await store.putAll("posts", [["uri": "c"]])
     #expect(try await files.list("analytics/virga-analytics%3Adid%3Aplc%3Aalice").isEmpty)
-    // The session resets every handle; the next open starts afresh.
+    // A relaunch: every handle forgotten, and the next open starts afresh.
     AnalyticsStore.resetAnalyticsStore(registry: registry)
     let fresh = await AnalyticsStore.openAnalyticsStore(alice, files: files, registry: registry)
     #expect(fresh.persistent)
     #expect(await fresh.all("posts").isEmpty)
     let bobAgain = await AnalyticsStore.openAnalyticsStore(bob, files: files, registry: registry)
     #expect(await bobAgain.all("posts") == [["uri": "b"]])
+  }
+
+  /// Deleting one account's database forgets and closes that account's
+  /// handle only. Another account's open archive and every later open of
+  /// it share the one handle, so no two pictures of one folder write its
+  /// segments (the app's resetAnalyticsStore leaves the registry alone).
+  @Test func deletingOneAccountsDatabaseLeavesAnothersHandleShared() async throws {
+    let files = InMemoryFileStore()
+    let registry = AnalyticsStoreRegistry()
+    let held = await AnalyticsStore.openAnalyticsStore(bob, files: files, registry: registry)
+    await held.putAll("posts", [["uri": "at://bob/p/1"]])
+    _ = await AnalyticsStore.openAnalyticsStore(alice, files: files, registry: registry)
+    #expect(await AnalyticsStore.deleteDatabase("virga-analytics:\(alice)", files: files, registry: registry))
+    let again = await AnalyticsStore.openAnalyticsStore(bob, files: files, registry: registry)
+    #expect(again === held)
+    await held.putAll("posts", [["uri": "at://bob/p/2"]])
+    await again.putAll("posts", [["uri": "at://bob/p/3"]])
+    // A relaunch reads every write.
+    let relaunched = await AnalyticsStore.openAnalyticsStore(bob, files: files, registry: AnalyticsStoreRegistry())
+    let uris = await relaunched.all("posts").compactMap { $0["uri"]?.stringValue }
+    #expect(uris == ["at://bob/p/1", "at://bob/p/2", "at://bob/p/3"])
   }
 
   @Test func rowsKeepTheWebsShape() async {
@@ -306,6 +327,81 @@ actor SlowFileStore: FileStore {
     registry.reset()
     let again = await AnalyticsStore.openAnalyticsStore(alice, files: files, registry: registry)
     #expect(await again.all("posts").count == 3)
+  }
+}
+
+/// An in-memory file store that can hold its writes until released, and
+/// says when one is waiting and what was deleted.
+actor HeldWritesFileStore: FileStore {
+  let base = InMemoryFileStore()
+  private var holding = false
+  private var held: [CheckedContinuation<Void, Never>] = []
+  private(set) var writesHeld = 0
+  private(set) var deleted: [String] = []
+
+  func hold() { holding = true }
+
+  func release() {
+    holding = false
+    for waiting in held { waiting.resume() }
+    held = []
+  }
+
+  func read(_ path: String) async throws -> Data? { try await base.read(path) }
+
+  func write(_ data: Data, to path: String) async throws {
+    if holding {
+      writesHeld += 1
+      await withCheckedContinuation { held.append($0) }
+    }
+    try await base.write(data, to: path)
+  }
+
+  func delete(_ path: String) async throws {
+    deleted.append(path)
+    try await base.delete(path)
+  }
+
+  func list(_ directory: String) async throws -> [String] { try await base.list(directory) }
+}
+
+@Suite struct AnalyticsStoreDeletion {
+  let gone = "did:plc:gone"
+
+  /// Removing an account with its data while its sync writes: the write
+  /// under way lands before the folder goes, as IndexedDB's delete waits
+  /// for the connection's transactions, so nothing of the account is left
+  /// and its next sign-in starts empty.
+  @Test(.timeLimit(.minutes(1))) func deletingWaitsForTheWriteUnderWay() async throws {
+    let files = HeldWritesFileStore()
+    let registry = AnalyticsStoreRegistry()
+    let name = AnalyticsStore.analyticsDbName(gone)
+    let store = await AnalyticsStore.openAnalyticsStore(gone, files: files, registry: registry)
+    let opened = try #require(store as? FileAnalyticsStore)
+    await files.hold()
+    let write = Task { await store.putAll("atmosphere", [["uri": "at://did:plc:gone/x/1"]]) }
+    while await files.writesHeld == 0 { await Task.yield() }
+    let finished = Locked(false)
+    let delete = Task {
+      let went = await AnalyticsStore.deleteDatabase(name, files: files, registry: registry)
+      finished.set(true)
+      return went
+    }
+    // Either the delete waits its turn behind the write, or it has run
+    // ahead of it.
+    while await opened.queued == 0, !finished.wrappedValue { await Task.yield() }
+    #expect(!finished.wrappedValue, "the delete didn't wait for the write under way")
+    #expect(await files.deleted.isEmpty, "the folder went while a write was under way")
+    await files.release()
+    await write.value
+    #expect(await delete.value)
+    let left = try await files.list(AnalyticsStore.directory(name))
+    #expect(left.isEmpty, "\(left)")
+    // Calls after the delete go nowhere.
+    await store.putAll("atmosphere", [["uri": "at://did:plc:gone/x/2"]])
+    #expect(try await files.list(AnalyticsStore.directory(name)).isEmpty)
+    let fresh = await AnalyticsStore.openAnalyticsStore(gone, files: files, registry: registry)
+    #expect(await fresh.all("atmosphere").isEmpty)
   }
 }
 

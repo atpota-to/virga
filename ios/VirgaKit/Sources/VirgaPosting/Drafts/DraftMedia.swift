@@ -72,9 +72,18 @@ public protocol DraftMediaStore: Sendable {
   func put(_ entries: [DraftMediaEntry]) async throws
   /// The entry kept under `ref`, or nil.
   func get(_ ref: String) async -> DraftMediaEntry?
+  /// The entry kept under `ref` as stored, without handing its bytes back
+  /// as a file (`file` holds only the file's fields), or nil: what a check
+  /// that it is held, or of when it was saved, needs. `get` gives a copy of
+  /// the bytes each time.
+  func entry(_ ref: String) async -> DraftMediaEntry?
   func remove(_ refs: [String]) async
   /// Every ref held.
   func refs() async -> [String]
+}
+
+extension DraftMediaStore {
+  public func entry(_ ref: String) async -> DraftMediaEntry? { await get(ref) }
 }
 
 /// Draft media in memory: kept in the order first put (a Map's), for the run.
@@ -174,6 +183,13 @@ public struct FileStoreDraftMedia: DraftMediaStore {
     }
   }
 
+  /// `entry.json` alone: the file's bytes are neither read nor copied.
+  public func entry(_ ref: String) async -> DraftMediaEntry? {
+    guard let stored = try? await storage.store.readJSON("\(folder(ref))/entry.json", as: Stored.self) else { return nil }
+    return DraftMediaEntry(
+      ref: stored.ref, file: stored.file, name: stored.name, type: stored.type, size: stored.size, savedAt: stored.savedAt)
+  }
+
   public func get(_ ref: String) async -> DraftMediaEntry? {
     do {
       let folder = folder(ref)
@@ -261,6 +277,30 @@ public enum DraftMedia {
   /// Forget the open stores (Remove from this device, and tests).
   public static func resetDraftMedia() {
     handles.withLock { $0.removeAll() }
+  }
+
+  /// Whether `name` is one of the posting databases (`virga-posting:<did>`).
+  public static func isPostingDbName(_ name: String) -> Bool {
+    name.utf16.count > postingDbPrefix.utf16.count && PostingJS.hasPrefix(name, postingDbPrefix)
+  }
+
+  /// `indexedDB.deleteDatabase(name)` for the posting databases: removes
+  /// `virga-posting:<did>`'s folder from `files` (every kept picture and
+  /// video), and forgets the account's open store, as the web's handle
+  /// closes and forgets itself on the delete's versionchange. False for a
+  /// name that isn't a posting database's, or when the files can't be
+  /// removed. The app routes the session's `deleteDatabase` here for these
+  /// names.
+  public static func deleteDatabase(_ name: String, files: any FileStore) async -> Bool {
+    guard isPostingDbName(name) else { return false }
+    let did = String(jsUnits: Array(name.utf16).dropFirst(postingDbPrefix.utf16.count))
+    _ = handles.withLock { $0.removeValue(forKey: JSKey(did)) }
+    do {
+      try await files.delete(pathSegment(name))
+      return true
+    } catch {
+      return false
+    }
   }
 
   /// A path segment for a database name or a ref: every unit outside
@@ -389,7 +429,7 @@ public enum DraftMedia {
       let item = at.item
       guard isFileLike(item["file"]), let file = item["file"] else { continue }
       var ref = isVirgaLocalRef(item["localRef"]) ? item["localRef"]?.stringValue : nil
-      if let held = ref, await store.get(held) != nil { continue }
+      if let held = ref, await store.entry(held) != nil { continue }
       // A new file, or one attached again over another app's path, which
       // this device could never look up.
       if ref == nil {
@@ -496,7 +536,7 @@ public enum DraftMedia {
     if let savedBefore {
       var old: [String] = []
       for ref in drop {
-        let entry = await store.get(ref)
+        let entry = await store.entry(ref)
         // Every entry this module writes has a savedAt; one without can't
         // be from a save in progress.
         let fresh = entry.map { ComposerJS.greaterOrEqual($0.savedAt, .number(savedBefore)) } ?? false

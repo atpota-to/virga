@@ -222,6 +222,72 @@ func storeJSON(_ media: any DraftMediaStore) async -> JSONValue {
     #expect(await media.refs().isEmpty)
   }
 
+  /// Remove from this browser with its data: `virga-posting:<did>` goes,
+  /// every kept file of that account with it, and its open store is
+  /// forgotten (the web's handle closes on the delete's versionchange).
+  /// Another account's files and store stay.
+  @Test func deletingThePostingDatabaseRemovesThatAccountsFiles() async throws {
+    let (storage, store, files) = Self.storage()
+    let gone = "did:plc:deletes-its-drafts"
+    let kept = "did:plc:keeps-its-drafts"
+    let picked = try await files.makeFile(Data([1, 2, 3]), name: "a.jpg", type: "image/jpeg", lastModified: 5)
+    func draft(_ did: String) -> JSONValue {
+      ["asDid": .string(did), "posts": [["id": "p1", "images": [["id": "i1", "file": picked.json, "mime": "image/jpeg"]]]]]
+    }
+    let goneMedia = DraftMedia.openDraftMedia(gone, storage: storage)
+    _ = try await DraftMedia.storeDraftMedia(gone, draft(gone), media: goneMedia, now: 1)
+    let keptMedia = DraftMedia.openDraftMedia(kept, storage: storage)
+    let keptSaved = try await DraftMedia.storeDraftMedia(kept, draft(kept), media: keptMedia, now: 1)
+
+    #expect(DraftMedia.isPostingDbName(DraftMedia.postingDbName(gone)))
+    #expect(!DraftMedia.isPostingDbName("virga-analytics:\(gone)"))
+    #expect(!DraftMedia.isPostingDbName(DraftMedia.postingDbPrefix))
+    #expect(await DraftMedia.deleteDatabase("virga-analytics:\(gone)", files: store) == false)
+    #expect(await DraftMedia.deleteDatabase(DraftMedia.postingDbName(gone), files: store))
+
+    let left = try await store.list("")
+    #expect(left.allSatisfy { $0.hasPrefix("virga-posting%3Adid%3Aplc%3Akeeps-its-drafts/") }, "\(left)")
+    #expect(left.count == 2, "\(left)")
+    #expect(DraftMedia.handles.withLock { $0[JSKey(gone)] } == nil)
+    #expect(await DraftMedia.openDraftMedia(gone, storage: storage).refs().isEmpty)
+    #expect(await DraftMedia.openDraftMedia(kept, storage: storage).refs() == keptSaved.refs)
+    // A database that isn't there deletes as IndexedDB's does: it went.
+    #expect(await DraftMedia.deleteDatabase(DraftMedia.postingDbName("did:plc:never-saved"), files: store))
+    _ = await DraftMedia.deleteDatabase(DraftMedia.postingDbName(kept), files: store)
+  }
+
+  /// Saving a draft again, and pruning, only look at the entries: the
+  /// bytes are handed back as a file (a copy, on the device) only when a
+  /// draft is opened, as IndexedDB's get hands back its stored File.
+  @Test func checksReadEntriesWithoutCopyingTheBytes() async throws {
+    let (storage, _, files) = Self.storage()
+    let media = FileStoreDraftMedia(did: Self.alice, storage: storage)
+    let picked = try await files.makeFile(Data([1, 2, 3]), name: "a.jpg", type: "image/jpeg", lastModified: 5)
+    let state: JSONValue = [
+      "asDid": .string(Self.alice),
+      "posts": [["id": "p1", "images": [["id": "i1", "file": picked.json, "mime": "image/jpeg"]]]],
+    ]
+    let saved = try await DraftMedia.storeDraftMedia(Self.alice, state, media: media, now: 42, newRef: CountingUUIDs().ref)
+    let made = await files.snapshot.count
+    // Saved again: the file is held already, so nothing is copied or written.
+    let again = try await DraftMedia.storeDraftMedia(Self.alice, saved.state, media: media, now: 99)
+    #expect(again.refs == saved.refs)
+    #expect(await files.snapshot.count == made)
+    let held = try #require(await media.entry(saved.refs[0]))
+    #expect(held.savedAt == 42)
+    #expect(held.type == "image/jpeg")
+    #expect(held.file?["name"] == "a.jpg")
+    #expect(held.file?["size"] == 3)
+    #expect(await media.entry("virga-media:none") == nil)
+    // A prune reads when each was saved, and copies nothing either.
+    #expect(await DraftMedia.pruneDraftMedia(Self.alice, [], media: media, savedBefore: 10).isEmpty)
+    #expect(await files.snapshot.count == made)
+    // Opening the draft hands the file back.
+    let opened = await DraftMedia.loadDraftMedia(Self.alice, ["posts": [["id": "p1", "images": [["localRef": .string(saved.refs[0])]]]]], media: media)
+    #expect(opened.missing.isEmpty)
+    #expect(await files.snapshot.count == made + 1)
+  }
+
   /// Refs come back in key order, as IndexedDB's getAllKeys gives them, and
   /// pruning leaves new files and the ones kept.
   @Test func prunesInKeyOrder() async throws {

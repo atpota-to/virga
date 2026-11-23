@@ -78,6 +78,12 @@ public struct AppRoot: View {
       .onChange(of: signedIn, initial: true) { _, dids in
         ScanStore.shared.keepScansFor(dids)
       }
+      // An account removed takes its unsent post with it, while the sheet is
+      // down too, and whichever state is drawn: the composer's host outlives
+      // the shell, so with the last account gone nothing is signed in, and
+      // a late patch (a video still processing) must find nobody to save for.
+      .onChange(of: session.accounts.map(\.did)) { _, _ in composer.controller?.forgetGoneAccounts() }
+      .onChange(of: session.did) { _, _ in composer.controller?.forgetGoneAccounts() }
       .onOpenURL { url in
         if openCompose(url) { return }
         finishReturn(url)
@@ -125,7 +131,7 @@ public struct AppRoot: View {
     case .needs:
       TermsGateView().id(did).sessionNotices()
     case .accepted:
-      ArchiveHost(archive: app.archive(for: did)) {
+      ArchiveHost(did: did) {
         // Drawn again in the new formats when they change.
         ShellView(store: app.stores.keyValue, did: did)
           .id(preferences.formats)

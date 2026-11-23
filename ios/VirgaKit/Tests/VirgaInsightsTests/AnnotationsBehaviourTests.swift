@@ -60,6 +60,19 @@ import VirgaTestSupport
     #expect(model.list.map(\.id) == ["a"])
   }
 
+  @Test func notesDeletedWithTheAccountsDataAreGoneWhenReadAgain() {
+    // Remove from this device with its data removes the key and tells no
+    // model; the app reads the notes again when the account's shell opens
+    // (ChartNotesModels.reload), as useAnnotations reads them on mount.
+    let store = InMemoryKeyValueStore()
+    let model = AnnotationsModel(did: "did:plc:me", store: store, changes: AnnotationsChanges(), timeZone: .gmt, newId: { "a" })
+    model.add("2026-02-01", "Changed my handle")
+    #expect(model.list.map(\.label) == ["Changed my handle"])
+    store.removeItem(Annotations.annotationsKey("did:plc:me"))
+    model.reload()
+    #expect(model.list.isEmpty)
+  }
+
   @Test func noStoreAtAll() {
     let model = AnnotationsModel(did: "did:plc:me", store: nil, changes: AnnotationsChanges(), timeZone: .gmt, newId: { "x" })
     model.add("2026-02-01", "Nowhere to keep it")
