@@ -17,12 +17,13 @@
 //
 // XCUITest's typeKey is a hardware key: on CI's iPad simulator the
 // software keyboard hides as each one arrives and comes back about two
-// seconds later (run 99's recording). The developer forums report keys
-// lost while the keyboard moves for XCUITest's virtual keyboard (thread
-// 849249, on devices), but in run 99 the ↓ that was taken and the Return
-// that did nothing both came with the software keyboard up and still, so
-// a key that does nothing is taken here for the app's to explain, and the
-// probe is there to say where it went.
+// seconds later (run 99's recording), and keys can be lost in that move
+// (developer forums thread 849249). Run 100's probe showed it: the ↓
+// reached the field, and the Return reached it by no route at all. So on
+// the iPad the test runs with no software keyboard in the app's UIKit
+// fields (-VirgaNoSoftwareKeyboard, SoftwareKeyboard), as with a hardware
+// keyboard attached; the phone keeps its software keyboard and presses its
+// Return.
 
 import UIKit
 import XCTest
@@ -34,11 +35,14 @@ final class ShortcutUITests: XCTestCase {
 
   private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
 
-  /// The app in demo mode; with `probe`, the typing probe on as well.
-  private func launch(probe: Bool = false) -> XCUIApplication {
+  /// The app in demo mode; with `probe`, the typing probe on as well; with
+  /// `hardwareKeys`, no software keyboard in the app's UIKit fields
+  /// (SoftwareKeyboard), as with a hardware keyboard attached.
+  private func launch(probe: Bool = false, hardwareKeys: Bool = false) -> XCUIApplication {
     let app = XCUIApplication()
     app.launchArguments += ["-VirgaDemo", "YES", "-VirgaDemoFlags", "latency=0"]
     if probe { app.launchArguments += ["-VirgaTypingProbe", "YES"] }
+    if hardwareKeys { app.launchArguments += ["-VirgaNoSoftwareKeyboard", "YES"] }
     app.launch()
     return app
   }
@@ -147,7 +151,8 @@ final class ShortcutUITests: XCTestCase {
   }
 
   func testTheMentionListTakesItsKeys() {
-    let app = launch(probe: true)
+    // The iPad presses hardware keys, so it runs as with a hardware keyboard.
+    let app = launch(probe: true, hardwareKeys: isPad)
     let wide = isPad && app.windows.firstMatch.frame.width >= 900
     let newPost = element(app, wide ? "sidebar-new-post" : "tab-new-post")
     XCTAssertTrue(newPost.waitForExistence(timeout: 30), "no New post button")

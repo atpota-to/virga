@@ -17,9 +17,17 @@ final class PostingUITests: XCTestCase {
     continueAfterFailure = false
   }
 
+  private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
+
+  /// The app in demo mode. On the iPad, whose language steps press
+  /// hardware keys, the app's UIKit fields (the language search) show no
+  /// software keyboard (-VirgaNoSoftwareKeyboard, SoftwareKeyboard), as
+  /// with a hardware keyboard attached: with one showing, iPadOS hides it
+  /// as each hardware key arrives and keys can be lost (run 100).
   private func launch() -> XCUIApplication {
     let app = XCUIApplication()
     app.launchArguments += ["-VirgaDemo", "YES", "-VirgaDemoFlags", "latency=0"]
+    if isPad { app.launchArguments += ["-VirgaNoSoftwareKeyboard", "YES"] }
     app.launch()
     return app
   }
@@ -159,7 +167,10 @@ final class PostingUITests: XCTestCase {
     var chosen = labels(removes)
     languages.tap()
     let keyboard = app.keyboards.firstMatch
-    guard keyboard.waitForExistence(timeout: 3) else { return }
+    // The phone's software keyboard comes up; the iPad has none here.
+    if !isPad {
+      guard keyboard.waitForExistence(timeout: 3) else { return }
+    }
     languages.typeText("fr")
     let suggestions = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'language-'"))
     XCTAssertTrue(suggestions.firstMatch.waitForExistence(timeout: 5), "no language suggestions for “fr”")
@@ -194,7 +205,7 @@ final class PostingUITests: XCTestCase {
     // web. The field is a KeyTextField, still app.textFields["Languages"]:
     // these keys reach the picker by the field's pressesBegan, its priority
     // key commands or, for Return, its delegate, whichever comes first.
-    guard UIDevice.current.userInterfaceIdiom == .pad else { return }
+    guard isPad else { return }
     languages.tap()
     languages.typeText("e")
     guard suggestions.firstMatch.waitForExistence(timeout: 5) else {

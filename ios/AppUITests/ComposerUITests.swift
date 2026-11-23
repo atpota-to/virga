@@ -289,15 +289,22 @@ final class ComposerUITests: XCTestCase {
     XCTAssertTrue(draftTitle.waitForExistence(timeout: 10), "the draft didn't come back")
     snapshot("composer-draft-reopened")
 
-    // Post the thread: its progress, then the toast, and the composer closes.
+    // Post the thread: the toast, and the composer closes. The toast lasts
+    // 4.2 seconds and the demo posts at once, so it is looked for straight
+    // after the press: in run 100's iPad a wait for the composer's progress
+    // (which never showed) and one slow query took ten seconds, the toast
+    // came and went in them, and the test missed a thread that had gone out
+    // (its shot shows the toast). The composer closes only once the thread
+    // has gone out, so a closed composer is the proof when the toast was
+    // missed; one that stays open fails the test either way.
     let publish = element(app, "publish")
     XCTAssertTrue(publish.waitForExistence(timeout: 5))
     publish.tap()
-    _ = element(app, "composer-busy").waitForExistence(timeout: 5)
-    snapshot("composer-sending")
-    XCTAssertTrue(text(app, containing: "Posted as").waitForExistence(timeout: 60), "the thread didn't go out")
+    let posted = text(app, containing: "Posted as")
+    let sawToast = posted.waitForExistence(timeout: 30)
     snapshot("composer-thread-posted")
-    XCTAssertTrue(element(app, "composer-title").waitForNonExistence(timeout: 10), "the composer stayed open")
+    XCTAssertTrue(element(app, "composer-title").waitForNonExistence(timeout: 30), "the thread didn't go out: the composer stayed open")
+    if !sawToast { print("VIRGA-NOTE the \"Posted as\" toast was gone before the test looked; the composer closed") }
     openComposer(app)
 
     // Continue a thread: one of the account's own recent posts, the new
