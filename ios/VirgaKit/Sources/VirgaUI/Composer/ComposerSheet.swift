@@ -123,12 +123,6 @@ struct ComposerSheet: View {
       } else {
         ComposerHead(title: title) { controller.closeComposer() }
       }
-      if TypingProbe.isBench {
-        // The UI tests' bench: a plain field, outside the scroll so it stays put.
-        TypingProbePlainField()
-          .frame(height: 64)
-          .padding(.horizontal, theme.composerNarrow ? ComposerMeasure.phoneSide : ComposerMeasure.side)
-      }
       ScrollViewReader { proxy in
         ScrollView {
           ComposerBody(controller: controller)

@@ -53,8 +53,6 @@ struct PostEditor: View {
   }
 
   private var partial: PartialMention? {
-    // The UI tests' bench (TypingProbe): its second post has no typeahead.
-    guard !TypingProbe.quiet(index) else { return nil }
     guard let m = Mentions.detectPartialMention(text, caret), m.query.utf16.count >= 1 else { return nil }
     return m
   }
@@ -138,11 +136,6 @@ struct PostEditor: View {
           controller.editingPostId = postId
         },
         onBlur: {
-          // The UI tests' bench empties a post as it loses focus.
-          if TypingProbe.isBench {
-            let at = controller.indexOfPost(postId)
-            if at >= 0 { controller.dispatch(.setText(index: at, text: "")) }
-          }
           if controller.editingPostId.map({ $0.jsEquals(postId) }) ?? false { controller.editingPostId = nil }
           // Who to mention closes as the field loses focus, a beat later so
           // a press on one of them still lands.
@@ -750,23 +743,14 @@ struct HighlightedTextView: UIViewRepresentable {
         }
       }
     } else if ahead {
+      // The field keeps its text, and the post gets it from the field's own
+      // next textViewDidChange, or when the field loses focus. An update
+      // never writes to the post: CI run 92's iPad, which handed the field's
+      // text on from here, never went idle again once a composer opened a
+      // second time.
       if !coordinator.editing {
         TypingProbe.note(identifier, "K\(view.text.utf16.count)>\(text.utf16.count)")
         TypingProbe.count(identifier, "kept")
-      }
-      // The field's text goes to the post once this update is over, unless
-      // the field told the post itself by then (textViewDidChange) or the
-      // post has been changed meanwhile, so the two can't stay apart.
-      let field = view.text ?? ""
-      let handOn = self.$text
-      let post = current
-      let counted = textChanges
-      let id = identifier
-      DispatchQueue.main.async { [weak view] in
-        guard let view, view.text == field, counted() == changes, post() != field else { return }
-        TypingProbe.note(id, "H\(field.utf16.count)")
-        TypingProbe.count(id, "handedOn")
-        handOn.wrappedValue = field
       }
     } else {
       let keep = view.selectedRange
@@ -844,6 +828,15 @@ struct HighlightedTextView: UIViewRepresentable {
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
+      // A field still ahead of its post as it loses focus hands its words on
+      // once, unless something else has changed the post since they last
+      // agreed (then the next update puts the post's text in the field).
+      let field = textView.text ?? ""
+      if parent.current() != field, parent.textChanges() == changes {
+        TypingProbe.note(parent.identifier, "H\(field.utf16.count)")
+        TypingProbe.count(parent.identifier, "handedOn")
+        parent.text = field
+      }
       parent.onBlur()
     }
   }

@@ -2,11 +2,9 @@
 // domain, as `-VirgaDemo YES` is) records, for each text field that reports
 // here, what reached it while typing and what the app wrote to it, and hands
 // that to the UI tests as the value of a hidden element, "typing-probe".
-// `-VirgaTypingBench YES` (implies the probe) adds what
-// ComposerUITests.testTypingBench compares: a bare UITextView above the
-// composer's scroll ("typing-probe-plain"), the second post without the "@"
-// typeahead, and each of the three emptied as it loses focus. Without either
-// argument nothing here records and nothing is drawn.
+// Without it nothing here records and nothing is drawn. (Runs 88 to 92 also
+// had a bench, -VirgaTypingBench, comparing the composer with a bare text
+// view; notes/ui.md has what it found.)
 //
 // A field's record, kept since it was last empty: `presses`, the characters
 // of the key presses it saw; `keys`, what insertText was called with;
@@ -24,7 +22,7 @@
 //                      (lengths); after run 88 the field follows the post
 //   K<field>><post>  after run 90: an update found the field ahead of the
 //                    post outside UIKit's edit and kept the field's text
-//   H<n>          the field's text handed to the post after such an update
+//   H<n>          the field's text handed to the post as it lost focus
 //   S<n>          the app set the selection
 //   X<loc>,<len>="..."  the keyboard asked for a replacement (a correction)
 //   D!<asked>><got>     after UIKit's edit the field isn't what it asked
@@ -37,8 +35,7 @@
 // was lost between insertText and the delegate; one in `asked` but not in
 // the field was lost after the delegate approved it (R, Ureset and D! say
 // how). A letter lost next to an h event was lost at a line wrap, as the
-// post editor grew and the composer laid out again (the bench's plain
-// field is a fixed height and never grows). A y with an o beside it is the
+// post editor grew and the composer laid out again. A y with an o beside it is the
 // scroll moving; a y alone is the sheet moving or resizing.
 //
 // Whether the keyboard's letters come in through insertText isn't known. If
@@ -52,11 +49,8 @@ import UIKit
 
 @MainActor
 enum TypingProbe {
-  static let isBench = UserDefaults.standard.bool(forKey: "VirgaTypingBench")
-  static let isOn = isBench || UserDefaults.standard.bool(forKey: "VirgaTypingProbe")
+  static let isOn = UserDefaults.standard.bool(forKey: "VirgaTypingProbe")
 
-  /// The bench's second post: no "@" lookups and no list of accounts.
-  static func quiet(_ index: Int) -> Bool { isBench && index == 1 }
 
   struct Field {
     // Since the field was last empty.
@@ -173,7 +167,7 @@ enum TypingProbe {
       field.note("U\(branch)")
     }
     if branch == "reset", model == 0 {
-      // The bench emptying a field it left, or the post cleared.
+      // The post cleared.
       field.emptied()
     } else if branch == "reset" {
       field.bump(editing ? "midEditResets" : "resets")
@@ -270,54 +264,4 @@ final class TypingProbeReportView: UIView {
   }
 }
 
-/// The bench's plain field: a UITextView with the post editor's keyboard
-/// (sentences, spell checking, the default autocorrection) and nothing of
-/// the composer's: no binding, no redraws, no attributes, no typeahead.
-struct TypingProbePlainField: UIViewRepresentable {
-  static let identifier = "typing-probe-plain"
-
-  func makeCoordinator() -> Coordinator { Coordinator() }
-
-  func makeUIView(context: Context) -> TypingProbeTextView {
-    let view = TypingProbeTextView()
-    view.delegate = context.coordinator
-    view.accessibilityIdentifier = Self.identifier
-    view.autocapitalizationType = .sentences
-    view.spellCheckingType = .yes
-    view.font = UIFont.systemFont(ofSize: 17, weight: .medium)
-    view.backgroundColor = .secondarySystemBackground
-    return view
-  }
-
-  func updateUIView(_ view: TypingProbeTextView, context: Context) {}
-
-  @MainActor
-  final class Coordinator: NSObject, UITextViewDelegate {
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-      TypingProbe.shouldChange(TypingProbePlainField.identifier, in: textView, range: range, text: text)
-      return true
-    }
-
-    func textViewDidChange(_ textView: UITextView) {
-      TypingProbe.didChange(TypingProbePlainField.identifier, in: textView)
-    }
-
-    func textViewDidEndEditing(_ textView: UITextView) {
-      textView.text = ""
-      TypingProbe.emptied(TypingProbePlainField.identifier)
-    }
-  }
-}
-
-final class TypingProbeTextView: UITextView {
-  override func insertText(_ text: String) {
-    if let id = accessibilityIdentifier { TypingProbe.insert(id, text, in: self) }
-    super.insertText(text)
-  }
-
-  override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
-    if let id = accessibilityIdentifier { TypingProbe.press(id, presses.compactMap { $0.key?.characters }.joined()) }
-    super.pressesBegan(presses, with: event)
-  }
-}
 #endif

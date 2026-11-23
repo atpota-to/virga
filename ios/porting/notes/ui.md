@@ -1044,6 +1044,18 @@ since they last agreed. A field that differs otherwise keeps its text and hands 
 after the update (probe events K and H). A new field starts from the post itself.
 ComposerStateModelBehaviour checks the count on Linux.
 
+Run 92 (a2b4b63) typed cleanly on both devices: no letter lost or moved in testTheComposer or in
+any of the bench's 36 typings, and the iPhone's composer kept its field once where it would
+have put the post's text back ("kept":1). But the iPad's ScheduleUITests never went idle again
+once a composer opened a second time ("Schedule a post"): every step waited out XCTest's
+60-second idle wait, and the job hit its 90-minute limit. Run 90's iPad and both iPhones had
+no such wait. The one new thing that wrote to the post from inside an update was the hand-on,
+and two fields bound to one post, or a post text the reducer changes, would make it run for
+ever; which of those it was isn't known. Since then an update never writes to the post: a
+field that is ahead keeps its text until its own next textViewDidChange, and a field still
+ahead as it loses focus hands its words on once (textViewDidEndEditing). The bench is gone;
+the probe stays on for ComposerUITests.
+
 Run 85 failed once on the iPhone, Defense's palette step: swiping back up until Search showed
 left it 51 points short of the top, under the status bar, where taps don't reach it. The seven
 palette steps now swipe until a swipe no longer moves Search.
