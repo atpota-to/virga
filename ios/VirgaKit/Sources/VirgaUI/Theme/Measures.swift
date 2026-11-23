@@ -166,12 +166,6 @@ public enum Measure {
     public static let titleMinWidth: CGFloat = 256
     /// `.card-head:has(> :nth-child(2)) { column-gap: 16px }` at 560 and under.
     public static let phoneHeadGap: CGFloat = 16
-    /// The port's own, for Dynamic Type: on a phone, the least a heading's
-    /// title keeps beside its tools before they go under its line, in ems
-    /// of the title (90 points at the default size, under the 103 that
-    /// "Who engaged" has beside its two actions on a 375-point iPhone). The
-    /// web's `minmax(0, 1fr)` has no least.
-    public static let phoneTitleLeastEms: CGFloat = 6
     /// A list's rows: `border-bottom: 1px solid var(--line)`.
     public static let hairline: CGFloat = 1
     /// `.empty-block .empty { max-width: 56ch }`
@@ -311,6 +305,10 @@ public enum Measure {
     /// figures go two to a row.
     public static let narrow: CGFloat = 860
     public static let phone: CGFloat = 620
+    /// `.widget-open { margin-right: -14px }` on touch: a card's last tool,
+    /// a 44 ghost icon, let out by its own padding so its glyph ends on the
+    /// card's edge.
+    public static let openLetOut: CGFloat = 14
   }
 
   /// charts.css and SeriesChart.jsx's own measures.

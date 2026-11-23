@@ -7,8 +7,8 @@
 // a card has no edge: a figure under a rule, a chart under its title, a
 // list under its title on a rule in ink. From 860 wide down a third and two
 // thirds take the whole row (a figure a third wide goes to half); from 620
-// down every card does, and figures go two to a row. A card 440 wide or
-// less puts its chart's modes under its title.
+// down every card does, and figures go two to a row. In a window 560 wide or
+// less, or a card 440 wide or less, a chart's modes go under its title.
 //
 // The header: the dashboard's name with its ⋯ (Rename, Duplicate, New
 // dashboard, Reset or Clear, Delete), the period's line, Customize and the
@@ -373,12 +373,17 @@ struct WidgetCard: View {
   }
 
   /// The heading: the title (and its lines), the chart's modes, and the
-  /// tools; in a card 440 wide or less the modes go under the titles.
+  /// tools, 16 apart (`.card-head { column-gap: 16px }`). The modes go under
+  /// the titles in a window 560 wide or less, as the kit's phone head puts
+  /// a small Segmented (`@media (max-width: 560px)`), and in a card 440
+  /// wide or less whatever the window (`@container widget (max-width:
+  /// 440px)`, the card's own width).
   private func head(title: String?) -> some View {
     let chartModes = modes
-    let under = chartModes != nil && (width ?? .infinity) <= Measure.Dashboard.headModesAt
+    let gap = theme.gap(ThemeKit.cardHeadGap)
+    let under = chartModes != nil && (theme.isPhone || (width ?? .infinity) <= Measure.Dashboard.headModesAt)
     return VStack(alignment: .leading, spacing: 0) {
-      HStack(alignment: .firstTextBaseline, spacing: theme.space2) {
+      HStack(alignment: .firstTextBaseline, spacing: gap.column) {
         VStack(alignment: .leading, spacing: 2) {
           // An h2: the heading's 1.25 between its lines (base.css).
           Text(title ?? def.name)
@@ -394,10 +399,10 @@ struct WidgetCard: View {
           }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        // Beside the title, in a card wider than 440, the modes' 44-point
-        // keys reach 13 above and below its line without making the head
-        // any taller (`.card-head > .segmented { margin-block: -13px }` on
-        // touch from 561 up).
+        // Beside the title (from 561 up, in a card wider than 440), the
+        // modes' 44-point keys reach 13 above and below its line without
+        // making the head any taller (`.card-head > .segmented {
+        // margin-block: -13px }` on touch from 561 up).
         if !under, let chartModes {
           chartModes
             .padding(.vertical, -Measure.Segmented.headLift)
@@ -409,13 +414,20 @@ struct WidgetCard: View {
         // is a mouse's, for its 30-point buttons). From 561 up they count
         // below it, so the head is 32 tall; on a phone they don't
         // (`.card-head:has(> :nth-child(2)) > .head-tools { margin-block:
-        // -12px }`), so the head stays the title's height.
+        // -12px }`), so the head stays the title's height. The last is
+        // let out by its own 14 (`.widget-open { margin-right: -14px }` on
+        // touch), so its glyph ends on the card's edge.
         tools(title: title)
           .padding(.top, -Measure.Section.iconToolLift)
           .padding(.bottom, theme.isPhone ? -Measure.Section.iconToolLift : 0)
+          .padding(.trailing, -Measure.Dashboard.openLetOut)
       }
+      // Under the titles, 8 down (`margin-top: 8px`). A phone's head has no
+      // gap between its rows (`.card-head:has(> :nth-child(2)) { row-gap: 0
+      // }`); a narrow card's on a wider screen keeps the head's 8, so there
+      // the modes are 16 under the tools' 32.
       if under, let chartModes {
-        chartModes.padding(.top, Measure.Dashboard.headModesSpaceAbove)
+        chartModes.padding(.top, Measure.Dashboard.headModesSpaceAbove + (theme.isPhone ? 0 : gap.row))
       }
     }
   }
@@ -431,9 +443,10 @@ struct WidgetCard: View {
         selection: $view, size: .small))
   }
 
-  /// Post as a picture and the way to the full report.
+  /// Post as a picture and the way to the full report, 4 apart
+  /// (`.head-tools { gap: 4px }`).
   private func tools(title: String?) -> some View {
-    HStack(spacing: 0) {
+    HStack(spacing: theme.points(ThemeKit.headToolsGap)) {
       PostChartButton(type: card.type, name: title ?? def.name, options: card.options, period: period)
       Button {
         navigate(def.href)
