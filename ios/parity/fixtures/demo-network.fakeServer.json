@@ -907,22 +907,21 @@
           "type": "application/json",
           "json": {
             "success": true,
-            "version": 1,
-            "effectiveDate": "2026-11-15",
+            "version": 2,
+            "effectiveDate": "2026-11-23",
             "accepted": true,
             "acceptedAt": "2026-10-15T23:46:40.000Z"
           }
         },
         {
-          "status": 200,
+          "status": 409,
           "type": "application/json",
           "json": {
-            "success": true,
-            "version": 1,
-            "effectiveDate": "2026-11-15",
-            "identity": "session",
-            "acceptedAt": "2026-10-15T23:46:40.000Z",
-            "created": false
+            "success": false,
+            "error": "the Terms of Service and Privacy Policy have changed. reload to read the current ones.",
+            "code": "TERMS_VERSION_MISMATCH",
+            "version": 2,
+            "effectiveDate": "2026-11-23"
           }
         },
         {
@@ -1133,23 +1132,22 @@
           "type": "application/json",
           "json": {
             "success": true,
-            "version": 1,
-            "effectiveDate": "2026-11-15",
+            "version": 2,
+            "effectiveDate": "2026-11-23",
             "accepted": false,
             "acceptedAt": null
           }
         },
         null,
         {
-          "status": 200,
+          "status": 409,
           "type": "application/json",
           "json": {
-            "success": true,
-            "version": 1,
-            "effectiveDate": "2026-11-15",
-            "identity": "session",
-            "acceptedAt": "2026-11-14T23:46:45.000Z",
-            "created": true
+            "success": false,
+            "error": "the Terms of Service and Privacy Policy have changed. reload to read the current ones.",
+            "code": "TERMS_VERSION_MISMATCH",
+            "version": 2,
+            "effectiveDate": "2026-11-23"
           }
         },
         {
@@ -1157,23 +1155,22 @@
           "type": "application/json",
           "json": {
             "success": true,
-            "version": 1,
-            "effectiveDate": "2026-11-15",
-            "accepted": true,
-            "acceptedAt": "2026-11-14T23:46:45.000Z"
+            "version": 2,
+            "effectiveDate": "2026-11-23",
+            "accepted": false,
+            "acceptedAt": null
           }
         },
         null,
         {
-          "status": 200,
+          "status": 409,
           "type": "application/json",
           "json": {
-            "success": true,
-            "version": 1,
-            "effectiveDate": "2026-11-15",
-            "identity": "session",
-            "acceptedAt": "2026-11-14T23:46:45.000Z",
-            "created": false
+            "success": false,
+            "error": "the Terms of Service and Privacy Policy have changed. reload to read the current ones.",
+            "code": "TERMS_VERSION_MISMATCH",
+            "version": 2,
+            "effectiveDate": "2026-11-23"
           }
         },
         {
@@ -1181,20 +1178,21 @@
           "type": "application/json",
           "json": {
             "success": true,
-            "version": 1,
-            "effectiveDate": "2026-11-15",
+            "version": 2,
+            "effectiveDate": "2026-11-23",
             "accepted": false,
             "acceptedAt": null
           }
         },
         {
-          "status": 200,
+          "status": 409,
           "type": "application/json",
           "json": {
-            "success": true,
-            "version": 1,
-            "effectiveDate": "2026-11-15",
-            "identity": "claimed"
+            "success": false,
+            "error": "the Terms of Service and Privacy Policy have changed. reload to read the current ones.",
+            "code": "TERMS_VERSION_MISMATCH",
+            "version": 2,
+            "effectiveDate": "2026-11-23"
           }
         },
         {
@@ -1202,19 +1200,30 @@
           "type": "application/json",
           "json": {
             "success": true,
-            "version": 1,
-            "effectiveDate": "2026-11-15",
+            "version": 2,
+            "effectiveDate": "2026-11-23",
             "accepted": false,
             "acceptedAt": null
           }
         },
         {
+          "status": 409,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "the Terms of Service and Privacy Policy have changed. reload to read the current ones.",
+            "code": "TERMS_VERSION_MISMATCH",
+            "version": 2,
+            "effectiveDate": "2026-11-23"
+          }
+        },
+        {
           "status": 200,
           "type": "application/json",
           "json": {
             "success": true,
-            "version": 1,
-            "effectiveDate": "2026-11-15",
+            "version": 2,
+            "effectiveDate": "2026-11-23",
             "identity": "claimed"
           }
         },
@@ -1225,8 +1234,8 @@
             "success": false,
             "error": "the Terms of Service and Privacy Policy have changed. reload to read the current ones.",
             "code": "TERMS_VERSION_MISMATCH",
-            "version": 1,
-            "effectiveDate": "2026-11-15"
+            "version": 2,
+            "effectiveDate": "2026-11-23"
           }
         },
         {
@@ -1236,53 +1245,8 @@
             "success": false,
             "error": "the Terms of Service and Privacy Policy have changed. reload to read the current ones.",
             "code": "TERMS_VERSION_MISMATCH",
-            "version": 1,
-            "effectiveDate": "2026-11-15"
-          }
-        },
-        {
-          "status": 400,
-          "type": "application/json",
-          "json": {
-            "success": false,
-            "error": "that isn't an account's DID.",
-            "code": "DID_INVALID"
-          }
-        },
-        {
-          "status": 400,
-          "type": "application/json",
-          "json": {
-            "success": false,
-            "error": "that isn't an account's DID.",
-            "code": "DID_INVALID"
-          }
-        },
-        {
-          "status": 400,
-          "type": "application/json",
-          "json": {
-            "success": false,
-            "error": "that isn't an account's DID.",
-            "code": "DID_INVALID"
-          }
-        },
-        {
-          "status": 400,
-          "type": "application/json",
-          "json": {
-            "success": false,
-            "error": "that isn't an account's DID.",
-            "code": "DID_INVALID"
-          }
-        },
-        {
-          "status": 400,
-          "type": "application/json",
-          "json": {
-            "success": false,
-            "error": "that isn't an account's DID.",
-            "code": "DID_INVALID"
+            "version": 2,
+            "effectiveDate": "2026-11-23"
           }
         },
         {
@@ -1292,8 +1256,52 @@
             "success": false,
             "error": "the Terms of Service and Privacy Policy have changed. reload to read the current ones.",
             "code": "TERMS_VERSION_MISMATCH",
-            "version": 1,
-            "effectiveDate": "2026-11-15"
+            "version": 2,
+            "effectiveDate": "2026-11-23"
+          }
+        },
+        {
+          "status": 409,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "the Terms of Service and Privacy Policy have changed. reload to read the current ones.",
+            "code": "TERMS_VERSION_MISMATCH",
+            "version": 2,
+            "effectiveDate": "2026-11-23"
+          }
+        },
+        {
+          "status": 409,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "the Terms of Service and Privacy Policy have changed. reload to read the current ones.",
+            "code": "TERMS_VERSION_MISMATCH",
+            "version": 2,
+            "effectiveDate": "2026-11-23"
+          }
+        },
+        {
+          "status": 409,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "the Terms of Service and Privacy Policy have changed. reload to read the current ones.",
+            "code": "TERMS_VERSION_MISMATCH",
+            "version": 2,
+            "effectiveDate": "2026-11-23"
+          }
+        },
+        {
+          "status": 409,
+          "type": "application/json",
+          "json": {
+            "success": false,
+            "error": "the Terms of Service and Privacy Policy have changed. reload to read the current ones.",
+            "code": "TERMS_VERSION_MISMATCH",
+            "version": 2,
+            "effectiveDate": "2026-11-23"
           }
         },
         {
@@ -1321,8 +1329,8 @@
             "success": false,
             "error": "the Terms of Service and Privacy Policy have changed. reload to read the current ones.",
             "code": "TERMS_VERSION_MISMATCH",
-            "version": 1,
-            "effectiveDate": "2026-11-15"
+            "version": 2,
+            "effectiveDate": "2026-11-23"
           }
         }
       ]
@@ -1380,8 +1388,8 @@
           "type": "application/json",
           "json": {
             "success": true,
-            "version": 1,
-            "effectiveDate": "2026-11-15",
+            "version": 2,
+            "effectiveDate": "2026-11-23",
             "accepted": false,
             "acceptedAt": null
           }

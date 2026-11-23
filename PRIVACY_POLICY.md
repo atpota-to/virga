@@ -1,12 +1,12 @@
 # Privacy Policy
 
-**Last updated:** November 15, 2026 (version 1)
+**Last updated:** November 23, 2026 (version 2)
 
 This policy says what Virga does with information about you: what stays in your browser, what Virga’s server keeps, what is sent to other services, and what you can do about each. Virga is operated by **atpotato, LLC**, a Delaware limited liability company, which is the controller of the information described here. “We”, “us” and “our” mean atpotato, LLC.
 
 The short version:
 
-- Your archive (your posts, followers, blocks and the rest of what the reports are built from) is worked out and kept in your browser. It is not sent to our server.
+- Your archive (your posts, followers, blocks and the rest of what the reports are built from) is worked out and kept in your browser, or on your device in the iPhone and iPad app. It is not sent to our server. The app’s copy is in your device’s backups unless you turn that off.
 - Our server is involved only for what has to happen while your browser is closed, or that a browser can’t do alone: long sessions, scheduled posts, post timers, and the optional post adviser and image descriptions. It also keeps the record that your account agreed to our terms.
 - Virga has no advertising, no analytics or tracking scripts and no cookies. We don’t sell information about you.
 - You sign in on your own account’s host. Virga never sees your password and doesn’t collect your email address.
@@ -34,6 +34,8 @@ Virga keeps the following in the browser you use it in. None of it is sent to ou
 | A sign-in in progress, and a compose link opened before signing in | sessionStorage | Closing the tab |
 
 A script running on the page could read what is kept here. That is true of every web app that keeps a session in the browser, and it is the reason to use Virga on a device you trust.
+
+**The iPhone and iPad app** keeps the same things on your device. The archive and drafts’ pictures and video are files in the app’s own folder, sign-in tokens are in the device’s Keychain, and the rest is in the app’s settings. Your device’s backups, to iCloud or to a computer, include the app’s folder and its settings. To leave the folder out, turn off iCloud Backup in Settings › Data and sync; the settings are still backed up. Backups already made keep their copy until newer ones replace them. A backup is held by Apple under your Apple Account, or on your computer, and nothing in it reaches our server. Sign-in tokens are kept for that one device and are never in a backup, so after a restore you sign in again.
 
 ## What Virga’s server keeps
 
@@ -121,6 +123,7 @@ In Virga itself you can:
 - **Sign out,** which ends the session in that browser. For a long session, our server gives up Virga’s permission and deletes its tokens once it has received the sign-out from the last browser holding the session.
 - **Remove an account from a browser,** and delete what it keeps there.
 - **Delete your archive** in Settings › Data and sync, or export it.
+- **Leave the archive out of your device’s backups** in the iPhone and iPad app, with iCloud Backup in Settings › Data and sync.
 - **Cancel a scheduled post or a timer.**
 - **Turn the adviser off.**
 - **Withdraw Virga’s permission** at your account’s host, which stops Virga’s sessions for that account from working.
@@ -135,7 +138,7 @@ Depending on where you live, you may also have the right to object to or restric
 
 ## Other people’s information
 
-Your archive holds public information about other accounts. It stays in your browser. If you are one of those people and want to know what a copy of Virga in someone’s browser holds about you, the answer is: whatever is public about your account on the network, in the browsers of the people whose accounts you interact with. Our server holds another person’s information only inside the content of a Virga user’s own scheduled post or timer, such as a post being quoted, and, for a scheduled reply, as the handle, name and up to 300 characters of the post being answered.
+Your archive holds public information about other accounts. It stays in your browser, or, in the iPhone and iPad app, on your device and in its backups. If you are one of those people and want to know what a copy of Virga in someone’s browser holds about you, the answer is: whatever is public about your account on the network, in the browsers of the people whose accounts you interact with. Our server holds another person’s information only inside the content of a Virga user’s own scheduled post or timer, such as a post being quoted, and, for a scheduled reply, as the handle, name and up to 300 characters of the post being answered.
 
 ## Children
 

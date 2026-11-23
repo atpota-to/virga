@@ -11,6 +11,13 @@
 //                   password under the app's service, readable after the
 //                   device's first unlock and never synced off it.
 //
+// The device's backups (iCloud's, or a computer's) take the file store's
+// folder and the key-value store, as iOS does for Application Support and
+// UserDefaults, unless the person turns the folder's backup off in Settings ›
+// Data and sync (`backupKey`). The Keychain item is this-device-only, so a
+// backup never carries the token. The web has no counterpart: a browser
+// doesn't back IndexedDB up anywhere.
+//
 // The demo (and previews, and tests) use the in-memory stand-ins of each.
 // ios/AppTests holds these to the protocols.
 
@@ -92,11 +99,57 @@ public struct AppStores {
     KeychainSecretStore(service: service)
   }
 
-  /// The app's own.
+  // MARK: Backups
+
+  /// Whether the file store's folder goes into the device's backups, in the
+  /// key-value store, for everyone on the device: "off" leaves it out, and
+  /// anything else, or nothing, keeps it in. The app's own key; the web has
+  /// no backup to choose.
+  public static let backupKey = "virga:ios-backup"
+
+  /// Whether the folder is to be backed up: yes unless it was turned off.
+  public static func backsUp(_ store: any KeyValueStore) -> Bool {
+    store.getItem(backupKey) != "off"
+  }
+
+  /// Keeps the choice and marks the folder to match (with no folder, as in
+  /// the demo, only the choice is kept).
+  public static func setBacksUp(_ on: Bool, store: any KeyValueStore, directory: URL?) {
+    try? store.setItem(backupKey, on ? "on" : "off")
+    markBackup(on, directory: directory)
+  }
+
+  /// Marks the folder in or out of backups. Leaving a folder out leaves out
+  /// everything under it, files written later included. The mark stays
+  /// with the folder, and the store never removes the folder itself, but
+  /// the app sets it again at every launch, in case the folder was made anew.
+  @discardableResult
+  public static func markBackup(_ on: Bool, directory: URL?) -> Bool {
+    guard var directory else { return false }
+    var values = URLResourceValues()
+    values.isExcludedFromBackup = !on
+    do {
+      try directory.setResourceValues(values)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  /// Whether the folder is marked to be left out of backups (nil: no folder,
+  /// or the mark can't be read).
+  public static func isExcludedFromBackup(_ directory: URL?) -> Bool? {
+    guard let directory else { return nil }
+    return (try? directory.resourceValues(forKeys: [.isExcludedFromBackupKey]))?.isExcludedFromBackup
+  }
+
+  /// The app's own, its folder marked in or out of backups as last chosen.
   public static func device() -> AppStores {
     let directory = fileStoreDirectory()
+    let keyValue = keyValueStore()
+    markBackup(backsUp(keyValue), directory: directory)
     return AppStores(
-      keyValue: keyValueStore(), tab: InMemoryKeyValueStore(), files: DiskFileStore(baseURL: directory), secrets: secretStore(),
+      keyValue: keyValue, tab: InMemoryKeyValueStore(), files: DiskFileStore(baseURL: directory), secrets: secretStore(),
       filesDirectory: directory)
   }
 

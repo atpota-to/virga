@@ -11,13 +11,13 @@
       "id": "TERMS_VERSION",
       "fn": "TERMS_VERSION",
       "input": {},
-      "output": 1
+      "output": 2
     },
     {
       "id": "TERMS_EFFECTIVE_DATE",
       "fn": "TERMS_EFFECTIVE_DATE",
       "input": {},
-      "output": "2026-11-15"
+      "output": "2026-11-23"
     },
     {
       "id": "TERMS_PATH",
@@ -93,9 +93,9 @@
       "id": "formatLegalDate#3",
       "fn": "formatLegalDate",
       "input": {
-        "isoDate": "2026-11-15"
+        "isoDate": "2026-11-23"
       },
-      "output": "November 15, 2026"
+      "output": "November 23, 2026"
     },
     {
       "id": "formatLegalDate#4",
@@ -567,7 +567,7 @@
         "options": {}
       },
       "output": {
-        "virga:terms-accepted:did:plc:abcdefghijklmnopqrstuvwx": "{\"version\":1,\"at\":null,\"recorded\":false,\"tries\":0,\"identity\":null}"
+        "virga:terms-accepted:did:plc:abcdefghijklmnopqrstuvwx": "{\"version\":2,\"at\":null,\"recorded\":false,\"tries\":0,\"identity\":null}"
       }
     },
     {
@@ -578,7 +578,7 @@
         "options": null
       },
       "output": {
-        "virga:terms-accepted:did:plc:abcdefghijklmnopqrstuvwx": "{\"version\":1,\"at\":null,\"recorded\":false,\"tries\":0,\"identity\":null}"
+        "virga:terms-accepted:did:plc:abcdefghijklmnopqrstuvwx": "{\"version\":2,\"at\":null,\"recorded\":false,\"tries\":0,\"identity\":null}"
       }
     },
     {
@@ -593,7 +593,7 @@
         }
       },
       "output": {
-        "virga:terms-accepted:did:plc:abcdefghijklmnopqrstuvwx": "{\"version\":1,\"at\":\"2026-11-14T10:00:00.000Z\",\"recorded\":true,\"tries\":0,\"identity\":\"session\"}"
+        "virga:terms-accepted:did:plc:abcdefghijklmnopqrstuvwx": "{\"version\":2,\"at\":\"2026-11-14T10:00:00.000Z\",\"recorded\":true,\"tries\":0,\"identity\":\"session\"}"
       }
     },
     {
@@ -623,7 +623,7 @@
         }
       },
       "output": {
-        "virga:terms-accepted:did:plc:abcdefghijklmnopqrstuvwx": "{\"version\":1,\"at\":\"quote \\\" and \\\\ and ✓\",\"recorded\":false,\"tries\":0,\"identity\":null}"
+        "virga:terms-accepted:did:plc:abcdefghijklmnopqrstuvwx": "{\"version\":2,\"at\":\"quote \\\" and \\\\ and ✓\",\"recorded\":false,\"tries\":0,\"identity\":null}"
       }
     },
     {
@@ -657,7 +657,7 @@
       "fn": "coversCurrent",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -671,7 +671,7 @@
       "fn": "coversCurrent",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -685,7 +685,7 @@
       "fn": "coversCurrent",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 0,
@@ -699,7 +699,7 @@
       "fn": "coversCurrent",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 4,
@@ -713,7 +713,7 @@
       "fn": "coversCurrent",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 5,
@@ -727,7 +727,7 @@
       "fn": "coversCurrent",
       "input": {
         "entry": {
-          "version": 2,
+          "version": 3,
           "at": "2026-11-14T10:00:00Z",
           "recorded": true,
           "tries": 0,
@@ -741,7 +741,7 @@
       "fn": "coversCurrent",
       "input": {
         "entry": {
-          "version": 0,
+          "version": 1,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -785,7 +785,7 @@
       "fn": "needsReport",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -799,7 +799,7 @@
       "fn": "needsReport",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -813,7 +813,7 @@
       "fn": "needsReport",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 0,
@@ -827,7 +827,7 @@
       "fn": "needsReport",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 4,
@@ -841,7 +841,7 @@
       "fn": "needsReport",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 5,
@@ -855,7 +855,7 @@
       "fn": "needsReport",
       "input": {
         "entry": {
-          "version": 2,
+          "version": 3,
           "at": "2026-11-14T10:00:00Z",
           "recorded": true,
           "tries": 0,
@@ -869,7 +869,7 @@
       "fn": "needsReport",
       "input": {
         "entry": {
-          "version": 0,
+          "version": 1,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -923,7 +923,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -938,7 +938,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -953,7 +953,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -968,7 +968,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -983,7 +983,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -998,7 +998,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -1013,7 +1013,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 0,
@@ -1028,7 +1028,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 0,
@@ -1043,7 +1043,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 0,
@@ -1058,7 +1058,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 4,
@@ -1073,7 +1073,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 4,
@@ -1088,7 +1088,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 4,
@@ -1103,7 +1103,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 5,
@@ -1118,7 +1118,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 5,
@@ -1133,7 +1133,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 5,
@@ -1148,7 +1148,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 2,
+          "version": 3,
           "at": "2026-11-14T10:00:00Z",
           "recorded": true,
           "tries": 0,
@@ -1163,7 +1163,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 2,
+          "version": 3,
           "at": "2026-11-14T10:00:00Z",
           "recorded": true,
           "tries": 0,
@@ -1178,7 +1178,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 2,
+          "version": 3,
           "at": "2026-11-14T10:00:00Z",
           "recorded": true,
           "tries": 0,
@@ -1193,7 +1193,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 0,
+          "version": 1,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -1208,7 +1208,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 0,
+          "version": 1,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -1223,7 +1223,7 @@
       "fn": "opensGate",
       "input": {
         "entry": {
-          "version": 0,
+          "version": 1,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -1278,7 +1278,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -1294,7 +1294,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -1310,7 +1310,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -1326,7 +1326,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -1342,7 +1342,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -1358,7 +1358,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -1374,7 +1374,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -1390,7 +1390,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -1406,7 +1406,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 0,
@@ -1422,7 +1422,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 0,
@@ -1438,7 +1438,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 0,
@@ -1454,7 +1454,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 0,
@@ -1470,7 +1470,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 4,
@@ -1486,7 +1486,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 4,
@@ -1502,7 +1502,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 4,
@@ -1518,7 +1518,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 4,
@@ -1534,7 +1534,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 5,
@@ -1550,7 +1550,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 5,
@@ -1566,7 +1566,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 5,
@@ -1582,7 +1582,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 1,
+          "version": 2,
           "at": null,
           "recorded": false,
           "tries": 5,
@@ -1598,7 +1598,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 2,
+          "version": 3,
           "at": "2026-11-14T10:00:00Z",
           "recorded": true,
           "tries": 0,
@@ -1614,7 +1614,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 2,
+          "version": 3,
           "at": "2026-11-14T10:00:00Z",
           "recorded": true,
           "tries": 0,
@@ -1630,7 +1630,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 2,
+          "version": 3,
           "at": "2026-11-14T10:00:00Z",
           "recorded": true,
           "tries": 0,
@@ -1646,7 +1646,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 2,
+          "version": 3,
           "at": "2026-11-14T10:00:00Z",
           "recorded": true,
           "tries": 0,
@@ -1662,7 +1662,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 0,
+          "version": 1,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -1678,7 +1678,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 0,
+          "version": 1,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -1694,7 +1694,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 0,
+          "version": 1,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -1710,7 +1710,7 @@
       "fn": "startingStatus",
       "input": {
         "entry": {
-          "version": 0,
+          "version": 1,
           "at": null,
           "recorded": true,
           "tries": 0,
@@ -1727,7 +1727,7 @@
       "input": {
         "answer": {
           "accepted": true,
-          "version": 1
+          "version": 2
         }
       },
       "output": "accepted"
@@ -1738,7 +1738,7 @@
       "input": {
         "answer": {
           "accepted": false,
-          "version": 1
+          "version": 2
         }
       },
       "output": "needs"
@@ -1749,7 +1749,7 @@
       "input": {
         "answer": {
           "accepted": true,
-          "version": 2
+          "version": 3
         }
       },
       "output": "needs"
@@ -1760,7 +1760,7 @@
       "input": {
         "answer": {
           "accepted": "true",
-          "version": 1
+          "version": 2
         }
       },
       "output": "needs"
@@ -1771,7 +1771,7 @@
       "input": {
         "answer": {
           "accepted": true,
-          "version": "1"
+          "version": "2"
         }
       },
       "output": "needs"
@@ -2405,7 +2405,7 @@
             "status": 200,
             "json": {
               "success": true,
-              "version": 1,
+              "version": 2,
               "accepted": true,
               "acceptedAt": "2026-11-14T10:00:00Z"
             }
@@ -2430,7 +2430,7 @@
                 "content-type": "application/json"
               },
               "body": {
-                "$text": "{\"success\":true,\"version\":1,\"accepted\":true,\"acceptedAt\":\"2026-11-14T10:00:00Z\"}"
+                "$text": "{\"success\":true,\"version\":2,\"accepted\":true,\"acceptedAt\":\"2026-11-14T10:00:00Z\"}"
               }
             }
           }
@@ -2439,7 +2439,7 @@
         "result": {
           "accepted": true,
           "acceptedAt": "2026-11-14T10:00:00Z",
-          "version": 1
+          "version": 2
         }
       }
     },
@@ -2737,7 +2737,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1
+                  "version": 2
                 }
               },
               "timeoutMs": 20000
@@ -2832,7 +2832,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1
+                  "version": 2
                 }
               },
               "timeoutMs": 20000
@@ -2882,7 +2882,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1
+                  "version": 2
                 }
               },
               "timeoutMs": 20000
@@ -2934,7 +2934,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1
+                  "version": 2
                 }
               },
               "timeoutMs": 20000
@@ -2987,7 +2987,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1
+                  "version": 2
                 }
               },
               "timeoutMs": 20000
@@ -3040,7 +3040,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1
+                  "version": 2
                 }
               },
               "timeoutMs": 20000
@@ -3094,7 +3094,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1
+                  "version": 2
                 }
               },
               "timeoutMs": 20000
@@ -3144,7 +3144,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1
+                  "version": 2
                 }
               },
               "timeoutMs": 20000
@@ -3198,7 +3198,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1
+                  "version": 2
                 }
               },
               "timeoutMs": 20000
@@ -3245,7 +3245,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1
+                  "version": 2
                 }
               },
               "timeoutMs": 20000
@@ -3275,7 +3275,7 @@
             "status": 200,
             "json": {
               "success": true,
-              "version": 1,
+              "version": 2,
               "identity": "claimed"
             }
           }
@@ -3292,7 +3292,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1,
+                  "version": 2,
                   "did": "did:plc:abcdefghijklmnopqrstuvwx"
                 }
               },
@@ -3304,7 +3304,7 @@
                 "content-type": "application/json"
               },
               "body": {
-                "$text": "{\"success\":true,\"version\":1,\"identity\":\"claimed\"}"
+                "$text": "{\"success\":true,\"version\":2,\"identity\":\"claimed\"}"
               }
             }
           }
@@ -3339,7 +3339,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1,
+                  "version": 2,
                   "did": "did:plc:abcdefghijklmnopqrstuvwx"
                 }
               },
@@ -3388,7 +3388,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1
+                  "version": 2
                 }
               },
               "timeoutMs": 15000
@@ -3485,7 +3485,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1,
+                  "version": 2,
                   "did": "did:plc:abcdefghijklmnopqrstuvwx"
                 }
               },
@@ -3539,7 +3539,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1,
+                  "version": 2,
                   "did": "did:plc:abcdefghijklmnopqrstuvwx"
                 }
               },
@@ -3589,7 +3589,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1,
+                  "version": 2,
                   "did": "did:plc:abcdefghijklmnopqrstuvwx"
                 }
               },
@@ -3641,7 +3641,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1,
+                  "version": 2,
                   "did": "did:plc:abcdefghijklmnopqrstuvwx"
                 }
               },
@@ -3688,7 +3688,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1,
+                  "version": 2,
                   "did": "did:plc:abcdefghijklmnopqrstuvwx"
                 }
               },
@@ -3755,7 +3755,7 @@
               },
               "body": {
                 "$json": {
-                  "version": 1,
+                  "version": 2,
                   "did": "did:plc:abcdefghijklmnopqrstuvwx"
                 }
               },

@@ -186,7 +186,7 @@ func backendError(_ body: () async throws -> Void) async -> BackendError? {
   @Test func answersTheRealServicesAskedThenRecordedOnceForTheSessionsAccount() async throws {
     let s = ServerSetup(terms: "ask")
     let req = s.requester(World.me.did)
-    let asked = TermsStatusAnswer(accepted: false, acceptedAt: .null, version: 1)
+    let asked = TermsStatusAnswer(accepted: false, acceptedAt: .null, version: .number(Double(LegalVersion.termsVersion)))
     #expect(try await TermsService.fetchTermsStatus(req) == asked)
     let first = try await TermsService.recordAcceptance(req)
     #expect(s.server.agreements.map(\.identity) == ["session"])
@@ -213,12 +213,14 @@ func backendError(_ body: () async throws -> Void) async -> BackendError? {
   @Test func refusesAnotherVersionADidThatIsntOneAndATokenThatDoesntHold() async throws {
     let s = ServerSetup(terms: "ask")
     let json: HTTPHeaders = ["Content-Type": "application/json"]
+    let current = LegalVersion.termsVersion
     let changed = try await s.fetch(
-      "/api/terms/accept", method: "POST", headers: json, text: #"{"version":2,"did":"\#(World.me.did)"}"#)
+      "/api/terms/accept", method: "POST", headers: json, text: #"{"version":\#(current + 1),"did":"\#(World.me.did)"}"#)
     #expect(changed.status == 409)
     #expect(try changed.json()["code"] == "TERMS_VERSION_MISMATCH")
-    #expect(try changed.json()["version"] == 1)
-    let handle = try await s.fetch("/api/terms/accept", method: "POST", headers: json, text: #"{"version":1,"did":"mira.example.com"}"#)
+    #expect(try changed.json()["version"] == .number(Double(current)))
+    let handle = try await s.fetch(
+      "/api/terms/accept", method: "POST", headers: json, text: #"{"version":\#(current),"did":"mira.example.com"}"#)
     #expect(handle.status == 400)
     #expect(try handle.json()["code"] == "DID_INVALID")
     let stale = s.requester(World.me.did, token: "vg_\(String(repeating: "0", count: 64))")

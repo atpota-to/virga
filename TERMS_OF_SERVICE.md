@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated:** November 15, 2026 (version 1)
+**Last updated:** November 23, 2026 (version 2)
 
 These terms are the agreement between you and **atpotato, LLC**, a Delaware limited liability company, for your use of Virga. In them, “we”, “us” and “our” mean atpotato, LLC, and “Virga” means the website, its server and the software behind them.
 
@@ -83,7 +83,7 @@ You are responsible for your content, and for having the rights to post it.
 
 ## Other people’s information
 
-Your archive contains public information about other people: the accounts that follow you, interact with you, block you or add you to lists. It is kept in your browser, and you can export it. What you do with it is your responsibility, including under the privacy laws that apply to you.
+Your archive contains public information about other people: the accounts that follow you, interact with you, block you or add you to lists. It is kept in your browser, or, in the iPhone and iPad app, on your device and in its backups, and you can export it. What you do with it is your responsibility, including under the privacy laws that apply to you.
 
 ## Price, limits and changes
 
