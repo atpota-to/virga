@@ -64,6 +64,9 @@ struct SlashMark: Equatable {
   var start: Int
   var query: String
   var index: Int
+
+  /// What the web's effect watches: the shortcut's place and query.
+  static func key(_ slash: SlashCommand) -> String { "\(slash.start):\(slash.query)" }
 }
 
 /// The keys an open suggestion list takes from its field: the lists as
@@ -174,6 +177,13 @@ struct PostEditor: View {
     // has left the shortcut.
     .onChange(of: Library.detectSlashCommand(text, caret) == nil) { _, gone in
       if gone && slashDismissed != nil { slashDismissed = nil }
+    }
+    // The web's other effect: the "/" list's mark goes back to the first row
+    // whenever the shortcut changes, even back to the one it was moved in (a
+    // letter typed and taken out, the caret leaving and coming back,
+    // Escape). slashIndex's own check covers the moment before this runs.
+    .onChange(of: slash.map(SlashMark.key)) { _, _ in
+      if slashMark != nil { slashMark = nil }
     }
   }
 
@@ -795,8 +805,9 @@ final class ComposerTextView: UITextView {
   /// A hardware keyboard's keys for a list that is up, ahead of the text
   /// view's own use of them (the caret's moves, a new line): ↑ and ↓ with
   /// or without a modifier (the web reads none), Return and Tab while it
-  /// has rows, Escape while it is up. Only then, so every other key reaches
-  /// the text view as before, and none while an input method is composing.
+  /// has rows (⇧⇥ too: the web's Tab is taken with anything held but ⌘ or
+  /// ⌃), Escape while it is up. Only then, so every other key reaches the
+  /// text view as before, and none while an input method is composing.
   private func listCommands() -> [UIKeyCommand] {
     guard markedTextRange == nil, let lists = suggestionKeys?.lists() else { return [] }
     var commands: [UIKeyCommand] = []
@@ -807,6 +818,7 @@ final class ComposerTextView: UITextView {
       }
       commands.append(Self.listCommand("\r", [], #selector(listReturn)))
       commands.append(Self.listCommand("\t", [], #selector(listTab)))
+      commands.append(Self.listCommand("\t", .shift, #selector(listBackTab)))
     }
     if lists.takesEscape {
       commands.append(Self.listCommand(UIKeyCommand.inputEscape, [], #selector(listEscape)))
@@ -829,6 +841,8 @@ final class ComposerTextView: UITextView {
   // typed as it would have been.
   @objc func listReturn() { if !takeListKey(.enter) { insertText("\n") } }
   @objc func listTab() { if !takeListKey(.tab) { insertText("\t") } }
+  // ⇧⇥ has no letter to type, so should the list have gone it does nothing.
+  @objc func listBackTab() { takeListKey(.tab) }
 
   /// The key's action on the lists as they are now (SuggestionKeys); true
   /// when the key was theirs.
