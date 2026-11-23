@@ -13,9 +13,12 @@
 // SearchField are. A select (`select.input`) is VirgaSelect: its value in
 // ink at the field's start, on one line, a chevron in --ink-2 at its end;
 // disabled, its value --muted on --surface-2, as any field's
-// (`keepingFillWhenDisabled()` keeps the field's own ground instead).
+// (`keepingFillWhenDisabled()` keeps the field's own ground instead). A
+// UIKit field (KeyTextField) has a focus SwiftUI's can't see, so the field
+// round it is told it: `.virgaField(focused:)`.
 //
 //   VirgaTextField("you.bsky.social", text: $handle).virgaField()
+//   KeyTextField("Add a language", text: $query, focused: $focused, …).virgaField(focused: focused)
 //   TextEditor(text: $text).virgaTextArea()
 //   VirgaSelect("Week starts on", selection: $start, options: [SelectChoice(.monday, "Week starts Monday"), …])
 
@@ -43,6 +46,10 @@ struct FieldChrome: ViewModifier {
   /// A disabled field that keeps the field's own ground, only its edge and
   /// words dimmed (schedule.css's `.lse-op:disabled`).
   var keepsFill = false
+  /// The focus of a field SwiftUI's focus can't see (KeyTextField, a UIKit
+  /// text field), as the field says it; nil for a SwiftUI field, whose
+  /// focus the chrome follows itself.
+  var focus: Bool? = nil
 
   func body(content: Content) -> some View {
     // A field in trouble declares its ring again, in the danger colour.
@@ -67,10 +74,11 @@ struct FieldChrome: ViewModifier {
     let height = textArea
       ? theme.points(ThemeKit.textAreaMinHeight)
       : theme.points(size == .large ? ThemeKit.largeInputHeight : ThemeKit.touchInputHeight)
+    let isFocused = focus ?? focused
     let edge: Color
     if !isEnabled {
       edge = theme.line
-    } else if focused {
+    } else if isFocused {
       edge = (local.color(.focusRing) ?? .transparent).color
     } else if invalid {
       edge = theme.color(ThemeKit.invalidEdge)
@@ -79,7 +87,7 @@ struct FieldChrome: ViewModifier {
     }
     let ring = local.shadow(.focus) ?? []
     return content
-      .focused($focused)
+      .trackingFocus($focused, if: focus == nil)
       .virgaText(size: theme.points(ThemeKit.touchInputFontSize), lineHeight: textArea ? ThemeKit.textAreaLineHeight : nil)
       .foregroundStyle(isEnabled ? theme.ink : theme.muted)
       .tint(theme.accent)
@@ -90,12 +98,25 @@ struct FieldChrome: ViewModifier {
       .background(shape.fill(isEnabled || keepsFill ? theme.color(ThemeKit.inputFill) : theme.color(ThemeKit.disabledInputFill)))
       .overlay(shape.strokeBorder(edge, lineWidth: theme.points(ThemeKit.inputBorder)))
       .overlay {
-        if focused {
+        if isFocused {
           FocusRing(layers: ring, theme: local, radius: radius)
         }
       }
       .focusEffectDisabled()
-      .animation(theme.motion.control, value: focused)
+      .animation(theme.motion.control, value: isFocused)
+  }
+}
+
+extension View {
+  /// `.focused(binding)`, for a field whose focus SwiftUI follows; a field
+  /// that says its own (`FieldChrome.focus`) is left alone.
+  @ViewBuilder
+  fileprivate func trackingFocus(_ binding: FocusState<Bool>.Binding, if tracked: Bool) -> some View {
+    if tracked {
+      focused(binding)
+    } else {
+      self
+    }
   }
 }
 
@@ -131,6 +152,13 @@ extension View {
   /// leading edge (search's glass, the handle field's @).
   public func virgaField(invalid: Bool = false, size: FieldSize = .medium, leading: CGFloat) -> some View {
     modifier(FieldChrome(invalid: invalid, size: size, leading: leading, textArea: false))
+  }
+
+  /// The kit's field round a field whose focus SwiftUI can't see
+  /// (KeyTextField, a UIKit text field): `focused` is the field's own word
+  /// for it, which draws the focused edge and ring.
+  public func virgaField(focused: Bool, invalid: Bool = false, size: FieldSize = .medium, leading: CGFloat? = nil) -> some View {
+    modifier(FieldChrome(invalid: invalid, size: size, leading: leading, textArea: false, focus: focused))
   }
 
   /// The kit's text area round a TextEditor, or, with `editor: false`, round

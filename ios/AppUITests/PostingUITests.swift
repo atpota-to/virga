@@ -188,9 +188,12 @@ final class PostingUITests: XCTestCase {
     // On the iPad, a hardware keyboard's: with the list open again, Escape
     // puts it away, and ↓ then Return adds the second suggestion. (Mira
     // starts with English, so this is the third language, the most there
-    // can be: Escape goes first.) The list is opened again by the query
-    // changing, as typing does on the web: a press on a field that already
-    // has the keyboard may not reach the picker.
+    // can be: Escape goes first.) The press on the field asks for the list
+    // again (KeyTextField's onPress, the web's onClick), and the query
+    // changing opens it too, as typing does on the web. The field is a
+    // KeyTextField, still app.textFields["Languages"]: these keys reach the
+    // picker by the field's pressesBegan, its priority key commands or, for
+    // Return, its delegate, whichever comes first.
     guard UIDevice.current.userInterfaceIdiom == .pad else { return }
     languages.tap()
     languages.typeText("e")
