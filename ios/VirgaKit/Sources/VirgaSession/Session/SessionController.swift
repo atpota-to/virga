@@ -35,13 +35,34 @@ public struct SignInOptions: Sendable, Hashable {
   public var defense: JSONValue?
   /// Which remembered account this is, when the caller knows.
   public var did: String?
+  /// iOS only: told once the server has given the host's address, as the
+  /// system's sheet opens on it, which is where the web's page leaves for
+  /// the host (`location.assign`). The sign-in's "Still here?" covers only
+  /// the wait before it. Not part of the options' equality.
+  public var onAuthorizing: (@MainActor @Sendable () -> Void)?
 
-  public init(mode: String? = nil, intent: String = "add", prompt: String? = nil, defense: JSONValue? = nil, did: String? = nil) {
+  public init(
+    mode: String? = nil, intent: String = "add", prompt: String? = nil, defense: JSONValue? = nil, did: String? = nil,
+    onAuthorizing: (@MainActor @Sendable () -> Void)? = nil
+  ) {
     self.mode = mode
     self.intent = intent
     self.prompt = prompt
     self.defense = defense
     self.did = did
+    self.onAuthorizing = onAuthorizing
+  }
+
+  public static func == (a: SignInOptions, b: SignInOptions) -> Bool {
+    a.mode == b.mode && a.intent == b.intent && a.prompt == b.prompt && a.defense == b.defense && a.did == b.did
+  }
+
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(mode)
+    hasher.combine(intent)
+    hasher.combine(prompt)
+    hasher.combine(defense)
+    hasher.combine(did)
   }
 }
 

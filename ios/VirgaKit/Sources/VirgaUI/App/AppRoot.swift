@@ -16,16 +16,23 @@
 // A Defense scan holds other people's names, so it goes when its account
 // is signed out or forgotten (ScanStore's keepScansFor). The shell is made
 // again when the number and date formats change, so nothing keeps a
-// string written the old way (App.jsx's `<Shell key={formats}>`).
+// string written the old way (App.jsx's `<Shell key={formats}>`), and when
+// the device moves to another time zone: the web's Date and Intl follow
+// the system's zone at once, so the app reads it again when the system
+// says it changed and whenever the app comes back to the front (a flight
+// while it was in the background).
 //
 // On iOS a sign-in comes back into the running app (ASWebAuthenticationSession),
 // not as a new page load on the return path, so "a sign-in that came back
 // without a session" is the session's error, whichever page is up; it
 // says so until it is dismissed. A universal link to the return page (a
-// sign-in finished in Safari) is finished the same way.
+// sign-in finished in Safari) is finished the same way. A compose link,
+// virga://compose?… or the universal link to /intent/compose, opens the
+// composer filled in, or is kept for after the sign-in.
 
 #if canImport(UIKit)
 import SwiftUI
+import UIKit
 import VirgaCore
 import VirgaDefense
 import VirgaNetwork
@@ -39,6 +46,7 @@ public struct AppRoot: View {
   @Environment(SessionModel.self) private var session
   @Environment(TermsAcceptanceModel.self) private var terms
   @Environment(PreferencesModel.self) private var preferences
+  @Environment(\.scenePhase) private var scenePhase
   /// The composer's host (ComposerContext), above the per-account identity,
   /// so an open composer survives switching accounts.
   @State private var composer = ComposerHost()
@@ -89,13 +97,23 @@ public struct AppRoot: View {
         finishReturn(url)
       }
       .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
-        if let url = activity.webpageURL { finishReturn(url) }
+        guard let url = activity.webpageURL else { return }
+        if openCompose(url) { return }
+        finishReturn(url)
+      }
+      .task { await followDeviceZone(on: .NSSystemTimeZoneDidChange) }
+      .task { await followDeviceZone(on: UIApplication.significantTimeChangeNotification) }
+      .onChange(of: scenePhase) { _, phase in
+        if phase == .active { lookAtDeviceZone() }
       }
   }
 
   @ViewBuilder private var content: some View {
     if let document = LegalDocuments.documentFor(navigator.path) {
-      LegalPageView(docKey: document)
+      // A page per document, as the web's navigate starts a new one at its
+      // top and LegalPage goes to the address's section for each docKey:
+      // Terms to Privacy doesn't keep the Terms' place.
+      LegalPageView(docKey: document).id(document)
     } else if session.loading {
       AppStatus(session.returning ? "Signing you in…" : "Opening Virga…")
     } else if let error = session.error {
@@ -132,9 +150,10 @@ public struct AppRoot: View {
       TermsGateView().id(did).sessionNotices()
     case .accepted:
       ArchiveHost(did: did) {
-        // Drawn again in the new formats when they change.
+        // Drawn again in the new formats, or the device's new zone, when
+        // they change.
         ShellView(store: app.stores.keyValue, did: did)
-          .id(preferences.formats)
+          .id("\(preferences.formats)|\(preferences.timeZone.identifier)")
       }
       .id(did)
       .composerHost(composer)
@@ -151,20 +170,33 @@ public struct AppRoot: View {
     }
   }
 
-  /// virga://compose?text=…&url=…&tags=…: the composer, filled in. Kept
-  /// for after the sign-in when nobody is signed in yet.
+  /// virga://compose?text=…&url=…&tags=…, or the universal link
+  /// https://<virga>/intent/compose?… (the only one the app's associated
+  /// domain claims): the composer, filled in. Kept for after the sign-in
+  /// when nobody is signed in yet.
   private func openCompose(_ url: URL) -> Bool {
-    guard url.scheme?.lowercased() == "virga", url.host?.lowercased() == "compose" else { return false }
+    guard let search = ComposeIntent.composeLinkSearch(url) else { return false }
     if session.did != nil, session.session != nil, terms.status == .accepted {
       composer.openLink(url)
     } else {
-      let search = url.query.map { "?\($0)" } ?? ""
       let now = Date().timeIntervalSince1970 * 1000
       if PendingCompose.rememberPendingCompose(ComposeIntent.intentComposePath, search, store: app.stores.tab, now: now) {
         composing = true
       }
     }
     return true
+  }
+
+  /// Each time `name` is posted, the device's zone, read again.
+  private func followDeviceZone(on name: Notification.Name) async {
+    for await _ in NotificationCenter.default.notifications(named: name) { lookAtDeviceZone() }
+  }
+
+  /// The device's zone now (the system's cached one dropped first), made
+  /// the active one if it has changed.
+  private func lookAtDeviceZone() {
+    NSTimeZone.resetSystemTimeZone()
+    preferences.deviceZoneChanged(TimeZone.current)
   }
 
   /// A return to `https://<server>/oauth/return#session=…` that reached the

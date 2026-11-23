@@ -21,9 +21,12 @@
 //
 // VoiceOver hears what the web's live regions say: "Looking you up…" and
 // "Found …" as the account is looked up, a notice as it comes up, and
-// "Still here?" when the trip is slow. Focus goes with the card: to the
-// field on the first card (and in Add an account as it opens), to the way
-// on while the account is looked up and found, else to the card's title.
+// "Still here?" when the trip is slow: when Virga's server is slow to give
+// the host's address, not while the person is on the host's page in the
+// system's sheet (the web's page has left by then). Focus goes with the
+// card: to the field on the first card (and in Add an account as it
+// opens), to the way on while the account is looked up and found, else to
+// the card's title.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -181,8 +184,16 @@ public struct SignInFlowView: View {
 
   private func signIn(_ input: String, intent: String = "add", mode: String? = nil, did: String? = nil) -> @MainActor () async throws -> Void {
     let session = self.session
-    let options = SignInOptions(mode: mode ?? session.authMode, intent: intent, did: did)
+    let options = SignInOptions(mode: mode ?? session.authMode, intent: intent, did: did, onAuthorizing: stopStalling)
     return { try await session.signIn(input, options) }
+  }
+
+  /// The system's sheet is opening on the host's page, which is where the
+  /// web's page leaves: "Still here?" covered the wait for the server only,
+  /// and mustn't be said over the host's page.
+  private var stopStalling: @MainActor @Sendable () -> Void {
+    let stall = $stallTask
+    return { stall.wrappedValue?.cancel() }
   }
 
   /// `picked` is a suggestion taken from under the field: looked up at once.
@@ -242,7 +253,7 @@ public struct SignInFlowView: View {
 
   private func chooseHost(_ host: SignupHost) {
     let session = self.session
-    let options = SignInOptions(mode: session.authMode)
+    let options = SignInOptions(mode: session.authMode, onAuthorizing: stopStalling)
     leave(host: host.domain, purpose: "signup") {
       try await SignInHosts.signUpAt({ input, opts in try await session.signIn(input, opts) }, host.url, options: options)
     }

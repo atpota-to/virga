@@ -10,6 +10,12 @@
 // the view sets `systemDark` and `systemMoreContrast` from its environment,
 // and calls `lookAtClock()` each minute while `watchesClock` is true (the
 // web's useSkyHour). Nothing here reads the clock but the `now` it is given.
+//
+// The device's time zone is the active one (AppLocale's), as the browser's
+// is on the web, where Date and Intl follow a change of the system's zone
+// at once. The app tells the model of a change (`deviceZoneChanged`: a
+// flight, or a new zone in Settings, while the app stays in memory), and
+// the shell is drawn again in the new zone.
 
 import Foundation
 import Observation
@@ -33,9 +39,12 @@ public final class PreferencesModel {
     didSet { if languages != oldValue { applyFormats() } }
   }
 
+  /// The device's zone, which is also the active one (`deviceZoneChanged`).
+  public private(set) var timeZone: TimeZone
+
   @ObservationIgnored private let store: KeyValueStore?
   @ObservationIgnored private let now: @Sendable () -> Date
-  @ObservationIgnored public let timeZone: TimeZone
+  @ObservationIgnored private let activateZone: @Sendable (TimeZone) -> Void
 
   /// - Parameters:
   ///   - store: where the preferences are kept (the app's key-value store).
@@ -43,24 +52,28 @@ public final class PreferencesModel {
   ///   - timeZone: the device's zone (`TimeZone.current`); also made the
   ///     active one, as the browser's local zone is on the web.
   ///   - now: the clock.
+  ///   - activateZone: makes a zone the active one (AppLocale's, which
+  ///     tests leave alone).
   public init(
     store: KeyValueStore?,
     languages: [String],
     timeZone: TimeZone,
     systemDark: Bool = false,
     systemMoreContrast: Bool = false,
-    now: @escaping @Sendable () -> Date = { Date() }
+    now: @escaping @Sendable () -> Date = { Date() },
+    activateZone: @escaping @Sendable (TimeZone) -> Void = { AppLocale.setActiveTimeZone($0) }
   ) {
     self.store = store
     self.languages = languages
     self.timeZone = timeZone
     self.now = now
+    self.activateZone = activateZone
     self.systemDark = systemDark
     self.systemMoreContrast = systemMoreContrast
     let prefs = Preferences.readPreferences(store: store)
     self.prefs = prefs
     self.hour = Sky.hourOf(now(), timeZone: timeZone)
-    AppLocale.setActiveTimeZone(timeZone)
+    activateZone(timeZone)
     // Before anything is drawn, as the web applies them in render.
     self.formats = Preferences.applyFormats(prefs, languages: languages)
   }
@@ -108,6 +121,16 @@ public final class PreferencesModel {
     guard watchesClock else { return }
     let current = Sky.hourOf(now(), timeZone: timeZone)
     if Sky.phaseAtHour(hour) != Sky.phaseAtHour(current) { hour = current }
+  }
+
+  /// The device has moved to another zone: it becomes the active one, and
+  /// the sky looks at the clock there. Nothing changes for the zone already
+  /// in force.
+  public func deviceZoneChanged(_ zone: TimeZone) {
+    guard zone.identifier != timeZone.identifier else { return }
+    timeZone = zone
+    activateZone(zone)
+    lookAtClock()
   }
 
   /// Reads the store again (another scene or an import changed it).

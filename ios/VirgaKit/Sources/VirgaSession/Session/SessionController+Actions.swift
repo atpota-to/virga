@@ -312,7 +312,8 @@ extension SessionController {
   ///
   /// Through Virga's server, with an authenticator, it returns once the
   /// sign-in has come back and been taken (or set as the session's error);
-  /// a sign-in called off throws a CANCELLED AbortError.
+  /// a sign-in called off throws a CANCELLED AbortError. `onAuthorizing` is
+  /// told as the authenticator's sheet opens, once the server has answered.
   public func signIn(_ input: String?, _ options: SignInOptions = SignInOptions()) async throws {
     let mode = options.mode ?? env.authMode
     var handleUnits = (input ?? "").jsTrimmed().units
@@ -334,6 +335,10 @@ extension SessionController {
         intent: options.intent, prompt: ask, defense: defenseValue, transport: env.transport, clock: env.clock,
         randomBytes: env.randomBytes, sessionStorage: env.tabStorage, assign: env.assign)
       guard let authenticator = env.authenticator else { return }
+      // The sheet opens on the host's page, where the web's page leaves
+      // (not for a sign-in already called off: its caller may have started
+      // another).
+      if !Task.isCancelled { options.onAuthorizing?() }
       let callback: String
       do {
         let host = (try? WebURL(env.origin()).hostname) ?? ""

@@ -141,6 +141,27 @@ public enum ComposeIntent {
     parseComposeIntent(toSearchParams(search))
   }
 
+  /// iOS only: the query of an address the app was opened with that opens
+  /// the composer ("?text=…", or "" for none), or nil for any other. Two
+  /// do: the app's own virga://compose?…, and the universal link
+  /// https://<virga>/intent/compose?…, which the app's associated domain
+  /// claims (public/.well-known/apple-app-site-association), so iOS hands
+  /// it to the app instead of opening the web's page. Only the associated
+  /// domain's links reach the app, so the host isn't checked.
+  public static func composeLinkSearch(_ url: URL) -> String? {
+    switch url.scheme?.lowercased() {
+    case "virga":
+      guard url.host?.lowercased() == "compose" else { return nil }
+    case "https":
+      var path = url.path
+      while path.hasSuffix("/") { path.removeLast() }
+      guard path == intentComposePath else { return nil }
+    default:
+      return nil
+    }
+    return url.query.map { "?\($0)" } ?? ""
+  }
+
   /// The inverse of parseComposeIntent. Omits empty parameters and puts
   /// `text` first (the Bluesky-compatible part). Throws "Invalid URL" for an
   /// origin that can't be a base, as `new URL` does.
