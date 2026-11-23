@@ -23,7 +23,10 @@ struct DataPicture: View {
   @State private var image: UIImage?
 
   var body: some View {
-    Group {
+    // A ZStack, not a Group: a Group's modifiers go on each view inside it,
+    // so `.task` could start again when the picture takes the clear
+    // view's place.
+    ZStack {
       if let image {
         Image(uiImage: image).resizable().scaledToFill()
       } else {

@@ -129,6 +129,39 @@ import VirgaNetwork
     #expect(DataURL("data:image/png;base64;x=y,QUJD")?.body == Data("QUJD".utf8))
   }
 
+  /// The URL parser percent-encodes a control or a byte past "~" in the
+  /// type, and in a query a space too, and the processor reads the type as
+  /// it's written. Chromium drew the PNG for the first five and not for the
+  /// rest, where the base64 stays text; the types are Node's.
+  @Test func readsTheTypeAsTheURLParserWritesIt() {
+    let b64 = Self.b64
+    let drawn: [(String, String)] = [
+      ("data:\u{0C}image/png;base64,\(b64)", "%0cimage/png"),
+      ("data:image/png\u{01};base64,\(b64)", "image/png%01"),
+      ("data:image/png\u{7F};base64,\(b64)", "image/png%7f"),
+      ("data:imag\u{E9}/png;base64,\(b64)", "imag%c3%a9/png"),
+      ("data:image/png?x;base64,\(b64)", "text/plain"),
+      ("data:image/png?\"x\";base64,\(b64)", "text/plain"),
+    ]
+    for (address, essence) in drawn {
+      let read = DataURL(address)
+      #expect(read?.essence == essence, "\(address.prefix(24))")
+      #expect(read?.picture == Self.png, "\(address.prefix(24))")
+    }
+    let text: [(String, String)] = [
+      ("data:image/png;base64\u{0C},\(b64)", "image/png"),
+      ("data:image/png;base64\u{0B},\(b64)", "image/png"),
+      ("data:image/png;\u{A0}base64,\(b64)", "image/png"),
+      ("data:image/png?x; base64,\(b64)", "text/plain"),
+    ]
+    for (address, essence) in text {
+      let read = DataURL(address)
+      #expect(read?.essence == essence, "\(address.prefix(24))")
+      #expect(read?.body == Data(b64.utf8), "\(address.prefix(24))")
+    }
+    #expect(DataURL("data:image/svg+xml\u{0C},%3Csvg%2F%3E")?.essence == "image/svg+xml%0c")
+  }
+
   @Test func percentDecodesTheBodyAsUTF8() {
     // A browser percent-encodes what the address holds beyond ASCII as
     // UTF-8 and decodes it back to those bytes: a PNG written as Latin-1

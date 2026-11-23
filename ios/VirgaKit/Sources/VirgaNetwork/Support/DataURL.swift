@@ -13,10 +13,12 @@
 // megabytes of base64. For a data: address the two agree: the URL parser
 // drops the C0 controls and spaces at either end and every tab and
 // newline, ends the address at "#", and percent-encodes what it doesn't
-// keep, which the processor's percent-decoding undoes. Not followed: the
-// URL parser's host and dot-segment rules for an address that goes on with
-// "/" after "data:", and the percent-encoding of a type's non-ASCII
-// letters, which leaves the type unparsed either way.
+// keep. The processor percent-decodes the body, which undoes that, but not
+// the type, so the type is percent-encoded here as the parser writes it:
+// a form feed after "base64" stays in the type as "%0C", and the body isn't
+// read as base64, as in a browser. Not
+// followed: the URL parser's host, path and dot-segment rules for an
+// address that goes on with "/" after "data:".
 
 import Foundation
 
@@ -37,7 +39,7 @@ public struct DataURL: Sendable, Hashable {
     // The fragment isn't part of what the URL serializer gives the processor.
     let serialized = input.firstIndex(of: 0x23).map { input[..<$0] } ?? input[...]
     guard let comma = serialized.firstIndex(of: 0x2C) else { return nil }
-    var mimeType = Self.trimmed(Array(serialized[..<comma]), Self.isASCIIWhitespace)
+    var mimeType = Self.trimmed(Self.asWritten(serialized[..<comma]), Self.isASCIIWhitespace)
     var body = WebURLParser.percentDecode(Array(serialized[(comma + 1)...]))
     if let rest = Self.withoutBase64(mimeType) {
       guard let decoded = Self.forgivingBase64(body) else { return nil }
@@ -84,6 +86,27 @@ public struct DataURL: Sendable, Hashable {
     let input = bytes[start..<end].filter { $0 != 0x09 && $0 != 0x0A && $0 != 0x0D }
     guard input.count >= 5, input[..<5].map(lower) == Array("data:".utf8) else { return nil }
     return Array(input[5...])
+  }
+
+  /// The type as the URL parser writes it, which the processor reads
+  /// without decoding: a control or a byte past "~" percent-encoded, and in
+  /// a query (after "?") a space, a double quote and angle brackets too.
+  static func asWritten(_ type: ArraySlice<UInt8>) -> [UInt8] {
+    let hex = Array("0123456789ABCDEF".utf8)
+    var out: [UInt8] = []
+    out.reserveCapacity(type.count)
+    var inQuery = false
+    for byte in type {
+      let encoded = byte < 0x20 || byte > 0x7E
+        || inQuery && (byte == 0x20 || byte == 0x22 || byte == 0x3C || byte == 0x3E)
+      if encoded {
+        out += [0x25, hex[Int(byte >> 4)], hex[Int(byte & 0x0F)]]
+      } else {
+        out.append(byte)
+      }
+      if byte == 0x3F { inQuery = true }
+    }
+    return out
   }
 
   /// The type without its ";base64" (any spaces before "base64", any
