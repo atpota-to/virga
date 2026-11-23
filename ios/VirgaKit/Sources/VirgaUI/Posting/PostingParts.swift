@@ -180,7 +180,10 @@ struct PostingConfirm<Message: View>: ViewModifier {
 
   func body(content: Content) -> some View {
     content
-      .virgaDialog(isPresented: Binding(get: { isPresented }, set: { if !busy { isPresented = $0 } }), title: title) {
+      // It opens on Cancel (`data-autofocus`), the safe choice.
+      .virgaDialog(
+        isPresented: Binding(get: { isPresented }, set: { if !busy { isPresented = $0 } }), title: title, autofocus: true
+      ) {
         VStack(alignment: .leading, spacing: Measure.Hub.confirmGap) {
           message()
           if !error.isEmpty {
@@ -195,6 +198,7 @@ struct PostingConfirm<Message: View>: ViewModifier {
         Button("Cancel") { isPresented = false }
           .buttonStyle(.virga)
           .disabled(busy)
+          .dialogAutofocus()
         Button(busy ? busyLabel : confirmLabel) { Task { await confirm() } }
           .buttonStyle(.virga(.danger))
           .disabled(busy)

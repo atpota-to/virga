@@ -22,6 +22,8 @@ struct AdviserSettingsCard: View {
   let model: PostingSettingsModel
   @State private var error = ""
   @State private var styleOpen = false
+  /// The scope radio a hardware keyboard is on (the arrows move the choice).
+  @FocusState private var scopeFocus: String?
 
   static let reviewOptions = [SegmentedOption("significant", "When something’s off"), SegmentedOption("always", "Every time")]
   /// A choice with its words and the line under them.
@@ -121,13 +123,8 @@ struct AdviserSettingsCard: View {
       }
       SettingsRow(label: "Which posts", hint: "A reply to your own post counts as one of your threads. The button checks any post.", block: true) {
         VStack(alignment: .leading, spacing: Measure.Adviser.radiosGap) {
-          ForEach(Self.scopeOptions, id: \.key) { option in
-            Toggle(
-              option.label,
-              isOn: Binding(get: { adviser.checkScope == option.key }, set: { if $0 { change { $0.checkScope = option.key } } })
-            )
-            .toggleStyle(.virgaCheck)
-            .accessibilityAddTraits(adviser.checkScope == option.key ? .isSelected : [])
+          ForEach(Array(Self.scopeOptions.enumerated()), id: \.element.key) { index, option in
+            scopeRadio(option, index: index, scope: adviser.checkScope)
           }
         }
         .accessibilityElement(children: .contain)
@@ -274,6 +271,44 @@ struct AdviserSettingsCard: View {
       }
       .virgaTextArea()
       .accessibilityLabel(label)
+  }
+
+  /// One of Which posts' radios (`<label class="check"><input type="radio">`
+  /// in a radiogroup): the browser's round mark, 8 from its words, the
+  /// whole row pressed. Read as a button, selected when it's the scope, and
+  /// where it is among the three; the arrows move the choice, as a radio
+  /// group's do. Choosing the chosen one does nothing (a radio's onChange).
+  private func scopeRadio(_ option: Option, index: Int, scope: String) -> some View {
+    let isOn = scope == option.key
+    let options = Self.scopeOptions
+    let pick = { (key: String) in
+      if key != scope { change { $0.checkScope = key } }
+    }
+    return Button {
+      pick(option.key)
+    } label: {
+      HStack(alignment: .center, spacing: theme.points(ThemeKit.checkGap)) {
+        RadioMark(isOn: isOn)
+          .accessibilityHidden(true)
+        Text(option.label)
+          .frame(maxWidth: .infinity, alignment: .leading)
+      }
+      .frame(minHeight: Measure.Touch.target)
+      .contentShape(Rectangle())
+    }
+    .buttonStyle(.plain)
+    .virgaFocusOutline(RoundedRectangle(cornerRadius: theme.radiusSm))
+    .focused($scopeFocus, equals: option.key)
+    .onKeyPress(keys: [.upArrow, .downArrow, .leftArrow, .rightArrow]) { press in
+      let n = options.count
+      let forward = press.key == .downArrow || press.key == .rightArrow
+      let next = options[(index + (forward ? 1 : n - 1)) % n].key
+      pick(next)
+      scopeFocus = next
+      return .handled
+    }
+    .accessibilityAddTraits(isOn ? .isSelected : [])
+    .accessibilityValue("\(index + 1) of \(options.count)")
   }
 
   /// `.adviser-check`: a box, and its label over its hint.

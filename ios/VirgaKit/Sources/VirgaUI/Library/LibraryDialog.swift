@@ -56,15 +56,18 @@ struct LibraryDialog: View {
   let request: LibraryRequest
   let onClose: () -> Void
   @State private var lib: LibraryModel?
-  /// The plan chosen, put in once the sheet has gone: what it asks
-  /// ("Replace the link card?") is a sheet of the composer's, which can't
-  /// come up while this one is still going down.
-  @State private var pendingPlan: LibraryPlan?
+  /// The plan chosen, put in once the sheet has gone (what it asks,
+  /// "Replace the link card?", is a sheet of the composer's, which can't
+  /// come up while this one is still going down), and whether the sheet is
+  /// still up. Held by reference, so a pick read after the sheet was closed
+  /// still finds out.
+  @State private var pick = LibraryDialogPick()
 
   var body: some View {
     let state = controller.state
     let postIndex = max(0, controller.indexOfPost(request.postId))
     let narrow = theme.windowWidth <= Breakpoint.tablet
+    let pick = self.pick
     VStack(spacing: 0) {
       DialogHead(title: Library.libraryName, onClose: onClose)
       Group {
@@ -77,8 +80,16 @@ struct LibraryDialog: View {
             // Not counted here: the composer counts a template's use as it
             // applies the plan.
             let plan = try await lib.planFor(item, answers: answers)
-            pendingPlan = plan
-            onClose()
+            guard pick.up else {
+              // Closed while the pick was read: it still goes into the post
+              // it was chosen for (the web's onPick holds that post), and a
+              // dialog opened since stays up.
+              await controller.applyPlan(plan, request.postId, range: request.range)
+              return
+            }
+            pick.plan = plan
+            // Only the library: it may already be on its way down.
+            if controller.dialog == .library(request) { onClose() }
           }
         }
       }
@@ -104,10 +115,11 @@ struct LibraryDialog: View {
     .onDisappear {
       lib?.setOpen(false)
       lib?.stop()
+      pick.up = false
       // The dialog has closed and the plan follows (the web's next tick),
       // now that the composer is the one sheet up.
-      guard let plan = pendingPlan else { return }
-      pendingPlan = nil
+      guard let plan = pick.plan else { return }
+      pick.plan = nil
       let request = self.request
       let controller = self.controller
       Task { await controller.applyPlan(plan, request.postId, range: request.range) }
@@ -115,6 +127,14 @@ struct LibraryDialog: View {
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("library-dialog")
   }
+}
+
+/// LibraryDialog's pick, by reference: the use's closure still holds it
+/// once the sheet has gone.
+@MainActor
+final class LibraryDialogPick {
+  var up = true
+  var plan: LibraryPlan?
 }
 
 /// The library as a page: every shelf, to browse on its own. Using
