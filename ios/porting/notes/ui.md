@@ -1004,14 +1004,14 @@ the iPhone. To see where such a letter goes, `-VirgaTypingProbe YES` (TypingProb
 for every ComposerUITests launch) records in the app what reached each post editor (its key
 presses, insertText, the insertions its delegate approved, the gaps between keys) and what
 the app did to it meanwhile (an updateUIView while UIKit was mid-edit, the post's text put
-back, a selection set, the "@" list coming and going, the field moving in the window). The
-tests read the record from a hidden element ("typing-probe") and print it after a mismatch
-(`VIRGA-TYPED-TRACE`). `-VirgaTypingBench YES` adds testTypingBench's two other fields, a
-bare UITextView above the composer's scroll and the second post without the typeahead, each
-emptied as it loses focus. testTypingBench types the first post's words six times into each
-of the three and prints one `VIRGA-TYPED-COUNT` line per field. Neither switch changes
-anything for someone using the app, and neither fails a test. The bench is for one run; the
-probe is cheap enough to keep.
+back, a selection set, the "@" list coming and going, the field moving in the window, growing
+a line at a wrap, or scrolling with the composer). The tests read the record from a hidden
+element ("typing-probe") and print it after a mismatch (`VIRGA-TYPED-TRACE`).
+`-VirgaTypingBench YES` adds testTypingBench's two other fields, a bare UITextView above the
+composer's scroll and the second post without the typeahead, each emptied as it loses focus.
+testTypingBench types the first post's words six times into each of the three and prints one
+`VIRGA-TYPED-COUNT` line per field. Neither switch changes anything for someone using the
+app, and neither fails a test. The bench is for one run; the probe is cheap enough to keep.
 
 Run 85 failed once on the iPhone, Defense's palette step: swiping back up until Search showed
 left it 51 points short of the top, under the status bar, where taps don't reach it. The seven

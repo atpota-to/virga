@@ -745,6 +745,7 @@ struct HighlightedTextView: UIViewRepresentable {
     return CGSize(width: width, height: max(ComposerMeasure.editorMinHeight, fitted.height))
   }
 
+  @MainActor
   final class Coordinator: NSObject, UITextViewDelegate {
     var parent: HighlightedTextView
     /// The text the field and the post last agreed on: the post's, as it

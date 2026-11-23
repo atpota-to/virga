@@ -108,11 +108,15 @@ final class ComposerUITests: XCTestCase {
   /// and kept as an activity in the results, and the test carries on. The
   /// field's curly apostrophe for a straight one is its own, not a lost key.
   /// `start` is what the field holds, when the caller knows (one read
-  /// fewer); `variant` names the bench's arm in the lines written. The
+  /// fewer); `variant` names the bench's arm in the lines written; `id` is
+  /// the field's identifier, when the caller knows it (the bench, whose
+  /// field may be gone by then, so it isn't read from the field). The
   /// probe's record of the field is written after a mismatch
   /// (VIRGA-TYPED-TRACE). True when the field holds what was typed.
   @discardableResult
-  private func enter(_ words: String, into field: XCUIElement, start: String? = nil, variant: String? = nil) -> Bool {
+  private func enter(
+    _ words: String, into field: XCUIElement, start: String? = nil, variant: String? = nil, id: String? = nil
+  ) -> Bool {
     let before = start ?? (field.value as? String ?? "")
     field.typeText(words)
     let expected = before + words
@@ -123,13 +127,14 @@ final class ComposerUITests: XCTestCase {
     let line = "VIRGA-TYPED-MISMATCH expected=\(expected.debugDescription) got=\(got.debugDescription)\(tag)"
     print(line)
     XCTContext.runActivity(named: line) { _ in }
-    print("VIRGA-TYPED-TRACE\(tag) field=\(field.identifier) \(jsonLine(probeRecord(of: field.identifier)))")
+    let name = id ?? field.identifier
+    print("VIRGA-TYPED-TRACE\(tag) field=\(name) \(jsonLine(probeRecord(of: name)))")
     return false
   }
 
   /// The typing probe's record of one field (TypingProbe.report), or nil.
-  private func probeRecord(of identifier: String) -> [String: Any]? {
-    let probe = XCUIApplication().descendants(matching: .any).matching(identifier: "typing-probe").firstMatch
+  private func probeRecord(of identifier: String, in app: XCUIApplication = XCUIApplication()) -> [String: Any]? {
+    let probe = element(app, "typing-probe")
     guard probe.exists, let json = probe.value as? String, let data = json.data(using: .utf8),
       let all = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
     else { return nil }
@@ -138,7 +143,7 @@ final class ComposerUITests: XCTestCase {
 
   private func jsonLine(_ object: Any?) -> String {
     guard let object, JSONSerialization.isValidJSONObject(object),
-      let data = try? JSONSerialization.data(withJSONObject: object, options: [.sortedKeys])
+      let data = try? JSONSerialization.data(withJSONObject: object, options: [.sortedKeys, .withoutEscapingSlashes])
     else { return "unavailable" }
     return String(decoding: data, as: UTF8.self)
   }
@@ -388,18 +393,30 @@ final class ComposerUITests: XCTestCase {
     guard addPost.exists && addPost.isHittable else { return print("VIRGA-TYPED-BENCH skipped: no Add a post") }
     addPost.tap()
     // By identifier only: editor(_:_:)'s fallback by place would count the
-    // plain field, the first text view here.
-    let textView = { (identifier: String) in app.textViews.matching(identifier: identifier).firstMatch }
-    let arms: [(variant: String, field: XCUIElement)] = [
-      ("composer", textView("post-editor-0")),
-      ("no-typeahead", textView("post-editor-1")),
-      ("plain", textView("typing-probe-plain")),
+    // plain field, the first text view here. Each arm keeps its field's
+    // identifier, and the field is found again each time from it: reading
+    // anything of a field that has gone (one that never came, a sheet a
+    // swipe closed) fails the test.
+    let arms: [(variant: String, id: String)] = [
+      ("composer", "post-editor-0"),
+      ("no-typeahead", "post-editor-1"),
+      ("plain", "typing-probe-plain"),
     ]
     var reps: [String: Int] = [:]
     var lost: [String: [String: Int]] = [:]
+    // The arm typed last, whose field still has the focus and its words.
+    var typedLast: String?
     for round in 0..<6 {
       for turn in 0..<arms.count {
-        let (variant, field) = arms[(turn + round) % arms.count]
+        let (variant, id) = arms[(turn + round) % arms.count]
+        // After a skip the arm just typed can come round again: its field
+        // never lost the focus, so it wasn't emptied, and a press would put
+        // the caret in its words.
+        guard variant != typedLast else {
+          print("VIRGA-TYPED-BENCH variant=\(variant) round=\(round) skipped: typed just before, not emptied")
+          continue
+        }
+        let field = app.textViews.matching(identifier: id).firstMatch
         guard field.waitForExistence(timeout: 5) else {
           print("VIRGA-TYPED-BENCH variant=\(variant) round=\(round) skipped: no field")
           continue
@@ -408,20 +425,22 @@ final class ComposerUITests: XCTestCase {
         // scrolled off the top swiped down to (the plain field is outside
         // the scroll and stays put). Three swipes at most.
         var tries = 0
-        while !field.isHittable && tries < 3 {
+        while field.exists && !field.isHittable && tries < 3 {
           if field.frame.midY < app.windows.firstMatch.frame.midY { app.swipeDown() } else { app.swipeUp() }
           tries += 1
         }
         // A press on a field that can't take it would fail the test.
-        guard field.isHittable else {
-          print("VIRGA-TYPED-BENCH variant=\(variant) round=\(round) skipped: the field isn't on screen")
+        guard field.exists && field.isHittable else {
+          let why = field.exists ? "the field isn't on screen" : "no field"
+          print("VIRGA-TYPED-BENCH variant=\(variant) round=\(round) skipped: \(why)")
           continue
         }
         field.tap()
+        typedLast = variant
         reps[variant, default: 0] += 1
-        if enter(words, into: field, start: "", variant: variant) { continue }
-        let got = field.value as? String ?? ""
-        let asked = probeRecord(of: field.identifier)?["asked"] as? String
+        if enter(words, into: field, start: "", variant: variant, id: id) { continue }
+        let got = field.exists ? (field.value as? String ?? "") : ""
+        let asked = probeRecord(of: id, in: app)?["asked"] as? String
         let kind: String
         if asked == words {
           kind = "reachedThenLost"  // the delegate approved every letter, and the field lost one after
@@ -434,14 +453,14 @@ final class ComposerUITests: XCTestCase {
       }
     }
     let device = isPad ? "ipad" : "iphone"
-    for (variant, field) in arms {
+    for (variant, id) in arms {
       let kinds = lost[variant] ?? [:]
       let count = reps[variant] ?? 0
       print(
         "VIRGA-TYPED-COUNT device=\(device) variant=\(variant) reps=\(count) keys=\(count * words.count) "
           + "mismatched=\(kinds.values.reduce(0, +)) neverReached=\(kinds["neverReached"] ?? 0) "
           + "reachedThenLost=\(kinds["reachedThenLost"] ?? 0) other=\(kinds["other"] ?? 0) "
-          + "totals=\(jsonLine(probeRecord(of: field.identifier)?["totals"]))")
+          + "totals=\(jsonLine(probeRecord(of: id, in: app)?["totals"]))")
     }
   }
 }

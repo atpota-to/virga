@@ -15,6 +15,8 @@
 // of keys so far:
 //   L+, L-        the "@" list appeared, disappeared
 //   y<pt>         the field moved in the window (a scroll, an iPad's sheet)
+//   h<pt>         the field's height changed (it grew a line at a wrap)
+//   o<pt>         the scroll it sits in moved (that scroll's content offset)
 //   U<branch>     an updateUIView ran while UIKit was part way through an
 //                 edit: Uahead, Usame, or Ureset (the guard failed)
 //   R<field>><model>  the app put the post's text back (lengths)
@@ -22,7 +24,17 @@
 //   X<loc>,<len>="..."  the keyboard asked for a replacement (a correction)
 //   D!<asked>><got>     after UIKit's edit the field isn't what it asked
 //                       for (lengths)
-// Its `totals` are kept since launch.
+// Its `totals` are kept since launch. The y, h and o events are looked for
+// as each key comes in: h@12 is a height the field took after its 12th key
+// and before its 13th.
+//
+// Reading a record: a letter in `keys` (or `presses`) but not in `asked`
+// was lost between insertText and the delegate; one in `asked` but not in
+// the field was lost after the delegate approved it (R, Ureset and D! say
+// how). A letter lost next to an h event was lost at a line wrap, as the
+// post editor grew and the composer laid out again (the bench's plain
+// field is a fixed height and never grows). A y with an o beside it is the
+// scroll moving; a y alone is the sheet moving or resizing.
 //
 // Whether the keyboard's letters come in through insertText isn't known. If
 // none does, the gaps and the count of keys are taken from the delegate's
@@ -52,6 +64,8 @@ enum TypingProbe {
     var pending: String?
     var lastKey: CFTimeInterval = 0
     var lastY: Int?
+    var lastH: Int?
+    var lastO: Int?
     // Since launch.
     var totals: [String: Int] = [:]
 
@@ -68,6 +82,8 @@ enum TypingProbe {
       pending = nil
       lastKey = 0
       lastY = nil
+      lastH = nil
+      lastO = nil
     }
 
     mutating func bump(_ key: String, by n: Int = 1) { totals[key, default: 0] += n }
@@ -161,8 +177,9 @@ enum TypingProbe {
     fields[id] = field
   }
 
-  /// A key's gap since the one before, and the field's place in the window
-  /// (an iPad's fitted sheet moves it as the composer grows).
+  /// A key's gap since the one before, the field's place in the window (an
+  /// iPad's fitted sheet moves it as the composer grows), its height (a
+  /// line wrap) and the offset of the scroll it sits in.
   private static func tick(_ field: inout Field, _ view: UIView) {
     let now = CACurrentMediaTime()
     if field.lastKey > 0 {
@@ -178,6 +195,26 @@ enum TypingProbe {
       if field.lastY != nil { field.note("y\(y)") }
       field.lastY = y
     }
+    let h = Int(view.bounds.height.rounded())
+    if field.lastH != h {
+      if field.lastH != nil { field.note("h\(h)") }
+      field.lastH = h
+    }
+    if let o = scrollOffset(of: view), field.lastO != o {
+      if field.lastO != nil { field.note("o\(o)") }
+      field.lastO = o
+    }
+  }
+
+  /// The vertical content offset of the nearest scroll the view sits in
+  /// (the composer's, for a post), or nil when it sits in none.
+  private static func scrollOffset(of view: UIView) -> Int? {
+    var next = view.superview
+    while let ancestor = next {
+      if let scroll = ancestor as? UIScrollView { return Int(scroll.contentOffset.y.rounded()) }
+      next = ancestor.superview
+    }
+    return nil
   }
 
   /// Every field's record, as JSON.
@@ -189,7 +226,8 @@ enum TypingProbe {
         "events": field.events, "totals": field.totals,
       ]
     }
-    guard let data = try? JSONSerialization.data(withJSONObject: out, options: [.sortedKeys]) else { return "{}" }
+    guard let data = try? JSONSerialization.data(withJSONObject: out, options: [.sortedKeys, .withoutEscapingSlashes])
+    else { return "{}" }
     return String(decoding: data, as: UTF8.self)
   }
 }
@@ -248,6 +286,7 @@ struct TypingProbePlainField: UIViewRepresentable {
 
   func updateUIView(_ view: TypingProbeTextView, context: Context) {}
 
+  @MainActor
   final class Coordinator: NSObject, UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
       TypingProbe.shouldChange(TypingProbePlainField.identifier, in: textView, range: range, text: text)
