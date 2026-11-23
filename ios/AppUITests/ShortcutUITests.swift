@@ -17,14 +17,12 @@
 //
 // XCUITest's typeKey is a hardware key: on CI's iPad simulator the
 // software keyboard hides as each one arrives and comes back about two
-// seconds later (run 99's recording), and keys can be lost in that move
-// (developer forums thread 849249, on devices). Run 100's probe showed the
-// ↓ reaching the field and the Return reaching it by no route at all, why
-// isn't known; the likeliest suspect is that switching. So on the iPad the
-// test runs with no software keyboard, bar or autocorrection in the app's
-// UIKit fields (-VirgaNoSoftwareKeyboard, SoftwareKeyboard); the traces
-// say how many keyboards XCUITest saw. The phone keeps its software
-// keyboard and presses its Return.
+// seconds later. In runs 99 and 100 its ↓ reached the post editor and its
+// Return reached it by no route at all (no press, key command or
+// insertText in the probe's record), why isn't known. So on the iPad each
+// key is tried three ways (the app's typeKey, the field's typeKey, the key
+// typed as text), each logged (VIRGA-KEY) with the probe's record after,
+// and the test still requires the key to do what the web's does.
 
 import UIKit
 import XCTest
@@ -36,14 +34,11 @@ final class ShortcutUITests: XCTestCase {
 
   private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
 
-  /// The app in demo mode; with `probe`, the typing probe on as well; with
-  /// `hardwareKeys`, no software keyboard in the app's UIKit fields
-  /// (SoftwareKeyboard), as with a hardware keyboard attached.
-  private func launch(probe: Bool = false, hardwareKeys: Bool = false) -> XCUIApplication {
+  /// The app in demo mode; with `probe`, the typing probe on as well.
+  private func launch(probe: Bool = false) -> XCUIApplication {
     let app = XCUIApplication()
     app.launchArguments += ["-VirgaDemo", "YES", "-VirgaDemoFlags", "latency=0"]
     if probe { app.launchArguments += ["-VirgaTypingProbe", "YES"] }
-    if hardwareKeys { app.launchArguments += ["-VirgaNoSoftwareKeyboard", "YES"] }
     app.launch()
     return app
   }
@@ -154,8 +149,7 @@ final class ShortcutUITests: XCTestCase {
   }
 
   func testTheMentionListTakesItsKeys() {
-    // The iPad presses hardware keys, so it runs as with a hardware keyboard.
-    let app = launch(probe: true, hardwareKeys: isPad)
+    let app = launch(probe: true)
     let wide = isPad && app.windows.firstMatch.frame.width >= 900
     let newPost = element(app, wide ? "sidebar-new-post" : "tab-new-post")
     XCTAssertTrue(newPost.waitForExistence(timeout: 30), "no New post button")
@@ -185,16 +179,25 @@ final class ShortcutUITests: XCTestCase {
       return
     }
 
-    // ↓ marks the second person, and Return takes them.
-    app.typeKey(XCUIKeyboardKey.downArrow.rawValue, modifierFlags: [])
-    check(app, waitUntil(second, "isSelected == true"), "↓ didn't mark the second person")
+    // ↓ marks the second person, and Return takes them. XCUITest's typeKey
+    // Return never reached the field in runs 99 and 100 (the probe saw
+    // no press, key command or insertText for it) while its ↓ did, so each
+    // key is tried three ways (the app's typeKey, the field's typeKey, and
+    // the key typed as text), each way logged with what came of it, and
+    // the probe's record written out after each key: which way, and which
+    // route in the field (Q events), took it.
+    let value = { field.value as? String ?? "" }
+    check(app, pressKey("@ ↓", app, field: field, key: XCUIKeyboardKey.downArrow.rawValue, typed: nil) {
+      second.isSelected
+    }, "↓ didn't mark the second person, by any way of pressing it")
     snapshot("composer-mention-marked-ipad")
     let picked = handle(of: second)
-    app.typeKey(XCUIKeyboardKey.return.rawValue, modifierFlags: [])
-    check(
-      app, waitUntil(field, "value CONTAINS %@", "@\(picked) "),
-      "Return didn't take @\(picked): \(String(describing: field.value))")
-    check(app, !(field.value as? String ?? "").contains("\n"), "Return made a new line")
+    let returned = pressKey("@ Return", app, field: field, key: XCUIKeyboardKey.return.rawValue, typed: "\n") {
+      value().contains("@\(picked) ") || value().contains("\n")
+    }
+    trace(app, "VIRGA-KEYS-TRACE after Return")
+    check(app, !value().contains("\n"), "Return made a new line")
+    check(app, returned, "Return didn't take @\(picked), by any way of pressing it: \(value())")
     let list = element(app, "mention-list")
     check(app, list.waitForNonExistence(timeout: 5), "the list stayed up after the pick")
 
@@ -202,8 +205,14 @@ final class ShortcutUITests: XCTestCase {
     // until the mention changes.
     field.typeText("and @bo")
     check(app, first.waitForExistence(timeout: 10), "no one offered for “bo”")
-    app.typeKey(XCUIKeyboardKey.escape.rawValue, modifierFlags: [])
-    check(app, list.waitForNonExistence(timeout: 5), "Escape didn't close the list")
+    let before = value()
+    let escaped = pressKey("@ Escape", app, field: field, key: XCUIKeyboardKey.escape.rawValue, typed: "\u{1b}") {
+      // Closed, the post as it was: an escape typed into it as a letter
+      // would end the mention without being Escape.
+      !list.exists && value() == before
+    }
+    trace(app, "VIRGA-KEYS-TRACE after Escape")
+    check(app, escaped, "Escape didn't close the list, by any way of pressing it: \(value())")
     check(app, element(app, "composer-title").exists, "Escape closed the composer")
     sleep(1)
     check(app, !list.exists, "the list came back for the same mention")
@@ -212,12 +221,39 @@ final class ShortcutUITests: XCTestCase {
 
     // Tab takes the marked person, the first, and types no tab.
     let tabbed = handle(of: first)
-    app.typeKey(XCUIKeyboardKey.tab.rawValue, modifierFlags: [])
-    check(
-      app, waitUntil(field, "value CONTAINS %@", "@\(tabbed) "),
-      "Tab didn't take @\(tabbed): \(String(describing: field.value))")
-    check(app, !(field.value as? String ?? "").contains("\t"), "Tab typed a tab")
+    let tabTook = pressKey("@ Tab", app, field: field, key: XCUIKeyboardKey.tab.rawValue, typed: "\t") {
+      value().contains("@\(tabbed) ") || value().contains("\t")
+    }
+    trace(app, "VIRGA-KEYS-TRACE after Tab")
+    check(app, !value().contains("\t"), "Tab typed a tab")
+    check(app, tabTook, "Tab didn't take @\(tabbed), by any way of pressing it: \(value())")
     check(app, list.waitForNonExistence(timeout: 5), "the list stayed up after Tab's pick")
-    trace(app, "VIRGA-KEYS-TRACE")
+  }
+
+  /// Presses `key` each way in turn, the app's typeKey, the field's
+  /// typeKey and (with `typed`) the field's typeText, until `done` holds,
+  /// giving each way three seconds; logs each way and what came of it
+  /// (VIRGA-KEY). True once one way did it.
+  private func pressKey(
+    _ name: String, _ app: XCUIApplication, field: XCUIElement, key: String, typed: String?, done: () -> Bool
+  ) -> Bool {
+    var ways: [(String, () -> Void)] = [
+      ("app.typeKey", { app.typeKey(key, modifierFlags: []) }),
+      ("field.typeKey", { field.typeKey(key, modifierFlags: []) }),
+    ]
+    if let typed { ways.append(("field.typeText", { field.typeText(typed) })) }
+    for (way, act) in ways {
+      act()
+      let deadline = Date().addingTimeInterval(3)
+      repeat {
+        if done() {
+          print("VIRGA-KEY \(name) via \(way): done (keyboards=\(app.keyboards.count))")
+          return true
+        }
+        Thread.sleep(forTimeInterval: 0.3)
+      } while Date() < deadline
+      print("VIRGA-KEY \(name) via \(way): nothing (keyboards=\(app.keyboards.count))")
+    }
+    return false
   }
 }

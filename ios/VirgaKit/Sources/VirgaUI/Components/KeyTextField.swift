@@ -100,9 +100,6 @@ struct KeyTextField: UIViewRepresentable {
     field.smartDashesType = .no
     field.smartInsertDeleteType = .no
     field.inlinePredictionType = .no
-    // The UI tests that press hardware keys run with no software keyboard
-    // (SoftwareKeyboard); without that flag this changes nothing.
-    SoftwareKeyboard.apply(to: field)
     // The field round it draws the focus (`.virgaField(focused:)`).
     field.focusEffect = nil
     field.setContentHuggingPriority(.defaultLow, for: .horizontal)
@@ -295,17 +292,52 @@ final class KeyField: UITextField {
   /// press it took (a second Escape, once the first has closed the list).
   @discardableResult
   func take(_ key: FieldKey, by way: Way) -> Bool {
-    guard markedTextRange == nil, keys.contains(key) else { return false }
+    guard markedTextRange == nil, keys.contains(key) else {
+      probe(key, way, markedTextRange != nil ? "composing" : "not-taken")
+      return false
+    }
     let now = ProcessInfo.processInfo.systemUptime
-    if let last, last.key == key, last.way != way, now - last.at < Self.samePress { return true }
-    guard let onKey, onKey(key) else { return false }
+    if let last, last.key == key, last.way != way, now - last.at < Self.samePress {
+      probe(key, way, "same-press")
+      return true
+    }
+    guard let onKey, onKey(key) else {
+      probe(key, way, "refused")
+      return false
+    }
     last = (key, way, now)
+    probe(key, way, "taken")
     return true
+  }
+
+  // MARK: Typing probe (UI tests only)
+
+  /// The field's name in the typing probe's record.
+  private var probeID: String { accessibilityIdentifier ?? "key-field" }
+
+  /// A key and the way it came, in the typing probe's record (Q events:
+  /// p a press, c a key command, d the delegate's Return).
+  private func probe(_ key: FieldKey, _ way: Way, _ result: String) {
+    guard TypingProbe.isOn else { return }
+    let route: String
+    switch way {
+    case .press: route = "p"
+    case .command: route = "c"
+    case .delegate: route = "d"
+    }
+    TypingProbe.listKey(probeID, route: route, key: "\(key)", result: result)
   }
 
   // MARK: Presses
 
   override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+    if TypingProbe.isOn {
+      // Every press, by its key code, so a key that comes but isn't one of
+      // the four still shows (P events).
+      for press in presses {
+        TypingProbe.note(probeID, "P\(press.key.map { "\($0.keyCode.rawValue)" } ?? "keyless\(press.type.rawValue)")")
+      }
+    }
     taken = taken.filter { $0.phase != .ended && $0.phase != .cancelled }
     var rest = Set<UIPress>()
     for press in presses {
@@ -355,6 +387,9 @@ final class KeyField: UITextField {
 
   override var keyCommands: [UIKeyCommand]? {
     let own = super.keyCommands ?? []
+    if TypingProbe.isOn {
+      TypingProbe.commands(probeID, markedTextRange != nil ? "composing" : keys.isEmpty ? "none" : keys.map { "\($0)" }.sorted().joined(separator: "+"))
+    }
     guard markedTextRange == nil, !keys.isEmpty else { return own }
     var commands: [UIKeyCommand] = []
     if keys.contains(.up) {

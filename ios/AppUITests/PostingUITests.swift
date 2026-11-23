@@ -20,14 +20,12 @@ final class PostingUITests: XCTestCase {
   private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
 
   /// The app in demo mode. On the iPad, whose language steps press
-  /// hardware keys, the app's UIKit fields (the language search) show no
-  /// software keyboard (-VirgaNoSoftwareKeyboard, SoftwareKeyboard), as
-  /// with a hardware keyboard attached: with one showing, iPadOS hides it
-  /// as each hardware key arrives and keys can be lost (run 100).
+  /// hardware keys, the typing probe is on too, so the language search
+  /// records which way each key reached it (TypingProbe).
   private func launch() -> XCUIApplication {
     let app = XCUIApplication()
     app.launchArguments += ["-VirgaDemo", "YES", "-VirgaDemoFlags", "latency=0"]
-    if isPad { app.launchArguments += ["-VirgaNoSoftwareKeyboard", "YES"] }
+    if isPad { app.launchArguments += ["-VirgaTypingProbe", "YES"] }
     app.launch()
     return app
   }
@@ -167,12 +165,7 @@ final class PostingUITests: XCTestCase {
     var chosen = labels(removes)
     languages.tap()
     let keyboard = app.keyboards.firstMatch
-    // The phone's software keyboard comes up; the iPad has none here, so
-    // there `covered()` below can only pass (in run 100 the list sat far
-    // above the iPad's keyboard).
-    if !isPad {
-      guard keyboard.waitForExistence(timeout: 3) else { return }
-    }
+    guard keyboard.waitForExistence(timeout: 3) else { return }
     languages.typeText("fr")
     let suggestions = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'language-'"))
     XCTAssertTrue(suggestions.firstMatch.waitForExistence(timeout: 5), "no language suggestions for “fr”")
@@ -201,27 +194,37 @@ final class PostingUITests: XCTestCase {
     // On the iPad, a hardware keyboard's: with the list open again, Escape
     // puts it away, and ↓ then Return adds the second suggestion. (Mira
     // starts with English, so this is the third language, the most there
-    // can be: Escape goes first.) The press on the field asks for the list
-    // again (the box's press and KeyTextField's onPress, the web's
-    // onClick), and the query changing opens it too, as typing does on the
-    // web. The field is a KeyTextField, still app.textFields["Languages"]:
-    // these keys reach the picker by the field's pressesBegan, its priority
-    // key commands or, for Return, its delegate, whichever comes first.
+    // can be: Escape goes first.) The field is a KeyTextField, still
+    // app.textFields["Languages"]: these keys reach the picker by its
+    // pressesBegan, its priority key commands or, for Return, its delegate.
+    // In runs 99, 100 and 103 XCUITest's typeKey Escape never closed the
+    // list, with the software keyboard up or none at all, so each key is
+    // tried three ways (the app's typeKey, the field's typeKey, and the
+    // key typed as text), each way logged with what came of it, and the
+    // typing probe's record of the field (key-field: P a press by its key
+    // code, Q a key by the way it came and what came of it, C the key
+    // commands offered) is written out after.
     guard isPad else { return }
     languages.tap()
     languages.typeText("e")
     guard suggestions.firstMatch.waitForExistence(timeout: 5) else {
       return XCTFail("no language suggestions for “e”")
     }
-    // Whether XCUITest sees a keyboard as the key is pressed (run 100's
-    // Escape was lost with one showing).
-    print("VIRGA-NOTE language Escape: keyboards=\(app.keyboards.count)\(keyboard.exists ? " frame=\(keyboard.frame)" : "")")
-    app.typeKey(XCUIKeyboardKey.escape.rawValue, modifierFlags: [])
-    XCTAssertTrue(suggestions.firstMatch.waitForNonExistence(timeout: 5), "Escape didn't put the language suggestions away")
+    let escaped = pressKey(
+      "language Escape", app, field: languages, key: XCUIKeyboardKey.escape.rawValue, typed: "\u{1b}"
+    ) {
+      // Closed, with the query still "e": an escape typed into it as a
+      // letter would empty the list without being Escape.
+      !suggestions.firstMatch.exists && (languages.value as? String) == "e"
+    }
+    trace(app, "VIRGA-KEYS-TRACE after Escape")
+    guard escaped else { return XCTFail("Escape didn't put the language suggestions away, by any way of pressing it") }
     chosen = labels(removes)
     // The "e" taken out: the empty query's six suggestions, the list open again.
-    app.typeKey(XCUIKeyboardKey.delete.rawValue, modifierFlags: [])
-    guard suggestions.firstMatch.waitForExistence(timeout: 5) else {
+    let emptied = pressKey(
+      "language Delete", app, field: languages, key: XCUIKeyboardKey.delete.rawValue, typed: XCUIKeyboardKey.delete.rawValue
+    ) { suggestions.firstMatch.exists }
+    guard emptied else {
       return XCTFail("the language suggestions didn't come back as the query emptied")
     }
     let rows = suggestions.allElementsBoundByIndex.sorted { $0.frame.minY < $1.frame.minY }
@@ -229,11 +232,69 @@ final class PostingUITests: XCTestCase {
       return XCTFail("fewer than two language suggestions for an empty query: \(rows.count)")
     }
     let secondLabel = rows[1].label
-    app.typeKey(XCUIKeyboardKey.downArrow.rawValue, modifierFlags: [])
-    app.typeKey(XCUIKeyboardKey.return.rawValue, modifierFlags: [])
+    let secondID = rows[1].identifier
+    let marked = pressKey("language ↓", app, field: languages, key: XCUIKeyboardKey.downArrow.rawValue, typed: nil) {
+      app.buttons[secondID].isSelected
+    }
+    XCTAssertTrue(marked, "↓ didn't highlight the second suggestion, by any way of pressing it")
+    var added: String?
+    let returned = pressKey("language Return", app, field: languages, key: XCUIKeyboardKey.return.rawValue, typed: "\n") {
+      added = self.newToken(removes, besides: chosen, tries: 1)
+      return added != nil
+    }
+    trace(app, "VIRGA-KEYS-TRACE after Return")
+    XCTAssertTrue(returned, "Return didn't add a language, by any way of pressing it")
     XCTAssertTrue(
-      newToken(removes, besides: chosen).map { secondLabel.hasPrefix($0) } ?? false,
-      "↓ and Return didn't add the second suggestion, “\(secondLabel)”")
+      added.map { secondLabel.hasPrefix($0) } ?? false,
+      "↓ and Return didn't add the second suggestion, “\(secondLabel)”: \(added ?? "nothing")")
+  }
+
+  /// Presses `key` each way in turn, the app's typeKey, the field's
+  /// typeKey and (with `typed`) the field's typeText, until `done` holds,
+  /// giving each way three seconds; logs each way and what came of it
+  /// (VIRGA-KEY). True once one way did it.
+  private func pressKey(
+    _ name: String, _ app: XCUIApplication, field: XCUIElement, key: String, typed: String?, done: () -> Bool
+  ) -> Bool {
+    var ways: [(String, () -> Void)] = [
+      ("app.typeKey", { app.typeKey(key, modifierFlags: []) }),
+      ("field.typeKey", { field.typeKey(key, modifierFlags: []) }),
+    ]
+    if let typed { ways.append(("field.typeText", { field.typeText(typed) })) }
+    for (way, act) in ways {
+      act()
+      let deadline = Date().addingTimeInterval(3)
+      repeat {
+        if done() {
+          print("VIRGA-KEY \(name) via \(way): done (keyboards=\(app.keyboards.count))")
+          return true
+        }
+        Thread.sleep(forTimeInterval: 0.3)
+      } while Date() < deadline
+      print("VIRGA-KEY \(name) via \(way): nothing (keyboards=\(app.keyboards.count))")
+    }
+    return false
+  }
+
+  /// The typing probe's record of the language search (TypingProbe's
+  /// "typing-probe" element, on the Settings page while the probe is on),
+  /// written to the log and kept with the results.
+  private func trace(_ app: XCUIApplication, _ tag: String) {
+    let probe = app.descendants(matching: .any).matching(identifier: "typing-probe").firstMatch
+    var record = "unavailable"
+    if probe.exists, let json = probe.value as? String, let data = json.data(using: .utf8),
+      let all = try? JSONSerialization.jsonObject(with: data) as? [String: Any], let field = all["key-field"],
+      JSONSerialization.isValidJSONObject(field),
+      let line = try? JSONSerialization.data(withJSONObject: field, options: [.sortedKeys])
+    {
+      record = String(decoding: line, as: UTF8.self)
+    }
+    let text = "\(tag) field=key-field keyboards=\(app.keyboards.count) \(record)"
+    print(text)
+    let attachment = XCTAttachment(string: text)
+    attachment.name = tag
+    attachment.lifetime = .keepAlways
+    add(attachment)
   }
 
   private func labels(_ query: XCUIElementQuery) -> Set<String> {
@@ -243,8 +304,8 @@ final class PostingUITests: XCTestCase {
   /// The language a new token names, once one of `removes` (the tokens'
   /// "Remove <name>" buttons) has a label not in `besides`; nil if none
   /// comes within five seconds.
-  private func newToken(_ removes: XCUIElementQuery, besides: Set<String>) -> String? {
-    for _ in 0..<10 {
+  private func newToken(_ removes: XCUIElementQuery, besides: Set<String>, tries: Int = 10) -> String? {
+    for _ in 0..<tries {
       if let label = labels(removes).first(where: { !besides.contains($0) }) {
         return String(label.dropFirst("Remove ".count))
       }

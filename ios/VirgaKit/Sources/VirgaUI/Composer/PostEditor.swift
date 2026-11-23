@@ -1170,9 +1170,6 @@ struct HighlightedTextView: UIViewRepresentable {
     view.adjustsFontForContentSizeCategory = false
     view.autocapitalizationType = .sentences
     view.spellCheckingType = .yes
-    // The UI tests that press hardware keys run with no software keyboard
-    // (SoftwareKeyboard); without that flag this changes nothing.
-    SoftwareKeyboard.apply(to: view)
     view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     // From the post itself, so a new field never starts behind it.
     let text = current()

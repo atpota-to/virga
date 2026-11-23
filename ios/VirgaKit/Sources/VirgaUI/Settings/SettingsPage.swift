@@ -45,6 +45,11 @@ public struct SettingsPage: View {
       // Posting's language picker brings its suggestions into view in the
       // page's scroll, over a phone's keyboard.
       .composerScrolling()
+      // The typing probe's record, for the UI tests that press the language
+      // search's keys (TypingProbe; only with -VirgaTypingProbe YES).
+      .overlay(alignment: .topLeading) {
+        if TypingProbe.isOn { TypingProbeElement().frame(width: 1, height: 1).allowsHitTesting(false) }
+      }
     }
   }
 
