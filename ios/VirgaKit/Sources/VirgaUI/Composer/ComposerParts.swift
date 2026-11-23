@@ -19,11 +19,10 @@ import VirgaSession
 /// Up to three languages: the chosen ones as tokens, and a search field
 /// that suggests more (by name or code). The suggestions open as the field
 /// takes focus, is pressed or is typed in, and close once one is added.
-/// `floating` lays them over whatever follows the field, as the web's
-/// `.lang-search .suggest-list` is, so nothing moves; the picker's container
-/// then draws it over its later siblings (`.zIndex(1)`). Without it they
-/// are in the flow under the field: a Settings row draws its hairline over
-/// what's in it, which would cross a list floating out of it.
+/// They float over whatever follows the field, as the web's `.lang-search
+/// .suggest-list` does, so nothing moves: whoever holds the picker draws it
+/// over its later siblings (`.zIndex(1)`), as the composer's Language and
+/// content labels and the Languages row in Settings do.
 /// `bare` is for a place that already says what this is (a row in Settings):
 /// the label is VoiceOver's alone, not drawn, and there is no hint.
 struct LanguagePicker: View {
@@ -33,7 +32,6 @@ struct LanguagePicker: View {
   var hint: String?
   var disabled = false
   var bare = false
-  var floating = false
   @State private var query = ""
   @State private var open = false
   /// The query is being cleared by an add, not typed: it doesn't reopen the list.
@@ -90,18 +88,22 @@ struct LanguagePicker: View {
         .onSubmit { add(options.first?.code, chosen: chosen) }
         .accessibilityLabel(label)
         // `.lang-search .suggest-list`: out of the flow (position:
-        // absolute), 4 under the field and as wide, over what follows.
-        // Its top is set 4 below the field's bottom.
+        // absolute), 4 under the field and as wide, over what follows. It
+        // hangs from a line of no height at the field's foot: the line sits
+        // on the field's bottom, the list's top on the line. An alignment
+        // guide setting the list's foot above its top wasn't honoured (run
+        // 94 drew the list over the field, its foot on the field's foot).
         .overlay(alignment: .bottom) {
-          if floating && !options.isEmpty {
-            suggestions(options, chosen: chosen)
-              .fixedSize(horizontal: false, vertical: true)
-              .alignmentGuide(.bottom) { d in d[.top] - ComposerMeasure.languagesListTop }
+          if !options.isEmpty {
+            Color.clear
+              .frame(height: 0)
+              .overlay(alignment: .top) {
+                suggestions(options, chosen: chosen)
+                  .fixedSize(horizontal: false, vertical: true)
+                  .padding(.top, ComposerMeasure.languagesListTop)
+              }
           }
         }
-      if !floating && !options.isEmpty {
-        suggestions(options, chosen: chosen)
-      }
     }
   }
 

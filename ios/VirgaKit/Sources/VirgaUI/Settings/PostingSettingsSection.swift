@@ -173,6 +173,9 @@ struct ComposerDefaultsCard: View {
         )
         .frame(maxWidth: Measure.SettingsPosting.stackMax, alignment: .leading)
       }
+      // Its suggestions float out of the row over the rows after it
+      // (`z-index: 30`), drawn and pressed above them.
+      .zIndex(1)
       SettingsRow(
         label: "Who can reply and quote",
         hint: own

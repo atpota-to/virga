@@ -3,8 +3,9 @@
 // palette goes to Templates (Mira's two, read from her repo), the editor
 // opens on Event reminder, which asks two questions, its Use opens the
 // composer on it (the questions in the library's dialog), and then
-// Settings › Posting, from its top to the default timer. Each is kept as a
-// screenshot, on the iPhone and the iPad.
+// Settings › Posting, from its top to the default timer and back up to its
+// language field with a few letters typed. Each is kept as a screenshot,
+// on the iPhone and the iPad.
 
 import UIKit
 import XCTest
@@ -133,5 +134,37 @@ final class PostingUITests: XCTestCase {
       tries += 1
     }
     snapshot("settings-posting-timer")
+
+    // Back at the top, its language field with "fr" typed: the suggestions
+    // float over the rows under it. Kept only as a screenshot; nothing
+    // here fails the test.
+    let languages = app.textFields["Languages"].firstMatch
+    guard languages.waitForExistence(timeout: 5) else { return }
+    var top = languages.frame.minY
+    tries = 0
+    repeat {
+      app.swipeDown()
+      tries += 1
+      let moved = languages.frame.minY != top
+      top = languages.frame.minY
+      if !moved { break }
+    } while tries < 8
+    // On the iPhone the field is then low in the window, and the keyboard
+    // would cover the list under it. Drag the page up until the field is in
+    // the window's top third, slowly and held so it doesn't fling on. On the
+    // iPad it is near there already.
+    let height = app.windows.firstMatch.frame.height
+    let lift = languages.frame.minY - height * 0.3
+    if lift > 0 {
+      let from = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.75))
+      let to = from.withOffset(CGVector(dx: 0, dy: -lift))
+      from.press(forDuration: 0.2, thenDragTo: to, withVelocity: .slow, thenHoldForDuration: 0.5)
+    }
+    guard languages.isHittable else { return }
+    languages.tap()
+    guard app.keyboards.firstMatch.waitForExistence(timeout: 3) else { return }
+    languages.typeText("fr")
+    sleep(1)
+    snapshot("settings-posting-languages")
   }
 }

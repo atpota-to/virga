@@ -304,7 +304,9 @@ struct SettingsRow<Control: View>: View {
     }
     .padding(.vertical, theme.rowPadLg)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
+    // Under the row's content, as the web's border-bottom is: what floats
+    // out of the row (the language suggestions) is drawn over its line.
+    .background(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
   }
 
   /// `--settings-line`: the name's first line, `--text-md` × 1.45.
