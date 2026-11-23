@@ -339,12 +339,14 @@ struct ScanProgressCard: View {
           .buttonStyle(.linkAction)
           .accessibilityIdentifier("defense-stop"))
       )
-      // The stage is announced as it changes; the running count isn't.
+      // The stage is announced as it changes; the running count isn't, but
+      // it is read with the line (the web's sibling span), as its value.
       (Text(PageModel.stageLabel(scan)) + Text(PageModel.stageCount(scan)))
         .virgaText(size: theme.points(ThemeKit.cardSubFontSize))
         .foregroundStyle(theme.color(ThemeKit.cardSubInk))
         .padding(.top, theme.points(ThemeKit.cardSubSpaceAbove))
         .accessibilityLabel(PageModel.stageLabel(scan))
+        .accessibilityValue(Self.countWords(PageModel.stageCount(scan)))
         .accessibilityAddTraits(.updatesFrequently)
         .toolAnnounces(PageModel.stageLabel(scan), onAppear: true)
         .accessibilityIdentifier("defense-stage")
@@ -355,6 +357,12 @@ struct ScanProgressCard: View {
     }
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("defense-progress")
+  }
+
+  /// The count as words of its own: ": 300 of 1,250 accounts" without its
+  /// leading ": ", or nothing.
+  static func countWords(_ count: String) -> String {
+    count.hasPrefix(": ") ? String(count.dropFirst(2)) : count
   }
 }
 
