@@ -132,7 +132,9 @@ struct KeyTextField: UIViewRepresentable {
     // The caret and selection; set each time, should SwiftUI's own tint
     // have reached the field since.
     if field.tintColor != style.tint { field.tintColor = style.tint }
-    field.isEnabled = enabled
+    coordinator.enabled = enabled
+    // One with the keyboard is disabled once it has let it go (below).
+    if enabled || !field.isFirstResponder { field.isEnabled = enabled }
     field.autocorrectionType = autocorrect ? .yes : .no
     field.autocapitalizationType = capitalization
     field.accessibilityLabel = label
@@ -147,9 +149,18 @@ struct KeyTextField: UIViewRepresentable {
       field.text = text
     }
     if !enabled {
-      // A disabled field lets the keyboard go, as SwiftUI's does.
+      // A disabled field lets the keyboard go, as SwiftUI's does, after
+      // this update, and only then is disabled: a field disabled while it
+      // has the keyboard may let it go at once, which would tell SwiftUI
+      // its focus in the middle of the update (the language search, as its
+      // third language is added). Should it be enabled again first, it
+      // keeps the keyboard.
       if field.isFirstResponder {
-        DispatchQueue.main.async { _ = field.resignFirstResponder() }
+        DispatchQueue.main.async {
+          guard !coordinator.enabled else { return }
+          _ = field.resignFirstResponder()
+          field.isEnabled = false
+        }
       }
     } else if focused != coordinator.reported {
       // Asked from SwiftUI's side; the field's own changes are reported
@@ -180,6 +191,8 @@ struct KeyTextField: UIViewRepresentable {
     var parent: KeyTextField
     /// Whether the field last said it had the keyboard.
     var reported = false
+    /// Whether SwiftUI last had the field enabled.
+    var enabled = true
     /// What the field's type and colours were last set from.
     var drawn: KeyFieldStyle?
     var prompt: String?
@@ -274,12 +287,15 @@ final class KeyField: UITextField {
   static let samePress: TimeInterval = 0.25
 
   /// Hands `key` on, unless it is the press another way just took: true
-  /// when it was taken (now or by that other way).
+  /// when it was taken (now or by that other way). A key what holds the
+  /// field doesn't take now is the field's, even one pressed just after a
+  /// press it took (a second Escape, once the first has closed the list).
   @discardableResult
   func take(_ key: FieldKey, by way: Way) -> Bool {
+    guard markedTextRange == nil, keys.contains(key) else { return false }
     let now = ProcessInfo.processInfo.systemUptime
     if let last, last.key == key, last.way != way, now - last.at < Self.samePress { return true }
-    guard markedTextRange == nil, keys.contains(key), let onKey, onKey(key) else { return false }
+    guard let onKey, onKey(key) else { return false }
     last = (key, way, now)
     return true
   }

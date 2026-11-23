@@ -189,11 +189,11 @@ final class PostingUITests: XCTestCase {
     // puts it away, and ↓ then Return adds the second suggestion. (Mira
     // starts with English, so this is the third language, the most there
     // can be: Escape goes first.) The press on the field asks for the list
-    // again (KeyTextField's onPress, the web's onClick), and the query
-    // changing opens it too, as typing does on the web. The field is a
-    // KeyTextField, still app.textFields["Languages"]: these keys reach the
-    // picker by the field's pressesBegan, its priority key commands or, for
-    // Return, its delegate, whichever comes first.
+    // again (the box's press and KeyTextField's onPress, the web's
+    // onClick), and the query changing opens it too, as typing does on the
+    // web. The field is a KeyTextField, still app.textFields["Languages"]:
+    // these keys reach the picker by the field's pressesBegan, its priority
+    // key commands or, for Return, its delegate, whichever comes first.
     guard UIDevice.current.userInterfaceIdiom == .pad else { return }
     languages.tap()
     languages.typeText("e")

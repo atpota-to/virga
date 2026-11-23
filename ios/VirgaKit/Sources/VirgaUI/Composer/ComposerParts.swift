@@ -19,9 +19,10 @@ import VirgaSession
 
 /// Up to three languages: the chosen ones as tokens, and a search field
 /// that suggests more (by name or code). The suggestions open as the field
-/// takes focus or is typed in, and close once one is added; a press on the
-/// field asks for them too, as the web's click does, even while the field
-/// already has the keyboard (KeyTextField's onPress).
+/// takes focus or is typed in, and close once one is added; a press
+/// anywhere in the field's box asks for them too and gives the field the
+/// keyboard, as the web's click does, even while the field already has the
+/// keyboard (the box's own press, and KeyTextField's onPress on its line).
 /// They float over whatever follows the field, as the web's `.lang-search
 /// .suggest-list` does, so nothing moves: whoever holds the picker draws it
 /// over its later siblings (`.zIndex(1)`), as the composer's Language and
@@ -97,6 +98,19 @@ struct LanguagePicker: View {
         return press(Self.pickerKey(key), options: shown(chosen: now), chosen: now)
       }
       .virgaField(focused: focused)
+      // The web's input is the whole box, so a click anywhere in it, its
+      // padding too, focuses it and opens the list. The text field is only
+      // its line of text, so the box takes a press of its own: it opens the
+      // list and asks for the keyboard. The field's own press (onPress)
+      // stays for the line itself, which a field that has the keyboard may
+      // not pass on. `.disabled` after it switches it off with the field.
+      .contentShape(Rectangle())
+      .simultaneousGesture(
+        TapGesture().onEnded {
+          open = true
+          focused = true
+        }
+      )
       .disabled(disabled || full)
       .onChange(of: focused) { _, now in
         if now {
