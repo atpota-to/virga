@@ -15,6 +15,14 @@
 // (Library.detectSlashCommand, rankTemplatesForSlash, matchShortcut); a
 // template picked goes in over the shortcut, and Open the library opens
 // it over the shortcut's range.
+//
+// Both lists take the web's keys (onKeyDown, SuggestionKeys): ↑ and ↓ move
+// the marked row (--hover, read as selected), round at the ends; Return or
+// Tab takes it; Escape closes the list, which stays closed until the
+// mention or shortcut changes. The text view asks for them only while a
+// list is up, and leaves them to an input method that is composing. The
+// software keyboard's Return takes the marked row too, as Safari sends
+// keydown Enter for it.
 
 #if canImport(UIKit)
 import CoreText
@@ -45,6 +53,29 @@ struct MentionLookup: Equatable {
   func isFor(_ partial: PartialMention) -> Bool {
     range.start == partial.start && range.query.jsEquals(partial.query)
   }
+
+  /// What the lookup's task is keyed on: the mention's place and query.
+  static func key(_ partial: PartialMention) -> String { "\(partial.start):\(partial.query)" }
+}
+
+/// The "/" list's marked row, for the shortcut it was marked in: the web's
+/// `slashIndex`, set back to 0 as the shortcut changes.
+struct SlashMark: Equatable {
+  var start: Int
+  var query: String
+  var index: Int
+
+  /// What the web's effect watches: the shortcut's place and query.
+  static func key(_ slash: SlashCommand) -> String { "\(slash.start):\(slash.query)" }
+}
+
+/// The keys an open suggestion list takes from its field: the lists as
+/// they are when a key comes in, and what to do with the key's action
+/// (PostEditor's). ComposerTextView asks as each key comes in, so a key
+/// acts on what is drawn at that moment.
+struct SuggestionKeyHandler {
+  var lists: () -> SuggestionKeys.Lists
+  var act: (SuggestionKeys.Action) -> Void
 }
 
 struct PostEditor: View {
@@ -58,6 +89,13 @@ struct PostEditor: View {
   @State private var caret = 0
   @State private var detected: (text: String, segments: [HighlightSegment]) = (text: "", segments: [])
   @State private var mention: MentionLookup?
+  /// The mention (MentionLookup.key) whose list Escape closed: it stays
+  /// closed, its lookup still running included, until the mention changes.
+  @State private var closedMention: String?
+  @State private var slashMark: SlashMark?
+  /// Where the shortcut starts whose list Escape closed: closed until the
+  /// caret leaves it (the web's `slashDismissed`).
+  @State private var slashDismissed: Int?
   @State private var pasteNote = ""
   @State private var focusTick = 0
 
@@ -81,10 +119,22 @@ struct PostEditor: View {
     return mention.isFor(partial) ? mention : MentionLookup.starting(partial, after: mention)
   }
 
-  /// The "/shortcut" being typed, while no mention is.
+  /// The "/shortcut" being typed, while no mention is, unless Escape
+  /// closed its list.
   private var slash: SlashCommand? {
-    guard partial == nil else { return nil }
-    return Library.detectSlashCommand(text, caret)
+    guard partial == nil, let found = Library.detectSlashCommand(text, caret) else { return nil }
+    return found.start == slashDismissed ? nil : found
+  }
+
+  /// The templates the shortcut could mean.
+  private func slashMatches(_ slash: SlashCommand) -> [PostTemplate] {
+    SlashList.matches(controller, slash)
+  }
+
+  /// The "/" list's marked row: 0 until the arrows move it in this shortcut.
+  private func slashIndex(_ slash: SlashCommand) -> Int {
+    guard let slashMark, slashMark.start == slash.start, slashMark.query.jsEquals(slash.query) else { return 0 }
+    return slashMark.index
   }
 
   /// The open suggestion list's place in the composer's scroll.
@@ -113,7 +163,8 @@ struct PostEditor: View {
       }
       if let slash {
         SlashList(
-          controller: controller, slash: slash, anchor: suggestAnchor,
+          controller: controller, slash: slash, matches: slashMatches(slash), marked: slashIndex(slash),
+          anchor: suggestAnchor,
           onOpenLibrary: { controller.openLibrary(postId, range: TextSelection(start: slash.start, end: slash.end)) }
         ) { template in
           controller.applyTemplate(postId, template, range: TextSelection(start: slash.start, end: slash.end))
@@ -121,7 +172,69 @@ struct PostEditor: View {
       }
     }
     .task(id: text) { await detect(text) }
-    .task(id: partial.map { "\($0.start):\($0.query)" }) { await lookUp(partial) }
+    .task(id: partial.map(MentionLookup.key)) { await lookUp(partial) }
+    // The web's effect: a "/" list Escape closed opens again once the caret
+    // has left the shortcut.
+    .onChange(of: Library.detectSlashCommand(text, caret) == nil) { _, gone in
+      if gone && slashDismissed != nil { slashDismissed = nil }
+    }
+    // The web's other effect: the "/" list's mark goes back to the first row
+    // whenever the shortcut changes, even back to the one it was moved in (a
+    // letter typed and taken out, the caret leaving and coming back,
+    // Escape). slashIndex's own check covers the moment before this runs.
+    .onChange(of: slash.map(SlashMark.key)) { _, _ in
+      if slashMark != nil { slashMark = nil }
+    }
+  }
+
+  // MARK: Keys
+
+  /// The lists as they are now, for a key coming in.
+  private func keyLists() -> SuggestionKeys.Lists {
+    let shown = shownMention
+    var lists = SuggestionKeys.Lists(
+      mentionOpen: shown != nil, mentionRows: shown?.items.count ?? 0, mentionIndex: shown?.index ?? 0)
+    if let slash {
+      lists.slashOpen = true
+      lists.slashRows = slashMatches(slash).count
+      lists.slashIndex = slashIndex(slash)
+    }
+    return lists
+  }
+
+  /// A key's action on the lists, as the web's onKeyDown takes it: a row
+  /// taken goes in as a press on it would, and the row marked is read out
+  /// (the web's aria-activedescendant).
+  private func act(_ action: SuggestionKeys.Action) {
+    switch action {
+    case .field:
+      return
+    case .markMention(let row):
+      guard var shown = shownMention, shown.items.indices.contains(row) else { return }
+      shown.index = row
+      mention = shown
+      AccessibilityNotification.Announcement(MentionList.spoken(shown.items[row])).post()
+    case .pickMention(let row):
+      guard let shown = shownMention, shown.items.indices.contains(row) else { return }
+      pick(shown.items[row], from: shown)
+    case .markSlash(let row):
+      guard let slash else { return }
+      let matches = slashMatches(slash)
+      guard matches.indices.contains(row) else { return }
+      slashMark = SlashMark(start: slash.start, query: slash.query, index: row)
+      AccessibilityNotification.Announcement(SlashList.spoken(matches[row])).post()
+    case .pickSlash(let row):
+      guard let slash else { return }
+      let matches = slashMatches(slash)
+      guard matches.indices.contains(row) else { return }
+      controller.applyTemplate(postId, matches[row], range: TextSelection(start: slash.start, end: slash.end))
+    case .close(let closesMention, let closesSlash):
+      if closesMention, let partial {
+        mention = nil
+        closedMention = MentionLookup.key(partial)
+      }
+      if closesSlash, let slash { slashDismissed = slash.start }
+    }
   }
 
   private func field(text: String, segments: [HighlightSegment]) -> some View {
@@ -173,7 +286,8 @@ struct PostEditor: View {
           if controller.focusPostId.map({ $0.jsEquals(postId) }) ?? false { controller.focusPostId = nil }
         },
         onPaste: { range in paste(range) },
-        onSend: { controller.sendFromKeyboard() })
+        onSend: { controller.sendFromKeyboard() },
+        suggestionKeys: SuggestionKeyHandler(lists: { keyLists() }, act: { act($0) }))
     }
     .opacity(disabled ? 0.6 : 1)
   }
@@ -194,22 +308,29 @@ struct PostEditor: View {
   // MARK: Mentions
 
   private func lookUp(_ partial: PartialMention?) async {
+    // A list Escape closed stays closed for its own mention only.
+    let key = partial.map(MentionLookup.key)
+    if closedMention != nil && closedMention != key { closedMention = nil }
     guard let partial else {
       mention = nil
       return
     }
+    // Closed by Escape while this lookup was on its way, so its answer
+    // doesn't bring the list back (the web's would, a beat after Escape).
+    func closed() -> Bool { closedMention == key }
+    if closed() { return }
     mention = .starting(partial, after: mention)
     try? await Task.sleep(nanoseconds: 150_000_000)
-    if Task.isCancelled { return }
+    if Task.isCancelled || closed() { return }
     do {
       let body = try await PublicAppView.publicXrpc(
         "app.bsky.actor.searchActorsTypeahead", ["q": .string(partial.query), "limit": 5],
         transport: controller.transport)
-      if Task.isCancelled { return }
+      if Task.isCancelled || closed() { return }
       let items = (body["actors"]?.arrayValue ?? []).filter { !($0["handle"]?.stringValue ?? "").isEmpty }
       mention = MentionLookup(range: partial, status: .ready, items: Array(items.prefix(5)))
     } catch {
-      if !Task.isCancelled { mention = MentionLookup(range: partial, status: .error, items: []) }
+      if !Task.isCancelled && !closed() { mention = MentionLookup(range: partial, status: .error, items: []) }
     }
   }
 
@@ -320,6 +441,29 @@ struct SuggestRowStyle: ViewModifier {
   }
 }
 
+/// `.suggest-item`'s fill: --hover on the row the arrow keys are on
+/// (`aria-selected`), and on the one under the pointer or a finger.
+struct SuggestItemStyle: ButtonStyle {
+  var marked = false
+
+  func makeBody(configuration: Configuration) -> some View {
+    SuggestItemBody(label: configuration.label, lit: marked || configuration.isPressed)
+  }
+}
+
+struct SuggestItemBody<Label: View>: View {
+  @Environment(\.virgaTheme) private var theme
+  let label: Label
+  let lit: Bool
+  @State private var hovered = false
+
+  var body: some View {
+    label
+      .background(RoundedRectangle(cornerRadius: theme.radius).fill(lit || hovered ? theme.hover : Color.clear))
+      .onHover { hovered = $0 }
+  }
+}
+
 /// `.suggest-status`: why there's nothing to suggest (role="status").
 struct SuggestStatus: View {
   @Environment(\.virgaTheme) private var theme
@@ -378,7 +522,8 @@ extension View {
   }
 }
 
-/// `.suggest-pop`: who the mention might be, and its status line.
+/// `.suggest-pop`: who the mention might be, and its status line. The row
+/// `mention.index` is marked: the one Return takes.
 struct MentionList: View {
   @Environment(\.virgaTheme) private var theme
   let mention: MentionLookup
@@ -390,8 +535,8 @@ struct MentionList: View {
     VStack(alignment: .leading, spacing: 0) {
       if !mention.items.isEmpty {
         VStack(alignment: .leading, spacing: 0) {
-          ForEach(Array(mention.items.enumerated()), id: \.offset) { _, actor in
-            row(actor)
+          ForEach(Array(mention.items.enumerated()), id: \.offset) { index, actor in
+            row(actor, index: index)
           }
         }
         .padding(ComposerMeasure.suggestListPadding)
@@ -403,8 +548,18 @@ struct MentionList: View {
     .suggestPop()
     .accessibilityElement(children: .contain)
     .accessibilityLabel("Accounts to mention")
+    .accessibilityIdentifier("mention-list")
     .composerReveals(anchor, when: mention.items.count)
   }
+
+  static func handle(_ actor: JSONValue) -> String { actor["handle"]?.stringValue ?? "" }
+
+  static func name(_ actor: JSONValue) -> String {
+    actor["displayName"]?.stringValue.flatMap { $0.isEmpty ? nil : $0 } ?? handle(actor)
+  }
+
+  /// A row as VoiceOver reads it: the name, then the handle.
+  static func spoken(_ actor: JSONValue) -> String { "\(name(actor)), @\(handle(actor))" }
 
   private var status: String {
     switch mention.status {
@@ -414,9 +569,10 @@ struct MentionList: View {
     }
   }
 
-  private func row(_ actor: JSONValue) -> some View {
-    let handle = actor["handle"]?.stringValue ?? ""
-    let name = actor["displayName"]?.stringValue.flatMap { $0.isEmpty ? nil : $0 } ?? handle
+  private func row(_ actor: JSONValue, index: Int) -> some View {
+    let handle = Self.handle(actor)
+    let name = Self.name(actor)
+    let marked = index == mention.index
     return Button {
       pick(actor)
     } label: {
@@ -432,33 +588,51 @@ struct MentionList: View {
       }
       .suggestRow()
     }
-    .buttonStyle(.plain)
-    .accessibilityLabel("\(name), @\(handle)")
+    .buttonStyle(SuggestItemStyle(marked: marked))
+    .accessibilityLabel(Self.spoken(actor))
+    .accessibilityAddTraits(marked ? .isSelected : [])
+    .accessibilityIdentifier("mention-option-\(index)")
   }
 }
 
-/// `.suggest-pop` for "/": the templates the shortcut could mean, or why
-/// there are none, and Open the library at its foot.
+/// `.suggest-pop` for "/": the templates the shortcut could mean (the row
+/// `marked` is the one Return takes), or why there are none, and Open the
+/// library at its foot.
 struct SlashList: View {
   @Environment(\.virgaTheme) private var theme
   let controller: ComposerController
   let slash: SlashCommand
+  /// `SlashList.matches(controller, slash)`.
+  let matches: [PostTemplate]
+  let marked: Int
   /// Its place in the composer's scroll.
   let anchor: String
   let onOpenLibrary: () -> Void
   let pick: (PostTemplate) -> Void
 
-  var body: some View {
+  /// The templates the shortcut could mean, at most five
+  /// (rankTemplatesForSlash, matchShortcut).
+  static func matches(_ controller: ComposerController, _ slash: SlashCommand) -> [PostTemplate] {
     let replying = controller.state.reply != nil
-    let templates = controller.templates.templates
     let ranked = Library.rankTemplatesForSlash(
-      templates, parentText: controller.state.reply?.text ?? "", usage: controller.templateUsage(), replying: replying)
-    let matches = PostTemplates.matchShortcut(ranked, slash.query, replying: replying, limit: 5)
+      controller.templates.templates, parentText: controller.state.reply?.text ?? "",
+      usage: controller.templateUsage(), replying: replying)
+    return PostTemplates.matchShortcut(ranked, slash.query, replying: replying, limit: 5)
+  }
+
+  /// A row as VoiceOver reads it: the name, then the shortcut.
+  static func spoken(_ template: PostTemplate) -> String {
+    let name = template.name.isEmpty ? "Untitled template" : template.name
+    return template.shortcut.isEmpty ? name : "\(name), /\(template.shortcut)"
+  }
+
+  var body: some View {
+    let templates = controller.templates.templates
     VStack(alignment: .leading, spacing: 0) {
       if !matches.isEmpty {
         VStack(alignment: .leading, spacing: 0) {
-          ForEach(Array(matches.enumerated()), id: \.offset) { _, template in
-            row(template)
+          ForEach(Array(matches.enumerated()), id: \.offset) { index, template in
+            row(template, marked: index == marked)
           }
         }
         .padding(ComposerMeasure.suggestListPadding)
@@ -492,7 +666,7 @@ struct SlashList: View {
     return slash.query.isEmpty ? "None of your templates has a shortcut yet." : "No template uses /\(slash.query)."
   }
 
-  private func row(_ template: PostTemplate) -> some View {
+  private func row(_ template: PostTemplate, marked: Bool) -> some View {
     let name = template.name.isEmpty ? "Untitled template" : template.name
     return Button {
       pick(template)
@@ -511,8 +685,9 @@ struct SlashList: View {
       }
       .suggestRow()
     }
-    .buttonStyle(.plain)
-    .accessibilityLabel(template.shortcut.isEmpty ? name : "\(name), /\(template.shortcut)")
+    .buttonStyle(SuggestItemStyle(marked: marked))
+    .accessibilityLabel(Self.spoken(template))
+    .accessibilityAddTraits(marked ? .isSelected : [])
     .accessibilityIdentifier("slash-template-\(template.shortcut)")
   }
 }
@@ -602,10 +777,13 @@ struct EditorStyle: Equatable {
   }
 }
 
-/// A UITextView that hands its pastes (and ⌘↩) to the composer first.
+/// A UITextView that hands its pastes (and ⌘↩) to the composer first, and
+/// its keys to a suggestion list that is up.
 final class ComposerTextView: UITextView {
   var pasteHandler: ((NSRange) -> Bool)?
   var sendHandler: (() -> Void)?
+  /// The "@" and "/" lists' keys (PostEditor.jsx's onKeyDown).
+  var suggestionKeys: SuggestionKeyHandler?
 
   override func paste(_ sender: Any?) {
     if pasteHandler?(selectedRange) == true { return }
@@ -621,7 +799,60 @@ final class ComposerTextView: UITextView {
 
   override var keyCommands: [UIKeyCommand]? {
     let send = UIKeyCommand(input: "\r", modifierFlags: .command, action: #selector(sendFromKeys))
-    return [send] + (super.keyCommands ?? [])
+    return [send] + listCommands() + (super.keyCommands ?? [])
+  }
+
+  /// A hardware keyboard's keys for a list that is up, ahead of the text
+  /// view's own use of them (the caret's moves, a new line): ↑ and ↓ with
+  /// or without a modifier (the web reads none), Return and Tab while it
+  /// has rows (⇧⇥ too: the web's Tab is taken with anything held but ⌘ or
+  /// ⌃), Escape while it is up. Only then, so every other key reaches the
+  /// text view as before, and none while an input method is composing.
+  private func listCommands() -> [UIKeyCommand] {
+    guard markedTextRange == nil, let lists = suggestionKeys?.lists() else { return [] }
+    var commands: [UIKeyCommand] = []
+    if lists.takesArrows {
+      for flags in Self.arrowModifiers {
+        commands.append(Self.listCommand(UIKeyCommand.inputUpArrow, flags, #selector(listUp)))
+        commands.append(Self.listCommand(UIKeyCommand.inputDownArrow, flags, #selector(listDown)))
+      }
+      commands.append(Self.listCommand("\r", [], #selector(listReturn)))
+      commands.append(Self.listCommand("\t", [], #selector(listTab)))
+      commands.append(Self.listCommand("\t", .shift, #selector(listBackTab)))
+    }
+    if lists.takesEscape {
+      commands.append(Self.listCommand(UIKeyCommand.inputEscape, [], #selector(listEscape)))
+    }
+    return commands
+  }
+
+  private static let arrowModifiers: [UIKeyModifierFlags] = [[], .shift, .alternate, .command, .control]
+
+  private static func listCommand(_ input: String, _ flags: UIKeyModifierFlags, _ action: Selector) -> UIKeyCommand {
+    let command = UIKeyCommand(input: input, modifierFlags: flags, action: action)
+    command.wantsPriorityOverSystemBehavior = true
+    return command
+  }
+
+  @objc func listUp() { takeListKey(.up) }
+  @objc func listDown() { takeListKey(.down) }
+  @objc func listEscape() { takeListKey(.escape) }
+  // Should the list have gone between the key and its command, the key is
+  // typed as it would have been.
+  @objc func listReturn() { if !takeListKey(.enter) { insertText("\n") } }
+  @objc func listTab() { if !takeListKey(.tab) { insertText("\t") } }
+  // ⇧⇥ has no letter to type, so should the list have gone it does nothing.
+  @objc func listBackTab() { takeListKey(.tab) }
+
+  /// The key's action on the lists as they are now (SuggestionKeys); true
+  /// when the key was theirs.
+  @discardableResult
+  private func takeListKey(_ key: SuggestionKeys.Key) -> Bool {
+    guard let handler = suggestionKeys else { return false }
+    let action = SuggestionKeys.action(key, lists: handler.lists(), composing: markedTextRange != nil)
+    if action == .field { return false }
+    handler.act(action)
+    return true
   }
 
   @objc func sendFromKeys() {
@@ -632,8 +863,13 @@ final class ComposerTextView: UITextView {
     sendHandler?()
   }
 
-  // The UI tests' typing probe (TypingProbe): what reached the field.
+  // A Return or Tab a list with rows takes goes no further: the software
+  // keyboard's Return on a phone (Safari sends keydown Enter for it, so
+  // the web takes the marked row too) and a hardware key its command
+  // missed. Every other key, and these with no list, as before. Then the
+  // UI tests' typing probe (TypingProbe): what reached the field.
   override func insertText(_ text: String) {
+    if text == "\n" || text == "\t", takeListKey(text == "\n" ? .enter : .tab) { return }
     if TypingProbe.isOn, let id = accessibilityIdentifier { TypingProbe.insert(id, text, in: self) }
     super.insertText(text)
   }
@@ -682,6 +918,9 @@ struct HighlightedTextView: UIViewRepresentable {
   var onRequestsDone: () -> Void
   var onPaste: (NSRange) -> Bool
   var onSend: () -> Void
+  /// The "@" and "/" lists' keys, handed to the text view as its paste and
+  /// send handlers are.
+  var suggestionKeys: SuggestionKeyHandler?
 
   /// What the field's attributes were last set from.
   struct Drawn: Equatable {
@@ -733,6 +972,7 @@ struct HighlightedTextView: UIViewRepresentable {
     let changes = textChanges()
     view.pasteHandler = onPaste
     view.sendHandler = onSend
+    view.suggestionKeys = suggestionKeys
     view.isEditable = !disabled
     view.tintColor = style.tint
     view.accessibilityLabel = label
