@@ -12,6 +12,7 @@
       "fixtures": [
         "insights-early.catalog"
       ],
+      "note": "Catalog.swift also holds Catalog.libraryMatches, DashboardPage.jsx's Library filter (`shown`), which is nothing of catalog.js.",
       "synced": "72a501e76bf6"
     },
     "src/dashboards/layouts.js": {

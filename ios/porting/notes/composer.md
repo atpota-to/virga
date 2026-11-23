@@ -65,6 +65,7 @@ COMPOSER MODULES (Composer/)
 - ComposerLanguages: languageCodes, languageName, searchLanguages, langsSummary, labelsSummary, adultLabelOptions, graphicLabel. compareNames is the one sort helper. The English names come from ComposerLanguageNames (ComposerLanguages+Names.swift: english 1061, regional 25, regions 630, scripts 204, from Node 22's ICU 78.3).
 - ComposerActions: postFacts, composerActions(state, defaultAction:queue:caps: ComposerCaps…) -> ComposerActionSet, actionLabel, draftMaxGraphemes, the hints.
 - ComposerDefaults: defaultTimerFor(settings, canSchedule:limitsStatus:limits:fit:) -> DefaultTimer, gatesSourceLine, gatesSummary, gatesShortSummary.
+- BlueskyGatesCache (Composer/BlueskyGatesCache.swift) is Composer.jsx's blueskyGates, readBlueskyGates and resolveGatesFor: one entry per account, a good read kept 5 minutes (`cacheMs`) and a failed one 30 seconds (`failureCacheMs`), an agent that can't be had counting as a failed read. `read(did, agent:)`; `resolve(settings, did:, agent:)` goes through PostingSettingsStore.resolveDefaultGates, and an empty did skips the read. VirgaUI's ComposerController holds one, so the Replies row and the post that goes out agree.
 - GatesModel: ruleOptions, replyMode, hasRule, toggleRule, rulesNote, isForeignListRule, gatesForAccount -> AccountGates, unlistedRules.
 - ComposerIntent: readTargetRef -> ComposerTargetRef?, normalizeIntent(_:activeDid:) -> ComposerIntentPlan, intentLoads (reads members by truthiness), seedFromIntent(base, plan, emptyPost:).
 - ComposerSubmit:
@@ -86,8 +87,9 @@ STORAGE
   - writeAutosave, readAutosave, clearAutosave(did, …, store:, now:).
   - setAside, countSetAside, takeSetAside(…, session:).
   - saveSessionDraft, loadSessionDraft, clearSessionDraft, forgetSessionDrafts, clearAllSessionDrafts; collectPreviewUrls, previewUrlIsHeld.
+  - Autosave+Files.swift: collectFileRefs(state) and fileRefIsHeld(ref, state), collectPreviewUrls and previewUrlIsHeld applied to the local files a state holds (the images' and the video's file refs, a card's thumbFile, and `file:` previews). On iOS a preview is the file itself, so VirgaUI deletes a temporary file on this test where the web revokes an object URL.
   - AutosaveSession (.shared) is the in-memory layer.
-  - `Autosaver(store:now:debounceMs:currentDid:setTimer:clearTimer:)`: save, flush, cancel, pending, dispose. The app calls flush() when its scene goes to the background.
+  - `Autosaver(store:now:debounceMs:currentDid:setTimer:clearTimer:)`: save, flush, cancel, pending, dispose. The app calls flush() when its scene goes to the background. `Autosaver.mainActorTimers()` gives timers whose callback runs on the main actor; the composer builds its autosaver with them, so the debounced write can't land between its own cancel() and what it does next (clearKept after a send, a set-aside).
 - Settings.swift:
   - `PostingSettingsStore`: postingSettingsKey, baseLanguage, defaultPostingSettings(language:) -> PostingSettings (typed: langs, gates: PostGates?, lifespan: TimerRule, queue: QueueSettings, defaultAction, requireAltText, showThreadSuggestion, threadNumbering, adviser: AdviserSettings, suggestBestTimes; `.json`).
   - readPostingSettings(did, store:, language:), writePostingSettings(did, patch, store:, target:) throws PostingSettingsError{field, message}, resetPostingSettings.
@@ -101,7 +103,8 @@ MEDIA
 - Lib/Images.swift, `Images`:
   - prepareImage(ComposerFile, budget:, encoder: any ImageEncoder, timeoutMs:, sleep:) throws ImageProcessingError -> PreparedImage{file, mime, size, aspectRatio}.
   - compressOptions, jpegName, isImageFile, imageBudget, cardThumbBudget, uploadImage(agent:image:data:).
-  - `protocol ImageEncoder { compress(ComposerFile, ImageCompressOptions) async throws -> ComposerFile?; decodeSize(ComposerFile) async throws -> ImageSize? }`. VirgaUI implements it over ImageIO and must honour maxSizeMB (MiB), maxWidthOrHeight, initialQuality, alwaysKeepResolution and no EXIF.
+  - `protocol ImageEncoder { compress(ComposerFile, ImageCompressOptions) async throws -> ComposerFile?; decodeSize(ComposerFile) async throws -> ImageSize? }`. VirgaUI implements it over ImageIO (ImageIOEncoder), copying no metadata (no EXIF).
+  - Lib/Images+Compress.swift: `compress(longSide:originalSize:options:png:render:)` is browser-image-compression 2.0.2's compress loop over an encoder's single render, and ImageIOEncoder walks it. The longer side is always capped at maxWidthOrHeight. The first render, at initialQuality, is the answer when it is within maxSizeMB (MiB) and no larger than the original. Otherwise at most `maxIteration` (10) more renders follow, each at the quality × 0.95 (× 0.85 for PNG), and at 0.95 of the side (truncated) only when alwaysKeepResolution is off and the first render was over budget. The last render is the answer even when still over, so prepareImage's own 1.9 MB check decides. So an original under 1.9 MB whose re-encode quality alone can't bring under 1.9 MB is refused, as on the web (a full-size HEIC photo is the likely case; not yet tried with real photos on a device).
 - Lib/Video.swift, `Video`:
   - validateVideoFile, normalizeJobStatus (an array jobStatus stands in for the status), isUsableVideoBlob, videoLimitMessage, videoServiceUrl(route, [(key, JSONValue?)]).
   - getVideoUploadLimits, pollVideoJobStatus(…, options: VideoPollOptions, transport:, clock:).
@@ -109,14 +112,14 @@ MEDIA
 
 WIRING (Wiring.swift)
 - `extension VirgaBackend: TimerRequester` and `extension BackendError: TimerErrorConvertible`.
-- `Mentions.useNetwork(transport:)` and `networkFetch(transport:)`. The app calls useNetwork once at launch. Tests that set Mentions.defaultFetch belong in the serialized MentionResolverBehaviour suite.
+- `Mentions.useNetwork(transport:)` and `networkFetch(transport:)`. The app calls useNetwork once at launch, in AppModel.init (device and demo alike, over archiveEnvironment.transport), so Drafts' and Scheduled posts' Post now resolve mentions through the network as the composer does. Tests that set Mentions.defaultFetch belong in the serialized MentionResolverBehaviour suite.
 - `PostingEvents.postsChangedListener(target:) -> PostsChangedListener`: pass it as ArchiveEnvironment(postsChanged:).
 - New: `public struct XRPCGatesAgent: GatesAgent` (getPreferences, getRecord, putRecord, deleteRecord as gates.js calls them), `XRPCAgent.gatesAgent`, and `extension XRPCError: XRPCErrorDescribing` (xrpcError = error, so RecordNotFound reads as none). Use these with Gates.readDefaultGates, Gates.updatePostGates and PostingSettingsStore.resolveDefaultGates(_, agent:).
 
 ## Known gaps and deliberate differences
 
 - languages.js (partial): variants ICU names are not named ('de-AT-1996' is 'Austrian German (German orthography of 1996)' on the web; the port writes the variant's code). Also not reproduced: dialect names reached through three-letter, numeric or deprecated aliases ('eng-US', 'en-840', 'ab-SU'), extlang tags ('zh-yue'), and non-English locales, which go through Foundation. compareNames still calls VirgaPosting's LocaleCompare; the merge should point that one helper at VirgaCore's consolidated localeCompare.
-- images.js (partial): there is no Apple ImageEncoder yet; VirgaUI writes it over ImageIO. The prepared file keeps the encoder's lastModified, where the web's new File takes the clock's.
+- images.js (partial): the pixel work is VirgaUI's ImageIOEncoder (over ImageIO, through Images.compress). The prepared file keeps the encoder's lastModified, where the web's new File takes the clock's.
 - media.js (partial): VirgaUI must build PastedItem values from UIPasteboard.
 - loaders.js: isOwnThreadRow is a private stand-in in Composer/ComposerLoaders.swift; the merge replaces it with the library chain's port.
 - postingQueue.js: when an instant's wall clock in its zone is past the end of time (within a day of 8.64e15, east of UTC), zonedWallTime gives nil where the web gives 'NaN-NaN-NaN'.

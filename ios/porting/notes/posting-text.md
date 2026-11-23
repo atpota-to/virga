@@ -45,7 +45,7 @@ RICH TEXT
     - Concurrent asks share one request.
     - A DID, or a 400, is cached for the TTL; a failure or a timeout is not.
     - A timeoutMs a browser's AbortSignal.timeout refuses (not finite, negative, past 2^53-1) makes every lookup throw MentionTimeoutError, with Node's RangeError text (numbers past 2^32 separated as Node writes them).
-  - `static let resolveMention: ResolveMention` is the shared resolver. `static let defaultFetch: Locked<MentionFetch?>` is what the app must set in wave 2.
+  - `static let resolveMention: ResolveMention` is the shared resolver. `static let defaultFetch: Locked<MentionFetch?>` is its fetch, which VirgaUI's AppModel.init sets at launch with Mentions.useNetwork(transport:) (VirgaPosting/Wiring.swift).
   - `typealias MentionFetch = @Sendable (String) async throws -> MentionFetchResponse(status:Int, body:Data)`
   - `typealias ResolveMention = @Sendable (String) async throws -> String?`
 - Lib/Hashtags.swift: `Hashtags.findHashtags(_ String?) -> [HashtagMatch{start,end,tag}]`, `isValidHashtag(_ String?)`, `maxHashtagGraphemes`.
@@ -166,7 +166,7 @@ TEST HELPERS (Tests/VirgaPostingTests)
 
 ## Known gaps and deliberate differences
 
-- mentions.js stays 'partial'. Mentions.defaultFetch (the shared resolver's fetch) is unset until wave 2 sets it from VirgaNetwork's HTTPTransport; until then the shared resolver treats every lookup as a network failure (no DID, nothing cached). A test that sets Mentions.defaultFetch must live in the serialized MentionResolverBehaviour suite.
+- mentions.js is ported. Mentions.defaultFetch (the shared resolver's fetch) is set at launch from VirgaNetwork's HTTPTransport (AppModel.init calls Mentions.useNetwork, for the device and the demo). Where it is unset, as in tests, the shared resolver treats every lookup as a network failure (no DID, nothing cached). A test that sets Mentions.defaultFetch must live in the serialized MentionResolverBehaviour suite.
 - gates.js needs an agent: in wave 2, VirgaNetwork's XRPC client must conform to GatesAgent, and its error type to XRPCErrorDescribing (for RecordNotFound). When both gate reads fail, Swift reports the threadgate's error; the web reports whichever failed first.
 - The resolver's timeout throws exactly where a browser's AbortSignal.timeout does: a fraction is truncated, and anything up to 2^53-1 is accepted. The message is Node's RangeError; a browser's TypeError is worded differently. Fractions and values from 2^32 to 2^53 aren't fixtures, because Node and browsers disagree on them.
 - WHATWGURL follows the URL Standard where Node 22's Ada leaves it (an input with '#' against an opaque base; a non-special '..' at the root). Everywhere else it is held to Node. If a Node 22 update moves Ada or its Unicode data, rerun ios/scripts/generate-idna-table.mjs and npm run parity:write. URL setters are not ported. NFC after IDNA mapping uses Foundation.

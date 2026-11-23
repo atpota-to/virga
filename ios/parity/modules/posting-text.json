@@ -24,6 +24,7 @@
         "posting-text.url",
         "posting-text.idna"
       ],
+      "note": "ComposeIntent.composeLinkSearch(url), iOS's, gives the query of virga://compose?… or https://<host>/intent/compose?… (a trailing slash allowed) and nil for any other address; the app opens compose links through it (ComposeLinkBehaviourTests).",
       "synced": "de71012badf2"
     },
     "src/posting/lib/embeds.js": {
@@ -99,7 +100,7 @@
         "posting-text.mentions"
       ],
       "synced": "2d5d18862697",
-      "note": "The shared resolver reads Mentions.defaultFetch, which the app sets once at launch with Mentions.useNetwork(transport:) (VirgaPosting/Wiring.swift, over VirgaNetwork's HTTPTransport)."
+      "note": "The shared resolver reads Mentions.defaultFetch, which the app sets once at launch, in AppModel.init (device and demo), with Mentions.useNetwork(transport:) (VirgaPosting/Wiring.swift, over VirgaNetwork's HTTPTransport)."
     },
     "src/posting/lib/postLink.js": {
       "status": "ported",

@@ -204,8 +204,11 @@ SHELL (Shell/)
   built), `SyncStatus.swift` (the sidebar's sync card, the phone's strip, Sync now in the
   account menu), the period picker and its custom range (`PeriodPicker`, `usePeriod` as
   PreferencesModel extensions), and the command palette (Search in the app bar and the
-  sidebar, ⌘K; recent commands under `virga:palette-recent`). A sync that fails is read out
-  once by ShellView, in the words of the page's role="alert" line.
+  sidebar, ⌘K, which also closes it; recent commands under `virga:palette-recent`). ⌘K is held
+  back while the composer is open (the hidden button that carries it is disabled) and while
+  another sheet is up (`KeyTargets.isPresenting()`), except to close the palette, as the web's
+  is while another dialog is open. A sync that fails is read out once by ShellView, in the
+  words of the page's role="alert" line.
 - Settings rows: `SettingsRow(label:hint:block:compactControl:kind:)`, where `kind`
   (`SettingsControlKind`: `.button`, `.segmented`, `.toggle`, `.state`, `.prose`; a switch
   by default where `compactControl` is set, else a button) says how far the control is
@@ -222,7 +225,9 @@ CHARTS (Charts/), in Swift Charts over bucket indices
 - `SeriesChart(series: [ChartPoint], seriesLabel:, secondary: ChartSecondary?, stacked:, trend:,
   mode: .bars|.line, unit:, zeroBase:, ghost: ChartGhost?, format:, marks: [SeriesMark]?, height:,
   accessibilityLabel:)`; `ChartPoint.of(...)` takes SeriesPoint, TrendPoint or RatePoint arrays.
-  A press is the hover (`chartXSelection`), with the readout on its own ground.
+  A press is the hover (`chartXSelection`), with the readout on its own ground. VoiceOver reads
+  the chart as one element (`.accessibilityElement(children: .ignore)`, as Heatmap is) labelled
+  with the web's summary, as the web's one `<svg role="img">` is; Show as table has the values.
 - `ChartTable(series:secondary:trend:unit:valueHead:secondaryHead:format:trailing:) { actions }` and
   `ShowAsTable(actions:trailing:table:)`: the line under every chart (44 points a line, `trailing` a
   phone's ⋯ at its end) and its table, `ChartTableView(columns:rows:)` (the kit's TableScroll with
@@ -237,7 +242,9 @@ DASHBOARDS AND REPORTS (Dashboards/, Reports/)
 - `ShellDashboards` is DashboardsContext's provider now: every action over Layouts, written back
   under `virga:dashboards:<did>` at once.
 - `DashboardPage(dashboard:)`: header with ⋯, Customize (move up/down, size, Remove, the library
-  in a dialog), the period picker; `CardGrid` (twelve columns, dashboards.css's 860/620 rules);
+  in a dialog, its search VirgaInsights' `Catalog.libraryMatches(query:category:)`: the web's
+  lower-cased substring of the name or of the description, each on its own, nothing folded), the
+  period picker; `CardGrid` (twelve columns, dashboards.css's 860/620 rules);
   `WidgetBody` draws the ported cards (four figures, six charts, Best time); the rest show their
   title and `Unported.card`. The posting cards (MoreWidgets.swift: `PostingStatScheduled`,
   `PostingStatTimers`, `PostingNextCard`, `PostingDraftsCard`) read what the overview reads, through
@@ -245,7 +252,9 @@ DASHBOARDS AND REPORTS (Dashboards/, Reports/)
 - `ReportsIndex`, `ReportPage(report:)`: every report (Followers, Posts, Engagement, Content,
   Blocks, People, Atmosphere), with `PersonRow`, `PersonList` (measures a list for its rows' meta
   line) and `PostRowView` (Reports/People.swift); `ChartNotes` and `ChartNotesModels.marks` (one
-  AnnotationsModel per account) put the notes and the follower milestones on the charts; every
+  AnnotationsModel per account, read again by `ChartNotesModels.reload(did)` each time a shell
+  opens for the account, as useAnnotations reads on mount, so notes deleted with the account's
+  data don't come back) put the notes and the follower milestones on the charts; every
   dashboard card (`MoreWidget`), and the card settings dialog (`CardSettings`) from Customize.
 - A report's actions (`ReportActionWords`, or the ⋯ on a phone) are passed to its report view as
   `actions:`/`more:` and end up on its lead ChartTable's line; Export is `ReportExport.file` through
@@ -342,6 +351,11 @@ TEMPLATES AND POSTING (Templates/, Posting/, Settings/PostingSettingsSection.swi
   through LibrarySources (fetchOwnPosts, hydrateEmbedViews, resolveRecordLink, resolveExternalLink);
   a web page's link card is `LinkCard.fetchLinkCard(transport:)`. The recent posts are read in a task
   of their own: a `.task(id:)` keyed on the status it sets cancels its own read.
+- The name's `maxLength={200}` only refuses growth past 200 UTF-16 units: a longer name the template
+  already has is kept as it opens (so no false Discard your changes?), and a paste that runs over is
+  cut on a character boundary (`TemplateEditor.fitting`). Each field's problem is its accessibility
+  hint (aria-describedby), and when Save is refused the first problem is read out as the focus moves
+  to its field.
 - `TemplateQuestions(template:context:…autoFocus:preview:onDone:)`, `ChoiceGroup` (its answers
   `ChipStyle(isOn:wraps: true)`, wrapping in their chips) and `TemplatePreviewView` are for the
   composer's library, which passes `preview:` from `Library.previewFor` within the post under way; on
@@ -350,8 +364,9 @@ TEMPLATES AND POSTING (Templates/, Posting/, Settings/PostingSettingsSection.swi
 - Posting/PostingParts.swift: `PostingHeader.model(key)`, `RowSkeleton` (each row as tall as its
   bones, the action bones under them on a phone), `.hubBonePulse()` (the bones' pulse), `LoadError`
   (role="alert", its triangle centred with the sentence and Try again) and
-  `.postingConfirm(isPresented:title:onConfirm:message:)` (hubParts' ConfirmDialog: no swipe away while it
-  works, a refusal read out). A count in words is VirgaPosting's `HubModel.countPhrase`. Use opens the
+  `.postingConfirm(isPresented:title:onConfirm:message:)` (hubParts' ConfirmDialog: it opens on Cancel,
+  `data-autofocus`; no swipe away while it works, a refusal read out; the Drafts, Posted and Templates
+  pages' deletes). A count in words is VirgaPosting's `HubModel.countPhrase`. Use opens the
   composer through `ComposerHost`.
 - Settings › Posting is `PostingSettingsSection` over `PostingSettingsModel`, with the composer's
   `LanguagePicker` (`bare: true`: the row names it) and `GatesEditor`, stacked 12 apart and held to
@@ -396,7 +411,13 @@ ADVISER (Adviser/, Composer/ComposerController+Adviser.swift, Posting/)
 - `AltTextDialog(image:requester:did:context:store:onSave:onClose:)` is AltTextDialog.jsx with its
   describing and revising (`alt-dialog`, `alt-describe`, `alt-revise`; the writer's field is the
   composer's `describe-text` and `describe-save`). The composer shows it for an image when the
-  account can use the server, and the plain DescribeDialog otherwise.
+  account can use the server, and the plain DescribeDialog otherwise
+  (`DescribeDialog.altText(image:transport:onSave:onClose:)`, given `controller.transport`). The AI
+  dialog takes its transport from AppModel in the environment (`app.archiveEnvironment.transport`,
+  the one the composer has), so a draft's image kept only as a posted blob (a CDN preview) is drawn
+  in both dialogs through `LocalPicture.picture(_:transport:)`; to describe it, the AI dialog fetches
+  the bytes as the web's fileFromPreview does (15 s; a refusal or an empty answer is "There’s no
+  image to describe."), typed by the answer's content-type, else image/jpeg.
 - In the composer (marked `ADVISER` in ComposerController, +Actions, ComposerSheet and
   ComposerOptions): `submitPost(skipAdviser:)` runs `adviserGate` first (`check(s, mode: gate)`,
   the busy line in the status, then "Getting it ready"; Save as draft from the sheet saves the
@@ -646,25 +667,47 @@ SHELL, ROUND 6
   as announcements.
 
 APP (App/, Pages/, Legal/, SignIn/, Accounts/, Settings/, Platform/)
-- `AppModel` builds the stores and models once per process; `AppModel.archive(for:)` makes
-  one ArchiveModel per signed-in account, and `ArchiveHost` (ArchiveProvider's role)
-  starts and stops it; pages read `@Environment(ArchiveModel.self)`. The session's
-  `resetAnalyticsStore` and `deleteDatabase` go to VirgaArchive's AnalyticsStore. The
+- `AppModel` builds the stores and models once per process. `ArchiveHost(did:)`
+  (ArchiveProvider's role) makes one ArchiveModel per shell (`AppModel.makeArchive`, the first
+  time the host is drawn, kept in its `@State`), starts it in `.task` and stops only that one
+  when it goes, so each window has its own, as each web tab mounts its own provider; they share
+  the account's one store handle. Pages read `@Environment(ArchiveModel.self)`. The host calls
+  `ChartNotesModels.reload(did)` as the shell appears. The session's `deleteDatabase`
+  (`AppModel.deleteDatabase(files:)`) sends `virga-posting:<did>` to VirgaPosting's
+  `DraftMedia.deleteDatabase` (the drafts' kept pictures and videos) and every other name to
+  VirgaArchive's `AnalyticsStore.deleteDatabase`. Its `resetAnalyticsStore`
+  (`AppModel.resetArchiveStores`) does nothing: deleteDatabase has already forgotten and closed
+  the deleted account's archive handle, and a second handle over a folder another still holds
+  would write over its segments. The
   archive's handle is `AppModel.archiveHandle(for:)`: the profile's once ProfileModel's
   `did` is that account's (a view drawn right after a switch still sees the last
   profile), else the remembered row's; ArchiveHost sets `archive.handle` again when the
   fresh read arrives, as the web hook takes it on every render.
-- `AppRoot` ports App.jsx's states; `onOpenURL` and universal links go to
-  `completeSignIn(callbackURL:)`. It keeps Defense's scans only for the accounts signed in
-  (`ScanStore.keepScansFor`), and makes the shell again when the number and date formats change
-  (`ShellView.id(preferences.formats)`, App.jsx's `<Shell key={formats}>`). `SystemWebAuthenticator` is ASWebAuthenticationSession
+- `AppRoot` ports App.jsx's states. `onOpenURL` and `onContinueUserActivity` both try
+  `openCompose` first: virga://compose?… and the universal link https://<virga>/intent/compose?…
+  (the only applinks path the AASA claims; `ComposeIntent.composeLinkSearch`) open the composer
+  filled in when an account is signed in with the terms accepted, and are otherwise kept with
+  `rememberPendingCompose` for after the sign-in. Anything else goes to `finishReturn`, which
+  passes an /oauth/return address to `completeSignIn(callbackURL:)`. It keeps Defense's scans
+  only for the accounts signed in (`ScanStore.keepScansFor`), runs the composer's
+  `forgetGoneAccounts()` on every change of the accounts or the open one, and makes the shell
+  again when the number and date formats or the device's zone change
+  (`ShellView.id("<formats>|<zone identifier>")`, App.jsx's `<Shell key={formats}>`). The zone
+  is read again (`PreferencesModel.deviceZoneChanged`, after `NSTimeZone.resetSystemTimeZone()`)
+  on NSSystemTimeZoneDidChange, on UIApplication.significantTimeChangeNotification and whenever
+  the scene becomes active. A rebuilt shell closes a sheet open inside it (the palette, a
+  dialog); the web doesn't remount on a change of zone. A legal page is keyed by its document
+  (`LegalPageView(docKey:).id(document)`): Terms to Privacy starts the new page at its top and
+  then goes to the address's section, as the web's navigate and LegalPage's [docKey] effect do;
+  an anchor within one document still scrolls in place. `SystemWebAuthenticator` is ASWebAuthenticationSession
   with the `.https(host:path:)` callback. "Signing you in…" while `session.returning`
   (a sign-in that came back is being finished). An account the agreement model hasn't
   been told of yet (the first pass after a switch or an Add an account) is decided
   in AppRoot's `termsStatus(for:)` from its stored note, as useTermsAcceptance decides
   in the same render, so no shell or archive is made for it on the last account's answer.
   A compose link kept while signed out lives in `stores.tab` (sessionStorage), and
-  `\.signInComposing` puts the front page's callout up.
+  `\.signInComposing` puts the front page's callout up; OpenComposerPage spends it from the
+  same store.
 - A sign-in called off on the system's sheet (`SignInTrip.calledOff`: code CANCELLED,
   AbortError, the flow's tripFailureNotice rule) shows no notice anywhere: the account
   menu's Reconnect, Settings, the session notices' hand-off, Sign in again and Sign in.
@@ -677,7 +720,10 @@ APP (App/, Pages/, Legal/, SignIn/, Accounts/, Settings/, Platform/)
   LandingFrame's main), and on a phone the page brings the field's label to the top when
   they come up (`SignInScrolling`, a ScrollViewReader round LandingView, put on by AppRoot).
   "Continue anyway" and "Still here? Open <host>" are links in their sentences
-  (`SignInInlineLink`, `virga-signin:`). Going again cancels and awaits the trip under way;
+  (`SignInInlineLink`, `virga-signin:`). "Still here?" covers only the wait for Virga's server
+  to give the host's address, never the system's sheet: `SignInOptions.onAuthorizing`, called
+  just before the sheet opens (and not for a trip already called off), cancels the stall, for
+  every sign-in and for signUpAt. Going again cancels and awaits the trip under way;
   closing Add an account calls the trip off, but not once the sign-in has come back
   (`session.returning`): "Signing you in…" takes the page down then, and cancelling would
   cancel the account's opening reads with it. A card, the account arriving and the
@@ -712,8 +758,11 @@ COMPOSER (Composer/)
 - `ComposerHost` (ComposerContext's role) is AppRoot's, above the per-account identity, put in the
   environment by `.composerHost(_:)`, which also presents the sheet, shows the composer's toasts
   and flushes the autosave when the scene goes to the background. `host.open(intent)` (the web's
-  intent JSON), `host.openLink(virga://compose?…)`; RoutedPage's `.intent` and `/posting/compose`
-  are `OpenComposerPage`, which opens it and moves to /posting, as Shell.jsx's OpenComposer does.
+  intent JSON), `host.openLink(_:)` (virga://compose?… or https://<virga>/intent/compose?…);
+  RoutedPage's `.intent` and `/posting/compose` are `OpenComposerPage`, which opens it and moves to
+  /posting, as Shell.jsx's OpenComposer does. A compose link that AppRoot opens while signed in goes
+  straight to `openLink`: unlike the web's OpenComposer, it neither spends a kept link nor moves to
+  /posting.
 - `ComposerController` holds Composer.jsx's state beside the post (ComposerStateModel holds the
   post): startFromIntent, restoreFor, changeAsDid, addFiles, detected, submitPost, startOver.
 - `ComposerPublisher` (Composer/ComposerServices.swift) is publish.js's seam: `publish(state,
@@ -726,7 +775,22 @@ COMPOSER (Composer/)
   post's media, a posted draft deleted; a draft's media live in `DraftMedia` over `app.stores.files`.
 - `TemporaryComposerFiles` (Platform/) is VirgaPosting's `ComposerFiles`: picked, pasted and fetched
   bytes as temporary files, `ref` the path. VirgaPosting has a protocol of that name, so nothing in
-  VirgaUI may be called ComposerFiles.
+  VirgaUI may be called ComposerFiles. Every composer file is in one folder,
+  `TemporaryComposerFiles.folder` (tmp/composer), emptied the first time it is used in each run
+  (nothing kept across launches names these files); `TemporaryComposerFiles.write`, ImageIOEncoder
+  and PickedMovie all write there, and `remove` deletes only files directly inside it. Where the web
+  revokes a preview, the composer deletes the file (`letGo`, ComposerController+Files.swift), and only
+  when `Autosave.fileRefIsHeld` says nothing on screen, kept or set aside holds it: an image removed,
+  `removeVideo`, `resetAfterSend`, Start over and `forgetGoneAccounts`; the originals handed to
+  `addFiles` and `addDescribedImages` go once they are prepared (a video taken stays, held by the
+  state). Nothing goes on `removePost`, as the web revokes nothing there and the thread's undo can
+  bring the post back. Left until the next launch: the card thumbnail picker's original, and its
+  prepared copy once the card is removed or its picture replaced (EmbedCards); the card thumbnail
+  a send fetches or prepares again (`LinkCard.uploadCardThumb`); the copy of a draft's kept image
+  that submitSchedule reads to schedule it; a removed post's files; a render
+  prepareImage refuses as over budget; the files of a gone account's kept or set-aside posts (the
+  web doesn't revoke those either); the copies the Drafts, Posted and Scheduled posts pages make
+  for themselves; and files earlier builds left at tmp's root.
 - The phone's composer (640 and under) sends from `ComposerBar` at the top; the foot keeps the
   tools (760 and under, the medium size with 20-point pictures, on the dialog's edge), why the
   button is off (on a phone a line of its own over the rest, only when it has to be read), Save as
@@ -737,12 +801,29 @@ COMPOSER (Composer/)
 - Intents: a `templateId` (Templates › Use) is `loadTemplate` (TemplateService.load over the
   session's agent, setSource, applyTemplate; `loads["template"]`'s failure a warn callout over the
   post); `reseedToken`/`reseedIfDue()` take the seed again once a template's or an attachment's
-  words are on screen. `forgetGoneAccounts()` runs from the host on every change of the accounts
-  or the open one, and first in `startFromIntent`.
+  words are on screen. `forgetGoneAccounts()` runs from AppRoot's body on every change of the
+  accounts or the open one, whether or not the sheet is up, and first in `startFromIntent`. With
+  the last account gone it loads `baseState("")`, so a late video patch finds nobody to save for.
 - Sending: `commitTagDraft()` (the tags field's word, `tagDraft`) first; the duplicate guard
-  (`Publish.defaultDuplicateGuard`) before anything is asked; `afterPublished` is awaited, so busy
-  holds until the scheduled copy or the draft is settled. ComposerBody's `onChange` on
+  (`Publish.defaultDuplicateGuard`) before anything is asked; `afterPublished` runs in a task of its
+  own and is awaited, so busy holds until the scheduled copy or the draft is settled, and a Cancel
+  tapped while the post was written doesn't stop the draft's delete, the scheduled copy's cancel or
+  finishSource's 1.5 s retry (the web's afterPublished takes no signal). `cancelPublish` does
+  nothing unless the busy line offers Cancel (`busy?.cancellable`). Each send holds background time
+  while it runs (`BackgroundSend`, ended in the same defer that ends busy): submitPost,
+  submitSchedule, saveDraft and each video's upload, and also Drafts' Post now and Schedule and
+  Scheduled posts' Post now. The default reply settings go through the controller's
+  `BlueskyGatesCache` (`resolveGatesFor(did)`: a good read kept 5 minutes, a failed one 30 seconds,
+  per account) for both the Replies row (`resolveGates`) and the post that goes out
+  (`ensureGates`), so a post goes out with the gates the row showed. The autosave's debounced write
+  runs on the main actor (`Autosaver.mainActorTimers()`), so it can't land between
+  resetAfterSend's `cancel()` and `clearKept`, or during a set-aside. ComposerBody's `onChange` on
   `videoUploadKey` starts any idle video's upload while the sheet is up.
+- Picked images count as processing as soon as they are chosen (PostTools bumps
+  `controller.processing` by their number, and takes it off before `addFiles` bumps for itself), so
+  their placeholder tiles and Preparing… show while they load. A pick that can't be read adds "An
+  image couldn’t be added." or "The video couldn’t be added." to the media note, after addFiles' own
+  notes (the video's words are iOS-only: the web's picker has no load failure).
 - Focus and the caret: `focusPostId` takes the first post 40 ms after the sheet appears or a
   state loads, on a wide screen only (`controller.narrow`, set by the sheet); splits and their undo
   refocus off a phone; `refocusAfterAdviser()`. `editingPostId` is the post with the caret (its
@@ -772,7 +853,9 @@ COMPOSER (Composer/)
 LIBRARY (Library/)
 - `LibraryPanel(lib:mode:state:postIndex:insertion:initialShelf:focusTemplate:verb:transport:onNewTemplate:onUse:)`
   over VirgaPosting's `LibraryModel`; `onUse(item, answers)` may throw, and its error shows under the
-  button. `LibraryDialog` is the composer's (a `ComposerDialog.library(LibraryRequest)`; the plan
+  button until the chosen row (`selectedId`) or the item shown (`shown?.id`: a shelf or a search can
+  put another first in the wide layout) changes, as the web's effect on [selectedId, activeId]
+  clears it. `LibraryDialog` is the composer's (a `ComposerDialog.library(LibraryRequest)`; the plan
   goes back through `ComposerController.applyPlan`), `LibraryScreen` the /posting/library page (Use
   in a new post opens the composer with `attach: plan.json`). VirgaPosting has a `LibraryPage` (a
   shelf's read), hence the page's name.
@@ -801,7 +884,13 @@ LIBRARY (Library/)
   view and a cid. A read called off by choosing another row isn't a failure.
 - The dialog puts its plan in from its `.onDisappear`, once its sheet has gone: what applyPlan asks
   (Replace the link card?, Replace what this post quotes?) is a sheet of the composer's, which
-  can't come up while the library's is still going down.
+  can't come up while the library's is still going down. A pick read after the library was closed
+  (swiped down or ✕ while it says Adding…) still goes into the post it was chosen for:
+  `LibraryDialogPick` (by reference, so the use's closure still holds it) keeps the plan and
+  whether the sheet is up, and once the sheet has gone the closure applies the plan itself, as the
+  web's onPick does. Closing after a pick closes only the library (`onClose` only while
+  `controller.dialog == .library(request)`), so a dialog opened since stays up; if the plan then
+  asks something, the question comes once that dialog closes (not yet seen on a device).
 - Identifiers: `library-dialog`, `library-panel`, `library-search`, `library-list`, `library-row`,
   `library-empty`, `library-detail`, `library-use`, `library-new-template`, `template-questions`,
   `template-question-<n>`, `template-questions-use`, `template-preview`; the dialog's Close is
@@ -860,8 +949,10 @@ reader, and the fixes went in on the visual-fix merges after cc3083d. What chang
   the detents and fits the sheet to its content at the dialog's width (520; 600 for How signing
   in works; 640 for the timer dialog, the adviser, alt text and the template editor; the
   library 980 by 720), held inside the window (`100vw - 32`, `100svh - 48`). The composer is 640
-  wide and as tall as its post. Its toasts are the window's one stack beside it; on a phone the
-  sheet draws its own over the post area. Pressing Posting as ends the post's editing first, so
+  wide and as tall as its post. Its toasts are the window's one stack beside it, and under the
+  sheet where the two meet, as the web's `.toasts` are under its modal `<dialog>` (the top layer)
+  and its scrim; a stack above the sheet would cover its foot. On a phone the sheet draws its
+  own over the post area. Pressing Posting as ends the post's editing first, so
   the list stays under the byline. On iOS 17 a wider window keeps the detents.
 - The phone's back link reports its whole width to the navigation bar (it was cut to one
   letter during a push); the tab bar's gaps are the web's 4 with the space between; the front

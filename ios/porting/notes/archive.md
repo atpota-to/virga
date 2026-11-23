@@ -89,13 +89,13 @@ STORE (Lib/AnalyticsStore.swift)
 - protocol AnalyticsStoreHandle: AnyObject, Sendable {persistent, blocked, all(_ store) async -> [JSONValue], putAll(_:_ rows:), remove(_:_ keys: [JSONValue]), clear(_:), getMeta(_ key) -> JSONValue?, setMeta(_ key:_ facts: JSONValue)}.
 - enum AnalyticsStore: dbVersion = 1; rootDirectory "analytics"; stores [(name, keyPath)]; analyticsDbName(_ did).
   - openAnalyticsStore(_ did: String?, files: (any FileStore)?, registry: AnalyticsStoreRegistry = .shared) async -> any AnalyticsStoreHandle.
-  - resetAnalyticsStore(registry: = .shared): synchronous, nonisolated.
-  - deleteDatabase(_ name: String, files:, registry:) async -> Bool.
-- Implementations: actor FileAnalyticsStore (files under analytics/<encodeURIComponent(name)>/) and actor MemoryAnalyticsStore(blocked:). [AUDIT] FileAnalyticsStore serves calls one at a time, first in first out, so writes made at the same time all land.
+  - resetAnalyticsStore(registry: = .shared): synchronous, nonisolated. It forgets every memoized handle, so it is only for when nothing holds one (the web's test seam): a handle keeps its own picture of its files, and a second FileAnalyticsStore opened over a folder the first still holds would write over its segments. The app never calls it.
+  - deleteDatabase(_ name: String, files:, registry:) async -> Bool. It forgets the deleted account's handle (a memory fallback too), closes it if it is a file store's, and leaves every other account's alone.
+- Implementations: actor FileAnalyticsStore (files under analytics/<encodeURIComponent(name)>/) and actor MemoryAnalyticsStore(blocked:). [AUDIT] FileAnalyticsStore serves calls one at a time, first in first out, so writes made at the same time all land. Its close() (deleteDatabase's) is async and waits its turn at the same gate, as IndexedDB's delete waits for the connection's transactions: a write under way, compaction included, lands before the folder is deleted, and every call queued behind it finds the store closed. An internal `queued` count is there for tests.
 - final class AnalyticsStoreRegistry (.shared, init()).
-- SESSION WIRING (the other chain):
-  - SessionEnvironment.resetAnalyticsStore = `{ AnalyticsStore.resetAnalyticsStore() }` (fits `@MainActor () -> Void`).
-  - SessionEnvironment.deleteDatabase (`@Sendable (String) async -> Bool`) should send names starting "virga-analytics:" to `await AnalyticsStore.deleteDatabase(name, files: appFileStore)` (returns Bool), and other names (virga-posting:) to the posting store.
+- SESSION WIRING (done in VirgaUI's AppModel):
+  - SessionEnvironment.deleteDatabase is `AppModel.deleteDatabase(files:)`: `virga-posting:<did>` goes to VirgaPosting's `DraftMedia.deleteDatabase(name, files:)` (the drafts' kept media), and every other name to `AnalyticsStore.deleteDatabase(name, files:)`, over the app's file store.
+  - SessionEnvironment.resetAnalyticsStore is `AppModel.resetArchiveStores`, which does nothing: deleteDatabase has already forgotten and closed the deleted account's handle, and every other account keeps the one it has.
 
 SWEEPS (Lib/AnalyticsSync.swift, enum AnalyticsSync)
 - caps; actorTtlMs; followFromRecord(_ JSONValue?) -> FollowingRow?.
@@ -110,7 +110,7 @@ SWEEPS (Lib/AnalyticsSync.swift, enum AnalyticsSync)
 
 MODEL (Archive/ArchiveModel.swift, ArchiveModel+Sync.swift, ArchiveData.swift)
 - `@MainActor @Observable final class ArchiveModel(agent: XRPCAgent?, did: String, handle: String?, environment: ArchiveEnvironment)`.
-- ArchiveEnvironment(files: (any FileStore)?, registry: = .shared, transport: = HTTP.transport, clock: = HTTP.clock, didDocuments: PromiseCache<JSONValue> = Atproto.didDocumentCache, timeZone:, locale:, postsChanged: PostsChangedListener?).
+- ArchiveEnvironment(files: (any FileStore)?, registry: = .shared, transport: = HTTP.transport, clock: = HTTP.clock, didDocuments: PromiseCache<JSONValue> = Atproto.didDocumentCache, timeZone: TimeZone? = nil, locale:, postsChanged: PostsChangedListener?). A nil timeZone is the active zone (AppLocale.activeTimeZone(), the device's), read each time the model needs it, so an environment made at launch (when the active zone is still UTC) or kept through a change of the device's zone follows it. The demo and the tests pass a zone.
 - PostsChangedListener = `@Sendable (did, @escaping @Sendable (JSONValue) -> Void) -> (@Sendable () -> Void)`. The app wires `{ did, fn in (try? PostingEvents.onPostingEvent(PostingEvents.postsChangedEvent, did: did, fn)) ?? {} }` (VirgaPosting; exact constant name per the posting-text notes).
 - State:
   - data: ArchiveData {loaded, persistent, blocked, posts, followers, following, blocks, inbound, outbound, atmosphere, meta: ArchiveMeta, rev, followRev}.
@@ -123,7 +123,7 @@ MODEL (Archive/ArchiveModel.swift, ArchiveModel+Sync.swift, ArchiveData.swift)
   - stop(): [AUDIT] also marks the mount, so a start() still waiting for its store does nothing more; a later start() mounts again from scratch.
   - runSync(_ SyncMode = .incremental | .full | .resume) async; cancelSync(). [AUDIT] The profile read up front outlives a call-off, as on the web.
   - setFollow(_ subject: String?, _ on: Bool) async throws; notePosted(_ [PostedItem]) async; noteDeleted(_ [String]) async.
-  - wantActors(_ [String?]) async; checkActivity(_ [String?], onProgress:) async -> Int; deleteArchive() async.
+  - wantActors(_ [String?]) async; checkActivity(_ [String?], onProgress:) async -> Int; deleteArchive() async. wantActors' read (hydrateActors) runs in a task of its own and is never called off, as the web's takes no signal: a People list left, or a `.task(id:)` started again, after the DIDs are marked as tried still gets their cards, merged and written.
   - exportArchive() throws -> ExportFile; exportPosts(_ [PostRow]?) -> ExportFile; exportRows(_ what:_ rows: [[JSONValue?]]) -> ExportFile.
 - ArchiveMeta {posts, followers, following, blocks, inbound, outbound, repo, lists: ArchiveMetaRecord?, followerLog: FollowerLogRecord?, read; json; init(json:)}.
 - ArchiveMetaRecord is the stored JSON with typed views (syncedAt, complete, cursor, shape, count, profileCount, pathCount, version, rev, bytes, coverageMs, truncated, lists) and updating(_:).
@@ -135,14 +135,14 @@ TEST HELPERS (Tests/VirgaArchiveTests, internal)
 - SyncParityTests.swift: AbortingTransport (callOff cancels the sweep's own task), SweepLog, replaySweep.
 - SyncCancellationTests.swift: InFlightAbortTransport, which fails a request whose task is cancelled, as URLSession does.
 - ArchiveModelParityTests.swift: StepTransport (callOff = the model's cancelSync) and StepClock, one recording per step.
-- AnalyticsStoreTests.swift: FailingFileStore and SlowFileStore.
+- AnalyticsStoreTests.swift: FailingFileStore, SlowFileStore and HeldWritesFileStore (holds writes, for AnalyticsStoreDeletion).
 - Generators: ios/parity/cases/archive.*.js, with shared helpers in _archive.js (under(zone/locale/weekStart), local, LOCALES, numbers/eachN markers). archive.model.js runs the web hook under a stand-in for React's useState/useRef/useEffect (vi.doMock('react')), evicts atproto.js's DID-document cache per scenario, and pins `new Date()` to Date.now. In archive.progress.js, applyPostChanges cases pass new row objects, as the app does.
 
 ## Known gaps and deliberate differences
 
 - src/archive/exports.js is partial: downloadText's browser download (Blob URL, anchor click, revoke timer) belongs to VirgaUI. ArchiveExports returns an ExportFile for fileExporter/ShareLink.
-- src/archive/ArchiveContext.jsx is partial: ArchiveProvider/useArchive are React context. VirgaUI puts the account's ArchiveModel in the SwiftUI environment (one model per signed-in DID) and calls start() from .task and stop() from .onDisappear. The provider's profile comes from the session.
-- Cross-chain wiring left for the merge: VirgaSession's resetAnalyticsStore closure (`@MainActor () -> Void`) becomes `{ AnalyticsStore.resetAnalyticsStore() }`. Its deleteDatabase closure (`@Sendable (String) async -> Bool`) must send 'virga-analytics:<did>' names to `await AnalyticsStore.deleteDatabase(name, files: appFileStore)` and other names to the posting store. ArchiveEnvironment.postsChanged must be wired to VirgaPosting's posting events bus (VirgaArchive can't import VirgaPosting).
+- src/archive/ArchiveContext.jsx is partial: ArchiveProvider/useArchive are React context. VirgaUI puts the account's ArchiveModel in the SwiftUI environment, one model per shell (ArchiveHost(did:) makes its own with AppModel.makeArchive), and calls start() from .task and stop() from .onDisappear, so each window has its own and stops only its own; they share the account's one store handle. The provider's profile comes from the session.
+- The cross-chain wiring is in the app (AppModel): the session's deleteDatabase and resetAnalyticsStore as in SESSION WIRING above, and ArchiveEnvironment.postsChanged from VirgaPosting's posting events bus (`PostingEvents.postsChangedListener()`, in makeArchive; VirgaArchive can't import VirgaPosting). Where the web's resetAnalyticsStore drops every memoized connection, the app resets nothing: a page still holding a connection goes on using the one database on the web, but here a second handle over a held folder would write over the first's segments.
 - Rows are typed: a field of the wrong type reads as absent (a non-string createdAt or post.uri, which the web keeps or throws on), and counts are whole Ints (a fractional or string likeCount is truncated or 0). Lexicon-valid answers never hit this.
 - The store keys rows only by string or number keyPath values (IndexedDB also takes dates, arrays and binary); other rows are skipped. The wait for a database blocked by another tab has no iOS case, so `blocked` is always false. deleteDatabase also forgets a memoized memory fallback, which the web keeps until resetAnalyticsStore.
 - archiveJson writes the document's own members in the web's order but sorts the members inside rows and meta (the web keeps insertion order). Readers can't tell.

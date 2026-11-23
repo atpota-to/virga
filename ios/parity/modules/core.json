@@ -36,7 +36,7 @@
       "fixtures": [
         "core.preferences"
       ],
-      "note": "Everything pure is ported (DEFAULT_PREFERENCES, the choices, readPreferences, writePreferences, applyFormats, effectiveContrast, rootAttributes), and PreferencesProvider/usePreferences are PreferencesModel (@MainActor @Observable, persisted through KeyValueStore, useSkyHour as lookAtClock). Stamping data-* on <html> and <meta name=theme-color>, and the matchMedia queries, are the DOM: VirgaUI applies rootAttributes and skyColor to the scene and feeds the environment's colorScheme and colorSchemeContrast to the model.",
+      "note": "Everything pure is ported (DEFAULT_PREFERENCES, the choices, readPreferences, writePreferences, applyFormats, effectiveContrast, rootAttributes), and PreferencesProvider/usePreferences are PreferencesModel (@MainActor @Observable, persisted through KeyValueStore, useSkyHour as lookAtClock; the device's zone is the active one, followed through deviceZoneChanged when the device moves zone, as the browser's Date and Intl follow the system's). Stamping data-* on <html> and <meta name=theme-color>, and the matchMedia queries, are the DOM: VirgaUI applies rootAttributes and skyColor to the scene and feeds the environment's colorScheme and colorSchemeContrast to the model.",
       "synced": "3a2e0c2e0fc0"
     },
     "src/lib/router.jsx": {

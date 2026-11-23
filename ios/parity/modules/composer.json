@@ -28,12 +28,13 @@
     "src/posting/autosave.js": {
       "status": "ported",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaPosting/Autosave.swift"
+        "ios/VirgaKit/Sources/VirgaPosting/Autosave.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Autosave+Files.swift"
       ],
       "fixtures": [
         "composer.storage"
       ],
-      "note": "The web's module-level Maps are AutosaveSession (.shared, or one per test). createAutosaver's pagehide/visibilitychange listeners have no logic-side equivalent: the app calls Autosaver.flush() when its scene goes to the background.",
+      "note": "The web's module-level Maps are AutosaveSession (.shared, or one per test). createAutosaver's pagehide/visibilitychange listeners have no logic-side equivalent: the app calls Autosaver.flush() when its scene goes to the background. collectPreviewUrls and previewUrlIsHeld also come as collectFileRefs and fileRefIsHeld over the local files a state holds (Autosave+Files.swift), the test VirgaUI's composer deletes its temporary files by. Autosaver.mainActorTimers() gives timers that run the debounced write on the main actor; the composer's autosaver uses them.",
       "synced": "109d5e4a65d5"
     },
     "src/posting/composer/actions.js": {
@@ -177,12 +178,13 @@
       "status": "partial",
       "swift": [
         "ios/VirgaKit/Sources/VirgaPosting/Lib/Images.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/Images+Compress.swift",
         "ios/VirgaKit/Sources/VirgaUI/Platform/ImageIOEncoder.swift"
       ],
       "fixtures": [
         "composer.images"
       ],
-      "note": "The pixel work (browser-image-compression's re-encode and decodeImageSize's createImageBitmap/<img> decode) is the ImageEncoder protocol, which VirgaUI implements over ImageIO; prepareImage's decisions (budgets, options, refusals, name, type, aspect ratio, the timeout) and uploadImage are ported and held to the fixture over a scripted encoder. The prepared file keeps the encoder's lastModified, where the web's new File takes the clock's.",
+      "note": "The pixel work (browser-image-compression's re-encode and decodeImageSize's createImageBitmap/<img> decode) is the ImageEncoder protocol, which VirgaUI implements over ImageIO; browser-image-compression 2.0.2's compress loop (the side always capped, the first render kept when it fits and is no larger, then at most 10 tries at the quality × 0.95, × 0.85 for PNG, shrinking only when alwaysKeepResolution is off and the first render was over, the last render returned) is Images.compress (Lib/Images+Compress.swift), which ImageIOEncoder walks; prepareImage's decisions (budgets, options, refusals, name, type, aspect ratio, the timeout) and uploadImage are ported and held to the fixture over a scripted encoder. The prepared file keeps the encoder's lastModified, where the web's new File takes the clock's.",
       "synced": "1b22cd163a1e"
     },
     "src/posting/lib/video.js": {

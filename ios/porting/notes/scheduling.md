@@ -34,7 +34,7 @@ All of this is in VirgaPosting (`import VirgaPosting`), under ios/VirgaKit/Sourc
 Conventions:
 - Rows, schedules, limits and states are loose JSONValue with the web's member names.
 - Instants are epoch-ms Doubles; NaN means an invalid date.
-- `timeZone:` / `localZone:` is the device's zone (nil means AppLocale's active zone). A time without an offset is read in it.
+- `timeZone:` / `localZone:` is the device's zone (nil means AppLocale's active zone). A time without an offset is read in it. The active zone is the device's at launch and again whenever it changes while the app runs (PreferencesModel.deviceZoneChanged; see the core notes), and the shell is drawn again keyed by formats and zone, so the scheduling pages show the new zone at once. Pass the zone in or read AppLocale.activeTimeZone() when it is needed; don't keep it. A composer sheet open during a change isn't under the shell's id, so its WhenPicker shows the new zone the next time it is drawn.
 - `locale:` nil means the active locale.
 - Where the web reads Date.now(), the Swift function takes `now:`.
 - A thrown error is read as the web's object by `ScheduledPostError.errorObject(_ error: any Error) -> JSONValue`, which covers BackendError's detail and payload. Every error type below conforms to `public protocol ScheduleErrorObject: Error { var errorObject: JSONValue { get } }`.

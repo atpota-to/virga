@@ -45,6 +45,7 @@ DASHBOARDS
   - categories: [WidgetCategory] (key, label), widgetList: [WidgetDef] in library order, widgets: [String: WidgetDef], widgetRules: [String: WidgetRules].
   - WidgetDef: type, name, desc, category, icon, sizes, defaultSize, href, kind ("stat"|"card"), options; `.rules` gives its WidgetRules.
   - WidgetRules has sizes, defaultSize and options, all optional. It is what the layout functions take as `def`.
+  - libraryMatches(query:category:) -> [WidgetDef] is DashboardPage.jsx's Library filter (`shown`), not anything of catalog.js: the query trimmed and lower-cased, the category `all` or equal, then a code-unit substring of the lower-cased name or of the lower-cased description, each on its own, nothing folded ("dont" doesn't find "don’t"). LibrarySearchBehaviourTests holds it to answers taken from the web's filter in Node.
 - Layouts (Dashboards/Layouts.swift), shapes:
   - DashboardLayout {version, dashboards}
   - Dashboard {id, name, template: String?, widgets: [DashboardCard]}; always encodes template, null when nil.
@@ -221,7 +222,7 @@ ANNOTATIONS (Reports/Annotations.swift)
   - marksOnSeries(_ series: [Double]|[SeriesPoint]|[RatePoint], unit, marks, weekStart:) -> [SeriesMark].
   - markText(mark, unit, locale:), todayKey(now).
   - chartMarks(notes:archive:series:unit:milestones:formats:).
-- @MainActor @Observable AnnotationsModel(did:store:changes: = .shared, timeZone:, newId:): list, add(day, label), remove(id), reload(), chartMarks(archive, series, unit, milestones:).
+- @MainActor @Observable AnnotationsModel(did:store:changes: = .shared, timeZone:, newId:): list, add(day, label), remove(id), reload(), chartMarks(archive, series, unit, milestones:). It keeps the zone it was made in, and uses it only to check and order YYYY-MM-DD days, which no change of zone moves. VirgaUI's ChartNotesModels keeps one per account and calls reload() each time a shell opens for it.
 - @MainActor AnnotationsChanges (.shared) stands in for the web's window event. Make one model per account.
 
 INTERACTION LOOKUP (enum InteractionModel; Tools/InteractionModel*.swift)

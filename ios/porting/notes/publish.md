@@ -182,10 +182,11 @@ PUBLISH (Lib/Publish.swift)
   - publish(_ state: JSONValue? | ComposerState, _ target: PublishTarget?, media:, onProgress: (@Sendable (JSONValue) -> Void)?, resolveMention:, now: @Sendable () -> Double, requireAltText:, duplicateGuard: DuplicateGuard? = .defaultDuplicateGuard, uploadVideo: UploadVideo? = nil, validationCache: = .shared, mintTid: = ThreadBatch.nextTid, timeZone:) async throws -> PublishResult
   - A video `file` that isn't a ComposerFile is checked with Video.validateVideoFile first (VIDEO_MISSING and the rest, as video.js does).
   - Progress events have the web's shapes, with a member the web leaves undefined absent: {phase: uploading|uploaded|video|writing, kind, postIndex, id (absent when the image has none), blob, blobDid, jobId (null when none), step, progress, done, total, count}. Image events arrive in completion order.
+  - Cancelling the caller's task is the web's signal, and is checked once, after the uploads (PublishError ABORTED, "Cancelled."), as the web checks it. The texts are resolved in a task of their own, and the write and its landed-check run in PublishRecord.withTimeout's unstructured tasks, so a cancel that comes after that check reaches neither: a post cancelled while its mentions are still resolving once the uploads are done, or while it is written, still goes out, as on the web. PublishBehaviour.cancelledDuringTheWriteStillPosts holds this.
 
 DRAFT MEDIA (Drafts/DraftMedia.swift)
 - `struct DraftMediaEntry`: ref, file/name/type/size/savedAt as JSONValue?; json; init(json:).
-- `protocol DraftMediaStore`: persistent, put throws, get, remove, refs. get, remove and refs never throw (the web's guarded handle).
+- `protocol DraftMediaStore`: persistent, put throws, get, entry, remove, refs. get, entry, remove and refs never throw (the web's guarded handle). `entry(_:)` is the entry as stored, its `file` only the file's fields, without the bytes handed back as a file; the default calls get, and FileStoreDraftMedia's reads only entry.json. storeDraftMedia's check that a ref is held and pruneDraftMedia's savedAt read use it, so of DraftMedia's own functions only loadDraftMedia copies the bytes (VirgaUI's submitSchedule still reads a draft's image with get).
 - `actor MemoryDraftMedia`.
 - `struct DraftMediaStorage(store: any FileStore, files: any ComposerFiles)`.
 - `struct FileStoreDraftMedia(did:storage:)`: lays files out under `<escaped postingDbName(did)>/media/<escaped ref>/{file, entry.json}`. A put is all or none; refs come back sorted by code unit.
@@ -193,6 +194,7 @@ DRAFT MEDIA (Drafts/DraftMedia.swift)
   - postingDbPrefix, localRefPrefix, postingDbName, isVirgaLocalRef, randomUUID, newLocalRef(uuid:)
   - `storage: Locked<DraftMediaStorage?>`. The app must set it at launch (DiskFileStore plus its ComposerFiles).
   - openDraftMedia(did, storage:) (cached per DID), resetDraftMedia
+  - isPostingDbName(_:) and deleteDatabase(_ name:, files:) async -> Bool: `indexedDB.deleteDatabase` for `virga-posting:<did>`. It forgets only that account's open store (as the web's handle closes and forgets itself on the delete's versionchange) and deletes its folder from `files`; false for another name or when the delete throws. The app's session deleteDatabase sends posting names here. A draft-media save already under way during the delete could make the folder again: FileStoreDraftMedia has no queue like the archive store's.
   - stateLocalRefs -> [String]
   - storeDraftMedia(did, state, media:, now:, newRef:) async throws -> Stored{state, refs}
   - loadDraftMedia(did, state, media:, makePreviewUrl: (@Sendable (JSONValue) throws -> String?)?) -> Loaded{state, missing}. A kept file without a size leaves the item without its own `size`, as the web's undefined does.
@@ -251,11 +253,11 @@ At port time:
 - The SDK's lexicon check on answers isn't ported. Swift filters a getDrafts page's broken entries where the web would refuse the whole page, and reads a createDraft answer without an id with drafts.js's own message where the web throws XRPCInvalidResponseError. The fixtures answer only with what the lexicon accepts.
 - Image upload progress events (and with several images, the order of requests) come in completion order on both sides. The fixtures compare them as a multiset.
 - loadDraftMedia's and openDraft's makePreviewUrl default to none, because URL.createObjectURL has no logic-side equivalent. VirgaUI must pass its own.
-- FileStoreDraftMedia (the IndexedDB stand-in) is held by behaviour tests: layout, round trip, all-or-none put, key order and prune. It isn't in the fixtures, whose store is the web's memory handle. By default its get() copies the bytes through ComposerFiles.storedFile.
+- FileStoreDraftMedia (the IndexedDB stand-in) is held by behaviour tests: layout, round trip, all-or-none put, key order and prune. It isn't in the fixtures, whose store is the web's memory handle. By default its get() copies the bytes through ComposerFiles.storedFile; entry() doesn't.
 - Divergences on malformed input (Swift reads the value as empty where the web throws a TypeError): a post text that isn't a string in publishSignature and buildPostRecords, and a post's `images` that isn't a list in draftMedia's helpers.
 - LinkCard.blobType follows Fetch's MIME extraction for the content types a card image server sends. Quoted parameters with escapes are approximated.
 - isDraftLimitError doesn't read the error's constructor name. The SDK's DraftLimitReachedError is an XRPCError whose `error` is DraftLimitReached, which it does read.
-- Not wired yet, for the merge or VirgaUI: the app must set DraftMedia.storage at launch (DiskFileStore plus its ComposerFiles), implement ComposerFiles over temporary files, pass `.thisDevice(store:)` for the device id, and give PublishMedia a clock that really waits. The demo installs its own HTTP.clock.
+- Wired in VirgaUI since (DraftMedia's storage, ComposerFiles, the device id and PublishMedia's clock): see the same line below.
 - Commit 9a8a37e (titled WIP) was finished by e2b3ee2 and 3305d2e. It is not an interrupted attempt.
 
 Still open after the audit:
@@ -270,7 +272,7 @@ Still open after the audit:
 - summarizeDraft's `first.embedExternals?.[0]?.uri` on an object keyed '0' reads the member on the web; Swift reads only arrays.
 - Embeds.hasLength (posting-text's file, not mine) reads `{ length: -1 }` as no length, where the web's `facets?.length` is truthy. Left for posting-text.
 - isDraftLimitError doesn't read the error's constructor name. The SDK's DraftLimitReachedError is an XRPCError whose `error` is DraftLimitReached, which it does read.
-- Not wired yet, for the merge or VirgaUI: the app must set DraftMedia.storage at launch (DiskFileStore plus its ComposerFiles), implement ComposerFiles over temporary files, pass `.thisDevice(store:)` for the device id and `store:` to pruneOrphanedDraftMedia (both default to nil, the web's missing localStorage), and give PublishMedia a clock that really waits. The demo installs its own HTTP.clock.
+- Wired in VirgaUI since: wherever the app opens an account's draft media (the composer, the posting pages) it passes `openDraftMedia` a DraftMediaStorage over its own FileStore and TemporaryComposerFiles, so the static DraftMedia.storage is left unset. Drafts carry `.thisDevice(store:)`, the Drafts page's prune gets `store:` (the app's key-value store), loadDraftMedia gets the composer's makePreviewUrl, and PublishMedia gets the session's clock. The demo installs its own HTTP.clock.
 - Library merge: LinkCard.fetchLinkCard(transport:) has the library's FetchLinkCard type, `@Sendable (String) async throws -> JSONValue?`. Pass `LinkCard.fetchLinkCard(transport: t)` where LibraryModel takes `fetchLinkCard:`. This port doesn't use LocaleCompare.
 
 ## Audit

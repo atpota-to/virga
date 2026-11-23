@@ -55,7 +55,7 @@ Session/SessionController.swift and SessionController+Actions.swift (ports src/s
   - `origin: (@Sendable () -> String)?` (default: the server's origin), `assign: @Sendable (String) -> Void` (leave it a no-op when an authenticator is given)
   - `authenticator: (any WebAuthenticator)? = nil`, `randomBytes`
 - Value types:
-  - `SignInOptions(mode: String? = nil, intent: String = "add", prompt: String? = nil, defense: JSONValue? = nil /* true, "scan", "lists", false; nil is unsaid */, did: String? = nil)`
+  - `SignInOptions(mode: String? = nil, intent: String = "add", prompt: String? = nil, defense: JSONValue? = nil /* true, "scan", "lists", false; nil is unsaid */, did: String? = nil, onAuthorizing: (@MainActor @Sendable () -> Void)? = nil)`. onAuthorizing is iOS only: signIn calls it once the server has given the host's address, just before the authenticator's sheet opens (where the web's page leaves for the host), and not when the task is already cancelled. The sign-in flow's "Still here?" stops there. It is left out of `==` and `hash`.
   - `ActiveSession(did:agent:session:mode:)`
   - `SessionInfo(sub:did:mode:oauth:)`
   - `SessionTarget(did:agent:pdsUrl:)`
@@ -73,10 +73,10 @@ Session/SessionModel.swift (ports useAtprotoSession.jsx):
   - `storageChanged(key: String?) async`: the window's storage event; key nil means the store was cleared.
   - `clearError()`: the error otherwise lasts until the next sign-in that comes back, or the next launch.
 
-How the app should build the environment:
-`SessionEnvironment(storage: UserDefaultsKeyValueStore(), tabStorage: InMemoryKeyValueStore() /* one per run: the web's sessionStorage */, secrets: KeychainSecretStore(), backendUrl: <the server>, authenticator: <VirgaUI's ASWebAuthenticationSession wrapper; .https(host:path:) callback, iOS 17.4>, resetAnalyticsStore: { _ in await <VirgaArchive's port of analyticsStore.js resetAnalyticsStore, which drops every cached store handle>() }, deleteDatabase: { name in <delete that FileStore folder>; return true })`
-- The archive hook keeps the web's name, `resetAnalyticsStore`. It receives the removed account's DID, which it may ignore (the web resets every store).
-- `deleteDatabase` is called with "virga-analytics:<did>" and then "virga-posting:<did>" (Accounts.localDatabases), one after the other.
+How the app builds the environment (VirgaUI's `AppModel.device`):
+`SessionEnvironment(storage: stores.keyValue, tabStorage: stores.tab /* one per run: the web's sessionStorage */, secrets: stores.secrets, backendUrl: flags.backendURL, authMode: flags.authMode, resetAnalyticsStore: AppModel.resetArchiveStores, deleteDatabase: AppModel.deleteDatabase(files: stores.files), authenticator: SystemWebAuthenticator())`. The demo (`AppModel.demo`) puts the same two hooks on DemoSession's environment.
+- The archive hook keeps the web's name, `resetAnalyticsStore`. It receives the removed account's DID. The web drops every memoized database handle there; the app's does nothing, because deleteDatabase has already forgotten and closed the deleted account's archive handle, and a second handle over a folder another account's archive still holds would write over its segments.
+- `deleteDatabase` is called with "virga-analytics:<did>" and then "virga-posting:<did>" (Accounts.localDatabases), one after the other. The app sends virga-posting:<did> to VirgaPosting's `DraftMedia.deleteDatabase` (the drafts' kept pictures and videos) and other names to VirgaArchive's `AnalyticsStore.deleteDatabase`.
 - The universal-link domain must be the origin `env.origin()` returns.
 
 Other files:
@@ -94,8 +94,7 @@ Test support, internal to VirgaSessionTests: Tests/VirgaSessionTests/SessionWorl
 
 ## Known gaps and deliberate differences
 
-- The app still has to supply three things: a WebAuthenticator built on ASWebAuthenticationSession in VirgaUI (.https(host:path:) callback, iOS 17.4); resetAnalyticsStore from VirgaArchive (the other chain); and deleteDatabase deleting the archive's and posting store's FileStore folders. The defaults do nothing, so deleting an account's data removes only its key-value data until these are wired.
-- How to wire the archive reset: SessionEnvironment(resetAnalyticsStore: { _ in await <VirgaArchive's port of analyticsStore.js resetAnalyticsStore>() }). The web function only clears its memoized per-account database handles, so the archive's port should drop its cached FileStore handles for every account. It may ignore the DID it is given. The hook keeps the web's name, resetAnalyticsStore, rather than the brief's suggested resetArchive.
+- The three things the app supplies are wired (see How the app builds the environment): SystemWebAuthenticator (ASWebAuthenticationSession, .https(host:path:) callback, iOS 17.4), a resetAnalyticsStore that does nothing more, and a deleteDatabase that deletes the archive's and the posting store's FileStore folders. SessionEnvironment's own defaults still do nothing. The hook keeps the web's name, resetAnalyticsStore, rather than the brief's suggested resetArchive.
 - Not ported, and nothing on iOS needs them: getOauthClient and getOauthEvents in oauthClient.js, and createBrowserDriver with its helpers in browserDriver.js. They wrap @atproto/oauth-client-browser, and iOS signs in only through Virga's server. Both map entries stay partial.
 - Kept from the porter, checked and still true: a VirgaBackend requester's 401 reaches the controller just after the call fails (the web reports it before); an account's two databases are deleted one after the other (the web asks for both at once); signIn returns rather than never settling; non-string handle, avatar and suggestion fields are dropped where the web keeps them; BrowserSessionDriver.onDeleted returns no unsubscribe; copy that says 'browser' and 'tab' is kept word for word; the signal half of the web test 'hands a sign-in the signal' doesn't apply on iOS.
 - I left out none of sessionController.test.js: the browser-session tests run against FakeBrowser.
@@ -106,7 +105,7 @@ Test support, internal to VirgaSessionTests: Tests/VirgaSessionTests/SessionWorl
 From the port:
 
 - Not ported, and nothing on iOS needs them: getOauthClient and getOauthEvents in oauthClient.js, and createBrowserDriver with its helpers in browserDriver.js. They wrap @atproto/oauth-client-browser, and iOS signs in only through Virga's server.
-- The app still has to supply three things before sign-in works: a WebAuthenticator built on ASWebAuthenticationSession in VirgaUI, resetAnalyticsStore from VirgaArchive (the other chain), and deleteDatabase deleting FileStore folders. The defaults do nothing, so an account's data delete removes only its key-value data until these are wired.
+- At port time the app still had to supply three things before sign-in worked (a WebAuthenticator, resetAnalyticsStore and deleteDatabase). All three are wired now (see Known gaps above).
 - A requester from backendFor (VirgaBackend) tells the controller about a 401 a moment after the call fails; on the web this happens before. The agent's fetch handler still reports before the call returns, as on the web.
 - An account's two databases are deleted one after the other; the web deletes both at once.
 - signIn returns after handing the address on (no sheet), or after the return is taken (with the sheet). The web's backend sign-in never resolves, because the page leaves.
