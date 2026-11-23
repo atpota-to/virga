@@ -299,13 +299,20 @@ struct PersonSearch: View {
     let shown = open && !query.jsTrimmed().isEmpty ? options : []
     VStack(alignment: .leading, spacing: Measure.Tools.lookupSearchGap) {
       // The suggestions float over the page under the field, 6 below it,
-      // over whatever follows (`.lookup-options`).
+      // over whatever follows (`.lookup-options`). They hang from a line of
+      // no height at the field's foot, as the language suggestions do: an
+      // alignment guide setting the list's foot above its top wasn't
+      // honoured (run 94 drew the list over the field).
       field(options: options, shown: shown)
         .overlay(alignment: .bottom) {
           if !shown.isEmpty {
-            suggestions(shown)
-              .fixedSize(horizontal: false, vertical: true)
-              .alignmentGuide(.bottom) { d in d[.top] - Measure.Tools.optionsSpaceAbove }
+            Color.clear
+              .frame(height: 0)
+              .overlay(alignment: .top) {
+                suggestions(shown)
+                  .fixedSize(horizontal: false, vertical: true)
+                  .padding(.top, Measure.Tools.optionsSpaceAbove)
+              }
           }
         }
         .zIndex(1)

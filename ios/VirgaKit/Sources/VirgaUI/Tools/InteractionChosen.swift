@@ -32,7 +32,8 @@ struct ChosenHistory: View {
     let name = ToolPeople.displayName(card, who)
     let filtered = InteractionModel.filterEvents(model.events, direction: direction, kind: kind)
     VirgaPage(header: ToolHeader.header(tool)) {
-      search
+      // Its suggestions float over the person's card under it.
+      search.zIndex(1)
       LookupPersonCard(card: card, who: who, model: model, onClear: onClear)
       if model.isSelf {
         ToolEmptyLine("This is the account you’re signed in with. Replies to your own posts are threads, so there’s no history to show.")

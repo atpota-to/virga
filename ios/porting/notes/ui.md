@@ -384,7 +384,10 @@ TEMPLATES AND POSTING (Templates/, Posting/, Settings/PostingSettingsSection.swi
 - `Measure.Templates` (Templates/TemplateMeasures.swift) names library.css's and hub.css's measures.
 - PostingUITests (`testTemplatesAndPostingSettings`, no archive build): `posting-templates`,
   `template-editor`, `template-editor-questions`, `posting-template-use` (Use on Event reminder: the
-  composer, its questions in the library), `settings-posting`, `settings-posting-timer`.
+  composer, its questions in the library), `settings-posting`, `settings-posting-timer`,
+  `settings-posting-languages` (back at the top, the language field dragged into the window's top
+  third so the iPhone's keyboard leaves room for the list, "fr" typed; skipped without failing if
+  the field can't be reached).
 
 ADVISER (Adviser/, Composer/ComposerController+Adviser.swift, Posting/)
 - The views are over VirgaPosting/Adviser's logic, unchanged: `AdviserGateModel` (the composer's
@@ -956,14 +959,14 @@ reader, and the fixes went in on the visual-fix merges after cc3083d. What chang
   the list stays under the byline. On iOS 17 a wider window keeps the detents.
 - The phone's back link reports its whole width to the navigation bar (it was cut to one
   letter during a push); the tab bar's gaps are the web's 4 with the space between; the front
-  page's title is set a line every 1.02em (LandingTitleLines); the front page holds the sky
+  page's title is set a line every 1.02em (TitleLines); the front page holds the sky
   over the status bar, and its foot sits at the screen's foot.
-- Posting: menu hints in --muted; Posted's search beside the filter; template rows, the weekly
+- Posting: menu hints are the native menu's subtitles (below, "Menu hints"); Posted's search beside the filter; template rows, the weekly
   schedule's add row and the row actions at the web's measures; the six-dot grip drawn
   (`GripVerticalGlyph`: no SF Symbol has it); MessageSquareLock is `lock.square`.
 - The composer: the "@" and "/" lists bring themselves into view (`ComposerReveals`); the
-  language suggestions float over Adult content in the composer's dialog (not yet in Settings,
-  whose row hairline is drawn over its content); the queue line's time is semibold.
+  language suggestions float over what follows the field (below, "Language suggestions"); the
+  queue line's time is semibold.
 - Defense: a chart's and a held table's columns are at least their words' width and share
   the rest (`TableGridWidth`), so the head lines up with the rows; the scan's actions beside
   Who engaged in full; the moderator's link underlined; the radar's legend within the radar.
@@ -973,12 +976,8 @@ reader, and the fixes went in on the visual-fix merges after cc3083d. What chang
   grows; a phone card's tools sit over the title's line; a tool's statement balances its lines
   (`BalancedLines`); the lookup's account head wraps as `.lookup-person-top` does.
 
-Still open from the review: the demo's people show the plain letter disc where the harness
-draws its SVG initials (AsyncImage can't decode a `data:image/svg+xml` avatar; real avatars are
-JPEGs, so only the demo shows it); a tablet card head's `margin-top: -5px` on its tools; wrapped
-page titles under 1.22 line height (Text's lineSpacing can't go below the face's own); Posted's
-menu hints, whose screenshot the test now takes once the menu has opened. The fixes compiled
-and passed the UI tests on both devices in CI run 82 (628657a).
+The fixes compiled and passed the UI tests on both devices in CI run 82 (628657a). The items
+the review left open are in "The review's last open items" below.
 
 ## CI's screenshots against each other (2026-11-23)
 
@@ -1063,6 +1062,116 @@ bench is gone; the probe stays on for ComposerUITests.
 Run 85 failed once on the iPhone, Defense's palette step: swiping back up until Search showed
 left it 51 points short of the top, under the status bar, where taps don't reach it. The seven
 palette steps now swipe until a swipe no longer moves Search.
+
+## The review's last open items (2026-11-23)
+
+Six items were still open after the visual review. Each was fixed on its own branch and checked
+by a second reader against the web harness (Playwright, with the bundled Instrument Sans loaded)
+and against run 94's screenshots (20ef411). VirgaUI only builds for Apple platforms, so none of
+this had been compiled when it was merged; the next CI run is its first.
+
+- The demo's pictures. The harness's faces (`avatarFor`) and post images (`placeholderImage`) are
+  SVG data addresses, which AsyncImage and UIImage can't decode, so the demo showed every face as
+  the plain letter disc. VirgaDemo's `DemoPicture.read` recognises exactly those two forms as the
+  makers write them, with their `hsl()` colours computed as a browser computes them
+  (`ThemeColor(css:)`). Anything else, every real https avatar included, reads as nil and loads
+  as before. VirgaUI's `DemoPictureView` draws one with a fill, Paths and one Text, scaled to
+  cover its frame and centred as `object-fit: cover` is, and cut by the caller's clip. The
+  initial is in the system face (`system-ui` on Apple devices) at 30/64 of the side, its middle
+  on x 32 and its baseline at y 42 of 64. Like an image, it ignores Dynamic Type, Bold Text and
+  dark mode. `Avatar` draws one in place of its letter disc, and `TransportImage` (link cards,
+  the card dialog, library rows) in place of loading it. No screen the web demo reaches shows a
+  placeholder image (the composer's link cards are the fake card service's PNGs), so the
+  landscape is there for a post's thumbnail. `DemoPictureTests` holds both forms to the makers
+  and the colours to Chromium's computed bytes.
+- Card and section heads. On touch, an icon tool in a card head is 44 points, pulled 12 above
+  the title's line (`.card-head > .head-tools { align-self: flex-start; margin-top: -12px }`).
+  The -5px in the open item is the mouse's rule, for 30-point buttons, and the port never uses
+  it. Only the dashboard's card head (`WidgetCard.head`) has icon tools. They keep their glyphs
+  on the title's baseline and give up 12 at the top (and 12 at the bottom on a phone), and a
+  chart's modes beside the title give up 13 at each end (`Measure.Segmented.headLift`), so the
+  head starts at the title: 32 tall from 561 up, the title's height on a phone. Before this, an
+  iPad card's title sat about 12.5 points low. SectionHead on a phone is `PhoneHeadLayout`, the
+  web's `minmax(0, 1fr) auto`: the tools at their own width, the title wrapping in what they
+  leave, both centred on the row; the title's line under both; a small Segmented on a row of its
+  own under that, 8 down. It reads as title, line, tools, the web's order. Port only, for Dynamic
+  Type: tools that would leave the title less than 6 ems (`Measure.Section.phoneTitleLeastEms`,
+  90 points at the default size), or less than its one-line width if that is smaller, go on
+  that same row under the line. At the default size no heading comes near that on a 375-point
+  iPhone (the tightest is Who engaged beside Open the post and Scan again, 103 points), but in a
+  320-point window (Display Zoom on a small iPhone, Slide Over) Who engaged's actions and The
+  best slots' more link go under the line where the web would wrap or crowd the title. Callers
+  no longer fix their tools' size: Defense's Who engaged doesn't.
+- Wrapped titles. A title whose line-height is under the face's own 1.22 and that can wrap is
+  set by `TitleLines` (Components/TitleLines.swift, the front page's old LandingTitleLines): one
+  view per word, a line every line-height in points (scaled by Dynamic Type), each word's own
+  line centred on that line's box. The lines are balanced as base.css's `h1 { text-wrap:
+  balance }` balances them, and a word wider than the line is offered the line's width. The
+  space between words is `theme.spaceWidth(size:weight:)` at the title's weight (the face's
+  space narrows as it gets heavier: 0.200em at 400, 0.193em at 600) plus the title's tracking,
+  which a browser adds after the space too; with the real font the web's gap measured 4.68 and
+  the port's comes to 4.70. The front page's `.landing-title` uses it at 1.02. A page's
+  `.page-title` is `ViewThatFits(in: .horizontal) { the one-line Text; TitleLines }`, so a title
+  that fits keeps the Text and `overflowingLeading`, and only a wrapped one is set 1.1 apart
+  (two lines 61.6 tall, as the web's). The wrapped one is `.frame(maxWidth: .infinity, alignment:
+  .leading)`, because the web's h1 is a flex item that takes the whole row once it wraps, so the
+  title tools (the dashboard's menu, the rename pencil) sit at the row's end. It is one VoiceOver
+  heading either way, identifier `page-title`. A title with right-to-left letters stays a Text
+  (`TitleLines.canSet`), since the words are placed left to right. At the default size only
+  NoReportPage's title wraps at 440, and "There's nothing at this address" at 375. Still at the
+  face's 1.22 when they wrap: a figure's value (line-height 1, `overflow-wrap: anywhere`), the
+  first build's title, the return and terms titles (1.1) and the legal pages' h1 (1.05). A long
+  word with hyphens, or a CJK title, breaks differently from the browser.
+- Language suggestions. They float over what follows the field, as `.lang-search
+  .suggest-list` does: in the composer's dialog over Adult content, and in Settings › Posting
+  over the rows after Languages. `LanguagePicker` hangs them from a line of no height at the
+  field's foot (an overlay at `.bottom` holding `Color.clear.frame(height: 0)`, whose own overlay
+  at `.top` holds the list with 4 above it), so only each view's own top and bottom place them.
+  The old `.alignmentGuide(.bottom) { $0[.top] - 4 }` on the overlay was not honoured: run 94
+  drew the list over the field, its foot on the field's foot, in the composer and in the
+  Interaction lookup (`.lookup-options`, 6 under its field), which now hangs its list the same
+  way. Why the guide was dropped isn't known, so don't go back to one. Whatever holds the picker
+  draws it over its later siblings with `.zIndex(1)` (MetaDialog's picker, the Languages
+  SettingsRow, the lookup's search on both of its pages), and a SettingsRow draws its hairline
+  as a background, under its content, as the web's border is. The web caps its list at 16rem
+  and scrolls; the port's isn't capped. On an iPhone the keyboard can still cover the list when
+  the field is low in Settings, which has nothing like the composer's ComposerReveals. No UI
+  test taps a language suggestion yet; the lookup's test taps its first suggestion, now under
+  the field.
+- The "@" list (`PostEditor.shownMention`). It is drawn while there is a partial mention and a
+  lookup, as the web's list is up from the lookup's start until the mention ends, a pick,
+  Escape, or a blur a beat later. A key the lookup task hasn't started on yet shows what the
+  lookup will start with (`MentionLookup.starting`: loading, keeping the accounts only for the
+  same query, the web's effect), so a key never takes the list down to put it back. Before, the
+  list was drawn only while the lookup's query was the partial mention's, and a render between a
+  key and the task's start would take it away and bring it back, reading its status out again,
+  scrolling to it and changing an iPad sheet's height. CI's probe at XCUITest's speed saw no
+  such flicker; a model of both versions showed it whenever the task starts a frame after the
+  key. Like the web, a new query drops the rows and shows "Looking…" until its lookup is back.
+  Typing faster than the lookup (150 ms plus the network) keeps one steady "Looking…", read once.
+  Typing slower brings the rows back between keys, so the list, an iPad's sheet and the web's
+  dialog all change height with each key, and with no one found the status is read out twice a
+  key ("Looking…", then "No one found for …"), as the web's live region is. Keeping the last
+  rows while the next lookup loads would be a departure from the web, not done here. A pick goes
+  in over the mention the list was drawn for. The list still has none of the web's keys (arrows,
+  Enter or Tab to pick, Escape).
+- Menu hints (Posted's Post again and Put on a timer). Run 94's shots, taken once the menu has
+  opened, show both hints under their titles on the iPhone and the iPad, and run 82's iPad shot
+  shows them over the dark menu. Items, order, wording and separators match Posted's and
+  Drafts' web menus. The hints that once looked blank were most likely shots taken while the
+  menu was still opening; no shot without `.foregroundStyle(.secondary)` has been taken since
+  the test waits, so that isn't proven. A native Menu takes a Button label's second Text as the
+  item's subtitle and draws only its words (UIAction's subtitle is a plain string). The hint is
+  therefore the system's secondary grey, about #797C7F over the light menu, not --muted
+  (#46536b); the title is the system's label colour at regular weight, not --ink at 500. The
+  hint wraps to the menu's own width (three lines in the iPad's 222-point menu where the web
+  takes two), and the icon is centred on both lines rather than on the title's. None of this
+  can be set from SwiftUI, as with the icons, which come pre-tinted.
+
+Also left as they were: in an iPad window 481 to 560 wide, a dashboard chart's modes sit beside
+its title where the web's phone rule puts them under it, and the dashboard head's gap is 8
+where the web's is 16; `TransportImage` sends a `data:` address through the transport, so a
+picture the demo user posts (`blobDataUrl`) shows nothing in a library row.
 
 ## Known gaps and deliberate differences
 
