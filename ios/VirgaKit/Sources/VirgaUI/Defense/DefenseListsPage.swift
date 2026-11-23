@@ -155,7 +155,9 @@ struct YourListsCard: View {
       _ = try await DefenseService.createList(lists.requester, name: typed, purpose: purpose)
       making = false
       name = ""
-      await lists.refresh()
+      // Read again without waiting for it, as the web does (here and
+      // after Keep and Stop keeping): the control is free at once.
+      Task { await lists.refresh() }
     } catch {
       self.error = DefenseService.defenseErrorMessage(error)
     }
@@ -301,7 +303,7 @@ struct KeptByHandCard: View {
       _ = try await DefenseService.keepAccount(lists.requester, did, why.isEmpty ? nil : why)
       handle = ""
       reason = ""
-      await lists.refresh()
+      Task { await lists.refresh() }
     } catch {
       self.error = DefenseService.defenseErrorMessage(error)
     }
@@ -312,7 +314,7 @@ struct KeptByHandCard: View {
     defer { busy = nil }
     do {
       _ = try await DefenseService.unkeepAccount(lists.requester, did)
-      await lists.refresh()
+      Task { await lists.refresh() }
     } catch {
       self.error = DefenseService.defenseErrorMessage(error)
     }

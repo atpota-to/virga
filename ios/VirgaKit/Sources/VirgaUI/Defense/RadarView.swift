@@ -21,8 +21,11 @@
 // it (the list under the radar marks the account and shows it); a press
 // elsewhere clears it. VoiceOver reads the picture's summary, and swiping
 // up and down walks the accounts near you in the arrow keys' order, saying
-// each; a double tap picks the one said. The counts are in the table under
-// it and every account near you is in the list on the page.
+// each; a double tap picks the one said and says it is marked in the list
+// (focus stays on the radar, where the web's Enter moves it to the row's
+// link). The hint names those gestures, not the web's keys. The counts
+// are in the table under it and every account near you is in the list on
+// the page.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -85,7 +88,11 @@ struct RadarView: View {
     .accessibilityElement()
     .accessibilityLabel(label)
     .accessibilityValue(said)
-    .accessibilityHint(order.isEmpty ? "" : "Arrow keys move between the accounts near you\(onPick != nil ? "; Enter finds one in the list below" : "").")
+    // VoiceOver's gestures, not the web's arrow keys and Enter: the stage
+    // takes no keyboard focus here.
+    .accessibilityHint(
+      order.isEmpty
+        ? "" : "Swipe up or down to move between the accounts near you\(onPick != nil ? "; double-tap to mark the one said in the list below" : "").")
     .accessibilityAdjustableAction { direction in
       guard !order.isEmpty else { return }
       let step = direction == .increment ? 1 : -1
@@ -98,7 +105,12 @@ struct RadarView: View {
       }
     }
     .accessibilityAction {
-      if let current, let row = current.row { onPick?(row) }
+      // The web's Enter moves focus to the row's link; here focus stays,
+      // so the pick is said.
+      if let current, let row = current.row, let onPick {
+        onPick(row)
+        ToolAnnouncement.post("Marked \(describe(row).title) in the list below.")
+      }
     }
     .accessibilityIdentifier("defense-radar")
   }

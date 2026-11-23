@@ -404,7 +404,9 @@ struct AddToListCard: View {
       done = DefenseDone(list: DefenseListRows.name(list), queued: count("queued"), kept: count("kept"), already: count("already"))
       listId = DefenseListRows.id(list)
       newName = ""
-      await lists.refresh()
+      // Read again without waiting for it, as the web does: the dialog
+      // closes as soon as the plan is approved.
+      Task { await lists.refresh() }
     } catch {
       self.error = DefenseService.defenseErrorMessage(error)
     }

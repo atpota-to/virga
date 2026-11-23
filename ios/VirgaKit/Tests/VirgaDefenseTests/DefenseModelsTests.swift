@@ -166,7 +166,8 @@ private func lists(waiting: Int, name: String = "Pile-on") -> JSONValue {
     await eventually { !session.signIns.isEmpty }
     #expect(model.asking == .busy)
     session.release()
-    await asking.value
+    let came = await asking.value
+    #expect(came)
     #expect(model.asking == nil)
   }
 
@@ -176,6 +177,47 @@ private func lists(waiting: Int, name: String = "Pile-on") -> JSONValue {
     let model = DefenseAccountModel(session: session)
     await model.askFor(.lists)
     #expect(model.asking == .error(OAuthClient.signInErrorMessage(Refused())))
+  }
+
+  @Test func saysNothingOfASignInCalledOff() async {
+    // Cancel on the system's sign-in sheet (SessionController's AbortError,
+    // code CANCELLED), or the reader coming back from the host: no words,
+    // as the rest of the app has none for it.
+    let session = FakeSession(did: mira, accounts: [account])
+    let model = DefenseAccountModel(session: session)
+    session.signInError = BackendError(name: "AbortError", message: "The sign-in was called off", code: "CANCELLED")
+    await model.askFor(.scan)
+    #expect(model.asking == nil)
+    session.signInError = BackendError(name: "Error", message: "User navigated back")
+    await model.askFor(nil)
+    #expect(model.asking == nil)
+    // One that didn't start still says so, and a later cancel clears it.
+    session.signInError = Refused()
+    await model.askFor(.lists)
+    #expect(model.asking == .error(OAuthClient.signInErrorMessage(Refused())))
+    session.signInError = BackendError(name: "AbortError", message: "The sign-in was called off", code: "CANCELLED")
+    await model.askFor(.lists)
+    #expect(model.asking == nil)
+  }
+
+  @Test func answersWhetherTheSignInCameBack() async {
+    // The scan page drops the account's scan on a yes, as the web's page
+    // starts again after its sign-in.
+    let session = FakeSession(did: mira, accounts: [account])
+    let model = DefenseAccountModel(session: session)
+    let came = await model.askFor(.scan)
+    #expect(came)
+    let turnedOff = await model.askFor(nil)
+    #expect(turnedOff)
+    session.signInError = BackendError(name: "AbortError", message: "The sign-in was called off", code: "CANCELLED")
+    let calledOff = await model.askFor(.scan)
+    #expect(!calledOff)
+    session.signInError = Refused()
+    let refused = await model.askFor(.scan)
+    #expect(!refused)
+    session.did = nil
+    let nobody = await model.askFor(.scan)
+    #expect(!nobody)
   }
 
   @Test func signsInByDidWhenThereIsNoHandleAndKeepsTheAccountsMode() async {
@@ -289,6 +331,46 @@ private func lists(waiting: Int, name: String = "Pile-on") -> JSONValue {
     await eventually { ticker.sleeping == 0 }
     #expect(ticker.sleeping == 0)
     #expect(model.error == nil)
+  }
+
+  @Test func aReadUnderWayWhenItGoesDoesntSetTheTimerAgain() async {
+    // The poll's read is out when the page goes: it lands, but the timer
+    // stays gone, as the hook's interval, cleared at unmount, is never made
+    // again. Opened again, the timer is back.
+    let s = session()
+    let hold = Locked(false)
+    let release = Locked(false)
+    s.transport.on(.path("/api/defense/lists")) { _ in
+      if hold.wrappedValue {
+        while !release.wrappedValue { try await Task.sleep(nanoseconds: 1_000_000) }
+      }
+      return .json(lists(waiting: 1))
+    }
+    let ticker = Ticker()
+    let model = DefenseListsModel(did: mira, session: s, sleep: ticker.sleep)
+    await model.start()
+    await eventually { ticker.sleeping == 1 }
+    #expect(model.polling)
+    hold.withLock { $0 = true }
+    ticker.tick()
+    await eventually { s.transport.requests.count == 2 }
+    #expect(model.loading)
+    model.stop()
+    #expect(!model.polling)
+    release.withLock { $0 = true }
+    await eventually { !model.loading }
+    #expect(!model.loading)
+    #expect(model.waiting)
+    #expect(!model.polling)
+    await eventually { ticker.sleeping == 0 }
+    #expect(ticker.sleeping == 0)
+    ticker.tick()
+    #expect(s.transport.requests.count == 2)
+
+    await model.start()
+    #expect(s.transport.requests.count == 3)
+    #expect(model.polling)
+    model.stop()
   }
 
   @Test func onlyTheLatestReadSetsTheLists() async {
