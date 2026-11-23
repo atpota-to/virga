@@ -995,8 +995,8 @@ Two pairs showed a letter lost while the test typed into a post editor ("@lab.ex
 the simulator or the editor drops it isn't known. HighlightedTextView used to rewrite every
 attribute and set the selection again on each of several redraws a keystroke, and could put
 the post's text back over a letter UIKit was still inserting; it now changes the field only
-where something changed and leaves it alone mid-edit (`Coordinator.drawn`, `synced`,
-`editing`). ComposerUITests prints `VIRGA-TYPED-MISMATCH` lines in CI's log when a letter
+where something changed and leaves it alone mid-edit (`Coordinator.drawn`, `editing`;
+superseded after run 90, below). ComposerUITests prints `VIRGA-TYPED-MISMATCH` lines in CI's log when a letter
 still goes missing, without failing, so later runs can say whether that helped.
 
 Run 87, the first after that change, lost one letter on the iPad ("#grdening") and none on
@@ -1034,12 +1034,15 @@ the post itself a key behind and put its text back (R43>42), the post caught up 
 took it again with the caret before the "e" (R42>43), and the next keys went in front of it.
 So the post can lag the field outside the window the `editing` flag covered, here while the
 composer scrolled at the wrap. Rather than chase each such window, the field now wins unless
-something else changed the post: ComposerController counts, per post, every change to a post's
+something else changed the post: ComposerStateModel counts, per post, every change to a post's
 text that doesn't come from its own field (`textChangeCount`; the field hands its text on
-through `typed`, which isn't counted), and updateUIView puts the post's text in the field only
-when that count has moved since they last agreed. A field that differs otherwise keeps its
-text and hands it to the post after the update (probe events K and H). A new field starts from
-the post itself.
+through `typed`, which isn't counted). It counts in the model, not the controller, because the
+adviser's fixes write to the model directly (AdviserGateModel.applyFixes), and a reviewer
+found that a count in the controller missed them, so the field would have handed its old text
+back over a fix. updateUIView puts the post's text in the field only when that count has moved
+since they last agreed. A field that differs otherwise keeps its text and hands it to the post
+after the update (probe events K and H). A new field starts from the post itself.
+ComposerStateModelBehaviour checks the count on Linux.
 
 Run 85 failed once on the iPhone, Defense's palette step: swiping back up until Search showed
 left it 51 points short of the top, under the status bar, where taps don't reach it. The seven

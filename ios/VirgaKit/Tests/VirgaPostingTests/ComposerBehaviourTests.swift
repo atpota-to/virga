@@ -207,6 +207,41 @@ final class SignallingStore: KeyValueStore, Sendable {
 }
 
 @Suite @MainActor struct ComposerStateModelBehaviour {
+  /// What the iOS post editor goes by to tell whether the post's text or the
+  /// field's should win: every change to a post's text but its own field's
+  /// counts, for that post only, whoever makes it.
+  @Test func countsTextChangesThatDoNotComeFromTheField() {
+    let model = ComposerStateModel(asDid: "did:plc:mira", session: AutosaveSession())
+    let first = model.state.posts[0].id
+    #expect(model.textChangeCount(first) == 0)
+    // Typing hands the field's words on without counting.
+    model.typed(index: 0, text: "hel")
+    model.typed(index: 0, text: "hello")
+    #expect(model.state.posts[0].text == "hello")
+    #expect(model.textChangeCount(first) == 0)
+    // A change from elsewhere counts, and only for the post it changed.
+    model.dispatch(.addPost())
+    let second = model.state.posts[1].id
+    #expect(model.textChangeCount(first) == 0)
+    #expect(model.textChangeCount(second) == 1)
+    model.dispatch(.setText(index: 0, text: "hello @mira.example.com "))
+    #expect(model.textChangeCount(first) == 1)
+    #expect(model.textChangeCount(second) == 1)
+    // Nothing counts when no text changes.
+    model.dispatch(.setText(index: 0, text: "hello @mira.example.com "))
+    model.dispatch(.setTags(["garden"]))
+    #expect(model.textChangeCount(first) == 1)
+    // The adviser's fixes go straight to the model, and count too.
+    AdviserGateModel.applyFixes(to: model)(["fixed", "also fixed"])
+    #expect(model.textChangeCount(first) == 2)
+    #expect(model.textChangeCount(second) == 2)
+    // A load counts for every post it puts on screen.
+    model.load(model.state)
+    #expect(model.textChangeCount(first) == 3)
+    #expect(model.textChangeCount(second) == 3)
+    model.cancelAutosave()
+  }
+
   @Test func dispatchesAndKeepsEachChange() throws {
     let store = InMemoryKeyValueStore()
     let timers = ManualTimers()

@@ -625,12 +625,12 @@ final class ComposerTextView: UITextView {
 }
 
 struct HighlightedTextView: UIViewRepresentable {
-  /// Where the field hands its text on. Read back to make the field, and
-  /// in updateUIView only to note in the typing probe when it disagrees
-  /// with the post.
+  /// Where the field hands its text on: textViewDidChange, and the hand-on
+  /// after an update that kept the field's text. Read only in updateUIView,
+  /// to note in the typing probe when it disagrees with the post.
   @Binding var text: String
-  /// The post's text as it is at the moment of asking. updateUIView decides
-  /// from this, not the binding: in CI run 88 an update read the binding a
+  /// The post's text as it is at the moment of asking. makeUIView and
+  /// updateUIView decide from this, not the binding: in CI run 88 an update read the binding a
   /// key behind the field, after the field had handed that key to the post,
   /// and put the older text back over it (TypingProbe's R events, all while
   /// the "@" list was up). The post already has every key the field has
@@ -685,7 +685,6 @@ struct HighlightedTextView: UIViewRepresentable {
     let segments = segmentsText == text ? self.segments : []
     view.attributedText = style.attributed(segments, text: text)
     view.typingAttributes = style.base
-    context.coordinator.synced = text
     context.coordinator.changes = textChanges()
     context.coordinator.drawn = Drawn(text: text, segments: segments, style: style)
     return view
@@ -730,7 +729,6 @@ struct HighlightedTextView: UIViewRepresentable {
         identifier, editing: coordinator.editing, branch: branch, field: view.text.utf16.count, model: text.utf16.count)
     }
     if view.text == text {
-      coordinator.synced = text
       coordinator.changes = changes
       if view.markedTextRange == nil {
         let keep = view.selectedRange
@@ -773,7 +771,6 @@ struct HighlightedTextView: UIViewRepresentable {
     } else {
       let keep = view.selectedRange
       view.attributedText = style.attributed(segments, text: text)
-      coordinator.synced = text
       coordinator.changes = changes
       coordinator.drawn = drawn
       let length = text.utf16.count
@@ -800,9 +797,6 @@ struct HighlightedTextView: UIViewRepresentable {
   @MainActor
   final class Coordinator: NSObject, UITextViewDelegate {
     var parent: HighlightedTextView
-    /// The text the field and the post last agreed on: the post's, as it
-    /// was put in the field or found there, or the field's, as handed on.
-    var synced = ""
     /// UIKit has asked to change the text and not yet said it did.
     var editing = false
     /// ComposerController.textChanges when the field and the post last
@@ -825,7 +819,6 @@ struct HighlightedTextView: UIViewRepresentable {
     func textViewDidChange(_ textView: UITextView) {
       editing = false
       TypingProbe.didChange(parent.identifier, in: textView)
-      synced = textView.text
       // The letters UIKit put in took the typing attributes, not the
       // highlights, so the next redraw sets them again even when the text
       // came out the same (a paste or a retyped letter over itself).

@@ -55,8 +55,42 @@ public final class ComposerStateModel {
   public func dispatch(_ action: ComposerAction) {
     let next = ComposerModel.composerReducer(state, action)
     guard next != state else { return }
+    countTextChanges(from: state, to: next)
     state = next
     keep()
+  }
+
+  /// A post's field handing on what was typed into it (`setText` for that
+  /// post): the one change to a post's text that `textChangeCount` doesn't
+  /// count.
+  public func typed(index: Int, text: String) {
+    let next = ComposerModel.composerReducer(state, .setText(index: index, text: text))
+    guard next != state else { return }
+    state = next
+    keep()
+  }
+
+  /// How many times this post's text has been changed by anything but its
+  /// own field: every dispatch and load that changes it, whoever calls (a
+  /// template, a mention picked, a link pasted or stripped, a thread split
+  /// or undone, the adviser's fixes, a draft or a new composer loaded). The
+  /// iOS post editor puts the post's text in its field only when this has
+  /// moved since the two last agreed; otherwise the field is ahead of the
+  /// post, not wrong (CI run 90: a letter reached the field before the post,
+  /// and putting the post's text back put the caret in front of it). The web
+  /// has no counterpart: its textarea is the post's text.
+  public func textChangeCount(_ postId: String) -> Int { textChanges[JSKey(postId)] ?? 0 }
+
+  @ObservationIgnored private var textChanges: [JSKey: Int] = [:]
+
+  /// Counts each post of `next` whose text isn't what it was in `previous`
+  /// (a new post counts).
+  private func countTextChanges(from previous: ComposerState, to next: ComposerState) {
+    var before: [JSKey: String] = [:]
+    for post in previous.posts { before[JSKey(post.id)] = post.text }
+    for post in next.posts where !before[JSKey(post.id)].jsEquals(post.text) {
+      textChanges[JSKey(post.id), default: 0] += 1
+    }
   }
 
   /// Runs several actions in order.
@@ -83,6 +117,7 @@ public final class ComposerStateModel {
     wroteFor = []
     lifespanTouched = touched
     state = ComposerModel.composerReducer(state, .load(next))
+    for post in state.posts { textChanges[JSKey(post.id), default: 0] += 1 }
     keep()
   }
 

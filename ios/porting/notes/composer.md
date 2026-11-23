@@ -34,6 +34,7 @@ COMPOSER STATE
   - resolvePostTexts.
 - Composer/ComposerStateModel.swift: `@MainActor @Observable ComposerStateModel(ComposerState | asDid:defaults:, autosaver: Autosaver?, now: () -> Double, session: AutosaveSession = .shared)`.
   - dispatch(_:), load(_:touched:), chooseLifespan(_:) (the writer's timer: touched, set, and kept at once even when unchanged, as the web's reducer always makes a new state), problems(now:…), actions(defaultAction:queue:caps:…), isEmpty, lifespanTouched, cancelAutosave().
+  - typed(index:text:) and textChangeCount(_:) (iOS only; the web's textarea is the post's text): typed hands a post editor's words on, and every other change to a post's text, through dispatch or load, counts for that post. The post editor puts the post's text in its field only when the count has moved (notes/ui.md, "CI's screenshots against each other").
   - It follows Composer.jsx's autosave effect. A change with content is debounced to the autosaver and kept in the session layer. An empty state only clears an account this composer wrote for (wroteFor). load cancels the waiting write and forgets wroteFor.
 
 SCHEDULE (Schedule/)
