@@ -176,83 +176,6 @@ struct LandingFootLayout: Layout {
   }
 }
 
-/// `.landing-title { line-height: 1.02 }`: the title's words, wrapped where
-/// a browser wraps them, a line every `pitch`. A Text can't set its lines
-/// closer than the face's own 1.22em (`.lineSpacing` stops at 0), so the
-/// words are set here, one view each: every line's box is the browser's,
-/// the word's own line centred on it (its half-leading), the glyphs reaching
-/// past it above and below as they do there. A heading's lines are
-/// balanced (base.css's `h1 { text-wrap: balance }`): as many as the width
-/// needs, broken at the narrowest width that still needs no more, so
-/// "Your account, / in figures." rather than "Your account, in / figures.".
-struct LandingTitleLines: Layout {
-  /// From one line's top to the next's: the line-height, in points.
-  var pitch: CGFloat
-  /// Between two words on a line.
-  var space: CGFloat
-
-  private struct Line {
-    var indices: [Int] = []
-    var width: CGFloat = 0
-  }
-
-  private func lines(_ sizes: [CGSize], maxWidth: CGFloat) -> [Line] {
-    var out: [Line] = []
-    var line = Line()
-    for (index, size) in sizes.enumerated() {
-      let extra = line.indices.isEmpty ? size.width : space + size.width
-      if !line.indices.isEmpty && line.width + extra > maxWidth {
-        out.append(line)
-        line = Line(indices: [index], width: size.width)
-      } else {
-        line.indices.append(index)
-        line.width += extra
-      }
-    }
-    if !line.indices.isEmpty { out.append(line) }
-    return out
-  }
-
-  /// The lines at `maxWidth`, balanced: wrapped at the narrowest width a
-  /// line of the words can have (a run of them, as wide as it is set) that
-  /// takes no more lines than `maxWidth` does.
-  private func balanced(_ sizes: [CGSize], maxWidth: CGFloat) -> [Line] {
-    let greedy = lines(sizes, maxWidth: maxWidth)
-    guard greedy.count > 1 else { return greedy }
-    var widths: [CGFloat] = []
-    for start in sizes.indices {
-      var width: CGFloat = 0
-      for end in start..<sizes.count {
-        width += end == start ? sizes[end].width : space + sizes[end].width
-        if width <= maxWidth { widths.append(width) }
-      }
-    }
-    for width in widths.sorted() where lines(sizes, maxWidth: width).count <= greedy.count {
-      return lines(sizes, maxWidth: width)
-    }
-    return greedy
-  }
-
-  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-    let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
-    let rows = balanced(sizes, maxWidth: proposal.width ?? .infinity)
-    return CGSize(width: rows.map(\.width).max() ?? 0, height: pitch * CGFloat(rows.count))
-  }
-
-  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-    let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
-    for (n, row) in balanced(sizes, maxWidth: max(bounds.width, proposal.width ?? 0)).enumerated() {
-      var x = bounds.minX
-      for index in row.indices {
-        let size = sizes[index]
-        let y = bounds.minY + pitch * CGFloat(n) + (pitch - size.height) / 2
-        subviews[index].place(at: CGPoint(x: x, y: y), proposal: .unspecified)
-        x += size.width + space
-      }
-    }
-  }
-}
-
 extension View {
   /// `.landing-foot-links a { min-height: 44px }` under a finger.
   func footTarget() -> some View {
@@ -395,11 +318,11 @@ public struct LandingView: View {
     }
   }
 
-  /// `.landing-title`, its lines 1.02em apart (LandingTitleLines).
+  /// `.landing-title`, its lines 1.02em apart (TitleLines).
   private var title: some View {
     let words = "Your account, in figures."
     let size = theme.points(ThemeKit.landingTitleFontSize)
-    return LandingTitleLines(
+    return TitleLines(
       pitch: theme.scaled(size) * CGFloat(ThemeKit.landingTitleLineHeight),
       // A space, and the letter-spacing a browser puts after it too.
       space: theme.spaceWidth(size: size) + theme.tracking(ThemeKit.landingTitleTracking, size: size)

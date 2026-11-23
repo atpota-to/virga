@@ -3,8 +3,9 @@
 //
 // The top of every page, on the sky, at the page's margin and --page-top
 // down:
-//   1. the title (--text-title, 600, tracking −0.025em, line 1.1), with at
-//      most a tool or two for the thing it names just after it;
+//   1. the title (--text-title, 600, tracking −0.025em, line 1.1, its lines
+//      balanced when it wraps), with at most a tool or two for the thing it
+//      names just after it;
 //   2. a line saying what the page is (--muted, --text-base, at most 68ch);
 //   3. a quiet meta line of what the page can touch (AccessLine);
 //   4. at most one row of controls: on a wide screen at the right of the
@@ -265,22 +266,64 @@ public struct PageHeader: View {
   /// and reaching out above and below it without making it taller.
   private var titleRow: some View {
     HStack(alignment: .top, spacing: Measure.PageHeader.gap) {
-      Text(model.title)
-        .virgaText(
-          .textTitle, weight: VirgaWeight.semibold, lineHeight: Measure.PageHeader.titleLineHeight,
-          tracking: Measure.PageHeader.titleTracking)
-        // The line is 1.1 of the title, shorter than the face's own: its
-        // box is that, the glyphs reaching past it as a browser's do.
-        .padding(.vertical, theme.overflowingLeading(size: theme.textTitle, lineHeight: Measure.PageHeader.titleLineHeight, weight: VirgaWeight.semibold))
-        .foregroundStyle(theme.ink)
-        .fixedSize(horizontal: false, vertical: true)
-        .accessibilityAddTraits(.isHeader)
-        .accessibilityIdentifier("page-title")
+      title
       if let titleTools {
         titleTools
           .padding(.vertical, (titleLine - Measure.Touch.target) / 2)
       }
     }
+  }
+
+  /// `.page-title`: on one line, the title as a Text; when it wraps, its
+  /// words a line every 1.1 of it (TitleLines), where a Text's lines would
+  /// be the face's own 1.22 apart, and balanced as the web's heading is.
+  /// Either way VoiceOver reads it as one heading. A title written right to
+  /// left stays a Text (TitleLines.canSet).
+  @ViewBuilder private var title: some View {
+    if TitleLines.canSet(model.title) {
+      ViewThatFits(in: .horizontal) {
+        titleText
+        titleLines
+      }
+    } else {
+      titleText
+    }
+  }
+
+  private var titleText: some View {
+    Text(model.title)
+      .virgaText(
+        .textTitle, weight: VirgaWeight.semibold, lineHeight: Measure.PageHeader.titleLineHeight,
+        tracking: Measure.PageHeader.titleTracking)
+      // The line is 1.1 of the title, shorter than the face's own: its
+      // box is that, the glyphs reaching past it as a browser's do.
+      .padding(.vertical, theme.overflowingLeading(size: theme.textTitle, lineHeight: Measure.PageHeader.titleLineHeight, weight: VirgaWeight.semibold))
+      .foregroundStyle(theme.ink)
+      .fixedSize(horizontal: false, vertical: true)
+      .accessibilityAddTraits(.isHeader)
+      .accessibilityIdentifier("page-title")
+  }
+
+  private var titleLines: some View {
+    TitleLines(
+      pitch: titleLine,
+      // A space at the title's weight, and the letter-spacing a browser
+      // puts after it too.
+      space: theme.spaceWidth(size: theme.textTitle, weight: VirgaWeight.semibold)
+        + theme.tracking(Measure.PageHeader.titleTracking, size: theme.textTitle)
+    ) {
+      ForEach(Array(model.title.split(separator: " ").enumerated()), id: \.offset) { _, word in
+        Text(String(word))
+          .virgaText(
+            .textTitle, weight: VirgaWeight.semibold, lineHeight: Measure.PageHeader.titleLineHeight,
+            tracking: Measure.PageHeader.titleTracking)
+      }
+    }
+    .foregroundStyle(theme.ink)
+    .accessibilityElement(children: .ignore)
+    .accessibilityLabel(model.title)
+    .accessibilityAddTraits(.isHeader)
+    .accessibilityIdentifier("page-title")
   }
 
   @ViewBuilder private var subAndAccess: some View {
