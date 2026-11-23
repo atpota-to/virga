@@ -4,8 +4,10 @@
 // opens on Event reminder, which asks two questions, its Use opens the
 // composer on it (the questions in the library's dialog), and then
 // Settings › Posting, from its top to the default timer and back up to its
-// language field with a few letters typed. Each is kept as a screenshot,
-// on the iPhone and the iPad.
+// language field with a few letters typed, its suggestions clear of the
+// keyboard, and the first one pressed (on the iPad then the keyboard's
+// Escape, and ↓ and Return). Each is kept as a screenshot, on the iPhone
+// and the iPad.
 
 import UIKit
 import XCTest
@@ -136,8 +138,11 @@ final class PostingUITests: XCTestCase {
     snapshot("settings-posting-timer")
 
     // Back at the top, its language field with "fr" typed: the suggestions
-    // float over the rows under it. Kept only as a screenshot; nothing
-    // here fails the test.
+    // float over the rows under it. On the iPhone the field is low in the
+    // window, and the page brings the list into view over the keyboard by
+    // itself. Reaching the field is guarded; once it has the keyboard, the
+    // list must clear the keyboard and a press on its first suggestion,
+    // outside the field's frame, must add that language.
     let languages = app.textFields["Languages"].firstMatch
     guard languages.waitForExistence(timeout: 5) else { return }
     var top = languages.frame.minY
@@ -149,22 +154,73 @@ final class PostingUITests: XCTestCase {
       top = languages.frame.minY
       if !moved { break }
     } while tries < 8
-    // On the iPhone the field is then low in the window, and the keyboard
-    // would cover the list under it. Drag the page up until the field is in
-    // the window's top third, slowly and held so it doesn't fling on. On the
-    // iPad it is near there already.
-    let height = app.windows.firstMatch.frame.height
-    let lift = languages.frame.minY - height * 0.3
-    if lift > 0 {
-      let from = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.75))
-      let to = from.withOffset(CGVector(dx: 0, dy: -lift))
-      from.press(forDuration: 0.2, thenDragTo: to, withVelocity: .slow, thenHoldForDuration: 0.5)
-    }
     guard languages.isHittable else { return }
+    let removes = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Remove '"))
+    var chosen = labels(removes)
     languages.tap()
-    guard app.keyboards.firstMatch.waitForExistence(timeout: 3) else { return }
+    let keyboard = app.keyboards.firstMatch
+    guard keyboard.waitForExistence(timeout: 3) else { return }
     languages.typeText("fr")
-    sleep(1)
+    let suggestions = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'language-'"))
+    XCTAssertTrue(suggestions.firstMatch.waitForExistence(timeout: 5), "no language suggestions for “fr”")
+    // The list is brought up once the keyboard is: wait until its last row
+    // is over the keyboard (or the keyboard has gone, as with a hardware one).
+    let covered: () -> Bool = {
+      let lowest = suggestions.allElementsBoundByIndex.map { $0.frame.maxY }.max()
+      guard keyboard.exists, let lowest else { return false }
+      return lowest > keyboard.frame.minY + 0.5
+    }
+    tries = 0
+    while covered() && tries < 12 {
+      Thread.sleep(forTimeInterval: 0.5)
+      tries += 1
+    }
     snapshot("settings-posting-languages")
+    XCTAssertFalse(covered(), "the language suggestions stayed under the keyboard")
+    // The first suggestion, by its place on screen.
+    guard let first = suggestions.allElementsBoundByIndex.min(by: { $0.frame.minY < $1.frame.minY }) else { return }
+    let firstLabel = first.label
+    first.tap()
+    XCTAssertTrue(
+      newToken(removes, besides: chosen).map { firstLabel.hasPrefix($0) } ?? false,
+      "a press on “\(firstLabel)” didn't add it")
+
+    // On the iPad, a hardware keyboard's: with the list open again (a press
+    // on the field), Escape puts it away, and ↓ then Return adds the second
+    // suggestion. (Mira starts with English, so this is the third language,
+    // the most there can be: Escape goes first.)
+    guard UIDevice.current.userInterfaceIdiom == .pad else { return }
+    languages.tap()
+    guard suggestions.firstMatch.waitForExistence(timeout: 5) else { return }
+    app.typeKey(XCUIKeyboardKey.escape.rawValue, modifierFlags: [])
+    XCTAssertTrue(suggestions.firstMatch.waitForNonExistence(timeout: 5), "Escape didn't put the language suggestions away")
+    chosen = labels(removes)
+    languages.tap()
+    guard suggestions.firstMatch.waitForExistence(timeout: 5) else { return }
+    let rows = suggestions.allElementsBoundByIndex.sorted { $0.frame.minY < $1.frame.minY }
+    guard rows.count >= 2 else { return }
+    let secondLabel = rows[1].label
+    app.typeKey(XCUIKeyboardKey.downArrow.rawValue, modifierFlags: [])
+    app.typeKey(XCUIKeyboardKey.return.rawValue, modifierFlags: [])
+    XCTAssertTrue(
+      newToken(removes, besides: chosen).map { secondLabel.hasPrefix($0) } ?? false,
+      "↓ and Return didn't add the second suggestion, “\(secondLabel)”")
+  }
+
+  private func labels(_ query: XCUIElementQuery) -> Set<String> {
+    Set(query.allElementsBoundByIndex.map { $0.label })
+  }
+
+  /// The language a new token names, once one of `removes` (the tokens'
+  /// "Remove <name>" buttons) has a label not in `besides`; nil if none
+  /// comes within five seconds.
+  private func newToken(_ removes: XCUIElementQuery, besides: Set<String>) -> String? {
+    for _ in 0..<10 {
+      if let label = labels(removes).first(where: { !besides.contains($0) }) {
+        return String(label.dropFirst("Remove ".count))
+      }
+      Thread.sleep(forTimeInterval: 0.5)
+    }
+    return nil
   }
 }

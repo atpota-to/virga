@@ -68,9 +68,10 @@
     "src/posting/composer/LanguagePicker.jsx": {
       "status": "partial",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerParts.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerParts.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/LanguagePickerKeys.swift"
       ],
-      "note": "The suggestions open as the field takes focus, is pressed or is typed in, and close once one is added (and 120 ms after the field loses focus); Return adds the first suggestion. Not yet: a hardware keyboard's arrows through them.",
+      "note": "The suggestions open as the field takes focus, is pressed or is typed in, and close once one is added (and 120 ms after the field loses focus). They float 4 under the field, at most 16rem tall (grown with Dynamic Type) and scrolling inside past it, and are brought into view in the scroll that holds the picker (Settings' page, the composer's Language dialog) over a phone's keyboard. The field is a combobox on a hardware keyboard (LanguagePickerKeys, onKeyDown's rules): the first suggestion highlighted (--hover, and VoiceOver's selected) as the list opens and after each keystroke, ↓ and ↑ round the list, Return adds the highlighted one, Escape closes the list. Not the web's: Return ends the field's editing, as a SwiftUI field's Return does, where the web's field keeps the focus.",
       "synced": "c409955cb92e"
     },
     "src/posting/composer/MediaGrid.jsx": {

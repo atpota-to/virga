@@ -873,6 +873,16 @@ public enum Measure {
     public static let noticeDangerRule: CGFloat = 3
   }
 
+  // MARK: composer.css (the language picker's suggestions)
+
+  public enum LanguageList {
+    /// `.lang-search .suggest-list { max-height: 16rem; overflow-y: auto }`:
+    /// past it the suggestions scroll inside the list. A rem, so it grows
+    /// with Dynamic Type as the rows' words do (LanguagePicker scales it).
+    /// Six rows at the default size come to 252 and don't reach it.
+    public static let maxHeight: CGFloat = 256
+  }
+
   // MARK: settings.css
 
   public enum Settings {
