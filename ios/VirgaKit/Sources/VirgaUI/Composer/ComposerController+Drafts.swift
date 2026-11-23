@@ -142,7 +142,7 @@ extension ComposerController {
         ComposerNotice(
           key: "missing-media", tone: .warn,
           text:
-            "\(n == 1 ? "One image or video in this post isn’t" : "\(n) images or videos in this post aren’t") in this browser any more. Add \(n == 1 ? "it" : "them") again before posting."
+            "\(n == 1 ? "One image or video in this post isn’t" : "\(n) images or videos in this post aren’t") on this device any more. Add \(n == 1 ? "it" : "them") again before posting."
         ))
     }
   }

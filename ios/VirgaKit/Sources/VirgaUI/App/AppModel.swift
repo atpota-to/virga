@@ -266,7 +266,7 @@ public final class AppModel {
   static func demoFlags(_ flags: AppConfig.Flags, defense: String?, moderator: String?) -> AppConfig.Flags {
     AppConfig.Flags(
       authMode: flags.authMode, backendURL: flags.backendURL, defenseEnabled: (defense ?? "on") == "on",
-      defenseModeratorEnabled: (moderator ?? "on") == "on")
+      defenseModeratorEnabled: (moderator ?? "on") == "on", appStoreURL: flags.appStoreURL)
   }
 
   /// Signed in through Virga's server, over the device's stores.

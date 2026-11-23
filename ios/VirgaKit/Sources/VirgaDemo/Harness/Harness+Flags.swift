@@ -31,8 +31,11 @@
 //   ?cron=20         how often (seconds) the server's workers run; 0 stops them
 //   ?appview=failopen|flaky
 //                    the signed-in getProfiles leaves known followers off
-//   ?terms=ask|down  nobody has agreed to the Terms of Service yet; with
-//                    'down' the server can't record it either
+//   ?terms=ask|down|newer  nobody has agreed to the Terms of Service yet;
+//                    with 'down' the server can't record it either, and with
+//                    'newer' its documents are a version ahead of the app's
+//                    (a build made before a bump), so it refuses the app's
+//                    agreement
 //   ?latency=60      simulated delay per request, in ms
 //   ?now=<ms>        the moment the made-up world is dated back from
 
@@ -183,7 +186,7 @@ extension Harness {
       limits: readLimits(get("limits")),
       aiLimits: readAiLimits(get("ailimits")),
       ai: oneOf("ai", ["slow", "down"], "ok"),
-      terms: oneOf("terms", ["ask", "down"], "agreed"),
+      terms: oneOf("terms", ["ask", "down", "newer"], "agreed"),
       cronSeconds: num("cron", 20),
       latency: num("latency", 60),
       now: now > 0 ? now : nil)

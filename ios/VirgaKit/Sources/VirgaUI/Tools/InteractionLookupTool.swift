@@ -140,7 +140,7 @@ struct LookupPage: View {
             let words: String =
               state == "missing"
               ? "The address names “\(named)”, which Bluesky doesn’t know as an account."
-              : "Couldn’t reach Bluesky to look up “\(named)”. Reload to try again."
+              : "Couldn’t reach Bluesky to look up “\(named)”. Check the connection and try again."
             Callout(tone: .warn) { Text(words) }
               .toolAnnounces(words, onAppear: true)
           }

@@ -210,7 +210,7 @@ extension ScheduleModel {
     _ row: JSONValue?, did: String, deps: PostScheduledNowDeps<Target>, now: Double, timeZone: TimeZone? = nil
   ) async throws -> PostScheduledNowResult {
     guard let row, let id = row["id"], id.isTruthy else {
-      throw ScheduleModelError("BAD_ROW", "That post couldn’t be read. Reload the page and try again.")
+      throw ScheduleModelError("BAD_ROW", "That post couldn’t be read, so nothing was posted.")
     }
     if ComposerJS.truthy(row["partial"]) {
       throw ScheduleModelError("PARTIALLY_PUBLISHED", "Part of this thread is already out. Retry it to post the rest.")

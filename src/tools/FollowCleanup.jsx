@@ -168,7 +168,7 @@ export default function FollowCleanup({ tool }) {
             </h2>
             <p className="card-sub">
               Reads the newest post or repost of each account you follow from Bluesky’s public API, one request each. About a minute for
-              800 accounts. Kept in this browser.
+              800 accounts. Kept on this device.
             </p>
           </div>
           {checking ? (
@@ -431,7 +431,7 @@ export default function FollowCleanup({ tool }) {
           )}
           <p className="card-caption">
             Unfollowing deletes the follow record from your repo, the same as unfollowing in any app. Undo writes a new one. Marking an
-            account Keep only changes what this page suggests, in this browser.
+            account Keep only changes what this page suggests, on this device.
           </p>
         </section>
       </div>

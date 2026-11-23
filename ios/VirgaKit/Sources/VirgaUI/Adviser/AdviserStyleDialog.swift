@@ -68,7 +68,7 @@ struct AdviserStyleDialog: View {
           NeedsBackendNotice(did: did)
         } else {
           Text(
-            "The adviser can learn how you write from your recent posts, so the proofread leaves your habits alone: all lowercase, no full stops, “gonna”. It sends your recent public posts to Virga’s server, which asks an AI model to describe them. Only the description is kept, in this browser."
+            "The adviser can learn how you write from your recent posts, so the proofread leaves your habits alone: all lowercase, no full stops, “gonna”. It sends your recent public posts to Virga’s server, which asks an AI model to describe them. Only the description is kept, on this device."
           )
           .virgaText(.textBase)
           .foregroundStyle(theme.ink2)

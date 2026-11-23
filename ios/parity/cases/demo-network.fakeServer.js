@@ -414,6 +414,35 @@ const SCENARIOS = [
     ],
   },
   {
+    // The server's documents a version ahead of the app's: the app's own
+    // version is refused, the next one is recorded and counts.
+    name: 'terms-newer',
+    terms: 'newer',
+    steps: [
+      { mint: ME.did },
+      {
+        url: `${S}/api/terms/status`,
+        headers: { authorization: 'Bearer $t0' },
+      },
+      {
+        url: `${S}/api/terms/accept`,
+        method: 'POST',
+        headers: { authorization: 'Bearer $t0', ...json },
+        text: '{"version":1}',
+      },
+      {
+        url: `${S}/api/terms/accept`,
+        method: 'POST',
+        headers: { authorization: 'Bearer $t0', ...json },
+        text: '{"version":2}',
+      },
+      {
+        url: `${S}/api/terms/status`,
+        headers: { authorization: 'Bearer $t0' },
+      },
+    ],
+  },
+  {
     name: 'terms-down',
     terms: 'down',
     steps: [

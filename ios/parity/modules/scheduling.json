@@ -50,7 +50,7 @@
         "scheduling.scheduleModel"
       ],
       "note": "Pure; every clock is a now: (epoch ms) and the device's zone a timeZone:, including the sentences the web says against Date.now() (rowFacts, timerRowModel). slotLabel formats in locale (nil: the active one) where the web uses the browser's own (toLocaleTimeString(undefined)). postScheduledNow takes its deps as PostScheduledNowDeps<Target> (live(...) wires VirgaBackend, reconstructFromScheduled, Publish.publish, the events bus and TimerService.armAfterPublish as the Scheduled page does). Not reproduced (corrupt input only): a day's slots that aren't a list, which the web throws spreading or sorting.",
-      "synced": "93930a5d238c"
+      "synced": "1939812d8d78"
     },
     "src/posting/schedule/queueCalendar.js": {
       "status": "ported",

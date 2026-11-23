@@ -596,7 +596,7 @@ export default function Composer({ open, intent, onClose }) {
     const item = takeSetAside(did, { id, base });
     if (!item) {
       setNotices((list) => list.filter((n) => n.key !== `aside-${id}`));
-      toast?.('That post isn’t kept in this browser any more.', { tone: 'danger' });
+      toast?.('That post isn’t kept on this device any more.', { tone: 'danger' });
       return;
     }
     const token = ++loadToken.current;
@@ -638,7 +638,7 @@ export default function Composer({ open, intent, onClose }) {
       {
         key: 'missing-media',
         tone: 'warn',
-        text: `${n === 1 ? 'One image or video in this post isn’t' : `${n} images or videos in this post aren’t`} in this browser any more. Add ${n === 1 ? 'it' : 'them'} again before posting.`,
+        text: `${n === 1 ? 'One image or video in this post isn’t' : `${n} images or videos in this post aren’t`} on this device any more. Add ${n === 1 ? 'it' : 'them'} again before posting.`,
       },
     ]);
   }

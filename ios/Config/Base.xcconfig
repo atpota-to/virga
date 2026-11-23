@@ -16,4 +16,10 @@ VIRGA_DEFENSE_MODERATOR = off
 VIRGA_BUNDLE_ID = app.virga.Virga
 VIRGA_TEAM_ID =
 
+// The app's App Store page, once it has one (https:/$()/apps.apple.com/app/
+// id…). A build made before the Terms of Service or the Privacy Policy move
+// on can't record an agreement to the new ones; the agreement screen then
+// offers an Update button that opens this. Empty: it only says to update.
+VIRGA_APP_STORE_URL =
+
 #include? "Local.xcconfig"

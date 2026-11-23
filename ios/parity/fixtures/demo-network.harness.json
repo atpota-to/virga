@@ -2037,7 +2037,7 @@
       "id": "flags#51",
       "fn": "readFlags",
       "input": {
-        "search": "?terms=whatever"
+        "search": "?terms=newer"
       },
       "output": {
         "accounts": [
@@ -2067,7 +2067,7 @@
           "altText": 15
         },
         "ai": "ok",
-        "terms": "agreed",
+        "terms": "newer",
         "cronSeconds": 20,
         "latency": 60,
         "now": null
@@ -2077,7 +2077,7 @@
       "id": "flags#52",
       "fn": "readFlags",
       "input": {
-        "search": "?terms="
+        "search": "?terms=whatever"
       },
       "output": {
         "accounts": [
@@ -2117,6 +2117,46 @@
       "id": "flags#53",
       "fn": "readFlags",
       "input": {
+        "search": "?terms="
+      },
+      "output": {
+        "accounts": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "handle": "mira.example.com",
+            "displayName": "Mira Okafor"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          }
+        ],
+        "mode": "backend",
+        "signedOut": false,
+        "expired": null,
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*",
+        "appview": "ok",
+        "defenseWrites": true,
+        "moderator": "on",
+        "limits": {},
+        "aiLimits": {
+          "adviser": 30,
+          "style": 3,
+          "altText": 15
+        },
+        "ai": "ok",
+        "terms": "agreed",
+        "cronSeconds": 20,
+        "latency": 60,
+        "now": null
+      }
+    },
+    {
+      "id": "flags#54",
+      "fn": "readFlags",
+      "input": {
         "search": "?cron=0"
       },
       "output": {
@@ -2154,7 +2194,7 @@
       }
     },
     {
-      "id": "flags#54",
+      "id": "flags#55",
       "fn": "readFlags",
       "input": {
         "search": "?cron=abc"
@@ -2194,7 +2234,7 @@
       }
     },
     {
-      "id": "flags#55",
+      "id": "flags#56",
       "fn": "readFlags",
       "input": {
         "search": "?cron="
@@ -2234,7 +2274,7 @@
       }
     },
     {
-      "id": "flags#56",
+      "id": "flags#57",
       "fn": "readFlags",
       "input": {
         "search": "?cron=1e2"
@@ -2274,7 +2314,7 @@
       }
     },
     {
-      "id": "flags#57",
+      "id": "flags#58",
       "fn": "readFlags",
       "input": {
         "search": "?cron=0x10"
@@ -2314,7 +2354,7 @@
       }
     },
     {
-      "id": "flags#58",
+      "id": "flags#59",
       "fn": "readFlags",
       "input": {
         "search": "?latency=0"
@@ -2354,7 +2394,7 @@
       }
     },
     {
-      "id": "flags#59",
+      "id": "flags#60",
       "fn": "readFlags",
       "input": {
         "search": "?latency=-5"
@@ -2394,7 +2434,7 @@
       }
     },
     {
-      "id": "flags#60",
+      "id": "flags#61",
       "fn": "readFlags",
       "input": {
         "search": "?latency=Infinity"
@@ -2434,7 +2474,7 @@
       }
     },
     {
-      "id": "flags#61",
+      "id": "flags#62",
       "fn": "readFlags",
       "input": {
         "search": "?latency=%2012%20"
@@ -2474,7 +2514,7 @@
       }
     },
     {
-      "id": "flags#62",
+      "id": "flags#63",
       "fn": "readFlags",
       "input": {
         "search": "?latency=+5"
@@ -2514,7 +2554,7 @@
       }
     },
     {
-      "id": "flags#63",
+      "id": "flags#64",
       "fn": "readFlags",
       "input": {
         "search": "?latency=1%2B1"
@@ -2554,7 +2594,7 @@
       }
     },
     {
-      "id": "flags#64",
+      "id": "flags#65",
       "fn": "readFlags",
       "input": {
         "search": "?now=1794700000000"
@@ -2594,7 +2634,7 @@
       }
     },
     {
-      "id": "flags#65",
+      "id": "flags#66",
       "fn": "readFlags",
       "input": {
         "search": "?now=0"
@@ -2634,7 +2674,7 @@
       }
     },
     {
-      "id": "flags#66",
+      "id": "flags#67",
       "fn": "readFlags",
       "input": {
         "search": "?now=-1"
@@ -2674,7 +2714,7 @@
       }
     },
     {
-      "id": "flags#67",
+      "id": "flags#68",
       "fn": "readFlags",
       "input": {
         "search": "?now=abc"
@@ -2714,7 +2754,7 @@
       }
     },
     {
-      "id": "flags#68",
+      "id": "flags#69",
       "fn": "readFlags",
       "input": {
         "search": "?now="
@@ -2754,7 +2794,7 @@
       }
     },
     {
-      "id": "flags#69",
+      "id": "flags#70",
       "fn": "readFlags",
       "input": {
         "search": "?now=1794700000000.75"
@@ -2794,7 +2834,7 @@
       }
     },
     {
-      "id": "flags#70",
+      "id": "flags#71",
       "fn": "readFlags",
       "input": {
         "search": "?now=1e309"
@@ -2834,7 +2874,7 @@
       }
     },
     {
-      "id": "flags#71",
+      "id": "flags#72",
       "fn": "readFlags",
       "input": {
         "search": "?now=0x1A"
@@ -2874,7 +2914,7 @@
       }
     },
     {
-      "id": "flags#72",
+      "id": "flags#73",
       "fn": "readFlags",
       "input": {
         "search": "?cron=-0"
@@ -2914,7 +2954,7 @@
       }
     },
     {
-      "id": "flags#73",
+      "id": "flags#74",
       "fn": "readFlags",
       "input": {
         "search": "?latency=%D9%A3"
@@ -2954,7 +2994,7 @@
       }
     },
     {
-      "id": "flags#74",
+      "id": "flags#75",
       "fn": "readFlags",
       "input": {
         "search": "?limits=%D9%A3,2"
@@ -2996,7 +3036,7 @@
       }
     },
     {
-      "id": "flags#75",
+      "id": "flags#76",
       "fn": "readFlags",
       "input": {
         "search": "?limits=%EF%BC%93"
@@ -3036,7 +3076,7 @@
       }
     },
     {
-      "id": "flags#76",
+      "id": "flags#77",
       "fn": "readFlags",
       "input": {
         "search": "?limits=3%0A,4%E2%80%A8"
@@ -3079,7 +3119,7 @@
       }
     },
     {
-      "id": "flags#77",
+      "id": "flags#78",
       "fn": "readFlags",
       "input": {
         "search": "?ailimits=unlimited%0A"
@@ -3119,7 +3159,7 @@
       }
     },
     {
-      "id": "flags#78",
+      "id": "flags#79",
       "fn": "readFlags",
       "input": {
         "search": "?ailimits=%E2%80%A8none"
@@ -3159,7 +3199,7 @@
       }
     },
     {
-      "id": "flags#79",
+      "id": "flags#80",
       "fn": "readFlags",
       "input": {
         "search": "?ailimits=%EF%BC%AE%EF%BC%AF%EF%BC%AE%EF%BC%A5"
@@ -3199,7 +3239,7 @@
       }
     },
     {
-      "id": "flags#80",
+      "id": "flags#81",
       "fn": "readFlags",
       "input": {
         "search": "?ailimits=UNL%C4%B0M%C4%B0TED"
@@ -3239,7 +3279,7 @@
       }
     },
     {
-      "id": "flags#81",
+      "id": "flags#82",
       "fn": "readFlags",
       "input": {
         "search": "?ailimits=NONE,1"
@@ -3279,7 +3319,7 @@
       }
     },
     {
-      "id": "flags#82",
+      "id": "flags#83",
       "fn": "readFlags",
       "input": {
         "search": "?ailimits=%2B1,-1,1e1"
@@ -3319,7 +3359,7 @@
       }
     },
     {
-      "id": "flags#83",
+      "id": "flags#84",
       "fn": "readFlags",
       "input": {
         "search": "?mode=browser&mode=x"
@@ -3359,7 +3399,7 @@
       }
     },
     {
-      "id": "flags#84",
+      "id": "flags#85",
       "fn": "readFlags",
       "input": {
         "search": "?expired=Lab"
@@ -3399,7 +3439,7 @@
       }
     },
     {
-      "id": "flags#85",
+      "id": "flags#86",
       "fn": "readFlags",
       "input": {
         "search": "?expired=lab.example.org.x"
@@ -3439,7 +3479,7 @@
       }
     },
     {
-      "id": "flags#86",
+      "id": "flags#87",
       "fn": "readFlags",
       "input": {
         "search": "?scope=read&scope=x"
@@ -3479,7 +3519,7 @@
       }
     },
     {
-      "id": "flags#87",
+      "id": "flags#88",
       "fn": "readFlags",
       "input": {
         "search": "?defense=on&defense=lists"
@@ -3519,7 +3559,7 @@
       }
     },
     {
-      "id": "flags#88",
+      "id": "flags#89",
       "fn": "readFlags",
       "input": {
         "search": "?terms=ASK"
@@ -3559,7 +3599,7 @@
       }
     },
     {
-      "id": "flags#89",
+      "id": "flags#90",
       "fn": "readFlags",
       "input": {
         "search": "#accounts=1"
@@ -3599,7 +3639,7 @@
       }
     },
     {
-      "id": "flags#90",
+      "id": "flags#91",
       "fn": "readFlags",
       "input": {
         "search": "?accounts=1#x"
@@ -3639,7 +3679,7 @@
       }
     },
     {
-      "id": "flags#91",
+      "id": "flags#92",
       "fn": "readFlags",
       "input": {
         "search": "?a=1;accounts=1"
@@ -3679,7 +3719,7 @@
       }
     },
     {
-      "id": "flags#92",
+      "id": "flags#93",
       "fn": "readFlags",
       "input": {
         "search": "??accounts=1"
@@ -3719,7 +3759,7 @@
       }
     },
     {
-      "id": "flags#93",
+      "id": "flags#94",
       "fn": "readFlags",
       "input": {
         "search": "?accounts%3D1"
@@ -3759,7 +3799,7 @@
       }
     },
     {
-      "id": "flags#94",
+      "id": "flags#95",
       "fn": "readFlags",
       "input": {
         "search": "?accounts=1&mode=browser&signedout&expired=lab&scope=read&defense=on&appview=flaky&defensewrites=off&moderator=linked&limits=1,2,3&ailimits=4,5,6&ai=down&terms=ask&cron=5&latency=7&now=8"

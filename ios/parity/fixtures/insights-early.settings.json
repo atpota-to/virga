@@ -13,12 +13,12 @@
         {
           "key": "account",
           "label": "Account",
-          "desc": "The accounts signed in on this browser, and how long each sign-in lasts."
+          "desc": "The accounts signed in on this device, and how long each sign-in lasts."
         },
         {
           "key": "data",
           "label": "Data and sync",
-          "desc": "What Virga keeps in this browser, how fresh it is, and how to take it with you."
+          "desc": "What Virga keeps on this device, how fresh it is, and how to take it with you."
         },
         {
           "key": "dashboards",
@@ -33,7 +33,7 @@
         {
           "key": "appearance",
           "label": "Appearance",
-          "desc": "How Virga looks in this browser. Changes show straight away."
+          "desc": "How Virga looks on this device. Changes show straight away."
         },
         {
           "key": "permissions",

@@ -171,7 +171,7 @@ struct SyncCard: View {
         // The two counts the card names (blockReach is worked out only
         // where the blocks are shown).
         Text(
-          "\(AppLocale.formatNumber(archive.data.atmosphere.count)) repo records and \(AppLocale.formatNumber(archive.data.followers.count)) followers, kept in this browser"
+          "\(AppLocale.formatNumber(archive.data.atmosphere.count)) repo records and \(AppLocale.formatNumber(archive.data.followers.count)) followers, kept on this device"
         )
         .virgaText(.textSm, lineHeight: Measure.Sync.subLineHeight)
         .fixedSize(horizontal: false, vertical: true)

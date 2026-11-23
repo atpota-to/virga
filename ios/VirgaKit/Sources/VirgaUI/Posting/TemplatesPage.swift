@@ -225,7 +225,7 @@ struct TemplatesPage: View {
   /// `usedLine(entry)`.
   static func usedLine(_ entry: TemplateUseEntry?) -> String {
     guard let entry, entry.count != 0 else { return "Not used here yet" }
-    return "Used \(entry.count == 1 ? "once" : "\(AppLocale.formatNumber(entry.count)) times") in this browser"
+    return "Used \(entry.count == 1 ? "once" : "\(AppLocale.formatNumber(entry.count)) times") on this device"
   }
 
   private func row(_ t: PostTemplate, usage: TemplateUsageCounts, canWrite: Bool, canPost: Bool) -> some View {

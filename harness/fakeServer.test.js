@@ -807,6 +807,7 @@ describe('the terms ledger', () => {
     expect(readFlags('').terms).toBe('agreed');
     expect(readFlags('?terms=ask').terms).toBe('ask');
     expect(readFlags('?terms=down').terms).toBe('down');
+    expect(readFlags('?terms=newer').terms).toBe('newer');
     expect(readFlags('?terms=whatever').terms).toBe('agreed');
   });
 });

@@ -611,7 +611,7 @@ export function createSessionController(set, env) {
     async switchAccount(did) {
       if (!did || did === active.did) return;
       const account = find(did);
-      if (!account) throw new Error('That account isn’t remembered in this browser.');
+      if (!account) throw new Error('That account isn’t remembered on this device.');
       if (statusOf(did) === 'needsSignIn') throw A.makeReauthRequiredError(did);
       const seq = ++switchSeq;
       set.switching(did);

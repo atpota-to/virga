@@ -9,6 +9,13 @@
 // gets a new row for each of them. Fixing a typo doesn't change it.
 // documents.test.js keeps a fingerprint of both documents beside it, so an
 // edit can't pass without that being decided.
+//
+// Raising it also strands iOS builds made before it. The iOS app carries its
+// own copies of the documents and of this number, so an older build can't
+// record an agreement to the new ones: an account signing in there meets the
+// agreement screen, which can only ask for an update (TermsGateView.swift),
+// and an account that agreed there before isn't asked again until it
+// updates. So a bump ships with an iOS release that carries it.
 export const TERMS_VERSION = 1;
 
 // The "Last updated" date both documents carry, as YYYY-MM-DD. The ledger

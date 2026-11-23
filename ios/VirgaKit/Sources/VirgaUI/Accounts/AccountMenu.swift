@@ -179,7 +179,7 @@ struct SignOutAllDialog: ViewModifier {
     let signedIn = session.accounts.filter { $0.status != .needsSignIn }
     return content.virgaDialog(isPresented: $isPresented, title: "Sign out of all \(signedIn.count) accounts") {
       DialogForm {
-        Text("Each account’s session in this browser ends. Their archives and dashboards stay here, and each can sign back in from the front page.")
+        Text("Each account’s session on this device ends. Their archives and dashboards stay here, and each can sign back in from the front page.")
           .fixedSize(horizontal: false, vertical: true)
         PendingWorkWarnings(accounts: signedIn, model: work)
       }

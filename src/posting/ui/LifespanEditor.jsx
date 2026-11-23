@@ -245,7 +245,7 @@ export default function LifespanEditor({
           </label>
           <p className="field-hint lse-switch-hint" id={`${id}-on-hint`}>
             {rule.enabled
-              ? 'Virga’s server acts on the post at its time, even with this browser closed.'
+              ? 'Virga’s server acts on the post at its time, even with Virga closed.'
               : 'No timer: the post stays up until you delete it.'}
           </p>
         </div>

@@ -41,7 +41,7 @@ export default function QueueSettings({ did }) {
   return (
     <SettingsCard
       title="Weekly queue"
-      sub="The times each week that a post added to the queue goes out. Kept in this browser, for this account."
+      sub="The times each week that a post added to the queue goes out. Kept on this device, for this account."
     >
       <SettingsRow
         label={

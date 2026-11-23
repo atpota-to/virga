@@ -564,7 +564,7 @@ struct PostingNextCard: View {
   /// Without a long session: why, and the way to see how.
   private var needsSession: some View {
     FlowLayout(spacing: 0, lineSpacing: 0) {
-      Text("Scheduling needs a long session, because Virga’s server posts while this browser is closed. ")
+      Text("Scheduling needs a long session, because Virga’s server posts while Virga is closed. ")
         .virgaText(.textBase)
         .foregroundStyle(theme.muted)
         .fixedSize(horizontal: false, vertical: true)

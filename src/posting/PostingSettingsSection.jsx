@@ -25,7 +25,7 @@ export default function PostingSettingsSection() {
   return (
     <>
       {choices.length > 1 && (
-        <SettingsCard title="Whose settings" sub="Each account keeps its own posting settings, in this browser.">
+        <SettingsCard title="Whose settings" sub="Each account keeps its own posting settings, on this device.">
           <SettingsRow label="Account" htmlFor={pickId}>
             <select id={pickId} className="input" value={did || ''} onChange={(e) => setChosen(e.target.value)}>
               {choices.map((a) => (

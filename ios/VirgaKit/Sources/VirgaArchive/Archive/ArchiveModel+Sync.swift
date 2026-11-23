@@ -273,7 +273,7 @@ extension ArchiveModel {
         }
         repoReport(
           SyncProgress.repoSaveFraction(0, toWrite), "\(Self.num(0, locale: locale)) of \(Self.num(Double(toWrite), locale: locale)) rows",
-          "Saving the repo to this browser")
+          "Saving the repo to this device")
         if since == nil {
           // A full pull replaces, so deleted records leave; the rev is
           // cleared first, so a death mid-write makes the next sync pull

@@ -151,7 +151,7 @@ TEST HELPERS (Tests/VirgaArchiveTests, internal)
 - linkHost uses VirgaNetwork's WebURL, whose non-ASCII (IDNA) host handling is approximate. VirgaPosting's exact WHATWGURL can't be imported here (noted in the network notes for the merge).
 - topActors' byKind is [String: Int] (canonical-equivalence keys). Two notification reasons that differ only by normalization would merge; that can't happen with the reasons the archive keeps.
 - Africa/Casablanca after 2027 buckets an hour off on the Linux toolchain (older bundled time-zone data than Node's); iOS uses Apple's data.
-- The sync bar's copy matches the web word for word, including 'Saving the repo to this browser'. VirgaUI may want to raise that with the web owners rather than change it on one side.
+- The sync bar's copy matches the web word for word. 'Saving the repo to this browser' became 'Saving the repo to this device' on both sides on 2026-11-23, when the web's copy was reworded to be true on iOS too (PORTING.md, "Copy is behaviour").
 - No generator records the sync against VirgaDemo's DemoWorld (optional in the brief). archive.model uses its own small made-up accounts built with harness/buildCar.js.
 
 ## The audit (2026-11-21)

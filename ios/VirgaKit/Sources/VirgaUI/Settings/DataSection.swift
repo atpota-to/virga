@@ -54,9 +54,9 @@ struct DataSection: View {
           }
           .buttonStyle(.virga(.primary))
         }
-        .virgaDialog(isPresented: confirming(.delete), title: "Delete this browser’s archive?") {
+        .virgaDialog(isPresented: confirming(.delete), title: "Delete the archive on this device?") {
           Text(
-            "Every post, follower, block, engagement event and repo record Virga holds for this account in this browser goes, along with the unfollow log. Your dashboards and settings stay."
+            "Every post, follower, block, engagement event and repo record Virga holds for this account on this device goes, along with the unfollow log. Your dashboards and settings stay."
           )
           .fixedSize(horizontal: false, vertical: true)
         } actions: {
@@ -66,7 +66,7 @@ struct DataSection: View {
             confirm = nil
             Task {
               await archive.deleteArchive()
-              toasts?.push("The archive is deleted from this browser.")
+              toasts?.push("The archive is deleted from this device.")
               navigate("/")
             }
           }
@@ -143,7 +143,7 @@ struct DataSection: View {
       }
 
       SettingsSectionView(title: "Take it with you", sub: nil) {
-        SettingsRow(label: "Everything, as JSON", hint: "Posts, followers, blocks, engagement and repo records, as this browser holds them.") {
+        SettingsRow(label: "Everything, as JSON", hint: "Posts, followers, blocks, engagement and repo records, as this device holds them.") {
           Button {
             exporting = try? archive.exportArchive()
           } label: {
@@ -165,7 +165,7 @@ struct DataSection: View {
         }
       }
 
-      SettingsSectionView(title: "Storage in this browser", sub: nil) {
+      SettingsSectionView(title: "Storage on this device", sub: nil) {
         SettingsRow(label: "Kept on this device", hint: storageHint(archive), compactControl: true, kind: .state) {
           // Only the case to find is marked; kept, the line says where.
           if !archive.data.persistent {
@@ -198,12 +198,12 @@ struct DataSection: View {
     if !archive.data.persistent {
       return archive.data.blocked
         ? "Another Virga tab is holding the archive open, so this one lasts the session only. Close that tab and reload to keep it."
-        : "This browser holds the archive for this session only."
+        : "The archive is held for this session only."
     }
     if let usage {
-      return "Virga is using about \(Self.megabytes(usage)) here, for every account signed in on this browser."
+      return "Virga is using about \(Self.megabytes(usage)) here, for every account signed in on this device."
     }
-    return "In IndexedDB, in a database of its own for this account."
+    return "In a database of its own for this account, on this device."
   }
 
   // MARK: The words

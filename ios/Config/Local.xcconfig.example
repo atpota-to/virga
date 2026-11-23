@@ -4,3 +4,4 @@
 // VIRGA_BACKEND_URL = https:/$()/your-deployment.vercel.app
 // VIRGA_HOST = your-deployment.vercel.app
 // VIRGA_DEFENSE = on
+// VIRGA_APP_STORE_URL = https:/$()/apps.apple.com/app/id0000000000

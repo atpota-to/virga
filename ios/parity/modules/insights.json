@@ -117,7 +117,7 @@
       "fixtures": [
         "insights-early.settings"
       ],
-      "synced": "943739766b94"
+      "synced": "a6c22004446e"
     },
     "src/share/chartImage.js": {
       "status": "ported",
@@ -209,7 +209,7 @@
         "insights-early.registries"
       ],
       "note": "All of it. The ACCESS table it re-exports from src/components/AccessBadge.jsx is ported in Components/AccessBadge.swift, whose header names both files; AccessBadge.jsx's own entry (ui-shell) is still pending: its AccessLine is a view, VirgaUI's.",
-      "synced": "2db4cac86133"
+      "synced": "bcd9f7840c03"
     }
   }
 }

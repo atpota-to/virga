@@ -450,7 +450,7 @@ public final class ComposerController {
     autosaver.cancel()
     guard let item = Autosave.takeSetAside(did, id: id, store: store, now: now, base: baseState(did).json) else {
       notices.removeAll { $0.key == "aside-\(id)" }
-      toasts.push("That post isn’t kept in this browser any more.", danger: true)
+      toasts.push("That post isn’t kept on this device any more.", danger: true)
       return
     }
     loadToken += 1

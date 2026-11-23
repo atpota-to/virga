@@ -58,7 +58,7 @@ public enum ToolsRegistry {
   public static let toolSections: [ToolSection] = [
     ToolSection(key: "tidy", title: "Tidy up", desc: "Keep your follows and followers in order."),
     ToolSection(key: "understand", title: "Understand", desc: "Answers to the questions the charts raise."),
-    ToolSection(key: "data", title: "Your data", desc: "What Virga keeps in this browser, and how to take it with you."),
+    ToolSection(key: "data", title: "Your data", desc: "What Virga keeps on this device, and how to take it with you."),
     ToolSection(key: "later", title: "Later", desc: "Ideas that need more than Virga asks for today. Each would ask you first."),
   ]
 

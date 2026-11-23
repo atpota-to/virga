@@ -234,7 +234,7 @@ export function readBackendReturn({ pathname, search, hash }, pending, returnPat
   if (!token && !did) return null;
   const nonce = query.get('n');
   if (!pending || !nonce || pending.nonce !== nonce) {
-    const error = returnError('unexpected_return', 'This sign-in wasn’t started from this tab, so it was ignored.');
+    const error = returnError('unexpected_return', 'This sign-in wasn’t started here, so it was ignored.');
     // A refused token is still live on the server, and while it lives the
     // server counts the account as signed in somewhere: handed back so it
     // can be signed out rather than left to keep the grant alive.

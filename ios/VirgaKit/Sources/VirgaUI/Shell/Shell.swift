@@ -84,6 +84,9 @@ public struct ShellView: View {
   /// (a preview), and only then does the shell draw one.
   @Environment(ToastCenter.self) private var hostToasts: ToastCenter?
   @State private var ownToasts = ToastCenter()
+  /// The phone's tab bar as drawn (`--tabbar-h` until it is measured), the
+  /// room each page in the stack leaves under its content.
+  @State private var tabBarHeight: CGFloat = 64
 
   /// - Parameters:
   ///   - store: where the account's dashboards are kept.
@@ -179,12 +182,20 @@ public struct ShellView: View {
       // Each page its own (its scroll, its state), not the last one's.
       RoutedPage(path: navigator.stackRoot)
         .id(navigator.stackRoot)
+        .safeAreaPadding(.bottom, tabBarHeight)
         .navigationDestination(for: String.self) { path in
           RoutedPage(path: path)
+            .safeAreaPadding(.bottom, tabBarHeight)
         }
     }
-    .safeAreaInset(edge: .bottom, spacing: 0) {
+    // The bar is drawn over the stack, so it stays put as a page is pushed,
+    // and each page leaves room for it itself (above). A `.safeAreaInset`
+    // on the stack doesn't reach the pages' scroll views on iOS 26: they
+    // only cleared the home indicator, and the last 64 points of every page
+    // stayed under the bar.
+    .overlay(alignment: .bottom) {
       TabBar()
+        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { tabBarHeight = $0 }
     }
     .environment(\.shellChrome, .phone)
   }

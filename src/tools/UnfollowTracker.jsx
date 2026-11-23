@@ -146,7 +146,7 @@ export default function UnfollowTracker({ tool }) {
               )}
               <p className="card-caption">
                 A change is noticed at the sync after it happened, so “noticed” is a window, not a moment. Someone who unfollowed and
-                followed again between two syncs never shows. The log is kept in this browser, up to 5,000 changes.
+                followed again between two syncs never shows. The log is kept on this device, up to 5,000 changes.
               </p>
             </section>
           </>

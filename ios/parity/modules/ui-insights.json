@@ -101,7 +101,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Dashboards/MoreWidgets.swift"
       ],
       "note": "Its four cards over the overview's reads (PostingLoad, read again on the posting events, for the dashboard's account): Scheduled (Waiting, the count, and how many didn't go out, Next: with whenLabel, or Nothing is scheduled) and Timers (Counting down, the count, Next check with relativeWhen, or None counting down) as figures, … Reading while they read and Couldn’t be read just now on a failure or an unavailable server; Going out next (scheduledOverview's next as many as the card's rows, each the overview's timed row, its day over its hour, Queue or Going out now; the bones, the failure with Try again, Scheduling isn’t available, Nothing is scheduled; how many didn't go out at its foot) and Latest drafts (the overview's draft rows with Open, which opens the draft in the composer; the bones, the failure, No drafts). Without a long session the figures say Needs a long session and Going out next why, with See how. What isn't rows stands 16 off the list's rule.",
-      "synced": "d108e840532d"
+      "synced": "15476d51f52f"
     },
     "src/people/people.jsx": {
       "status": "ported",
@@ -117,7 +117,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Reports/ChartNotes.swift"
       ],
       "note": "Notes on your charts: the day (the system's date picker, up to today) and what happened (at most 80; Return adds the note, as the web's form does), Add note, the notes newest first on a rule in ink 18 under the form, each row at least 46 tall with its day in a column of 108 (84 at 760 and under), with Remove, and the empty line, over one AnnotationsModel per account (ChartNotesModels), read again each time a shell opens for the account (ChartNotesModels.reload, from ArchiveHost), as useAnnotations reads on mount; on the followers and posts reports. useChartMarks is ChartNotesModels.marks: the notes, and the follower milestones on the follower charts, on the reports' charts and the dashboard's. The widget's visually hidden marks list (.widget .an-chart-marks) is drawn under the card's chart here.",
-      "synced": "d2a0b9be0794"
+      "synced": "eabf30e1d412"
     },
     "src/reports/ContentReport.jsx": {
       "status": "ported",
@@ -195,7 +195,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Tools/FollowCleanupTool.swift"
       ],
       "note": "Every follow once (the earliest record), with its interactions (all, and the last year), whether they follow you, and the activity on its card; the header's line; the callout before the follows are read; the activity check (ArchiveModel.checkActivity through the session's network, its progress with Stop, which cancels it, then the toast), Quiet after 30/90/180/365 days; the four filter figures; the line over the table (the sort, Show/Hide kept, Export 'follows'; or the count selected with Clear, Keep, don’t suggest and Unfollow n; or Unfollowing n of m…); the table from 641 wide (CleanupTable: the tick box with Select every account shown in the head, the account at 36% of the table's width with its name and handle ending in an ellipsis, then Follows you, Last active with its dot, Interactions and Followed sharing what is left, and Unfollow or Undo with its error; a ticked row tinted past the sides; an unfollowed row muted, its name struck through), and narrower as the web's phone sets it (Select all shown; each row's tick box, face, name, handle and Kept, its button and error, and the meta line: the activity with its dot, followed, follows you, interactions); while rows are ticked each row's own button steps back, keeping its place; Show 50 more; the caption; and the confirm dialog. The kept list is KeepListModel 'cleanup'.",
-      "synced": "186dcedd56f3"
+      "synced": "b7b3b3f8e82b"
     },
     "src/tools/Identity.jsx": {
       "status": "ported",
@@ -212,7 +212,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Tools/InteractionChosen.swift"
       ],
       "note": "The chosen account in the address (?who= on the navigator, cleared when the page is left), an address that names a handle looked up through Atproto.getProfile on the session's transport (missing or failed in a warn callout); PersonSearch (matchPeople's seven floating over the page 6 under the field, the lookup option for a whole handle or DID, 'Looking up @…', the not-found and couldn’t-reach lines, the hint; on a hardware keyboard ↑ and ↓ open the suggestions and move through them, round at the ends, the pointer's row becoming the active one, Return taking it and Escape closing them, the active one read as the field's value); StartingPoint with its legend, PairCount and Show 12 more; Chosen: the person (Open on Bluesky, Choose someone else, the three facts), By kind, each way (bars to the largest, the sum, first and latest), Interactions per month (both ways, the line under the chart and its table, the caption), the posts they engaged with (or the line why not) and your replies and quotes, Every interaction (Direction and Kind, Export as one file or a choice, each event's date, glyph, phrase, words and its post), and How this is counted.",
-      "synced": "6cd82245b3d9"
+      "synced": "72e47ad18690"
     },
     "src/tools/ListsYoureOn.jsx": {
       "status": "ported",
@@ -237,7 +237,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Tools/UnfollowTrackerTool.swift"
       ],
       "note": "Before a second list: the sentence and Sync now. Then the four figures (the last sync's, and in all since the log began), Left and Arrived as the heading's keys with Sync now and Export (ArchiveModel.exportRows 'follower-changes', through the system's exporter) at the right, the changes under the sync that noticed each (Noticed …, since the sync on … · n), each a person row with the log's card standing in, 'had followed you since …' or 'followed …', Show 40 more, and the caption. The 'in this browser' words are the web's.",
-      "synced": "fb8350731fd5"
+      "synced": "7f14cce95510"
     }
   }
 }

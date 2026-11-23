@@ -96,7 +96,15 @@ means porting the code, not reimagining it.
 - **Copy is behaviour.** User-visible words come from the web, word for word,
   including curly quotes and the house style ("Scheduled posts", not
   "Scheduled Posts"). Where the web builds a sentence in a function, port the
-  function and hold it to the web with a fixture.
+  function and hold it to the web with a fixture. So the web's copy is
+  written to be true in both places: where things are kept is "on this
+  device", what Virga's server does without the app open happens "while
+  Virga is closed", a sign-out that ends one session ends it "here", and no
+  copy says to reload a page. Words that name the browser or a tab stay only
+  on paths iOS never takes (a browser session, another tab, IndexedDB) or
+  where the legal documents quote them; `ios/parity/copy.test.js` lists them
+  and fails on any other. To change shared copy, change the web and port the
+  words; don't reword one side.
 - **Module-level state** (caches, the active locale) becomes a `Locked<T>`
   static (VirgaCore/Support/Locked.swift) with the value also accepted as a
   parameter.

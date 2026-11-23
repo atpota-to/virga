@@ -84,7 +84,7 @@ export default function HowSigningInWorks({ open, onClose, longSession = false }
         </div>
         <p className="note">
           {longSession
-            ? `${APP_NAME}’s server keeps the pass, so you stay signed in for longer and scheduled posts can go out while this browser is closed. Signing out of the last browser you use it in ends it.`
+            ? `${APP_NAME}’s server keeps the pass, so you stay signed in for longer and scheduled posts can go out while Virga is closed. Signing out of the last device or browser you use it on ends it.`
             : 'The pass is kept in this browser. Signing out ends it.'}{' '}
           Your posts and everything else in your account stay with your host.
         </p>

@@ -15,7 +15,7 @@ export default function FirstRun({ archive }) {
           Build your archive
         </h1>
         <p className="first-run-lede">
-          Virga works your analytics out in this browser, from your own data. The first build takes a minute or two
+          Virga works your analytics out on this device, from your own data. The first build takes a minute or two
           for most accounts; after that, a sync only fetches what’s new.
         </p>
         <ul className="first-run-list">
@@ -47,7 +47,7 @@ export default function FirstRun({ archive }) {
           <li>
             <Cloud size={16} aria-hidden="true" />
             <span>
-              It’s kept <strong>in this browser</strong>. Virga’s server never keeps a copy.
+              It’s kept <strong>on this device</strong>. Virga’s server never keeps a copy.
             </span>
           </li>
         </ul>

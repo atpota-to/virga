@@ -75,6 +75,9 @@ targets:
         VirgaBackendURL: $(VIRGA_BACKEND_URL)
         VirgaDefense: $(VIRGA_DEFENSE)
         VirgaDefenseModerator: $(VIRGA_DEFENSE_MODERATOR)
+        # Where the agreement screen sends a build that predates the current
+        # Terms and Privacy Policy (AppConfig.Flags.appStoreURL).
+        VirgaAppStoreURL: $(VIRGA_APP_STORE_URL)
         NSPhotoLibraryAddUsageDescription: Virga saves a chart's picture to your photos when you ask it to.
     entitlements:
       path: App/Virga.entitlements
