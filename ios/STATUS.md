@@ -31,7 +31,12 @@ post editor. A probe in the app (runs 88 to 92) showed the editor putting
 an older copy of the post's text back over a letter just typed; the field
 now keeps its text unless something other than the field changed the post
 (ComposerStateModel.textChangeCount), and CI run 94 (20ef411) was green on
-every job with no letter lost on either device.
+every job with no letter lost on either device. The six items the
+screenshot review had left open (the demo's faces, the iPad's card heads,
+wrapped page titles, floating suggestion lists, the "@" list, the menu
+hints) were fixed and CI run 96 (31a9367) was green on every job with
+them; notes/ui.md, "The review's last open items", says what each shot
+showed. The branch was merged into main at that commit (PR #13).
 
 ## Done
 

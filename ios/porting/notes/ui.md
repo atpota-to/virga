@@ -1067,8 +1067,13 @@ palette steps now swipe until a swipe no longer moves Search.
 
 Six items were still open after the visual review. Each was fixed on its own branch and checked
 by a second reader against the web harness (Playwright, with the bundled Instrument Sans loaded)
-and against run 94's screenshots (20ef411). VirgaUI only builds for Apple platforms, so none of
-this had been compiled when it was merged; the next CI run is its first.
+and against run 94's screenshots (20ef411). CI run 96 (31a9367) compiled them and passed every job.
+Its shots show what each was for: the faces in their colours (Bo's orange B in the lookup, Mira's
+blue M); on the iPad each dashboard card's title 12 points higher than in run 94 (Follower growth
+at 403 against 415, Engagement by type 711 against 735, Top posts 905 against 941); Who engaged
+with Open the post and Scan again in full beside it on the iPhone; the composer's language list
+under its field with "Span" showing; Settings' list over the rows under Languages on both
+devices; and the lookup's suggestion under its search field rather than over it.
 
 - The demo's pictures. The harness's faces (`avatarFor`) and post images (`placeholderImage`) are
   SVG data addresses, which AsyncImage and UIImage can't decode, so the demo showed every face as
