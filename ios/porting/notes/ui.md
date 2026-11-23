@@ -386,9 +386,10 @@ TEMPLATES AND POSTING (Templates/, Posting/, Settings/PostingSettingsSection.swi
   `template-editor`, `template-editor-questions`, `posting-template-use` (Use on Event reminder: the
   composer, its questions in the library), `settings-posting`, `settings-posting-timer`,
   `settings-posting-languages` (back at the top, "fr" typed in the language field, the shot taken
-  once the list has cleared the keyboard by itself; reaching the field is guarded, but then the
-  list must clear the keyboard and a press on its first suggestion must add that language; on
-  the iPad, Escape must put the list away and ↓ and Return must add the second suggestion).
+  once the list has cleared the keyboard by itself; reaching the field and the software keyboard
+  showing are guarded, but then the list must clear the keyboard and a press on its first
+  suggestion must add that language; on the iPad, Escape must put the list away and ↓ and
+  Return must add the second suggestion. CI's iPad shows the software keyboard, so those run).
 
 ADVISER (Adviser/, Composer/ComposerController+Adviser.swift, Posting/)
 - The views are over VirgaPosting/Adviser's logic, unchanged: `AdviserGateModel` (the composer's
@@ -1298,7 +1299,10 @@ compiled until CI runs them.
   lines under the title (its own period, the lists' count, `.card-sub` in grid row 2) the full
   width beneath both, 2 down; read and drawn in the web's order, title, lines, tools, so the
   tools' 44-point targets stay over the lines they reach; and the tools under the lines only
-  should the title's longest word not fit beside them. From 561 up the lines stay in the
+  should the title's longest word not fit beside them (then their 20-point frame sits 8 under
+  the lines, so the buttons reach 4 over them; a report's own name, whose longest word is
+  short, never takes that at 375 or wider at the default size, though a title someone gives a
+  card might). From 561 up the lines stay in the
   titles' column and the tools on the title's line. (The phone layout was the head review's
   note, done at the merge; the merge's first try put the lines after the tools, which a second
   reader caught.)

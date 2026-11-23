@@ -407,7 +407,9 @@ struct WidgetCard: View {
           // the title as every heading does (`.card-head > .head-tools {
           // align-self: flex-start; margin-top: -12px }` on touch; the -5px
           // is a mouse's, for its 30-point buttons), and count below it, so
-          // the head is 32 tall.
+          // the head is 32 tall. The last is let out by its own 14
+          // (`.widget-open { margin-right: -14px }` on touch), so its glyph
+          // ends on the card's edge.
           tools(title: title)
             .padding(.top, -Measure.Section.iconToolLift)
             .padding(.trailing, -Measure.Dashboard.openLetOut)
