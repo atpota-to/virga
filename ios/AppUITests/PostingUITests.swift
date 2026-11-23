@@ -149,6 +149,17 @@ final class PostingUITests: XCTestCase {
       top = languages.frame.minY
       if !moved { break }
     } while tries < 8
+    // On the iPhone the field is then low in the window, and the keyboard
+    // would cover the list under it. Drag the page up until the field is in
+    // the window's top third, slowly and held so it doesn't fling on. On the
+    // iPad it is near there already.
+    let height = app.windows.firstMatch.frame.height
+    let lift = languages.frame.minY - height * 0.3
+    if lift > 0 {
+      let from = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.75))
+      let to = from.withOffset(CGVector(dx: 0, dy: -lift))
+      from.press(forDuration: 0.2, thenDragTo: to, withVelocity: .slow, thenHoldForDuration: 0.5)
+    }
     guard languages.isHittable else { return }
     languages.tap()
     guard app.keyboards.firstMatch.waitForExistence(timeout: 3) else { return }
