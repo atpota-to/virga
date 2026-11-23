@@ -263,7 +263,33 @@ public final class ComposerController {
   }
 
   func dispatch(_ action: ComposerAction) {
+    var before: [JSKey: String] = [:]
+    for post in model.state.posts { before[JSKey(post.id)] = post.text }
     model.dispatch(action)
+    for post in model.state.posts {
+      let key = JSKey(post.id)
+      if !(before[key].map { $0.jsEquals(post.text) } ?? false) { textChanges[key, default: 0] += 1 }
+    }
+    followAccount()
+  }
+
+  /// How many times each post's text has been changed by anything but its own
+  /// field: a template, a mention picked, a link pasted or stripped, a thread
+  /// split or undone, a draft or a new composer loaded. A post editor puts the
+  /// post's text in its field only when this has moved since they last
+  /// agreed; otherwise the field is ahead of the post, not wrong (CI run 90:
+  /// a letter reached the field before the post, and putting the post's text
+  /// back moved the caret in front of it).
+  @ObservationIgnored private var textChanges: [JSKey: Int] = [:]
+
+  func textChangeCount(_ postId: String) -> Int { textChanges[JSKey(postId)] ?? 0 }
+
+  /// The words in a post's field, handed on as they were typed: the one change
+  /// to a post's text that `textChanges` doesn't count.
+  func typed(_ postId: String, _ text: String) {
+    let at = indexOfPost(postId)
+    guard at >= 0 else { return }
+    model.dispatch(.setText(index: at, text: text))
     followAccount()
   }
 
@@ -286,6 +312,7 @@ public final class ComposerController {
     seed = nil
     postNow = false
     model.load(next, touched: touched)
+    for post in model.state.posts { textChanges[JSKey(post.id), default: 0] += 1 }
     followAccount()
     generation += 1
     processing = [:]

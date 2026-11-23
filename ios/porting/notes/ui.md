@@ -1026,6 +1026,21 @@ handing text on; the probe
 notes a "B" event whenever the two disagree, so the next run can show whether a stale binding
 was the reason. Why the "@" list makes it likelier isn't shown; it adds updates while typing.
 
+Run 90 (f8c531e): the bench's composer lost nothing on either device and no update put text
+back (run 88's iPhone: 2 losses, 2 resets). But testTheComposer's third post came out
+"garden-nots e" on the iPhone, at the line wrap where "garden-nots" had been lost three runs in
+a row: the "e" reached the field and its delegate, then an update, outside UIKit's edit, found
+the post itself a key behind and put its text back (R43>42), the post caught up and the field
+took it again with the caret before the "e" (R42>43), and the next keys went in front of it.
+So the post can lag the field outside the window the `editing` flag covered, here while the
+composer scrolled at the wrap. Rather than chase each such window, the field now wins unless
+something else changed the post: ComposerController counts, per post, every change to a post's
+text that doesn't come from its own field (`textChangeCount`; the field hands its text on
+through `typed`, which isn't counted), and updateUIView puts the post's text in the field only
+when that count has moved since they last agreed. A field that differs otherwise keeps its
+text and hands it to the post after the update (probe events K and H). A new field starts from
+the post itself.
+
 Run 85 failed once on the iPhone, Defense's palette step: swiping back up until Search showed
 left it 51 points short of the top, under the status bar, where taps don't reach it. The seven
 palette steps now swipe until a swipe no longer moves Search.

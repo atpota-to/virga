@@ -117,11 +117,9 @@ struct PostEditor: View {
       HighlightedTextView(
         text: Binding(
           get: { self.text },
-          set: { next in
-            let at = controller.indexOfPost(postId)
-            if at >= 0 { controller.dispatch(.setText(index: at, text: next)) }
-          }),
+          set: { next in controller.typed(postId, next) }),
         current: { self.text },
+        textChanges: { controller.textChangeCount(postId) },
         segments: segments,
         segmentsText: text,
         style: EditorStyle(theme: theme),
@@ -638,6 +636,9 @@ struct HighlightedTextView: UIViewRepresentable {
   /// the "@" list was up). The post already has every key the field has
   /// handed on.
   var current: () -> String
+  /// ComposerController.textChangeCount: how many times something other than
+  /// its field has changed this post's text.
+  var textChanges: () -> Int
   /// The highlights, found for `segmentsText` (the post's text when
   /// PostEditor's body ran).
   var segments: [HighlightSegment]
@@ -679,9 +680,13 @@ struct HighlightedTextView: UIViewRepresentable {
     view.autocapitalizationType = .sentences
     view.spellCheckingType = .yes
     view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+    // From the post itself, so a new field never starts behind it.
+    let text = current()
+    let segments = segmentsText == text ? self.segments : []
     view.attributedText = style.attributed(segments, text: text)
     view.typingAttributes = style.base
     context.coordinator.synced = text
+    context.coordinator.changes = textChanges()
     context.coordinator.drawn = Drawn(text: text, segments: segments, style: style)
     return view
   }
@@ -701,7 +706,9 @@ struct HighlightedTextView: UIViewRepresentable {
     let segments = segmentsText == text ? self.segments : []
     if TypingProbe.isOn, seen != text {
       TypingProbe.note(identifier, "B\(seen.utf16.count)>\(text.utf16.count)")
+      TypingProbe.count(identifier, "staleBinding")
     }
+    let changes = textChanges()
     view.pasteHandler = onPaste
     view.sendHandler = onSend
     view.isEditable = !disabled
@@ -710,12 +717,13 @@ struct HighlightedTextView: UIViewRepresentable {
     view.accessibilityIdentifier = identifier
     view.accessibilityHint = text.isEmpty ? placeholder : nil
     let drawn = Drawn(text: text, segments: segments, style: style)
-    // While UIKit is part way through an edit (its delegate asked, not yet
-    // told), a field whose text differs from a post that still has the text
-    // they last agreed on is ahead, not wrong: putting the post's text back
-    // would take out the letter just typed. The change is on its way, and
-    // the redraw that follows it does the rest.
-    let ahead = coordinator.editing && text == coordinator.synced
+    // The post's text goes in the field only when something other than the
+    // field has changed it since they last agreed. Otherwise a field that
+    // differs is ahead of the post, not wrong: its last keys haven't reached
+    // the post yet, part way through UIKit's edit or not, and putting the
+    // post's text back would take them out or put the caret in front of them
+    // (CI run 90: "garden-nots e").
+    let ahead = changes == coordinator.changes
     if TypingProbe.isOn {
       let branch = view.text == text ? "same" : ahead ? "ahead" : "reset"
       TypingProbe.update(
@@ -723,6 +731,7 @@ struct HighlightedTextView: UIViewRepresentable {
     }
     if view.text == text {
       coordinator.synced = text
+      coordinator.changes = changes
       if view.markedTextRange == nil {
         let keep = view.selectedRange
         if coordinator.drawn != drawn {
@@ -742,10 +751,30 @@ struct HighlightedTextView: UIViewRepresentable {
           TypingProbe.note(identifier, "S\(caret.location)")
         }
       }
-    } else if !ahead {
+    } else if ahead {
+      if !coordinator.editing {
+        TypingProbe.note(identifier, "K\(view.text.utf16.count)>\(text.utf16.count)")
+        TypingProbe.count(identifier, "kept")
+      }
+      // The field's text goes to the post once this update is over, unless
+      // the field told the post itself by then (textViewDidChange) or the
+      // post has been changed meanwhile, so the two can't stay apart.
+      let field = view.text ?? ""
+      let handOn = self.$text
+      let post = current
+      let counted = textChanges
+      let id = identifier
+      DispatchQueue.main.async { [weak view] in
+        guard let view, view.text == field, counted() == changes, post() != field else { return }
+        TypingProbe.note(id, "H\(field.utf16.count)")
+        TypingProbe.count(id, "handedOn")
+        handOn.wrappedValue = field
+      }
+    } else {
       let keep = view.selectedRange
       view.attributedText = style.attributed(segments, text: text)
       coordinator.synced = text
+      coordinator.changes = changes
       coordinator.drawn = drawn
       let length = text.utf16.count
       let caret = min(caretRequest ?? keep.location, length)
@@ -776,6 +805,9 @@ struct HighlightedTextView: UIViewRepresentable {
     var synced = ""
     /// UIKit has asked to change the text and not yet said it did.
     var editing = false
+    /// ComposerController.textChanges when the field and the post last
+    /// agreed, or the field last took the post's text.
+    var changes = 0
     /// What the field's attributes were last set from, or nil once an edit
     /// of UIKit's own may have changed them since.
     var drawn: Drawn?

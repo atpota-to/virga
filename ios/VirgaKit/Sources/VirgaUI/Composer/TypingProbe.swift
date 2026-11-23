@@ -22,6 +22,9 @@
 //   R<field>><model>  the app put the post's text back (lengths)
 //   B<binding>><post>  an update's binding disagreed with the post itself
 //                      (lengths); after run 88 the field follows the post
+//   K<field>><post>  after run 90: an update found the field ahead of the
+//                    post outside UIKit's edit and kept the field's text
+//   H<n>          the field's text handed to the post after such an update
 //   S<n>          the app set the selection
 //   X<loc>,<len>="..."  the keyboard asked for a replacement (a correction)
 //   D!<asked>><got>     after UIKit's edit the field isn't what it asked
