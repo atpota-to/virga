@@ -275,61 +275,16 @@ public struct PageHeader: View {
   }
 
   /// `.page-title`: on one line, the title as a Text; when it wraps, its
-  /// words a line every 1.1 of it (TitleLines), where a Text's lines would
-  /// be the face's own 1.22 apart, and balanced as the web's heading is.
-  /// Either way VoiceOver reads it as one heading. A title written right to
-  /// left stays a Text (TitleLines.canSet). A title that wraps takes the
-  /// whole row, as the web's h1 shrinks to the row once it no longer fits
-  /// on one line, so the tools after it sit at the row's end, not just past
-  /// its balanced lines.
-  @ViewBuilder private var title: some View {
-    if TitleLines.canSet(model.title) {
-      ViewThatFits(in: .horizontal) {
-        titleText
-        titleLines
-      }
-    } else {
-      titleText
-    }
-  }
-
-  private var titleText: some View {
-    Text(model.title)
-      .virgaText(
-        .textTitle, weight: VirgaWeight.semibold, lineHeight: Measure.PageHeader.titleLineHeight,
-        tracking: Measure.PageHeader.titleTracking)
-      // The line is 1.1 of the title, shorter than the face's own: its
-      // box is that, the glyphs reaching past it as a browser's do.
-      .padding(.vertical, theme.overflowingLeading(size: theme.textTitle, lineHeight: Measure.PageHeader.titleLineHeight, weight: VirgaWeight.semibold))
-      .foregroundStyle(theme.ink)
-      .fixedSize(horizontal: false, vertical: true)
-      .accessibilityAddTraits(.isHeader)
-      .accessibilityIdentifier("page-title")
-  }
-
-  private var titleLines: some View {
-    TitleLines(
-      pitch: titleLine,
-      // A space at the title's weight, and the letter-spacing a browser
-      // puts after it too.
-      space: theme.spaceWidth(size: theme.textTitle, weight: VirgaWeight.semibold)
-        + theme.tracking(Measure.PageHeader.titleTracking, size: theme.textTitle)
-    ) {
-      ForEach(Array(model.title.split(separator: " ").enumerated()), id: \.offset) { _, word in
-        Text(String(word))
-          .virgaText(
-            .textTitle, weight: VirgaWeight.semibold, lineHeight: Measure.PageHeader.titleLineHeight,
-            tracking: Measure.PageHeader.titleTracking)
-      }
-    }
-    .foregroundStyle(theme.ink)
-    .accessibilityElement(children: .ignore)
-    .accessibilityLabel(model.title)
-    .accessibilityAddTraits(.isHeader)
-    .accessibilityIdentifier("page-title")
-    // The row's width, the lines at its start; VoiceOver's heading stays
-    // the size of the words.
-    .frame(maxWidth: .infinity, alignment: .leading)
+  /// words a line every 1.1 of it, where a Text's lines would be the face's
+  /// own 1.22 apart, and balanced as the web's heading is (WrappingTitle).
+  /// A title that wraps takes the whole row, as the web's h1 shrinks to the
+  /// row once it no longer fits on one line, so the tools after it sit at
+  /// the row's end, not just past its lines; a title written right to left
+  /// as well, though its lines stay a Text's.
+  private var title: some View {
+    WrappingTitle(
+      model.title, size: theme.textTitle, lineHeight: Measure.PageHeader.titleLineHeight,
+      tracking: Measure.PageHeader.titleTracking, identifier: "page-title")
   }
 
   @ViewBuilder private var subAndAccess: some View {

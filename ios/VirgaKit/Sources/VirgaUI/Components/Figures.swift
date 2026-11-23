@@ -18,6 +18,7 @@
 // compare against. A caller with no comparison at all draws none.
 
 #if canImport(UIKit)
+import CoreText
 import SwiftUI
 import VirgaArchive
 import VirgaCore
@@ -183,6 +184,14 @@ struct FigureLabelPart: View {
 /// (reports.css `.fig-unit`): 0.4 of the number's size, muted, 500, no
 /// tracking, 3 after the number on its baseline, in the same line of text
 /// so it follows the number's last line.
+///
+/// On one line it is one Text. A number that wraps (a long one in a
+/// phone's half of the row, or any at a large Dynamic Type size) is set a
+/// character at a time (FigureLines), a line every figure size as the
+/// web's are, where a Text's lines would be the face's own 1.22 apart; its
+/// unit then goes to a line of its own, 3 in, when it doesn't fit after the
+/// number, as the web's does. Only a value FigureWrap.canSet takes is set
+/// so, with the bundled face; anything else wraps as a Text.
 struct FigureValuePart: View {
   @Environment(\.virgaTheme) private var theme
   let item: FigureItem
@@ -191,17 +200,60 @@ struct FigureValuePart: View {
     let size = theme.points(ThemeKit.figureValueFontSize)
     let weight = ThemeKit.figureValueWeight
     let spoken: String = (item.shown ?? "") + (item.unit ?? "")
+    value(size: size, weight: weight)
+      .foregroundStyle(theme.ink)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .accessibilityElement(children: .ignore)
+      .accessibilityLabel(item.label)
+      .accessibilityValue(spoken)
+  }
+
+  @ViewBuilder private func value(size: CGFloat, weight: Double) -> some View {
+    if let characters = characters(size: size, weight: weight) {
+      ViewThatFits(in: .horizontal) {
+        line(size: size, weight: weight)
+        characters
+      }
+    } else {
+      line(size: size, weight: weight)
+    }
+  }
+
+  private func line(size: CGFloat, weight: Double) -> some View {
     words(size: size)
       .virgaText(size: size, weight: weight, lineHeight: ThemeKit.figureValueLineHeight, tracking: ThemeKit.figureValueTracking)
       // Line height 1: the box is the figure's size, its glyphs reaching
       // past it as a browser's do.
       .padding(.vertical, theme.overflowingLeading(size: size, lineHeight: ThemeKit.figureValueLineHeight, weight: weight))
-      .foregroundStyle(theme.ink)
       .fixedSize(horizontal: false, vertical: true)
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .accessibilityElement(children: .ignore)
-      .accessibilityLabel(item.label)
-      .accessibilityValue(spoken)
+  }
+
+  /// The value and its unit a character at a time, each where it goes in a
+  /// line of it as Core Text sets it with the bundled face (its tabular
+  /// figures, and any kerning), with the letter-spacing a browser puts
+  /// after each; nil for a value FigureWrap doesn't set, or without the
+  /// bundled face.
+  private func characters(size: CGFloat, weight: Double) -> FigureCharacters? {
+    guard let shown = item.shown, FigureWrap.canSet(shown + (item.unit ?? "")), theme.hasTypeface,
+      let face = VirgaTypeface.face(size: theme.scaled(size), weight: weight)
+    else { return nil }
+    let tracking = theme.tracking(ThemeKit.figureValueTracking, size: size)
+    var glyphs = shown.map { FigureCharacters.Glyph(text: String($0), font: theme.font(size: size, weight: weight), unit: false) }
+    var advances = FigureCharacters.measure(shown, face: face).map { $0 + tracking }
+    var leads = Array(repeating: CGFloat(0), count: advances.count)
+    if let unit = item.unit, !unit.isEmpty {
+      let unitSize = size * Measure.Reports.figUnitScale
+      guard let unitFace = VirgaTypeface.face(size: theme.scaled(unitSize), weight: Measure.Reports.figUnitWeight) else { return nil }
+      let font = theme.font(size: unitSize, weight: Measure.Reports.figUnitWeight)
+      glyphs += unit.map { FigureCharacters.Glyph(text: String($0), font: font, unit: true) }
+      // `.fig-unit { margin-left: 3px; letter-spacing: 0 }`
+      advances += FigureCharacters.measure(unit, face: unitFace)
+      leads += [Measure.Reports.figUnitGap] + Array(repeating: CGFloat(0), count: unit.count - 1)
+    }
+    guard advances.count == glyphs.count else { return nil }
+    return FigureCharacters(
+      glyphs: glyphs, advances: advances, leads: leads,
+      pitch: theme.scaled(size) * CGFloat(ThemeKit.figureValueLineHeight))
   }
 
   private func words(size: CGFloat) -> Text {
@@ -217,6 +269,93 @@ struct FigureValuePart: View {
       .tracking(0)
       .foregroundStyle(theme.muted)
     return number + gap + shown
+  }
+}
+
+/// A figure's value once it wraps: one Text per character, placed by
+/// FigureLines. The number's characters are in ink, the unit's muted.
+struct FigureCharacters: View {
+  @Environment(\.virgaTheme) private var theme
+
+  struct Glyph {
+    var text: String
+    var font: Font
+    var unit: Bool
+  }
+
+  let glyphs: [Glyph]
+  /// Each glyph's advance, the letter-spacing after it included.
+  let advances: [CGFloat]
+  /// The room before each on its line (the unit's 3).
+  let leads: [CGFloat]
+  /// From one line's top to the next's.
+  let pitch: CGFloat
+
+  var body: some View {
+    FigureLines(pitch: pitch, advances: advances, leads: leads) {
+      ForEach(Array(glyphs.enumerated()), id: \.offset) { _, glyph in
+        // No tracking: FigureLines puts the letter-spacing in.
+        Text(glyph.text)
+          .font(glyph.font)
+          .tracking(0)
+          .foregroundStyle(glyph.unit ? theme.muted : theme.ink)
+      }
+    }
+  }
+
+  /// Each character's advance in one line of `text` set in `face`, as Core
+  /// Text sets it: from where it starts to where the next one does.
+  static func measure(_ text: String, face: CTFont) -> [CGFloat] {
+    let attributed = NSAttributedString(
+      string: text, attributes: [NSAttributedString.Key(rawValue: kCTFontAttributeName as String): face])
+    let line = CTLineCreateWithAttributedString(attributed as CFAttributedString)
+    var starts: [CGFloat] = []
+    var index = 0
+    for character in text {
+      starts.append(CTLineGetOffsetForStringIndex(line, index, nil))
+      index += character.utf16.count
+    }
+    starts.append(CGFloat(CTLineGetTypographicBounds(line, nil, nil, nil)))
+    return (0..<max(0, starts.count - 1)).map { starts[$0 + 1] - starts[$0] }
+  }
+}
+
+/// `.figures-value` wrapped: each character where FigureWrap puts it, its
+/// line `pitch` below the last (line-height 1), every character on its
+/// line's baseline, which sits where the number's own line, centred on the
+/// line's box, has it, as a browser's line box does.
+struct FigureLines: Layout {
+  var pitch: CGFloat
+  var advances: [CGFloat]
+  var leads: [CGFloat]
+
+  private func spots(_ maxWidth: CGFloat) -> [FigureWrap.Spot] {
+    FigureWrap.place(advances: advances.map { Double($0) }, leads: leads.map { Double($0) }, maxWidth: Double(maxWidth))
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    let spots = spots(proposal.width ?? .infinity)
+    var width: CGFloat = 0
+    for (index, spot) in spots.enumerated() where index < subviews.count {
+      width = max(width, CGFloat(spot.x) + subviews[index].sizeThatFits(.unspecified).width)
+    }
+    return CGSize(width: width, height: pitch * CGFloat(FigureWrap.lineCount(spots)))
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    guard let first = subviews.first else { return }
+    let spots = spots(max(bounds.width, proposal.width ?? 0))
+    // The number's line, centred on the line's box: where its baseline is.
+    let strut = first.dimensions(in: .unspecified)
+    let baseline = (pitch - strut.height) / 2 + strut[VerticalAlignment.firstTextBaseline]
+    for (index, spot) in spots.enumerated() where index < subviews.count {
+      let own = subviews[index].dimensions(in: .unspecified)
+      subviews[index].place(
+        at: CGPoint(
+          x: bounds.minX + CGFloat(spot.x),
+          y: bounds.minY + CGFloat(spot.line) * pitch + baseline - own[VerticalAlignment.firstTextBaseline]),
+        proposal: .unspecified)
+    }
   }
 }
 
