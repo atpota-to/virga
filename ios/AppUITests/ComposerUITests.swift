@@ -358,6 +358,18 @@ final class ComposerUITests: XCTestCase {
     XCTAssertTrue(element(app, "library-panel").waitForExistence(timeout: 15), "the Library page didn't open")
     _ = element(app, "library-row").waitForExistence(timeout: 15)
     snapshot("library-page")
+
+    // Your posts: the thread's first post shows the first picture pasted
+    // into it, which the demo gives back as a data: address. The thumbnail
+    // is hidden from VoiceOver, so only the shot shows it.
+    let yourPosts = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Your posts")).firstMatch
+    if yourPosts.waitForExistence(timeout: 5) {
+      yourPosts.tap()
+      if element(app, "library-row").waitForExistence(timeout: 15) {
+        sleep(1)
+        snapshot("library-your-posts")
+      }
+    }
   }
 
 }
