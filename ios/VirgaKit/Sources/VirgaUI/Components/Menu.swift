@@ -94,10 +94,14 @@ struct MenuItemButton: View {
       item.action?()
     } label: {
       // A native menu item reads its first Text as the title, a second as
-      // the hint under it, and an Image as its icon. The hint is given the
-      // secondary style outright (`.menu-item-hint { color: var(--muted) }`)
-      // rather than left to inherit one: inheriting, the Posted ⋯'s hints
-      // were laid out but drawn as nothing (the account menu's were drawn).
+      // the hint under it (its subtitle), and an Image as its icon. The menu
+      // takes only their words and draws them itself: the title in the
+      // system's label colour where the web has --ink, the hint smaller and
+      // in the system's secondary grey where `.menu-item-hint` has --muted,
+      // wrapped to the menu's own width, and the icon centred on both lines
+      // where the web keeps it on the title's. The secondary style says what
+      // the hint is; the menu draws it that way whatever is asked. A hint
+      // once seen as blank was a picture taken while the menu was opening.
       Text(item.label)
       if let hint = item.hint { Text(hint).foregroundStyle(.secondary) }
       if let image = item.systemImage { icon(image) }
