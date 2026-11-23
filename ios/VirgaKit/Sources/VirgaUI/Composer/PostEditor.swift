@@ -32,6 +32,19 @@ struct MentionLookup: Equatable {
   var status: Status
   var items: [JSONValue]
   var index = 0
+
+  /// The lookup as it starts for `partial`: loading, with the accounts it
+  /// had only while the query is the same (the web's effect).
+  static func starting(_ partial: PartialMention, after previous: MentionLookup?) -> MentionLookup {
+    let same = previous.map { $0.range.query.jsEquals(partial.query) } ?? false
+    return MentionLookup(range: partial, status: .loading, items: same ? previous?.items ?? [] : [])
+  }
+
+  /// True when this is the lookup for `partial`: the same place and query,
+  /// what the lookup's task is keyed on.
+  func isFor(_ partial: PartialMention) -> Bool {
+    range.start == partial.start && range.query.jsEquals(partial.query)
+  }
 }
 
 struct PostEditor: View {
@@ -55,6 +68,17 @@ struct PostEditor: View {
   private var partial: PartialMention? {
     guard let m = Mentions.detectPartialMention(text, caret), m.query.utf16.count >= 1 else { return nil }
     return m
+  }
+
+  /// What the "@" list shows: nothing once the mention is done or the list
+  /// was closed. It stays up while the mention is typed, as the web's does;
+  /// a key the lookup hasn't caught up with shows what the lookup will start
+  /// with. A key never takes the list down to put it back when the lookup
+  /// starts, which would read its status out again, scroll to it and change
+  /// the height of an iPad's sheet.
+  private var shownMention: MentionLookup? {
+    guard let mention, let partial else { return nil }
+    return mention.isFor(partial) ? mention : MentionLookup.starting(partial, after: mention)
   }
 
   /// The "/shortcut" being typed, while no mention is.
@@ -82,8 +106,8 @@ struct PostEditor: View {
           .foregroundStyle(theme.muted)
           .composerAnnounces(note)
       }
-      if let mention, mention.range.query.jsEquals(partial?.query ?? "\u{0}") {
-        MentionList(mention: mention, anchor: suggestAnchor) { actor in pick(actor) }
+      if let shown = shownMention {
+        MentionList(mention: shown, anchor: suggestAnchor) { actor in pick(actor, from: shown) }
           .onAppear { TypingProbe.note("post-editor-\(index)", "L+") }
           .onDisappear { TypingProbe.note("post-editor-\(index)", "L-") }
       }
@@ -174,8 +198,7 @@ struct PostEditor: View {
       mention = nil
       return
     }
-    let kept = mention?.range.query.jsEquals(partial.query) ?? false ? mention?.items ?? [] : []
-    mention = MentionLookup(range: partial, status: .loading, items: kept)
+    mention = .starting(partial, after: mention)
     try? await Task.sleep(nanoseconds: 150_000_000)
     if Task.isCancelled { return }
     do {
@@ -190,10 +213,12 @@ struct PostEditor: View {
     }
   }
 
-  private func pick(_ actor: JSONValue) {
-    guard let mention, let handle = actor["handle"]?.stringValue, !handle.isEmpty else { return }
-    let edit = ComposerEditing.insertMention(text, mention.range, handle)
-    self.mention = nil
+  /// `actor` picked from the list as it was drawn (`lookup`), over the
+  /// mention it was drawn for.
+  private func pick(_ actor: JSONValue, from lookup: MentionLookup) {
+    guard mention != nil, let handle = actor["handle"]?.stringValue, !handle.isEmpty else { return }
+    let edit = ComposerEditing.insertMention(text, lookup.range, handle)
+    mention = nil
     let at = controller.indexOfPost(postId)
     guard at >= 0 else { return }
     controller.dispatch(.setText(index: at, text: edit.text))
