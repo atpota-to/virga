@@ -105,6 +105,15 @@ final class PostingPagesUITests: XCTestCase {
     return true
   }
 
+  /// Waits (a few seconds at most) until the open menu's `item` can be
+  /// pressed, then a moment more: the menu is there as it starts to open,
+  /// and a picture taken then catches it half open (the iPad's Posted menu).
+  private func waitForMenu(_ item: XCUIElement) {
+    let open = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND isHittable == true"), object: item)
+    _ = XCTWaiter.wait(for: [open], timeout: 5)
+    sleep(1)
+  }
+
   func testThePostingPagesOnTheDemo() {
     let app = launch()
     XCTAssertTrue(element(app, "first-run-title").waitForExistence(timeout: 15), "no first build's page")
@@ -126,8 +135,9 @@ final class PostingPagesUITests: XCTestCase {
     let listed = element(app, "drafts-list").waitForExistence(timeout: 15)
     snapshot(listed ? "posting-drafts" : "posting-drafts-empty")
     if listed && openFirstMenu(app, in: "drafts-list") {
-      snapshot("posting-drafts-menu")
       let schedule = menuItem(app, "draft-schedule", "Schedule…")
+      waitForMenu(schedule)
+      snapshot("posting-drafts-menu")
       if schedule.waitForExistence(timeout: 5) {
         schedule.tap()
         if element(app, "schedule-draft-dialog").waitForExistence(timeout: 10) {
@@ -148,8 +158,9 @@ final class PostingPagesUITests: XCTestCase {
     let posts = element(app, "posted-list").waitForExistence(timeout: 15)
     snapshot("posting-posted")
     if posts && openFirstMenu(app, in: "posted-list") {
-      snapshot("posting-posted-menu")
       let timer = menuItem(app, "posted-timer", "Put on a timer")
+      waitForMenu(timer)
+      snapshot("posting-posted-menu")
       if timer.waitForExistence(timeout: 5) {
         timer.tap()
         if element(app, "timer-dialog").waitForExistence(timeout: 10) {

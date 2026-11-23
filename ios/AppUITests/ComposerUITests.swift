@@ -71,7 +71,11 @@ final class ComposerUITests: XCTestCase {
   }
 
   /// A picture on the pasteboard, pasted into `field` from its edit menu
-  /// (a paste the writer asked for, so the system doesn't ask first).
+  /// (a paste the writer asked for, so the system doesn't ask first). The
+  /// press is at the end of the words, at the right of their last line's
+  /// foot, so the caret lands after them and not in the mention, and it is
+  /// made again (three presses at most) when no Paste comes up, as none did
+  /// on run 82's iPhone.
   private func pastePicture(_ app: XCUIApplication, into field: XCUIElement, hue: CGFloat) -> Bool {
     let size = CGSize(width: 640, height: 480)
     let picture = UIGraphicsImageRenderer(size: size).image { context in
@@ -81,11 +85,33 @@ final class ComposerUITests: XCTestCase {
       context.fill(CGRect(x: 80, y: 300, width: 480, height: 120))
     }
     UIPasteboard.general.image = picture
-    field.press(forDuration: 1.2)
     let paste = app.menuItems["Paste"]
-    guard paste.waitForExistence(timeout: 4) else { return false }
-    paste.tap()
-    return true
+    for _ in 0..<3 {
+      field.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: 1)).withOffset(CGVector(dx: 0, dy: -4)).press(forDuration: 1.2)
+      if paste.waitForExistence(timeout: 4) {
+        paste.tap()
+        return true
+      }
+    }
+    return false
+  }
+
+  /// `words` typed into a post's field, and the field read back. Now and
+  /// then a keystroke is lost on the way in ("@lab.example.or" in runs 82
+  /// and 84), which the editor's own fix is for, so it isn't typed again
+  /// here: a field that doesn't hold what was typed is written to the log
+  /// and kept as an activity in the results, and the test carries on. The
+  /// field's curly apostrophe for a straight one is its own, not a lost key.
+  private func enter(_ words: String, into field: XCUIElement) {
+    let before = field.value as? String ?? ""
+    field.typeText(words)
+    let expected = before + words
+    let got = field.value as? String ?? ""
+    let straight = { (text: String) in text.replacingOccurrences(of: "\u{2019}", with: "'") }
+    guard straight(got) != straight(expected) else { return }
+    let line = "VIRGA-TYPED-MISMATCH expected=\(expected.debugDescription) got=\(got.debugDescription)"
+    print(line)
+    XCTContext.runActivity(named: line) { _ in }
   }
 
   func testTheComposer() {
@@ -97,7 +123,7 @@ final class ComposerUITests: XCTestCase {
     let first = editor(app, 0)
     XCTAssertTrue(first.waitForExistence(timeout: 5))
     first.tap()
-    first.typeText("Seed swap at the community garden this Saturday with @lab.example.org #gardening ")
+    enter("Seed swap at the community garden this Saturday with @lab.example.org #gardening ", into: first)
     XCTAssertTrue(text(app, containing: "of 300").waitForExistence(timeout: 5))
     sleep(1)
     snapshot("composer-text")
@@ -126,19 +152,19 @@ final class ComposerUITests: XCTestCase {
     XCTAssertTrue(second.waitForExistence(timeout: 5))
     second.tap()
     // The "/" shortcuts: the account's templates, or why there are none.
-    second.typeText("/")
+    enter("/", into: second)
     if element(app, "slash-templates").waitForExistence(timeout: 10) {
       sleep(1)
       snapshot("composer-slash")
     }
     second.typeText(XCUIKeyboardKey.delete.rawValue)
-    second.typeText("Bring seeds in labelled envelopes; we'll have spares.")
+    enter("Bring seeds in labelled envelopes; we'll have spares.", into: second)
     scrollTo(app, addPost)
     addPost.tap()
     let third = editor(app, 2)
     XCTAssertTrue(third.waitForExistence(timeout: 5))
     third.tap()
-    third.typeText("Directions: https://example.com/garden-notes ")
+    enter("Directions: https://example.com/garden-notes ", into: third)
     XCTAssertTrue(text(app, containing: "3 of 3").waitForExistence(timeout: 5))
     snapshot("composer-thread")
     let card = element(app, "link-card")
@@ -198,7 +224,7 @@ final class ComposerUITests: XCTestCase {
     let fourth = editor(app, 3)
     XCTAssertTrue(fourth.waitForExistence(timeout: 5))
     fourth.tap()
-    fourth.typeText("/remind")
+    enter("/remind", into: fourth)
     let remind = element(app, "slash-template-remind")
     if remind.waitForExistence(timeout: 15) {
       remind.tap()
@@ -280,7 +306,7 @@ final class ComposerUITests: XCTestCase {
       // A single post (the reply) sent.
       let reply = editor(app, 0)
       reply.tap()
-      reply.typeText("Spares went fast. Thanks, all!")
+      enter("Spares went fast. Thanks, all!", into: reply)
       element(app, "publish").tap()
       XCTAssertTrue(text(app, containing: "Posted as").waitForExistence(timeout: 30), "the reply didn't go out")
       snapshot("composer-post-posted")

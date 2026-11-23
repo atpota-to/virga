@@ -93,6 +93,10 @@ final class ToolsUITests: XCTestCase {
     part(app, "tools").tap()
     waitForTitle(app, "Tools")
     XCTAssertTrue(element(app, "tool-archive").waitForExistence(timeout: 10), "no row for the archive")
+    // The rest of the sync (engagement, notifications) runs on after the
+    // first build's page has gone, in a strip at the top of a phone's page:
+    // the page once the strip has gone.
+    _ = element(app, "sync-banner").waitForNonExistence(timeout: 60)
     snapshot("tools-built")
 
     // Identity: the PDS and the handle history, from the demo's directory.
@@ -115,6 +119,9 @@ final class ToolsUITests: XCTestCase {
       check.tap()
       let checked = text(app, containing: "Activity checked for").waitForExistence(timeout: 90)
       XCTAssertTrue(checked, "the activity check didn't finish")
+      // Its toast ("Checked 79 accounts.") comes a beat after the line, and
+      // fades in.
+      if text(app, containing: "Checked ").waitForExistence(timeout: 5) { sleep(1) }
       snapshot("tool-follow-cleanup-checked")
     }
 
