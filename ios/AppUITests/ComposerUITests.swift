@@ -5,7 +5,7 @@
 // service; the language picker; the post-as picker;
 // the library from the composer; a template with blanks answered through
 // its questions into the post; the thread saved as a draft and opened
-// again; the thread posted (its progress and its toast); Continue a thread
+// again; the thread posted (its toast, and the composer closing); Continue a thread
 // listing it, and a reply to it sent; and the Library page. On a phone,
 // the bar at the top with the keyboard up. Each is kept as a screenshot
 // (an XCTAttachment kept always), on the iPhone and the iPad, all in one
@@ -290,21 +290,18 @@ final class ComposerUITests: XCTestCase {
     snapshot("composer-draft-reopened")
 
     // Post the thread: the toast, and the composer closes. The toast lasts
-    // 4.2 seconds and the demo posts at once, so it is looked for straight
+    // 9 seconds and the demo posts at once, so it is looked for straight
     // after the press: in run 100's iPad a wait for the composer's progress
     // (which never showed) and one slow query took ten seconds, the toast
     // came and went in them, and the test missed a thread that had gone out
-    // (its shot shows the toast). The composer closes only once the thread
-    // has gone out, so a closed composer is the proof when the toast was
-    // missed; one that stays open fails the test either way.
+    // (its shot shows the toast).
     let publish = element(app, "publish")
     XCTAssertTrue(publish.waitForExistence(timeout: 5))
     publish.tap()
-    let posted = text(app, containing: "Posted as")
-    let sawToast = posted.waitForExistence(timeout: 30)
+    XCTAssertTrue(text(app, containing: "Posted as").waitForExistence(timeout: 30), "the thread didn't go out")
     snapshot("composer-thread-posted")
-    XCTAssertTrue(element(app, "composer-title").waitForNonExistence(timeout: 30), "the thread didn't go out: the composer stayed open")
-    if !sawToast { print("VIRGA-NOTE the \"Posted as\" toast was gone before the test looked; the composer closed") }
+    XCTAssertTrue(element(app, "composer-title").waitForNonExistence(timeout: 10), "the composer stayed open")
+    XCTAssertEqual(app.state, .runningForeground, "the app went away after the post")
     openComposer(app)
 
     // Continue a thread: one of the account's own recent posts, the new

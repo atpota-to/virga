@@ -167,7 +167,9 @@ final class PostingUITests: XCTestCase {
     var chosen = labels(removes)
     languages.tap()
     let keyboard = app.keyboards.firstMatch
-    // The phone's software keyboard comes up; the iPad has none here.
+    // The phone's software keyboard comes up; the iPad has none here, so
+    // there `covered()` below can only pass (in run 100 the list sat far
+    // above the iPad's keyboard).
     if !isPad {
       guard keyboard.waitForExistence(timeout: 3) else { return }
     }
@@ -211,6 +213,9 @@ final class PostingUITests: XCTestCase {
     guard suggestions.firstMatch.waitForExistence(timeout: 5) else {
       return XCTFail("no language suggestions for “e”")
     }
+    // Whether XCUITest sees a keyboard as the key is pressed (run 100's
+    // Escape was lost with one showing).
+    print("VIRGA-NOTE language Escape: keyboards=\(app.keyboards.count)\(keyboard.exists ? " frame=\(keyboard.frame)" : "")")
     app.typeKey(XCUIKeyboardKey.escape.rawValue, modifierFlags: [])
     XCTAssertTrue(suggestions.firstMatch.waitForNonExistence(timeout: 5), "Escape didn't put the language suggestions away")
     chosen = labels(removes)

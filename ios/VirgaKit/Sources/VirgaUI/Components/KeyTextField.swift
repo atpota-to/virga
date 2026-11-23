@@ -101,8 +101,8 @@ struct KeyTextField: UIViewRepresentable {
     field.smartInsertDeleteType = .no
     field.inlinePredictionType = .no
     // The UI tests that press hardware keys run with no software keyboard
-    // (SoftwareKeyboard); nil, the system's keyboard, otherwise.
-    field.inputView = SoftwareKeyboard.inputView()
+    // (SoftwareKeyboard); without that flag this changes nothing.
+    SoftwareKeyboard.apply(to: field)
     // The field round it draws the focus (`.virgaField(focused:)`).
     field.focusEffect = nil
     field.setContentHuggingPriority(.defaultLow, for: .horizontal)

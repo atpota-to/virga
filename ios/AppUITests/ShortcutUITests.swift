@@ -18,12 +18,13 @@
 // XCUITest's typeKey is a hardware key: on CI's iPad simulator the
 // software keyboard hides as each one arrives and comes back about two
 // seconds later (run 99's recording), and keys can be lost in that move
-// (developer forums thread 849249). Run 100's probe showed it: the ↓
-// reached the field, and the Return reached it by no route at all. So on
-// the iPad the test runs with no software keyboard in the app's UIKit
-// fields (-VirgaNoSoftwareKeyboard, SoftwareKeyboard), as with a hardware
-// keyboard attached; the phone keeps its software keyboard and presses its
-// Return.
+// (developer forums thread 849249, on devices). Run 100's probe showed the
+// ↓ reaching the field and the Return reaching it by no route at all, why
+// isn't known; the likeliest suspect is that switching. So on the iPad the
+// test runs with no software keyboard, bar or autocorrection in the app's
+// UIKit fields (-VirgaNoSoftwareKeyboard, SoftwareKeyboard); the traces
+// say how many keyboards XCUITest saw. The phone keeps its software
+// keyboard and presses its Return.
 
 import UIKit
 import XCTest
@@ -89,7 +90,9 @@ final class ShortcutUITests: XCTestCase {
   /// The probe's record of the post's field, written to the log under
   /// `tag` and kept with the results.
   private func trace(_ app: XCUIApplication, _ tag: String) {
-    let line = "\(tag) field=post-editor-0 \(jsonLine(probeRecord(of: "post-editor-0", in: app)))"
+    let keyboard = app.keyboards.firstMatch
+    let keyboards = "keyboards=\(app.keyboards.count)\(keyboard.exists ? " frame=\(keyboard.frame)" : "")"
+    let line = "\(tag) field=post-editor-0 \(keyboards) \(jsonLine(probeRecord(of: "post-editor-0", in: app)))"
     print(line)
     let attachment = XCTAttachment(string: line)
     attachment.name = tag
