@@ -278,7 +278,10 @@ public struct PageHeader: View {
   /// words a line every 1.1 of it (TitleLines), where a Text's lines would
   /// be the face's own 1.22 apart, and balanced as the web's heading is.
   /// Either way VoiceOver reads it as one heading. A title written right to
-  /// left stays a Text (TitleLines.canSet).
+  /// left stays a Text (TitleLines.canSet). A title that wraps takes the
+  /// whole row, as the web's h1 shrinks to the row once it no longer fits
+  /// on one line, so the tools after it sit at the row's end, not just past
+  /// its balanced lines.
   @ViewBuilder private var title: some View {
     if TitleLines.canSet(model.title) {
       ViewThatFits(in: .horizontal) {
@@ -324,6 +327,9 @@ public struct PageHeader: View {
     .accessibilityLabel(model.title)
     .accessibilityAddTraits(.isHeader)
     .accessibilityIdentifier("page-title")
+    // The row's width, the lines at its start; VoiceOver's heading stays
+    // the size of the words.
+    .frame(maxWidth: .infinity, alignment: .leading)
   }
 
   @ViewBuilder private var subAndAccess: some View {

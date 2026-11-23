@@ -324,8 +324,10 @@ public struct LandingView: View {
     let size = theme.points(ThemeKit.landingTitleFontSize)
     return TitleLines(
       pitch: theme.scaled(size) * CGFloat(ThemeKit.landingTitleLineHeight),
-      // A space, and the letter-spacing a browser puts after it too.
-      space: theme.spaceWidth(size: size) + theme.tracking(ThemeKit.landingTitleTracking, size: size)
+      // A space at the title's weight, and the letter-spacing a browser
+      // puts after it too.
+      space: theme.spaceWidth(size: size, weight: ThemeKit.landingTitleWeight)
+        + theme.tracking(ThemeKit.landingTitleTracking, size: size)
     ) {
       ForEach(Array(words.split(separator: " ").enumerated()), id: \.offset) { _, word in
         Text(String(word))
