@@ -37,7 +37,10 @@
 //                 composing<n> while an input method held n letters
 //                 marked, dup when another way had taken that press,
 //                 passed or after-command for an arrow's press, and held
-//                 or passed for a press's end
+//                 or passed for a press's end (cancel-held, cancel-passed
+//                 for one cancelled). Qp-keyless<type>=held or passed: a
+//                 press with no key (UIPress.PressType's number), held
+//                 when it came in a set with a list key taken
 //   C<offered>    the list key commands the field offered as UIKit asked
 //                 for its key commands, noted as it changes: rows (the
 //                 arrows, Return, Tab and Escape), escape (Escape alone),

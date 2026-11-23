@@ -792,13 +792,18 @@ final class ComposerTextView: UITextView {
   /// The "@" and "/" lists' keys (PostEditor.jsx's onKeyDown).
   var suggestionKeys: SuggestionKeyHandler?
   /// The hardware presses of Return, Tab and Escape a list took in
-  /// pressesBegan (and the key-less twin UIKit sends beside some keys),
-  /// until each ends: no phase of them goes on to the text view, and while
-  /// one is down its key command and insertText don't take the key again.
+  /// pressesBegan (and a key-less twin UIKit sends beside some keys in the
+  /// same set), until each ends: no phase of them goes on to the text view,
+  /// and while one is down its key command and insertText don't take the
+  /// key again.
   private var heldListPresses: [UIPress: SuggestionKeys.Key] = [:]
   /// The list key a key command last acted on, and when (CACurrentMediaTime,
   /// the clock of a press's timestamp). A press of that key stamped no later
   /// is the one the command took, should UIKit hand it to pressesBegan too.
+  /// Forgotten when a press of that key ends or is cancelled: a key's press
+  /// ends before its next press begins, so a press that begins after that
+  /// is a new one, even one stamped before a command that waited on a busy
+  /// main thread.
   private var commandTook: (key: SuggestionKeys.Key, at: CFTimeInterval)?
   /// True while insertText hands a letter to UIKit's own insertText: the
   /// typing probe's way of telling a new line that came that way from one
@@ -953,6 +958,9 @@ final class ComposerTextView: UITextView {
     }
     var taken: [UIPress: SuggestionKeys.Key] = [:]
     for press in presses {
+      // A press that begins now isn't one held before, should UIKit ever
+      // hand a press object on to a new press.
+      heldListPresses[press] = nil
       guard let uiKey = press.key else { continue }
       if TypingProbe.isOn { noteArrow(uiKey, press) }
       guard let key = Self.pressKey(uiKey) else { continue }
@@ -968,12 +976,19 @@ final class ComposerTextView: UITextView {
         taken[press] = key
       }
     }
-    guard let key = taken.values.first else {
+    let twinOf = taken.values.first
+    if TypingProbe.isOn {
+      for press in presses where press.key == nil {
+        noteListKey("p", "keyless\(press.type.rawValue)", twinOf == nil ? "passed" : "held")
+      }
+    }
+    guard let key = twinOf else {
       super.pressesBegan(presses, with: event)
       return
     }
     // The key-less twin of a key taken (its semantic press, a select or a
-    // menu) goes no further either.
+    // menu) goes no further either, when it comes in the same set. One that
+    // comes in a set of its own goes on, as it did before.
     for press in presses where press.key == nil { taken[press] = key }
     heldListPresses.merge(taken) { _, new in new }
     let rest = presses.filter { taken[$0] == nil }
@@ -987,16 +1002,27 @@ final class ComposerTextView: UITextView {
   }
 
   override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
-    if TypingProbe.isOn { noteEnded(presses) }
+    if TypingProbe.isOn { noteEnded(presses, "") }
+    forgetCommand(presses)
     guard !heldListPresses.isEmpty else { return super.pressesEnded(presses, with: event) }
     let rest = release(presses)
     if !rest.isEmpty { super.pressesEnded(rest, with: event) }
   }
 
   override func pressesCancelled(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+    if TypingProbe.isOn { noteEnded(presses, "cancel-") }
+    forgetCommand(presses)
     guard !heldListPresses.isEmpty else { return super.pressesCancelled(presses, with: event) }
     let rest = release(presses)
     if !rest.isEmpty { super.pressesCancelled(rest, with: event) }
+  }
+
+  /// A press of the key a key command last took has ended, so the press
+  /// that command took is over (a key's press ends before its next press
+  /// begins): the next press of that key is a new one, whatever its stamp.
+  private func forgetCommand(_ presses: Set<UIPress>) {
+    guard let took = commandTook else { return }
+    if presses.contains(where: { $0.key.flatMap(Self.listKey) == took.key }) { commandTook = nil }
   }
 
   /// The presses not held, once those held are let go.
@@ -1020,6 +1046,16 @@ final class ComposerTextView: UITextView {
     case .keyboardReturnOrEnter, .keyboardReturn, .keypadEnter: return .enter
     case .keyboardTab: return .tab
     case .keyboardEscape: return .escape
+    default: return nil
+    }
+  }
+
+  /// The list key a hardware key is, the arrows included.
+  private static func listKey(_ key: UIKey) -> SuggestionKeys.Key? {
+    if let key = pressKey(key) { return key }
+    switch key.keyCode {
+    case .keyboardUpArrow: return .up
+    case .keyboardDownArrow: return .down
     default: return nil
     }
   }
@@ -1060,21 +1096,17 @@ final class ComposerTextView: UITextView {
   /// An arrow's press, which always goes on: "after-command" when its key
   /// command took it first.
   private func noteArrow(_ key: UIKey, _ press: UIPress) {
-    let arrow: SuggestionKeys.Key
-    switch key.keyCode {
-    case .keyboardUpArrow: arrow = .up
-    case .keyboardDownArrow: arrow = .down
-    default: return
-    }
+    guard let arrow = Self.listKey(key), arrow == .up || arrow == .down else { return }
     let after = commandTook.map { $0.key == arrow && $0.at >= press.timestamp } ?? false
     noteListKey("p", Self.probeName(arrow), after ? "after-command" : "passed")
   }
 
-  /// The end of a press of Return, Tab or Escape: "held" when its list took it.
-  private func noteEnded(_ presses: Set<UIPress>) {
+  /// The end of a press of Return, Tab or Escape: "held" when its list took
+  /// it, "passed" when not, after `prefix` ("cancel-" for a cancelled one).
+  private func noteEnded(_ presses: Set<UIPress>, _ prefix: String) {
     for press in presses {
       guard let uiKey = press.key, let key = Self.pressKey(uiKey) else { continue }
-      noteListKey("u", Self.probeName(key), heldListPresses[press] != nil ? "held" : "passed")
+      noteListKey("u", Self.probeName(key), prefix + (heldListPresses[press] != nil ? "held" : "passed"))
     }
   }
 }
