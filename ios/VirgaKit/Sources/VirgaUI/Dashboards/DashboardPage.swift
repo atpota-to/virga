@@ -382,9 +382,16 @@ struct WidgetCard: View {
     let chartModes = modes
     let gap = theme.gap(ThemeKit.cardHeadGap)
     let under = chartModes != nil && (theme.isPhone || (width ?? .infinity) <= Measure.Dashboard.headModesAt)
+    let phone = theme.isPhone
     return VStack(alignment: .leading, spacing: 0) {
-      HStack(alignment: .firstTextBaseline, spacing: gap.column) {
-        VStack(alignment: .leading, spacing: 2) {
+      // On a phone the head is a grid (`minmax(0, 1fr) auto`): the title
+      // and the tools share the first row, each centred on it (`align-self:
+      // center`), so a title on two lines has the tools by its middle; the
+      // lines under the title (`.card-sub`) run the full width beneath both
+      // (`grid-column: 1 / -1`). Wider, the titles' column holds them and
+      // the tools sit on the title's line.
+      HStack(alignment: phone ? .center : .firstTextBaseline, spacing: gap.column) {
+        VStack(alignment: .leading, spacing: Measure.Dashboard.cardSubSpaceAbove) {
           // An h2: the heading's 1.25 between its lines (base.css).
           Text(title ?? def.name)
             .virgaText(
@@ -393,10 +400,7 @@ struct WidgetCard: View {
             .foregroundStyle(theme.ink)
             .fixedSize(horizontal: false, vertical: true)
             .accessibilityAddTraits(.isHeader)
-          ownLine
-          if let sub = headSub {
-            Text(sub).virgaText(.textSm).foregroundStyle(theme.muted)
-          }
+          if !phone { subLines }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         // Beside the title (from 561 up, in a card wider than 440), the
@@ -421,6 +425,10 @@ struct WidgetCard: View {
           .padding(.top, -Measure.Section.iconToolLift)
           .padding(.bottom, theme.isPhone ? -Measure.Section.iconToolLift : 0)
           .padding(.trailing, -Measure.Dashboard.openLetOut)
+      }
+      if phone && hasSubLines {
+        VStack(alignment: .leading, spacing: Measure.Dashboard.cardSubSpaceAbove) { subLines }
+          .padding(.top, Measure.Dashboard.cardSubSpaceAbove)
       }
       // Under the titles, 8 down (`margin-top: 8px`). A phone's head has no
       // gap between its rows (`.card-head:has(> :nth-child(2)) { row-gap: 0
@@ -458,6 +466,23 @@ struct WidgetCard: View {
     }
   }
 
+  /// The lines under the title (`.card-sub`): the card's own period and
+  /// kind, and the lists' count.
+  @ViewBuilder private var subLines: some View {
+    ownLine
+    if let sub = headSub {
+      Text(sub).virgaText(.textSm).foregroundStyle(theme.muted)
+    }
+  }
+
+  /// Whether the card has a line under its title.
+  private var hasSubLines: Bool {
+    ownPeriod != nil || ownKind != nil || headSub != nil
+  }
+
+  private var ownPeriod: AnalyticsPeriod? { card.options?.period.flatMap { Periods.presetPeriod($0) } }
+  private var ownKind: String? { card.options?.kind.flatMap { WidgetParts.kindNoun[$0] } }
+
   /// WIDGET_HEADS' `sub`: the lists' count heads the lists you're on.
   private var headSub: String? {
     guard card.type == "lists-on", archive.meta.lists != nil else { return nil }
@@ -470,8 +495,8 @@ struct WidgetCard: View {
   /// `OwnLine`: the card's own period and kind, when it keeps them, each
   /// with the web's title as its hint.
   @ViewBuilder private var ownLine: some View {
-    let own = card.options?.period.flatMap { Periods.presetPeriod($0) }
-    let kind = card.options?.kind.flatMap { WidgetParts.kindNoun[$0] }
+    let own = ownPeriod
+    let kind = ownKind
     if own != nil || kind != nil {
       FlowLayout(spacing: 0, lineSpacing: 0) {
         if let own {

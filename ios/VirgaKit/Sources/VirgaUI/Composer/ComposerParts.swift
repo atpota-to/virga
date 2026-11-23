@@ -149,7 +149,7 @@ struct LanguagePicker: View {
     ScrollViewReader { proxy in
       // Its own height up to 16rem, which grows with Dynamic Type as a rem
       // does with the browser's text size; past that it scrolls inside.
-      TableRowsHeight(limit: theme.scaled(Measure.LanguageList.maxHeight, relativeTo: VirgaTheme.textStyle(for: theme.textBase))) {
+      TableRowsHeight(limit: theme.scaled(ComposerMeasure.languagesListMax, relativeTo: VirgaTheme.textStyle(for: theme.textBase))) {
         ScrollView {
           VStack(alignment: .leading, spacing: 0) {
             ForEach(Array(options.enumerated()), id: \.element.code) { index, option in
@@ -163,7 +163,7 @@ struct LanguagePicker: View {
                 }
                 .suggestRow()
               }
-              .buttonStyle(LanguageOptionStyle(selected: index == active))
+              .buttonStyle(SuggestItemStyle(marked: index == active))
               .accessibilityAddTraits(index == active ? .isSelected : [])
               .accessibilityIdentifier("language-\(option.code)")
               .id(option.code)
@@ -172,6 +172,9 @@ struct LanguagePicker: View {
           .padding(ComposerMeasure.suggestListPadding)
         }
         .scrollBounceBehavior(.basedOnSize)
+        // The page's scroll lets the keyboard go as it is dragged; a drag in
+        // the list (at large sizes, where it scrolls) keeps it and the list.
+        .scrollDismissesKeyboard(.never)
       }
       // The highlighted one stays in sight as the arrows move it.
       .onChange(of: active) { _, at in
@@ -209,30 +212,6 @@ struct LanguagePicker: View {
     query = ""
     active = 0
     open = false
-  }
-}
-
-/// `.suggest-item` in the language list: --hover under the one the arrow
-/// keys are on (`aria-selected`), under an iPad's pointer and while
-/// pressed, on the kit's radius.
-struct LanguageOptionStyle: ButtonStyle {
-  let selected: Bool
-
-  func makeBody(configuration: Configuration) -> some View {
-    LanguageOptionBody(label: configuration.label, shaded: selected || configuration.isPressed)
-  }
-}
-
-struct LanguageOptionBody<Label: View>: View {
-  @Environment(\.virgaTheme) private var theme
-  let label: Label
-  let shaded: Bool
-  @State private var hovered = false
-
-  var body: some View {
-    label
-      .background(RoundedRectangle(cornerRadius: theme.radius).fill(shaded || hovered ? theme.hover : Color.clear))
-      .onHover { hovered = $0 }
   }
 }
 

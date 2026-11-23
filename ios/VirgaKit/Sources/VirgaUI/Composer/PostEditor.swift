@@ -442,7 +442,8 @@ struct SuggestRowStyle: ViewModifier {
 }
 
 /// `.suggest-item`'s fill: --hover on the row the arrow keys are on
-/// (`aria-selected`), and on the one under the pointer or a finger.
+/// (`aria-selected`), and on the one under the pointer or a finger. The
+/// "@" and "/" lists and the language picker's suggestions wear it.
 struct SuggestItemStyle: ButtonStyle {
   var marked = false
 
@@ -478,8 +479,9 @@ struct SuggestStatus: View {
   }
 }
 
-/// Scrolls the composer's body the least it can so a view of it (by its
-/// id) is wholly in view: the sheet's ScrollViewReader, handed down.
+/// Scrolls the least it can so a view (by its id) is wholly in view: a
+/// ScrollViewReader handed down, the composer sheet's round its body, or
+/// `composerScrolling()`'s round a page or dialog holding a language picker.
 struct ComposerScroller {
   let reveal: @MainActor (String) -> Void
 }
@@ -489,7 +491,9 @@ private struct ComposerScrollerKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-  /// The composer sheet's scroller (ComposerSheet sets it).
+  /// The scroller of the scroll view this is in, where one is lent
+  /// (ComposerSheet, and `composerScrolling()` in Settings' pages and the
+  /// Language dialog).
   var composerScroller: ComposerScroller? {
     get { self[ComposerScrollerKey.self] }
     set { self[ComposerScrollerKey.self] = newValue }

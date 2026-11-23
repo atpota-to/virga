@@ -81,6 +81,9 @@ extension Measure.Dashboard {
   /// `@container widget (max-width: 440px)`: a chart's modes under the title, 8 down.
   static let headModesAt: CGFloat = 440
   static let headModesSpaceAbove: CGFloat = 8
+  /// `.card-sub { margin-top: 2px }`: a card's own-period line and the
+  /// lists' count, under its title.
+  static let cardSubSpaceAbove: CGFloat = 2
   /// `.widget--list > .widget-head { padding-bottom: 12px }`, and what isn't
   /// rows 16 under its rule.
   static let listHeadSpaceBelow: CGFloat = 12

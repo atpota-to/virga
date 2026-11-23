@@ -185,17 +185,21 @@ final class PostingUITests: XCTestCase {
       newToken(removes, besides: chosen).map { firstLabel.hasPrefix($0) } ?? false,
       "a press on “\(firstLabel)” didn't add it")
 
-    // On the iPad, a hardware keyboard's: with the list open again (a press
-    // on the field), Escape puts it away, and ↓ then Return adds the second
-    // suggestion. (Mira starts with English, so this is the third language,
-    // the most there can be: Escape goes first.)
+    // On the iPad, a hardware keyboard's: with the list open again, Escape
+    // puts it away, and ↓ then Return adds the second suggestion. (Mira
+    // starts with English, so this is the third language, the most there
+    // can be: Escape goes first.) The list is opened again by the query
+    // changing, as typing does on the web: a press on a field that already
+    // has the keyboard may not reach the picker.
     guard UIDevice.current.userInterfaceIdiom == .pad else { return }
     languages.tap()
+    languages.typeText("e")
     guard suggestions.firstMatch.waitForExistence(timeout: 5) else { return }
     app.typeKey(XCUIKeyboardKey.escape.rawValue, modifierFlags: [])
     XCTAssertTrue(suggestions.firstMatch.waitForNonExistence(timeout: 5), "Escape didn't put the language suggestions away")
     chosen = labels(removes)
-    languages.tap()
+    // The "e" taken out: the empty query's suggestions, the list open again.
+    app.typeKey(XCUIKeyboardKey.delete.rawValue, modifierFlags: [])
     guard suggestions.firstMatch.waitForExistence(timeout: 5) else { return }
     let rows = suggestions.allElementsBoundByIndex.sorted { $0.frame.minY < $1.frame.minY }
     guard rows.count >= 2 else { return }

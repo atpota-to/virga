@@ -385,9 +385,10 @@ TEMPLATES AND POSTING (Templates/, Posting/, Settings/PostingSettingsSection.swi
 - PostingUITests (`testTemplatesAndPostingSettings`, no archive build): `posting-templates`,
   `template-editor`, `template-editor-questions`, `posting-template-use` (Use on Event reminder: the
   composer, its questions in the library), `settings-posting`, `settings-posting-timer`,
-  `settings-posting-languages` (back at the top, the language field dragged into the window's top
-  third so the iPhone's keyboard leaves room for the list, "fr" typed; skipped without failing if
-  the field can't be reached).
+  `settings-posting-languages` (back at the top, "fr" typed in the language field, the shot taken
+  once the list has cleared the keyboard by itself; reaching the field is guarded, but then the
+  list must clear the keyboard and a press on its first suggestion must add that language; on
+  the iPad, Escape must put the list away and ↓ and Return must add the second suggestion).
 
 ADVISER (Adviser/, Composer/ComposerController+Adviser.swift, Posting/)
 - The views are over VirgaPosting/Adviser's logic, unchanged: `AdviserGateModel` (the composer's
@@ -1099,14 +1100,9 @@ devices; and the lookup's suggestion under its search field rather than over it.
   iPad card's title sat about 12.5 points low. SectionHead on a phone is `PhoneHeadLayout`, the
   web's `minmax(0, 1fr) auto`: the tools at their own width, the title wrapping in what they
   leave, both centred on the row; the title's line under both; a small Segmented on a row of its
-  own under that, 8 down. It reads as title, line, tools, the web's order. Port only, for Dynamic
-  Type: tools that would leave the title less than 6 ems (`Measure.Section.phoneTitleLeastEms`,
-  90 points at the default size), or less than its one-line width if that is smaller, go on
-  that same row under the line. At the default size no heading comes near that on a 375-point
-  iPhone (the tightest is Who engaged beside Open the post and Scan again, 103 points), but in a
-  320-point window (Display Zoom on a small iPhone, Slide Over) Who engaged's actions and The
-  best slots' more link go under the line where the web would wrap or crowd the title. Callers
-  no longer fix their tools' size: Defense's Who engaged doesn't.
+  own under that, 8 down. It reads as title, line, tools, the web's order. Callers no longer fix
+  their tools' size: Defense's Who engaged doesn't. (The 6-em fallback this round added was
+  replaced in the next: see "Phone heads and dashboard card heads" below.)
 - Wrapped titles. A title whose line-height is under the face's own 1.22 and that can wrap is
   set by `TitleLines` (Components/TitleLines.swift, the front page's old LandingTitleLines): one
   view per word, a line every line-height in points (scaled by Dynamic Type), each word's own
@@ -1123,10 +1119,9 @@ devices; and the lookup's suggestion under its search field rather than over it.
   title tools (the dashboard's menu, the rename pencil) sit at the row's end. It is one VoiceOver
   heading either way, identifier `page-title`. A title with right-to-left letters stays a Text
   (`TitleLines.canSet`), since the words are placed left to right. At the default size only
-  NoReportPage's title wraps at 440, and "There's nothing at this address" at 375. Still at the
-  face's 1.22 when they wrap: a figure's value (line-height 1, `overflow-wrap: anywhere`), the
-  first build's title, the return and terms titles (1.1) and the legal pages' h1 (1.05). A long
-  word with hyphens, or a CJK title, breaks differently from the browser.
+  NoReportPage's title wraps at 440, and "There's nothing at this address" at 375. A long word
+  with hyphens, or a CJK title, breaks differently from the browser. The other short-leaded
+  titles and a figure's value followed in the next round ("Titles and figures that wrap" below).
 - Language suggestions. They float over what follows the field, as `.lang-search
   .suggest-list` does: in the composer's dialog over Adult content, and in Settings › Posting
   over the rows after Languages. `LanguagePicker` hangs them from a line of no height at the
@@ -1138,11 +1133,9 @@ devices; and the lookup's suggestion under its search field rather than over it.
   way. Why the guide was dropped isn't known, so don't go back to one. Whatever holds the picker
   draws it over its later siblings with `.zIndex(1)` (MetaDialog's picker, the Languages
   SettingsRow, the lookup's search on both of its pages), and a SettingsRow draws its hairline
-  as a background, under its content, as the web's border is. The web caps its list at 16rem
-  and scrolls; the port's isn't capped. On an iPhone the keyboard can still cover the list when
-  the field is low in Settings, which has nothing like the composer's ComposerReveals. No UI
-  test taps a language suggestion yet; the lookup's test taps its first suggestion, now under
-  the field.
+  as a background, under its content, as the web's border is. The lookup's test taps its first
+  suggestion, now under the field. The cap, the keys and the list's place over the keyboard
+  came in the next round ("The language picker's keys and room" below).
 - The "@" list (`PostEditor.shownMention`). It is drawn while there is a partial mention and a
   lookup, as the web's list is up from the lookup's start until the mention ends, a pick,
   Escape, or a blur a beat later. A key the lookup task hasn't started on yet shows what the
@@ -1158,8 +1151,8 @@ devices; and the lookup's suggestion under its search field rather than over it.
   dialog all change height with each key, and with no one found the status is read out twice a
   key ("Looking…", then "No one found for …"), as the web's live region is. Keeping the last
   rows while the next lookup loads would be a departure from the web, not done here. A pick goes
-  in over the mention the list was drawn for. The list still has none of the web's keys (arrows,
-  Enter or Tab to pick, Escape).
+  in over the mention the list was drawn for. Its keys came in the next round ("The suggestion
+  lists' keys" below).
 - Menu hints (Posted's Post again and Put on a timer). Run 94's shots, taken once the menu has
   opened, show both hints under their titles on the iPhone and the iPad, and run 82's iPad shot
   shows them over the dark menu. Items, order, wording and separators match Posted's and
@@ -1176,7 +1169,152 @@ devices; and the lookup's suggestion under its search field rather than over it.
 Also left as they were: in an iPad window 481 to 560 wide, a dashboard chart's modes sit beside
 its title where the web's phone rule puts them under it, and the dashboard head's gap is 8
 where the web's is 16; `TransportImage` sends a `data:` address through the transport, so a
-picture the demo user posts (`blobDataUrl`) shows nothing in a library row.
+picture the demo user posts (`blobDataUrl`) shows nothing in a library row. All three were
+fixed in the next round, below.
+
+## The next round (after run 96)
+
+Five more fixes, each on its own branch from 31a9367, each read by a second reviewer (the
+suggestion keys by two: one for the web's behaviour, one for the typing path alone), then
+merged together. Linux checks: every changed file parses, the new logic tests pass
+(`LanguagePickerKeysBehaviour`, `SuggestionKeysBehaviour`, `FigureWrap`, `DataURLTests`,
+`DemoDataPictureTests`), and the module map's checks pass. None of the VirgaUI changes has been
+compiled until CI runs them.
+
+- The language picker's keys and room. On a hardware keyboard `LanguagePicker` is a combobox,
+  as LanguagePicker.jsx is. The first suggestion is highlighted as the list opens and after
+  every keystroke (--hover on the kit's radius, the shared `SuggestItemStyle`, and `.isSelected`
+  for VoiceOver). ↑ and ↓ (`.onKeyPress` on the field, as HandleField and the lookup's search
+  use) move the highlight round the list, Return (onSubmit) adds the highlighted one, and
+  Escape closes the list. With no list showing every key is the field's, and Tab is left to
+  move the focus, which closes the list 120 ms later. The rules are VirgaPosting's
+  `LanguagePickerKeys` (onKeyDown's, held by `LanguagePickerKeysBehaviour`). A move by the
+  arrows is announced, as the web's aria-activedescendant is read. Unlike the web, Return ends
+  the field's editing, as a SwiftUI field's Return does; a touch user's Return still adds the
+  first suggestion. The list is at most 16rem (`ComposerMeasure.languagesListMax`, 256, grown
+  with Dynamic Type as --text-base's style grows) and scrolls inside past it, keeping the
+  highlighted row in sight; six rows come to 252, so at the default size it never scrolls, as
+  on the web, and a drag inside it doesn't let the keyboard go (`.scrollDismissesKeyboard(.never)`
+  over the page's interactive dismissal). A scroll view holding a picker wears
+  `composerScrolling()` (SettingsPage round its VirgaPage, MetaDialog round its DialogFrame): a
+  ScrollViewReader whose proxy is handed down as the ComposerScroller the composer sheet lends
+  its "@" list. The list then brings itself into view with ComposerReveals (anchor
+  `language-suggestions`, keyed by its row count), and again on keyboardDidShow, since it opens
+  with the focus while the keyboard is still rising. scrollTo without an anchor moves the least
+  it can, so nothing moves while the list shows in full. The Settings test no longer drags the
+  page (see PostingUITests above). Not proven before CI: that iOS delivers ↑, ↓ and Escape to a
+  focused TextField's onKeyPress (no UI test had pressed them in HandleField, the lookup or the
+  palette either), that the proxy finds the list's id inside its overlay, and that it keeps the
+  list clear of the keyboard in VirgaPage's scroll.
+- Titles and figures that wrap. A heading whose line-height is under the face's 1.22 and that
+  can wrap is `WrappingTitle` (Components/WrappingTitle.swift): on one line the Text with
+  `overflowingLeading`, and once it no longer fits (`ViewThatFits(in: .horizontal)`) TitleLines
+  at the web's line-height, balanced as base.css's h1 is, taking the row. It is one VoiceOver
+  heading with the identifier it had. A page's title (`page-title`), the first build's
+  (`first-run-title`, 1.1), the return and terms screens' (`return-title`, `terms-title`, 1.1)
+  and a legal page's h1 (`legal-title`, 1.05) all use it; all are h1s, so all balance. A title
+  with right-to-left letters stays a Text, greedy and 1.22 apart, but once wrapped it takes the
+  row too, so a page title's tools sit at the row's end as on the web. One known difference: at
+  320, Chromium balances "Sign-in didn’t complete" as "Sign-in" / "didn’t complete" and the port
+  as "Sign-in didn’t" / "complete". The hyphen changes Chromium's choice ("Signin didn’t
+  complete" balances as the port does), and the port's is the narrower of the two. The first
+  build's one-line title box now shrinks to its line, about 3.4 points, so the lede sits about 2
+  points nearer it than the web's (the port's paragraphs have no half-leading above them). A
+  figure's value that wraps is set a character at a time, a line every figure size. Measured in
+  Chromium with the bundled face, tabular digits, "+", "−" and "%" are 0.6em, "," "." "’"
+  0.265em, and no pair a number puts side by side is kerned. `overflow-wrap: anywhere` gives each
+  line as many characters as fit, each counted at its advance plus letter-spacing, with the unit
+  able to start a line 3 in. FigureWrap (VirgaCore) breaks it so, and `FigureWrapTests` hold it
+  to 16 of Chromium's layouts. FigureLines places the characters at Core Text's advances for the
+  face, on the line's baseline. Only digits, those separators and signs, and "%" are set so;
+  anything else, including the narrow no-break space (Chromium drops the letter-spacing of a
+  value holding one), wraps as a Text 1.22 apart. The web caps a figure at 0.26 of its cell, so
+  its figures rarely wrap; the port's grow with Dynamic Type and wrap at large sizes.
+- The suggestion lists' keys. The "@" and "/" lists in a post's field take PostEditor.jsx's
+  onKeyDown, as `SuggestionKeys` (VirgaPosting, with its tests) decides it. Nothing happens
+  while an input method is composing (the web's `isComposing`, the field's `markedTextRange`).
+  ↑ and ↓ move the mark, round at the ends, whatever modifier is held. Return and Tab (⇧⇥
+  included) take the marked row, except with ⌘ or ⌃ held (⌘↩ sends). A list showing only its
+  status line (still looking, no one found, no template) takes only Escape, so Return makes a
+  new line. Escape closes the list, not the composer, and doesn't blur. The "@" list Escape
+  closed stays closed, its lookup still running included, until the mention changes
+  (`closedMention`). The web's comes back when a lookup already on its way answers, which the
+  port deliberately doesn't copy. The "/" list stays closed until the caret leaves the shortcut
+  (`slashDismissed`). The mark goes back to the first row whenever the mention or shortcut
+  changes, coming back to the same one included: each lookup starts at 0, and an onChange on
+  the shortcut's place and query (`SlashMark.key`) clears the "/" mark, as the web's
+  `setSlashIndex(0)` effect does. With a hardware keyboard, `ComposerTextView` returns
+  UIKeyCommands with `wantsPriorityOverSystemBehavior` only while a list is up and nothing is
+  composing: the arrows (plain, ⇧, ⌥, ⌘, ⌃), "\r", "\t" and ⇧⇥ while it has rows, Escape while
+  it is up. The software keyboard's Return and Tab reach `insertText` as "\n" and "\t", which
+  hands them to the lists only while they show rows: Safari on a phone sends keydown Enter for
+  Return, so the web takes the marked row too. A key reads the lists as they are when it comes
+  in (`keyLists`, from the post and the caret), and a row taken goes through the same `pick` and
+  `applyTemplate` as a tap. Every other key, and these with no rows, go to the field as before;
+  `typed`, `textChangeCount`, `handOnIfAhead`, the typing probe's `pressesBegan` and L+/L- notes,
+  and ⌘↩ are unchanged. The marked row is on --hover (`SuggestItemStyle`, as the pointer's and a
+  pressed row are), has `.isSelected`, and is read out as it moves. Not as the web: ⌃↩ and ⌃⇥
+  reach `insertText` as Return and Tab and pick while rows show (the port uses ⌘ for the web's
+  "⌘ or ⌃" throughout and has no ⌃↩ send); a dictated or Scribble new line picks while rows show,
+  where the web sees no keydown; a key's pick reads the post, so a Return while the field is
+  ahead of its post (run 90, run 92's "kept") picks where the field's last key would have ended
+  the mention, as a tap pick does. The handle field's list opens again as the field takes focus,
+  as the web's onFocus brings back what Escape or Tab put away. The Interaction lookup's Return
+  keeps the keyboard when it opens the suggestions or says why there are none. TagsField.jsx has
+  no suggestion list. ShortcutUITests' `testTheMentionListTakesItsKeys` checks, on the iPad's
+  keyboard, that ↓ marks the second person and Return takes them, and that Escape closes the
+  list until "bo" becomes "bo6"; on the phone, that Return takes the first person and makes no
+  new line (autocorrect on that Return is a small risk to the test, not the app). Not proven
+  before CI: that UIKit asks for `keyCommands` again on each key, and that a plain "\r" command
+  wins over text input (if not, `insertText` takes the key instead).
+- Phone heads and dashboard card heads. The web's phone head (`minmax(0, 1fr) auto`, 16 apart)
+  gives the tools their full width and the title what they leave; `.card-title` never breaks a
+  word, so a word longer than that room runs over the tools. Measured with the real font at 320,
+  375 and 440 and at the body style's Dynamic Type steps, that happens only to Who engaged (at
+  320 from the default size, at 375 from xxLarge) and The best slots (at 320 from xxLarge); the
+  web's tools themselves wrap only once the title's column is 0. `PhoneHeadLayout` now keeps the
+  tools beside the title down to its longest word, read from a hidden copy of the title with its
+  words one to a line (`wordsApart`, split at spaces but not no-break spaces), and puts them
+  under its line only below that, the one port-only fallback (`Measure.Section.phoneTitleLeastEms`
+  is gone). Over a small Segmented the title's column is the row less 16, as the web's empty
+  second column keeps its gap, and the title's lines are balanced (`PhoneHeadLayout.balanced`:
+  the narrowest width, to half a point, that needs no more lines, TitleLines' rule), so Best
+  time's long title breaks after "earns," at 375 as the web's does. A dashboard card's head: 16
+  between the title, the chart's modes and the tools; the two tools 4 apart (`.head-tools`) and
+  let out 14 at the end (`.widget-open { margin-right: -14px }` on touch,
+  `Measure.Dashboard.openLetOut`), so the last glyph ends on the card's edge. The modes go under
+  the title in a window 560 or less (the phone rule, on the window), 8 down with no row gap, and
+  in a card 440 or less in any window (`@container widget`, the card's own width), where the
+  head's 8 row gap stays and they sit 16 under the tools' 32. On a phone the card's lines under
+  its title (its own period, the lists' count) now run the full width under the title and tools
+  (`.card-sub` in grid row 2), and the tools are centred on the title's row, so a two-line title
+  has them by its middle (`align-self: center`); from 561 up they stay in the titles' column and
+  the tools on the title's line. (These last two were the head review's notes, done at the merge.)
+  Where the port still differs: its link actions scale with the footnote style (19/13 at
+  xxxLarge, the web's 23/17 with its root), so at the largest sizes a few titles get less room
+  than the web's and wrap one line more, or go under (The best slots at 375 at xxxLarge);
+  Chromium's balance prefers "Defense is on / for @handle" from 180 to 255 points where the port,
+  like greedy wrapping, gives "Defense is on for / @handle"; a hyphenated word counts whole and a
+  CJK title counts as one word, so their tools go under sooner than the web would wrap; and the
+  iPad's head (BesideOrUnder) isn't balanced.
+- Pictures in `data:` addresses. A picture the demo's user posts comes back in the post's view
+  as a `data:` address (`HarnessRepo.blobDataUrl`, up to 2,000,000 bytes, about 2.7 million
+  characters). An `<img>` draws one, but no transport answers it, so its library row showed an
+  empty tint square. `TransportImage` (link cards, the card dialog, library rows) now tries
+  `DemoPicture` first, then hands any `data:` address to `DataPicture`, and uses the transport
+  for everything else, so https and file addresses load and fail as before. `DataPicture` (a
+  ZStack, not a Group, as AltTextPreview is) reads the address off the main actor with
+  VirgaNetwork's `DataURL`, the Fetch standard's data: URL processor: base64 decoded the
+  forgiving way, percent-encoding undone, the type percent-encoded as the URL parser writes it
+  and parsed to its essence. UIImage decodes the bytes, and the picture fills its frame as
+  `object-fit: cover` does; nothing shows while it is read or when it holds no picture, and
+  `onFailure` is told then. An SVG type holds no picture for `DataPicture`, so SVG in any form
+  but the demo's two still draws nothing; UIImage draws TIFF and HEIC, which Chromium doesn't
+  and Safari does. `DataURLTests` holds `DataURL` to what Playwright's Chromium draws and Node's
+  fetch reads over 61 addresses. Today only library rows receive such an address (`images[0].thumb`
+  through `Library.postMedia`): Avatar and RemotePicture get the SVG faces, "" or CDN https, and
+  LocalPicture and AltTextPreview get file: or https. ComposerUITests takes a shot of Your posts
+  (`library-your-posts`), where the thread's first post should show its pasted picture.
 
 ## Known gaps and deliberate differences
 
