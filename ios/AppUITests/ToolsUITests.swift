@@ -95,8 +95,9 @@ final class ToolsUITests: XCTestCase {
     XCTAssertTrue(element(app, "tool-archive").waitForExistence(timeout: 10), "no row for the archive")
     // The rest of the sync (engagement, notifications) runs on after the
     // first build's page has gone, in a strip at the top of a phone's page:
-    // the page once the strip has gone.
-    _ = element(app, "sync-banner").waitForNonExistence(timeout: 60)
+    // the page once it ends. Its Cancel, not the strip, which stays to say a
+    // sync had problems.
+    _ = element(app, "sync-cancel").waitForNonExistence(timeout: 60)
     snapshot("tools-built")
 
     // Identity: the PDS and the handle history, from the demo's directory.

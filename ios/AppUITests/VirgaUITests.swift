@@ -226,6 +226,8 @@ final class VirgaUITests: XCTestCase {
     sleep(1)
     snapshot("settings-day-high-contrast")
     choose(element(app, "sky-night"))
+    // The sky's colours change over a moment after the press.
+    sleep(1)
     snapshot("settings-night-high-contrast")
   }
 

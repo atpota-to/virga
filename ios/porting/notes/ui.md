@@ -977,8 +977,31 @@ Still open from the review: the demo's people show the plain letter disc where t
 draws its SVG initials (AsyncImage can't decode a `data:image/svg+xml` avatar; real avatars are
 JPEGs, so only the demo shows it); a tablet card head's `margin-top: -5px` on its tools; wrapped
 page titles under 1.22 line height (Text's lineSpacing can't go below the face's own); Posted's
-menu hints, which may need the test to wait for the menu before its screenshot. None of this
-is checked by a compile yet beyond `swiftc -parse`: CI's next run is the first.
+menu hints, whose screenshot the test now takes once the menu has opened. The fixes compiled
+and passed the UI tests on both devices in CI run 82 (628657a).
+
+## CI's screenshots against each other (2026-11-23)
+
+Runs 82 (628657a) and 84 (69d274e) were compared pair by pair over every screen that changed
+(56 on the iPhone, 36 on the iPad), to see whether the final review's fixes moved anything they
+shouldn't have. None did. Of 20 suspect pairs, each checked again against the code, 17 differed
+only by when the test took its shot (a toast still fading in, a menu still opening, a scroll
+still coasting, a press that landed while the page moved). The follower chart's shot lost its
+top under the bar because SeriesChart became one VoiceOver element, so the test's scroll
+stopped once its foot showed. The UI tests now wait for the state each shot is meant to show.
+
+Two pairs showed a letter lost while the test typed into a post editor ("@lab.example.or",
+"garden-nots"), on both runs and different devices, a different letter each time. Whether
+the simulator or the editor drops it isn't known. HighlightedTextView used to rewrite every
+attribute and set the selection again on each of several redraws a keystroke, and could put
+the post's text back over a letter UIKit was still inserting; it now changes the field only
+where something changed and leaves it alone mid-edit (`Coordinator.drawn`, `synced`,
+`editing`). ComposerUITests prints `VIRGA-TYPED-MISMATCH` lines in CI's log when a letter
+still goes missing, without failing, so later runs can say whether that helped.
+
+Run 85 failed once on the iPhone, Defense's palette step: swiping back up until Search showed
+left it 51 points short of the top, under the status bar, where taps don't reach it. The seven
+palette steps now swipe until a swipe no longer moves Search.
 
 ## Known gaps and deliberate differences
 

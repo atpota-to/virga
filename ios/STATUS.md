@@ -23,7 +23,9 @@ run 82 (628657a) was green on every job with them fixed, the UI tests on
 both devices included. The final review then went over every domain
 against the web code again and confirmed 48 findings, about 38 distinct
 once duplicates are folded; they were fixed on the merges after 628657a
-(item 7 below), and their first compile is CI's next run.
+(item 7 below), and CI run 84 (69d274e) was green with them on every job.
+A comparison of runs 82 and 84's screenshots found no regressions
+(notes/ui.md, "CI's screenshots against each other").
 
 ## Done
 
@@ -75,7 +77,7 @@ The order follows the dependencies between the web modules.
    - each iPad window keeps its own archive model;
    - Defense no longer keeps a stale scan after it is turned on or off;
    - VoiceOver gaps in the charts, the radar and the scan's progress.
-   One finding was skipped: the iPad's toasts under the composer sheet, which is what the web does too (PORTING.md, "What sits above a sheet"). `npm run parity:drift` shows no drift. The screenshots are worth one more look after the next green run; what the visual review left is listed in notes/ui.md.
+   One finding was skipped: the iPad's toasts under the composer sheet, which is what the web does too (PORTING.md, "What sits above a sheet"). `npm run parity:drift` shows no drift. Run 84's screenshots were compared with run 82's and showed no regressions; what the visual review left is listed in notes/ui.md, with a letter now and then lost while the UI tests type into a post editor, which the tests now log.
 
 ## Things a future session should know
 
