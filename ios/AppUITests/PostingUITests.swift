@@ -3,8 +3,9 @@
 // palette goes to Templates (Mira's two, read from her repo), the editor
 // opens on Event reminder, which asks two questions, its Use opens the
 // composer on it (the questions in the library's dialog), and then
-// Settings › Posting, from its top to the default timer. Each is kept as a
-// screenshot, on the iPhone and the iPad.
+// Settings › Posting, from its top to the default timer and back up to its
+// language field with a few letters typed. Each is kept as a screenshot,
+// on the iPhone and the iPad.
 
 import UIKit
 import XCTest
@@ -133,5 +134,26 @@ final class PostingUITests: XCTestCase {
       tries += 1
     }
     snapshot("settings-posting-timer")
+
+    // Back at the top, its language field with "fr" typed: the suggestions
+    // float over the rows under it. Kept only as a screenshot; nothing
+    // here fails the test.
+    let languages = app.textFields["Languages"].firstMatch
+    guard languages.waitForExistence(timeout: 5) else { return }
+    var top = languages.frame.minY
+    tries = 0
+    repeat {
+      app.swipeDown()
+      tries += 1
+      let moved = languages.frame.minY != top
+      top = languages.frame.minY
+      if !moved { break }
+    } while tries < 8
+    guard languages.isHittable else { return }
+    languages.tap()
+    guard app.keyboards.firstMatch.waitForExistence(timeout: 3) else { return }
+    languages.typeText("fr")
+    sleep(1)
+    snapshot("settings-posting-languages")
   }
 }

@@ -55,7 +55,7 @@ struct MetaDialog: View {
     DialogFrame(title: "Language and content labels", onClose: onClose) {
       DialogForm {
         LanguagePicker(
-          value: $l, label: "Written in", hint: "Up to three. Bluesky uses these for people’s language filters.", floating: true
+          value: $l, label: "Written in", hint: "Up to three. Bluesky uses these for people’s language filters."
         )
         // Its suggestions float over Adult content (`z-index: 30`).
         .zIndex(1)
