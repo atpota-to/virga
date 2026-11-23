@@ -99,8 +99,9 @@ The order follows the dependencies between the web modules.
 - **Fixtures** live in the repository (about 53 MB in 173 files; the
   largest, timers.fuzz.json, is 1.9 MB). Keep new ones under about 1 MB
   each.
-- **Bugs.** `ios/porting/WEB-BUGS.md` lists 107 bugs in the web app the
-  porters found and reproduced rather than fixed. Twenty are visible to people.
+- **Bugs.** `ios/porting/WEB-BUGS.md` lists 108 bugs in the web app found
+  while porting and reproduced rather than fixed. Twenty-one are visible to
+  people.
 - **Harness limits.** The fixture writer's `toJSON` in
   `ios/parity/cases/_helpers.js` keeps a `__proto__` key since 2026-11-21
   (no fixture changed). It is still recursive, so a value nested about

@@ -99,6 +99,23 @@ final class ScheduleUITests: XCTestCase {
     for _ in 0..<4 { app.swipeDown() }
   }
 
+  /// Waits for the hour to turn when it's 57 minutes past or later. A post
+  /// scheduled from Scheduled posts starts at the web's nextHour (an hour
+  /// on, back to the start of its hour), which from :59 is under a minute
+  /// away, and the server refuses anything under a minute ("Choose a time
+  /// at least a minute from now."): run 84's iPhone opened the composer at
+  /// 1:59 and no "Scheduled for" came. The phone's keyboard covers the when
+  /// panel (run 84's composer-when), so the test can't count on picking a
+  /// later time there.
+  private func waitForAnEarlyMinute() {
+    let calendar = Calendar.current
+    let now = Date()
+    guard calendar.component(.minute, from: now) >= 57,
+      let hour = calendar.dateInterval(of: .hour, for: now)
+    else { return }
+    Thread.sleep(forTimeInterval: hour.end.timeIntervalSince(now) + 5)
+  }
+
   /// The post's text field, by its place in the thread.
   private func editor(_ app: XCUIApplication, _ index: Int) -> XCUIElement {
     app.textViews.matching(identifier: "post-editor-\(index)").firstMatch.exists
@@ -254,6 +271,7 @@ final class ScheduleUITests: XCTestCase {
     let scheduleOne = element(app, "sched-schedule-a-post")
     scrollTo(app, scheduleOne)
     if scheduleOne.waitForExistence(timeout: 5) && scheduleOne.isHittable {
+      waitForAnEarlyMinute()
       scheduleOne.tap()
       XCTAssertTrue(element(app, "composer-title").waitForExistence(timeout: 15), "the composer didn't open")
       let first = editor(app, 0)
