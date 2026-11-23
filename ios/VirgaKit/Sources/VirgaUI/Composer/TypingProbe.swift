@@ -20,6 +20,8 @@
 //   U<branch>     an updateUIView ran while UIKit was part way through an
 //                 edit: Uahead, Usame, or Ureset (the guard failed)
 //   R<field>><model>  the app put the post's text back (lengths)
+//   B<binding>><post>  an update's binding disagreed with the post itself
+//                      (lengths); since run 88 the field follows the post
 //   S<n>          the app set the selection
 //   X<loc>,<len>="..."  the keyboard asked for a replacement (a correction)
 //   D!<asked>><got>     after UIKit's edit the field isn't what it asked

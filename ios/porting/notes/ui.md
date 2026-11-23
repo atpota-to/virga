@@ -1013,6 +1013,17 @@ testTypingBench types the first post's words six times into each of the three an
 `VIRGA-TYPED-COUNT` line per field. Neither switch changes anything for someone using the
 app, and neither fails a test. The bench is for one run; the probe is cheap enough to keep.
 
+Run 88 (fb3e9ea) answered it. On the iPhone the composer lost a letter in 2 of the bench's 6
+typings and once in testTheComposer; the post without the typeahead and the bare text view lost
+none in 6 each, and the iPad none at all. All three losses had the same record: every key
+reached the field and its delegate, and then an update put the post's text back while the
+field was one key ahead of the text the update had through its binding ("R63>62", not mid-edit,
+always while the "@" list was up). Every key reaches the post at once in textViewDidChange, so
+the post itself wasn't behind; the update's binding was. updateUIView now reads the post
+itself (`HighlightedTextView.current`) and keeps the binding for handing text on; the probe
+notes a "B" event whenever the two disagree, so the next run can show whether a stale binding
+was the reason. Why the "@" list makes it likelier isn't shown; it adds updates while typing.
+
 Run 85 failed once on the iPhone, Defense's palette step: swiping back up until Search showed
 left it 51 points short of the top, under the status bar, where taps don't reach it. The seven
 palette steps now swipe until a swipe no longer moves Search.

@@ -121,6 +121,7 @@ struct PostEditor: View {
             let at = controller.indexOfPost(postId)
             if at >= 0 { controller.dispatch(.setText(index: at, text: next)) }
           }),
+        current: { self.text },
         segments: segments,
         style: EditorStyle(theme: theme),
         label: label,
@@ -625,7 +626,15 @@ final class ComposerTextView: UITextView {
 }
 
 struct HighlightedTextView: UIViewRepresentable {
+  /// Where the field hands its text on. Read back only to make the field.
   @Binding var text: String
+  /// The post's text as it is at the moment of asking. updateUIView reads
+  /// this, not the binding: in CI run 88 an update read the binding a key
+  /// behind the post, after the field had already handed that key on, and
+  /// put the older text back over it (TypingProbe's R events, all while the
+  /// "@" list was up). The post itself is never behind.
+  var current: () -> String
+  /// The highlights, found for the text the binding had.
   var segments: [HighlightSegment]
   var style: EditorStyle
   var label: String
@@ -679,6 +688,14 @@ struct HighlightedTextView: UIViewRepresentable {
   func updateUIView(_ view: ComposerTextView, context: Context) {
     let coordinator = context.coordinator
     coordinator.parent = self
+    let seen = self.text
+    let text = current()
+    // Highlights found for other text would underline the wrong letters:
+    // plain until the redraw that catches up.
+    let segments = seen == text ? self.segments : []
+    if TypingProbe.isOn, seen != text {
+      TypingProbe.note(identifier, "B\(seen.utf16.count)>\(text.utf16.count)")
+    }
     view.pasteHandler = onPaste
     view.sendHandler = onSend
     view.isEditable = !disabled
