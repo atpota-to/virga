@@ -1017,16 +1017,22 @@
 
 /* A field's ground lets a little of what is behind it through, so on the
    sky it is a pale pane and on the page it is the page; its edge is what
-   says it is a field. */
+   says it is a field. A line of text is round-ended like the buttons,
+   chips and tokens it so often sits beside: everything you press or type
+   into is round, and only what holds things (a menu, a dialog, an embed)
+   is a rounded box. Its words start a little further in, clear of the
+   curve, and words too long for it (a long example on a phone) end in an
+   ellipsis there rather than in half a letter. */
 .input {
   width: 100%;
   min-height: var(--control-h);
-  padding: 0 12px;
+  padding: 0 14px;
   border: 1px solid var(--line-2);
-  border-radius: var(--radius);
+  border-radius: var(--pill);
   background: color-mix(in srgb, var(--surface) 72%, transparent);
   color: var(--ink);
   font-size: var(--text-base);
+  text-overflow: ellipsis;
   transition:
     border-color 0.12s ease,
     box-shadow 0.12s ease;
@@ -1065,16 +1071,18 @@
 
 .input--lg {
   min-height: 46px;
-  padding: 0 16px;
+  padding: 0 18px;
   font-size: var(--text-md);
 }
 
-/* A text area: the field's look, with room for lines. The writer can
-   make it taller, never wider than its column. */
+/* A text area: the field's look, with room for lines, and a box's
+   corners, since a pill can't hold a paragraph. The writer can make it
+   taller, never wider than its column. */
 textarea.input {
   display: block;
   min-height: calc(var(--control-h) * 2.5);
-  padding: 9px 12px;
+  padding: 9px 14px;
+  border-radius: var(--radius-lg);
   line-height: 1.5;
   resize: vertical;
 }
@@ -1104,7 +1112,7 @@ textarea.input {
 input[type='datetime-local'].input,
 input[type='date'].input,
 input[type='time'].input {
-  padding-right: 8px;
+  padding-right: 12px;
 }
 
 /* A search field: the glass sits inside the left edge. */
@@ -1116,7 +1124,7 @@ input[type='time'].input {
 
 .search > svg {
   position: absolute;
-  left: 12px;
+  left: 14px;
   width: 16px;
   height: 16px;
   color: var(--muted);
@@ -1124,20 +1132,60 @@ input[type='time'].input {
 }
 
 .search > .input {
-  padding-left: 36px;
+  padding-left: 38px;
 }
 
+/* The browser's own clear cross is a blue it picks itself; drawn here it
+   is the muted ✕ every other dismiss in the app uses, and it sits clear
+   of the round end. The shape is a mask, so the colour is the token's. */
+.input[type='search']::-webkit-search-cancel-button {
+  width: 14px;
+  height: 14px;
+  margin: 0 -2px 0 8px;
+  appearance: none;
+  background: var(--muted);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.25' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E") center / contain no-repeat;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .input[type='search']::-webkit-search-cancel-button:hover {
+    background: var(--ink);
+  }
+}
+
+@media (forced-colors: active) {
+  .input[type='search']::-webkit-search-cancel-button {
+    background: CanvasText;
+  }
+}
+
+/* The arrow sits as far in from the round end as the words do from the
+   other, and the words stop short of it: a choice too long for the field
+   ends in the field's ellipsis there, not under the arrow. */
 select.input {
-  padding-right: 30px;
+  padding-right: 36px;
   appearance: none;
   background-image: linear-gradient(45deg, transparent 50%, var(--ink-2) 50%),
     linear-gradient(135deg, var(--ink-2) 50%, transparent 50%);
   background-position:
-    calc(100% - 16px) 50%,
-    calc(100% - 11px) 50%;
+    calc(100% - 20px) 50%,
+    calc(100% - 15px) 50%;
   background-size: 5px 5px;
   background-repeat: no-repeat;
   cursor: pointer;
+}
+
+/* Where the system's colours take over, the drawn arrow goes with every
+   other background, and nothing would say the field opens a list: there
+   it has the browser's own arrow, drawn in the system's colours. That
+   arrow brings its own room at the end, so the words need no more than
+   their usual inset to stay clear of it. */
+@media (forced-colors: active) {
+  select.input {
+    padding-right: 14px;
+    appearance: auto;
+  }
 }
 
 input[type='checkbox'],

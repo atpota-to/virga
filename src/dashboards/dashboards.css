@@ -481,6 +481,7 @@
   color: var(--ink);
 }
 
+/* Round, as the icon buttons beside it are, so its focus ring is too. */
 .widget-grip {
   display: grid;
   flex: none;
@@ -489,7 +490,7 @@
   height: 28px;
   padding: 0;
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: 50%;
   background: transparent;
   color: var(--muted);
   cursor: grab;

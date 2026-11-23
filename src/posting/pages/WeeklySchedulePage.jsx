@@ -196,10 +196,12 @@ function DayRow({ day, times, onAdd, onRemove, onCopy, onClear }) {
               // The field is what was asked for; it takes the focus.
               autoFocus
             />
-            <Button size="sm" variant="primary" type="submit">
+            {/* As tall as the field they finish: a smaller pill beside a
+                taller one reads as a different kind of thing. */}
+            <Button variant="primary" type="submit">
               Add
             </Button>
-            <Button size="sm" variant="ghost" onClick={close}>
+            <Button variant="ghost" onClick={close}>
               Cancel
             </Button>
           </form>
