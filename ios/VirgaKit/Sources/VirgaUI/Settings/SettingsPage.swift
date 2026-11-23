@@ -42,6 +42,9 @@ public struct SettingsPage: View {
       VirgaPage(PageHeaderModel(title: current.label, sub: current.desc, crumbs: [Crumb("Settings", to: "/settings")])) {
         sectionBody(current.key)
       }
+      // Posting's language picker brings its suggestions into view in the
+      // page's scroll, over a phone's keyboard.
+      .composerScrolling()
     }
   }
 

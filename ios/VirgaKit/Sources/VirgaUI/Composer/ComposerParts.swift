@@ -10,6 +10,7 @@
 // button (the account's usual action, and the caret's other ways).
 
 #if canImport(UIKit)
+import Combine
 import SwiftUI
 import UIKit
 import VirgaCore
@@ -22,11 +23,29 @@ import VirgaSession
 /// They float over whatever follows the field, as the web's `.lang-search
 /// .suggest-list` does, so nothing moves: whoever holds the picker draws it
 /// over its later siblings (`.zIndex(1)`), as the composer's Language and
-/// content labels and the Languages row in Settings do.
+/// content labels and the Languages row in Settings do. The list is at most
+/// 16rem tall and scrolls inside past that.
 /// `bare` is for a place that already says what this is (a row in Settings):
 /// the label is VoiceOver's alone, not drawn, and there is no hint.
+///
+/// On a hardware keyboard the field is a combobox, as the web's is
+/// (LanguagePickerKeys): the first suggestion is highlighted as the list
+/// opens and after each keystroke, ↓ and ↑ move the highlight round the
+/// list, Return adds the highlighted one (the phone's Return too, which is
+/// always the first) and Escape puts the list away. VoiceOver hears the
+/// highlighted one as selected, and its name as the arrows reach it (the
+/// web's aria-activedescendant).
+///
+/// Where the scroll view holding the picker lends its scroller
+/// (`composerScrolling()`: Settings' pages and the composer's Language
+/// dialog), the list is brought into view as the composer's "@" list is
+/// (ComposerReveals): as it opens, as its rows change and once the keyboard
+/// is up, by the least the scroll can move, so not at all while it shows in
+/// full. On an iPhone the keyboard would otherwise cover it under a field
+/// low on the page.
 struct LanguagePicker: View {
   @Environment(\.virgaTheme) private var theme
+  @Environment(\.composerScroller) private var scroller
   @Binding var value: [String]
   var label = "Languages"
   var hint: String?
@@ -34,11 +53,15 @@ struct LanguagePicker: View {
   var bare = false
   @State private var query = ""
   @State private var open = false
+  /// The suggestion the arrows are on (the web's `active`), the first to start with.
+  @State private var active = 0
   /// The query is being cleared by an add, not typed: it doesn't reopen the list.
   @State private var clearing = false
   @FocusState private var focused: Bool
 
   static let max = 3
+  /// The list's place in the scroll view that holds the picker.
+  static let listAnchor = "language-suggestions"
 
   var body: some View {
     let chosen = Array(value.prefix(Self.max))
@@ -83,9 +106,18 @@ struct LanguagePicker: View {
             clearing = false
           } else {
             open = true
+            active = 0
           }
         }
-        .onSubmit { add(options.first?.code, chosen: chosen) }
+        .onSubmit { press(.enter, options: options, chosen: chosen) }
+        // A hardware keyboard's arrows and Escape, while suggestions show;
+        // with none showing they are the field's (and Escape what holds it).
+        .onKeyPress(keys: [.upArrow, .downArrow]) { key in
+          press(key.key == .downArrow ? .down : .up, options: options, chosen: chosen)
+        }
+        .onKeyPress(.escape) {
+          press(.escape, options: options, chosen: chosen)
+        }
         .accessibilityLabel(label)
         // `.lang-search .suggest-list`: out of the flow (position:
         // absolute), 4 under the field and as wide, over what follows. It
@@ -101,6 +133,12 @@ struct LanguagePicker: View {
                 suggestions(options, chosen: chosen)
                   .fixedSize(horizontal: false, vertical: true)
                   .padding(.top, ComposerMeasure.languagesListTop)
+                  .composerReveals(Self.listAnchor, when: options.count)
+                  // It opens as the field takes focus, while the keyboard is
+                  // still rising: once the keyboard is up, again.
+                  .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { _ in
+                    scroller?.reveal(Self.listAnchor)
+                  }
               }
           }
         }
@@ -108,26 +146,60 @@ struct LanguagePicker: View {
   }
 
   private func suggestions(_ options: [LanguageChoice], chosen: [String]) -> some View {
-    VStack(alignment: .leading, spacing: 0) {
-      ForEach(options, id: \.code) { option in
-        Button {
-          add(option.code, chosen: chosen)
-        } label: {
-          HStack(spacing: ComposerMeasure.suggestItemGap) {
-            Text(option.name).foregroundStyle(theme.ink)
-            Spacer(minLength: 0)
-            Text(option.code).virgaText(.textSm).foregroundStyle(theme.muted)
+    ScrollViewReader { proxy in
+      // Its own height up to 16rem, which grows with Dynamic Type as a rem
+      // does with the browser's text size; past that it scrolls inside.
+      TableRowsHeight(limit: theme.scaled(Measure.LanguageList.maxHeight, relativeTo: VirgaTheme.textStyle(for: theme.textBase))) {
+        ScrollView {
+          VStack(alignment: .leading, spacing: 0) {
+            ForEach(Array(options.enumerated()), id: \.element.code) { index, option in
+              Button {
+                add(option.code, chosen: chosen)
+              } label: {
+                HStack(spacing: ComposerMeasure.suggestItemGap) {
+                  Text(option.name).foregroundStyle(theme.ink)
+                  Spacer(minLength: 0)
+                  Text(option.code).virgaText(.textSm).foregroundStyle(theme.muted)
+                }
+                .suggestRow()
+              }
+              .buttonStyle(LanguageOptionStyle(selected: index == active))
+              .accessibilityAddTraits(index == active ? .isSelected : [])
+              .accessibilityIdentifier("language-\(option.code)")
+              .id(option.code)
+            }
           }
-          .suggestRow()
+          .padding(ComposerMeasure.suggestListPadding)
         }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier("language-\(option.code)")
+        .scrollBounceBehavior(.basedOnSize)
+      }
+      // The highlighted one stays in sight as the arrows move it.
+      .onChange(of: active) { _, at in
+        if options.indices.contains(at) { proxy.scrollTo(options[at].code) }
       }
     }
-    .padding(ComposerMeasure.suggestListPadding)
     .suggestPop()
     .accessibilityElement(children: .contain)
     .accessibilityLabel("Languages")
+  }
+
+  /// A key in the field (LanguagePickerKeys, LanguagePicker.jsx's onKeyDown).
+  @discardableResult
+  private func press(_ key: LanguagePickerKeys.Key, options: [LanguageChoice], chosen: [String]) -> KeyPress.Result {
+    switch LanguagePickerKeys.press(key, active: active, count: options.count) {
+    case .ignored:
+      return .ignored
+    case .highlight(let next):
+      active = next
+      AccessibilityNotification.Announcement(options[next].name).post()
+      return .handled
+    case .add(let index):
+      add(options[index].code, chosen: chosen)
+      return .handled
+    case .close:
+      open = false
+      return .handled
+    }
   }
 
   private func add(_ code: String?, chosen: [String]) {
@@ -135,7 +207,60 @@ struct LanguagePicker: View {
     value = chosen + [code]
     if !query.isEmpty { clearing = true }
     query = ""
+    active = 0
     open = false
+  }
+}
+
+/// `.suggest-item` in the language list: --hover under the one the arrow
+/// keys are on (`aria-selected`), under an iPad's pointer and while
+/// pressed, on the kit's radius.
+struct LanguageOptionStyle: ButtonStyle {
+  let selected: Bool
+
+  func makeBody(configuration: Configuration) -> some View {
+    LanguageOptionBody(label: configuration.label, shaded: selected || configuration.isPressed)
+  }
+}
+
+struct LanguageOptionBody<Label: View>: View {
+  @Environment(\.virgaTheme) private var theme
+  let label: Label
+  let shaded: Bool
+  @State private var hovered = false
+
+  var body: some View {
+    label
+      .background(RoundedRectangle(cornerRadius: theme.radius).fill(shaded || hovered ? theme.hover : Color.clear))
+      .onHover { hovered = $0 }
+  }
+}
+
+/// A ScrollViewReader round a scroll view that holds a language picker,
+/// its proxy handed down as the composer's scroller, so the picker brings
+/// its floating suggestions into view as the composer's sheet brings its
+/// "@" and "/" lists (ComposerReveals). Settings' pages and the composer's
+/// Language dialog wear it round their scroll views.
+struct ComposerScrolling: ViewModifier {
+  @Environment(\.virgaTheme) private var theme
+
+  func body(content: Content) -> some View {
+    ScrollViewReader { proxy in
+      content.environment(
+        \.composerScroller,
+        ComposerScroller { [motion = theme.motion.control] id in
+          DispatchQueue.main.async {
+            withAnimation(motion) { proxy.scrollTo(id) }
+          }
+        })
+    }
+  }
+}
+
+extension View {
+  /// Lets a language picker in this scroll view bring its suggestions into view.
+  func composerScrolling() -> some View {
+    modifier(ComposerScrolling())
   }
 }
 
