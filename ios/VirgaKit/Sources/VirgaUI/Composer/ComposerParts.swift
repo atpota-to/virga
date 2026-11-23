@@ -19,7 +19,9 @@ import VirgaSession
 
 /// Up to three languages: the chosen ones as tokens, and a search field
 /// that suggests more (by name or code). The suggestions open as the field
-/// takes focus, is pressed or is typed in, and close once one is added.
+/// takes focus or is typed in, and close once one is added; a press on the
+/// field asks for them too (a simultaneous tap, which a text field that
+/// already has the keyboard may not pass on), as the web's click does.
 /// They float over whatever follows the field, as the web's `.lang-search
 /// .suggest-list` does, so nothing moves: whoever holds the picker draws it
 /// over its later siblings (`.zIndex(1)`), as the composer's Language and

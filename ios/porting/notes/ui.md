@@ -1093,10 +1093,11 @@ devices; and the lookup's suggestion under its search field rather than over it.
 - Card and section heads. On touch, an icon tool in a card head is 44 points, pulled 12 above
   the title's line (`.card-head > .head-tools { align-self: flex-start; margin-top: -12px }`).
   The -5px in the open item is the mouse's rule, for 30-point buttons, and the port never uses
-  it. Only the dashboard's card head (`WidgetCard.head`) has icon tools. They keep their glyphs
-  on the title's baseline and give up 12 at the top (and 12 at the bottom on a phone), and a
-  chart's modes beside the title give up 13 at each end (`Measure.Segmented.headLift`), so the
-  head starts at the title: 32 tall from 561 up, the title's height on a phone. Before this, an
+  it. Only the dashboard's card head (`WidgetCard.head`) has icon tools. From 561 up they keep
+  their glyphs on the title's baseline and give up 12 at the top, and a chart's modes beside
+  the title give up 13 at each end (`Measure.Segmented.headLift`), so the head starts at the
+  title and is 32 tall. (On a phone the next round centres them on the title's row; see "Phone
+  heads and dashboard card heads" below.) Before this, an
   iPad card's title sat about 12.5 points low. SectionHead on a phone is `PhoneHeadLayout`, the
   web's `minmax(0, 1fr) auto`: the tools at their own width, the title wrapping in what they
   leave, both centred on the row; the title's line under both; a small Segmented on a row of its
@@ -1177,7 +1178,7 @@ fixed in the next round, below.
 Five more fixes, each on its own branch from 31a9367, each read by a second reviewer (the
 suggestion keys by two: one for the web's behaviour, one for the typing path alone), then
 merged together. Linux checks: every changed file parses, the new logic tests pass
-(`LanguagePickerKeysBehaviour`, `SuggestionKeysBehaviour`, `FigureWrap`, `DataURLTests`,
+(`LanguagePickerKeysBehaviour`, `SuggestionKeysBehaviour`, `FigureWrapTests`, `DataURLTests`,
 `DemoDataPictureTests`), and the module map's checks pass. None of the VirgaUI changes has been
 compiled until CI runs them.
 
@@ -1194,18 +1195,22 @@ compiled until CI runs them.
   first suggestion. The list is at most 16rem (`ComposerMeasure.languagesListMax`, 256, grown
   with Dynamic Type as --text-base's style grows) and scrolls inside past it, keeping the
   highlighted row in sight; six rows come to 252, so at the default size it never scrolls, as
-  on the web, and a drag inside it doesn't let the keyboard go (`.scrollDismissesKeyboard(.never)`
-  over the page's interactive dismissal). A scroll view holding a picker wears
+  on the web. Once it does scroll (at the larger sizes), a drag inside it keeps the keyboard
+  (`.scrollDismissesKeyboard(.never)` over the page's interactive dismissal); while it fits, a
+  drag on it is most likely the page's, which still lets the keyboard go. A scroll view holding a picker wears
   `composerScrolling()` (SettingsPage round its VirgaPage, MetaDialog round its DialogFrame): a
   ScrollViewReader whose proxy is handed down as the ComposerScroller the composer sheet lends
   its "@" list. The list then brings itself into view with ComposerReveals (anchor
   `language-suggestions`, keyed by its row count), and again on keyboardDidShow, since it opens
   with the focus while the keyboard is still rising. scrollTo without an anchor moves the least
   it can, so nothing moves while the list shows in full. The Settings test no longer drags the
-  page (see PostingUITests above). Not proven before CI: that iOS delivers ↑, ↓ and Escape to a
-  focused TextField's onKeyPress (no UI test had pressed them in HandleField, the lookup or the
-  palette either), that the proxy finds the list's id inside its overlay, and that it keeps the
-  list clear of the keyboard in VirgaPage's scroll.
+  page (see PostingUITests above); its iPad steps open the list again by typing, not by a press.
+  Not proven before CI: that iOS delivers ↑, ↓ and Escape to a focused TextField's onKeyPress
+  (no UI test had pressed them in HandleField, the lookup or the palette either), that the
+  proxy finds the list's id inside its overlay, and that it keeps the list clear of the keyboard
+  in VirgaPage's scroll. Nor whether a press on the field while it already has the keyboard
+  opens a list Escape closed, as the web's onClick does: the picker asks for it with a
+  simultaneous TapGesture, which a text field may not pass on, and no test presses so.
 - Titles and figures that wrap. A heading whose line-height is under the face's 1.22 and that
   can wrap is `WrappingTitle` (Components/WrappingTitle.swift): on one line the Text with
   `overflowingLeading`, and once it no longer fits (`ViewThatFits(in: .horizontal)`) TitleLines
@@ -1226,9 +1231,10 @@ compiled until CI runs them.
   line as many characters as fit, each counted at its advance plus letter-spacing, with the unit
   able to start a line 3 in. FigureWrap (VirgaCore) breaks it so, and `FigureWrapTests` hold it
   to 16 of Chromium's layouts. FigureLines places the characters at Core Text's advances for the
-  face, on the line's baseline. Only digits, those separators and signs, and "%" are set so;
-  anything else, including the narrow no-break space (Chromium drops the letter-spacing of a
-  value holding one), wraps as a Text 1.22 apart. The web caps a figure at 0.26 of its cell, so
+  face, on the line's baseline. Only digits, "," "." "’", "+", "−", the hyphen-minus (0.499em),
+  the no-break space (0.197em) and "%" are set so (`FigureWrap.settable`); anything else,
+  including the narrow no-break space (Chromium drops the letter-spacing of a value holding
+  one), wraps as a Text 1.22 apart. The web caps a figure at 0.26 of its cell, so
   its figures rarely wrap; the port's grow with Dynamic Type and wrap at large sizes.
 - The suggestion lists' keys. The "@" and "/" lists in a post's field take PostEditor.jsx's
   onKeyDown, as `SuggestionKeys` (VirgaPosting, with its tests) decides it. Nothing happens
@@ -1285,11 +1291,17 @@ compiled until CI runs them.
   `Measure.Dashboard.openLetOut`), so the last glyph ends on the card's edge. The modes go under
   the title in a window 560 or less (the phone rule, on the window), 8 down with no row gap, and
   in a card 440 or less in any window (`@container widget`, the card's own width), where the
-  head's 8 row gap stays and they sit 16 under the tools' 32. On a phone the card's lines under
-  its title (its own period, the lists' count) now run the full width under the title and tools
-  (`.card-sub` in grid row 2), and the tools are centred on the title's row, so a two-line title
-  has them by its middle (`align-self: center`); from 561 up they stay in the titles' column and
-  the tools on the title's line. (These last two were the head review's notes, done at the merge.)
+  head's 8 row gap stays and they sit 16 under the tools' 32. On a phone the card's head is
+  laid out by `PhoneHeadLayout`, as SectionHead's is (`WidgetCard.phoneHead`): the title and
+  tools centred on one row, so a two-line title has the tools by its middle (`align-self:
+  center`), the row the larger of the title and the tools' 20; the title's lines balanced; the
+  lines under the title (its own period, the lists' count, `.card-sub` in grid row 2) the full
+  width beneath both, 2 down; read and drawn in the web's order, title, lines, tools, so the
+  tools' 44-point targets stay over the lines they reach; and the tools under the lines only
+  should the title's longest word not fit beside them. From 561 up the lines stay in the
+  titles' column and the tools on the title's line. (The phone layout was the head review's
+  note, done at the merge; the merge's first try put the lines after the tools, which a second
+  reader caught.)
   Where the port still differs: its link actions scale with the footnote style (19/13 at
   xxxLarge, the web's 23/17 with its root), so at the largest sizes a few titles get less room
   than the web's and wrap one line more, or go under (The best slots at 375 at xxxLarge);

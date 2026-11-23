@@ -194,15 +194,21 @@ final class PostingUITests: XCTestCase {
     guard UIDevice.current.userInterfaceIdiom == .pad else { return }
     languages.tap()
     languages.typeText("e")
-    guard suggestions.firstMatch.waitForExistence(timeout: 5) else { return }
+    guard suggestions.firstMatch.waitForExistence(timeout: 5) else {
+      return XCTFail("no language suggestions for “e”")
+    }
     app.typeKey(XCUIKeyboardKey.escape.rawValue, modifierFlags: [])
     XCTAssertTrue(suggestions.firstMatch.waitForNonExistence(timeout: 5), "Escape didn't put the language suggestions away")
     chosen = labels(removes)
-    // The "e" taken out: the empty query's suggestions, the list open again.
+    // The "e" taken out: the empty query's six suggestions, the list open again.
     app.typeKey(XCUIKeyboardKey.delete.rawValue, modifierFlags: [])
-    guard suggestions.firstMatch.waitForExistence(timeout: 5) else { return }
+    guard suggestions.firstMatch.waitForExistence(timeout: 5) else {
+      return XCTFail("the language suggestions didn't come back as the query emptied")
+    }
     let rows = suggestions.allElementsBoundByIndex.sorted { $0.frame.minY < $1.frame.minY }
-    guard rows.count >= 2 else { return }
+    guard rows.count >= 2 else {
+      return XCTFail("fewer than two language suggestions for an empty query: \(rows.count)")
+    }
     let secondLabel = rows[1].label
     app.typeKey(XCUIKeyboardKey.downArrow.rawValue, modifierFlags: [])
     app.typeKey(XCUIKeyboardKey.return.rawValue, modifierFlags: [])
