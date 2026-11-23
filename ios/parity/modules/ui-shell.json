@@ -598,12 +598,13 @@
         "ios/VirgaKit/Sources/VirgaUI/Theme/Typography.swift",
         "ios/VirgaKit/Sources/VirgaUI/Theme/SkyWash.swift",
         "ios/VirgaKit/Sources/VirgaUI/Theme/Motion.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Components/Focus.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Components/Focus.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/TitleLines.swift"
       ],
       "fixtures": [
         "ui.themeKit"
       ],
-      "note": "the page's type (body size, line height, numerals, headings, links, code), focus outline, selection and the sky's wash are measures in ThemeKit (VirgaCore/Theme); it sets no theme tokens. VirgaUI draws them: the type in Instrument Sans with tabular figures, the body's 1.45 between lines unless a text says otherwise (headings 1.25) and, where a single line's box lays it out, the half-leading above and below (Theme/Typography.swift), the sky from the window's top behind the page, moved by its scroll, and once behind the sidebar and the page together beside the sidebar (Theme/SkyWash.swift), the focus outline, on the control it is put on (Components/Focus.swift), a Segmented key's inside it from 2 in out to the edge, Reduce Motion (Theme/Motion.swift). The element resets, ::selection and the helper classes (.visually-hidden, .skip-link) have no counterpart on iOS",
+      "note": "the page's type (body size, line height, numerals, headings, links, code), focus outline, selection and the sky's wash are measures in ThemeKit (VirgaCore/Theme); it sets no theme tokens. VirgaUI draws them: the type in Instrument Sans with tabular figures, the body's 1.45 between lines unless a text says otherwise (headings 1.25) and, where a single line's box lays it out, the half-leading above and below (Theme/Typography.swift), the sky from the window's top behind the page, moved by its scroll, and once behind the sidebar and the page together beside the sidebar (Theme/SkyWash.swift), a title whose line-height is under the face's own set a word at a time, a line every line-height, its lines balanced as h1's text-wrap: balance balances them (Components/TitleLines.swift: the front page's title, and a page's title once it wraps), the focus outline, on the control it is put on (Components/Focus.swift), a Segmented key's inside it from 2 in out to the edge, Reduce Motion (Theme/Motion.swift). The element resets, ::selection and the helper classes (.visually-hidden, .skip-link) have no counterpart on iOS",
       "synced": "25a6fa774758"
     },
     "src/styles/controls.css": {

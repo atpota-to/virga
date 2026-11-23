@@ -214,11 +214,13 @@ extension VirgaTheme {
     return ("0" as NSString).size(withAttributes: [.font: UIFont.systemFont(ofSize: points)]).width
   }
 
-  /// The advance of a space in the face at `size` (scaled by Dynamic Type).
+  /// The advance of a space in the face at `size` (scaled by Dynamic Type)
+  /// and `weight` (the variable face's space narrows a little as it gets
+  /// heavier).
   @MainActor
-  func spaceWidth(size: CGFloat) -> CGFloat {
+  func spaceWidth(size: CGFloat, weight: Double = VirgaWeight.regular) -> CGFloat {
     let points = scaled(size)
-    if hasTypeface, let face = VirgaTypeface.face(size: points, weight: VirgaWeight.regular) {
+    if hasTypeface, let face = VirgaTypeface.face(size: points, weight: weight) {
       var glyph = CGGlyph(0)
       var space = UniChar(0x20)
       if CTFontGetGlyphsForCharacters(face, &space, &glyph, 1) {
