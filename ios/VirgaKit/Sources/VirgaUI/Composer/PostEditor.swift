@@ -123,6 +123,7 @@ struct PostEditor: View {
           }),
         current: { self.text },
         segments: segments,
+        segmentsText: text,
         style: EditorStyle(theme: theme),
         label: label,
         identifier: "post-editor-\(index)",
@@ -626,16 +627,21 @@ final class ComposerTextView: UITextView {
 }
 
 struct HighlightedTextView: UIViewRepresentable {
-  /// Where the field hands its text on. Read back only to make the field.
+  /// Where the field hands its text on. Read back to make the field, and
+  /// in updateUIView only to note in the typing probe when it disagrees
+  /// with the post.
   @Binding var text: String
-  /// The post's text as it is at the moment of asking. updateUIView reads
-  /// this, not the binding: in CI run 88 an update read the binding a key
-  /// behind the post, after the field had already handed that key on, and
-  /// put the older text back over it (TypingProbe's R events, all while the
-  /// "@" list was up). The post itself is never behind.
+  /// The post's text as it is at the moment of asking. updateUIView decides
+  /// from this, not the binding: in CI run 88 an update read the binding a
+  /// key behind the field, after the field had handed that key to the post,
+  /// and put the older text back over it (TypingProbe's R events, all while
+  /// the "@" list was up). The post already has every key the field has
+  /// handed on.
   var current: () -> String
-  /// The highlights, found for the text the binding had.
+  /// The highlights, found for `segmentsText` (the post's text when
+  /// PostEditor's body ran).
   var segments: [HighlightSegment]
+  var segmentsText: String
   var style: EditorStyle
   var label: String
   var identifier: String
@@ -692,7 +698,7 @@ struct HighlightedTextView: UIViewRepresentable {
     let text = current()
     // Highlights found for other text would underline the wrong letters:
     // plain until the redraw that catches up.
-    let segments = seen == text ? self.segments : []
+    let segments = segmentsText == text ? self.segments : []
     if TypingProbe.isOn, seen != text {
       TypingProbe.note(identifier, "B\(seen.utf16.count)>\(text.utf16.count)")
     }

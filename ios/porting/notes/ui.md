@@ -1019,8 +1019,10 @@ none in 6 each, and the iPad none at all. All three losses had the same record: 
 reached the field and its delegate, and then an update put the post's text back while the
 field was one key ahead of the text the update had through its binding ("R63>62", not mid-edit,
 always while the "@" list was up). Every key reaches the post at once in textViewDidChange, so
-the post itself wasn't behind; the update's binding was. updateUIView now reads the post
-itself (`HighlightedTextView.current`) and keeps the binding for handing text on; the probe
+the post can't have been behind (inferred; the probe measured the field against the binding).
+updateUIView now decides from the post itself (`HighlightedTextView.current`), shows the
+highlights only for the text they were found for (`segmentsText`), and keeps the binding for
+handing text on; the probe
 notes a "B" event whenever the two disagree, so the next run can show whether a stale binding
 was the reason. Why the "@" list makes it likelier isn't shown; it adds updates while typing.
 
