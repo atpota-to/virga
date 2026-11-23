@@ -4,11 +4,13 @@
 // Someone's picture, or the first letter of their name on a plain disc when
 // they have none (or it can't be drawn). Always decorative: the name is
 // beside it. 34 points (24 small, 44 large), a circle; the letter in
-// --avatar-ink on --avatar-bg.
+// --avatar-ink on --avatar-bg. The demo's faces are SVG, which AsyncImage
+// can't decode; DemoPictureView draws them as a browser does.
 
 #if canImport(UIKit)
 import SwiftUI
 import VirgaCore
+import VirgaDemo
 
 public enum AvatarSize: Sendable {
   case small, medium, large
@@ -68,16 +70,22 @@ public struct Avatar: View {
     // holds: it is decorative (the name is beside it), and the disc is not.
     let letter = min(theme.scaled(self.side == nil ? fontSize : theme.textXs), side * Measure.Avatar.letterShare)
     return ZStack {
-      Circle().fill(theme.avatarBg)
-      Text(Self.letter(name))
-        .font(theme.font(points: letter, weight: ThemeKit.avatarWeight))
-        .foregroundStyle(theme.avatarInk)
-      if let src, !src.isEmpty, let url = URL(string: src) {
-        AsyncImage(url: url) { phase in
-          if let image = phase.image {
-            image.resizable().scaledToFill()
-          } else {
-            Color.clear
+      if let picture = src.flatMap(DemoPicture.read) {
+        // The demo's faces are SVG, which AsyncImage can't decode: drawn
+        // as the browser draws them.
+        DemoPictureView(picture: picture)
+      } else {
+        Circle().fill(theme.avatarBg)
+        Text(Self.letter(name))
+          .font(theme.font(points: letter, weight: ThemeKit.avatarWeight))
+          .foregroundStyle(theme.avatarInk)
+        if let src, !src.isEmpty, let url = URL(string: src) {
+          AsyncImage(url: url) { phase in
+            if let image = phase.image {
+              image.resizable().scaledToFill()
+            } else {
+              Color.clear
+            }
           }
         }
       }

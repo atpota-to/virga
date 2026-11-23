@@ -14,12 +14,14 @@ import PhotosUI
 import SwiftUI
 import UIKit
 import VirgaCore
+import VirgaDemo
 import VirgaNetwork
 import VirgaPosting
 
 /// A picture at a web address, read through the session's transport (so
-/// the demo's made-up pages have pictures too). Nothing while it loads, or
-/// when it won't: a page image that won't load is left out.
+/// the demo's made-up pages have pictures too), or one of the demo's own
+/// drawn pictures. Nothing while it loads, or when it won't: a page image
+/// that won't load is left out.
 struct TransportImage: View {
   let url: String
   let transport: any HTTPTransport
@@ -29,6 +31,16 @@ struct TransportImage: View {
   @State private var image: UIImage?
 
   var body: some View {
+    if let picture = DemoPicture.read(url) {
+      // The demo's post images are SVG, which UIImage can't decode: drawn
+      // as the browser draws them.
+      DemoPictureView(picture: picture)
+    } else {
+      loaded
+    }
+  }
+
+  private var loaded: some View {
     Group {
       if let image {
         Image(uiImage: image).resizable().scaledToFill()

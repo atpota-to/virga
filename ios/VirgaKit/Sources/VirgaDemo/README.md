@@ -35,7 +35,13 @@ of the web file's SHA-256 when its Swift side was last brought in line, as
 | `harness/main.jsx`, `harness/index.html` | — | exempt: the web page that mounts the harness; on iOS, demo mode is the app's own launch option | — | — |
 
 Every Swift file that ports harness code says so in a `// Ports harness/…`
-header.
+header. One file ports nothing: `Harness/DemoPicture.swift` reads back
+the two SVG pictures the harness makes (`avatarFor`'s initials and
+`placeholderImage`'s landscapes), which a browser draws and iOS's image
+decoders can't, so VirgaUI can draw them with shapes and Text
+(`DemoPictureView`). It recognises exactly what the makers write and
+nothing else; `DemoPictureTests.swift` reads every face and picture the
+worlds hold, with their colours as Chromium computes them.
 
 ## How the port stays exact
 
