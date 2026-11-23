@@ -7,8 +7,10 @@
 // 16 points to what follows; the title and its line share a column, the
 // thing at the right going under them only when that column would be
 // narrower than 16rem. On a phone the thing at the right stays on the
-// title's line and the line under the title runs the full width beneath
-// both; a small Segmented goes on a row of its own under that line. A
+// title's line at its own width, the title wrapping in what it leaves, and
+// the line under the title runs the full width beneath both; a small
+// Segmented goes on a row of its own under that line, and so does anything
+// else that would leave the title too little at a large Dynamic Type size. A
 // section that is a list or a table (`flush`) has a rule in ink
 // under its heading, which is the top of its first row. A caption sits 12
 // under it; under a list, its foot ("Show 10 more" first, "12 of 64" at the
@@ -69,28 +71,26 @@ public struct SectionHead: View {
   }
 
   /// At 560 and under: the title with what is at its right centred beside
-  /// it, the line under the title across the whole width beneath both, and
-  /// a small Segmented on a row of its own under that, 8 down.
+  /// it, the tools at their own width and the title taking what they leave
+  /// (`minmax(0, 1fr) auto`, 16 apart), the line under the title across the
+  /// whole width beneath both, and a small Segmented on a row of its own
+  /// under that, 8 down. Read in the web's order: the title, its line, then
+  /// the tools.
   private var phone: some View {
-    VStack(alignment: .leading, spacing: 0) {
-      if let trailing, !segmented {
-        // `minmax(0, 1fr) auto` 16 apart: the title takes what the tools
-        // leave (a Spacer here would take the gap twice).
-        HStack(alignment: .center, spacing: Measure.Section.phoneHeadGap) {
-          titleText
-            .frame(maxWidth: .infinity, alignment: .leading)
-          tools(trailing)
-        }
-      } else {
-        titleText
-      }
+    PhoneHeadLayout(
+      titleLeast: theme.scaled(theme.points(ThemeKit.cardTitleFontSize)) * Measure.Section.phoneTitleLeastEms,
+      columnGap: Measure.Section.phoneHeadGap, subSpaceAbove: theme.points(ThemeKit.cardSubSpaceAbove),
+      underSpaceAbove: Measure.Segmented.headSpaceAbove, toolsUnder: segmented
+    ) {
+      titleText
+        .layoutValue(key: PhoneHeadLayout.Role.self, value: .title)
       if let sub {
         subLine(sub)
-          .padding(.top, theme.points(ThemeKit.cardSubSpaceAbove))
+          .layoutValue(key: PhoneHeadLayout.Role.self, value: .sub)
       }
-      if let trailing, segmented {
+      if let trailing {
         tools(trailing)
-          .padding(.top, Measure.Segmented.headSpaceAbove)
+          .layoutValue(key: PhoneHeadLayout.Role.self, value: .tools)
       }
     }
   }
@@ -124,6 +124,99 @@ public struct SectionHead: View {
       .foregroundStyle(theme.color(ThemeKit.cardSubInk))
       .fixedSize(horizontal: false, vertical: true)
       .frame(maxWidth: theme.measure, alignment: .leading)
+  }
+}
+
+/// A phone's section heading (`.card-head:has(> :nth-child(2))` at 560 and
+/// under): a row of the title and the tools, both centred on it, the tools
+/// at their own width and the title wrapping in what they leave; the line
+/// under the title across the whole width beneath that row; and the tools
+/// on a row of their own under the line instead when they are a small
+/// Segmented (`toolsUnder`), or when beside them the title would have less
+/// than `titleLeast` (or than it needs on one line, if that is less). The
+/// web's grid gives the title no least; this one only comes into play at
+/// the larger Dynamic Type sizes, where tools at their own width would
+/// leave the title a letter or two across.
+struct PhoneHeadLayout: Layout {
+  enum Part {
+    case title, sub, tools
+  }
+
+  /// Which part of the heading a subview is.
+  struct Role: LayoutValueKey {
+    static let defaultValue = Part.title
+  }
+
+  var titleLeast: CGFloat
+  var columnGap: CGFloat
+  var subSpaceAbove: CGFloat
+  var underSpaceAbove: CGFloat
+  var toolsUnder: Bool
+
+  /// Each subview's frame, in its order, and the heading's size.
+  func plan(width: CGFloat?, subviews: Subviews) -> (frames: [CGRect], size: CGSize) {
+    var frames = Array(repeating: CGRect.zero, count: subviews.count)
+    let find = { (part: Part) in subviews.firstIndex { $0[Role.self] == part } }
+    guard let title = find(.title) else { return (frames, .zero) }
+    let sub = find(.sub)
+    let tools = find(.tools)
+    var y: CGFloat = 0
+    var widest: CGFloat = 0
+    var toolsSize = CGSize.zero
+    var beside = false
+    if let tools, !toolsUnder {
+      toolsSize = subviews[tools].sizeThatFits(.unspecified)
+      if let width {
+        let oneLine = subviews[title].sizeThatFits(.unspecified).width
+        beside = width - columnGap - toolsSize.width >= min(titleLeast, oneLine, width)
+      } else {
+        beside = true
+      }
+    }
+    if let tools, beside {
+      let room = width.map { $0 - columnGap - toolsSize.width }
+      let titleSize = subviews[title].sizeThatFits(ProposedViewSize(width: room, height: nil))
+      let row = max(titleSize.height, toolsSize.height)
+      let whole = width ?? titleSize.width + columnGap + toolsSize.width
+      frames[title] = CGRect(x: 0, y: (row - titleSize.height) / 2, width: titleSize.width, height: titleSize.height)
+      frames[tools] = CGRect(
+        x: whole - toolsSize.width, y: (row - toolsSize.height) / 2, width: toolsSize.width, height: toolsSize.height)
+      y = row
+      widest = titleSize.width + columnGap + toolsSize.width
+    } else {
+      let titleSize = subviews[title].sizeThatFits(ProposedViewSize(width: width, height: nil))
+      frames[title] = CGRect(origin: .zero, size: titleSize)
+      y = titleSize.height
+      widest = titleSize.width
+    }
+    if let sub {
+      let size = subviews[sub].sizeThatFits(ProposedViewSize(width: width, height: nil))
+      y += subSpaceAbove
+      frames[sub] = CGRect(x: 0, y: y, width: size.width, height: size.height)
+      y += size.height
+      widest = max(widest, size.width)
+    }
+    if let tools, !beside {
+      let size = subviews[tools].sizeThatFits(ProposedViewSize(width: width, height: nil))
+      y += underSpaceAbove
+      frames[tools] = CGRect(x: 0, y: y, width: size.width, height: size.height)
+      y += size.height
+      widest = max(widest, size.width)
+    }
+    return (frames, CGSize(width: width ?? widest, height: y))
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    plan(width: proposal.width, subviews: subviews).size
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    let frames = plan(width: bounds.width, subviews: subviews).frames
+    for (subview, frame) in zip(subviews, frames) {
+      subview.place(
+        at: CGPoint(x: bounds.minX + frame.minX, y: bounds.minY + frame.minY),
+        proposal: ProposedViewSize(width: frame.width, height: frame.height))
+    }
   }
 }
 

@@ -394,12 +394,25 @@ struct WidgetCard: View {
           }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        if !under, let chartModes { chartModes }
-        // On a phone the 44-point tools are pulled in over the title's line
+        // Beside the title, in a card wider than 440, the modes' 44-point
+        // keys reach 13 above and below its line without making the head
+        // any taller (`.card-head > .segmented { margin-block: -13px }` on
+        // touch from 561 up).
+        if !under, let chartModes {
+          chartModes
+            .padding(.vertical, -Measure.Segmented.headLift)
+        }
+        // The 44-point tools, their glyphs on the title's baseline, reach
+        // 12 above its line without counting there, so the head starts at
+        // the title as every heading does (`.card-head > .head-tools {
+        // align-self: flex-start; margin-top: -12px }` on touch; the -5px
+        // is a mouse's, for its 30-point buttons). From 561 up they count
+        // below it, so the head is 32 tall; on a phone they don't
         // (`.card-head:has(> :nth-child(2)) > .head-tools { margin-block:
         // -12px }`), so the head stays the title's height.
         tools(title: title)
-          .padding(.vertical, theme.isPhone ? -Measure.Section.iconToolLift : 0)
+          .padding(.top, -Measure.Section.iconToolLift)
+          .padding(.bottom, theme.isPhone ? -Measure.Section.iconToolLift : 0)
       }
       if under, let chartModes {
         chartModes.padding(.top, Measure.Dashboard.headModesSpaceAbove)
