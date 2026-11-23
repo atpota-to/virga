@@ -7,6 +7,7 @@
 // holds the whole table to the web's, every field of every card.
 
 import Foundation
+import VirgaCore
 
 /// A group of cards in Customize.
 public struct WidgetCategory: Codable, Hashable, Sendable, Identifiable {
@@ -167,4 +168,18 @@ public enum Catalog {
 
   /// The library as the layout code checks against it.
   public static let widgetRules: [String: WidgetRules] = widgets.mapValues(\.rules)
+
+  /// The report library's list under its search and kind (DashboardPage.jsx's
+  /// Library `shown`): a kind of "all" keeps every kind; the trimmed query,
+  /// lower-cased, is a plain substring of the lower-cased name or of the
+  /// lower-cased description, each on its own. Nothing is folded, so
+  /// "dont" doesn't find "don’t", and a query can't run from the name into
+  /// the description.
+  public static func libraryMatches(query: String, category: String) -> [WidgetDef] {
+    let q = query.jsTrimmed().jsLowercased()
+    return widgetList.filter { w in
+      (category.jsEquals("all") || w.category.jsEquals(category))
+        && (q.isEmpty || w.name.jsLowercased().jsIndexOf(q) != -1 || w.desc.jsLowercased().jsIndexOf(q) != -1)
+    }
+  }
 }
