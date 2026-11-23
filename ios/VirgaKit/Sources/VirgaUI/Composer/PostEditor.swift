@@ -53,6 +53,8 @@ struct PostEditor: View {
   }
 
   private var partial: PartialMention? {
+    // The UI tests' bench (TypingProbe): its second post has no typeahead.
+    guard !TypingProbe.quiet(index) else { return nil }
     guard let m = Mentions.detectPartialMention(text, caret), m.query.utf16.count >= 1 else { return nil }
     return m
   }
@@ -84,6 +86,8 @@ struct PostEditor: View {
       }
       if let mention, mention.range.query.jsEquals(partial?.query ?? "\u{0}") {
         MentionList(mention: mention, anchor: suggestAnchor) { actor in pick(actor) }
+          .onAppear { TypingProbe.note("post-editor-\(index)", "L+") }
+          .onDisappear { TypingProbe.note("post-editor-\(index)", "L-") }
       }
       if let slash {
         SlashList(
@@ -134,6 +138,11 @@ struct PostEditor: View {
           controller.editingPostId = postId
         },
         onBlur: {
+          // The UI tests' bench empties a post as it loses focus.
+          if TypingProbe.isBench {
+            let at = controller.indexOfPost(postId)
+            if at >= 0 { controller.dispatch(.setText(index: at, text: "")) }
+          }
           if controller.editingPostId.map({ $0.jsEquals(postId) }) ?? false { controller.editingPostId = nil }
           // Who to mention closes as the field loses focus, a beat later so
           // a press on one of them still lands.
@@ -600,6 +609,19 @@ final class ComposerTextView: UITextView {
   @objc func sendFromKeys() {
     sendHandler?()
   }
+
+  // The UI tests' typing probe (TypingProbe): what reached the field.
+  override func insertText(_ text: String) {
+    if TypingProbe.isOn, let id = accessibilityIdentifier { TypingProbe.insert(id, text, in: self) }
+    super.insertText(text)
+  }
+
+  override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+    if TypingProbe.isOn, let id = accessibilityIdentifier {
+      TypingProbe.press(id, presses.compactMap { $0.key?.characters }.joined())
+    }
+    super.pressesBegan(presses, with: event)
+  }
 }
 
 struct HighlightedTextView: UIViewRepresentable {
@@ -671,6 +693,11 @@ struct HighlightedTextView: UIViewRepresentable {
     // would take out the letter just typed. The change is on its way, and
     // the redraw that follows it does the rest.
     let ahead = coordinator.editing && text == coordinator.synced
+    if TypingProbe.isOn {
+      let branch = view.text == text ? "same" : ahead ? "ahead" : "reset"
+      TypingProbe.update(
+        identifier, editing: coordinator.editing, branch: branch, field: view.text.utf16.count, model: text.utf16.count)
+    }
     if view.text == text {
       coordinator.synced = text
       if view.markedTextRange == nil {
@@ -681,12 +708,16 @@ struct HighlightedTextView: UIViewRepresentable {
           style.apply(segments, to: storage)
           storage.endEditing()
           coordinator.drawn = drawn
+          TypingProbe.count(identifier, "attributes")
         }
         var caret = keep
         if let caretRequest, caretRequest <= text.utf16.count {
           caret = NSRange(location: caretRequest, length: 0)
         }
-        if view.selectedRange != caret { view.selectedRange = caret }
+        if view.selectedRange != caret {
+          view.selectedRange = caret
+          TypingProbe.note(identifier, "S\(caret.location)")
+        }
       }
     } else if !ahead {
       let keep = view.selectedRange
@@ -731,11 +762,13 @@ struct HighlightedTextView: UIViewRepresentable {
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
       editing = true
+      TypingProbe.shouldChange(parent.identifier, in: textView, range: range, text: text)
       return true
     }
 
     func textViewDidChange(_ textView: UITextView) {
       editing = false
+      TypingProbe.didChange(parent.identifier, in: textView)
       synced = textView.text
       // The letters UIKit put in took the typing attributes, not the
       // highlights, so the next redraw sets them again even when the text

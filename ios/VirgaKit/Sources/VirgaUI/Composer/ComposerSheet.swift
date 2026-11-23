@@ -123,6 +123,12 @@ struct ComposerSheet: View {
       } else {
         ComposerHead(title: title) { controller.closeComposer() }
       }
+      if TypingProbe.isBench {
+        // The UI tests' bench: a plain field, outside the scroll so it stays put.
+        TypingProbePlainField()
+          .frame(height: 64)
+          .padding(.horizontal, theme.composerNarrow ? ComposerMeasure.phoneSide : ComposerMeasure.side)
+      }
       ScrollViewReader { proxy in
         ScrollView {
           ComposerBody(controller: controller)
@@ -180,6 +186,10 @@ struct ComposerSheet: View {
       ComposerFoot(controller: controller)
     }
     .background(theme.surface)
+    // The UI tests' typing probe (TypingProbe): a hidden element whose value is its record.
+    .overlay(alignment: .topLeading) {
+      if TypingProbe.isOn { TypingProbeElement().frame(width: 1, height: 1).allowsHitTesting(false) }
+    }
     // Files dropped anywhere on the composer go to the post being written.
     .composerDrop(controller, over: $dropOver)
     // ADVISER: the adviser's sheet, and its account while the composer is open.
