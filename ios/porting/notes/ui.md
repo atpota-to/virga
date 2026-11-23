@@ -1185,9 +1185,18 @@ picture the demo user posts (`blobDataUrl`) shows nothing in a library row.
   dropped payload is readable only until it returns. Dragged text and links are the post's text
   view's. No UI test drags one in: XCUITest can't bring a drag from another app, so it is checked
   by CI's compile and by hand.
-- Copy is the web's word for word, including words that only fit a browser ("This
-  browser's region", "Forget X on this browser", "Saving the repo to this browser"). Worth
-  raising on the web side rather than changing on one side.
+- Copy is the web's word for word. On 2026-11-23 the web's copy was reworded to be true on
+  both ("This device's region", "Saving the repo to this device"); what still names the
+  browser is on paths iOS never takes, or quoted by the legal documents ("Forget X on this
+  browser" goes with "Remove from this browser"). ios/parity/copy.test.js lists each.
+- The agreement screen when the documents have moved on past this build
+  (TERMS_VERSION_MISMATCH, `reload` in Acceptance.acceptFailure): the web offers a Reload
+  link, which fetches the new documents. This build carries its own copies, so reloading
+  can't help: TermsGateView says "The Terms of Service and Privacy Policy have changed since
+  this version of Virga was made. Update Virga to read the new ones and agree to them." and,
+  when the App Store page is known (`VIRGA_APP_STORE_URL` → `AppConfig.Flags.appStoreURL`),
+  puts an Update Virga button where Agree and continue was. Without one it says to update
+  and leaves Agree as it is. The demo shows it with `-VirgaDemoFlags "terms=newer"`.
 - New copy the web has no counterpart for: "This page isn't in the iOS app yet.", "This
   section isn't in the iOS app yet." and "This card isn't in the iOS app yet."; the share dialog's toasts after
   Save the picture ("Saved to Photos." and "The picture couldn’t be saved.") and Photos'

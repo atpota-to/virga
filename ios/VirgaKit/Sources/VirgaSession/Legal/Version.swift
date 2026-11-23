@@ -10,7 +10,10 @@ import VirgaNetwork
 
 public enum LegalVersion {
   /// Goes up by one when either document changes in a way people should
-  /// agree to again.
+  /// agree to again. A build is stuck with the number it was made with:
+  /// once the server's goes past it, the build can't record an agreement
+  /// and the agreement screen asks for an update (TermsGateView), so a bump
+  /// ships with a release that carries it (src/legal/version.js).
   public static let termsVersion = 2
 
   /// The "Last updated" date both documents carry, as YYYY-MM-DD.

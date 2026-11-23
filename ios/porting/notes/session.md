@@ -113,7 +113,7 @@ From the port:
 - Non-string values the web would keep are dropped: a truthy non-string avatar in suggestions, and a truthy non-string handle or avatar in sign-in identities, because those Swift fields are strings.
 - BrowserSessionDriver.onDeleted returns no unsubscribe function, unlike the web's.
 - The 'signal' half of the web test 'hands a sign-in the signal that calls it off' doesn't apply: Swift cancels the task instead. The backend half is ported. Every other web test in sessionController.test.js is ported, including the browser-session ones (they run against a fake driver).
-- Copy that says 'browser' and 'tab' is kept word for word on iOS ("…isn’t remembered in this browser.", "another tab signed it out"), because copy is behaviour. Rewording it for iOS is a product decision.
+- Copy is kept word for word on iOS, because copy is behaviour. On 2026-11-23 the web's copy was reworded to be true on both ("…isn’t remembered on this device.", "This sign-in wasn’t started here"). What still says 'browser' or 'tab' is on paths iOS never takes, or rare ones ("another tab signed it out"); ios/parity/copy.test.js lists each.
 - harness/fakeSession.jsx (the demo session) is still to be ported, on top of SessionController and NoBrowserSessions.
 
 ## The audit (2026-11-21)

@@ -109,7 +109,7 @@ function PostingNext({ archive, size, def, rows = null }) {
   if (!req) {
     return (
       <p className="empty">
-        Scheduling needs a long session, because Virga’s server posts while this browser is closed. <Link to={def.href}>See how</Link>
+        Scheduling needs a long session, because Virga’s server posts while Virga is closed. <Link to={def.href}>See how</Link>
       </p>
     );
   }

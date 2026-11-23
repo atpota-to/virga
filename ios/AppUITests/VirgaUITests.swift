@@ -498,4 +498,21 @@ final class VirgaUITests: XCTestCase {
     element(app, "terms-agree").tap()
     waitForHome(app)
   }
+
+  /// The server's documents are newer than this build's: the agreement
+  /// can't be recorded, and the screen asks for an update, not a reload.
+  func testDocumentsNewerThanTheBuildAskForAnUpdate() {
+    let app = launch(["-VirgaDemoFlags", "terms=newer"])
+    XCTAssertTrue(element(app, "terms-title").waitForExistence(timeout: 15))
+    element(app, "terms-check").tap()
+    element(app, "terms-agree").tap()
+    let update = app.staticTexts.matching(
+      NSPredicate(format: "label BEGINSWITH %@", "The Terms of Service and Privacy Policy have changed since this version of Virga")
+    ).firstMatch
+    XCTAssertTrue(update.waitForExistence(timeout: 10), "no word about updating")
+    XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'Reload'")).firstMatch.exists)
+    // Without an App Store page in the build, Agree stays and nothing else is offered.
+    XCTAssertFalse(element(app, "terms-update").exists)
+    snapshot("agreement-newer-documents")
+  }
 }

@@ -10,7 +10,7 @@ import { ACCESS } from '../components/AccessBadge.jsx';
 export const TOOL_SECTIONS = Object.freeze([
   { key: 'tidy', title: 'Tidy up', desc: 'Keep your follows and followers in order.' },
   { key: 'understand', title: 'Understand', desc: 'Answers to the questions the charts raise.' },
-  { key: 'data', title: 'Your data', desc: 'What Virga keeps in this browser, and how to take it with you.' },
+  { key: 'data', title: 'Your data', desc: 'What Virga keeps on this device, and how to take it with you.' },
   { key: 'later', title: 'Later', desc: 'Ideas that need more than Virga asks for today. Each would ask you first.' },
 ]);
 

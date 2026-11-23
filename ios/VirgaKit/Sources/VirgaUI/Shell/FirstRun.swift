@@ -27,7 +27,7 @@ struct FirstRunPage: View {
           .accessibilityAddTraits(.isHeader)
           .accessibilityIdentifier("first-run-title")
         Text(
-          "Virga works your analytics out in this browser, from your own data. The first build takes a minute or two for most accounts; after that, a sync only fetches what’s new."
+          "Virga works your analytics out on this device, from your own data. The first build takes a minute or two for most accounts; after that, a sync only fetches what’s new."
         )
         .virgaText(.textMd)
         .foregroundStyle(theme.ink2)
@@ -72,7 +72,7 @@ struct FirstRunPage: View {
       item(
         Glyph.heart, "Engagement",
         ": the likes, reposts, replies and quotes on every post, and your recent notifications")
-      row(Glyph.cloud, Text("It’s kept ") + strong("in this browser") + Text(". Virga’s server never keeps a copy."))
+      row(Glyph.cloud, Text("It’s kept ") + strong("on this device") + Text(". Virga’s server never keeps a copy."))
     }
     .overlay(alignment: .top) { Rectangle().fill(theme.rule).frame(height: 1) }
   }

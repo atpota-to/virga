@@ -1556,9 +1556,13 @@ export function createServer({
 
   /* ---- the terms ledger ---- */
 
-  const currentTerms = () => ({ version: TERMS_VERSION, effectiveDate: TERMS_EFFECTIVE_DATE });
+  // With terms=newer the server's documents are a version ahead of the app's,
+  // as they are for an iOS build made before a bump: nobody has agreed to
+  // them, and an agreement to the app's own version is refused.
+  const serverTermsVersion = terms === 'newer' ? TERMS_VERSION + 1 : TERMS_VERSION;
+  const currentTerms = () => ({ version: serverTermsVersion, effectiveDate: TERMS_EFFECTIVE_DATE });
   const agreementOf = (did, identity) =>
-    agreements.find((row) => row.did === did && row.terms_version === TERMS_VERSION && row.identity === identity) || null;
+    agreements.find((row) => row.did === did && row.terms_version === serverTermsVersion && row.identity === identity) || null;
 
   /** GET /api/terms/status: only a session's own agreement counts. */
   function termsStatus(headers) {
@@ -1582,7 +1586,7 @@ export function createServer({
       did = authOf(headers).did;
       identity = 'session';
     } else identity = 'claimed';
-    if (body.version !== TERMS_VERSION) {
+    if (body.version !== serverTermsVersion) {
       return [
         409,
         {
@@ -1605,14 +1609,14 @@ export function createServer({
       row = {
         did,
         policy_version: TERMS_EFFECTIVE_DATE,
-        terms_version: TERMS_VERSION,
+        terms_version: serverTermsVersion,
         identity,
         accepted_at: iso(now()),
         ip: '203.0.113.7',
         user_agent: headers['user-agent'] || null,
       };
       agreements.push(row);
-      note(`${did} agreed to version ${TERMS_VERSION} (${identity})`);
+      note(`${did} agreed to version ${serverTermsVersion} (${identity})`);
     }
     // A claim's answer says nothing about the row: the caller could be anyone.
     if (identity === 'claimed') return [200, { success: true, ...currentTerms(), identity }];

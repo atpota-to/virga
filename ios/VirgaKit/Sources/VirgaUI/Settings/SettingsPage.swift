@@ -70,7 +70,7 @@ struct SettingsIndex: View {
   @Environment(\.navigate) private var navigate
 
   var body: some View {
-    VirgaPage(PageHeaderModel(title: "Settings", sub: "For whoever is at this browser, and for the account that’s open.")) {
+    VirgaPage(PageHeaderModel(title: "Settings", sub: "For whoever is using this device, and for the account that’s open.")) {
       VStack(spacing: 0) {
         ForEach(SettingsSections.sections) { section in
           SettingsIndexItem(label: section.label, desc: section.desc) { navigate("/settings/\(section.key)") }
@@ -499,7 +499,7 @@ struct AppearanceSection: View {
       return (choice, "\(Self.regionName(tag)): \(AppLocale.localeSample(tag))")
     }
     let localeOptions: [(Preferences.LocaleChoice, String)] =
-      [(Preferences.LocaleChoice.system, "This browser’s region (\(Self.regionName(system)))")] + regions
+      [(Preferences.LocaleChoice.system, "This device’s region (\(Self.regionName(system)))")] + regions
     let weekOptions: [(Preferences.WeekStart, String)] = [
       (Preferences.WeekStart.system, "Week starts as in this region (\(regionStart))"),
       (Preferences.WeekStart.monday, "Week starts Monday"),
@@ -894,7 +894,7 @@ struct PermissionsSection: View {
         SettingsText(
           Text(
             AttributedString(
-              "A browser session stays in this browser and goes straight to your account’s server. A long session is held by Virga’s server at \(host), which makes the same requests on your behalf, and is what lets a scheduled post go out while the browser is closed. Virga’s server is used only for long sessions and the features that need one, and for the record that an account agreed to the terms, which either kind of session sends it; your archive never goes there. Settings › "
+              "A browser session stays in the browser and goes straight to your account’s server. A long session is held by Virga’s server at \(host), which makes the same requests on your behalf, and is what lets a scheduled post go out while Virga is closed. Virga’s server is used only for long sessions and the features that need one, and for the record that an account agreed to the terms, which either kind of session sends it; your archive never goes there. Settings › "
             ) + pageLink("Account", to: "/settings/account") + AttributedString(" says which kind each account has.")))
       }
     }
@@ -944,7 +944,7 @@ struct AboutSection: View {
     VStack(alignment: .leading, spacing: theme.sectionGap) {
       SettingsSectionView(title: "About Virga", sub: nil) {
         SettingsText(
-          "Analytics for your Bluesky account and the rest of your atproto repo, worked out in your browser from your own data, and a place to write and schedule posts. The archive is read from your PDS, Bluesky’s public API, the PLC directory and Constellation, and kept in this browser; it is never sent to Virga’s server. That server and its database are used only for long sessions, for the features that run while the browser is closed, and for the record that an account agreed to the terms."
+          "Analytics for your Bluesky account and the rest of your atproto repo, worked out on your device from your own data, and a place to write and schedule posts. The archive is read from your PDS, Bluesky’s public API, the PLC directory and Constellation, and kept on this device; it is never sent to Virga’s server. That server and its database are used only for long sessions, for the features that run while Virga is closed, and for the record that an account agreed to the terms."
         )
       }
       SettingsSectionView(

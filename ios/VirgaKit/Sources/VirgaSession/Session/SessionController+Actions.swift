@@ -273,7 +273,7 @@ extension SessionController {
   public func switchAccount(_ did: String?) async throws {
     guard let did, !did.isEmpty, !Optional(did).jsEquals(active.did) else { return }
     guard let account = find(did) else {
-      throw JSError(message: "That account isn’t remembered in this browser.")
+      throw JSError(message: "That account isn’t remembered on this device.")
     }
     if statusOf(did) == .needsSignIn { throw Accounts.makeReauthRequiredError(did) }
     switchSeq += 1

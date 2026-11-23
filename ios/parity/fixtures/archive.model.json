@@ -861,7 +861,7 @@
               "step": "repo",
               "fraction": 0.5,
               "detail": "0 of 11 rows",
-              "doing": "Saving the repo to this browser"
+              "doing": "Saving the repo to this device"
             },
             {
               "plan": [
@@ -881,7 +881,7 @@
               "step": "repo",
               "fraction": 0.8636363636363636,
               "detail": "8 of 11 rows",
-              "doing": "Saving the repo to this browser"
+              "doing": "Saving the repo to this device"
             },
             {
               "plan": [
@@ -901,7 +901,7 @@
               "step": "repo",
               "fraction": 0.99,
               "detail": "11 of 11 rows",
-              "doing": "Saving the repo to this browser"
+              "doing": "Saving the repo to this device"
             },
             {
               "plan": [
@@ -1922,7 +1922,7 @@
               "step": "repo",
               "fraction": 0.5,
               "detail": "0 of 1 rows",
-              "doing": "Saving the repo to this browser"
+              "doing": "Saving the repo to this device"
             },
             {
               "plan": [
@@ -1942,7 +1942,7 @@
               "step": "repo",
               "fraction": 0.99,
               "detail": "1 of 1 rows",
-              "doing": "Saving the repo to this browser"
+              "doing": "Saving the repo to this device"
             },
             {
               "plan": [
@@ -3279,7 +3279,7 @@
               "step": "repo",
               "fraction": 0.5,
               "detail": "0 of 11 rows",
-              "doing": "Saving the repo to this browser"
+              "doing": "Saving the repo to this device"
             },
             {
               "plan": [
@@ -3299,7 +3299,7 @@
               "step": "repo",
               "fraction": 0.8636363636363636,
               "detail": "8 of 11 rows",
-              "doing": "Saving the repo to this browser"
+              "doing": "Saving the repo to this device"
             },
             {
               "plan": [
@@ -3319,7 +3319,7 @@
               "step": "repo",
               "fraction": 0.99,
               "detail": "11 of 11 rows",
-              "doing": "Saving the repo to this browser"
+              "doing": "Saving the repo to this device"
             },
             {
               "plan": [
@@ -4122,7 +4122,7 @@
               "step": "repo",
               "fraction": 0.5,
               "detail": "0 of 11 rows",
-              "doing": "Saving the repo to this browser"
+              "doing": "Saving the repo to this device"
             },
             {
               "plan": [
@@ -4142,7 +4142,7 @@
               "step": "repo",
               "fraction": 0.8636363636363636,
               "detail": "8 of 11 rows",
-              "doing": "Saving the repo to this browser"
+              "doing": "Saving the repo to this device"
             },
             {
               "plan": [
@@ -4162,7 +4162,7 @@
               "step": "repo",
               "fraction": 0.99,
               "detail": "11 of 11 rows",
-              "doing": "Saving the repo to this browser"
+              "doing": "Saving the repo to this device"
             },
             {
               "plan": [
@@ -6006,7 +6006,7 @@
                 "step": "repo",
                 "fraction": 0.5,
                 "detail": "0 of 11 rows",
-                "doing": "Saving the repo to this browser"
+                "doing": "Saving the repo to this device"
               },
               {
                 "plan": [
@@ -6026,7 +6026,7 @@
                 "step": "repo",
                 "fraction": 0.8636363636363636,
                 "detail": "8 of 11 rows",
-                "doing": "Saving the repo to this browser"
+                "doing": "Saving the repo to this device"
               },
               {
                 "plan": [
@@ -6046,7 +6046,7 @@
                 "step": "repo",
                 "fraction": 0.99,
                 "detail": "11 of 11 rows",
-                "doing": "Saving the repo to this browser"
+                "doing": "Saving the repo to this device"
               },
               {
                 "plan": [
@@ -6972,7 +6972,7 @@
                 "step": "repo",
                 "fraction": 0.5,
                 "detail": "0 of 11 rows",
-                "doing": "Saving the repo to this browser"
+                "doing": "Saving the repo to this device"
               },
               {
                 "plan": [
@@ -6992,7 +6992,7 @@
                 "step": "repo",
                 "fraction": 0.8636363636363636,
                 "detail": "8 of 11 rows",
-                "doing": "Saving the repo to this browser"
+                "doing": "Saving the repo to this device"
               },
               {
                 "plan": [
@@ -7012,7 +7012,7 @@
                 "step": "repo",
                 "fraction": 0.99,
                 "detail": "11 of 11 rows",
-                "doing": "Saving the repo to this browser"
+                "doing": "Saving the repo to this device"
               },
               {
                 "plan": [

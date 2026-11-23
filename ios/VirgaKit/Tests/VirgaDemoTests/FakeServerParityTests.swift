@@ -53,7 +53,7 @@ import VirgaTestSupport
 
   @Test func theServersAnswers() async throws {
     let cases = try Parity.cases(Self.fixture, fn: "server")
-    #expect(cases.count == 5)
+    #expect(cases.count == 6)
     for c in cases {
       let got = await Self.scenario(c)
       let want = c.output.arrayValue ?? []

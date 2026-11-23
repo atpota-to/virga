@@ -716,7 +716,7 @@ struct LookupHowCounted: View {
         paragraph(
           "Who follows whom is as of your last sync, and each follow is dated by its own record; where that can’t be read, the date is left out. A follow that has ended leaves no record: someone who stopped following you shows only if the unfollow tracker saw it happen."
         )
-        paragraph("Months are counted on your own calendar. Everything is read from the archive in this browser.")
+        paragraph("Months are counted on your own calendar. Everything is read from the archive on this device.")
       }
     }
   }

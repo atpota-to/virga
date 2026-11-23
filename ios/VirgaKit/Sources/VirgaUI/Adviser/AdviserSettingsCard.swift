@@ -363,7 +363,7 @@ struct AdviserSettingsCard: View {
       }
       .padding(.leading, Measure.Adviser.sentListInset / 2)
       Text(
-        "Virga’s server passes it, with this account’s DID for counting use, to an AI model through an AI gateway, and sends the answer back. It doesn’t store what was sent; whether the model’s provider keeps it is set by the gateway’s account settings, not per request. Virga’s server keeps only counts: how many uses this account has had each month and each day. Your goals, notes and style description are kept only in this browser."
+        "Virga’s server passes it, with this account’s DID for counting use, to an AI model through an AI gateway, and sends the answer back. It doesn’t store what was sent; whether the model’s provider keeps it is set by the gateway’s account settings, not per request. Virga’s server keeps only counts: how many uses this account has had each month and each day. Your goals, notes and style description are kept only on this device."
       )
     }
     .virgaText(.textSm)

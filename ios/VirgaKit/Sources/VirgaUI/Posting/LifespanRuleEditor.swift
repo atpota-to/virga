@@ -163,7 +163,7 @@ struct LifespanRuleEditor: View {
   private func toggle(_ rule: TimerRule) -> some View {
     let hint =
       rule.enabled
-      ? "Virga’s server acts on the post at its time, even with this browser closed."
+      ? "Virga’s server acts on the post at its time, even with Virga closed."
       : "No timer: the post stays up until you delete it."
     return HStack(alignment: .top, spacing: Measure.Lifespan.switchGap) {
       Toggle(toggleLabel, isOn: Binding(get: { rule.enabled }, set: { emit(LifespanModel.patchRule(rule, ["enabled": .bool($0)])) }))

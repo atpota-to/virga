@@ -41,29 +41,46 @@ public enum AppConfig {
     public var defenseEnabled: Bool
     /// VITE_DEFENSE_MODERATOR == 'on', and only with Defense on.
     public var defenseModeratorEnabled: Bool
+    /// iOS only, with no web flag: the app's App Store page, empty when
+    /// there isn't one yet. A build made before the Terms of Service or the
+    /// Privacy Policy moved on can't record an agreement to the new ones,
+    /// so the agreement screen sends the reader here to update.
+    public var appStoreURL: String
 
     public init(
       authMode: String = "backend",
       backendURL: String = "",
       defenseEnabled: Bool = false,
-      defenseModeratorEnabled: Bool = false
+      defenseModeratorEnabled: Bool = false,
+      appStoreURL: String = ""
     ) {
       self.authMode = authMode == "browser" ? "browser" : "backend"
       self.backendURL = backendURL.replacingOccurrences(of: #"/+$"#, with: "", options: .regularExpression)
       self.defenseEnabled = defenseEnabled
       self.defenseModeratorEnabled = defenseEnabled && defenseModeratorEnabled
+      self.appStoreURL = appStoreURL.trimmingCharacters(in: .whitespaces)
     }
 
     /// From an Info.plist: VirgaBackendURL, VirgaDefense ("on"),
-    /// VirgaDefenseModerator ("on").
+    /// VirgaDefenseModerator ("on"), VirgaAppStoreURL.
     public init(infoDictionary: [String: Any]) {
       func string(_ key: String) -> String { (infoDictionary[key] as? String) ?? "" }
       self.init(
         authMode: "backend",
         backendURL: string("VirgaBackendURL"),
         defenseEnabled: string("VirgaDefense") == "on",
-        defenseModeratorEnabled: string("VirgaDefenseModerator") == "on"
+        defenseModeratorEnabled: string("VirgaDefenseModerator") == "on",
+        appStoreURL: string("VirgaAppStoreURL")
       )
+    }
+
+    /// `appStoreURL` as a link to open: an https or itms-apps address with a
+    /// host, or nil (none set, or not one the App Store opens).
+    public var appStoreLink: URL? {
+      guard let url = URL(string: appStoreURL), let scheme = url.scheme?.lowercased(),
+        scheme == "https" || scheme == "itms-apps", url.host?.isEmpty == false
+      else { return nil }
+      return url
     }
   }
 

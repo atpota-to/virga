@@ -28,6 +28,7 @@ import {
   isSafeXrpcMethod,
 } from '../../../server/oauth/handlers/proxy.js';
 import { httpStatusForXrpcError } from '../../../server/oauth/xrpcErrors.js';
+import { TERMS_VERSION } from '../../../src/legal/version.js';
 import { ResponseType } from '@atproto/xrpc';
 import { extractBlobPayload } from '../../../server/oauth/blobPayload.js';
 import { each } from './_helpers.js';
@@ -284,7 +285,7 @@ const SCENARIOS = [
         url: `${S}/api/terms/accept`,
         method: 'POST',
         headers: { authorization: 'Bearer $t0', ...json },
-        text: '{"version":1}',
+        text: `{"version":${TERMS_VERSION}}`,
       },
       { url: `${S}/api/terms/status` },
       {
@@ -317,7 +318,7 @@ const SCENARIOS = [
           ...json,
           'user-agent': 'Virga',
         },
-        text: '{"version":1}',
+        text: `{"version":${TERMS_VERSION}}`,
       },
       {
         url: `${S}/api/terms/status`,
@@ -328,7 +329,7 @@ const SCENARIOS = [
         url: `${S}/api/terms/accept`,
         method: 'POST',
         headers: { authorization: 'Bearer $t0', ...json },
-        text: '{"version":1}',
+        text: `{"version":${TERMS_VERSION}}`,
       },
       {
         url: `${S}/api/terms/status`,
@@ -338,7 +339,7 @@ const SCENARIOS = [
         url: `${S}/api/terms/accept`,
         method: 'POST',
         headers: json,
-        text: `{"version":1,"did":"${LAB.did}"}`,
+        text: `{"version":${TERMS_VERSION},"did":"${LAB.did}"}`,
       },
       {
         url: `${S}/api/terms/status`,
@@ -348,49 +349,49 @@ const SCENARIOS = [
         url: `${S}/api/terms/accept`,
         method: 'POST',
         headers: json,
-        text: `{"version":1,"did":"${LAB.did}"}`,
+        text: `{"version":${TERMS_VERSION},"did":"${LAB.did}"}`,
       },
       {
         url: `${S}/api/terms/accept`,
         method: 'POST',
         headers: json,
-        text: `{"version":2,"did":"${ME.did}"}`,
+        text: `{"version":${TERMS_VERSION + 1},"did":"${ME.did}"}`,
       },
       {
         url: `${S}/api/terms/accept`,
         method: 'POST',
         headers: json,
-        text: `{"version":"1","did":"${ME.did}"}`,
+        text: `{"version":"${TERMS_VERSION}","did":"${ME.did}"}`,
       },
       {
         url: `${S}/api/terms/accept`,
         method: 'POST',
         headers: json,
-        text: '{"version":1,"did":"mira.example.com"}',
+        text: `{"version":${TERMS_VERSION},"did":"mira.example.com"}`,
       },
       {
         url: `${S}/api/terms/accept`,
         method: 'POST',
         headers: json,
-        text: '{"version":1,"did":"did:key:z6Mk"}',
+        text: `{"version":${TERMS_VERSION},"did":"did:key:z6Mk"}`,
       },
       {
         url: `${S}/api/terms/accept`,
         method: 'POST',
         headers: json,
-        text: '{"version":1,"did":"did:web:café.example"}',
+        text: `{"version":${TERMS_VERSION},"did":"did:web:café.example"}`,
       },
       {
         url: `${S}/api/terms/accept`,
         method: 'POST',
         headers: json,
-        text: '{"version":1,"did":5}',
+        text: `{"version":${TERMS_VERSION},"did":5}`,
       },
       {
         url: `${S}/api/terms/accept`,
         method: 'POST',
         headers: json,
-        text: '{"version":1}',
+        text: `{"version":${TERMS_VERSION}}`,
       },
       { url: `${S}/api/terms/accept`, method: 'POST', headers: json },
       {
@@ -403,13 +404,42 @@ const SCENARIOS = [
         url: `${S}/api/terms/accept`,
         method: 'POST',
         headers: { authorization: `Bearer vg_${'0'.repeat(64)}`, ...json },
-        text: '{"version":1}',
+        text: `{"version":${TERMS_VERSION}}`,
       },
       {
         url: `${S}/api/terms/accept`,
         method: 'POST',
         headers: { authorization: 'Bearer $t1', ...json },
         text: '[1]',
+      },
+    ],
+  },
+  {
+    // The server's documents a version ahead of the app's: the app's own
+    // version is refused, the next one is recorded and counts.
+    name: 'terms-newer',
+    terms: 'newer',
+    steps: [
+      { mint: ME.did },
+      {
+        url: `${S}/api/terms/status`,
+        headers: { authorization: 'Bearer $t0' },
+      },
+      {
+        url: `${S}/api/terms/accept`,
+        method: 'POST',
+        headers: { authorization: 'Bearer $t0', ...json },
+        text: `{"version":${TERMS_VERSION}}`,
+      },
+      {
+        url: `${S}/api/terms/accept`,
+        method: 'POST',
+        headers: { authorization: 'Bearer $t0', ...json },
+        text: `{"version":${TERMS_VERSION + 1}}`,
+      },
+      {
+        url: `${S}/api/terms/status`,
+        headers: { authorization: 'Bearer $t0' },
       },
     ],
   },
@@ -426,19 +456,19 @@ const SCENARIOS = [
         url: `${S}/api/terms/accept`,
         method: 'POST',
         headers: { authorization: 'Bearer $t0', ...json },
-        text: '{"version":1}',
+        text: `{"version":${TERMS_VERSION}}`,
       },
       {
         url: `${S}/api/terms/accept`,
         method: 'POST',
         headers: json,
-        text: `{"version":1,"did":"${ME.did}"}`,
+        text: `{"version":${TERMS_VERSION},"did":"${ME.did}"}`,
       },
       {
         url: `${S}/api/terms/accept`,
         method: 'POST',
         headers: { authorization: 'Bearer nope', ...json },
-        text: '{"version":1}',
+        text: `{"version":${TERMS_VERSION}}`,
       },
     ],
   },

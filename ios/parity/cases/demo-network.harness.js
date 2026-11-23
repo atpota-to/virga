@@ -62,6 +62,7 @@ const SEARCHES = [
   '?ai=x',
   '?terms=ask',
   '?terms=down',
+  '?terms=newer',
   '?terms=whatever',
   '?terms=',
   '?cron=0',

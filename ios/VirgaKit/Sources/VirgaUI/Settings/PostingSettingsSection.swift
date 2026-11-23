@@ -46,7 +46,7 @@ struct PostingSettingsSection: View {
     let server = did.map { session.capabilitiesFor($0).canSchedule } ?? false
     VStack(alignment: .leading, spacing: theme.sectionGap) {
       if choices.count > 1 {
-        SettingsSectionView(title: "Whose settings", sub: "Each account keeps its own posting settings, in this browser.") {
+        SettingsSectionView(title: "Whose settings", sub: "Each account keeps its own posting settings, on this device.") {
           SettingsRow(label: "Account", hint: nil as String?) {
             SettingsSelect(label: "Account", options: choices.map { ($0.did, Self.choiceName($0)) }, selection: did ?? "") {
               chosen = $0
@@ -286,7 +286,7 @@ struct QueueSettingsCard: View {
     let device = PostingQueue.resolveTimezone(nil)
     let count = ScheduleModel.weeklyCount(schedule)
     SettingsSectionView(
-      title: "Weekly queue", sub: "The times each week that a post added to the queue goes out. Kept in this browser, for this account."
+      title: "Weekly queue", sub: "The times each week that a post added to the queue goes out. Kept on this device, for this account."
     ) {
       SettingsRow(label: count == 1 ? "1 posting time a week" : "\(count) posting times a week", hint: ScheduleModel.weekSummary(schedule)) {
         // `<Link className="btn">`: a way to a page, drawn as a button.

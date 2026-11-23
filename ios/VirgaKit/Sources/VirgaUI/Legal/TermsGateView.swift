@@ -7,7 +7,9 @@
 // until it agrees. The two ways on are agreeing and signing out. The button
 // is never greyed out: pressed before the box is ticked, it says what is
 // missing. If the agreement can't be recorded the screen stays and says why
-// (Acceptance.acceptFailure, never the server's own words).
+// (Acceptance.acceptFailure, never the server's own words). Where the web
+// offers to reload for documents newer than the page, iOS asks for an
+// update instead (`failureText`).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -19,6 +21,7 @@ public struct TermsGateView: View {
   @Environment(SessionModel.self) private var session
   @Environment(TermsAcceptanceModel.self) private var terms
   @Environment(AppModel.self) private var app
+  @Environment(\.openURL) private var openURL
   @State private var agreed = false
   @State private var nudge = false
   @State private var busy = false
@@ -83,14 +86,22 @@ public struct TermsGateView: View {
             Callout(tone: .warn) { Text("Tick the box to say you agree, then carry on.") }
           }
           if let failure {
-            Callout(tone: .danger) { Text(failure.text) }
+            Callout(tone: .danger) { Text(Self.failureText(failure)) }
               .accessibilityIdentifier("terms-failure")
           }
-          Button(busy ? "Recording…" : "Agree and continue") { agree() }
-            .buttonStyle(.virga(.primary, size: .large))
-            .environment(\.virgaFillsWidth, theme.isPhone)
-            .disabled(leaving)
-            .accessibilityIdentifier("terms-agree")
+          if failure?.reload == true, let store = app.flags.appStoreLink {
+            Button("Update \(AppConfig.appName)") { openURL(store) }
+              .buttonStyle(.virga(.primary, size: .large))
+              .environment(\.virgaFillsWidth, theme.isPhone)
+              .disabled(leaving)
+              .accessibilityIdentifier("terms-update")
+          } else {
+            Button(busy ? "Recording…" : "Agree and continue") { agree() }
+              .buttonStyle(.virga(.primary, size: .large))
+              .environment(\.virgaFillsWidth, theme.isPhone)
+              .disabled(leaving)
+              .accessibilityIdentifier("terms-agree")
+          }
           NoteText(
             session.mode == "backend"
               ? "\(AppConfig.appName)’s server keeps a record that this account agreed, and when, with the IP address and browser the agreement came from."
@@ -141,6 +152,20 @@ public struct TermsGateView: View {
   /// The links in the sentence open a document in place.
   static let documentScheme = "virga-document"
 
+  /// What the screen says when the agreement couldn't be recorded: the
+  /// web's words (Acceptance.acceptFailure), except for documents newer than
+  /// this build (`reload`). The web reloads the page to fetch them; this
+  /// build carries its own copies, so only an update brings the new ones,
+  /// and the screen says so (with an Update button when the App Store page
+  /// is known: VirgaAppStoreURL). A deliberate difference from the web
+  /// (ios/porting/notes/ui.md).
+  static func failureText(_ failure: TermsAcceptFailure) -> String {
+    failure.reload ? outdatedBuildText : failure.text
+  }
+
+  static let outdatedBuildText =
+    "The Terms of Service and Privacy Policy have changed since this version of \(AppConfig.appName) was made. Update \(AppConfig.appName) to read the new ones and agree to them."
+
   private func agree() {
     guard !busy else { return }
     if !agreed {
@@ -157,7 +182,7 @@ public struct TermsGateView: View {
         let failed = Acceptance.acceptFailure(error)
         failure = failed
         // role="alert": read out as it comes up.
-        AccessibilityNotification.Announcement(failed.text).post()
+        AccessibilityNotification.Announcement(Self.failureText(failed)).post()
       }
       busy = false
     }

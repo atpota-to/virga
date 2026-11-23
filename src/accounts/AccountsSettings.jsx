@@ -218,7 +218,7 @@ export default function AccountsSettings() {
           <div>
             <h2 className="card-title">Accounts</h2>
             <p className="card-sub">
-              Each account keeps its own archive and its own dashboards in this browser. Switching doesn’t sign anyone out. Your DID, your PDS
+              Each account keeps its own archive and its own dashboards on this device. Switching doesn’t sign anyone out. Your DID, your PDS
               and every handle you’ve had are in the <Link to="/tools/identity">Identity inspector</Link>.
             </p>
           </div>
@@ -257,7 +257,7 @@ export default function AccountsSettings() {
               </div>
               <div className="settings-row-control">
                 <p className="accounts-note">
-                  The sign-in is kept by this browser, which talks to your account’s server directly. It lasts as long as that server allows
+                  The sign-in is kept by the browser, which talks to your account’s server directly. It lasts as long as that server allows
                   an app that runs only in a browser, which is usually up to two weeks.
                 </p>
               </div>
@@ -269,8 +269,8 @@ export default function AccountsSettings() {
               <div className="settings-row-control">
                 <p className="accounts-note">
                   The sign-in is held by Virga’s server ({backendHost()}), which passes your requests on to your account and stays signed in
-                  for as long as you keep using it. Scheduled posts, post timers and the post adviser need one, because they run while this
-                  browser is closed.
+                  for as long as you keep using it. Scheduled posts, post timers and the post adviser need one, because they run while Virga
+                  is closed.
                 </p>
               </div>
             </div>
@@ -280,7 +280,7 @@ export default function AccountsSettings() {
               </div>
               <div className="settings-row-control">
                 <p className="accounts-note">
-                  Signing out ends the session in this browser only: your other browsers and devices stay signed in. Scheduled posts and
+                  Signing out ends the session here only: your other browsers and devices stay signed in. Scheduled posts and
                   post timers keep running while any browser or device is signed in to Virga with a long session for the account; signing
                   out of the last one stops them until you sign in that way again. Your archive is never sent to Virga’s server.
                   {authMode !== 'backend' && ' This copy of Virga signs new accounts in through the browser.'}

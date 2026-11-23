@@ -42,7 +42,7 @@ struct HowSigningInWorks: View {
       asks(name)
       NoteText(
         (longSession
-          ? "\(name)’s server keeps the pass, so you stay signed in for longer and scheduled posts can go out while this browser is closed. Signing out of the last browser you use it in ends it."
+          ? "\(name)’s server keeps the pass, so you stay signed in for longer and scheduled posts can go out while Virga is closed. Signing out of the last device or browser you use it on ends it."
           : "The pass is kept in this browser. Signing out ends it.") + " Your posts and everything else in your account stay with your host.")
     }
     .fixedSize(horizontal: false, vertical: true)

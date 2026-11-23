@@ -876,7 +876,7 @@ function HowCounted({ model }) {
           out. A follow that has ended leaves no record: someone who stopped following you shows only if the unfollow tracker saw it
           happen.
         </p>
-        <p>Months are counted on your own calendar. Everything is read from the archive in this browser.</p>
+        <p>Months are counted on your own calendar. Everything is read from the archive on this device.</p>
       </div>
     </details>
   );
@@ -1002,7 +1002,7 @@ export default function InteractionLookup({ tool }) {
         )}
         {(state === 'missing' || state === 'failed') && (
           <p className="callout callout--warn" role="alert">
-            {state === 'missing' ? `The address names “${named}”, which Bluesky doesn’t know as an account.` : `Couldn’t reach Bluesky to look up “${named}”. Reload to try again.`}
+            {state === 'missing' ? `The address names “${named}”, which Bluesky doesn’t know as an account.` : `Couldn’t reach Bluesky to look up “${named}”. Check the connection and try again.`}
           </p>
         )}
         {state !== 'looking' && <StartingPoint archive={archive} onChoose={choose} />}

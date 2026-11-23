@@ -227,7 +227,7 @@ public struct LandingView: View {
       } foot: {
         Text(
           AttributedString(
-            "Your archive is worked out and kept in this browser. Requests go to your account’s host, Bluesky’s public API, the PLC directory and Constellation, and, for long sessions, scheduled posts and your agreement to the terms, to Virga’s server. The "
+            "Your archive is worked out and kept on this device. Requests go to your account’s host, Bluesky’s public API, the PLC directory and Constellation, and, for long sessions, scheduled posts and your agreement to the terms, to Virga’s server. The "
           ) + pageLink("Privacy Policy", to: LegalVersion.privacyPath) + AttributedString(" has the whole list.")
         )
         .fixedSize(horizontal: false, vertical: true)
@@ -295,7 +295,7 @@ public struct LandingView: View {
       title
         .padding(.top, Measure.Landing.titleSpaceAbove)
       Text(
-        "Followers, blocks, posts, engagement and the people behind them, on dashboards you arrange yourself, with a few small tools for looking after your account. Worked out in your browser, from your own data."
+        "Followers, blocks, posts, engagement and the people behind them, on dashboards you arrange yourself, with a few small tools for looking after your account. Worked out on your device, from your own data."
       )
       .virgaText(theme.isPhone ? .textMd : .textLg, lineHeight: ThemeKit.landingLedeLineHeight)
       .foregroundStyle(theme.ink2)
@@ -354,8 +354,8 @@ public struct LandingView: View {
         "Tidy up who you follow, see who left, find your best time to post. Each tool says what it can touch before it touches it."
       ),
       (
-        Glyph.lock, "Kept in your browser",
-        "Your archive lives in this browser, and you can export it whenever you like. It’s never sent anywhere, not even to Virga’s server."
+        Glyph.lock, "Kept on your device",
+        "Your archive lives on this device, and you can export it whenever you like. It’s never sent anywhere, not even to Virga’s server."
       ),
     ]
     // `repeat(auto-fit, minmax(min(240px, 100%), 1fr))`, three from 720.

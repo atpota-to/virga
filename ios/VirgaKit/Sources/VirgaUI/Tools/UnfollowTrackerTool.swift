@@ -103,7 +103,7 @@ struct UnfollowLog: View {
       }
       ToolMoreFoot(shown: shown.count, total: entries.count, page: Self.page) { limit += Self.page }
       ToolCaption(
-        "A change is noticed at the sync after it happened, so “noticed” is a window, not a moment. Someone who unfollowed and followed again between two syncs never shows. The log is kept in this browser, up to 5,000 changes."
+        "A change is noticed at the sync after it happened, so “noticed” is a window, not a moment. Someone who unfollowed and followed again between two syncs never shows. The log is kept on this device, up to 5,000 changes."
       )
     }
     .accessibilityElement(children: .contain)

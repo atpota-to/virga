@@ -104,7 +104,7 @@ export function SyncCard({ archive, brief = false }) {
       </div>
       {!brief && pm && (
         <span className="sync-card-sub sync-card-counts num">
-          {counts.records.toLocaleString(activeLocale())} repo records and {counts.followers.toLocaleString(activeLocale())} followers, kept in this browser
+          {counts.records.toLocaleString(activeLocale())} repo records and {counts.followers.toLocaleString(activeLocale())} followers, kept on this device
         </span>
       )}
       {!brief && syncError && (

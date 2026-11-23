@@ -245,7 +245,7 @@ export function whyNot({ result, caps, session, lists }) {
   if (result?.vouchCheck !== 'canary') return { key: 'vouches', text: 'This scan couldn’t check who you know in common, so nothing from it can go on a list. Scan again later.' };
   if (caps.mode !== 'backend') {
     return session.authMode === 'backend'
-      ? { key: 'long', text: 'Lists are written by Virga’s server while your browser is closed, so they need a long session. Reconnect for a longer session from the account menu.' }
+      ? { key: 'long', text: 'Lists are written by Virga’s server while Virga is closed, so they need a long session. Reconnect for a longer session from the account menu.' }
       : { key: 'long', text: 'Lists are written by Virga’s server, which isn’t taking long sessions here.' };
   }
   if (lists.error) return { key: 'error', text: lists.error };

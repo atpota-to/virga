@@ -296,7 +296,7 @@ public final class DemoServer: Sendable {
 
   /// - Parameters:
   ///   - world: the accounts' worlds.
-  ///   - terms: how the ledger starts ('agreed', 'ask' or 'down').
+  ///   - terms: how the ledger starts ('agreed', 'ask', 'down' or 'newer').
   ///   - limits: the per-feature limits, as the server reads its env
   ///     (`{ scheduledPosts, postTimers, conditionalTimers }`, each a
   ///     positive whole number or left out for unlimited).
@@ -646,13 +646,18 @@ public final class DemoServer: Sendable {
 
   // MARK: The terms ledger
 
+  /// With terms=newer the server's documents are a version ahead of the
+  /// app's, as they are for an iOS build made before a bump: nobody has
+  /// agreed to them, and an agreement to the app's own version is refused.
+  var serverTermsVersion: Int { terms == "newer" ? LegalVersion.termsVersion + 1 : LegalVersion.termsVersion }
+
   var currentTerms: [String: JSONValue] {
-    ["version": .number(Double(LegalVersion.termsVersion)), "effectiveDate": .string(LegalVersion.termsEffectiveDate)]
+    ["version": .number(Double(serverTermsVersion)), "effectiveDate": .string(LegalVersion.termsEffectiveDate)]
   }
 
   func agreementOf(_ s: State, _ did: String, _ identity: String) -> TermsAgreement? {
     s.agreements.first {
-      $0.did.jsEquals(did) && $0.terms_version == LegalVersion.termsVersion && $0.identity == identity
+      $0.did.jsEquals(did) && $0.terms_version == serverTermsVersion && $0.identity == identity
     }
   }
 
@@ -686,7 +691,7 @@ public final class DemoServer: Sendable {
     // `body = {}` stands in for no body; a null one can't be read.
     let body = given ?? [:]
     if body.isNull { throw HarnessJSError.typeError("Cannot read properties of null (reading 'version')") }
-    guard body["version"] == .number(Double(LegalVersion.termsVersion)) else {
+    guard body["version"] == .number(Double(serverTermsVersion)) else {
       return ServerAnswer(
         409,
         FakeServer.failure(
@@ -704,12 +709,12 @@ public final class DemoServer: Sendable {
     let (row, created) = state.withLock { s -> (TermsAgreement, Bool) in
       if let row = agreementOf(s, did, identity) { return (row, false) }
       let row = TermsAgreement(
-        did: did, policy_version: LegalVersion.termsEffectiveDate, terms_version: LegalVersion.termsVersion, identity: identity,
+        did: did, policy_version: LegalVersion.termsEffectiveDate, terms_version: serverTermsVersion, identity: identity,
         accepted_at: at, ip: "203.0.113.7", user_agent: agent)
       s.agreements.append(row)
       return (row, true)
     }
-    if created { note("\(did) agreed to version \(LegalVersion.termsVersion) (\(identity))") }
+    if created { note("\(did) agreed to version \(serverTermsVersion) (\(identity))") }
     var out = currentTerms
     out["success"] = true
     out["identity"] = .string(identity)

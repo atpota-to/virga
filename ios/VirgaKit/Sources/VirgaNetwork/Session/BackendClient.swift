@@ -368,7 +368,7 @@ public enum BackendClient {
     var nonceMatches = false
     if case .string(let held)? = pending?["nonce"], let nonce { nonceMatches = held.jsEquals(nonce) }
     if pending.truthy.isPresent == false || truthy(nonce) == nil || !nonceMatches {
-      let error = ReturnError("unexpected_return", "This sign-in wasn’t started from this tab, so it was ignored.")
+      let error = ReturnError("unexpected_return", "This sign-in wasn’t started here, so it was ignored.")
       return .error(error, orphanToken: isToken(token ?? "") ? token : nil)
     }
     guard let token, isToken(token), let did, isDid(did) else {

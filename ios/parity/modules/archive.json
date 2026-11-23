@@ -46,7 +46,7 @@
         "archive.model"
       ],
       "note": "ArchiveModel (@MainActor @Observable) has every state and action of the hook: data, actors, sync, syncError, runSync, setFollow, notePosted, noteDeleted, wantActors, checkActivity, deleteArchive, cancelSync, plus the exports. Mount and unmount are start() and stop(); the profile read up front, like the web's, isn't stopped by a call-off, and neither is wantActors' read (a task of its own, as the web's hydrateActors takes no signal), so a People list left before it answers still gets its cards; ArchiveEnvironment.timeZone nil, the app's, is the active zone, read each time; the posting events bus (VirgaPosting) comes in as ArchiveEnvironment.postsChanged. Held to fixture archive.model: four scenarios replayed request by request, with every state of the sync bar and the archive after each step. The download and parse progress of the repo CAR reach the bar through an AsyncStream, in order.",
-      "synced": "45349f2d6747"
+      "synced": "d70c6009666a"
     },
     "src/charts/format.js": {
       "status": "ported",

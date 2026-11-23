@@ -64,7 +64,7 @@ export default function SettingsPage({ section }) {
 function SettingsIndex() {
   return (
     <>
-      <PageHeader title="Settings" sub="For whoever is at this browser, and for the account that’s open." />
+      <PageHeader title="Settings" sub="For whoever is using this device, and for the account that’s open." />
       <div className="page-body settings-body">
         <ul className="settings-index">
           {SECTIONS.map((s) => (
@@ -223,7 +223,7 @@ function DataSection() {
       </Section>
 
       <Section title="Take it with you">
-        <Row label="Everything, as JSON" hint="Posts, followers, blocks, engagement and repo records, as this browser holds them.">
+        <Row label="Everything, as JSON" hint="Posts, followers, blocks, engagement and repo records, as this device holds them.">
           <Button onClick={() => exportArchive(archive)} disabled={!built}>
             <Download size={15} aria-hidden="true" />
             Export JSON
@@ -237,17 +237,17 @@ function DataSection() {
         </Row>
       </Section>
 
-      <Section title="Storage in this browser">
+      <Section title="Storage on this device">
         <Row
           label="Kept on this device"
           hint={
             !archive.persistent
               ? archive.blocked
                 ? 'Another Virga tab is holding the archive open, so this one lasts the session only. Close that tab and reload to keep it.'
-                : 'This browser holds the archive for this session only.'
+                : 'The archive is held for this session only.'
               : estimate
-                ? `Virga is using about ${megabytes(estimate.usage)} here, for every account signed in on this browser.`
-                : 'In IndexedDB, in a database of its own for this account.'
+                ? `Virga is using about ${megabytes(estimate.usage)} here, for every account signed in on this device.`
+                : 'In a database of its own for this account, on this device.'
           }
         >
           {/* Only the case to find is marked; kept, the line says where. */}
@@ -312,7 +312,7 @@ function DataSection() {
       <Dialog
         open={confirm === 'delete'}
         onClose={() => setConfirm(null)}
-        title="Delete this browser’s archive?"
+        title="Delete the archive on this device?"
         tone="danger"
         actions={
           <>
@@ -322,7 +322,7 @@ function DataSection() {
               onClick={async () => {
                 setConfirm(null);
                 await archive.deleteArchive();
-                toast?.('The archive is deleted from this browser.');
+                toast?.('The archive is deleted from this device.');
                 navigate('/');
               }}
             >
@@ -332,7 +332,7 @@ function DataSection() {
         }
       >
         <p>
-          Every post, follower, block, engagement event and repo record Virga holds for this account in this browser goes, along with the
+          Every post, follower, block, engagement event and repo record Virga holds for this account on this device goes, along with the
           unfollow log. Your dashboards and settings stay.
         </p>
       </Dialog>
@@ -425,7 +425,7 @@ function DashboardsSection() {
         </div>
       </Section>
       <Section title="Where they’re kept">
-        <p className="settings-text">Kept in this browser, like your archive. Another browser starts with the three starting dashboards.</p>
+        <p className="settings-text">Kept on this device, like your archive. Another device or browser starts with the three starting dashboards.</p>
       </Section>
       <Dialog
         open={Boolean(renaming)}
@@ -642,7 +642,7 @@ function AppearanceSection() {
         }
       >
         <select className="input" aria-label="Number and date format" value={prefs.locale} onChange={(e) => setPref('locale', e.target.value)}>
-          <option value="system">This browser’s region ({regionName(systemLocale())})</option>
+          <option value="system">This device’s region ({regionName(systemLocale())})</option>
           {LOCALE_CHOICES.map((tag) => (
             <option key={tag} value={tag}>
               {regionName(tag)}: {localeSample(tag)}
@@ -700,8 +700,8 @@ function PermissionsSection() {
       </Section>
       <Section title="Where the sign-in is kept">
         <p className="settings-text">
-          A browser session stays in this browser and goes straight to your account’s server. A long session is held by Virga’s server at{' '}
-          {backendHost()}, which makes the same requests on your behalf, and is what lets a scheduled post go out while the browser is closed.
+          A browser session stays in the browser and goes straight to your account’s server. A long session is held by Virga’s server at{' '}
+          {backendHost()}, which makes the same requests on your behalf, and is what lets a scheduled post go out while Virga is closed.
           Virga’s server is used only for long sessions and the features that need one, and for the record that an account agreed to the
           terms, which either kind of session sends it; your archive never goes there. Settings ›{' '}
           <Link to="/settings/account">Account</Link> says which kind each account has.
@@ -734,10 +734,10 @@ function AboutSection() {
     <>
       <Section title="About Virga">
         <p className="settings-text">
-          Analytics for your Bluesky account and the rest of your atproto repo, worked out in your browser from your own data, and a place to
-          write and schedule posts. The archive is read from your PDS, Bluesky’s public API, the PLC directory and Constellation, and kept in
-          this browser; it is never sent to Virga’s server. That server and its database are used only for long sessions, for the features
-          that run while the browser is closed, and for the record that an account agreed to the terms.
+          Analytics for your Bluesky account and the rest of your atproto repo, worked out on your device from your own data, and a place to
+          write and schedule posts. The archive is read from your PDS, Bluesky’s public API, the PLC directory and Constellation, and kept on
+          this device; it is never sent to Virga’s server. That server and its database are used only for long sessions, for the features
+          that run while Virga is closed, and for the record that an account agreed to the terms.
         </p>
       </Section>
       <Section title="Terms and privacy" sub="What you agreed to when this account signed in, and what Virga does with information about you.">

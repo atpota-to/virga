@@ -139,11 +139,11 @@ function TurnOn({ account, asking, onTurnOn, refused }) {
           you in again, asking for that one read as well. It reads; it can’t block, mute or post.
         </p>
         <p>
-          Who engaged comes from Constellation, the public index of the network, from this browser.{' '}
+          Who engaged comes from Constellation, the public index of the network, from this device.{' '}
           {account?.mode === 'backend'
             ? 'This account’s session is held by Virga’s server, so the read of their profiles goes through it, which passes it on to Bluesky and keeps none of it.'
-            : 'The read of their profiles goes from this browser straight to Bluesky.'}{' '}
-          Nothing a scan finds is kept after this tab closes.
+            : 'The read of their profiles goes from this device straight to Bluesky.'}{' '}
+          Nothing a scan finds is kept after Virga closes.
         </p>
       </div>
       <div className="defense-actions">

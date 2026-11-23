@@ -883,7 +883,7 @@ export async function postScheduledNow(row, { did, deps, now = Date.now() }) {
   if (!row?.id)
     throw coded(
       'BAD_ROW',
-      'That post couldn’t be read. Reload the page and try again.',
+      'That post couldn’t be read, so nothing was posted.',
     );
   if (row.partial)
     throw coded(

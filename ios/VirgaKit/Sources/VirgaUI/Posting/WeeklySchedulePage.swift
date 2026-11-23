@@ -441,7 +441,7 @@ struct WeeklySchedulePage: View {
   }
 
   private var footWords: some View {
-    Text("Saved as you go, in this browser.")
+    Text("Saved as you go, on this device.")
       .virgaText(.textSm)
       .foregroundStyle(theme.muted)
   }
@@ -497,7 +497,7 @@ struct WeeklySchedulePage: View {
       }
       if !suggest {
         ScheduleSwitch(
-          label: "Suggest times from my best times", hint: "Uses the archive in this browser; nothing is sent anywhere.",
+          label: "Suggest times from my best times", hint: "Uses the archive on this device; nothing is sent anywhere.",
           isOn: false
         ) { on in try? live().update(["suggestBestTimes": .bool(on)]) }
       }

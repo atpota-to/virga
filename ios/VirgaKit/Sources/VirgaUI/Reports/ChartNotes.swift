@@ -54,7 +54,7 @@ struct ChartNotes: View {
     let notes = ChartNotesModels.model(did, store: app.stores.keyValue)
     let today = Annotations.todayKey(SyncStatus.now())
     let ready = !label.jsTrimmed().isEmpty && Periods.dayStartMs(day).isFinite
-    ReportCard(title: "Notes on your charts", sub: "A day and a few words, marked on every chart over time. Kept in this browser.", tools: nil) {
+    ReportCard(title: "Notes on your charts", sub: "A day and a few words, marked on every chart over time. Kept on this device.", tools: nil) {
       ViewThatFits(in: .horizontal) {
         HStack(alignment: .bottom, spacing: theme.space3) { fields(today) ; add(notes, ready) }
         VStack(alignment: .leading, spacing: theme.space3) { fields(today) ; add(notes, ready) }

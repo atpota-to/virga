@@ -10,7 +10,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Defense/AddToListCard.swift"
       ],
       "note": "whyNot (vouches, a long session, the lists' error, Reading your lists…, writes off, the lists permission) with Let Defense make lists; the form: Who (each approvable band to tick with its mark, count and meaning, a band with none disabled; the protected never added), To (the lists, a list made here kept for a retry, A new list…), its name and For when making one, Why in your words (held to 500) with its hint, the plan limit's warning, Add n… with the estimate at Virga’s pace, the error; the confirm dialog's title and paragraphs; approving (createList when making, then planAndApprove with the rows not kept, the totals with their bands, the ticked bands and cleanNote) and the done line with Follow it on Lists and Add more from this post. The lists are read again without waiting, so the dialog closes once the plan is approved.",
-      "synced": "cf47fbcd225f"
+      "synced": "d42b1de967f0"
     },
     "src/defense/DefenseHistory.jsx": {
       "status": "ported",
@@ -35,7 +35,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Defense/DefenseScanResult.swift"
       ],
       "note": "DefensePage routes scan, lists and history (behind the Defense build flag, which the demo can turn on with -VirgaDefense on). The scan page over DefenseAccountModel (caps, askFor) and ScanStore.shared: Turn on Defense (both paragraphs, the refused line, Opening the sign-in…, the error) while the grant is missing or a scan was refused for it; the form (a link, Scan, and PageModel.postsToScan's posts of yours with their replies and quotes); a scan begun as the page does (Scan.runScan over Scan.signedInProfiles(agent), Scan.canaryCandidates from the archive, the session's transport for Constellation and the public AppView); Scanning with its stage, count, Stop and bar (VoiceOver hears the count as the line's value; only the stage is announced); the failure with Try again unless the link was the trouble; the result (Who engaged with the post's words or address, Open the post, Scan again, the four figures, ScanNotes' callouts, the radar, Show as table with the band × slice counts and Export 'defense-scan' of PageModel.scanCsvRows, the near list with its band filter, a person row each led by its band mark and PageModel.rowFacts, Show 40 more, and the no-connection count); How a scan sorts people before any scan; Defense is on with Turn off. A mark picked on the radar is marked in the list and shown in it, but the page doesn't scroll to it. Turning Defense on or off drops the account's scan once the sign-in comes back, as the web's reload does; Let Defense make lists keeps it, where the web's reload drops it too.",
-      "synced": "20776ae6ca59"
+      "synced": "5848f89da8da"
     },
     "src/defense/ModeratorCard.jsx": {
       "status": "ported",

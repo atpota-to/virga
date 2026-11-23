@@ -17,7 +17,7 @@ export default function ChartNotes({ did }) {
   const [label, setLabel] = useState('');
   const ready = Boolean(label.trim()) && Number.isFinite(dayStartMs(day));
   return (
-    <Card title="Notes on your charts" sub="A day and a few words, marked on every chart over time. Kept in this browser.">
+    <Card title="Notes on your charts" sub="A day and a few words, marked on every chart over time. Kept on this device.">
       <form
         className="chart-notes-form"
         onSubmit={(e) => {

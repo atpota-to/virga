@@ -283,7 +283,7 @@ private struct ModelWorld {
   @Test func refusesToSwitchToAnAccountItDoesntKnowOrThatHasToSignInAgain() async {
     let w = await two()
     let unknown = await thrown { try await w.model.switchAccount("did:plc:nobody") }
-    #expect(unknown.map(jsMessage) == "That account isn’t remembered in this browser.")
+    #expect(unknown.map(jsMessage) == "That account isn’t remembered on this device.")
     w.stores.secrets.removeSecret(for: Accounts.backendTokenKey(lab))
     let gone = await thrown { try await w.model.switchAccount(lab) }
     #expect(Accounts.isReauthRequiredError(gone))

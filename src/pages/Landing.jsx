@@ -39,7 +39,7 @@ export default function Landing({ composing = false }) {
             </h1>
             <p className="landing-lede">
               Followers, blocks, posts, engagement and the people behind them, on dashboards you arrange yourself, with a few small tools
-              for looking after your account. Worked out in your browser, from your own data.
+              for looking after your account. Worked out on your device, from your own data.
             </p>
 
             <SignInFlow variant="page" remembered composing={composing} />
@@ -65,15 +65,15 @@ export default function Landing({ composing = false }) {
           </div>
           <div>
             <Lock size={18} aria-hidden="true" />
-            <h2>Kept in your browser</h2>
-            <p>Your archive lives in this browser, and you can export it whenever you like. It’s never sent anywhere, not even to Virga’s server.</p>
+            <h2>Kept on your device</h2>
+            <p>Your archive lives on this device, and you can export it whenever you like. It’s never sent anywhere, not even to Virga’s server.</p>
           </div>
         </section>
       </main>
 
       <footer className="landing-foot">
         <span>
-          Your archive is worked out and kept in this browser. Requests go to your account’s host, Bluesky’s public API, the PLC directory
+          Your archive is worked out and kept on this device. Requests go to your account’s host, Bluesky’s public API, the PLC directory
           and Constellation, and, for long sessions, scheduled posts and your agreement to the terms, to Virga’s server. The{' '}
           <Link to={PRIVACY_PATH}>Privacy Policy</Link> has the whole list.
         </span>

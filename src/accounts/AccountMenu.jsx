@@ -196,7 +196,7 @@ export function SignOutAllDialog({ open, onClose }) {
     >
       <div className="dialog-form">
         <p>
-          Each account’s session in this browser ends. Their archives and dashboards stay here, and each can sign back in from the front page.
+          Each account’s session on this device ends. Their archives and dashboards stay here, and each can sign back in from the front page.
         </p>
         <PendingWorkWarnings accounts={signedIn} work={work} />
       </div>

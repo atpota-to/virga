@@ -37,7 +37,7 @@ function TemplateText({ text }) {
 
 function usedLine(entry) {
   if (!entry?.count) return 'Not used here yet';
-  return `Used ${entry.count === 1 ? 'once' : `${entry.count.toLocaleString(activeLocale())} times`} in this browser`;
+  return `Used ${entry.count === 1 ? 'once' : `${entry.count.toLocaleString(activeLocale())} times`} on this device`;
 }
 
 /**

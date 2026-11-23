@@ -365,7 +365,7 @@ export function useAnalyticsArchive(agent, did, handle) {
           written += rows;
           report(repoSaveFraction(written, toWrite), `${num(written)} of ${num(toWrite)} rows`);
         };
-        report(repoSaveFraction(0, toWrite), `${num(0)} of ${num(toWrite)} rows`, 'Saving the repo to this browser');
+        report(repoSaveFraction(0, toWrite), `${num(0)} of ${num(toWrite)} rows`, 'Saving the repo to this device');
         if (since == null) {
           // Full pull: replace, so deleted records actually leave. The rev
           // is nulled first — a death mid-write must make the NEXT sync

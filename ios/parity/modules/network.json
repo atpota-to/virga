@@ -71,7 +71,7 @@
         "network.url"
       ],
       "note": "stripReturnFromAddress isn't ported: it takes the token out of the browser's address bar with history.replaceState, and on iOS the sign-in comes back through ASWebAuthenticationSession's callback URL, which never reaches an address bar (VirgaUI's sign-in reads that URL with BackendClient.readBackendReturn). startBackendSignIn returns the authorization address for ASWebAuthenticationSession (and hands it to `assign`) instead of navigating away and never settling. Where the web falls back to location.origin for an empty backendUrl, the port takes `origin` as a parameter.",
-      "synced": "0b4dec4501e2"
+      "synced": "010b16743c96"
     },
     "src/session/pds.js": {
       "status": "ported",

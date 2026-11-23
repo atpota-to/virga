@@ -63,7 +63,7 @@ struct DashboardsSection: View {
         }
       }
       SettingsSectionView(title: "Where they’re kept", sub: nil) {
-        SettingsText("Kept in this browser, like your archive. Another browser starts with the three starting dashboards.")
+        SettingsText("Kept on this device, like your archive. Another device or browser starts with the three starting dashboards.")
       }
     }
     .dashboardDialog(isPresented: Binding(get: { renaming != nil }, set: { if !$0 { renaming = nil } })) {

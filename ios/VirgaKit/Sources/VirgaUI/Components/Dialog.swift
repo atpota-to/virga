@@ -427,7 +427,7 @@ struct RadioMark: View {
 #Preview("Dialog") {
   VirgaPreviewHost {
     DialogFrame(title: "Sign out of Mira Okafor", onClose: {}) {
-      Text("Each account’s session in this browser ends.")
+      Text("Each account’s session on this device ends.")
     } actions: {
       Button("Cancel") {}.buttonStyle(.virga)
       Button("Sign out") {}.buttonStyle(.virga(.danger))

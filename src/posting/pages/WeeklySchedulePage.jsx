@@ -520,7 +520,7 @@ export default function WeeklySchedulePage({ did }) {
                 ))}
               </ul>
               <div className="card-foot sched-week-foot">
-                <span>Saved as you go, in this browser.</span>
+                <span>Saved as you go, on this device.</span>
                 {!isDefaultWeek(schedule) && (
                   <button
                     type="button"
@@ -626,7 +626,7 @@ export default function WeeklySchedulePage({ did }) {
                       checked={false}
                       onChange={(v) => update({ suggestBestTimes: v })}
                       label="Suggest times from my best times"
-                      hint="Uses the archive in this browser; nothing is sent anywhere."
+                      hint="Uses the archive on this device; nothing is sent anywhere."
                     />
                   </div>
                 )}

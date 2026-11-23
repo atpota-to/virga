@@ -206,7 +206,7 @@ private let invalid: MockTransport.Response = .failure("FRONTEND_SESSION_INVALID
   @Test func refusesAnAccountThisDeviceDoesntRemember() async {
     let w = await twoAccounts()
     let error = await thrown { try await w.ctrl.switchAccount(third) }
-    #expect(error.map(jsMessage) == "That account isn’t remembered in this browser.")
+    #expect(error.map(jsMessage) == "That account isn’t remembered on this device.")
     #expect(w.state.switchingLog.isEmpty)
   }
 }
