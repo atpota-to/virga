@@ -380,7 +380,11 @@ final class ScheduledPageModel {
     guard let did else { return }
     let id = ScheduleIds.key(row["id"])
     setRowBusy(id, true)
-    defer { setRowBusy(id, false) }
+    let background = BackgroundSend("Posting")
+    defer {
+      background.end()
+      setRowBusy(id, false)
+    }
     let session = self.session
     let files = TemporaryComposerFiles()
     let media = PublishMedia(files: files, encoder: ImageIOEncoder(), transport: transport, clock: clock)

@@ -142,6 +142,54 @@ final class ManualTimers: Sendable {
     #expect(saver.pending() == nil)
   }
 
+  /// The composer's timers: the debounced write runs on the main actor, so
+  /// one that comes due while the main actor is busy (a send's last steps)
+  /// can't land after the cancel() and the clearing that follow there
+  /// (resetAfterSend: cancel, then clearKept). The hold only sets the scene;
+  /// what's asserted doesn't depend on how long it took.
+  @Test @MainActor func aMainActorTimerCantWriteAfterCancel() async {
+    let (written, signal) = AsyncStream<WriteReportingStore.Write>.makeStream()
+    let store = WriteReportingStore(signal)
+    let timers = Autosaver.mainActorTimers()
+    let saver = Autosaver(store: store, debounceMs: 1, setTimer: timers.0, clearTimer: timers.1)
+    let key = Autosave.autosaveKey("did:plc:mira")
+    saver.save("did:plc:mira", ["posts": [["id": "p1", "text": "just posted"]]])
+    holdTheThread(milliseconds: 30)
+    saver.cancel()
+    store.removeItem(key)
+    saver.save("did:plc:mira", ["posts": [["id": "p2", "text": "the next one"]]])
+    for await write in written {
+      #expect(write.key == key)
+      #expect(write.value.contains("the next one"), "the first write is the post after the send: \(write.value)")
+      break
+    }
+    #expect(saver.pending() == nil)
+  }
+}
+
+/// Keeps the calling thread busy without yielding it (a synchronous wait,
+/// so it may be used from async code).
+func holdTheThread(milliseconds: Double) {
+  Thread.sleep(forTimeInterval: milliseconds / 1000)
+}
+
+/// A store that reports each write: its key and value.
+final class WriteReportingStore: KeyValueStore, Sendable {
+  struct Write: Sendable {
+    var key: String
+    var value: String
+  }
+
+  let inner = InMemoryKeyValueStore()
+  let signal: AsyncStream<Write>.Continuation
+  init(_ signal: AsyncStream<Write>.Continuation) { self.signal = signal }
+  func getItem(_ key: String) -> String? { inner.getItem(key) }
+  func setItem(_ key: String, _ value: String) throws {
+    try inner.setItem(key, value)
+    signal.yield(Write(key: key, value: value))
+  }
+  func removeItem(_ key: String) { inner.removeItem(key) }
+  func allKeys() -> [String] { inner.allKeys() }
 }
 
 /// A store that says each key it writes.
@@ -266,5 +314,102 @@ final class SignallingStore: KeyValueStore, Sendable {
     #expect(Autosave.loadSessionDraft("did:plc:mira", session: session)?.savedAt == 7)
     _ = ComposerStateModel(asDid: "did:plc:wren", now: { 7 }, session: session)
     #expect(Autosave.loadSessionDraft("did:plc:wren", session: session) == nil)
+  }
+}
+
+/// Composer.jsx's blueskyGates: each account's Bluesky default reply
+/// settings, a good read kept 5 minutes and a failed one 30 seconds, read
+/// for the Replies row and again when the post goes out.
+@Suite struct BlueskyGatesCacheBehaviour {
+  static let mira = "did:plc:mira"
+  static let following: JSONValue = [
+    "preferences": [
+      [
+        "$type": "app.bsky.actor.defs#postInteractionSettingsPref",
+        "threadgateAllowRules": [["$type": "app.bsky.feed.threadgate#followingRule"]],
+      ]
+    ]
+  ]
+
+  struct Failed: Error {}
+
+  /// An agent whose getPreferences answers `following` until `failing` is set.
+  static func agent(reads: Locked<Int>, failing: Locked<Bool>) -> FakeGatesAgent {
+    FakeGatesAgent(preferences: {
+      reads.withLock { $0 += 1 }
+      if failing.wrappedValue { throw Failed() }
+      return following
+    })
+  }
+
+  static var settings: PostingSettings { PostingSettingsStore.readPostingSettings(mira, store: InMemoryKeyValueStore()) }
+
+  /// The writer saw "only people you follow" when the composer opened; a
+  /// read that fails at Post still sends the post with that gate.
+  @Test func aGoodReadIsKeptFiveMinutes() async {
+    let clock = Locked<Double>(1_000)
+    let reads = Locked(0)
+    let failing = Locked(false)
+    let cache = BlueskyGatesCache(now: { clock.wrappedValue })
+    let agent = Self.agent(reads: reads, failing: failing)
+    let shown = await cache.resolve(Self.settings, did: Self.mira) { agent }
+    #expect(shown.source == "bluesky")
+    #expect(shown.gates["reply"] == [["type": "following"]])
+    failing.set(true)
+    let fresh: Double = 1_000 + BlueskyGatesCache.cacheMs - 1
+    clock.set(fresh)
+    let sent = await cache.resolve(Self.settings, did: Self.mira) { agent }
+    #expect(sent == shown)
+    #expect(reads.wrappedValue == 1)
+    // Once it's old, Bluesky is asked again, and a failure says so.
+    let old: Double = 1_000 + BlueskyGatesCache.cacheMs
+    clock.set(old)
+    let later = await cache.resolve(Self.settings, did: Self.mira) { agent }
+    #expect(reads.wrappedValue == 2)
+    #expect(later.source == "everyone")
+    #expect(later.gates == ["custom": false, "reply": .null, "quotes": true])
+    #expect(later.notice == "Couldn’t read your reply settings from Bluesky, so anyone can reply and quote this post.")
+  }
+
+  @Test func aFailedReadIsKeptThirtySeconds() async {
+    let clock = Locked<Double>(0)
+    let reads = Locked(0)
+    let failing = Locked(true)
+    let cache = BlueskyGatesCache(now: { clock.wrappedValue })
+    let agent = Self.agent(reads: reads, failing: failing)
+    #expect(await cache.read(Self.mira) { agent } == nil)
+    failing.set(false)
+    clock.set(BlueskyGatesCache.failureCacheMs - 1)
+    #expect(await cache.read(Self.mira) { agent } == nil)
+    #expect(reads.wrappedValue == 1)
+    clock.set(BlueskyGatesCache.failureCacheMs)
+    #expect(await cache.read(Self.mira) { agent } == PostGates(reply: [.following], quotes: true).json)
+    #expect(reads.wrappedValue == 2)
+  }
+
+  /// No agent (the account can't be reached) is a failed read, kept as one.
+  @Test func noAgentIsAFailedRead() async {
+    let asked = Locked(0)
+    let cache = BlueskyGatesCache(now: { 0 })
+    let none: @Sendable () async throws -> (any GatesAgent)? = {
+      asked.withLock { $0 += 1 }
+      throw Failed()
+    }
+    let r = await cache.resolve(Self.settings, did: Self.mira, agent: none)
+    #expect(r.source == "everyone")
+    #expect(r.notice != nil)
+    _ = await cache.resolve(Self.settings, did: Self.mira, agent: none)
+    #expect(asked.wrappedValue == 1)
+  }
+
+  @Test func eachAccountHasItsOwn() async {
+    let reads = Locked(0)
+    let failing = Locked(false)
+    let cache = BlueskyGatesCache(now: { 0 })
+    let agent = Self.agent(reads: reads, failing: failing)
+    _ = await cache.read(Self.mira) { agent }
+    _ = await cache.read("did:plc:wren") { agent }
+    _ = await cache.read(Self.mira) { agent }
+    #expect(reads.wrappedValue == 2)
   }
 }

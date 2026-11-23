@@ -712,4 +712,30 @@ public final class Autosaver: Sendable {
 
   /// Cancel and stop.
   public func dispose() { cancel() }
+
+  /// Timers whose callbacks run on the main actor. A composer that writes
+  /// the same keys from the main actor (clearing what was kept after a
+  /// send, setting a post aside) gets its debounced write there too, so the
+  /// write can't land between its `cancel()` and what it does next, as on
+  /// the web's one thread.
+  public static func mainActorTimers() -> (SetTimer, ClearTimer) {
+    let tasks = Locked<[Int: Task<Void, Never>]>([:])
+    let next = Locked(0)
+    let set: SetTimer = { ms, fn in
+      let id = next.withLock { n -> Int in
+        n += 1
+        return n
+      }
+      let task = Task { @MainActor in
+        try? await Task.sleep(nanoseconds: UInt64(Swift.max(0, ms) * 1_000_000))
+        if !Task.isCancelled { fn() }
+      }
+      tasks.withLock { $0[id] = task }
+      return id
+    }
+    let clear: ClearTimer = { id in
+      tasks.withLock { $0.removeValue(forKey: id) }?.cancel()
+    }
+    return (set, clear)
+  }
 }

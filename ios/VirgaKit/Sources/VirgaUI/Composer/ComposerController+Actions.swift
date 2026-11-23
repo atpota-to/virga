@@ -190,6 +190,8 @@ extension ComposerController {
     let transport = self.transport
     patchVideo(postId, file, ["status": "uploading", "progress": 0, "error": .null])
     let task = Task {
+      let background = BackgroundSend("Uploading a video")
+      defer { background.end() }
       do {
         guard let ref = file.ref else { throw VideoError("The video needs to be added again.", code: "VIDEO_FAILED") }
         let data = try Data(contentsOf: URL(fileURLWithPath: ref))
@@ -474,7 +476,11 @@ extension ComposerController {
       return
     }
     let attempt = startBusy(PublishActions.post, "Getting it ready")
-    defer { endBusy(attempt) }
+    let background = BackgroundSend("Posting")
+    defer {
+      background.end()
+      endBusy(attempt)
+    }
     var late = false
     do {
       // The same post twice within a couple of minutes is refused before
@@ -525,8 +531,14 @@ extension ComposerController {
       }
       late = watch.stop()
       // Awaited: the composer stays busy (and its buttons off) until the
-      // post's source, a scheduled copy or a draft, is settled.
-      await afterPublished(s, result, late: late)
+      // post's source, a scheduled copy or a draft, is settled. The post is
+      // out, so a Cancel tapped while it was written (it still shows while
+      // the mentions resolve) doesn't reach these steps: they run in a task
+      // of their own, as the web's afterPublished takes no signal, so the
+      // draft is deleted and the scheduled copy cancelled all the same.
+      let sent = s
+      let wasLate = late
+      await Task { await self.afterPublished(sent, result, late: wasLate) }.value
     } catch {
       if late { return }
       let view = ComposerSubmit.publishErrorView(error)
@@ -535,14 +547,17 @@ extension ComposerController {
     }
   }
 
+  /// The busy line's Cancel: only while it's offered (the web takes it away
+  /// with the 'writing' event; a tap the sheet hasn't redrawn for since is
+  /// too late).
   func cancelPublish() {
+    guard busy?.cancellable == true else { return }
     publishTask?.cancel()
   }
 
   func ensureGates(_ s: ComposerState) async -> ComposerState {
     if s.reply != nil || s.gates.custom { return s }
-    let agent = try? await session.agentFor(s.asDid)
-    let r = await PostingSettingsStore.resolveDefaultGates(settingsFor(s.asDid), agent: agent?.gatesAgent)
+    let r = await resolveGatesFor(s.asDid)
     if state.asDid.jsEquals(s.asDid), !state.gates.custom { dispatch(.setDefaultGates(r.gates)) }
     var out = s
     out.json["gates"] = r.gates

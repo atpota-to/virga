@@ -30,7 +30,11 @@ extension ComposerController {
       return
     }
     let attempt = startBusy(PublishActions.draft, "Saving the draft")
-    defer { endBusy(attempt) }
+    let background = BackgroundSend("Saving a draft")
+    defer {
+      background.end()
+      endBusy(attempt)
+    }
     let defaultRule = defaultTimer.rule  // TIMER: what the toast compares the draft's timer with
     do {
       let agent = try await session.agentFor(did)
