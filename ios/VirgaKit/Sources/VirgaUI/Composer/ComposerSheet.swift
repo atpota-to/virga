@@ -693,7 +693,7 @@ struct ComposerDialogView: View {
             image: image, requester: requester, did: controller.asDid, context: post.text, store: controller.store,
             onSave: save, onClose: close)
         } else {
-          DescribeDialog.altText(image: image, onSave: save, onClose: close)
+          DescribeDialog.altText(image: image, transport: controller.transport, onSave: save, onClose: close)
         }
       }
     case .videoAlt(let postId):
