@@ -20,8 +20,8 @@ import VirgaPosting
 
 /// A picture at a web address, read through the session's transport (so
 /// the demo's made-up pages have pictures too), or one of the demo's own
-/// drawn pictures. Nothing while it loads, or when it won't: a page image
-/// that won't load is left out.
+/// drawn pictures, or one written into a `data:` address. Nothing while it
+/// loads, or when it won't: a page image that won't load is left out.
 struct TransportImage: View {
   let url: String
   let transport: any HTTPTransport
@@ -35,6 +35,10 @@ struct TransportImage: View {
       // The demo's post images are SVG, which UIImage can't decode: drawn
       // as the browser draws them.
       DemoPictureView(picture: picture)
+    } else if DataURL.isDataURL(url) {
+      // A picture the demo's user posted: in its address, which no
+      // transport answers.
+      DataPicture(address: url, onFailure: onFailure)
     } else {
       loaded
     }
