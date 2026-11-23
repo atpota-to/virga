@@ -25,7 +25,13 @@ against the web code again and confirmed 48 findings, about 38 distinct
 once duplicates are folded; they were fixed on the merges after 628657a
 (item 7 below), and CI run 84 (69d274e) was green with them on every job.
 A comparison of runs 82 and 84's screenshots found no regressions
-(notes/ui.md, "CI's screenshots against each other").
+(notes/ui.md, "CI's screenshots against each other"). That comparison
+also turned up a letter lost now and then while the UI tests typed into a
+post editor. A probe in the app (runs 88 to 92) showed the editor putting
+an older copy of the post's text back over a letter just typed; the field
+now keeps its text unless something other than the field changed the post
+(ComposerStateModel.textChangeCount), and CI run 94 (20ef411) was green on
+every job with no letter lost on either device.
 
 ## Done
 
@@ -77,7 +83,7 @@ The order follows the dependencies between the web modules.
    - each iPad window keeps its own archive model;
    - Defense no longer keeps a stale scan after it is turned on or off;
    - VoiceOver gaps in the charts, the radar and the scan's progress.
-   One finding was skipped: the iPad's toasts under the composer sheet, which is what the web does too (PORTING.md, "What sits above a sheet"). `npm run parity:drift` shows no drift. Run 84's screenshots were compared with run 82's and showed no regressions; what the visual review left is listed in notes/ui.md, with a letter now and then lost while the UI tests type into a post editor, which the tests now log.
+   One finding was skipped: the iPad's toasts under the composer sheet, which is what the web does too (PORTING.md, "What sits above a sheet"). `npm run parity:drift` shows no drift. Run 84's screenshots were compared with run 82's and showed no regressions; what the visual review left is listed in notes/ui.md. The post editor's lost letters are fixed (see the paragraph at the top, and notes/ui.md); ComposerUITests still logs any typed text that comes out wrong (VIRGA-TYPED-MISMATCH) with the probe's trace.
 
 ## Things a future session should know
 
