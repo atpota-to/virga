@@ -1,6 +1,6 @@
 # Where the iOS port stands, and what's left
 
-Last updated 2026-11-22. Run `node ios/parity/sync.mjs status` for the live
+Last updated 2026-11-23. Run `node ios/parity/sync.mjs status` for the live
 count; ios/parity/modules/*.json say file by file.
 
 ## In one paragraph
@@ -16,11 +16,14 @@ Every Swift test passes on Linux and on an iOS Simulator (CI's `iOS app`
 job, which also builds the app and runs its UI tests on an iPhone and an
 iPad and keeps their screenshots). Two independent audits of the SwiftUI
 layer against the web found 189 differences in the stable parts and 187
-in the posting screens; all were fixed and merged by 2026-11-22. CI run 79
-(cc3083d) was green on every job, the UI tests on both devices included.
-A side-by-side review of that run's screenshots against the web harness
-then found 51 more differences (notes/ui.md, "The screenshot review"),
-fixed on the merges after cc3083d; their first compile is CI's next run.
+in the posting screens; all were fixed and merged by 2026-11-22. A
+side-by-side review of CI run 79's screenshots against the web harness
+found 51 more differences (notes/ui.md, "The screenshot review"), and CI
+run 82 (628657a) was green on every job with them fixed, the UI tests on
+both devices included. The final review then went over every domain
+against the web code again and confirmed 48 findings, about 38 distinct
+once duplicates are folded; they were fixed on the merges after 628657a
+(item 7 below), and their first compile is CI's next run.
 
 ## Done
 
@@ -32,7 +35,7 @@ fixed on the merges after cc3083d; their first compile is CI's next run.
 | repo | VirgaRepo | ported, audited | SHA-256, CIDs, DAG-CBOR, CAR files, MST walking, record CIDs |
 | session | VirgaSession | ported, audited | accounts, scopes, health, the Terms and their agreement, sign-in a step at a time, the session controller and SessionModel (useAtprotoSession) |
 | archive | VirgaArchive | ported, audited | the store over FileStore, the first build and later syncs, the analytics, periods, chart formats, follower log, sync progress, exports, ArchiveModel (useAnalyticsArchive) |
-| posting-text | VirgaPosting | ported, audited | facets, links, mentions, hashtags, thread splitting, gates, embeds, compose intents, the posting events bus (mentions' default fetch still to be wired) |
+| posting-text | VirgaPosting | ported, audited | facets, links, mentions, hashtags, thread splitting, gates, embeds, compose intents, the posting events bus; mentions resolve through the network from launch (`Mentions.useNetwork` in AppModel) |
 | timers | VirgaPosting | ported, audited | the timer rule model and every sentence in five locales and seven zones, the lifespan editor's model; the server calls wait behind `TimerRequester` |
 | templates | VirgaPosting | ported, audited | postTemplates, templateUsage, editorDrafts, templateService, TemplatesModel (useTemplates), the template editor's model |
 | library | VirgaPosting | ported, audited | the library's model, sources, store, LibraryModel (useLibrary) and its UI helpers; one port of localeCompare for the whole app in VirgaCore (JSCollation) |
@@ -61,7 +64,18 @@ The order follows the dependencies between the web modules.
 6. ~~**The SwiftUI layer, continued**~~ Built and audited on 2026-11-22 (VirgaUI; `ios/DESIGN.md` is the guide, CI's `iOS app` job the compiler, its screenshots the eyes). Dashboards, reports, sharing a chart, the tools, Defense and the radar, the composer with everything it sends, the posting pages with scheduling and timers, Settings › Posting, and the live sky in Metal are all in. Both audits (189 and 187 confirmed differences) are fixed. What is knowingly not done, with the reasons in each file's module map entry and in notes/ui.md:
    - dragging dashboard cards (Customize uses the web's phone and keyboard path, up and down, at every width), and the wide screen's grid of chosen cards with the library beside it;
    - "Keep it when space runs low" (iOS asks nothing like the browser's storage prompt).
-7. **Final review** (still to do): an adversarial review of every domain against the web code, a completeness check, a pass over `npm run parity:drift`, and a look through the screenshots of every screen on both devices (done once on 2026-11-22: 51 differences fixed; worth doing again after the next green run).
+7. ~~**Final review**~~ Done on 2026-11-23. Finders over each domain and a completeness check, each finding then checked by a second agent against the web code: 57 findings, 48 confirmed. Every confirmed one was fixed by a group working on its own files, then reviewed by an agent that hadn't written the fix (one must-fix, done). The larger ones:
+   - removing an account now deletes its draft pictures and videos, and no longer leaves another account with two store handles that overwrite each other;
+   - https `/intent/compose` universal links open the composer;
+   - mentions resolve for Post now and Schedule from the posting pages;
+   - the app follows the device's time zone while it runs;
+   - the composer's temporary files are deleted once nothing holds them;
+   - images are re-encoded as browser-image-compression does, so small ones are no longer crushed;
+   - a late Cancel no longer cuts a sent post's clean-up;
+   - each iPad window keeps its own archive model;
+   - Defense no longer keeps a stale scan after it is turned on or off;
+   - VoiceOver gaps in the charts, the radar and the scan's progress.
+   One finding was skipped: the iPad's toasts under the composer sheet, which is what the web does too (PORTING.md, "What sits above a sheet"). `npm run parity:drift` shows no drift. The screenshots are worth one more look after the next green run; what the visual review left is listed in notes/ui.md.
 
 ## Things a future session should know
 
@@ -95,4 +109,5 @@ The order follows the dependencies between the web modules.
 - **Placeholder settings.** The app's bundle identifier, team and server are
   placeholders in `ios/Config/Base.xcconfig`, and
   `public/.well-known/apple-app-site-association` names a placeholder team ID
-  (`TEAMID`). Set both before a real sign-in can come back to the app.
+  (`TEAMID`). Set both before a real sign-in can come back to the app, or
+  an https `/intent/compose` link can open it.

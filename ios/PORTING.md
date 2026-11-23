@@ -102,6 +102,16 @@ means porting the code, not reimagining it.
   parameter.
 - **Errors**: Swift `Error` types that carry the same codes and messages the
   web shows (`LocalizedError.errorDescription` = the web's message).
+- **Cancellation.** A web promise runs to its end when the component that
+  started it unmounts or its effect runs again; only an AbortSignal it was
+  handed stops it. A SwiftUI `.task` or `.task(id:)` cancels its task, and
+  every `await` inside it, when the view goes or the id changes, and
+  URLSession throws on a cancelled task. Work the web lets finish runs in a
+  `Task { … }` of its own, awaited with `.value`, which doesn't pass the
+  cancellation on: a People list's profile read (ArchiveModel.wantActors)
+  and the clean-up after a post has gone out (the composer's
+  afterPublished) were both cut short until the final review. Pass
+  cancellation through only where the web passes a signal.
 
 ## Platform rules
 
@@ -181,6 +191,13 @@ means porting the code, not reimagining it.
     bundled face as one `Font(UIFont)` at one weight, so a segment's own
     `.fontWeight` is lost under it: give the segment its own
     `.font(theme.font(…, weight:))`.
+  - **What sits above a sheet** (a reading of the web, not the compiler).
+    A web `<dialog>` opened with `showModal()` is in the browser's top
+    layer, drawn above the page whatever its z-index, its scrim included,
+    so the page's toasts and menus are under it. Check that before raising
+    something over a sheet: the iPad's composer toasts are under the
+    composer sheet because the web's are under its dialog (a final review
+    finding that read the web's z-index and was skipped).
 
 ## Tests
 
