@@ -262,6 +262,9 @@ struct DescribeDialog: View {
   let max: Int
   /// The image described, when it is one (the alt text dialog's preview).
   let preview: String?
+  /// What loads an http(s) preview (a draft's image kept only as a posted
+  /// blob, shown from its CDN address), as `<img src>` loads it.
+  var transport: (any HTTPTransport)?
   /// "N of max" for what's written, as altTextCount or the video's count says it.
   let countLabel: (String) -> String
   let onSave: (String) -> Void
@@ -274,7 +277,7 @@ struct DescribeDialog: View {
     DialogFrame(title: title, onClose: onClose) {
       DialogForm {
         if let preview {
-          LocalPicture(url: preview)
+          LocalPicture(url: preview, transport: transport)
             .frame(maxWidth: .infinity, maxHeight: 220)
             .clipShape(RoundedRectangle(cornerRadius: theme.radiusLg))
             .accessibilityHidden(true)
@@ -304,14 +307,16 @@ struct DescribeDialog: View {
 
 extension DescribeDialog {
   /// AltTextDialog, the writer's part: the image, and its description,
-  /// counted by altTextModel.js's altTextCount (AltTextModel).
-  static func altText(image: ComposerImage, onSave: @escaping (String) -> Void, onClose: @escaping () -> Void)
-    -> DescribeDialog
-  {
+  /// counted by altTextModel.js's altTextCount (AltTextModel). `transport`
+  /// loads a preview that is a CDN address rather than a file.
+  static func altText(
+    image: ComposerImage, transport: (any HTTPTransport)?, onSave: @escaping (String) -> Void,
+    onClose: @escaping () -> Void
+  ) -> DescribeDialog {
     DescribeDialog(
       title: "Alt text", fieldLabel: "Description",
       placeholder: "What’s in the image, and what matters about it for this post", initial: image.alt,
-      max: AltTextModel.altTextMaxGraphemes, preview: image.previewUrl,
+      max: AltTextModel.altTextMaxGraphemes, preview: image.previewUrl, transport: transport,
       countLabel: { text in
         let count = AltTextModel.altTextCount(text)
         return count.label + (count.over ? " · too long" : "")

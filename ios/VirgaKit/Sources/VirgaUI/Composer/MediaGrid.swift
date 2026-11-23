@@ -12,12 +12,16 @@ import AVKit
 import SwiftUI
 import UIKit
 import VirgaCore
+import VirgaNetwork
 import VirgaPosting
 
-/// A composer file's picture, read from its ref (a local file).
+/// A composer image's picture: its preview, a local file, or (a draft's
+/// image kept only as a posted blob) its CDN address read through
+/// `transport`, as `<img src>` loads either.
 struct LocalPicture: View {
   @Environment(\.virgaTheme) private var theme
   let url: String?
+  var transport: (any HTTPTransport)?
   @State private var image: UIImage?
 
   var body: some View {
@@ -28,12 +32,21 @@ struct LocalPicture: View {
       }
     }
     .task(id: url) {
-      guard let url, let parsed = URL(string: url), parsed.isFileURL else {
-        image = nil
-        return
-      }
-      image = UIImage(contentsOfFile: parsed.path)
+      image = nil
+      guard let url else { return }
+      image = await Self.picture(url, transport: transport)
     }
+  }
+
+  /// The picture at `url`: a `file:` address read from disk, an http(s)
+  /// one fetched through `transport` when there is one; nil otherwise.
+  static func picture(_ url: String, transport: (any HTTPTransport)?) async -> UIImage? {
+    guard let parsed = URL(string: url) else { return nil }
+    if parsed.isFileURL { return UIImage(contentsOfFile: parsed.path) }
+    guard parsed.scheme == "https" || parsed.scheme == "http", let transport,
+      let response = try? await transport.send(HTTPRequest(url: url, timeoutMs: 10_000)), response.ok
+    else { return nil }
+    return UIImage(data: response.body)
   }
 }
 
@@ -89,6 +102,8 @@ struct ImageGrid: View {
   let processing: Int
   let requireAltText: Bool
   let disabled: Bool
+  /// For a preview that isn't a local file (a draft's posted image).
+  var transport: (any HTTPTransport)?
   let onAlt: (String) -> Void
   let onMove: (Int, Int) -> Void
   let onRemove: (String) -> Void
@@ -135,7 +150,7 @@ struct ImageGrid: View {
     let described = !img.alt.jsTrimmed().isEmpty
     return ZStack(alignment: .bottomLeading) {
       if img.previewUrl != nil {
-        LocalPicture(url: img.previewUrl)
+        LocalPicture(url: img.previewUrl, transport: transport)
           .frame(maxWidth: .infinity, maxHeight: .infinity)
           .accessibilityLabel(described ? "Image \(i + 1): \(img.alt)" : "Image \(i + 1), not described yet")
       } else {

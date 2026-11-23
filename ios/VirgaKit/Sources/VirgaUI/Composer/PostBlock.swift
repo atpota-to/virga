@@ -18,7 +18,7 @@ import UniformTypeIdentifiers
 import VirgaCore
 import VirgaPosting
 
-/// A movie picked from the library, copied to a temporary file.
+/// A movie picked from the library, copied into the composer's temporary folder.
 struct PickedMovie: Transferable {
   let url: URL
 
@@ -27,7 +27,7 @@ struct PickedMovie: Transferable {
       SentTransferredFile(movie.url)
     } importing: { received in
       let ext = received.file.pathExtension.isEmpty ? "mov" : received.file.pathExtension
-      let copy = FileManager.default.temporaryDirectory.appendingPathComponent("composer-\(UUID().uuidString).\(ext)")
+      let copy = TemporaryComposerFiles.folder.appendingPathComponent("composer-\(UUID().uuidString).\(ext)")
       try FileManager.default.copyItem(at: received.file, to: copy)
       return PickedMovie(url: copy)
     }
@@ -51,12 +51,30 @@ enum PickedMedia {
     return TemporaryComposerFiles.write(data, mime: type.preferredMIMEType ?? "image/jpeg", name: "image")
   }
 
-  static func files(_ items: [PhotosPickerItem]) async -> [ComposerFile] {
+  /// The picks that could be read, and how many couldn't (an iCloud
+  /// original while offline, say).
+  static func files(_ items: [PhotosPickerItem]) async -> (files: [ComposerFile], failed: Int) {
     var out: [ComposerFile] = []
+    var failed = 0
     for item in items {
-      if let file = try? await file(item) { out.append(file) }
+      if let file = try? await file(item) { out.append(file) } else { failed += 1 }
     }
-    return out
+    return (out, failed)
+  }
+
+  /// Hands what was picked to addFiles, with a note for each pick that
+  /// couldn't be read: added after addFiles' own notes, or as the note
+  /// when nothing could be read.
+  @MainActor
+  static func add(
+    _ picked: (files: [ComposerFile], failed: Int), to postId: String, controller: ComposerController, allowVideo: Bool,
+    failure: String
+  ) async {
+    let notes = Array(repeating: failure, count: picked.failed)
+    if !picked.files.isEmpty { await controller.addFiles(postId, picked.files, allowVideo: allowVideo) }
+    guard !notes.isEmpty else { return }
+    controller.mediaNote = ((picked.files.isEmpty ? [] : [controller.mediaNote]) + notes)
+      .filter { !$0.isEmpty }.joined(separator: " ")
   }
 }
 
@@ -108,18 +126,27 @@ struct PostTools: View {
       guard !items.isEmpty else { return }
       pickedImages = []
       let postId = post.id
+      let controller = controller
+      // A placeholder each and "Preparing…" from the moment they're
+      // picked, as the web's addFiles shows them at once; addFiles counts
+      // them again for itself.
+      controller.bump(postId, items.count)
       Task {
-        let files = await PickedMedia.files(items)
-        if !files.isEmpty { await controller.addFiles(postId, files, allowVideo: false) }
+        let picked = await PickedMedia.files(items)
+        controller.bump(postId, -items.count)
+        await PickedMedia.add(
+          picked, to: postId, controller: controller, allowVideo: false, failure: "An image couldn’t be added.")
       }
     }
     .onChange(of: pickedVideo) { _, item in
       guard let item else { return }
       pickedVideo = nil
       let postId = post.id
+      let controller = controller
       Task {
-        let files = await PickedMedia.files([item])
-        if !files.isEmpty { await controller.addFiles(postId, files, allowVideo: true) }
+        let picked = await PickedMedia.files([item])
+        await PickedMedia.add(
+          picked, to: postId, controller: controller, allowVideo: true, failure: "The video couldn’t be added.")
       }
     }
   }
@@ -205,10 +232,16 @@ struct PostBlock: View {
   @ViewBuilder private var attachments: some View {
     ImageGrid(
       images: post.images, processing: controller.processing[post.id] ?? 0,
-      requireAltText: controller.settings.requireAltText, disabled: disabled,
+      requireAltText: controller.settings.requireAltText, disabled: disabled, transport: controller.transport,
       onAlt: { id in controller.dialog = .alt(postId: post.id, imageId: id) },
       onMove: { from, to in controller.dispatch(.moveImage(index: index, from: from, to: to)) },
-      onRemove: { id in controller.dispatch(.removeImage(index: index, id: id)) })
+      onRemove: { id in
+        let posts = controller.state.posts
+        let file = posts.indices.contains(index) ? posts[index].images.first(where: { $0.id.jsEquals(id) })?.file : nil
+        controller.dispatch(.removeImage(index: index, id: id))
+        // revokeLater: its file goes unless something else still holds it.
+        controller.letGo(files: file.map { [$0] } ?? [])
+      })
     if let video = post.video {
       VideoAttachment(
         video: video, disabled: disabled, onAlt: { controller.dialog = .videoAlt(postId: post.id) },
