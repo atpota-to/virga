@@ -3,6 +3,7 @@
 #if canImport(UIKit)
 import AVFoundation
 import Foundation
+import UIKit
 import VirgaCore
 import VirgaNetwork
 import VirgaPosting
@@ -417,8 +418,13 @@ extension ComposerController {
   // ADVISER: a read holds the post still too.
   var disabled: Bool { busy != nil || adviserReading || loads["scheduled"] == .loading || loads["draft"] == .loading }
 
-  func runAction(_ action: String) {
+  /// `blur`: a button takes the focus from the field being typed in, as a
+  /// click does on the web, so the field hands on any words its post hasn't
+  /// had yet before the post is read (HighlightedTextView's handOnIfAhead).
+  /// ⌘↩ keeps the focus; its field hands on before it calls here.
+  func runAction(_ action: String, blur: Bool = true) {
     guard busy == nil, !adviserReading else { return }  // ADVISER
+    if blur { UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil) }
     // A tag still being typed is part of what goes out (the web commits it
     // as the field loses focus to the button).
     commitTagDraft()
@@ -441,7 +447,7 @@ extension ComposerController {
     guard !disabled else { return }
     let a = set.actions[set.primary]
     if !a.disabled {
-      runAction(set.primary)
+      runAction(set.primary, blur: false)
     } else {
       error = ComposerErrorLine(text: a.reason ?? "")
     }

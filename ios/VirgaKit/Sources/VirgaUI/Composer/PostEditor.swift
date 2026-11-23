@@ -600,6 +600,10 @@ final class ComposerTextView: UITextView {
   }
 
   @objc func sendFromKeys() {
+    // ⌘↩ keeps the field focused (as the web's textarea keeps focus), so
+    // the field hands on any words its post hasn't had yet before the post
+    // is read to send it.
+    (delegate as? HighlightedTextView.Coordinator)?.handOnIfAhead(self)
     sendHandler?()
   }
 
@@ -618,9 +622,10 @@ final class ComposerTextView: UITextView {
 }
 
 struct HighlightedTextView: UIViewRepresentable {
-  /// Where the field hands its text on: textViewDidChange, and the hand-on
-  /// after an update that kept the field's text. Read only in updateUIView,
-  /// to note in the typing probe when it disagrees with the post.
+  /// Where the field hands its text on: textViewDidChange, and
+  /// handOnIfAhead (as the field loses focus, and before ⌘↩ sends). Read
+  /// only in updateUIView, to note in the typing probe when it disagrees
+  /// with the post.
   @Binding var text: String
   /// The post's text as it is at the moment of asking. makeUIView and
   /// updateUIView decide from this, not the binding: in CI run 88 an update read the binding a
@@ -828,16 +833,21 @@ struct HighlightedTextView: UIViewRepresentable {
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
-      // A field still ahead of its post as it loses focus hands its words on
-      // once, unless something else has changed the post since they last
-      // agreed (then the next update puts the post's text in the field).
-      let field = textView.text ?? ""
-      if parent.current() != field, parent.textChanges() == changes {
-        TypingProbe.note(parent.identifier, "H\(field.utf16.count)")
-        TypingProbe.count(parent.identifier, "handedOn")
-        parent.text = field
-      }
+      handOnIfAhead(textView)
       parent.onBlur()
+    }
+
+    /// A field still ahead of its post hands its words on, once, unless
+    /// something else has changed the post since they last agreed (then the
+    /// next update puts the post's text in the field). As the field loses
+    /// focus (a send button takes it first, ComposerController.runAction),
+    /// and before ⌘↩ sends.
+    func handOnIfAhead(_ textView: UITextView) {
+      let field = textView.text ?? ""
+      guard parent.current() != field, parent.textChanges() == changes else { return }
+      TypingProbe.note(parent.identifier, "H\(field.utf16.count)")
+      TypingProbe.count(parent.identifier, "handedOn")
+      parent.text = field
     }
   }
 }

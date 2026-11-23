@@ -1007,11 +1007,12 @@ the app did to it meanwhile (an updateUIView while UIKit was mid-edit, the post'
 back, a selection set, the "@" list coming and going, the field moving in the window, growing
 a line at a wrap, or scrolling with the composer). The tests read the record from a hidden
 element ("typing-probe") and print it after a mismatch (`VIRGA-TYPED-TRACE`).
-`-VirgaTypingBench YES` adds testTypingBench's two other fields, a bare UITextView above the
-composer's scroll and the second post without the typeahead, each emptied as it loses focus.
-testTypingBench types the first post's words six times into each of the three and prints one
-`VIRGA-TYPED-COUNT` line per field. Neither switch changes anything for someone using the
-app, and neither fails a test. The bench is for one run; the probe is cheap enough to keep.
+For runs 88 to 92, `-VirgaTypingBench YES` added testTypingBench's two other fields, a bare
+UITextView above the composer's scroll and the second post without the typeahead, each emptied
+as it lost focus; testTypingBench typed the first post's words six times into each of the
+three and printed one `VIRGA-TYPED-COUNT` line per field. Neither switch changed anything for
+someone using the app, and neither failed a test. The bench was removed after run 92; the
+probe stays.
 
 Run 88 (fb3e9ea) answered it. On the iPhone the composer lost a letter in 2 of the bench's 6
 typings and once in testTheComposer; the post without the typeahead and the bare text view lost
@@ -1050,11 +1051,14 @@ have put the post's text back ("kept":1). But the iPad's ScheduleUITests never w
 once a composer opened a second time ("Schedule a post"): every step waited out XCTest's
 60-second idle wait, and the job hit its 90-minute limit. Run 90's iPad and both iPhones had
 no such wait. The one new thing that wrote to the post from inside an update was the hand-on,
-and two fields bound to one post, or a post text the reducer changes, would make it run for
-ever; which of those it was isn't known. Since then an update never writes to the post: a
+and two fields bound to one post would make it run for ever (a reviewer ruled out a text the
+reducer changes: setText stores it as given), though nothing in the code makes two such
+fields, so what hung the iPad isn't shown. Since then an update never writes to the post: a
 field that is ahead keeps its text until its own next textViewDidChange, and a field still
-ahead as it loses focus hands its words on once (textViewDidEndEditing). The bench is gone;
-the probe stays on for ComposerUITests.
+ahead hands its words on once as it loses focus (textViewDidEndEditing) or before ⌘↩ sends
+(`handOnIfAhead`). A send button takes the focus from the field first, as a click does on the
+web (`runAction`'s `blur`), so a post is never read for sending while its field is ahead. The
+bench is gone; the probe stays on for ComposerUITests.
 
 Run 85 failed once on the iPhone, Defense's palette step: swiping back up until Search showed
 left it 51 points short of the top, under the status bar, where taps don't reach it. The seven

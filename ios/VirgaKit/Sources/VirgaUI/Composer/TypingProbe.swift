@@ -51,7 +51,6 @@ import UIKit
 enum TypingProbe {
   static let isOn = UserDefaults.standard.bool(forKey: "VirgaTypingProbe")
 
-
   struct Field {
     // Since the field was last empty.
     var presses = ""
@@ -98,11 +97,6 @@ enum TypingProbe {
   static func note(_ id: String, _ event: String) {
     guard isOn else { return }
     fields[id, default: Field()].note(event)
-  }
-
-  static func emptied(_ id: String) {
-    guard isOn else { return }
-    fields[id, default: Field()].emptied()
   }
 
   static func count(_ id: String, _ key: String) {
