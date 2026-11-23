@@ -1186,14 +1186,13 @@ compiled until CI runs them.
 - The language picker's keys and room. On a hardware keyboard `LanguagePicker` is a combobox,
   as LanguagePicker.jsx is. The first suggestion is highlighted as the list opens and after
   every keystroke (--hover on the kit's radius, the shared `SuggestItemStyle`, and `.isSelected`
-  for VoiceOver). ↑ and ↓ (`.onKeyPress` on the field, as HandleField and the lookup's search
-  use) move the highlight round the list, Return (onSubmit) adds the highlighted one, and
-  Escape closes the list. With no list showing every key is the field's, and Tab is left to
+  for VoiceOver). ↑ and ↓ move the highlight round the list, Return adds the highlighted one,
+  and Escape closes the list (first wired with `.onKeyPress` on a SwiftUI TextField, which run
+  99's iPad showed doesn't get Escape; now `KeyTextField`, see "Run 99 and the hardware keys"). With no list showing every key is the field's, and Tab is left to
   move the focus, which closes the list 120 ms later. The rules are VirgaPosting's
   `LanguagePickerKeys` (onKeyDown's, held by `LanguagePickerKeysBehaviour`). A move by the
-  arrows is announced, as the web's aria-activedescendant is read. Unlike the web, Return ends
-  the field's editing, as a SwiftUI field's Return does; a touch user's Return still adds the
-  first suggestion. The list is at most 16rem (`ComposerMeasure.languagesListMax`, 256, grown
+  arrows is announced, as the web's aria-activedescendant is read. Return keeps the focus, as
+  the web's Enter does; a touch user's Return adds the first suggestion. The list is at most 16rem (`ComposerMeasure.languagesListMax`, 256, grown
   with Dynamic Type as --text-base's style grows) and scrolls inside past it, keeping the
   highlighted row in sight; six rows come to 252, so at the default size it never scrolls, as
   on the web. Once it does scroll (at the larger sizes), a drag inside it keeps the keyboard
@@ -1206,12 +1205,9 @@ compiled until CI runs them.
   with the focus while the keyboard is still rising. scrollTo without an anchor moves the least
   it can, so nothing moves while the list shows in full. The Settings test no longer drags the
   page (see PostingUITests above); its iPad steps open the list again by typing, not by a press.
-  Not proven before CI: that iOS delivers ↑, ↓ and Escape to a focused TextField's onKeyPress
-  (no UI test had pressed them in HandleField, the lookup or the palette either), that the
-  proxy finds the list's id inside its overlay, and that it keeps the list clear of the keyboard
-  in VirgaPage's scroll. Nor whether a press on the field while it already has the keyboard
-  opens a list Escape closed, as the web's onClick does: the picker asks for it with a
-  simultaneous TapGesture, which a text field may not pass on, and no test presses so.
+  Run 99 showed the reveal working on the iPhone (the list clear of the keyboard, French
+  marked, a press on it adding the language). A press on the field while it already has the
+  keyboard opening a list Escape closed, as the web's onClick does, is still untested.
 - Titles and figures that wrap. A heading whose line-height is under the face's 1.22 and that
   can wrap is `WrappingTitle` (Components/WrappingTitle.swift): on one line the Text with
   `overflowingLeading`, and once it no longer fits (`ViewThatFits(in: .horizontal)`) TitleLines
@@ -1331,6 +1327,65 @@ compiled until CI runs them.
   through `Library.postMedia`): Avatar and RemotePicture get the SVG faces, "" or CDN https, and
   LocalPicture and AltTextPreview get file: or https. ComposerUITests takes a shot of Your posts
   (`library-your-posts`), where the thread's first post should show its pasted picture.
+
+### Run 99 and the hardware keys
+
+CI run 99 (8abae71, started by hand: with PR #13 merged, a push to the branch no longer runs the
+workflow) compiled everything and passed on the iPhone, with the new checks: the language list
+clears the keyboard by itself (French marked) and a press on it adds the language; the software
+Return takes the marked person (`composer-mention-return`, "Thanks @maren.example.com"); the
+pasted picture shows in its Library row on both devices (`library-your-posts`); the phone's
+Follower growth head has its tools centred beside the title, the last glyph on the card's edge,
+and the modes under the title. The iPad failed two of the new key steps. In the post editor ↓
+reached its priority key command and marked the second person, but a hardware Return did
+nothing: no pick, no new line, the list still up (the recording, and the hierarchy at the
+failure). In Settings, `.onKeyPress(.escape)` on the language field, a SwiftUI TextField, never
+fired: the hierarchy at the failure has the field holding "e" with the keyboard and the list's
+six rows still up. CI's iPad shows the software keyboard, and each hardware key from XCUITest
+hides it and brings it back about two seconds later; the ↓ was delivered through that, and so
+were two hardware "n" keys typed into the library's search in another test.
+
+A research pass (Apple's documentation, WWDC21 10260 and WWDC23 10162, developer forum threads
+760511, 784668, 849249 and others) found: a priority key command (`wantsPriorityOverSystemBehavior`)
+is documented to come before the text system for every key, and a plain "\r" one has been seen
+to fire on an iPadOS 26.2 simulator, so why run 99's didn't is not known; Apple DTS says a
+SwiftUI TextField loses focus on a hardware Return whatever an `onKeyPress` handler returns, and
+nothing confirms Escape or the arrows reach `onKeyPress` on a focused TextField. The round that
+followed:
+- The post editor (`ComposerTextView`) also takes Return (the keypad's Enter too), Tab, ⇧⇥ and
+  Escape in `pressesBegan` when `SuggestionKeys` says the lists take them, reading the press's ⌘
+  and ⌃ (⌘↩ still sends), and keeps that press and its later phases from the text view; every
+  other press goes to super unchanged. The key commands stay, and a key acts once whichever route
+  comes first (a command does nothing while the list's own press of that key is down; a press
+  stamped no later than a command that took its key is held as the same key, a claim forgotten
+  when a press of that key ends). The typing probe now records each list key as a Q event (route
+  c, p, u, i or d, the key, and what came of it), the list commands the field offered (C events),
+  and presses with no key. `testTheMentionListTakesItsKeys` runs with the probe on, writes the
+  field's record when a step fails (VIRGA-TYPED-TRACE) and when its keys are done
+  (VIRGA-KEYS-TRACE), and on the iPad also checks that Tab takes the person "bo6" finds. A
+  second reviewer, on the typing path alone, found one way a second Return could be swallowed
+  behind a busy main thread; that was fixed before the merge.
+- The language search is `KeyTextField` (Components/KeyTextField.swift), a UIViewRepresentable
+  over a UITextField subclass drawn as VirgaTextField is inside `.virgaField(focused:)`. While
+  suggestions show it hands ↑, ↓, Return and Escape to LanguagePicker by whichever comes first:
+  its `pressesBegan` (a press it takes goes no further in any phase), priority key commands, or,
+  for Return, `textFieldShouldReturn`, which also takes a phone's Return. The same key by another
+  route within a quarter second counts as the same press. Return keeps the focus, as the web's
+  Enter does, so the old difference where Return ended the field's editing is gone; Return and
+  Escape with ⌘, ⌥ or ⌃ stay with the field, where the web takes them with any modifier. Inline
+  predictions, autocorrection and spell checking are off in it. The field reports its focus to
+  the picker both ways, a press anywhere in the box opens the list and gives the field the
+  keyboard (a SwiftUI press on the box, and the field's own tap on its text line), and a field
+  disabled while it has the keyboard (the third language added) lets the keyboard go after the
+  update before it is disabled.
+- Not proven until the next run: that both compile; which route delivers each key on iPadOS
+  26.5; and whether XCUITest's typeKey loses keys while the iPad's software keyboard hides and
+  comes back. If it does, a debug-only launch argument that gives the field a zero-size
+  inputView for the hardware-key steps (as another project's iPad UI tests do) is the next thing
+  to try. The other fields that use `.onKeyPress` on a SwiftUI TextField (HandleField, the
+  Interaction lookup's search, the command palette, the library's search, the template editor)
+  carry the same risk; no test has pressed a key in them, and KeyTextField can replace them once
+  CI shows it working.
 
 ## Known gaps and deliberate differences
 

@@ -36,7 +36,14 @@ screenshot review had left open (the demo's faces, the iPad's card heads,
 wrapped page titles, floating suggestion lists, the "@" list, the menu
 hints) were fixed and CI run 96 (31a9367) was green on every job with
 them; notes/ui.md, "The review's last open items", says what each shot
-showed. The branch was merged into main at that commit (PR #13).
+showed. The branch was merged into main at that commit (PR #13). The next
+round (language picker keys and room, the other titles, the suggestion
+lists' keys, phone and dashboard heads, data: pictures) compiled in CI run
+99 (8abae71, started by hand, since a push to the branch no longer runs the
+workflow) and passed on the iPhone; the iPad failed two hardware-key steps
+(Return in the "@" list, Escape in the language list). Both key paths were
+reworked and are waiting on the next run; notes/ui.md, "Run 99 and the
+hardware keys", has the detail.
 
 ## Done
 
