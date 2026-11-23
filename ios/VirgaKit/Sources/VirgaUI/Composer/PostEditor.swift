@@ -721,7 +721,8 @@ struct HighlightedTextView: UIViewRepresentable {
     var synced = ""
     /// UIKit has asked to change the text and not yet said it did.
     var editing = false
-    /// What the field's attributes were last set from.
+    /// What the field's attributes were last set from, or nil once an edit
+    /// of UIKit's own may have changed them since.
     var drawn: Drawn?
 
     init(_ parent: HighlightedTextView) {
@@ -736,6 +737,10 @@ struct HighlightedTextView: UIViewRepresentable {
     func textViewDidChange(_ textView: UITextView) {
       editing = false
       synced = textView.text
+      // The letters UIKit put in took the typing attributes, not the
+      // highlights, so the next redraw sets them again even when the text
+      // came out the same (a paste or a retyped letter over itself).
+      drawn = nil
       parent.text = textView.text
       parent.onCaret(textView.selectedRange.location + textView.selectedRange.length)
       parent.onSelection(textView.selectedRange)
