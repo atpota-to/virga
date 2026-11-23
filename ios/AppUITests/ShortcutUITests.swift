@@ -63,6 +63,15 @@ final class ShortcutUITests: XCTestCase {
       (field.value as? String)?.lowercased().hasPrefix("nn") == true,
       "N wasn't typed into the field: \(String(describing: field.value))")
     XCTAssertFalse(element(app, "composer-title").exists, "N in a field opened the composer")
+    // The letters are a search, which asks Bluesky a moment after the typing
+    // stops (400 ms): past that, then until what it found (or that nothing
+    // matches) is in place of its skeleton, and Searching Bluesky… is gone.
+    sleep(1)
+    _ = app.descendants(matching: .any)
+      .matching(NSPredicate(format: "identifier == 'library-list' OR identifier == 'library-empty'")).firstMatch
+      .waitForExistence(timeout: 5)
+    _ = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Searching Bluesky…")).firstMatch
+      .waitForNonExistence(timeout: 5)
     snapshot("shortcut-typed-in-a-field-ipad")
   }
 }

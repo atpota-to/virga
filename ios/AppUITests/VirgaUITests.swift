@@ -90,6 +90,17 @@ final class VirgaUITests: XCTestCase {
     }
   }
 
+  /// Presses a choice until it says it is chosen (a few seconds at most). A
+  /// press while the page still runs on from a swipe only stops it (run 84's
+  /// Night never took), so a press that didn't take is made once more.
+  private func choose(_ choice: XCUIElement) {
+    for _ in 0..<2 {
+      choice.tap()
+      let chosen = XCTNSPredicateExpectation(predicate: NSPredicate(format: "isSelected == true"), object: choice)
+      if XCTWaiter.wait(for: [chosen], timeout: 3) == .completed { return }
+    }
+  }
+
   func testLaunches() {
     let app = launch()
     XCTAssertTrue(app.wait(for: .runningForeground, timeout: 10))
@@ -205,14 +216,16 @@ final class VirgaUITests: XCTestCase {
   func testSettingsInHighContrast() {
     let app = launch()
     openAppearance(app)
-    element(app, "sky-day").tap()
+    choose(element(app, "sky-day"))
     let high = button(app, "High")
     scrollTo(app, high)
-    high.tap()
+    choose(high)
     XCTAssertTrue(high.isSelected)
     app.swipeDown()
+    // The page runs on after the swipe: a moment for it to come to rest.
+    sleep(1)
     snapshot("settings-day-high-contrast")
-    element(app, "sky-night").tap()
+    choose(element(app, "sky-night"))
     snapshot("settings-night-high-contrast")
   }
 
@@ -239,7 +252,14 @@ final class VirgaUITests: XCTestCase {
     waitForHome(app)
     snapshot("first-run")
     element(app, "first-run-build").tap()
-    if element(app, "sync-steps").waitForExistence(timeout: 5) { snapshot("first-run-building") }
+    if element(app, "sync-steps").waitForExistence(timeout: 5) {
+      // A step under way, which its name says at its end (", 42% done" or
+      // ", under way"), rather than the moment between two steps.
+      let active = app.descendants(matching: .any)
+        .matching(NSPredicate(format: "label ENDSWITH %@ OR label ENDSWITH %@", "% done", ", under way")).firstMatch
+      _ = active.waitForExistence(timeout: 3)
+      snapshot("first-run-building")
+    }
     let built = element(app, "first-run-title").waitForNonExistence(timeout: 180)
     XCTAssertFalse(element(app, "first-run-error").exists, "the first build failed")
     XCTAssertTrue(built, "the first build didn't finish in three minutes")
@@ -293,11 +313,37 @@ final class VirgaUITests: XCTestCase {
       // puts the keyboard away; then the chart is scrolled back into view,
       // with the note marked on it.
       note.typeText("A post went round\n")
+      // The chart is one element, so it can be pressed with only its foot
+      // on the screen, its top under the phone's navigation bar (runs 82
+      // and 84), and a swipe runs on by a way that varies. So the page is
+      // swiped back, with a rest after each swipe, until the mark is on the
+      // screen between the bar and the window's foot: on a phone the chart's
+      // card's heading (above the chart, so swiping on past it ends at the
+      // page's top with it in view). Then a slow drag on the heading, held
+      // before it lets go so the page stops where it is left, lays it just
+      // under the bar with the chart whole below it.
       let chart = element(app, "series-chart")
+      let bar = app.navigationBars.firstMatch
+      let heading = app.staticTexts.matching(NSPredicate(format: "label == %@", "Growth")).firstMatch
+      let foot = app.windows.firstMatch.frame.maxY - 120
+      let inView = {
+        bar.exists
+          ? heading.isHittable && heading.frame.minY >= bar.frame.maxY && heading.frame.maxY <= foot
+          : chart.isHittable
+      }
       var tries = 0
-      while !chart.isHittable && tries < 8 {
+      while !inView() && tries < 8 {
         app.swipeDown()
+        sleep(1)
         tries += 1
+      }
+      if bar.exists {
+        sleep(1)
+        if inView() {
+          let from = heading.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+          let to = from.withOffset(CGVector(dx: 0, dy: bar.frame.maxY + 16 - heading.frame.minY))
+          from.press(forDuration: 0.2, thenDragTo: to, withVelocity: .slow, thenHoldForDuration: 0.5)
+        }
       }
       snapshot("chart-note")
     }

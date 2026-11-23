@@ -248,6 +248,8 @@ final class ScheduleUITests: XCTestCase {
       XCTAssertTrue(publish.waitForExistence(timeout: 5))
       publish.tap()
       if text(app, containing: "the queue, going out").waitForExistence(timeout: 30) {
+        // The toast is there as it starts to fade in: a moment for it to be drawn.
+        sleep(1)
         snapshot("composer-queued")
       }
       _ = element(app, "composer-title").waitForNonExistence(timeout: 10)
@@ -375,6 +377,8 @@ final class ScheduleUITests: XCTestCase {
     let queue = element(app, "posting-queue")
     scrollTo(app, queue)
     XCTAssertTrue(queue.waitForExistence(timeout: 10), "no weekly queue in Settings › Posting")
+    // The page runs on after the swipe: a moment for it to come to rest.
+    sleep(2)
     snapshot("settings-posting-queue")
   }
 }
