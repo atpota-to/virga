@@ -79,12 +79,19 @@ final class ComposerTimerUITests: XCTestCase {
     let search = app.buttons.matching(identifier: "palette-open").firstMatch
     XCTAssertTrue(search.waitForExistence(timeout: 10), "no Search")
     // On a part's front page the phone's app bar is in the page and scrolls
-    // away with it (as `.appbar` on the web): back to the top for Search.
+    // away with it (as `.appbar` on the web): back to the top for Search,
+    // until a swipe no longer moves it. Stopping as soon as it showed left
+    // it 51 points short of the top in run 85, under the iPhone's status
+    // bar, where both taps missed it.
     var swipes = 0
-    while search.frame.minY < 0 && swipes < 6 {
+    var top = search.frame.minY
+    repeat {
       app.swipeDown()
       swipes += 1
-    }
+      let moved = search.frame.minY != top
+      top = search.frame.minY
+      if !moved, search.isHittable { break }
+    } while swipes < 8
     // Straight after a sheet closes (the composer, a dialog), Search is in the
     // hierarchy before it can be pressed, and a tap in the closing animation
     // is dropped: wait until it can be, and press once more if the palette
