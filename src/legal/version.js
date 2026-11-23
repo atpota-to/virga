@@ -9,7 +9,7 @@
 // gets a new row for each of them. Fixing a typo doesn't change it.
 // documents.test.js keeps a fingerprint of both documents beside it, so an
 // edit can't pass without that being decided.
-export const TERMS_VERSION = 1;
+export const TERMS_VERSION = 2;
 
 // The "Last updated" date both documents carry, as YYYY-MM-DD. The ledger
 // stores it beside the version (as policy_version, the name its sibling

@@ -170,8 +170,8 @@ private func note(_ value: JSONValue?) -> TermsAcceptanceNote? {
   /// to places that exist, and haven't changed since the version was decided.
   @Test func theDocumentsHoldTogether() throws {
     let fingerprints = [
-      "terms": "2455724bf8ac30865fb53471bc7f61b8e7d0224ad0640b1355e34d74a2dc443f",
-      "privacy": "883c68a9a58a321385dd0e357a7e40ea1d1c09713b6ef3b76a9c86be5c7933a1",
+      "terms": "7209e387abe07ab9f77023f8cee4113da1dde55af7463734b47ad25c20bdbc03",
+      "privacy": "09baacd6c9bc347e397314381f6b36e36ed2ded4a859037c37f843bec29e52a3",
     ]
     for doc in LegalDocuments.all {
       let source = try Repo.text(doc.file)

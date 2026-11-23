@@ -11,7 +11,7 @@ import VirgaNetwork
 public enum LegalVersion {
   /// Goes up by one when either document changes in a way people should
   /// agree to again.
-  public static let termsVersion = 1
+  public static let termsVersion = 2
 
   /// The "Last updated" date both documents carry, as YYYY-MM-DD.
   public static let termsEffectiveDate = "2026-11-23"

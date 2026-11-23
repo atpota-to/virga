@@ -15,9 +15,9 @@ import { PRIVACY_PATH, TERMS_EFFECTIVE_DATE, TERMS_PATH, TERMS_VERSION, formatLe
 // documents); if it is a typo or a clarification, leave the version alone.
 // Either way, put the new fingerprint here.
 const FINGERPRINTS = {
-  version: 1,
-  terms: '2455724bf8ac30865fb53471bc7f61b8e7d0224ad0640b1355e34d74a2dc443f',
-  privacy: '883c68a9a58a321385dd0e357a7e40ea1d1c09713b6ef3b76a9c86be5c7933a1',
+  version: 2,
+  terms: '7209e387abe07ab9f77023f8cee4113da1dde55af7463734b47ad25c20bdbc03',
+  privacy: '09baacd6c9bc347e397314381f6b36e36ed2ded4a859037c37f843bec29e52a3',
 };
 
 const fingerprint = (text) => createHash('sha256').update(text).digest('hex');

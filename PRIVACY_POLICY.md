@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** November 23, 2026 (version 1)
+**Last updated:** November 23, 2026 (version 2)
 
 This policy says what Virga does with information about you: what stays in your browser, what Virga’s server keeps, what is sent to other services, and what you can do about each. Virga is operated by **atpotato, LLC**, a Delaware limited liability company, which is the controller of the information described here. “We”, “us” and “our” mean atpotato, LLC.
 

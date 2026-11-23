@@ -62,7 +62,9 @@ final class Reports: @unchecked Sendable {
   @Test func aLongSessionWithNoNoteAsksTheServer() async {
     let store = InMemoryKeyValueStore()
     let transport = MockTransport()
-    transport.on(.path("/api/terms/status"), respond: .json(["success": true, "accepted": true, "version": 1, "acceptedAt": "2026-11-14T10:00:00Z"]))
+    transport.on(.path("/api/terms/status"), respond: .json([
+        "success": true, "accepted": true, "version": .number(Double(LegalVersion.termsVersion)), "acceptedAt": "2026-11-14T10:00:00Z",
+      ]))
     let model = TermsAcceptanceModel(
       did: mira, mode: "backend", storage: store, backendFor: requester(transport), reporter: Reports().reporter)
     #expect(model.status == .checking)
@@ -71,7 +73,8 @@ final class Reports: @unchecked Sendable {
   }
 
   @Test func theScreenShowsWhenTheServerCantSayOrSaysNo() async {
-    for answer: MockTransport.Response in [.networkError("fetch failed"), .json(["success": true, "accepted": false]), .json(["success": true, "accepted": true, "version": 2])] {
+    let newer = JSONValue.number(Double(LegalVersion.termsVersion + 1))
+    for answer: MockTransport.Response in [.networkError("fetch failed"), .json(["success": true, "accepted": false]), .json(["success": true, "accepted": true, "version": newer])] {
       let store = InMemoryKeyValueStore()
       let transport = MockTransport()
       transport.on(.path("/api/terms/status"), respond: answer)
@@ -109,7 +112,7 @@ final class Reports: @unchecked Sendable {
     #expect(Acceptance.readAcceptance(store, mira)?.identity == "session")
     let posted = try #require(transport.requests.last)
     #expect(posted.url == "\(server)/api/terms/accept")
-    #expect(String(decoding: posted.body ?? Data(), as: UTF8.self) == "{\"version\":1}")
+    #expect(String(decoding: posted.body ?? Data(), as: UTF8.self) == "{\"version\":\(LegalVersion.termsVersion)}")
   }
 
   @Test func aRefusedRowLeavesTheScreenUp() async {
@@ -139,7 +142,7 @@ final class Reports: @unchecked Sendable {
     #expect(model.status == .accepted)
     #expect(await eventually { Acceptance.readAcceptance(store, mira)?.recorded == true })
     #expect(Acceptance.readAcceptance(store, mira) == TermsAcceptanceNote(at: "2026-03-15T12:00:00.000Z", recorded: true, identity: "claimed"))
-    #expect(reports.calls.wrappedValue == ["\(mira)@1"])
+    #expect(reports.calls.wrappedValue == ["\(mira)@\(LegalVersion.termsVersion)"])
   }
 
   @Test func anUnreportedAgreementIsOfferedAgainOnce() async {

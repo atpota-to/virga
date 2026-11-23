@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated:** November 23, 2026 (version 1)
+**Last updated:** November 23, 2026 (version 2)
 
 These terms are the agreement between you and **atpotato, LLC**, a Delaware limited liability company, for your use of Virga. In them, “we”, “us” and “our” mean atpotato, LLC, and “Virga” means the website, its server and the software behind them.
 
