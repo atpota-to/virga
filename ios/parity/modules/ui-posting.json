@@ -69,9 +69,10 @@
       "status": "partial",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Composer/ComposerParts.swift",
-        "ios/VirgaKit/Sources/VirgaPosting/Composer/LanguagePickerKeys.swift"
+        "ios/VirgaKit/Sources/VirgaPosting/Composer/LanguagePickerKeys.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/KeyTextField.swift"
       ],
-      "note": "The suggestions open as the field takes focus, is pressed or is typed in, and close once one is added (and 120 ms after the field loses focus). They float 4 under the field, at most 16rem tall (grown with Dynamic Type) and scrolling inside past it, and are brought into view in the scroll that holds the picker (Settings' page, the composer's Language dialog) over a phone's keyboard. The field is a combobox on a hardware keyboard (LanguagePickerKeys, onKeyDown's rules): the first suggestion highlighted (--hover, and VoiceOver's selected) as the list opens and after each keystroke, ↓ and ↑ round the list, Return adds the highlighted one, Escape closes the list. Not the web's: Return ends the field's editing, as a SwiftUI field's Return does, where the web's field keeps the focus.",
+      "note": "The suggestions open as the field takes focus, is pressed anywhere in its box (even while it has the keyboard) or is typed in, and close once one is added (and 120 ms after the field loses focus). They float 4 under the field, at most 16rem tall (grown with Dynamic Type) and scrolling inside past it, and are brought into view in the scroll that holds the picker (Settings' page, the composer's Language dialog) over a phone's keyboard. The field is a combobox on a hardware keyboard (LanguagePickerKeys, onKeyDown's rules): the first suggestion highlighted (--hover, and VoiceOver's selected) as the list opens and after each keystroke, ↓ and ↑ round the list, Return adds the highlighted one, Escape closes the list. The field is KeyTextField (a UIKit text field drawn as the kit's): while the list shows it hands those four keys to the picker before its own use of them (its pressesBegan, priority key commands, and its delegate for Return), as preventDefault does, and Return keeps the field's focus, as the web's Enter does. Not the web's: Return and Escape with ⌘, ⌥ or ⌃ held are left to the field, where onKeyDown takes them with any key held.",
       "synced": "c409955cb92e"
     },
     "src/posting/composer/MediaGrid.jsx": {

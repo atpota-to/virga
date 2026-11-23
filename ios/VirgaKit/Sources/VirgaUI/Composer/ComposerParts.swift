@@ -19,9 +19,10 @@ import VirgaSession
 
 /// Up to three languages: the chosen ones as tokens, and a search field
 /// that suggests more (by name or code). The suggestions open as the field
-/// takes focus or is typed in, and close once one is added; a press on the
-/// field asks for them too (a simultaneous tap, which a text field that
-/// already has the keyboard may not pass on), as the web's click does.
+/// takes focus or is typed in, and close once one is added; a press
+/// anywhere in the field's box asks for them too and gives the field the
+/// keyboard, as the web's click does, even while the field already has the
+/// keyboard (the box's own press, and KeyTextField's onPress on its line).
 /// They float over whatever follows the field, as the web's `.lang-search
 /// .suggest-list` does, so nothing moves: whoever holds the picker draws it
 /// over its later siblings (`.zIndex(1)`), as the composer's Language and
@@ -34,9 +35,13 @@ import VirgaSession
 /// (LanguagePickerKeys): the first suggestion is highlighted as the list
 /// opens and after each keystroke, ↓ and ↑ move the highlight round the
 /// list, Return adds the highlighted one (the phone's Return too, which is
-/// always the first) and Escape puts the list away. VoiceOver hears the
-/// highlighted one as selected, and its name as the arrows reach it (the
-/// web's aria-activedescendant).
+/// always the first) and Escape puts the list away. While the list shows,
+/// the field (KeyTextField, a UIKit text field) hands those four keys to
+/// the picker before its own use of them, as onKeyDown's preventDefault
+/// does; with no list they are the field's. Return never ends the field's
+/// editing, as the web's Enter leaves the caret in the field. VoiceOver
+/// hears the highlighted one as selected, and its name as the arrows reach
+/// it (the web's aria-activedescendant).
 ///
 /// Where the scroll view holding the picker lends its scroller
 /// (`composerScrolling()`: Settings' pages and the composer's Language
@@ -59,7 +64,8 @@ struct LanguagePicker: View {
   @State private var active = 0
   /// The query is being cleared by an add, not typed: it doesn't reopen the list.
   @State private var clearing = false
-  @FocusState private var focused: Bool
+  /// Whether the field has the keyboard, as the field says it (KeyTextField).
+  @State private var focused = false
 
   static let max = 3
   /// The list's place in the scroll view that holds the picker.
@@ -68,10 +74,7 @@ struct LanguagePicker: View {
   var body: some View {
     let chosen = Array(value.prefix(Self.max))
     let full = chosen.count >= Self.max
-    let options =
-      open && focused && !full
-      ? ComposerLanguages.searchLanguages(
-        .string(query), chosen: chosen, preferred: Locale.preferredLanguages, limit: 6) : []
+    let options = shown(chosen: chosen)
     VStack(alignment: .leading, spacing: theme.space2) {
       if !bare {
         FieldLabel(label)
@@ -86,64 +89,70 @@ struct LanguagePicker: View {
           }
         }
       }
-      VirgaTextField(full ? "Three languages is the most a post can have" : "Add a language", text: $query)
-        .virgaField()
-        .focused($focused)
-        .disabled(disabled || full)
-        .autocorrectionDisabled()
-        .textInputAutocapitalization(.never)
-        .simultaneousGesture(TapGesture().onEnded { open = true })
-        .onChange(of: focused) { _, now in
-          if now {
-            open = true
-          } else {
-            Task { @MainActor in
-              try? await Task.sleep(nanoseconds: UInt64(ComposerMeasure.languagesCloseDelay * 1_000_000_000))
-              if !focused { open = false }
+      KeyTextField(
+        full ? "Three languages is the most a post can have" : "Add a language", text: $query, focused: $focused,
+        label: label, keys: options.isEmpty ? [] : FieldKey.all, onPress: { open = true }
+      ) { key in
+        // The picker as it is at the key, not as it was last drawn.
+        let now = Array(value.prefix(Self.max))
+        return press(Self.pickerKey(key), options: shown(chosen: now), chosen: now)
+      }
+      .virgaField(focused: focused)
+      // The web's input is the whole box, so a click anywhere in it, its
+      // padding too, focuses it and opens the list. The text field is only
+      // its line of text, so the box takes a press of its own: it opens the
+      // list and asks for the keyboard. The field's own press (onPress)
+      // stays for the line itself, which a field that has the keyboard may
+      // not pass on. `.disabled` after it switches it off with the field.
+      .contentShape(Rectangle())
+      .simultaneousGesture(
+        TapGesture().onEnded {
+          open = true
+          focused = true
+        }
+      )
+      .disabled(disabled || full)
+      .onChange(of: focused) { _, now in
+        if now {
+          open = true
+        } else {
+          Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64(ComposerMeasure.languagesCloseDelay * 1_000_000_000))
+            if !focused { open = false }
+          }
+        }
+      }
+      .onChange(of: query) { _, _ in
+        if clearing {
+          clearing = false
+        } else {
+          open = true
+          active = 0
+        }
+      }
+      // `.lang-search .suggest-list`: out of the flow (position:
+      // absolute), 4 under the field and as wide, over what follows. It
+      // hangs from a line of no height at the field's foot: the line sits
+      // on the field's bottom, the list's top on the line. An alignment
+      // guide setting the list's foot above its top wasn't honoured (run
+      // 94 drew the list over the field, its foot on the field's foot).
+      .overlay(alignment: .bottom) {
+        if !options.isEmpty {
+          Color.clear
+            .frame(height: 0)
+            .overlay(alignment: .top) {
+              suggestions(options, chosen: chosen)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, ComposerMeasure.languagesListTop)
+                .composerReveals(Self.listAnchor, when: options.count)
+                // It opens as the field takes focus, while the keyboard is
+                // still rising: once the keyboard is up, again.
+                .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { _ in
+                  scroller?.reveal(Self.listAnchor)
+                }
             }
-          }
         }
-        .onChange(of: query) { _, _ in
-          if clearing {
-            clearing = false
-          } else {
-            open = true
-            active = 0
-          }
-        }
-        .onSubmit { press(.enter, options: options, chosen: chosen) }
-        // A hardware keyboard's arrows and Escape, while suggestions show;
-        // with none showing they are the field's (and Escape what holds it).
-        .onKeyPress(keys: [.upArrow, .downArrow]) { key in
-          press(key.key == .downArrow ? .down : .up, options: options, chosen: chosen)
-        }
-        .onKeyPress(.escape) {
-          press(.escape, options: options, chosen: chosen)
-        }
-        .accessibilityLabel(label)
-        // `.lang-search .suggest-list`: out of the flow (position:
-        // absolute), 4 under the field and as wide, over what follows. It
-        // hangs from a line of no height at the field's foot: the line sits
-        // on the field's bottom, the list's top on the line. An alignment
-        // guide setting the list's foot above its top wasn't honoured (run
-        // 94 drew the list over the field, its foot on the field's foot).
-        .overlay(alignment: .bottom) {
-          if !options.isEmpty {
-            Color.clear
-              .frame(height: 0)
-              .overlay(alignment: .top) {
-                suggestions(options, chosen: chosen)
-                  .fixedSize(horizontal: false, vertical: true)
-                  .padding(.top, ComposerMeasure.languagesListTop)
-                  .composerReveals(Self.listAnchor, when: options.count)
-                  // It opens as the field takes focus, while the keyboard is
-                  // still rising: once the keyboard is up, again.
-                  .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { _ in
-                    scroller?.reveal(Self.listAnchor)
-                  }
-              }
-          }
-        }
+      }
     }
   }
 
@@ -188,22 +197,40 @@ struct LanguagePicker: View {
     .accessibilityLabel("Languages")
   }
 
-  /// A key in the field (LanguagePickerKeys, LanguagePicker.jsx's onKeyDown).
+  /// The suggestions showing: the search's, while the list is open, the
+  /// field has the keyboard and there is room for another.
+  private func shown(chosen: [String]) -> [LanguageChoice] {
+    guard open && focused && chosen.count < Self.max else { return [] }
+    return ComposerLanguages.searchLanguages(
+      .string(query), chosen: chosen, preferred: Locale.preferredLanguages, limit: 6)
+  }
+
+  private static func pickerKey(_ key: FieldKey) -> LanguagePickerKeys.Key {
+    switch key {
+    case .up: return .up
+    case .down: return .down
+    case .enter: return .enter
+    case .escape: return .escape
+    }
+  }
+
+  /// A key in the field (LanguagePickerKeys, LanguagePicker.jsx's onKeyDown):
+  /// true when the list took it.
   @discardableResult
-  private func press(_ key: LanguagePickerKeys.Key, options: [LanguageChoice], chosen: [String]) -> KeyPress.Result {
+  private func press(_ key: LanguagePickerKeys.Key, options: [LanguageChoice], chosen: [String]) -> Bool {
     switch LanguagePickerKeys.press(key, active: active, count: options.count) {
     case .ignored:
-      return .ignored
+      return false
     case .highlight(let next):
       active = next
       AccessibilityNotification.Announcement(options[next].name).post()
-      return .handled
+      return true
     case .add(let index):
       add(options[index].code, chosen: chosen)
-      return .handled
+      return true
     case .close:
       open = false
-      return .handled
+      return true
     }
   }
 
