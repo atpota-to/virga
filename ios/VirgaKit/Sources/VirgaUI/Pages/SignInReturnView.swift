@@ -43,13 +43,11 @@ public struct SignInReturnView: View {
         .accessibilityLabel("\(AppConfig.appName), to the front page")
       } main: {
         NarrowColumn {
-          Text("Sign-in didn’t complete")
-            .virgaText(
-              size: theme.points(ThemeKit.returnTitleFontSize), weight: VirgaWeight.semibold, lineHeight: ThemeKit.returnTitleLineHeight,
-              tracking: ThemeKit.returnTitleTracking)
-            .foregroundStyle(theme.ink)
-            .accessibilityAddTraits(.isHeader)
-            .accessibilityIdentifier("return-title")
+          // `.return-title`: its box the 1.1 line, its lines balanced
+          // when it wraps.
+          WrappingTitle(
+            "Sign-in didn’t complete", size: theme.points(ThemeKit.returnTitleFontSize),
+            lineHeight: ThemeKit.returnTitleLineHeight, tracking: ThemeKit.returnTitleTracking, identifier: "return-title")
           Text(OAuthClient.callbackErrorMessage(error))
             .modifier(LandingLede())
           Button(session.session != nil ? "Back to Virga" : "Back to the start") { leave() }

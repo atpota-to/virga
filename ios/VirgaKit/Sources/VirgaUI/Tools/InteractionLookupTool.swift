@@ -387,7 +387,12 @@ struct PersonSearch: View {
     }
   }
 
-  /// Return: takes the first suggestion, opens them, or says why there's none.
+  /// Return: takes the suggestion ↑ and ↓ have reached, opens them, or says
+  /// why there's none. The web's Enter leaves the caret in the field
+  /// (preventDefault), and a SwiftUI text field can let the keyboard go on
+  /// Return, so the field asks for it back when Return opens the
+  /// suggestions (they close with the focus) or says why there's none
+  /// (more is to be typed). With nothing typed, Return does nothing more.
   private func submit(options: [LookupOption], shown: [LookupOption]) {
     let typed = query.jsTrimmed()
     if typed.isEmpty { return }
@@ -395,11 +400,13 @@ struct PersonSearch: View {
       take(shown[min(active, shown.count - 1)])
     } else if !options.isEmpty {
       open = true
+      focused = true
     } else {
       status = (
         false,
         "Nobody your archive knows matches “\(typed)”. To look up anyone else, type their whole handle (name.example.com) or their DID."
       )
+      focused = true
     }
   }
 

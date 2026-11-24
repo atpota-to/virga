@@ -9,12 +9,11 @@
 // narrower than 16rem. On a phone the thing at the right stays on the
 // title's line at its own width, the title wrapping in what it leaves, and
 // the line under the title runs the full width beneath both; a small
-// Segmented goes on a row of its own under that line, and so does anything
-// else that would leave the title too little at a large Dynamic Type size. A
-// section that is a list or a table (`flush`) has a rule in ink
-// under its heading, which is the top of its first row. A caption sits 12
-// under it; under a list, its foot ("Show 10 more" first, "12 of 64" at the
-// right).
+// Segmented goes on a row of its own under that line, and so do tools that
+// would leave the title less room than its longest word. A section that is
+// a list or a table (`flush`) has a rule in ink under its heading, which is
+// the top of its first row. A caption sits 12 under it; under a list, its
+// foot ("Show 10 more" first, "12 of 64" at the right).
 //
 // A row (VirgaRow) of posts or data: --row-pad above and below (the roomier
 // --row-pad-lg for a setting, an account or a link elsewhere), a hairline
@@ -78,7 +77,6 @@ public struct SectionHead: View {
   /// the tools.
   private var phone: some View {
     PhoneHeadLayout(
-      titleLeast: theme.scaled(theme.points(ThemeKit.cardTitleFontSize)) * Measure.Section.phoneTitleLeastEms,
       columnGap: Measure.Section.phoneHeadGap, subSpaceAbove: theme.points(ThemeKit.cardSubSpaceAbove),
       underSpaceAbove: Measure.Segmented.headSpaceAbove, toolsUnder: segmented
     ) {
@@ -91,6 +89,12 @@ public struct SectionHead: View {
       if let trailing {
         tools(trailing)
           .layoutValue(key: PhoneHeadLayout.Role.self, value: .tools)
+        // The title's words one to a line, in its face, never drawn or
+        // read: as wide as its longest word, the least it can wrap in.
+        titleFace(Text(PhoneHeadLayout.wordsApart(title)))
+          .hidden()
+          .accessibilityHidden(true)
+          .layoutValue(key: PhoneHeadLayout.Role.self, value: .words)
       }
     }
   }
@@ -103,13 +107,17 @@ public struct SectionHead: View {
   }
 
   private var titleText: some View {
-    Text(title)
-      .virgaText(
-        size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, lineHeight: ThemeKit.headingLineHeight,
-        tracking: ThemeKit.cardTitleTracking)
+    titleFace(Text(title))
       .foregroundStyle(theme.ink)
       .fixedSize(horizontal: false, vertical: true)
       .accessibilityAddTraits(.isHeader)
+  }
+
+  /// `.card-title`: --text-md at 600, -0.005em, its lines 1.25 apart.
+  private func titleFace(_ text: Text) -> some View {
+    text.virgaText(
+      size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, lineHeight: ThemeKit.headingLineHeight,
+      tracking: ThemeKit.cardTitleTracking)
   }
 
   @ViewBuilder private var subText: some View {
@@ -133,13 +141,18 @@ public struct SectionHead: View {
 /// under the title across the whole width beneath that row; and the tools
 /// on a row of their own under the line instead when they are a small
 /// Segmented (`toolsUnder`), or when beside them the title would have less
-/// than `titleLeast` (or than it needs on one line, if that is less). The
-/// web's grid gives the title no least; this one only comes into play at
-/// the larger Dynamic Type sizes, where tools at their own width would
-/// leave the title a letter or two across.
+/// room than its longest word (`words`, the title's words one to a line).
+/// Short of that the title wraps by words beside the tools, as the web's
+/// does. The web's grid gives the title no least (`minmax(0, 1fr)`, and
+/// `.card-title` never breaks a word), so there a word longer than the
+/// room runs out of its column and over the tools: Who engaged in a
+/// 320-point window, or at the larger Dynamic Type sizes on a 375-point
+/// iPhone. Over a Segmented the title keeps the grid's 16 at its right,
+/// beside the tools' empty column, and in every case its lines are
+/// balanced (`balanced`).
 struct PhoneHeadLayout: Layout {
   enum Part {
-    case title, sub, tools
+    case title, sub, tools, words
   }
 
   /// Which part of the heading a subview is.
@@ -147,11 +160,37 @@ struct PhoneHeadLayout: Layout {
     static let defaultValue = Part.title
   }
 
-  var titleLeast: CGFloat
   var columnGap: CGFloat
   var subSpaceAbove: CGFloat
   var underSpaceAbove: CGFloat
   var toolsUnder: Bool
+
+  /// A title's words one to a line, broken where a browser may wrap it: at
+  /// a space, but not at a no-break space.
+  static func wordsApart(_ title: String) -> String {
+    title.split { $0.isWhitespace && !"\u{00A0}\u{2007}\u{202F}".contains($0) }.joined(separator: "\n")
+  }
+
+  /// The title in `width`, its lines balanced as base.css's `h2 {
+  /// text-wrap: balance }` balances them: as many as `width` needs, broken
+  /// at the narrowest width (to half a point) that needs no more, so "What
+  /// a typical post earns, / by when it was posted" rather than its last
+  /// word on a line of its own.
+  static func balanced(_ title: LayoutSubview, in width: CGFloat?) -> CGSize {
+    let size = title.sizeThatFits(ProposedViewSize(width: width, height: nil))
+    guard let width, width.isFinite, size.height > title.sizeThatFits(.unspecified).height + 0.5 else { return size }
+    var narrow: CGFloat = 0
+    var wide = width
+    while wide - narrow > 0.5 {
+      let middle = (narrow + wide) / 2
+      if title.sizeThatFits(ProposedViewSize(width: middle, height: nil)).height > size.height + 0.5 {
+        narrow = middle
+      } else {
+        wide = middle
+      }
+    }
+    return title.sizeThatFits(ProposedViewSize(width: wide, height: nil))
+  }
 
   /// Each subview's frame, in its order, and the heading's size.
   func plan(width: CGFloat?, subviews: Subviews) -> (frames: [CGRect], size: CGSize) {
@@ -167,15 +206,16 @@ struct PhoneHeadLayout: Layout {
     if let tools, !toolsUnder {
       toolsSize = subviews[tools].sizeThatFits(.unspecified)
       if let width {
-        let oneLine = subviews[title].sizeThatFits(.unspecified).width
-        beside = width - columnGap - toolsSize.width >= min(titleLeast, oneLine, width)
+        // Given no words, the title's one line stands in for its longest.
+        let longestWord = subviews[find(.words) ?? title].sizeThatFits(.unspecified).width
+        beside = width - columnGap - toolsSize.width >= longestWord
       } else {
         beside = true
       }
     }
     if let tools, beside {
       let room = width.map { $0 - columnGap - toolsSize.width }
-      let titleSize = subviews[title].sizeThatFits(ProposedViewSize(width: room, height: nil))
+      let titleSize = Self.balanced(subviews[title], in: room)
       let row = max(titleSize.height, toolsSize.height)
       let whole = width ?? titleSize.width + columnGap + toolsSize.width
       frames[title] = CGRect(x: 0, y: (row - titleSize.height) / 2, width: titleSize.width, height: titleSize.height)
@@ -184,7 +224,10 @@ struct PhoneHeadLayout: Layout {
       y = row
       widest = titleSize.width + columnGap + toolsSize.width
     } else {
-      let titleSize = subviews[title].sizeThatFits(ProposedViewSize(width: width, height: nil))
+      // Over a Segmented the grid's second column is empty, but its gap
+      // stays; tools put under by the port alone leave the whole row.
+      let room = tools != nil && toolsUnder ? width.map { max(0, $0 - columnGap) } : width
+      let titleSize = Self.balanced(subviews[title], in: room)
       frames[title] = CGRect(origin: .zero, size: titleSize)
       y = titleSize.height
       widest = titleSize.width

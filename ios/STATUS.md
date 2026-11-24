@@ -31,7 +31,23 @@ post editor. A probe in the app (runs 88 to 92) showed the editor putting
 an older copy of the post's text back over a letter just typed; the field
 now keeps its text unless something other than the field changed the post
 (ComposerStateModel.textChangeCount), and CI run 94 (20ef411) was green on
-every job with no letter lost on either device.
+every job with no letter lost on either device. The six items the
+screenshot review had left open (the demo's faces, the iPad's card heads,
+wrapped page titles, floating suggestion lists, the "@" list, the menu
+hints) were fixed and CI run 96 (31a9367) was green on every job with
+them; notes/ui.md, "The review's last open items", says what each shot
+showed. The branch was merged into main at that commit (PR #13). The next
+round (language picker keys and room, the other titles, the suggestion
+lists' keys, phone and dashboard heads, data: pictures) compiled in CI run
+99 (8abae71, started by hand, since a push to the branch no longer runs the
+workflow) and passed on the iPhone; the iPad failed two hardware-key steps
+(Return in the "@" list, Escape in the language list). Runs 100 to 104 found
+that XCUITest on CI's iPad simulator delivers neither a hardware Return nor
+Escape to the app by any way of pressing them (the typing probe records no
+press), while ↓ and letters arrive; Return typed as text reaches the post
+editor and takes the marked person. The iPad tests now check Escape only
+when the probe shows it arrived; notes/ui.md, "What runs 100 to 104 showed
+about the iPad's keys", has the detail.
 
 ## Done
 

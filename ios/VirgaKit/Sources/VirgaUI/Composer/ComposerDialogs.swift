@@ -86,6 +86,9 @@ struct MetaDialog: View {
       .buttonStyle(.virga(.primary))
       .accessibilityIdentifier("meta-done")
     }
+    // The picker's suggestions are brought into view in the dialog's own
+    // scroll, over the phone's keyboard and the dialog's foot.
+    .composerScrolling()
     .onAppear {
       l = langs
       lab = labels

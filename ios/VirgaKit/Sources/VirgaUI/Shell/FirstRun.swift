@@ -18,14 +18,11 @@ struct FirstRunPage: View {
   var body: some View {
     VirgaPage(header: nil, contentTop: theme.pageTop) {
       VStack(alignment: .leading, spacing: Measure.FirstRun.cardGap) {
-        Text("Build your archive")
-          .virgaText(
-            .textTitle, weight: VirgaWeight.semibold, lineHeight: Measure.PageHeader.titleLineHeight,
-            tracking: Measure.PageHeader.titleTracking)
-          .foregroundStyle(theme.ink)
-          .fixedSize(horizontal: false, vertical: true)
-          .accessibilityAddTraits(.isHeader)
-          .accessibilityIdentifier("first-run-title")
+        // `.first-run-title`: the page title's size, weight, tracking and
+        // 1.1 line, its box that line and its lines balanced when it wraps.
+        WrappingTitle(
+          "Build your archive", size: theme.textTitle, lineHeight: Measure.PageHeader.titleLineHeight,
+          tracking: Measure.PageHeader.titleTracking, identifier: "first-run-title")
         Text(
           "Virga works your analytics out on this device, from your own data. The first build takes a minute or two for most accounts; after that, a sync only fetches what’s new."
         )

@@ -230,6 +230,11 @@ enum ComposerMeasure {
   /// `.lang-search .suggest-list { position: absolute; top: calc(100% +
   /// 4px) }`: the language suggestions float 4 under the field.
   static let languagesListTop: CGFloat = 4
+  /// `.lang-search .suggest-list { max-height: 16rem; overflow-y: auto }`:
+  /// past it the suggestions scroll inside the list. A rem, so it grows
+  /// with Dynamic Type as the rows' words do (LanguagePicker scales it).
+  /// Six rows at the default size come to 252 and don't reach it.
+  static let languagesListMax: CGFloat = 256
   /// How long after opening the first post takes the caret (Composer.jsx's 40 ms).
   static let focusDelay: Double = 0.04
   /// `.callout-actions { gap: 6px }`
