@@ -38,8 +38,7 @@ export default function Landing({ composing = false }) {
               Your account, in figures.
             </h1>
             <p className="landing-lede">
-              Followers, blocks, posts, engagement and the people behind them, on dashboards you arrange yourself, with a few small tools
-              for looking after your account. Worked out on your device, from your own data.
+              Followers, blocks, posts and engagement on dashboards you arrange, plus small tools for looking after your account. Worked out on your device.
             </p>
 
             <SignInFlow variant="page" remembered composing={composing} />
@@ -56,7 +55,7 @@ export default function Landing({ composing = false }) {
           <div>
             <LayoutDashboard size={18} aria-hidden="true" />
             <h2>Reports you arrange</h2>
-            <p>Pick the reports you care about, size them, and keep a few dashboards: one for growth, one for what you post.</p>
+            <p>Pick the reports you care about and keep a few dashboards.</p>
           </div>
           <div>
             <Wrench size={18} aria-hidden="true" />

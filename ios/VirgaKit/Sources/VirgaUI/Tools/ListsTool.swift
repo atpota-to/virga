@@ -101,7 +101,7 @@ struct ListsYoureOnBody: View {
         }
         .buttonStyle(.linkAction)),
       caption:
-        "Found through Constellation, which indexes who links to whom across the network, then each list read from Bluesky’s public API. Subscribers are counted for moderation lists only, where they decide who blocks you. A list removed since the last sync is gone from here at the next one."
+        "Found through Constellation, then read from Bluesky’s public API. Subscribers are counted for moderation lists only."
     ) {
       // `.card`, not flush: the table's own head carries the one rule in
       // ink; set as rows on a phone, that head is just its rule

@@ -167,8 +167,7 @@ export default function FollowCleanup({ tool }) {
               {checkedCount ? `Activity checked for ${checkedCount.toLocaleString(activeLocale())} of ${rows.length.toLocaleString(activeLocale())} accounts` : 'When did they last post?'}
             </h2>
             <p className="card-sub">
-              Reads the newest post or repost of each account you follow from Bluesky’s public API, one request each. About a minute for
-              800 accounts. Kept on this device.
+              Reads each followed account’s newest post from Bluesky’s public API. About a minute for 800 accounts.
             </p>
           </div>
           {checking ? (
@@ -430,8 +429,7 @@ export default function FollowCleanup({ tool }) {
             </div>
           )}
           <p className="card-caption">
-            Unfollowing deletes the follow record from your repo, the same as unfollowing in any app. Undo writes a new one. Marking an
-            account Keep only changes what this page suggests, on this device.
+            Unfollowing deletes the follow record, as in any app, and Undo writes a new one. Keep only changes what this page suggests.
           </p>
         </section>
       </div>
@@ -450,8 +448,7 @@ export default function FollowCleanup({ tool }) {
         }
       >
         <p>
-          Their follow records are deleted from your repo, one by one. They aren’t told. Each row keeps an Undo for as long as this page
-          is open.
+          Their follow records are deleted. They aren’t told, and each row keeps an Undo while this page is open.
         </p>
       </Dialog>
     </>

@@ -158,7 +158,7 @@ struct AdviserNotice: View {
     case "empty":
       empty(
         AdviserGlyph.sparkles, "Nothing to check against yet",
-        "The adviser reads a post against goals you set, like a gentler tone or posting less about a topic, and can proofread it for typos. Choose what it checks in Settings › Posting, under Post adviser."
+        "The adviser reads a post against your goals and proofreads it. Choose what it checks in Settings › Posting."
       )
     default:
       empty(AdviserGlyph.pen, "Write something first", "Then ask the adviser what it thinks.")

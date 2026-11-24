@@ -225,7 +225,7 @@ struct FollowCleanupPage: View {
         }
         ToolMoreFoot(shown: shown.count, total: filtered.count, page: FollowCleanup.page) { limit += FollowCleanup.page }
         ToolCaption(
-          "Unfollowing deletes the follow record from your repo, the same as unfollowing in any app. Undo writes a new one. Marking an account Keep only changes what this page suggests, on this device."
+          "Unfollowing deletes the follow record, as in any app, and Undo writes a new one. Keep only changes what this page suggests."
         )
       }
       .accessibilityElement(children: .contain)
@@ -244,7 +244,7 @@ struct FollowCleanupPage: View {
       title: "Unfollow \(fmt(selectedLive.count)) \(selectedLive.count == 1 ? "account" : "accounts")?"
     ) {
       Text(
-        "Their follow records are deleted from your repo, one by one. They aren’t told. Each row keeps an Undo for as long as this page is open."
+        "Their follow records are deleted. They aren’t told, and each row keeps an Undo while this page is open."
       )
       .fixedSize(horizontal: false, vertical: true)
     } actions: {
@@ -298,7 +298,7 @@ struct FollowCleanupPage: View {
           .fixedSize(horizontal: false, vertical: true)
           .accessibilityAddTraits(.isHeader)
         Text(
-          "Reads the newest post or repost of each account you follow from Bluesky’s public API, one request each. About a minute for 800 accounts. Kept on this device."
+          "Reads each followed account’s newest post from Bluesky’s public API. About a minute for 800 accounts."
         )
         .virgaText(size: theme.points(ThemeKit.cardSubFontSize))
         .foregroundStyle(theme.color(ThemeKit.cardSubInk))

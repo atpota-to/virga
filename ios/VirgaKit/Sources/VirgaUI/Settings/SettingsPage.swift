@@ -39,7 +39,7 @@ public struct SettingsPage: View {
       SettingsIndex()
     } else {
       let current = named ?? SettingsSections.sections[0]
-      VirgaPage(PageHeaderModel(title: current.label, sub: current.desc, crumbs: [Crumb("Settings", to: "/settings")])) {
+      VirgaPage(PageHeaderModel(title: current.label, crumbs: [Crumb("Settings", to: "/settings")])) {
         sectionBody(current.key)
       }
       // Posting's language picker brings its suggestions into view in the
@@ -78,7 +78,7 @@ struct SettingsIndex: View {
   @Environment(\.navigate) private var navigate
 
   var body: some View {
-    VirgaPage(PageHeaderModel(title: "Settings", sub: "For whoever is using this device, and for the account that’s open.")) {
+    VirgaPage(PageHeaderModel(title: "Settings")) {
       VStack(spacing: 0) {
         ForEach(SettingsSections.sections) { section in
           SettingsIndexItem(label: section.label, desc: section.desc) { navigate("/settings/\(section.key)") }
@@ -423,14 +423,14 @@ struct AppearanceSection: View {
       SettingsRow(
         label: "Sky",
         hint:
-          "The sky behind every page. Let it follow the clock, or keep it where you leave it. Night is also the dark theme, and a device set to dark stays on it.",
+          "Night is the dark theme, and a device set to dark stays on it.",
         block: true
       ) {
         SkyChoices()
       }
       SettingsRow(
         label: "Accent",
-        hint: "The colour of your data, and of whatever is selected. Each pair is checked for contrast and for colour-blind eyes, under every sky.",
+        hint: "The colour of your data and of what’s selected. Each is checked for contrast and colour blindness.",
         block: true
       ) {
         AccentChoices()
@@ -438,7 +438,7 @@ struct AppearanceSection: View {
       SettingsRow(
         label: "Contrast",
         hint:
-          "High darkens the words and the rules, takes the sky away and thickens the focus ring. Match system follows your device’s own setting.",
+          "High darkens the words and rules, hides the sky and thickens the focus ring.",
         kind: .segmented
       ) {
         Segmented(
@@ -452,7 +452,7 @@ struct AppearanceSection: View {
         ) { preferences.setPref(\.contrast, $0) }
         .accessibilityIdentifier("contrast")
       }
-      SettingsRow(label: "Density", hint: "Compact fits more on a screen.", kind: .segmented) {
+      SettingsRow(label: "Density", kind: .segmented) {
         Segmented(
           label: "Density",
           options: [
@@ -464,7 +464,7 @@ struct AppearanceSection: View {
       // A phone, or a narrow tablet, has no sidebar to fold.
       if chrome != .phone {
         SettingsRow(
-          label: "Sidebar", hint: "Folded, it’s a rail of icons, which gives the page more room. The button at its top does the same.",
+          label: "Sidebar",
           kind: .segmented
         ) {
           Segmented(
@@ -478,7 +478,7 @@ struct AppearanceSection: View {
       SettingsRow(
         label: "Live sky",
         hint:
-          "Clouds that drift across the sky at the top of the page: the 3D scene from Virga’s first version. It uses WebGL and some battery, holds still if you’ve asked your device for reduced motion, and is left out in high contrast. Five taps on the Virga mark turn it on or off from anywhere.",
+          "Clouds drifting across the top of the page. It uses some battery, holds still with reduced motion and is off in high contrast. Five taps on the Virga mark turn it on or off.",
         compactControl: true
       ) {
         Toggle("Show the live sky", isOn: Binding(get: { preferences.prefs.liveSky }, set: { preferences.setPref(\.liveSky, $0) }))
@@ -518,7 +518,7 @@ struct AppearanceSection: View {
       label: "Numbers and dates",
       hint: AnyView(
         VStack(alignment: .leading, spacing: Measure.Settings.sampleSpaceAbove) {
-          Text("Virga’s words are English. These choose how its figures, dates and times are written, and the day a week starts on.")
+          Text("Virga’s words stay English.")
           Text(sample).foregroundStyle(theme.ink2).accessibilityIdentifier("locale-sample")
         }),
       block: true
@@ -895,14 +895,14 @@ struct PermissionsSection: View {
       }
       SettingsSectionView(title: "What it can’t do", sub: nil) {
         SettingsText(
-          "It can’t like, repost, block or mute anyone, change your profile, or read your messages. It posts, replies and deletes posts only when you ask it to, and never edits a post once it’s published. With Defense’s lists on, it adds people to a list you made only when you approve them, and never anyone you follow. Everything else it reads is public and fetched without your session."
+          "It can’t like, repost, block or mute anyone, change your profile, or read your messages. It posts, replies and deletes only when you ask, and never edits a published post. Defense adds people to your lists only when you approve them, never anyone you follow. Everything else it reads is public, read without signing in."
         )
       }
       SettingsSectionView(title: "Where the sign-in is kept", sub: nil) {
         SettingsText(
           Text(
             AttributedString(
-              "A browser session stays in the browser and goes straight to your account’s server. A long session is held by Virga’s server at \(host), which makes the same requests on your behalf, and is what lets a scheduled post go out while Virga is closed. Virga’s server is used only for long sessions and the features that need one, and for the record that an account agreed to the terms, which either kind of session sends it; your archive never goes there. Settings › "
+              "A browser session stays in the browser and goes straight to your account’s server. A long session is held by Virga’s server at \(host), which makes requests on your behalf so a scheduled post can go out while Virga is closed. Otherwise Virga’s server is used only for the features that need a long session and for the record that an account agreed to the terms. Your archive never goes there. Settings › "
             ) + pageLink("Account", to: "/settings/account") + AttributedString(" says which kind each account has.")))
       }
     }
@@ -952,11 +952,11 @@ struct AboutSection: View {
     VStack(alignment: .leading, spacing: theme.sectionGap) {
       SettingsSectionView(title: "About Virga", sub: nil) {
         SettingsText(
-          "Analytics for your Bluesky account and the rest of your atproto repo, worked out on your device from your own data, and a place to write and schedule posts. The archive is read from your PDS, Bluesky’s public API, the PLC directory and Constellation, and kept on this device; it is never sent to Virga’s server. That server and its database are used only for long sessions, for the features that run while Virga is closed, and for the record that an account agreed to the terms."
+          "Analytics for your Bluesky account and atproto repo, worked out on your device, and a place to write and schedule posts. Your archive stays on this device and is never sent to Virga’s server."
         )
       }
       SettingsSectionView(
-        title: "Terms and privacy", sub: "What you agreed to when this account signed in, and what Virga does with information about you."
+        title: "Terms and privacy"
       ) {
         ForEach(LegalDocuments.all, id: \.key) { document in
           SettingsIndexItem(label: document.title, desc: nil) { reading = document.key }

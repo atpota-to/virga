@@ -32,7 +32,7 @@ struct ModeratorCard: View {
     VirgaSection(
       title: "The moderator",
       sub:
-        "Virga’s Bluesky account for doing this by DM: send it “block @someone”, “undo” or “history” from this account, and it answers. It reads the commands it knows and nothing else, and acts only on your own lists.",
+        "Virga’s Bluesky account for doing this by DM. Send it “block @someone”, “undo” or “history” from this account. It reads only the commands it knows and acts only on your lists.",
       trailing: linked && handle != nil
         ? AnyView(
           Button("Unlink") {

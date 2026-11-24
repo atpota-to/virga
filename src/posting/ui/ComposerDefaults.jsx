@@ -30,7 +30,7 @@ export default function ComposerDefaults({ did }) {
   const ownGates = settings.gates != null;
 
   return (
-    <SettingsCard title="New posts" sub="What the composer starts with for this account. Each post can still change it.">
+    <SettingsCard title="New posts" sub="Each post can still change these.">
       <div className="settings-row settings-row--block">
         <div className="settings-row-text">
           <div className="settings-row-label">Languages</div>
@@ -64,7 +64,7 @@ export default function ComposerDefaults({ did }) {
         </div>
       </div>
 
-      <SettingsRow label="Main button" hint="What the composer’s main button does. The others stay in its menu." htmlFor={ids.action}>
+      <SettingsRow label="Main button" hint="The others stay in its menu." htmlFor={ids.action}>
         <select
           id={ids.action}
           className="input"
@@ -79,7 +79,7 @@ export default function ComposerDefaults({ did }) {
         </select>
       </SettingsRow>
 
-      <SettingsRow label="Require alt text" hint="Don’t post an image until it has a description." htmlFor={ids.alt}>
+      <SettingsRow label="Require alt text" htmlFor={ids.alt}>
         <button
           id={ids.alt}
           type="button"
@@ -90,7 +90,7 @@ export default function ComposerDefaults({ did }) {
         />
       </SettingsRow>
 
-      <SettingsRow label="Offer to split long posts" hint="When a post runs past 300 characters, offer to make it a thread." htmlFor={ids.thread}>
+      <SettingsRow label="Offer to split long posts" hint="For posts over 300 characters." htmlFor={ids.thread}>
         <button
           id={ids.thread}
           type="button"
@@ -103,7 +103,7 @@ export default function ComposerDefaults({ did }) {
 
       <SettingsRow
         label="Number the posts of a split thread"
-        hint="End each post with its place and the total, such as 2/5, on a line of its own. You can still choose each time you split."
+        hint="Ends each post with its place, like 2/5. You can still choose each time."
         htmlFor={ids.numbering}
       >
         <button

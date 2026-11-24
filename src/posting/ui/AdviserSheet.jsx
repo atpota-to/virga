@@ -119,8 +119,7 @@ function AdviserNotice({ read }) {
         <Sparkles size={20} aria-hidden="true" />
         <p className="adviser-empty-title">Nothing to check against yet</p>
         <p>
-          The adviser reads a post against goals you set, like a gentler tone or posting less about a topic, and can
-          proofread it for typos. Choose what it checks in Settings › Posting, under Post adviser.
+          The adviser reads a post against your goals and proofreads it. Choose what it checks in Settings › Posting.
         </p>
       </div>
     );

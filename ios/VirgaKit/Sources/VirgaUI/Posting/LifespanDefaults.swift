@@ -30,7 +30,7 @@ struct LifespanDefaultsCard: View {
   var body: some View {
     let lifespan = SelfDestruct.normalizeTimer(model.settings.lifespan)
     let rule = Self.ruleSentence(lifespan)
-    SettingsSectionView(title: "Default timer", sub: "A timer every new post starts with. Each post can change it or take it off.") {
+    SettingsSectionView(title: "Default timer", sub: "Each post can change it or take it off.") {
       SettingsRow(
         label: "Start new posts with a timer",
         hint: lifespan.enabled ? nil as String? : "New posts start without one. The rule is kept for when you turn this on.",
@@ -111,7 +111,7 @@ struct LifespanDefaultsCard: View {
   private var caption: some View {
     let usage = ScheduleModel.timerLimitsLine(limits)
     let lead =
-      "\(usage.isEmpty ? "" : "\(usage) ")When the account has no free timer of the kind this rule needs, a new post starts without it, and the composer says why. "
+      "\(usage.isEmpty ? "" : "\(usage) ")If no timer of this kind is free, a new post starts without one and the composer says why. "
     return ScheduleLinkedText(pieces: [
       .words(lead), .link("See posts on a timer", to: PostingRoutes.postingPath("timers")), .words("."),
     ])

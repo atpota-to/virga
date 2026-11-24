@@ -89,7 +89,7 @@ function ScanPage() {
     <>
       <PageHeader
         title="Defense"
-        sub="Everyone who engaged with a post, sorted by how close each of them is to you, before anything is done about any of them."
+        sub="Everyone who engaged with a post, sorted by how close they are to you."
         access={['read']}
       />
       <div className="page-body defense">
@@ -134,14 +134,12 @@ function TurnOn({ account, asking, onTurnOn, refused }) {
       </div>
       <div className="defense-prose">
         <p>
-          To sort the people who engaged with a post, Virga asks Bluesky, as you, how many of the people you follow also follow each of
-          them. Only a signed-in read of their profiles says that (<code>app.bsky.actor.getProfiles</code>), so turning Defense on signs
-          you in again, asking for that one read as well. It reads; it can’t block, mute or post.
+          To sort who engaged with a post, Virga asks Bluesky, as you, how many people you follow also follow each of them. Only a signed-in read says that (<code>app.bsky.actor.getProfiles</code>), so turning Defense on signs you in again to ask for it. It reads; it can’t block, mute or post.
         </p>
         <p>
           Who engaged comes from Constellation, the public index of the network, from this device.{' '}
           {account?.mode === 'backend'
-            ? 'This account’s session is held by Virga’s server, so the read of their profiles goes through it, which passes it on to Bluesky and keeps none of it.'
+            ? 'The profile reads go through Virga’s server, which passes them to Bluesky and keeps none of it.'
             : 'The read of their profiles goes from this device straight to Bluesky.'}{' '}
           Nothing a scan finds is kept after Virga closes.
         </p>
@@ -170,9 +168,7 @@ function DefenseOn({ account, asking, onTurnOff }) {
             Defense is on{account?.handle ? ` for @${account.handle}` : ''}
           </h2>
           <p className="card-sub">
-            Its sign-in includes reading who you know in common with an account, and writing your lists if you let it. Turning it off
-            signs you in again without them. Anyone still waiting to be added waits until it is turned on again; take them back on
-            History if they shouldn’t be.
+            Turning it off signs you in again without Defense’s permissions. Anyone waiting to be added waits until it’s back on; take them back on History if they shouldn’t be.
           </p>
         </div>
         <button type="button" className="link-action" onClick={onTurnOff} disabled={asking?.busy}>
@@ -494,9 +490,7 @@ function ScanNotes({ result }) {
   if (result.vouchCheck !== 'canary') {
     notes.push(
       <p key="vouch" className="callout callout--warn">
-        Bluesky didn’t say who you know in common with these accounts, so nobody was sorted by it. Anyone who follows you counts as
-        connected instead, and everyone else as having no connection. This happens when you follow few people or none of them follow
-        each other, and when Bluesky’s count is running slow, in which case scanning again in a minute may sort them.
+        Bluesky didn’t say who you know in common with these accounts. Anyone who follows you counts as connected instead, and everyone else as having no connection. This happens when you follow few people, or when Bluesky is slow; scanning again in a minute may help.
       </p>,
     );
   }

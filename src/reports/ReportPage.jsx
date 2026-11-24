@@ -601,13 +601,10 @@ function FollowersReport({ archive, period, nowMs, actions }) {
       <ChartNotes did={archive.did} />
       <HowCounted>
         <p>
-          Virga walks your follower list and dates each follower by their follow record, so the total is the followers whose accounts
-          exist right now.
+          Each follower is dated by their follow record, so the total counts accounts that exist right now.
         </p>
         <p>
-          The diamonds on the chart mark the round numbers your count has passed, each on the day the follower who made it arrived.
-          They are counted from the followers you have today, so if people have left since, you reached that number on that day or
-          a little before it. Notes you add below are marked the same way.
+          Diamonds mark the round numbers your count has passed. They’re counted from today’s followers, so if people have left, you may have reached each one a little earlier. Notes you add below are marked the same way.
         </p>
         {m.counterGap > 0 && (
           <p>
@@ -760,8 +757,7 @@ function PostsReport({ archive, period, nowMs, actions }) {
       <ChartNotes did={archive.did} />
       <HowCounted>
         <p>
-          Every post in your archive, dated by when it was written, in your time zone. Replies to other people and to yourself both
-          count as posts here; the engagement rate leaves replies to other people out.
+          Every post in your archive, by when it was written. Replies count as posts here; the engagement rate leaves replies to other people out.
         </p>
       </HowCounted>
     </>
@@ -995,8 +991,7 @@ function PeopleReport({ archive, period, nowMs, kind, relation }) {
       </div>
       <HowCounted>
         <p>
-          Inbound counts come from your notifications: likes, reposts, replies, quotes and mentions aimed at you. Outbound counts come
-          from your repo’s like and repost history, plus the replies and quotes in your post archive.
+          Inbound counts come from your notifications. Outbound counts come from your repo’s likes and reposts, and your replies and quotes.
         </p>
         <p>
           {archive.meta.following
@@ -1019,8 +1014,7 @@ function AtmosphereReport({ archive, period, nowMs, actions }) {
   if (!m) {
     return (
       <SyncEmpty archive={archive}>
-        A sync downloads your repo’s own archive, every record in every collection back to the very first, and charts what got written
-        when.
+        A sync downloads every record in your repo and charts what was written when.
       </SyncEmpty>
     );
   }

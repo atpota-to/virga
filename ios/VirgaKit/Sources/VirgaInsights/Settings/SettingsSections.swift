@@ -22,12 +22,12 @@ public struct SettingsSection: Codable, Hashable, Sendable, Identifiable {
 
 public enum SettingsSections {
   public static let sections: [SettingsSection] = [
-    SettingsSection(key: "account", label: "Account", desc: "The accounts signed in on this device, and how long each sign-in lasts."),
-    SettingsSection(key: "data", label: "Data and sync", desc: "What Virga keeps on this device, how fresh it is, and how to take it with you."),
-    SettingsSection(key: "dashboards", label: "Dashboards", desc: "Your sets of reports, and where they’re kept."),
-    SettingsSection(key: "posting", label: "Posting", desc: "How a new post starts, the weekly queue, timers and the post adviser."),
-    SettingsSection(key: "appearance", label: "Appearance", desc: "How Virga looks on this device. Changes show straight away."),
+    SettingsSection(key: "account", label: "Account", desc: "Who’s signed in here, and for how long."),
+    SettingsSection(key: "data", label: "Data and sync", desc: "Your archive on this device: sync, export and delete."),
+    SettingsSection(key: "dashboards", label: "Dashboards", desc: "Your sets of reports."),
+    SettingsSection(key: "posting", label: "Posting", desc: "New post defaults, the queue, timers and the adviser."),
+    SettingsSection(key: "appearance", label: "Appearance", desc: "Sky, colour, contrast and layout."),
     SettingsSection(key: "permissions", label: "Permissions", desc: "What signing in lets Virga do, and what it can’t."),
-    SettingsSection(key: "about", label: "About", desc: "What Virga is, its terms, and where its numbers come from."),
+    SettingsSection(key: "about", label: "About", desc: "Terms, privacy and where the data comes from."),
   ]
 }

@@ -207,7 +207,7 @@ struct ScanNotesView: View {
         if vouches {
           Callout(tone: .warn) {
             Text(
-              "Bluesky didn’t say who you know in common with these accounts, so nobody was sorted by it. Anyone who follows you counts as connected instead, and everyone else as having no connection. This happens when you follow few people or none of them follow each other, and when Bluesky’s count is running slow, in which case scanning again in a minute may sort them."
+              "Bluesky didn’t say who you know in common with these accounts. Anyone who follows you counts as connected instead, and everyone else as having no connection. This happens when you follow few people, or when Bluesky is slow; scanning again in a minute may help."
             )
           }
         }

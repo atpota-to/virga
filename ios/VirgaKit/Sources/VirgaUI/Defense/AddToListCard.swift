@@ -29,7 +29,7 @@ struct DefenseWhy: Hashable {
       return authMode == "backend"
         ? DefenseWhy(
           key: "long",
-          text: "Lists are written by Virga’s server while Virga is closed, so they need a long session. Reconnect for a longer session from the account menu."
+          text: "Lists are written by Virga’s server, so they need a long session. Reconnect from the account menu."
         )
         : DefenseWhy(key: "long", text: "Lists are written by Virga’s server, which isn’t taking long sessions here.")
     }
@@ -139,7 +139,7 @@ struct AddToListCard: View {
     VirgaSection(
       title: "Add to a list",
       sub:
-        "Choose who from this post goes on one of your block or mute lists. Anyone you follow, keep, or have on a curation list is left off, checked again as each one is written."
+        "Choose who from this post goes on a block or mute list. Anyone you follow, keep or have on a curation list is left off."
     ) {
       if let why {
         DefenseWhyNotView(why: why, asking: defense.asking) { Task { await defense.askFor(.lists) } }

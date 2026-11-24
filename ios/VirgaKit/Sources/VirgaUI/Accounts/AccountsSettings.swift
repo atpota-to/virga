@@ -38,7 +38,7 @@ struct AccountsSettings: View {
         subView: AnyView(
           Text(
             AttributedString(
-              "Each account keeps its own archive and its own dashboards on this device. Switching doesn’t sign anyone out. Your DID, your PDS and every handle you’ve had are in the "
+              "Each account has its own archive and dashboards. Switching doesn’t sign anyone out. Your DID, PDS and past handles are in the "
             ) + pageLink("Identity inspector", to: "/tools/identity") + AttributedString(".")
           )
           .tint(theme.ink)),
@@ -90,17 +90,17 @@ struct AccountsSettings: View {
         SettingsBody {
           SettingsRow(label: "Browser session", kind: .prose) {
             note(
-              "The sign-in is kept by the browser, which talks to your account’s server directly. It lasts as long as that server allows an app that runs only in a browser, which is usually up to two weeks."
+              "The sign-in is kept by the browser, which talks to your account’s server directly. It usually lasts up to two weeks."
             )
           }
           SettingsRow(label: "Long session through Virga’s server", kind: .prose) {
             note(
-              "The sign-in is held by Virga’s server (\(host)), which passes your requests on to your account and stays signed in for as long as you keep using it. Scheduled posts, post timers and the post adviser need one, because they run while Virga is closed."
+              "The sign-in is held by Virga’s server (\(host)), which passes your requests on and stays signed in while you keep using it. Scheduled posts, timers and the post adviser need one."
             )
           }
           SettingsRow(label: "Signing out", kind: .prose) {
             note(
-              "Signing out ends the session here only: your other browsers and devices stay signed in. Scheduled posts and post timers keep running while any browser or device is signed in to Virga with a long session for the account; signing out of the last one stops them until you sign in that way again. Your archive is never sent to Virga’s server."
+              "Signing out ends the session here only: your other browsers and devices stay signed in. Scheduled posts and timers keep running while any browser or device is signed in with a long session; signing out of the last one stops them."
                 + (session.authMode != "backend" ? " This copy of Virga signs new accounts in through the browser." : ""))
           }
         }
@@ -305,7 +305,7 @@ struct RemoveAccountDialog: ViewModifier {
       isPresented: Binding(get: { account != nil }, set: { if !$0 { account = nil } }), title: "Remove \(name) from this browser"
     ) {
       DialogForm {
-        Text("It signs out and stops being listed here. You can add it again any time by signing in.")
+        Text("It signs out here. Sign in to add it back.")
           .fixedSize(horizontal: false, vertical: true)
         if let account {
           PendingWorkWarnings(accounts: [account], model: work)

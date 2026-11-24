@@ -41,7 +41,6 @@ export default function QueueSettings({ did }) {
   return (
     <SettingsCard
       title="Weekly queue"
-      sub="The times each week that a post added to the queue goes out. Kept on this device, for this account."
     >
       <SettingsRow
         label={
@@ -74,7 +73,7 @@ export default function QueueSettings({ did }) {
       <SettingsRow
         label="Suggest posting times"
         htmlFor={suggestId}
-        hint="From when this account’s own posts have done best, once the archive holds enough of them. Never added without asking."
+        hint="From when your posts have done best. Never added without asking."
       >
         <SwitchButton
           id={suggestId}

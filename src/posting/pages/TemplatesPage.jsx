@@ -103,8 +103,7 @@ export default function TemplatesPage({ did }) {
         ) : !templates.length && ready ? (
           <div className="empty-block">
             <p className="empty">
-              No templates yet. A template is a post or reply to start from, with blanks it asks you to fill in, such as the name of the person
-              you’re answering.
+              No templates yet. A template is a post or reply to start from, with blanks to fill in.
             </p>
             <Button onClick={newTemplate} disabled={!canWrite}>
               <Plus size={15} aria-hidden="true" />

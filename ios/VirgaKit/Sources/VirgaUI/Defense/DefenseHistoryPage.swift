@@ -57,7 +57,7 @@ struct DefenseHistoryPage: View {
       if lists.requester == nil {
         Callout(tone: .warn) {
           Text(
-            "The history is kept by Virga’s server, so it needs a long session. Reconnect for a longer session from the account menu.")
+            "The history is kept by Virga’s server, so it needs a long session. Reconnect from the account menu.")
         }
         .accessibilityIdentifier("defense-history-needs")
       } else if loading {
@@ -88,7 +88,7 @@ struct DefenseHistoryPage: View {
     .wantActorsIf(archive, Array(decisions.prefix(200)).compactMap(\.did))
     .virgaDialog(isPresented: Binding(get: { undoing != nil }, set: { if !$0 && !busy { undoing = nil } }), title: "Take \(undoing?.label ?? "them") off the list?") {
       Text(
-        "Those not written yet are cancelled now. Those on the list are taken off a batch at a time, by the very record each add wrote. Anyone added another way stays."
+        "Adds not written yet are cancelled. The rest come off a batch at a time. Anyone added another way stays."
       )
       .fixedSize(horizontal: false, vertical: true)
       // Nor can a swipe close it while it works (`onClose={() => !busy && …}`).

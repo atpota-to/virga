@@ -57,7 +57,7 @@ public enum DefenseRoutes {
       label: "Lists",
       title: "Lists",
       icon: "List",
-      desc: "The block and mute lists Defense keeps for you, what is being written to them, and who you keep off them."
+      desc: "Your Defense lists, what’s being written to them, and who you keep off them."
     ),
     DefensePage(
       key: "history",

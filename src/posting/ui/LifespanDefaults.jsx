@@ -65,7 +65,7 @@ export default function LifespanDefaults({ did }) {
   return (
     <SettingsCard
       title="Default timer"
-      sub="A timer every new post starts with. Each post can change it or take it off."
+      sub="Each post can change it or take it off."
     >
       {/* On, the editor under this row ends with the rule in a sentence, so
           the row says nothing more; off, it says what happens instead. */}
@@ -97,9 +97,7 @@ export default function LifespanDefaults({ did }) {
         </p>
       )}
       <p className="card-caption">
-        {usage ? `${usage} ` : ''}When the account has no free timer of the
-        kind this rule needs, a new post starts without it, and the composer
-        says why. <Link to={postingPath('timers')}>See posts on a timer</Link>.
+        {usage ? `${usage} ` : ''}If no timer of this kind is free, a new post starts without one and the composer says why. <Link to={postingPath('timers')}>See posts on a timer</Link>.
       </p>
     </SettingsCard>
   );

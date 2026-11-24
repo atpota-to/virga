@@ -3,11 +3,11 @@
 // command palette can list them without loading the page.
 
 export const SECTIONS = Object.freeze([
-  { key: 'account', label: 'Account', desc: 'The accounts signed in on this device, and how long each sign-in lasts.' },
-  { key: 'data', label: 'Data and sync', desc: 'What Virga keeps on this device, how fresh it is, and how to take it with you.' },
-  { key: 'dashboards', label: 'Dashboards', desc: 'Your sets of reports, and where they’re kept.' },
-  { key: 'posting', label: 'Posting', desc: 'How a new post starts, the weekly queue, timers and the post adviser.' },
-  { key: 'appearance', label: 'Appearance', desc: 'How Virga looks on this device. Changes show straight away.' },
+  { key: 'account', label: 'Account', desc: 'Who’s signed in here, and for how long.' },
+  { key: 'data', label: 'Data and sync', desc: 'Your archive on this device: sync, export and delete.' },
+  { key: 'dashboards', label: 'Dashboards', desc: 'Your sets of reports.' },
+  { key: 'posting', label: 'Posting', desc: 'New post defaults, the queue, timers and the adviser.' },
+  { key: 'appearance', label: 'Appearance', desc: 'Sky, colour, contrast and layout.' },
   { key: 'permissions', label: 'Permissions', desc: 'What signing in lets Virga do, and what it can’t.' },
-  { key: 'about', label: 'About', desc: 'What Virga is, its terms, and where its numbers come from.' },
+  { key: 'about', label: 'About', desc: 'Terms, privacy and where the data comes from.' },
 ]);

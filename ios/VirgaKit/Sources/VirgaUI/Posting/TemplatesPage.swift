@@ -97,7 +97,7 @@ struct TemplatesPage: View {
       } else if templates.isEmpty && model.ready {
         VStack(alignment: .leading, spacing: theme.points(ThemeKit.emptyBlockGap)) {
           Text(
-            "No templates yet. A template is a post or reply to start from, with blanks it asks you to fill in, such as the name of the person you’re answering."
+            "No templates yet. A template is a post or reply to start from, with blanks to fill in."
           )
           .virgaText(.textBase)
           .foregroundStyle(theme.muted)

@@ -140,7 +140,7 @@ struct PeopleReportView: View {
         }
       }
       HowCounted(paragraphs: [
-        "Inbound counts come from your notifications: likes, reposts, replies, quotes and mentions aimed at you. Outbound counts come from your repo’s like and repost history, plus the replies and quotes in your post archive.",
+        "Inbound counts come from your notifications. Outbound counts come from your repo’s likes and reposts, and your replies and quotes.",
         archive.meta.following != nil
           ? "Following is read from the follow records in your own repo at each sync. Follow writes one there, and pressing Following deletes it."
           : "Who you follow arrives with the next sync; until then there are no Follow buttons, so nobody can be followed twice.",
@@ -244,7 +244,7 @@ struct AtmosphereReportView: View {
     } else {
       SyncEmpty(
         text:
-          "A sync downloads your repo’s own archive, every record in every collection back to the very first, and charts what got written when."
+          "A sync downloads every record in your repo and charts what was written when."
       )
     }
   }

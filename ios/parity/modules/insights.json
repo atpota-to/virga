@@ -34,7 +34,7 @@
       "fixtures": [
         "insights-early.routes"
       ],
-      "synced": "29dd25e5b420"
+      "synced": "471fc1267655"
     },
     "src/posting/routes.js": {
       "status": "ported",
@@ -117,7 +117,7 @@
       "fixtures": [
         "insights-early.settings"
       ],
-      "synced": "a6c22004446e"
+      "synced": "6c53eb6df3ac"
     },
     "src/share/chartImage.js": {
       "status": "ported",

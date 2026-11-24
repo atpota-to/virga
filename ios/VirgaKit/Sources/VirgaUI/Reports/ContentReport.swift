@@ -213,7 +213,7 @@ struct ContentReportView: View {
     } else if !m.ready {
       SyncEmpty(
         text:
-          "One more sync, and this report can be drawn. Your archive was built before Virga kept what each post is made of: its length, tags, links, media and alt text. A sync reads them from your repo in one download and keeps every count you already have."
+          "One more sync and this report can be drawn. Your archive predates Virga keeping each post’s length, tags, links, media and alt text. A sync adds them and keeps every count you have."
       )
     } else {
       let share = { (n: Int) -> Double in m.posts != 0 ? (Double(n) / Double(m.posts) * 100).jsRounded : 0 }
@@ -271,9 +271,9 @@ struct ContentReportView: View {
         .fixedSize(horizontal: false, vertical: true)
       }
       HowCounted(paragraphs: [
-        "Your posts and your own threads in the window. Replies to other people are left out, as they are from the engagement rate: an answer inside someone else’s conversation earns on a different scale.",
+        "Your posts and threads in the window. Replies to other people are left out, as in the engagement rate.",
         "What a group typically earns is its median post, the one in the middle, so a single post that went round doesn’t speak for the rest. Posts from the last two days are still collecting and are counted but not weighed, and a group needs \(ReportModels.contentMinPosts) weighed posts before it gets a typical value. Counts are as of the last sync.",
-        "A post’s format is what it carries: pictures, a video, a link card, a GIF, or a quote. A quote post that also has pictures counts as its pictures. Length is in the characters Bluesky counts. Tags come from the text and from tags added beside it; sites from links in the text and from link cards. Media counts as described when its alt text isn’t empty.",
+        "A post’s format is what it carries: pictures, a video, a link card, a GIF or a quote; a quote with pictures counts as pictures. Length is in the characters Bluesky counts. Media counts as described when its alt text isn’t empty.",
         "None of this says one thing causes another. Posts with pictures may do well because of what you choose to photograph.",
       ])
     }
