@@ -163,7 +163,7 @@ struct ComposerDefaultsCard: View {
   var body: some View {
     let settings = model.settings
     let own = settings.gates != nil
-    SettingsSectionView(title: "New posts", sub: "What the composer starts with for this account. Each post can still change it.") {
+    SettingsSectionView(title: "New posts", sub: "What new posts start with. Each post can change it.") {
       SettingsRow(
         label: "Languages", hint: "Bluesky uses these to show your posts to people who read them. Up to three.", block: true
       ) {
@@ -230,7 +230,7 @@ struct ComposerDefaultsCard: View {
       SettingsRow(
         label: "Number the posts of a split thread",
         hint:
-          "End each post with its place and the total, such as 2/5, on a line of its own. You can still choose each time you split.",
+          "Ends each post with its place, like 2/5. You can still choose each time.",
         compactControl: true
       ) {
         SettingsSwitch(label: "Number the posts of a split thread", isOn: settings.threadNumbering == "counter") { on in
@@ -286,7 +286,7 @@ struct QueueSettingsCard: View {
     let device = PostingQueue.resolveTimezone(nil)
     let count = ScheduleModel.weeklyCount(schedule)
     SettingsSectionView(
-      title: "Weekly queue", sub: "The times each week that a post added to the queue goes out. Kept on this device, for this account."
+      title: "Weekly queue", sub: "When queued posts go out each week."
     ) {
       SettingsRow(label: count == 1 ? "1 posting time a week" : "\(count) posting times a week", hint: ScheduleModel.weekSummary(schedule)) {
         // `<Link className="btn">`: a way to a page, drawn as a button.
@@ -313,7 +313,7 @@ struct QueueSettingsCard: View {
       }
       SettingsRow(
         label: "Suggest posting times",
-        hint: "From when this account’s own posts have done best, once the archive holds enough of them. Never added without asking.",
+        hint: "From when your posts have done best. Never added without asking.",
         compactControl: true
       ) {
         SettingsSwitch(label: "Suggest posting times", isOn: model.settings.suggestBestTimes) { save(["suggestBestTimes": .bool($0)]) }

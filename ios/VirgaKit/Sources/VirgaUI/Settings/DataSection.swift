@@ -48,7 +48,7 @@ struct DataSection: View {
         .task { usage = await AppStores.bytesUsed(at: app.stores.filesDirectory) }
         .virgaDialog(isPresented: confirming(.rebuild), title: "Rebuild the post archive?") {
           Text(
-            "Clears the post archive and reads every post again. It’s the only way deleted posts leave, and old posts’ counts fully refresh. It takes as long as the first build."
+            "Reads every post again, which takes as long as the first build. It’s the only way to drop deleted posts and fully refresh old counts."
           )
           .fixedSize(horizontal: false, vertical: true)
         } actions: {
@@ -62,7 +62,7 @@ struct DataSection: View {
         }
         .virgaDialog(isPresented: confirming(.delete), title: "Delete the archive on this device?") {
           Text(
-            "Every post, follower, block, engagement event and repo record Virga holds for this account on this device goes, along with the unfollow log. Your dashboards and settings stay."
+            "Everything Virga holds for this account on this device goes, unfollow log included. Your dashboards and settings stay."
           )
           .fixedSize(horizontal: false, vertical: true)
         } actions: {
@@ -121,7 +121,7 @@ struct DataSection: View {
           }
           SettingsRow(
             label: posts == nil ? "Build" : posts?.complete == true ? "Sync" : "Finish the build",
-            hint: "A sync runs by itself when you open Virga and the archive is more than an hour old. It only fetches what’s new."
+            hint: "Runs by itself when you open Virga and the archive is over an hour old, fetching only what’s new."
           ) {
             Button {
               let mode = SyncStatus.mode(archive)
@@ -135,7 +135,7 @@ struct DataSection: View {
           if built {
             SettingsRow(
               label: "Rebuild",
-              hint: "Clears the post archive and reads every post again. It’s the only way deleted posts leave, and old posts’ counts fully refresh."
+              hint: "Reads every post again. The only way to drop deleted posts and fully refresh old counts."
             ) {
               Button {
                 confirm = .rebuild
@@ -197,7 +197,7 @@ struct DataSection: View {
       SettingsSectionView(title: "Delete this archive", sub: nil, danger: true) {
         SettingsRow(
           label: "Everything Virga keeps for this account here",
-          hint: "Your account, your repo and your followers aren’t touched. The next build reads it all again."
+          hint: "Nothing in your account is touched. The next build reads it all again."
         ) {
           Button {
             confirm = .delete
@@ -221,7 +221,7 @@ struct DataSection: View {
         : "The archive is held for this session only."
     }
     if let usage {
-      return "Virga is using about \(Self.megabytes(usage)) here, for every account signed in on this device."
+      return "About \(Self.megabytes(usage)), for every account on this device."
     }
     return "In a database of its own for this account, on this device."
   }

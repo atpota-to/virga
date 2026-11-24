@@ -59,8 +59,7 @@ export default function AddToList({ result, defense, lists }) {
             Add to a list
           </h2>
           <p className="card-sub">
-            Choose who from this post goes on one of your block or mute lists. Anyone you follow, keep, or have on a curation list is
-            left off, checked again as each one is written.
+            Choose who from this post goes on a block or mute list. Anyone you follow, keep or have on a curation list is left off.
           </p>
         </div>
       </div>
@@ -245,7 +244,7 @@ export function whyNot({ result, caps, session, lists }) {
   if (result?.vouchCheck !== 'canary') return { key: 'vouches', text: 'This scan couldn’t check who you know in common, so nothing from it can go on a list. Scan again later.' };
   if (caps.mode !== 'backend') {
     return session.authMode === 'backend'
-      ? { key: 'long', text: 'Lists are written by Virga’s server while Virga is closed, so they need a long session. Reconnect for a longer session from the account menu.' }
+      ? { key: 'long', text: 'Lists are written by Virga’s server, so they need a long session. Reconnect from the account menu.' }
       : { key: 'long', text: 'Lists are written by Virga’s server, which isn’t taking long sessions here.' };
   }
   if (lists.error) return { key: 'error', text: lists.error };

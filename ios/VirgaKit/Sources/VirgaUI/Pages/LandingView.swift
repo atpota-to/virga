@@ -295,7 +295,7 @@ public struct LandingView: View {
       title
         .padding(.top, Measure.Landing.titleSpaceAbove)
       Text(
-        "Followers, blocks, posts, engagement and the people behind them, on dashboards you arrange yourself, with a few small tools for looking after your account. Worked out on your device, from your own data."
+        "Followers, blocks, posts and engagement on dashboards you arrange, plus small tools for looking after your account. Worked out on your device."
       )
       .virgaText(theme.isPhone ? .textMd : .textLg, lineHeight: ThemeKit.landingLedeLineHeight)
       .foregroundStyle(theme.ink2)
@@ -347,7 +347,7 @@ public struct LandingView: View {
     let items: [(String, String, String)] = [
       (
         Glyph.dashboards, "Reports you arrange",
-        "Pick the reports you care about, size them, and keep a few dashboards: one for growth, one for what you post."
+        "Pick the reports you care about and keep a few dashboards."
       ),
       (
         Glyph.tools, "Tools that ask first",

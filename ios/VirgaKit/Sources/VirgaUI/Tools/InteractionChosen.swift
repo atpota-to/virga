@@ -427,7 +427,7 @@ struct EngagedPostsView: View {
     if !engaged.known {
       LookupCannotRank(
         sub: engaged.of != 0
-          ? "The archive keeps who engaged and when, not which post it was for, so there’s no ranking to show. Their replies, quotes and mentions are in the list below, each with a link to their post."
+          ? "The archive doesn’t keep which post they engaged with, so there’s no ranking. Their replies, quotes and mentions are below."
           : "They haven’t liked, reposted, replied to or quoted you, as far as your notifications reach.")
     } else {
       let shown = Array(engaged.rows.prefix(limit))
@@ -714,7 +714,7 @@ struct LookupHowCounted: View {
           "A reply, a quote or a mention is a post, and is listed with a link to it. A like or a repost is listed without one: the archive keeps that it happened and when, not which post it was\(known)"
         )
         paragraph(
-          "Who follows whom is as of your last sync, and each follow is dated by its own record; where that can’t be read, the date is left out. A follow that has ended leaves no record: someone who stopped following you shows only if the unfollow tracker saw it happen."
+          "Follows are as of your last sync, dated by their records. An ended follow leaves no record, so it shows only if the unfollow tracker saw it."
         )
         paragraph("Months are counted on your own calendar. Everything is read from the archive on this device.")
       }

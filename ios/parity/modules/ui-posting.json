@@ -166,7 +166,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Posting/DraftsPage.swift"
       ],
       "note": "The account's drafts a page at a time (DraftsPageList, useDraftList: Show more, read again on the drafts' event), the count and its line, each row's words (three lines, No text yet), draftMeta, the line about pictures saved elsewhere or why it can't be posted or scheduled, Open and the row's menu (Post now, Schedule…, Delete draft; a spinner while it works), the notices after an action (warnings, failures, the permission notice on a missing scope), No drafts yet with New post, the failure with Try again, the captions (Bluesky's limit past 50, a long session for scheduling), the delete question with the draft's words, and Schedule this draft (the queue's next open time on its button from nextOpenSlot, the usage line and the room problem, the hints, the deleted-after note, a refusal's words) over DraftActions.postDraftNow and scheduleDraft with DraftActionDeps.live (the account's target, its long session's requester and timers, the composer's files and ImageIO, this device's draft media). /posting/drafts/<id> opens the draft and goes back to /posting/drafts; stray draft files are pruned once a launch while the composer is closed. The time is WhenPicker (Posting/WhenPicker.swift) over the account's settings.queue and its server session. iOS: the focus after a row goes is the system's to place. Post now and Schedule hold background time while they run (BackgroundSend), as the composer's sends do.",
-      "synced": "a03ba8db66b8"
+      "synced": "274340c4b50d"
     },
     "src/posting/pages/HubPage.jsx": {
       "status": "ported",
@@ -199,7 +199,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduledPage+Rows.swift"
       ],
       "note": "Scheduled posts over scheduleModel (ScheduledPageModel holds the page's state): the read (listScheduled with getLimits, read again on a scheduling or timer event, ScheduledListLoad), the clock once a minute, from now each time the page comes back (a post whose time has come read again, never mid-drag), the load failure with Try again, the unavailable server's callout, the message (role=\"alert\", its glyph centred on the words) with Dismiss; A timer couldn't be set (Went out over the day and hour, a phone's one line with its dot and the ✕ in the corner, the note, Set a timer opening TimerDialog over the note's arm (PostTimerDialog) with The timer is set. Posting › Timers shows it. and the note dismissed once it is set, Dismiss through acknowledgeTimerNote); Didn't go out (the day over the hour); Your queue with Add to queue (the composer in queue mode), the week ahead (QueueCalendarView with Change the times, a taken time pressed brings its row into view and its first button the focus, a keyboard's and VoiceOver's, lit for two seconds), the empty lines and Set posting times, the rows grouped by zoned day in one run so a row keeps its view as it moves, and Saving the new order…; At a set time with Schedule a post; the allowance line (scheduledLimitsLine) and its bone. A row: its time column (or a phone's first line, its dot 6 either side and kept with the part before it), its words (two lines), Replying to, the meta line (going out now a step louder, part of it out as a badge, the series with its progress and the last one, From a repeating post, From the queue, rowTags, the timer with its sentence read out), the reason (red for a failure), Retry (Retry the rest) or Edit, the ⋯ (on a phone out of the row's flow, centred on the time's line; Edit, Post now, Skip this one, Stop repeating with their hints, then Dismiss / Remove from the schedule / Remove, and stop repeating). Reordering (planQueueReorder, applyAssignment while it moves, reorderScheduled with the fallback's second try, the refusals and REORDER_PARTIAL): wider than a phone a handle (in the page's margin from 900) dragged over the others, a drag the system cancels putting the row back (onPointerCancel), or the keys (Space or Return, the arrows, Escape) with the web's announcements, and VoiceOver's adjust (the handle's value is its place, each step says where it went, none while an order saves); a phone's Move earlier and Move later; a row that keeps its time shows the lock. The four questions (Remove or Dismiss, Post now through postScheduledNow over the app's publish and timer services, Skip it, Stop repeating) with their sentences and the quoted post, each keeping its words while its sheet slides away, and the toasts. Coming back to the page, the message, the lit row and a row picked up are gone, as from the web's fresh page; the account's settings listen only while the page is up (made in start()). useFocusAfterRemoval is the system's: VoiceOver moves on to what took the row's place. Post now holds background time while it runs (BackgroundSend), as the composer's sends do.",
-      "synced": "68f5738826af"
+      "synced": "3455060db104"
     },
     "src/posting/pages/TemplatesPage.jsx": {
       "status": "ported",
@@ -207,7 +207,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Posting/TemplatesPage.swift"
       ],
       "note": "The page over the account's own TemplatesModel (useTemplates) and TemplateUsage (readTemplateUsage, sortTemplatesForShelf): the permission notice with Sign in again when the sign-in can't write templates; the read-again failure over the last ones seen; the bones while the first read runs; the failure with Try again; No templates yet with New template; then the count and its line with New template, the groups (Other templates for those without one), and each row: the name as the way into the editor (44 to press) with its /shortcut, Use and the ⋯ (Edit, Delete with its dialog and toast) on the name's line, the words with each blank marked (named as it is asked, or as it fills itself; No text: it only attaches something), and the facts (who it's for, the questions, what it attaches, the words that suggest it, how often it was used here). The editor is TemplateEditor, opened on its template until it has gone (sheet(item:)). Use opens the composer (ComposerHost) with the web's intent, { asDid, templateId }; the composer reads the account's templates, marks the post as made from it (its source) and applies it to the first post, as Composer.jsx does (ComposerController.loadTemplate; one with questions opens the library over the composer once its sheet is up, and a template that has gone says so over the post). iOS additions: /posting/templates/new and /posting/templates/<rkey> open the editor. A blank's chip is drawn on a tint in the run of words; the focus after a delete is the system's.",
-      "synced": "2476eb0001c7"
+      "synced": "4be7c7e66899"
     },
     "src/posting/pages/TimersPage.jsx": {
       "status": "ported",
@@ -258,7 +258,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserSettingsCard.swift"
       ],
       "note": "Post adviser in Settings › Posting, over the account's PostingSettingsModel: NeedsBackend for an account that can't use AI; Use the post adviser (nextPostingAdviserState, the recommended setup the first time), Check before posting, Stop me (the Segmented's own medium keys, in a row drawn up for them), Which posts, Read replies with their conversation (the switches' names press them), Your goals (the two presets, Post less about some topics with its topics, VirgaTextField with its muted example, Goals in your own words with its example placeholder and its count), Proofread (the three checks, Notes for the proofread with its example placeholder, Your writing style with Learn my style or See or change it, which opens StyleDialog), the month's three usage lines, What’s sent, and to whom (a Settings disclosure row), and a refused change's message, read out. Which posts is a radio group: each scope a button with the round radio mark, selected when it's the scope, its place ('1 of 3') as its value; the arrows move the choice, and choosing the chosen one does nothing.",
-      "synced": "bc480980fce8"
+      "synced": "e7dd1707ab54"
     },
     "src/posting/ui/AdviserSheet.jsx": {
       "status": "ported",
@@ -266,7 +266,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserReadSheet.swift"
       ],
       "note": "The sheet over AdviserGateModel's read (sheetActions, sheetTitle, sheetContextLine, adviserSheetModel, adviserWritingTally, adviserDraftLabel): the notices (error, read out; limit, empty, needsText), the verdict, the kind of post with its tone at the line's end, the marked post (each post's index, a fix struck through with its replacement, a link in the words that takes it, the replacement underlined in the ok colour once taken, a flagged passage underlined in its tone with its numbers raised; VoiceOver hears Post 1/2, Change “x” to “y”, Fixed: and note 1 as the web's hidden words say, each fix to take an action of its own), the tally (read out as it changes) with Fix all, the notes (a numbered note lights its passage for a moment; others with their tone's glyph), Fine against, the context line, the usage line, the skeleton while busy, and its foot (Keep editing, Save as draft, Publish or Publish anyway, or Close), wrapping as the dialog's foot does. A numbered note lights its passage instead of scrolling to it.",
-      "synced": "35d71f3a93a7"
+      "synced": "d7a61de4d0eb"
     },
     "src/posting/ui/AltTextDialog.jsx": {
       "status": "ported",
@@ -283,7 +283,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
       ],
       "note": "New posts: Languages (the composer's LanguagePicker, bare: its label VoiceOver's alone, no hint, under the row's own name), Who can reply and quote (My Bluesky setting or Choose here, with the composer's GatesEditor over the stored gates), the two stacked 12 apart and each held to 420 (composer.css's .settings-row-control--stack), Main button (PublishActions' four, normalized, as SettingsSelect), Require alt text, Offer to split long posts and Number the posts of a split thread as switches whose names press them (the label's htmlFor), each saved as it changes, with a refused change's message under them, read out.",
-      "synced": "648efd59b070"
+      "synced": "bcb2b9acc2cd"
     },
     "src/posting/ui/GatesEditor.jsx": {
       "status": "ported",
@@ -299,7 +299,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Posting/LifespanDefaults.swift"
       ],
       "note": "LifespanDefaultsCard in Settings › Posting: Start new posts with a timer (its hint when off; its name presses the switch), the rule's editor (LifespanRuleEditor, a length and never a set time, its changes keeping the timer on or off as it is, checked against the account's limits, held to 640 and its parts named like Settings' rows) as a label-less block row when on, and behind The rule it will use: … when off (a Settings disclosure row: its arrow on the sentence's first line, the sentence pressed through 44 points that reach into the row's air, the editor 16 under it and kept while closed, as a closed <details> keeps its children), saved never pinned to a time, the refusal read out, and the caption: with a long session the timers in use (getLimits, timerLimitsLine) first, then the rest with See posts on a timer, a link in ink and underlined that the navigator follows to postingPath('timers') (ScheduleLinkedText).",
-      "synced": "ae76e34b01e2"
+      "synced": "86238654b30c"
     },
     "src/posting/ui/LifespanEditor.jsx": {
       "status": "ported",
@@ -340,7 +340,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
       ],
       "note": "Weekly queue: the posting times a week with the week in a line and Edit the week (a Link drawn as a button: read as a link, to postingPath('schedule'), Posting › Weekly schedule), the time zone (scheduleParts' TimezoneSelect: this device's first, then every zone the device knows; the whole line from 760 down) with the device's zone named when it differs, and Suggest posting times (its name presses its switch), over VirgaPosting's ScheduleModel (weeklyCount, weekSummary, zoneLabel, moveToZone); a refused change read out. TimeZone.knownTimeZoneIdentifiers stands in for Intl.supportedValuesOf('timeZone').",
-      "synced": "e64f22b07927"
+      "synced": "d0ea990c1359"
     },
     "src/posting/ui/SettingsParts.jsx": {
       "status": "ported",
@@ -356,7 +356,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserStyleDialog.swift"
       ],
       "note": "A full-height sheet with one StyleSession per opening over the account's requester: NeedsBackend without AI, the intro, how many posts to read and Read my posts, the three stages with the posts gathered (the one under way read out), the failure (a warning for the monthly limit; read out), How you write (editable) with its line and · not kept yet, What should change?, Refine with my note and Read my posts again (medium), the count to read again (the kit's select, at least 112 wide), the usage line, and Forget my style (red, at the foot's start; from 640 down a line of its own), Close or Cancel, Keep this (styleProfileFrom, forgetStyleProfile), a refused save's message, read out.",
-      "synced": "83b9df1a0f3a"
+      "synced": "20ba2a5101e2"
     },
     "src/posting/ui/TimerDialog.jsx": {
       "status": "ported",

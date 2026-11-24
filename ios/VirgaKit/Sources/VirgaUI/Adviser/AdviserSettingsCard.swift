@@ -67,13 +67,13 @@ struct AdviserSettingsCard: View {
     SettingsSectionView(
       title: "Post adviser",
       sub:
-        "Reads a post against goals you set for yourself, and proofreads it, before it goes out. It never stops a post: you can always publish anyway."
+        "Reads a post against your goals and proofreads it before it goes out. You can always publish anyway."
     ) {
       SettingsRow(
         label: "Use the post adviser",
         hint: adviser.enabled
           ? "The composer has a “Check this post” button, and checks posts as set below."
-          : "Off. The first time it’s turned on, every check below comes on with it; change any of them after.",
+          : "Off. It starts with every check on.",
         compactControl: true
       ) {
         SettingsSwitch(label: "Use the post adviser", isOn: adviser.enabled) { _ in
@@ -104,7 +104,7 @@ struct AdviserSettingsCard: View {
     SettingsRow(
       label: "Check before posting",
       hint:
-        "Reads each post when you press Post (not when you schedule one). If it takes more than 10 seconds or can’t be reached, the post goes out as it is.",
+        "Reads each post when you press Post, not when you schedule. If it takes over 10 seconds or fails, the post goes out as it is.",
       compactControl: true
     ) {
       SettingsSwitch(label: "Check before posting", isOn: adviser.checkBeforePublish) { on in change { $0.checkBeforePublish = on } }
@@ -134,7 +134,7 @@ struct AdviserSettingsCard: View {
     SettingsRow(
       label: "Read replies with their conversation",
       hint:
-        "For a reply or a quote, the posts it answers are read too, so the adviser can say if you may have misread someone. Those are other people’s public posts.",
+        "Also reads the posts a reply or quote answers, so the adviser can say if you’ve misread someone. These are other people’s public posts.",
       compactControl: true
     ) {
       SettingsSwitch(label: "Read replies with their conversation", isOn: adviser.checkReplyContext) { on in
@@ -143,12 +143,12 @@ struct AdviserSettingsCard: View {
     }
     .pressingName { change { $0.checkReplyContext = !adviser.checkReplyContext } }
     SettingsRow(
-      label: "Your goals", hint: "What a post is read against. The adviser says when one goes against them; it doesn’t rewrite it.",
+      label: "Your goals", hint: "The adviser says when a post goes against them. It doesn’t rewrite it.",
       block: true
     ) {
       goals(adviser)
     }
-    SettingsRow(label: "Proofread", hint: "The slips it looks for. It offers a fix for each; taking one is up to you.", block: true) {
+    SettingsRow(label: "Proofread", hint: "It offers a fix for each slip. Taking it is up to you.", block: true) {
       proofread(adviser)
     }
   }
@@ -220,7 +220,7 @@ struct AdviserSettingsCard: View {
           "Notes for the proofread", prompt: "For example: I skip apostrophes on purpose; never flag “gonna”",
           text: adviser.writingChecks.customText
         ) { next in change { $0.writingChecks.customText = next.jsSlice(0, notesLimit) } }
-        FieldHint("These come before everything else the proofread goes by.")
+        FieldHint("These take priority.")
       }
       // `.adviser-style`: a wrapping row, centred, the words `flex: 1 1
       // 220px` (the room the button leaves them) and the button beside

@@ -86,7 +86,7 @@ export default function DefenseHistory() {
       <PageHeader crumbs={[{ label: 'Defense', to: '/defense' }]} title={PAGE.title} sub={PAGE.desc} access={['lists']} />
       <div className="page-body defense">
         {!req ? (
-          <p className="callout callout--warn">The history is kept by Virga’s server, so it needs a long session. Reconnect for a longer session from the account menu.</p>
+          <p className="callout callout--warn">The history is kept by Virga’s server, so it needs a long session. Reconnect from the account menu.</p>
         ) : state.loading ? (
           <p className="empty">Reading the history…</p>
         ) : (
@@ -197,7 +197,7 @@ export default function DefenseHistory() {
           </>
         }
       >
-        <p>Those not written yet are cancelled now. Those on the list are taken off a batch at a time, by the very record each add wrote. Anyone added another way stays.</p>
+        <p>Adds not written yet are cancelled. The rest come off a batch at a time. Anyone added another way stays.</p>
       </Dialog>
     </>
   );

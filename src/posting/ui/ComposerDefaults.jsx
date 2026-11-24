@@ -30,7 +30,7 @@ export default function ComposerDefaults({ did }) {
   const ownGates = settings.gates != null;
 
   return (
-    <SettingsCard title="New posts" sub="What the composer starts with for this account. Each post can still change it.">
+    <SettingsCard title="New posts" sub="What new posts start with. Each post can change it.">
       <div className="settings-row settings-row--block">
         <div className="settings-row-text">
           <div className="settings-row-label">Languages</div>
@@ -103,7 +103,7 @@ export default function ComposerDefaults({ did }) {
 
       <SettingsRow
         label="Number the posts of a split thread"
-        hint="End each post with its place and the total, such as 2/5, on a line of its own. You can still choose each time you split."
+        hint="Ends each post with its place, like 2/5. You can still choose each time."
         htmlFor={ids.numbering}
       >
         <button

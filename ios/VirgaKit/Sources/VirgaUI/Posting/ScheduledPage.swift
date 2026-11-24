@@ -214,7 +214,7 @@ struct ScheduledPage: View {
   private func queueEmpty(_ empty: Bool) -> some View {
     if empty {
       EmptyState(
-        "Your week has no posting times yet. Set some, then add posts to the queue and they go out in turn.",
+        "Your week has no posting times yet. Set some to use the queue.",
         actionTitle: "Set posting times"
       ) {
         navigate(PostingRoutes.postingPageByKey["schedule"]?.path ?? "/posting/schedule")
@@ -267,7 +267,7 @@ struct ScheduledPage: View {
   private func timedSection(_ rows: [JSONValue]) -> some View {
     VirgaSection(
       title: "At a set time",
-      sub: "Posts with a time of their own, replies and repeating posts among them. They don’t move when the queue does.",
+      sub: "Posts with their own time, including replies and repeats. They don’t move with the queue.",
       trailing: AnyView(
         Button {
           open(["asDid": did.map(JSONValue.string) ?? .null, "mode": "schedule"])
@@ -282,7 +282,7 @@ struct ScheduledPage: View {
         RowSkeleton(rows: 2, actions: 1)
       } else if model.load.list != nil {
         if rows.isEmpty {
-          EmptyState("Nothing scheduled for a set time. Write a post and choose Schedule to pick when it goes out.")
+          EmptyState("Nothing scheduled for a set time. Choose Schedule in the composer to add one.")
         } else {
           VStack(alignment: .leading, spacing: 0) {
             ForEach(ScheduleListEntry.entries(rows, tz: model.tz, now: model.now)) { entry in

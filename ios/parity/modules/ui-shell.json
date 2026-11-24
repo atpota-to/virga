@@ -21,7 +21,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Accounts/AccountMenu.swift"
       ],
       "note": "All of it, with the compact menu's Sync now once there is an archive to sync. A native Menu: an account's row carries a person glyph, since a native menu item can't show the picture. The pending-work read before a long session's sign-out (useSignOutGuard, and Sign out of all's usePendingWork) goes through AppModel.pendingWork, VirgaPosting's listScheduled and listTimers over the account's VirgaBackend (PendingWorkServices.posting, VirgaPosting/Wiring.swift); a read that fails says it couldn't check, as the web's does.",
-      "synced": "615f266bc128"
+      "synced": "a8a3a69562fb"
     },
     "src/accounts/AccountsSettings.jsx": {
       "status": "ported",
@@ -29,7 +29,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Accounts/AccountsSettings.swift"
       ],
       "note": "All of it; the pending-work warnings in Remove … from this browser read through AppModel.pendingWork (VirgaPosting's listScheduled and listTimers, PendingWorkServices.posting). Refocusing the next row's ⋯ after a removal is the system's.",
-      "synced": "05778b50732c"
+      "synced": "9b17f8a99199"
     },
     "src/accounts/AddAccountDialog.jsx": {
       "status": "ported",
@@ -300,7 +300,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Pages/LandingView.swift"
       ],
       "note": "All of it. The live sky is over the front page's sky when it is on (LandingFrame's skyBackground(live:)), and five taps on its mark turn it on or off, with the toasts the web's ToastProvider shows (the front page has a ToastCenter of its own). The compose link's callout (composing) shows on the page variant, from AppRoot's signInComposing while a compose link is kept.",
-      "synced": "5e84adef0950"
+      "synced": "059ac1e91756"
     },
     "src/pages/SignInReturn.jsx": {
       "status": "ported",
@@ -413,7 +413,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
       ],
       "note": "The index (a phone's), Account, Data and sync (the archive's line, the sync's steps and Cancel, what failed, Sync now or the rest of a build, Rebuild posts and its dialog, the JSON and CSV exports through the system's exporter, where it is kept with the app folder's size for the web's storage estimate, and Delete the archive… as the quiet outline in red, with its dialog, the toast and the way home), Dashboards (Your dashboards with New dashboard at its head, each dashboard's name as the way to it with its count of reports, its ⋯ with Rename…, Move up, Move down and Delete while there is more than one, its dialogs, Reset to the three starting dashboards with its dialog and toast, and Where they’re kept; the focus after a move or a delete is the system's to place), Appearance (the sky and the accent with its swatches, each a radio group whose arrows, Home and End choose on a hardware keyboard, each choice saying its place and the clock's tile what it comes to now; contrast, density, the sidebar; numbers and dates, two selects in the system's menu; and the live sky's switch), Permissions and About (with the Terms and the Privacy Policy, the agreement's date, and when the repo was last read). Posting is PostingSettingsSection (ui-posting.json says what of it is there). Data's \"Keep it when space runs low\" is shown only where the browser can be asked (navigator.storage.persist), which iOS has no counterpart for, so it isn't drawn.",
-      "synced": "75dfb6bb9a59"
+      "synced": "79c784bcd081"
     },
     "src/settings/settings.css": {
       "status": "ported",
@@ -449,7 +449,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Shell/FirstRun.swift"
       ],
       "note": "The first build's page, word for word: what a build reads and where it goes, the store's warning when the archive would only last the session, Build your archive (a full sync), the steps while it runs (SyncSteps), and what failed. Shown by RoutedPage where a route needs the archive and it isn't built.",
-      "synced": "e90f24838c88"
+      "synced": "3d95bebf14bd"
     },
     "src/shell/MobileNav.jsx": {
       "status": "partial",

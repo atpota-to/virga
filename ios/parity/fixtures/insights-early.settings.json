@@ -13,27 +13,27 @@
         {
           "key": "account",
           "label": "Account",
-          "desc": "The accounts signed in on this device, and how long each sign-in lasts."
+          "desc": "Who’s signed in here, and for how long."
         },
         {
           "key": "data",
           "label": "Data and sync",
-          "desc": "What Virga keeps on this device, how fresh it is, and how to take it with you."
+          "desc": "Your archive on this device: sync, export and delete."
         },
         {
           "key": "dashboards",
           "label": "Dashboards",
-          "desc": "Your sets of reports, and where they’re kept."
+          "desc": "Your sets of reports."
         },
         {
           "key": "posting",
           "label": "Posting",
-          "desc": "How a new post starts, the weekly queue, timers and the post adviser."
+          "desc": "New post defaults, the queue, timers and the adviser."
         },
         {
           "key": "appearance",
           "label": "Appearance",
-          "desc": "How Virga looks on this device. Changes show straight away."
+          "desc": "How Virga looks on this device."
         },
         {
           "key": "permissions",
@@ -43,7 +43,7 @@
         {
           "key": "about",
           "label": "About",
-          "desc": "What Virga is, its terms, and where its numbers come from."
+          "desc": "Terms, privacy and where the data comes from."
         }
       ]
     },

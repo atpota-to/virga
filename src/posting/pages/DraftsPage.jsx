@@ -239,7 +239,7 @@ export default function DraftsPage({ did, id = null }) {
           // Nothing to list, so no heading over nothing: the sentence and
           // the way to start one.
           <div className="empty-block">
-            <p className="empty">No drafts yet. Start a post and choose Save draft: it waits here, private to your account, until you’re ready.</p>
+            <p className="empty">No drafts yet. Choose Save draft in the composer and it waits here, private to you.</p>
             <Button onClick={() => composer.open({ asDid: did })}>
               <SquarePen size={15} aria-hidden="true" />
               New post

@@ -671,8 +671,8 @@ struct FollowersReportView: View {
       ChartNotes(did: archive.did)
       HowCounted(
         paragraphs: [
-          "Virga walks your follower list and dates each follower by their follow record, so the total is the followers whose accounts exist right now.",
-          "The diamonds on the chart mark the round numbers your count has passed, each on the day the follower who made it arrived. They are counted from the followers you have today, so if people have left since, you reached that number on that day or a little before it. Notes you add below are marked the same way.",
+          "Each follower is dated by their follow record, so the total counts accounts that exist right now.",
+          "Diamonds mark the round numbers your count has passed. They’re counted from today’s followers, so if people have left, you may have reached each one a little earlier. Notes you add below are marked the same way.",
         ]
           + ((m.counterGap ?? 0) > 0
             ? [
@@ -751,7 +751,7 @@ struct PostsReportView: View {
       }
       ChartNotes(did: archive.did)
       HowCounted(paragraphs: [
-        "Every post in your archive, dated by when it was written, in your time zone. Replies to other people and to yourself both count as posts here; the engagement rate leaves replies to other people out."
+        "Every post in your archive, by when it was written. Replies count as posts here; the engagement rate leaves replies to other people out."
       ])
     }
   }

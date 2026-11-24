@@ -27,7 +27,7 @@ struct FirstRunPage: View {
           .accessibilityAddTraits(.isHeader)
           .accessibilityIdentifier("first-run-title")
         Text(
-          "Virga works your analytics out on this device, from your own data. The first build takes a minute or two for most accounts; after that, a sync only fetches what’s new."
+          "Virga works out your analytics on this device. The first build takes a minute or two; after that, a sync fetches only what’s new."
         )
         .virgaText(.textMd)
         .foregroundStyle(theme.ink2)

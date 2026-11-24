@@ -35,7 +35,7 @@ struct DashboardsSection: View {
     VStack(alignment: .leading, spacing: theme.sectionGap) {
       SettingsSectionView(
         title: "Your dashboards",
-        sub: "Each is a set of reports, arranged your way. Open one and press Customize to change it.",
+        sub: "Open one and press Customize to change it.",
         action: AnyView(
           Button {
             creating = true
@@ -63,7 +63,7 @@ struct DashboardsSection: View {
         }
       }
       SettingsSectionView(title: "Where they’re kept", sub: nil) {
-        SettingsText("Kept on this device, like your archive. Another device or browser starts with the three starting dashboards.")
+        SettingsText("Kept on this device. Other devices start with the three starting dashboards.")
       }
     }
     .dashboardDialog(isPresented: Binding(get: { renaming != nil }, set: { if !$0 { renaming = nil } })) {

@@ -161,7 +161,7 @@ export default function ArchiveSearch({ tool }) {
             </div>
           )}
           <p className="card-caption">
-            The archive keeps the first 200 characters of each post, so a search finds words in that part. Counts are as of the last sync.
+            Searches the first 200 characters of each post. Counts are as of the last sync.
           </p>
         </section>
       </div>

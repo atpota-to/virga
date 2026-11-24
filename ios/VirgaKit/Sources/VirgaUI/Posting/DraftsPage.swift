@@ -208,7 +208,7 @@ struct DraftsPage: View {
 
   private var empty: some View {
     VStack(alignment: .leading, spacing: theme.points(ThemeKit.emptyBlockGap)) {
-      Text("No drafts yet. Start a post and choose Save draft: it waits here, private to your account, until you’re ready.")
+      Text("No drafts yet. Choose Save draft in the composer and it waits here, private to you.")
         .virgaText(.textBase)
         .foregroundStyle(theme.muted)
         .fixedSize(horizontal: false, vertical: true)

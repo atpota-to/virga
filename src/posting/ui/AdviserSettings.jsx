@@ -93,7 +93,7 @@ export default function AdviserSettings({ open, onClose, did }) {
   return (
     <SettingsCard
       title="Post adviser"
-      sub="Reads a post against goals you set for yourself, and proofreads it, before it goes out. It never stops a post: you can always publish anyway."
+      sub="Reads a post against your goals and proofreads it before it goes out. You can always publish anyway."
     >
       <SettingsRow
         label="Use the post adviser"
@@ -101,7 +101,7 @@ export default function AdviserSettings({ open, onClose, did }) {
         hint={
           adviser.enabled
             ? 'The composer has a “Check this post” button, and checks posts as set below.'
-            : 'Off. The first time it’s turned on, every check below comes on with it; change any of them after.'
+            : 'Off. It starts with every check on.'
         }
       >
         <button
@@ -119,7 +119,7 @@ export default function AdviserSettings({ open, onClose, did }) {
           <SettingsRow
             label="Check before posting"
             htmlFor={ids.gate}
-            hint="Reads each post when you press Post (not when you schedule one). If it takes more than 10 seconds or can’t be reached, the post goes out as it is."
+            hint="Reads each post when you press Post, not when you schedule. If it takes over 10 seconds or fails, the post goes out as it is."
           >
             <button
               id={ids.gate}
@@ -159,7 +159,7 @@ export default function AdviserSettings({ open, onClose, did }) {
           <SettingsRow
             label="Read replies with their conversation"
             htmlFor={ids.room}
-            hint="For a reply or a quote, the posts it answers are read too, so the adviser can say if you may have misread someone. Those are other people’s public posts."
+            hint="Also reads the posts a reply or quote answers, so the adviser can say if you’ve misread someone. These are other people’s public posts."
           >
             <button
               id={ids.room}
@@ -176,7 +176,7 @@ export default function AdviserSettings({ open, onClose, did }) {
               <div className="settings-row-label" id={ids.goalsTitle}>
                 Your goals
               </div>
-              <div className="settings-row-hint">What a post is read against. The adviser says when one goes against them; it doesn’t rewrite it.</div>
+              <div className="settings-row-hint">The adviser says when a post goes against them. It doesn’t rewrite it.</div>
             </div>
             <div className="settings-row-control adviser-set-stack">
               {GOAL_PRESETS.map((g) => (
@@ -239,7 +239,7 @@ export default function AdviserSettings({ open, onClose, did }) {
               <div className="settings-row-label" id={ids.proofTitle}>
                 Proofread
               </div>
-              <div className="settings-row-hint">The slips it looks for. It offers a fix for each; taking one is up to you.</div>
+              <div className="settings-row-hint">It offers a fix for each slip. Taking it is up to you.</div>
             </div>
             <div className="settings-row-control adviser-set-stack">
               {WRITING_CHECKS.map((c) => (
@@ -264,7 +264,7 @@ export default function AdviserSettings({ open, onClose, did }) {
                   placeholder="For example: I skip apostrophes on purpose; never flag “gonna”"
                   onChange={(e) => patchWriting({ customText: e.target.value })}
                 />
-                <span className="field-hint">These come before everything else the proofread goes by.</span>
+                <span className="field-hint">These take priority.</span>
               </div>
               <div className="adviser-style">
                 <div>

@@ -49,8 +49,7 @@ export default function UnfollowTracker({ tool }) {
         {!m.tracking ? (
           <div className="empty-block">
             <p className="empty">
-              Virga compares your follower list at each sync with the one before. Your archive has one list so far; the next sync will
-              have a second to compare it with, and from then on every unfollow lands here.
+              Virga compares your follower list at each sync with the last. After your next sync, unfollows show up here.
             </p>
             <Button onClick={syncNow} disabled={Boolean(archive.sync)}>
               <RefreshCw size={15} aria-hidden="true" />
@@ -145,8 +144,7 @@ export default function UnfollowTracker({ tool }) {
                 </div>
               )}
               <p className="card-caption">
-                A change is noticed at the sync after it happened, so “noticed” is a window, not a moment. Someone who unfollowed and
-                followed again between two syncs never shows. The log is kept on this device, up to 5,000 changes.
+                A change is noticed at the next sync, so “noticed” is a window, not a moment. An unfollow and refollow between syncs never shows. Up to 5,000 changes are kept on this device.
               </p>
             </section>
           </>

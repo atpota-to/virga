@@ -574,7 +574,7 @@ struct StartingPoint: View {
     let phone = theme.isPhone
     VirgaSection(
       caption:
-        "Them to you comes from your notifications, which reach back about a year at most. You to them comes from your repo and your posts, and goes all the way back."
+        "Them to you comes from your notifications, about a year back at most. You to them goes all the way back."
     ) {
       // The heading, a flush one. On a phone the legend would leave the
       // title a word a line, so it takes a line of its own under the

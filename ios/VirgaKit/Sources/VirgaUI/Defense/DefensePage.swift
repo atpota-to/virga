@@ -85,7 +85,7 @@ struct DefenseScanPage: View {
     VirgaPage(
       PageHeaderModel(
         title: "Defense",
-        sub: "Everyone who engaged with a post, sorted by how close each of them is to you, before anything is done about any of them.",
+        sub: "Everyone who engaged with a post, sorted by how close they are to you.",
         access: ["read"])
     ) {
       if needsPermission {
@@ -161,12 +161,12 @@ struct TurnOnCard: View {
     ) {
       VStack(alignment: .leading, spacing: theme.space3) {
         Text(
-          "To sort the people who engaged with a post, Virga asks Bluesky, as you, how many of the people you follow also follow each of them. Only a signed-in read of their profiles says that ("
+          "To sort who engaged with a post, Virga asks Bluesky, as you, how many people you follow also follow each of them. Only a signed-in read says that ("
         )
           + Text("app.bsky.actor.getProfiles").font(theme.codeFont(around: theme.textBase))
-          + Text("), so turning Defense on signs you in again, asking for that one read as well. It reads; it can’t block, mute or post.")
+          + Text("), so turning Defense on signs you in again to ask for it. It reads; it can’t block, mute or post.")
         Text(
-          "Who engaged comes from Constellation, the public index of the network, from this device. \(account?.mode == "backend" ? "This account’s session is held by Virga’s server, so the read of their profiles goes through it, which passes it on to Bluesky and keeps none of it." : "The read of their profiles goes from this device straight to Bluesky.") Nothing a scan finds is kept after Virga closes."
+          "Who engaged comes from Constellation, the public index of the network, from this device. \(account?.mode == "backend" ? "The profile reads go through Virga’s server, which passes them to Bluesky and keeps none of it." : "The read of their profiles goes from this device straight to Bluesky.") Nothing a scan finds is kept after Virga closes."
         )
       }
       .virgaText(.textBase)
@@ -202,7 +202,7 @@ struct DefenseOnCard: View {
     VirgaSection(
       title: "Defense is on\(handle.map { " for @\($0)" } ?? "")",
       sub:
-        "Its sign-in includes reading who you know in common with an account, and writing your lists if you let it. Turning it off signs you in again without them. Anyone still waiting to be added waits until it is turned on again; take them back on History if they shouldn’t be.",
+        "Turning it off signs you in again without Defense’s permissions. Anyone waiting to be added waits until it’s back on; take them back on History if they shouldn’t be.",
       trailing: AnyView(
         Button("Turn off", action: onTurnOff)
           .buttonStyle(.linkAction)

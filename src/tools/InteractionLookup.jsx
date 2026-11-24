@@ -421,8 +421,7 @@ function StartingPoint({ archive, onChoose }) {
         </div>
       )}
       <p className="card-caption">
-        Them to you comes from your notifications, which reach back about a year at most. You to them comes from your repo and your posts,
-        and goes all the way back.
+        Them to you comes from your notifications, about a year back at most. You to them goes all the way back.
       </p>
     </Card>
   );
@@ -643,7 +642,7 @@ function EngagedPosts({ model }) {
         <h2 className="card-title">Your posts they engaged with most</h2>
         <p className="card-sub lookup-cannot">
           {engagedPosts.of
-            ? 'The archive keeps who engaged and when, not which post it was for, so there’s no ranking to show. Their replies, quotes and mentions are in the list below, each with a link to their post.'
+            ? 'The archive doesn’t keep which post they engaged with, so there’s no ranking. Their replies, quotes and mentions are below.'
             : 'They haven’t liked, reposted, replied to or quoted you, as far as your notifications reach.'}
         </p>
       </section>
@@ -872,9 +871,7 @@ function HowCounted({ model }) {
           {engagedPosts.known ? ', except where the event says so.' : ', which is also why it can’t rank your posts by how much they engaged with them.'}
         </p>
         <p>
-          Who follows whom is as of your last sync, and each follow is dated by its own record; where that can’t be read, the date is left
-          out. A follow that has ended leaves no record: someone who stopped following you shows only if the unfollow tracker saw it
-          happen.
+          Follows are as of your last sync, dated by their records. An ended follow leaves no record, so it shows only if the unfollow tracker saw it.
         </p>
         <p>Months are counted on your own calendar. Everything is read from the archive on this device.</p>
       </div>

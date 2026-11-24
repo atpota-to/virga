@@ -15,8 +15,7 @@ export default function FirstRun({ archive }) {
           Build your archive
         </h1>
         <p className="first-run-lede">
-          Virga works your analytics out on this device, from your own data. The first build takes a minute or two
-          for most accounts; after that, a sync only fetches what’s new.
+          Virga works out your analytics on this device. The first build takes a minute or two; after that, a sync fetches only what’s new.
         </p>
         <ul className="first-run-list">
           <li>

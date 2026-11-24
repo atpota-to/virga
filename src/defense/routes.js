@@ -25,7 +25,7 @@ export const DEFENSE_PAGES = Object.freeze([
     label: 'Lists',
     title: 'Lists',
     icon: List,
-    desc: 'The block and mute lists Defense keeps for you, what is being written to them, and who you keep off them.',
+    desc: 'Your Defense lists, what’s being written to them, and who you keep off them.',
   },
   {
     key: 'history',

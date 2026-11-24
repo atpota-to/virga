@@ -64,7 +64,7 @@ export default function SettingsPage({ section }) {
 function SettingsIndex() {
   return (
     <>
-      <PageHeader title="Settings" sub="For whoever is using this device, and for the account that’s open." />
+      <PageHeader title="Settings" sub="For this device and the open account." />
       <div className="page-body settings-body">
         <ul className="settings-index">
           {SECTIONS.map((s) => (
@@ -203,7 +203,7 @@ function DataSection() {
             )}
             <Row
               label={!pm ? 'Build' : pm.complete ? 'Sync' : 'Finish the build'}
-              hint="A sync runs by itself when you open Virga and the archive is more than an hour old. It only fetches what’s new."
+              hint="Runs by itself when you open Virga and the archive is over an hour old, fetching only what’s new."
             >
               <Button onClick={() => archive.runSync(!pm ? 'full' : pm.complete ? 'incremental' : 'resume')}>
                 <RefreshCw size={15} aria-hidden="true" />
@@ -211,7 +211,7 @@ function DataSection() {
               </Button>
             </Row>
             {built && (
-              <Row label="Rebuild" hint="Clears the post archive and reads every post again. It’s the only way deleted posts leave, and old posts’ counts fully refresh.">
+              <Row label="Rebuild" hint="Reads every post again. The only way to drop deleted posts and fully refresh old counts.">
                 <Button onClick={() => setConfirm('rebuild')}>
                   <RotateCcw size={15} aria-hidden="true" />
                   Rebuild posts
@@ -246,7 +246,7 @@ function DataSection() {
                 ? 'Another Virga tab is holding the archive open, so this one lasts the session only. Close that tab and reload to keep it.'
                 : 'The archive is held for this session only.'
               : estimate
-                ? `Virga is using about ${megabytes(estimate.usage)} here, for every account signed in on this device.`
+                ? `About ${megabytes(estimate.usage)}, for every account on this device.`
                 : 'In a database of its own for this account, on this device.'
           }
         >
@@ -276,7 +276,7 @@ function DataSection() {
       <Section title="Delete this archive" tone="danger">
         <Row
           label="Everything Virga keeps for this account here"
-          hint="Your account, your repo and your followers aren’t touched. The next build reads it all again."
+          hint="Nothing in your account is touched. The next build reads it all again."
         >
           <Button className="is-danger" onClick={() => setConfirm('delete')} disabled={!archive.loaded || Boolean(archive.sync)}>
             <Trash2 size={15} aria-hidden="true" />
@@ -305,8 +305,7 @@ function DataSection() {
         }
       >
         <p>
-          Clears the post archive and reads every post again. It’s the only way deleted posts leave, and old posts’ counts fully refresh. It
-          takes as long as the first build.
+          Reads every post again, which takes as long as the first build. It’s the only way to drop deleted posts and fully refresh old counts.
         </p>
       </Dialog>
       <Dialog
@@ -332,8 +331,7 @@ function DataSection() {
         }
       >
         <p>
-          Every post, follower, block, engagement event and repo record Virga holds for this account on this device goes, along with the
-          unfollow log. Your dashboards and settings stay.
+          Everything Virga holds for this account on this device goes, unfollow log included. Your dashboards and settings stay.
         </p>
       </Dialog>
     </>
@@ -374,7 +372,7 @@ function DashboardsSection() {
     <>
       <Section
         title="Your dashboards"
-        sub="Each is a set of reports, arranged your way. Open one and press Customize to change it."
+        sub="Open one and press Customize to change it."
         action={
           <button type="button" className="link-action" onClick={() => setCreating(true)}>
             <Plus size={14} aria-hidden="true" />
@@ -425,7 +423,7 @@ function DashboardsSection() {
         </div>
       </Section>
       <Section title="Where they’re kept">
-        <p className="settings-text">Kept on this device, like your archive. Another device or browser starts with the three starting dashboards.</p>
+        <p className="settings-text">Kept on this device. Other devices start with the three starting dashboards.</p>
       </Section>
       <Dialog
         open={Boolean(renaming)}
@@ -555,7 +553,7 @@ function AppearanceSection() {
         block
         labelId="sky-label"
         label="Sky"
-        hint="The sky behind every page. Let it follow the clock, or keep it where you leave it. Night is also the dark theme, and a device set to dark stays on it."
+        hint="The sky behind every page. Night is the dark theme, and a device set to dark stays on it."
       >
         <RadioButtons className="sky-choices" labelledBy="sky-label" choices={SKIES} value={prefs.sky} onChange={(v) => setPref('sky', v)}>
           {(sky, radio) => {
@@ -580,7 +578,7 @@ function AppearanceSection() {
         block
         labelId="accent-label"
         label="Accent"
-        hint="The colour of your data, and of whatever is selected. Each pair is checked for contrast and for colour-blind eyes, under every sky."
+        hint="The colour of your data and of what’s selected. Each is checked for contrast and colour blindness."
       >
         <RadioButtons className="accent-choices" labelledBy="accent-label" choices={ACCENTS} value={prefs.accent} onChange={(v) => setPref('accent', v)}>
           {(a, radio) => (
@@ -594,7 +592,7 @@ function AppearanceSection() {
       </Row>
       <Row
         label="Contrast"
-        hint="High darkens the words and the rules, takes the sky away and thickens the focus ring. Match system follows your device’s own setting."
+        hint="High darkens the words and rules, hides the sky and thickens the focus ring."
       >
         <Segmented
           label="Contrast"
@@ -619,7 +617,7 @@ function AppearanceSection() {
         />
       </Row>
       {!narrow && (
-        <Row label="Sidebar" hint="Folded, it’s a rail of icons, which gives the page more room. The button at its top does the same.">
+        <Row label="Sidebar" hint="Folded, it’s a rail of icons.">
           <Segmented
             label="Sidebar"
             value={prefs.sidebar}
@@ -636,7 +634,7 @@ function AppearanceSection() {
         label="Numbers and dates"
         hint={
           <>
-            Virga’s words are English. These choose how its figures, dates and times are written, and the day a week starts on.
+            How figures, dates and times are written, and when the week starts. Virga’s words stay English.
             <span className="settings-row-sample">{localeSample(activeLocale())}</span>
           </>
         }
@@ -659,7 +657,7 @@ function AppearanceSection() {
       </Row>
       <Row
         label="Live sky"
-        hint="Clouds that drift across the sky at the top of the page: the 3D scene from Virga’s first version. It uses WebGL and some battery, holds still if you’ve asked your device for reduced motion, and is left out in high contrast. Five taps on the Virga mark turn it on or off from anywhere."
+        hint="Clouds drifting across the top of the page. It uses some battery, holds still with reduced motion and is off in high contrast. Five taps on the Virga mark turn it on or off."
       >
         <button type="button" role="switch" className="switch" aria-checked={prefs.liveSky} aria-label="Show the live sky" onClick={() => setPref('liveSky', !prefs.liveSky)} />
       </Row>
@@ -693,17 +691,13 @@ function PermissionsSection() {
       </Section>
       <Section title="What it can’t do">
         <p className="settings-text">
-          It can’t like, repost, block or mute anyone, change your profile, or read your messages. It posts, replies and deletes posts only
-          when you ask it to, and never edits a post once it’s published. With Defense’s lists on, it adds people to a list you made only
-          when you approve them, and never anyone you follow. Everything else it reads is public and fetched without your session.
+          It can’t like, repost, block or mute anyone, change your profile, or read your messages. It posts, replies and deletes only when you ask, and never edits a published post. Defense adds people to your lists only when you approve them, never anyone you follow. Everything else it reads is public, read without signing in.
         </p>
       </Section>
       <Section title="Where the sign-in is kept">
         <p className="settings-text">
           A browser session stays in the browser and goes straight to your account’s server. A long session is held by Virga’s server at{' '}
-          {backendHost()}, which makes the same requests on your behalf, and is what lets a scheduled post go out while Virga is closed.
-          Virga’s server is used only for long sessions and the features that need one, and for the record that an account agreed to the
-          terms, which either kind of session sends it; your archive never goes there. Settings ›{' '}
+          {backendHost()}, which makes requests on your behalf so a scheduled post can go out while Virga is closed. Otherwise Virga’s server is used only for the features that need a long session and for the record that an account agreed to the terms. Your archive never goes there. Settings ›{' '}
           <Link to="/settings/account">Account</Link> says which kind each account has.
         </p>
       </Section>
@@ -734,13 +728,10 @@ function AboutSection() {
     <>
       <Section title="About Virga">
         <p className="settings-text">
-          Analytics for your Bluesky account and the rest of your atproto repo, worked out on your device from your own data, and a place to
-          write and schedule posts. The archive is read from your PDS, Bluesky’s public API, the PLC directory and Constellation, and kept on
-          this device; it is never sent to Virga’s server. That server and its database are used only for long sessions, for the features
-          that run while Virga is closed, and for the record that an account agreed to the terms.
+          Analytics for your Bluesky account and atproto repo, worked out on your device, and a place to write and schedule posts. Your archive stays on this device and is never sent to Virga’s server.
         </p>
       </Section>
-      <Section title="Terms and privacy" sub="What you agreed to when this account signed in, and what Virga does with information about you.">
+      <Section title="Terms and privacy" sub="What you agreed to, and what Virga does with your information.">
         {/* Each opens in place, like a row of the settings list leads to its page. */}
         {Object.values(DOCUMENTS).map((doc) => (
           <button key={doc.key} type="button" className="settings-index-item" onClick={() => setReading(doc.key)} aria-haspopup="dialog">

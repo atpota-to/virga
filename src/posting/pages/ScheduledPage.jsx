@@ -951,7 +951,7 @@ export default function ScheduledPage({ did }) {
                   <div className="empty-block">
                     <p className="empty">
                       {isScheduleEmpty(schedule)
-                        ? 'Your week has no posting times yet. Set some, then add posts to the queue and they go out in turn.'
+                        ? 'Your week has no posting times yet. Set some to use the queue.'
                         : 'Nothing in the queue. Every time above is open: add a post and it takes the next one.'}
                     </p>
                     {isScheduleEmpty(schedule) && (
@@ -985,7 +985,7 @@ export default function ScheduledPage({ did }) {
         <Section
           id="sched-timed"
           title="At a set time"
-          sub="Posts with a time of their own, replies and repeating posts among them. They don’t move when the queue does."
+          sub="Posts with their own time, including replies and repeats. They don’t move with the queue."
           actions={
             <button
               type="button"
@@ -1004,8 +1004,7 @@ export default function ScheduledPage({ did }) {
             (sections.timed.length === 0 ? (
               <div className="empty-block">
                 <p className="empty">
-                  Nothing scheduled for a set time. Write a post and choose
-                  Schedule to pick when it goes out.
+                  Nothing scheduled for a set time. Choose Schedule in the composer to add one.
                 </p>
               </div>
             ) : (

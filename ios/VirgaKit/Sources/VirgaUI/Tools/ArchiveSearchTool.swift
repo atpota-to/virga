@@ -135,7 +135,7 @@ struct ArchiveSearchBody: View {
         }
       }
       ToolMoreFoot(shown: shown.count, total: results.count, page: ArchiveSearch.page) { limit += ArchiveSearch.page }
-      ToolCaption("The archive keeps the first 200 characters of each post, so a search finds words in that part. Counts are as of the last sync.")
+      ToolCaption("Searches the first 200 characters of each post. Counts are as of the last sync.")
     }
     .toolExporter($exporting)
     .onChange(of: query) { _, _ in limit = ArchiveSearch.page }
