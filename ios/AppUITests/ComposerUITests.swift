@@ -5,7 +5,7 @@
 // service; the language picker; the post-as picker;
 // the library from the composer; a template with blanks answered through
 // its questions into the post; the thread saved as a draft and opened
-// again; the thread posted (its progress and its toast); Continue a thread
+// again; the thread posted (its toast, and the composer closing); Continue a thread
 // listing it, and a reply to it sent; and the Library page. On a phone,
 // the bar at the top with the keyboard up. Each is kept as a screenshot
 // (an XCTAttachment kept always), on the iPhone and the iPad, all in one
@@ -289,15 +289,19 @@ final class ComposerUITests: XCTestCase {
     XCTAssertTrue(draftTitle.waitForExistence(timeout: 10), "the draft didn't come back")
     snapshot("composer-draft-reopened")
 
-    // Post the thread: its progress, then the toast, and the composer closes.
+    // Post the thread: the toast, and the composer closes. The toast lasts
+    // 9 seconds and the demo posts at once, so it is looked for straight
+    // after the press: in run 100's iPad a wait for the composer's progress
+    // (which never showed) and one slow query took ten seconds, the toast
+    // came and went in them, and the test missed a thread that had gone out
+    // (its shot shows the toast).
     let publish = element(app, "publish")
     XCTAssertTrue(publish.waitForExistence(timeout: 5))
     publish.tap()
-    _ = element(app, "composer-busy").waitForExistence(timeout: 5)
-    snapshot("composer-sending")
-    XCTAssertTrue(text(app, containing: "Posted as").waitForExistence(timeout: 60), "the thread didn't go out")
+    XCTAssertTrue(text(app, containing: "Posted as").waitForExistence(timeout: 30), "the thread didn't go out")
     snapshot("composer-thread-posted")
     XCTAssertTrue(element(app, "composer-title").waitForNonExistence(timeout: 10), "the composer stayed open")
+    XCTAssertEqual(app.state, .runningForeground, "the app went away after the post")
     openComposer(app)
 
     // Continue a thread: one of the account's own recent posts, the new
@@ -358,6 +362,18 @@ final class ComposerUITests: XCTestCase {
     XCTAssertTrue(element(app, "library-panel").waitForExistence(timeout: 15), "the Library page didn't open")
     _ = element(app, "library-row").waitForExistence(timeout: 15)
     snapshot("library-page")
+
+    // Your posts: the thread's first post shows the first picture pasted
+    // into it, which the demo gives back as a data: address. The thumbnail
+    // is hidden from VoiceOver, so only the shot shows it.
+    let yourPosts = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Your posts")).firstMatch
+    if yourPosts.waitForExistence(timeout: 5) {
+      yourPosts.tap()
+      if element(app, "library-row").waitForExistence(timeout: 15) {
+        sleep(1)
+        snapshot("library-your-posts")
+      }
+    }
   }
 
 }

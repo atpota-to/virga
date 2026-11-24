@@ -385,9 +385,11 @@ TEMPLATES AND POSTING (Templates/, Posting/, Settings/PostingSettingsSection.swi
 - PostingUITests (`testTemplatesAndPostingSettings`, no archive build): `posting-templates`,
   `template-editor`, `template-editor-questions`, `posting-template-use` (Use on Event reminder: the
   composer, its questions in the library), `settings-posting`, `settings-posting-timer`,
-  `settings-posting-languages` (back at the top, the language field dragged into the window's top
-  third so the iPhone's keyboard leaves room for the list, "fr" typed; skipped without failing if
-  the field can't be reached).
+  `settings-posting-languages` (back at the top, "fr" typed in the language field, the shot taken
+  once the list has cleared the keyboard by itself; reaching the field and the software keyboard
+  showing are guarded, but then the list must clear the keyboard and a press on its first
+  suggestion must add that language; on the iPad, Escape must put the list away and ↓ and
+  Return must add the second suggestion. CI's iPad shows the software keyboard, so those run).
 
 ADVISER (Adviser/, Composer/ComposerController+Adviser.swift, Posting/)
 - The views are over VirgaPosting/Adviser's logic, unchanged: `AdviserGateModel` (the composer's
@@ -1067,8 +1069,13 @@ palette steps now swipe until a swipe no longer moves Search.
 
 Six items were still open after the visual review. Each was fixed on its own branch and checked
 by a second reader against the web harness (Playwright, with the bundled Instrument Sans loaded)
-and against run 94's screenshots (20ef411). VirgaUI only builds for Apple platforms, so none of
-this had been compiled when it was merged; the next CI run is its first.
+and against run 94's screenshots (20ef411). CI run 96 (31a9367) compiled them and passed every job.
+Its shots show what each was for: the faces in their colours (Bo's orange B in the lookup, Mira's
+blue M); on the iPad each dashboard card's title 12 points higher than in run 94 (Follower growth
+at 403 against 415, Engagement by type 711 against 735, Top posts 905 against 941); Who engaged
+with Open the post and Scan again in full beside it on the iPhone; the composer's language list
+under its field with "Span" showing; Settings' list over the rows under Languages on both
+devices; and the lookup's suggestion under its search field rather than over it.
 
 - The demo's pictures. The harness's faces (`avatarFor`) and post images (`placeholderImage`) are
   SVG data addresses, which AsyncImage and UIImage can't decode, so the demo showed every face as
@@ -1087,21 +1094,17 @@ this had been compiled when it was merged; the next CI run is its first.
 - Card and section heads. On touch, an icon tool in a card head is 44 points, pulled 12 above
   the title's line (`.card-head > .head-tools { align-self: flex-start; margin-top: -12px }`).
   The -5px in the open item is the mouse's rule, for 30-point buttons, and the port never uses
-  it. Only the dashboard's card head (`WidgetCard.head`) has icon tools. They keep their glyphs
-  on the title's baseline and give up 12 at the top (and 12 at the bottom on a phone), and a
-  chart's modes beside the title give up 13 at each end (`Measure.Segmented.headLift`), so the
-  head starts at the title: 32 tall from 561 up, the title's height on a phone. Before this, an
+  it. Only the dashboard's card head (`WidgetCard.head`) has icon tools. From 561 up they keep
+  their glyphs on the title's baseline and give up 12 at the top, and a chart's modes beside
+  the title give up 13 at each end (`Measure.Segmented.headLift`), so the head starts at the
+  title and is 32 tall. (On a phone the next round centres them on the title's row; see "Phone
+  heads and dashboard card heads" below.) Before this, an
   iPad card's title sat about 12.5 points low. SectionHead on a phone is `PhoneHeadLayout`, the
   web's `minmax(0, 1fr) auto`: the tools at their own width, the title wrapping in what they
   leave, both centred on the row; the title's line under both; a small Segmented on a row of its
-  own under that, 8 down. It reads as title, line, tools, the web's order. Port only, for Dynamic
-  Type: tools that would leave the title less than 6 ems (`Measure.Section.phoneTitleLeastEms`,
-  90 points at the default size), or less than its one-line width if that is smaller, go on
-  that same row under the line. At the default size no heading comes near that on a 375-point
-  iPhone (the tightest is Who engaged beside Open the post and Scan again, 103 points), but in a
-  320-point window (Display Zoom on a small iPhone, Slide Over) Who engaged's actions and The
-  best slots' more link go under the line where the web would wrap or crowd the title. Callers
-  no longer fix their tools' size: Defense's Who engaged doesn't.
+  own under that, 8 down. It reads as title, line, tools, the web's order. Callers no longer fix
+  their tools' size: Defense's Who engaged doesn't. (The 6-em fallback this round added was
+  replaced in the next: see "Phone heads and dashboard card heads" below.)
 - Wrapped titles. A title whose line-height is under the face's own 1.22 and that can wrap is
   set by `TitleLines` (Components/TitleLines.swift, the front page's old LandingTitleLines): one
   view per word, a line every line-height in points (scaled by Dynamic Type), each word's own
@@ -1118,10 +1121,9 @@ this had been compiled when it was merged; the next CI run is its first.
   title tools (the dashboard's menu, the rename pencil) sit at the row's end. It is one VoiceOver
   heading either way, identifier `page-title`. A title with right-to-left letters stays a Text
   (`TitleLines.canSet`), since the words are placed left to right. At the default size only
-  NoReportPage's title wraps at 440, and "There's nothing at this address" at 375. Still at the
-  face's 1.22 when they wrap: a figure's value (line-height 1, `overflow-wrap: anywhere`), the
-  first build's title, the return and terms titles (1.1) and the legal pages' h1 (1.05). A long
-  word with hyphens, or a CJK title, breaks differently from the browser.
+  NoReportPage's title wraps at 440, and "There's nothing at this address" at 375. A long word
+  with hyphens, or a CJK title, breaks differently from the browser. The other short-leaded
+  titles and a figure's value followed in the next round ("Titles and figures that wrap" below).
 - Language suggestions. They float over what follows the field, as `.lang-search
   .suggest-list` does: in the composer's dialog over Adult content, and in Settings › Posting
   over the rows after Languages. `LanguagePicker` hangs them from a line of no height at the
@@ -1133,11 +1135,9 @@ this had been compiled when it was merged; the next CI run is its first.
   way. Why the guide was dropped isn't known, so don't go back to one. Whatever holds the picker
   draws it over its later siblings with `.zIndex(1)` (MetaDialog's picker, the Languages
   SettingsRow, the lookup's search on both of its pages), and a SettingsRow draws its hairline
-  as a background, under its content, as the web's border is. The web caps its list at 16rem
-  and scrolls; the port's isn't capped. On an iPhone the keyboard can still cover the list when
-  the field is low in Settings, which has nothing like the composer's ComposerReveals. No UI
-  test taps a language suggestion yet; the lookup's test taps its first suggestion, now under
-  the field.
+  as a background, under its content, as the web's border is. The lookup's test taps its first
+  suggestion, now under the field. The cap, the keys and the list's place over the keyboard
+  came in the next round ("The language picker's keys and room" below).
 - The "@" list (`PostEditor.shownMention`). It is drawn while there is a partial mention and a
   lookup, as the web's list is up from the lookup's start until the mention ends, a pick,
   Escape, or a blur a beat later. A key the lookup task hasn't started on yet shows what the
@@ -1153,8 +1153,8 @@ this had been compiled when it was merged; the next CI run is its first.
   dialog all change height with each key, and with no one found the status is read out twice a
   key ("Looking…", then "No one found for …"), as the web's live region is. Keeping the last
   rows while the next lookup loads would be a departure from the web, not done here. A pick goes
-  in over the mention the list was drawn for. The list still has none of the web's keys (arrows,
-  Enter or Tab to pick, Escape).
+  in over the mention the list was drawn for. Its keys came in the next round ("The suggestion
+  lists' keys" below).
 - Menu hints (Posted's Post again and Put on a timer). Run 94's shots, taken once the menu has
   opened, show both hints under their titles on the iPhone and the iPad, and run 82's iPad shot
   shows them over the dark menu. Items, order, wording and separators match Posted's and
@@ -1171,7 +1171,251 @@ this had been compiled when it was merged; the next CI run is its first.
 Also left as they were: in an iPad window 481 to 560 wide, a dashboard chart's modes sit beside
 its title where the web's phone rule puts them under it, and the dashboard head's gap is 8
 where the web's is 16; `TransportImage` sends a `data:` address through the transport, so a
-picture the demo user posts (`blobDataUrl`) shows nothing in a library row.
+picture the demo user posts (`blobDataUrl`) shows nothing in a library row. All three were
+fixed in the next round, below.
+
+## The next round (after run 96)
+
+Five more fixes, each on its own branch from 31a9367, each read by a second reviewer (the
+suggestion keys by two: one for the web's behaviour, one for the typing path alone), then
+merged together. Linux checks: every changed file parses, the new logic tests pass
+(`LanguagePickerKeysBehaviour`, `SuggestionKeysBehaviour`, `FigureWrapTests`, `DataURLTests`,
+`DemoDataPictureTests`), and the module map's checks pass. None of the VirgaUI changes has been
+compiled until CI runs them.
+
+- The language picker's keys and room. On a hardware keyboard `LanguagePicker` is a combobox,
+  as LanguagePicker.jsx is. The first suggestion is highlighted as the list opens and after
+  every keystroke (--hover on the kit's radius, the shared `SuggestItemStyle`, and `.isSelected`
+  for VoiceOver). ↑ and ↓ move the highlight round the list, Return adds the highlighted one,
+  and Escape closes the list (first wired with `.onKeyPress` on a SwiftUI TextField, which run
+  99's iPad showed doesn't get Escape; now `KeyTextField`, see "Run 99 and the hardware keys"). With no list showing every key is the field's, and Tab is left to
+  move the focus, which closes the list 120 ms later. The rules are VirgaPosting's
+  `LanguagePickerKeys` (onKeyDown's, held by `LanguagePickerKeysBehaviour`). A move by the
+  arrows is announced, as the web's aria-activedescendant is read. Return keeps the focus, as
+  the web's Enter does; a touch user's Return adds the first suggestion. The list is at most 16rem (`ComposerMeasure.languagesListMax`, 256, grown
+  with Dynamic Type as --text-base's style grows) and scrolls inside past it, keeping the
+  highlighted row in sight; six rows come to 252, so at the default size it never scrolls, as
+  on the web. Once it does scroll (at the larger sizes), a drag inside it keeps the keyboard
+  (`.scrollDismissesKeyboard(.never)` over the page's interactive dismissal); while it fits, a
+  drag on it is most likely the page's, which still lets the keyboard go. A scroll view holding a picker wears
+  `composerScrolling()` (SettingsPage round its VirgaPage, MetaDialog round its DialogFrame): a
+  ScrollViewReader whose proxy is handed down as the ComposerScroller the composer sheet lends
+  its "@" list. The list then brings itself into view with ComposerReveals (anchor
+  `language-suggestions`, keyed by its row count), and again on keyboardDidShow, since it opens
+  with the focus while the keyboard is still rising. scrollTo without an anchor moves the least
+  it can, so nothing moves while the list shows in full. The Settings test no longer drags the
+  page (see PostingUITests above); its iPad steps open the list again by typing, not by a press.
+  Run 99 showed the reveal working on the iPhone (the list clear of the keyboard, French
+  marked, a press on it adding the language). A press on the field while it already has the
+  keyboard opening a list Escape closed, as the web's onClick does, is still untested.
+- Titles and figures that wrap. A heading whose line-height is under the face's 1.22 and that
+  can wrap is `WrappingTitle` (Components/WrappingTitle.swift): on one line the Text with
+  `overflowingLeading`, and once it no longer fits (`ViewThatFits(in: .horizontal)`) TitleLines
+  at the web's line-height, balanced as base.css's h1 is, taking the row. It is one VoiceOver
+  heading with the identifier it had. A page's title (`page-title`), the first build's
+  (`first-run-title`, 1.1), the return and terms screens' (`return-title`, `terms-title`, 1.1)
+  and a legal page's h1 (`legal-title`, 1.05) all use it; all are h1s, so all balance. A title
+  with right-to-left letters stays a Text, greedy and 1.22 apart, but once wrapped it takes the
+  row too, so a page title's tools sit at the row's end as on the web. One known difference: at
+  320, Chromium balances "Sign-in didn’t complete" as "Sign-in" / "didn’t complete" and the port
+  as "Sign-in didn’t" / "complete". The hyphen changes Chromium's choice ("Signin didn’t
+  complete" balances as the port does), and the port's is the narrower of the two. The first
+  build's one-line title box now shrinks to its line, about 3.4 points, so the lede sits about 2
+  points nearer it than the web's (the port's paragraphs have no half-leading above them). A
+  figure's value that wraps is set a character at a time, a line every figure size. Measured in
+  Chromium with the bundled face, tabular digits, "+", "−" and "%" are 0.6em, "," "." "’"
+  0.265em, and no pair a number puts side by side is kerned. `overflow-wrap: anywhere` gives each
+  line as many characters as fit, each counted at its advance plus letter-spacing, with the unit
+  able to start a line 3 in. FigureWrap (VirgaCore) breaks it so, and `FigureWrapTests` hold it
+  to 16 of Chromium's layouts. FigureLines places the characters at Core Text's advances for the
+  face, on the line's baseline. Only digits, "," "." "’", "+", "−", the hyphen-minus (0.499em),
+  the no-break space (0.197em) and "%" are set so (`FigureWrap.settable`); anything else,
+  including the narrow no-break space (Chromium drops the letter-spacing of a value holding
+  one), wraps as a Text 1.22 apart. The web caps a figure at 0.26 of its cell, so
+  its figures rarely wrap; the port's grow with Dynamic Type and wrap at large sizes.
+- The suggestion lists' keys. The "@" and "/" lists in a post's field take PostEditor.jsx's
+  onKeyDown, as `SuggestionKeys` (VirgaPosting, with its tests) decides it. Nothing happens
+  while an input method is composing (the web's `isComposing`, the field's `markedTextRange`).
+  ↑ and ↓ move the mark, round at the ends, whatever modifier is held. Return and Tab (⇧⇥
+  included) take the marked row, except with ⌘ or ⌃ held (⌘↩ sends). A list showing only its
+  status line (still looking, no one found, no template) takes only Escape, so Return makes a
+  new line. Escape closes the list, not the composer, and doesn't blur. The "@" list Escape
+  closed stays closed, its lookup still running included, until the mention changes
+  (`closedMention`). The web's comes back when a lookup already on its way answers, which the
+  port deliberately doesn't copy. The "/" list stays closed until the caret leaves the shortcut
+  (`slashDismissed`). The mark goes back to the first row whenever the mention or shortcut
+  changes, coming back to the same one included: each lookup starts at 0, and an onChange on
+  the shortcut's place and query (`SlashMark.key`) clears the "/" mark, as the web's
+  `setSlashIndex(0)` effect does. With a hardware keyboard, `ComposerTextView` returns
+  UIKeyCommands with `wantsPriorityOverSystemBehavior` only while a list is up and nothing is
+  composing: the arrows (plain, ⇧, ⌥, ⌘, ⌃), "\r", "\t" and ⇧⇥ while it has rows, Escape while
+  it is up. The software keyboard's Return and Tab reach `insertText` as "\n" and "\t", which
+  hands them to the lists only while they show rows: Safari on a phone sends keydown Enter for
+  Return, so the web takes the marked row too. A key reads the lists as they are when it comes
+  in (`keyLists`, from the post and the caret), and a row taken goes through the same `pick` and
+  `applyTemplate` as a tap. Every other key, and these with no rows, go to the field as before;
+  `typed`, `textChangeCount`, `handOnIfAhead`, the typing probe's `pressesBegan` and L+/L- notes,
+  and ⌘↩ are unchanged. The marked row is on --hover (`SuggestItemStyle`, as the pointer's and a
+  pressed row are), has `.isSelected`, and is read out as it moves. Not as the web: ⌃↩ and ⌃⇥
+  reach `insertText` as Return and Tab and pick while rows show (the port uses ⌘ for the web's
+  "⌘ or ⌃" throughout and has no ⌃↩ send); a dictated or Scribble new line picks while rows show,
+  where the web sees no keydown; a key's pick reads the post, so a Return while the field is
+  ahead of its post (run 90, run 92's "kept") picks where the field's last key would have ended
+  the mention, as a tap pick does. The handle field's list opens again as the field takes focus,
+  as the web's onFocus brings back what Escape or Tab put away. The Interaction lookup's Return
+  keeps the keyboard when it opens the suggestions or says why there are none. TagsField.jsx has
+  no suggestion list. ShortcutUITests' `testTheMentionListTakesItsKeys` checks, on the iPad's
+  keyboard, that ↓ marks the second person and Return takes them, and that Escape closes the
+  list until "bo" becomes "bo6"; on the phone, that Return takes the first person and makes no
+  new line (autocorrect on that Return is a small risk to the test, not the app). Not proven
+  before CI: that UIKit asks for `keyCommands` again on each key, and that a plain "\r" command
+  wins over text input (if not, `insertText` takes the key instead).
+- Phone heads and dashboard card heads. The web's phone head (`minmax(0, 1fr) auto`, 16 apart)
+  gives the tools their full width and the title what they leave; `.card-title` never breaks a
+  word, so a word longer than that room runs over the tools. Measured with the real font at 320,
+  375 and 440 and at the body style's Dynamic Type steps, that happens only to Who engaged (at
+  320 from the default size, at 375 from xxLarge) and The best slots (at 320 from xxLarge); the
+  web's tools themselves wrap only once the title's column is 0. `PhoneHeadLayout` now keeps the
+  tools beside the title down to its longest word, read from a hidden copy of the title with its
+  words one to a line (`wordsApart`, split at spaces but not no-break spaces), and puts them
+  under its line only below that, the one port-only fallback (`Measure.Section.phoneTitleLeastEms`
+  is gone). Over a small Segmented the title's column is the row less 16, as the web's empty
+  second column keeps its gap, and the title's lines are balanced (`PhoneHeadLayout.balanced`:
+  the narrowest width, to half a point, that needs no more lines, TitleLines' rule), so Best
+  time's long title breaks after "earns," at 375 as the web's does. A dashboard card's head: 16
+  between the title, the chart's modes and the tools; the two tools 4 apart (`.head-tools`) and
+  let out 14 at the end (`.widget-open { margin-right: -14px }` on touch,
+  `Measure.Dashboard.openLetOut`), so the last glyph ends on the card's edge. The modes go under
+  the title in a window 560 or less (the phone rule, on the window), 8 down with no row gap, and
+  in a card 440 or less in any window (`@container widget`, the card's own width), where the
+  head's 8 row gap stays and they sit 16 under the tools' 32. On a phone the card's head is
+  laid out by `PhoneHeadLayout`, as SectionHead's is (`WidgetCard.phoneHead`): the title and
+  tools centred on one row, so a two-line title has the tools by its middle (`align-self:
+  center`), the row the larger of the title and the tools' 20; the title's lines balanced; the
+  lines under the title (its own period, the lists' count, `.card-sub` in grid row 2) the full
+  width beneath both, 2 down; read and drawn in the web's order, title, lines, tools, so the
+  tools' 44-point targets stay over the lines they reach; and the tools under the lines only
+  should the title's longest word not fit beside them (then their 20-point frame sits 8 under
+  the lines, so the buttons reach 4 over them; a report's own name, whose longest word is
+  short, never takes that at 375 or wider at the default size, though a title someone gives a
+  card might). From 561 up the lines stay in the
+  titles' column and the tools on the title's line. (The phone layout was the head review's
+  note, done at the merge; the merge's first try put the lines after the tools, which a second
+  reader caught.)
+  Where the port still differs: its link actions scale with the footnote style (19/13 at
+  xxxLarge, the web's 23/17 with its root), so at the largest sizes a few titles get less room
+  than the web's and wrap one line more, or go under (The best slots at 375 at xxxLarge);
+  Chromium's balance prefers "Defense is on / for @handle" from 180 to 255 points where the port,
+  like greedy wrapping, gives "Defense is on for / @handle"; a hyphenated word counts whole and a
+  CJK title counts as one word, so their tools go under sooner than the web would wrap; and the
+  iPad's head (BesideOrUnder) isn't balanced.
+- Pictures in `data:` addresses. A picture the demo's user posts comes back in the post's view
+  as a `data:` address (`HarnessRepo.blobDataUrl`, up to 2,000,000 bytes, about 2.7 million
+  characters). An `<img>` draws one, but no transport answers it, so its library row showed an
+  empty tint square. `TransportImage` (link cards, the card dialog, library rows) now tries
+  `DemoPicture` first, then hands any `data:` address to `DataPicture`, and uses the transport
+  for everything else, so https and file addresses load and fail as before. `DataPicture` (a
+  ZStack, not a Group, as AltTextPreview is) reads the address off the main actor with
+  VirgaNetwork's `DataURL`, the Fetch standard's data: URL processor: base64 decoded the
+  forgiving way, percent-encoding undone, the type percent-encoded as the URL parser writes it
+  and parsed to its essence. UIImage decodes the bytes, and the picture fills its frame as
+  `object-fit: cover` does; nothing shows while it is read or when it holds no picture, and
+  `onFailure` is told then. An SVG type holds no picture for `DataPicture`, so SVG in any form
+  but the demo's two still draws nothing; UIImage draws TIFF and HEIC, which Chromium doesn't
+  and Safari does. `DataURLTests` holds `DataURL` to what Playwright's Chromium draws and Node's
+  fetch reads over 61 addresses. Today only library rows receive such an address (`images[0].thumb`
+  through `Library.postMedia`): Avatar and RemotePicture get the SVG faces, "" or CDN https, and
+  LocalPicture and AltTextPreview get file: or https. ComposerUITests takes a shot of Your posts
+  (`library-your-posts`), where the thread's first post should show its pasted picture.
+
+### Run 99 and the hardware keys
+
+CI run 99 (8abae71, started by hand: with PR #13 merged, a push to the branch no longer runs the
+workflow) compiled everything and passed on the iPhone, with the new checks: the language list
+clears the keyboard by itself (French marked) and a press on it adds the language; the software
+Return takes the marked person (`composer-mention-return`, "Thanks @maren.example.com"); the
+pasted picture shows in its Library row on both devices (`library-your-posts`); the phone's
+Follower growth head has its tools centred beside the title, the last glyph on the card's edge,
+and the modes under the title. The iPad failed two of the new key steps. In the post editor ↓
+reached its priority key command and marked the second person, but a hardware Return did
+nothing: no pick, no new line, the list still up (the recording, and the hierarchy at the
+failure). In Settings, `.onKeyPress(.escape)` on the language field, a SwiftUI TextField, never
+fired: the hierarchy at the failure has the field holding "e" with the keyboard and the list's
+six rows still up. CI's iPad shows the software keyboard, and each hardware key from XCUITest
+hides it and brings it back about two seconds later; the ↓ was delivered through that, and so
+were two hardware "n" keys typed into the library's search in another test.
+
+A research pass (Apple's documentation, WWDC21 10260 and WWDC23 10162, developer forum threads
+760511, 784668, 849249 and others) found: a priority key command (`wantsPriorityOverSystemBehavior`)
+is documented to come before the text system for every key, and a plain "\r" one has been seen
+to fire on an iPadOS 26.2 simulator, so why run 99's didn't is not known; Apple DTS says a
+SwiftUI TextField loses focus on a hardware Return whatever an `onKeyPress` handler returns, and
+nothing confirms Escape or the arrows reach `onKeyPress` on a focused TextField. The round that
+followed:
+- The post editor (`ComposerTextView`) also takes Return (the keypad's Enter too), Tab, ⇧⇥ and
+  Escape in `pressesBegan` when `SuggestionKeys` says the lists take them, reading the press's ⌘
+  and ⌃ (⌘↩ still sends), and keeps that press and its later phases from the text view; every
+  other press goes to super unchanged. The key commands stay, and a key acts once whichever route
+  comes first (a command does nothing while the list's own press of that key is down; a press
+  stamped no later than a command that took its key is held as the same key, a claim forgotten
+  when a press of that key ends). The typing probe now records each list key as a Q event (route
+  c, p, u, i or d, the key, and what came of it), the list commands the field offered (C events),
+  and presses with no key. `testTheMentionListTakesItsKeys` runs with the probe on, writes the
+  field's record when a step fails (VIRGA-TYPED-TRACE) and when its keys are done
+  (VIRGA-KEYS-TRACE), and on the iPad also checks that Tab takes the person "bo6" finds. A
+  second reviewer, on the typing path alone, found one way a second Return could be swallowed
+  behind a busy main thread; that was fixed before the merge.
+- The language search is `KeyTextField` (Components/KeyTextField.swift), a UIViewRepresentable
+  over a UITextField subclass drawn as VirgaTextField is inside `.virgaField(focused:)`. While
+  suggestions show it hands ↑, ↓, Return and Escape to LanguagePicker by whichever comes first:
+  its `pressesBegan` (a press it takes goes no further in any phase), priority key commands, or,
+  for Return, `textFieldShouldReturn`, which also takes a phone's Return. The same key by another
+  route within a quarter second counts as the same press. Return keeps the focus, as the web's
+  Enter does, so the old difference where Return ended the field's editing is gone; Return and
+  Escape with ⌘, ⌥ or ⌃ stay with the field, where the web takes them with any modifier. Inline
+  predictions, autocorrection and spell checking are off in it. The field reports its focus to
+  the picker both ways, a press anywhere in the box opens the list and gives the field the
+  keyboard (a SwiftUI press on the box, and the field's own tap on its text line), and a field
+  disabled while it has the keyboard (the third language added) lets the keyboard go after the
+  update before it is disabled.
+- Not proven until the next run: that both compile; which route delivers each key on iPadOS
+  26.5; and whether XCUITest's typeKey loses keys while the iPad's software keyboard hides and
+  comes back. If it does, a debug-only launch argument that gives the field a zero-size
+  inputView for the hardware-key steps (as another project's iPad UI tests do) is the next thing
+  to try. The other fields that use `.onKeyPress` on a SwiftUI TextField (HandleField, the
+  Interaction lookup's search, the command palette, the library's search, the template editor)
+  carry the same risk; no test has pressed a key in them, and KeyTextField can replace them once
+  CI shows it working.
+
+### What runs 100 to 104 showed about the iPad's keys
+
+Every run compiled; the iPhone passed every test in each, its software Return taking the marked
+person. On the iPad:
+- Run 100 (29abaf5): the post editor's typing probe recorded the ↓ as a press and then its
+  priority key command, which marked the second person, and no trace at all of the Return
+  pressed with `app.typeKey` five seconds later (no press, key command or insertText). The
+  composer test also failed, but on its own timing: it waited for a progress view that never
+  showed while the 9-second "Posted as" toast came and went (its shot shows the toast); it now
+  looks for the toast straight after Post. A posting pages step timed out reading the screen in
+  the palette, which passed in later runs on the same code.
+- Runs 102 and 103 tried a test-only flag giving the UIKit fields an empty input view, so no
+  software keyboard came up. With it XCUITest could no longer type into the post editor
+  ("Neither element nor any descendant has keyboard focus"), and the language search's Escape
+  still did nothing with no keyboard at all (`keyboards=0`). The flag is gone.
+- Run 104 (e611fb8) pressed each key three ways and logged each: the app's `typeKey`, the
+  field's `typeKey`, and the key typed as text. ↓ came through `app.typeKey`. Return came through
+  neither `typeKey`, and typed as text ("\n") it reached the post editor's insertText, which took
+  the marked person with no new line (Qi-ret=pickMention1). Escape came through no way at all,
+  in either field: the language search's probe record holds no press of any key and the post
+  editor's none of Escape.
+
+So on CI's iPad simulator XCUITest delivers neither a hardware Return nor Escape to the app, and
+what the fields do with them is checked there as far as it can be: Return as the field receives
+it from text, and Escape only when the probe shows it arrived, which fails the test if the list
+stays up. When no way of pressing Escape reached the field, the tests log it (VIRGA-NOTE) and go
+on. On a device, a hardware Return and Escape take the routes the code gives them (presses,
+priority key commands, the delegate), which the Linux models and two reviews hold to the web's
+rules but no CI run has exercised.
 
 ## Known gaps and deliberate differences
 

@@ -1,8 +1,8 @@
 // Ports src/styles/base.css (h1 { text-wrap: balance })
 //
 // A title whose CSS line-height is shorter than the face's own 1.22em (the
-// front page's `.landing-title` at 1.02, a page's `.page-title` at 1.1),
-// set on more than one line. A Text can't set its lines closer than the
+// front page's `.landing-title` at 1.02; a page's `.page-title` and the
+// others WrappingTitle draws, at 1.1 or 1.05), set on more than one line. A Text can't set its lines closer than the
 // face's own (`.lineSpacing` stops at 0), so the title's words are set
 // here, one view each: every line's box is the browser's, the word's own
 // line centred on it (its half-leading), the glyphs reaching past it above

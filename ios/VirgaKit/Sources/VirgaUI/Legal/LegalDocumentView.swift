@@ -213,15 +213,11 @@ struct LegalBlockView: View {
     let words = LegalMarkdown.inlineText(children)
     switch level {
     case 1:
-      Text(words)
-        .virgaText(
-          size: theme.points(Measure.Legal.h1Size), weight: VirgaWeight.semibold, lineHeight: Measure.Legal.h1LineHeight,
-          tracking: Measure.Legal.h1Tracking)
-        .foregroundStyle(theme.ink)
-        .fixedSize(horizontal: false, vertical: true)
+      // `.legal-h1`: its box the 1.05 line, its lines balanced when it wraps.
+      WrappingTitle(
+        words, size: theme.points(Measure.Legal.h1Size), lineHeight: Measure.Legal.h1LineHeight,
+        tracking: Measure.Legal.h1Tracking, identifier: "legal-title")
         .padding(.bottom, Measure.Legal.h1SpaceBelow)
-        .accessibilityAddTraits(.isHeader)
-        .accessibilityIdentifier("legal-title")
         .id(id)
     case 2:
       let space = inDialog ? Measure.Legal.dialogH2SpaceAbove : Measure.Legal.h2SpaceAbove

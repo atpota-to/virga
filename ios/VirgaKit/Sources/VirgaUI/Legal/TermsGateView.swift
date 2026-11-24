@@ -46,13 +46,11 @@ public struct TermsGateView: View {
         Brand().accessibilityHidden(true)
       } main: {
         NarrowColumn(gap: Measure.Legal.termsGap) {
-          Text("Before you start")
-            .virgaText(
-              size: theme.points(ThemeKit.returnTitleFontSize), weight: VirgaWeight.semibold, lineHeight: ThemeKit.returnTitleLineHeight,
-              tracking: ThemeKit.returnTitleTracking)
-            .foregroundStyle(theme.ink)
-            .accessibilityAddTraits(.isHeader)
-            .accessibilityIdentifier("terms-title")
+          // `.return-title`: its box the 1.1 line, its lines balanced
+          // when it wraps.
+          WrappingTitle(
+            "Before you start", size: theme.points(ThemeKit.returnTitleFontSize),
+            lineHeight: ThemeKit.returnTitleLineHeight, tracking: ThemeKit.returnTitleTracking, identifier: "terms-title")
           Group {
             if named || waited {
               IdentityRow(identity: identity) {

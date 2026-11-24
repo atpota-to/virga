@@ -56,7 +56,8 @@ struct HandleField: View {
   @State private var skip: String?
   /// The suggestion the arrows have marked, -1 for none (the field itself).
   @State private var active = -1
-  /// Escape (or Tab) put the list away; the arrows or new answers bring it back.
+  /// Escape (or Tab) put the list away; the arrows, new answers or the
+  /// field's focus coming back bring it back.
   @State private var closed = false
 
   var body: some View {
@@ -146,7 +147,13 @@ struct HandleField: View {
     .zIndex(1)
     .task(id: value) { await suggest() }
     .onChange(of: focus.wrappedValue) { _, focused in
-      if !focused { active = -1 }
+      // The web's blur puts the list away and its focus brings back what
+      // was found, so a list Escape closed is up again when the field is.
+      if focused {
+        closed = false
+      } else {
+        active = -1
+      }
     }
     .onChange(of: showing) { _, now in
       // On a phone the keyboard takes the lower half: the field goes to the

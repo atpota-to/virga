@@ -7,8 +7,8 @@
 // a card has no edge: a figure under a rule, a chart under its title, a
 // list under its title on a rule in ink. From 860 wide down a third and two
 // thirds take the whole row (a figure a third wide goes to half); from 620
-// down every card does, and figures go two to a row. A card 440 wide or
-// less puts its chart's modes under its title.
+// down every card does, and figures go two to a row. In a window 560 wide or
+// less, or a card 440 wide or less, a chart's modes go under its title.
 //
 // The header: the dashboard's name with its ⋯ (Rename, Duplicate, New
 // dashboard, Reset or Clear, Delete), the period's line, Customize and the
@@ -373,51 +373,109 @@ struct WidgetCard: View {
   }
 
   /// The heading: the title (and its lines), the chart's modes, and the
-  /// tools; in a card 440 wide or less the modes go under the titles.
+  /// tools, 16 apart (`.card-head { column-gap: 16px }`). The modes go under
+  /// the titles in a window 560 wide or less, as the kit's phone head puts
+  /// a small Segmented (`@media (max-width: 560px)`), and in a card 440
+  /// wide or less whatever the window (`@container widget (max-width:
+  /// 440px)`, the card's own width).
   private func head(title: String?) -> some View {
     let chartModes = modes
-    let under = chartModes != nil && (width ?? .infinity) <= Measure.Dashboard.headModesAt
+    let gap = theme.gap(ThemeKit.cardHeadGap)
+    let under = chartModes != nil && (theme.isPhone || (width ?? .infinity) <= Measure.Dashboard.headModesAt)
+    let name = title ?? def.name
+    let sub = headSub
     return VStack(alignment: .leading, spacing: 0) {
-      HStack(alignment: .firstTextBaseline, spacing: theme.space2) {
-        VStack(alignment: .leading, spacing: 2) {
-          // An h2: the heading's 1.25 between its lines (base.css).
-          Text(title ?? def.name)
-            .virgaText(
-              size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, lineHeight: ThemeKit.headingLineHeight,
-              tracking: ThemeKit.cardTitleTracking)
-            .foregroundStyle(theme.ink)
-            .fixedSize(horizontal: false, vertical: true)
-            .accessibilityAddTraits(.isHeader)
-          ownLine
-          if let sub = headSub {
-            Text(sub).virgaText(.textSm).foregroundStyle(theme.muted)
+      if theme.isPhone {
+        phoneHead(name: name, title: title, sub: sub)
+      } else {
+        HStack(alignment: .firstTextBaseline, spacing: gap.column) {
+          VStack(alignment: .leading, spacing: theme.points(ThemeKit.cardSubSpaceAbove)) {
+            titleText(name)
+            subLines(sub)
           }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          // Beside the title (from 561 up, in a card wider than 440), the
+          // modes' 44-point keys reach 13 above and below its line without
+          // making the head any taller (`.card-head > .segmented {
+          // margin-block: -13px }` on touch from 561 up).
+          if !under, let chartModes {
+            chartModes
+              .padding(.vertical, -Measure.Segmented.headLift)
+          }
+          // The 44-point tools, their glyphs on the title's baseline, reach
+          // 12 above its line without counting there, so the head starts at
+          // the title as every heading does (`.card-head > .head-tools {
+          // align-self: flex-start; margin-top: -12px }` on touch; the -5px
+          // is a mouse's, for its 30-point buttons), and count below it, so
+          // the head is 32 tall. The last is let out by its own 14
+          // (`.widget-open { margin-right: -14px }` on touch), so its glyph
+          // ends on the card's edge.
+          tools(title: title)
+            .padding(.top, -Measure.Section.iconToolLift)
+            .padding(.trailing, -Measure.Dashboard.openLetOut)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        // Beside the title, in a card wider than 440, the modes' 44-point
-        // keys reach 13 above and below its line without making the head
-        // any taller (`.card-head > .segmented { margin-block: -13px }` on
-        // touch from 561 up).
-        if !under, let chartModes {
-          chartModes
-            .padding(.vertical, -Measure.Segmented.headLift)
-        }
-        // The 44-point tools, their glyphs on the title's baseline, reach
-        // 12 above its line without counting there, so the head starts at
-        // the title as every heading does (`.card-head > .head-tools {
-        // align-self: flex-start; margin-top: -12px }` on touch; the -5px
-        // is a mouse's, for its 30-point buttons). From 561 up they count
-        // below it, so the head is 32 tall; on a phone they don't
-        // (`.card-head:has(> :nth-child(2)) > .head-tools { margin-block:
-        // -12px }`), so the head stays the title's height.
-        tools(title: title)
-          .padding(.top, -Measure.Section.iconToolLift)
-          .padding(.bottom, theme.isPhone ? -Measure.Section.iconToolLift : 0)
       }
+      // Under the titles, 8 down (`margin-top: 8px`). A phone's head has no
+      // gap between its rows (`.card-head:has(> :nth-child(2)) { row-gap: 0
+      // }`); a narrow card's on a wider screen keeps the head's 8, so there
+      // the modes are 16 under the tools' 32.
       if under, let chartModes {
-        chartModes.padding(.top, Measure.Dashboard.headModesSpaceAbove)
+        chartModes.padding(.top, Measure.Dashboard.headModesSpaceAbove + (theme.isPhone ? 0 : gap.row))
       }
     }
+  }
+
+  /// At 560 and under the head is the kit's phone grid (`minmax(0, 1fr)
+  /// auto`, 16 apart), laid out as SectionHead's is (PhoneHeadLayout): the
+  /// title and the tools share the first row, each centred on it, so a
+  /// title on two lines has the tools by its middle, and its lines are
+  /// balanced as an h2's are; the lines under the title (`.card-sub`) run
+  /// the full width beneath both (`grid-column: 1 / -1`), 2 down. It reads
+  /// and draws in the web's order: the title, its lines, then the tools,
+  /// whose 44-point targets stay over the lines they reach. The tools
+  /// reach 12 above and below the row without counting there
+  /// (`.card-head:has(> :nth-child(2)) > .head-tools { margin-block: -12px
+  /// }` on touch), so the row is the larger of the title and 20, and the
+  /// last is let out by its own 14 (`.widget-open { margin-right: -14px }`
+  /// on touch), so its glyph ends on the card's edge. Only should the
+  /// title's longest word not fit beside them do they go under its lines,
+  /// SectionHead's one port-only fallback.
+  private func phoneHead(name: String, title: String?, sub: String?) -> some View {
+    PhoneHeadLayout(
+      columnGap: Measure.Section.phoneHeadGap, subSpaceAbove: theme.points(ThemeKit.cardSubSpaceAbove),
+      underSpaceAbove: Measure.Segmented.headSpaceAbove, toolsUnder: false
+    ) {
+      titleText(name)
+        .layoutValue(key: PhoneHeadLayout.Role.self, value: .title)
+      if hasSubLines(sub) {
+        VStack(alignment: .leading, spacing: theme.points(ThemeKit.cardSubSpaceAbove)) { subLines(sub) }
+          .layoutValue(key: PhoneHeadLayout.Role.self, value: .sub)
+      }
+      tools(title: title)
+        .padding(.vertical, -Measure.Section.iconToolLift)
+        .padding(.trailing, -Measure.Dashboard.openLetOut)
+        .layoutValue(key: PhoneHeadLayout.Role.self, value: .tools)
+      // The title's words one to a line, in its face, never drawn or read:
+      // as wide as its longest word, the least it can wrap in.
+      titleFace(Text(PhoneHeadLayout.wordsApart(name)))
+        .hidden()
+        .accessibilityHidden(true)
+        .layoutValue(key: PhoneHeadLayout.Role.self, value: .words)
+    }
+  }
+
+  /// An h2: `.card-title`, the heading's 1.25 between its lines (base.css).
+  private func titleText(_ name: String) -> some View {
+    titleFace(Text(name))
+      .foregroundStyle(theme.ink)
+      .fixedSize(horizontal: false, vertical: true)
+      .accessibilityAddTraits(.isHeader)
+  }
+
+  private func titleFace(_ text: Text) -> some View {
+    text.virgaText(
+      size: theme.points(ThemeKit.cardTitleFontSize), weight: ThemeKit.cardTitleWeight, lineHeight: ThemeKit.headingLineHeight,
+      tracking: ThemeKit.cardTitleTracking)
   }
 
   /// The follower chart's Total and New, a small Segmented.
@@ -431,9 +489,10 @@ struct WidgetCard: View {
         selection: $view, size: .small))
   }
 
-  /// Post as a picture and the way to the full report.
+  /// Post as a picture and the way to the full report, 4 apart
+  /// (`.head-tools { gap: 4px }`).
   private func tools(title: String?) -> some View {
-    HStack(spacing: 0) {
+    HStack(spacing: theme.points(ThemeKit.headToolsGap)) {
       PostChartButton(type: card.type, name: title ?? def.name, options: card.options, period: period)
       Button {
         navigate(def.href)
@@ -444,6 +503,23 @@ struct WidgetCard: View {
       .accessibilityLabel("Open the full \(def.name) report")
     }
   }
+
+  /// The lines under the title (`.card-sub`): the card's own period and
+  /// kind, and `sub`, the lists' count (headSub).
+  @ViewBuilder private func subLines(_ sub: String?) -> some View {
+    ownLine
+    if let sub {
+      Text(sub).virgaText(.textSm).foregroundStyle(theme.muted)
+    }
+  }
+
+  /// Whether the card has a line under its title.
+  private func hasSubLines(_ sub: String?) -> Bool {
+    ownPeriod != nil || ownKind != nil || sub != nil
+  }
+
+  private var ownPeriod: AnalyticsPeriod? { card.options?.period.flatMap { Periods.presetPeriod($0) } }
+  private var ownKind: String? { card.options?.kind.flatMap { WidgetParts.kindNoun[$0] } }
 
   /// WIDGET_HEADS' `sub`: the lists' count heads the lists you're on.
   private var headSub: String? {
@@ -457,8 +533,8 @@ struct WidgetCard: View {
   /// `OwnLine`: the card's own period and kind, when it keeps them, each
   /// with the web's title as its hint.
   @ViewBuilder private var ownLine: some View {
-    let own = card.options?.period.flatMap { Periods.presetPeriod($0) }
-    let kind = card.options?.kind.flatMap { WidgetParts.kindNoun[$0] }
+    let own = ownPeriod
+    let kind = ownKind
     if own != nil || kind != nil {
       FlowLayout(spacing: 0, lineSpacing: 0) {
         if let own {

@@ -15,9 +15,20 @@
 // (Library.detectSlashCommand, rankTemplatesForSlash, matchShortcut); a
 // template picked goes in over the shortcut, and Open the library opens
 // it over the shortcut's range.
+//
+// Both lists take the web's keys (onKeyDown, SuggestionKeys): ↑ and ↓ move
+// the marked row (--hover, read as selected), round at the ends; Return or
+// Tab takes it; Escape closes the list, which stays closed until the
+// mention or shortcut changes. The text view asks for them only while a
+// list is up, and leaves them to an input method that is composing. The
+// web hears every key once, at keydown; UIKit can hand a hardware key in
+// by a key command or by its press, so the text view takes Return, Tab and
+// Escape by whichever comes first and never twice. The software keyboard's
+// Return takes the marked row too, as Safari sends keydown Enter for it.
 
 #if canImport(UIKit)
 import CoreText
+import QuartzCore
 import SwiftUI
 import UIKit
 import UniformTypeIdentifiers
@@ -45,6 +56,29 @@ struct MentionLookup: Equatable {
   func isFor(_ partial: PartialMention) -> Bool {
     range.start == partial.start && range.query.jsEquals(partial.query)
   }
+
+  /// What the lookup's task is keyed on: the mention's place and query.
+  static func key(_ partial: PartialMention) -> String { "\(partial.start):\(partial.query)" }
+}
+
+/// The "/" list's marked row, for the shortcut it was marked in: the web's
+/// `slashIndex`, set back to 0 as the shortcut changes.
+struct SlashMark: Equatable {
+  var start: Int
+  var query: String
+  var index: Int
+
+  /// What the web's effect watches: the shortcut's place and query.
+  static func key(_ slash: SlashCommand) -> String { "\(slash.start):\(slash.query)" }
+}
+
+/// The keys an open suggestion list takes from its field: the lists as
+/// they are when a key comes in, and what to do with the key's action
+/// (PostEditor's). ComposerTextView asks as each key comes in, so a key
+/// acts on what is drawn at that moment.
+struct SuggestionKeyHandler {
+  var lists: () -> SuggestionKeys.Lists
+  var act: (SuggestionKeys.Action) -> Void
 }
 
 struct PostEditor: View {
@@ -58,6 +92,13 @@ struct PostEditor: View {
   @State private var caret = 0
   @State private var detected: (text: String, segments: [HighlightSegment]) = (text: "", segments: [])
   @State private var mention: MentionLookup?
+  /// The mention (MentionLookup.key) whose list Escape closed: it stays
+  /// closed, its lookup still running included, until the mention changes.
+  @State private var closedMention: String?
+  @State private var slashMark: SlashMark?
+  /// Where the shortcut starts whose list Escape closed: closed until the
+  /// caret leaves it (the web's `slashDismissed`).
+  @State private var slashDismissed: Int?
   @State private var pasteNote = ""
   @State private var focusTick = 0
 
@@ -81,10 +122,22 @@ struct PostEditor: View {
     return mention.isFor(partial) ? mention : MentionLookup.starting(partial, after: mention)
   }
 
-  /// The "/shortcut" being typed, while no mention is.
+  /// The "/shortcut" being typed, while no mention is, unless Escape
+  /// closed its list.
   private var slash: SlashCommand? {
-    guard partial == nil else { return nil }
-    return Library.detectSlashCommand(text, caret)
+    guard partial == nil, let found = Library.detectSlashCommand(text, caret) else { return nil }
+    return found.start == slashDismissed ? nil : found
+  }
+
+  /// The templates the shortcut could mean.
+  private func slashMatches(_ slash: SlashCommand) -> [PostTemplate] {
+    SlashList.matches(controller, slash)
+  }
+
+  /// The "/" list's marked row: 0 until the arrows move it in this shortcut.
+  private func slashIndex(_ slash: SlashCommand) -> Int {
+    guard let slashMark, slashMark.start == slash.start, slashMark.query.jsEquals(slash.query) else { return 0 }
+    return slashMark.index
   }
 
   /// The open suggestion list's place in the composer's scroll.
@@ -113,7 +166,8 @@ struct PostEditor: View {
       }
       if let slash {
         SlashList(
-          controller: controller, slash: slash, anchor: suggestAnchor,
+          controller: controller, slash: slash, matches: slashMatches(slash), marked: slashIndex(slash),
+          anchor: suggestAnchor,
           onOpenLibrary: { controller.openLibrary(postId, range: TextSelection(start: slash.start, end: slash.end)) }
         ) { template in
           controller.applyTemplate(postId, template, range: TextSelection(start: slash.start, end: slash.end))
@@ -121,7 +175,69 @@ struct PostEditor: View {
       }
     }
     .task(id: text) { await detect(text) }
-    .task(id: partial.map { "\($0.start):\($0.query)" }) { await lookUp(partial) }
+    .task(id: partial.map(MentionLookup.key)) { await lookUp(partial) }
+    // The web's effect: a "/" list Escape closed opens again once the caret
+    // has left the shortcut.
+    .onChange(of: Library.detectSlashCommand(text, caret) == nil) { _, gone in
+      if gone && slashDismissed != nil { slashDismissed = nil }
+    }
+    // The web's other effect: the "/" list's mark goes back to the first row
+    // whenever the shortcut changes, even back to the one it was moved in (a
+    // letter typed and taken out, the caret leaving and coming back,
+    // Escape). slashIndex's own check covers the moment before this runs.
+    .onChange(of: slash.map(SlashMark.key)) { _, _ in
+      if slashMark != nil { slashMark = nil }
+    }
+  }
+
+  // MARK: Keys
+
+  /// The lists as they are now, for a key coming in.
+  private func keyLists() -> SuggestionKeys.Lists {
+    let shown = shownMention
+    var lists = SuggestionKeys.Lists(
+      mentionOpen: shown != nil, mentionRows: shown?.items.count ?? 0, mentionIndex: shown?.index ?? 0)
+    if let slash {
+      lists.slashOpen = true
+      lists.slashRows = slashMatches(slash).count
+      lists.slashIndex = slashIndex(slash)
+    }
+    return lists
+  }
+
+  /// A key's action on the lists, as the web's onKeyDown takes it: a row
+  /// taken goes in as a press on it would, and the row marked is read out
+  /// (the web's aria-activedescendant).
+  private func act(_ action: SuggestionKeys.Action) {
+    switch action {
+    case .field:
+      return
+    case .markMention(let row):
+      guard var shown = shownMention, shown.items.indices.contains(row) else { return }
+      shown.index = row
+      mention = shown
+      AccessibilityNotification.Announcement(MentionList.spoken(shown.items[row])).post()
+    case .pickMention(let row):
+      guard let shown = shownMention, shown.items.indices.contains(row) else { return }
+      pick(shown.items[row], from: shown)
+    case .markSlash(let row):
+      guard let slash else { return }
+      let matches = slashMatches(slash)
+      guard matches.indices.contains(row) else { return }
+      slashMark = SlashMark(start: slash.start, query: slash.query, index: row)
+      AccessibilityNotification.Announcement(SlashList.spoken(matches[row])).post()
+    case .pickSlash(let row):
+      guard let slash else { return }
+      let matches = slashMatches(slash)
+      guard matches.indices.contains(row) else { return }
+      controller.applyTemplate(postId, matches[row], range: TextSelection(start: slash.start, end: slash.end))
+    case .close(let closesMention, let closesSlash):
+      if closesMention, let partial {
+        mention = nil
+        closedMention = MentionLookup.key(partial)
+      }
+      if closesSlash, let slash { slashDismissed = slash.start }
+    }
   }
 
   private func field(text: String, segments: [HighlightSegment]) -> some View {
@@ -173,7 +289,8 @@ struct PostEditor: View {
           if controller.focusPostId.map({ $0.jsEquals(postId) }) ?? false { controller.focusPostId = nil }
         },
         onPaste: { range in paste(range) },
-        onSend: { controller.sendFromKeyboard() })
+        onSend: { controller.sendFromKeyboard() },
+        suggestionKeys: SuggestionKeyHandler(lists: { keyLists() }, act: { act($0) }))
     }
     .opacity(disabled ? 0.6 : 1)
   }
@@ -194,22 +311,29 @@ struct PostEditor: View {
   // MARK: Mentions
 
   private func lookUp(_ partial: PartialMention?) async {
+    // A list Escape closed stays closed for its own mention only.
+    let key = partial.map(MentionLookup.key)
+    if closedMention != nil && closedMention != key { closedMention = nil }
     guard let partial else {
       mention = nil
       return
     }
+    // Closed by Escape while this lookup was on its way, so its answer
+    // doesn't bring the list back (the web's would, a beat after Escape).
+    func closed() -> Bool { closedMention == key }
+    if closed() { return }
     mention = .starting(partial, after: mention)
     try? await Task.sleep(nanoseconds: 150_000_000)
-    if Task.isCancelled { return }
+    if Task.isCancelled || closed() { return }
     do {
       let body = try await PublicAppView.publicXrpc(
         "app.bsky.actor.searchActorsTypeahead", ["q": .string(partial.query), "limit": 5],
         transport: controller.transport)
-      if Task.isCancelled { return }
+      if Task.isCancelled || closed() { return }
       let items = (body["actors"]?.arrayValue ?? []).filter { !($0["handle"]?.stringValue ?? "").isEmpty }
       mention = MentionLookup(range: partial, status: .ready, items: Array(items.prefix(5)))
     } catch {
-      if !Task.isCancelled { mention = MentionLookup(range: partial, status: .error, items: []) }
+      if !Task.isCancelled && !closed() { mention = MentionLookup(range: partial, status: .error, items: []) }
     }
   }
 
@@ -320,6 +444,30 @@ struct SuggestRowStyle: ViewModifier {
   }
 }
 
+/// `.suggest-item`'s fill: --hover on the row the arrow keys are on
+/// (`aria-selected`), and on the one under the pointer or a finger. The
+/// "@" and "/" lists and the language picker's suggestions wear it.
+struct SuggestItemStyle: ButtonStyle {
+  var marked = false
+
+  func makeBody(configuration: Configuration) -> some View {
+    SuggestItemBody(label: configuration.label, lit: marked || configuration.isPressed)
+  }
+}
+
+struct SuggestItemBody<Label: View>: View {
+  @Environment(\.virgaTheme) private var theme
+  let label: Label
+  let lit: Bool
+  @State private var hovered = false
+
+  var body: some View {
+    label
+      .background(RoundedRectangle(cornerRadius: theme.radius).fill(lit || hovered ? theme.hover : Color.clear))
+      .onHover { hovered = $0 }
+  }
+}
+
 /// `.suggest-status`: why there's nothing to suggest (role="status").
 struct SuggestStatus: View {
   @Environment(\.virgaTheme) private var theme
@@ -334,8 +482,9 @@ struct SuggestStatus: View {
   }
 }
 
-/// Scrolls the composer's body the least it can so a view of it (by its
-/// id) is wholly in view: the sheet's ScrollViewReader, handed down.
+/// Scrolls the least it can so a view (by its id) is wholly in view: a
+/// ScrollViewReader handed down, the composer sheet's round its body, or
+/// `composerScrolling()`'s round a page or dialog holding a language picker.
 struct ComposerScroller {
   let reveal: @MainActor (String) -> Void
 }
@@ -345,7 +494,9 @@ private struct ComposerScrollerKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-  /// The composer sheet's scroller (ComposerSheet sets it).
+  /// The scroller of the scroll view this is in, where one is lent
+  /// (ComposerSheet, and `composerScrolling()` in Settings' pages and the
+  /// Language dialog).
   var composerScroller: ComposerScroller? {
     get { self[ComposerScrollerKey.self] }
     set { self[ComposerScrollerKey.self] = newValue }
@@ -378,7 +529,8 @@ extension View {
   }
 }
 
-/// `.suggest-pop`: who the mention might be, and its status line.
+/// `.suggest-pop`: who the mention might be, and its status line. The row
+/// `mention.index` is marked: the one Return takes.
 struct MentionList: View {
   @Environment(\.virgaTheme) private var theme
   let mention: MentionLookup
@@ -390,8 +542,8 @@ struct MentionList: View {
     VStack(alignment: .leading, spacing: 0) {
       if !mention.items.isEmpty {
         VStack(alignment: .leading, spacing: 0) {
-          ForEach(Array(mention.items.enumerated()), id: \.offset) { _, actor in
-            row(actor)
+          ForEach(Array(mention.items.enumerated()), id: \.offset) { index, actor in
+            row(actor, index: index)
           }
         }
         .padding(ComposerMeasure.suggestListPadding)
@@ -403,8 +555,18 @@ struct MentionList: View {
     .suggestPop()
     .accessibilityElement(children: .contain)
     .accessibilityLabel("Accounts to mention")
+    .accessibilityIdentifier("mention-list")
     .composerReveals(anchor, when: mention.items.count)
   }
+
+  static func handle(_ actor: JSONValue) -> String { actor["handle"]?.stringValue ?? "" }
+
+  static func name(_ actor: JSONValue) -> String {
+    actor["displayName"]?.stringValue.flatMap { $0.isEmpty ? nil : $0 } ?? handle(actor)
+  }
+
+  /// A row as VoiceOver reads it: the name, then the handle.
+  static func spoken(_ actor: JSONValue) -> String { "\(name(actor)), @\(handle(actor))" }
 
   private var status: String {
     switch mention.status {
@@ -414,9 +576,10 @@ struct MentionList: View {
     }
   }
 
-  private func row(_ actor: JSONValue) -> some View {
-    let handle = actor["handle"]?.stringValue ?? ""
-    let name = actor["displayName"]?.stringValue.flatMap { $0.isEmpty ? nil : $0 } ?? handle
+  private func row(_ actor: JSONValue, index: Int) -> some View {
+    let handle = Self.handle(actor)
+    let name = Self.name(actor)
+    let marked = index == mention.index
     return Button {
       pick(actor)
     } label: {
@@ -432,33 +595,51 @@ struct MentionList: View {
       }
       .suggestRow()
     }
-    .buttonStyle(.plain)
-    .accessibilityLabel("\(name), @\(handle)")
+    .buttonStyle(SuggestItemStyle(marked: marked))
+    .accessibilityLabel(Self.spoken(actor))
+    .accessibilityAddTraits(marked ? .isSelected : [])
+    .accessibilityIdentifier("mention-option-\(index)")
   }
 }
 
-/// `.suggest-pop` for "/": the templates the shortcut could mean, or why
-/// there are none, and Open the library at its foot.
+/// `.suggest-pop` for "/": the templates the shortcut could mean (the row
+/// `marked` is the one Return takes), or why there are none, and Open the
+/// library at its foot.
 struct SlashList: View {
   @Environment(\.virgaTheme) private var theme
   let controller: ComposerController
   let slash: SlashCommand
+  /// `SlashList.matches(controller, slash)`.
+  let matches: [PostTemplate]
+  let marked: Int
   /// Its place in the composer's scroll.
   let anchor: String
   let onOpenLibrary: () -> Void
   let pick: (PostTemplate) -> Void
 
-  var body: some View {
+  /// The templates the shortcut could mean, at most five
+  /// (rankTemplatesForSlash, matchShortcut).
+  static func matches(_ controller: ComposerController, _ slash: SlashCommand) -> [PostTemplate] {
     let replying = controller.state.reply != nil
-    let templates = controller.templates.templates
     let ranked = Library.rankTemplatesForSlash(
-      templates, parentText: controller.state.reply?.text ?? "", usage: controller.templateUsage(), replying: replying)
-    let matches = PostTemplates.matchShortcut(ranked, slash.query, replying: replying, limit: 5)
+      controller.templates.templates, parentText: controller.state.reply?.text ?? "",
+      usage: controller.templateUsage(), replying: replying)
+    return PostTemplates.matchShortcut(ranked, slash.query, replying: replying, limit: 5)
+  }
+
+  /// A row as VoiceOver reads it: the name, then the shortcut.
+  static func spoken(_ template: PostTemplate) -> String {
+    let name = template.name.isEmpty ? "Untitled template" : template.name
+    return template.shortcut.isEmpty ? name : "\(name), /\(template.shortcut)"
+  }
+
+  var body: some View {
+    let templates = controller.templates.templates
     VStack(alignment: .leading, spacing: 0) {
       if !matches.isEmpty {
         VStack(alignment: .leading, spacing: 0) {
-          ForEach(Array(matches.enumerated()), id: \.offset) { _, template in
-            row(template)
+          ForEach(Array(matches.enumerated()), id: \.offset) { index, template in
+            row(template, marked: index == marked)
           }
         }
         .padding(ComposerMeasure.suggestListPadding)
@@ -492,7 +673,7 @@ struct SlashList: View {
     return slash.query.isEmpty ? "None of your templates has a shortcut yet." : "No template uses /\(slash.query)."
   }
 
-  private func row(_ template: PostTemplate) -> some View {
+  private func row(_ template: PostTemplate, marked: Bool) -> some View {
     let name = template.name.isEmpty ? "Untitled template" : template.name
     return Button {
       pick(template)
@@ -511,8 +692,9 @@ struct SlashList: View {
       }
       .suggestRow()
     }
-    .buttonStyle(.plain)
-    .accessibilityLabel(template.shortcut.isEmpty ? name : "\(name), /\(template.shortcut)")
+    .buttonStyle(SuggestItemStyle(marked: marked))
+    .accessibilityLabel(Self.spoken(template))
+    .accessibilityAddTraits(marked ? .isSelected : [])
     .accessibilityIdentifier("slash-template-\(template.shortcut)")
   }
 }
@@ -602,10 +784,31 @@ struct EditorStyle: Equatable {
   }
 }
 
-/// A UITextView that hands its pastes (and ⌘↩) to the composer first.
+/// A UITextView that hands its pastes (and ⌘↩) to the composer first, and
+/// its keys to a suggestion list that is up.
 final class ComposerTextView: UITextView {
   var pasteHandler: ((NSRange) -> Bool)?
   var sendHandler: (() -> Void)?
+  /// The "@" and "/" lists' keys (PostEditor.jsx's onKeyDown).
+  var suggestionKeys: SuggestionKeyHandler?
+  /// The hardware presses of Return, Tab and Escape a list took in
+  /// pressesBegan (and a key-less twin UIKit sends beside some keys in the
+  /// same set), until each ends: no phase of them goes on to the text view,
+  /// and while one is down its key command and insertText don't take the
+  /// key again.
+  private var heldListPresses: [UIPress: SuggestionKeys.Key] = [:]
+  /// The list key a key command last acted on, and when (CACurrentMediaTime,
+  /// the clock of a press's timestamp). A press of that key stamped no later
+  /// is the one the command took, should UIKit hand it to pressesBegan too.
+  /// Forgotten when a press of that key ends or is cancelled: a key's press
+  /// ends before its next press begins, so a press that begins after that
+  /// is a new one, even one stamped before a command that waited on a busy
+  /// main thread.
+  private var commandTook: (key: SuggestionKeys.Key, at: CFTimeInterval)?
+  /// True while insertText hands a letter to UIKit's own insertText: the
+  /// typing probe's way of telling a new line that came that way from one
+  /// that reached the delegate by another.
+  private(set) var insertingThrough = false
 
   override func paste(_ sender: Any?) {
     if pasteHandler?(selectedRange) == true { return }
@@ -621,7 +824,92 @@ final class ComposerTextView: UITextView {
 
   override var keyCommands: [UIKeyCommand]? {
     let send = UIKeyCommand(input: "\r", modifierFlags: .command, action: #selector(sendFromKeys))
-    return [send] + (super.keyCommands ?? [])
+    return [send] + listCommands() + (super.keyCommands ?? [])
+  }
+
+  /// A hardware keyboard's keys for a list that is up, ahead of the text
+  /// view's own use of them (the caret's moves, a new line): ↑ and ↓ with
+  /// or without a modifier (the web reads none), Return and Tab while it
+  /// has rows (⇧⇥ too: the web's Tab is taken with anything held but ⌘ or
+  /// ⌃), Escape while it is up. Only then, so every other key reaches the
+  /// text view as before, and none while an input method is composing.
+  /// Return, Tab and Escape are taken from their press as well
+  /// (pressesBegan), should UIKit not hand them to these.
+  private func listCommands() -> [UIKeyCommand] {
+    guard let handler = suggestionKeys else { return [] }
+    guard markedTextRange == nil else {
+      if TypingProbe.isOn, let id = accessibilityIdentifier {
+        TypingProbe.commands(id, handler.lists().takesEscape ? "composing" : "none")
+      }
+      return []
+    }
+    let lists = handler.lists()
+    var commands: [UIKeyCommand] = []
+    if lists.takesArrows {
+      for flags in Self.arrowModifiers {
+        commands.append(Self.listCommand(UIKeyCommand.inputUpArrow, flags, #selector(listUp)))
+        commands.append(Self.listCommand(UIKeyCommand.inputDownArrow, flags, #selector(listDown)))
+      }
+      commands.append(Self.listCommand("\r", [], #selector(listReturn)))
+      commands.append(Self.listCommand("\t", [], #selector(listTab)))
+      commands.append(Self.listCommand("\t", .shift, #selector(listBackTab)))
+    }
+    if lists.takesEscape {
+      commands.append(Self.listCommand(UIKeyCommand.inputEscape, [], #selector(listEscape)))
+    }
+    if TypingProbe.isOn, let id = accessibilityIdentifier {
+      TypingProbe.commands(id, commands.isEmpty ? "none" : lists.takesArrows ? "rows" : "escape")
+    }
+    return commands
+  }
+
+  private static let arrowModifiers: [UIKeyModifierFlags] = [[], .shift, .alternate, .command, .control]
+
+  private static func listCommand(_ input: String, _ flags: UIKeyModifierFlags, _ action: Selector) -> UIKeyCommand {
+    let command = UIKeyCommand(input: input, modifierFlags: flags, action: action)
+    command.wantsPriorityOverSystemBehavior = true
+    return command
+  }
+
+  @objc func listUp() { commandKey(.up, "up") }
+  @objc func listDown() { commandKey(.down, "down") }
+  @objc func listEscape() { commandKey(.escape, "esc") }
+  // Should the list have gone between the key and its command, the key is
+  // typed as it would have been.
+  @objc func listReturn() { commandKey(.enter, "ret", typing: "\n") }
+  @objc func listTab() { commandKey(.tab, "tab", typing: "\t") }
+  // ⇧⇥ has no letter to type, so should the list have gone it does nothing.
+  @objc func listBackTab() { commandKey(.tab, "btab") }
+
+  /// A list key from its key command: nothing while its press, taken in
+  /// pressesBegan, is still down (that was this key); otherwise the key
+  /// goes to the lists as they are now, or is typed. Noted, so that its
+  /// press goes no further should UIKit hand that on to pressesBegan after
+  /// the command.
+  private func commandKey(_ key: SuggestionKeys.Key, _ name: String, typing: String? = nil) {
+    if isHeld(key) {
+      noteListKey("c", name, "dup")
+      return
+    }
+    if !takeListKey(key, "c", name), let typing { insertText(typing) }
+    commandTook = (key, CACurrentMediaTime())
+  }
+
+  /// The key's action on the lists as they are now (SuggestionKeys); true
+  /// when the key was theirs. `command` and `control` are what the press
+  /// held, where it came by its press; `route` and `name` are for the
+  /// typing probe.
+  @discardableResult
+  private func takeListKey(
+    _ key: SuggestionKeys.Key, _ route: String, _ name: String, command: Bool = false, control: Bool = false
+  ) -> Bool {
+    guard let handler = suggestionKeys else { return false }
+    let lists = handler.lists()
+    let action = SuggestionKeys.action(key, lists: lists, composing: markedTextRange != nil, command: command, control: control)
+    if TypingProbe.isOn { noteListKey(route, name, probeResult(action, lists)) }
+    if action == .field { return false }
+    handler.act(action)
+    return true
   }
 
   @objc func sendFromKeys() {
@@ -632,17 +920,194 @@ final class ComposerTextView: UITextView {
     sendHandler?()
   }
 
-  // The UI tests' typing probe (TypingProbe): what reached the field.
+  // A Return or Tab a list with rows takes goes no further: the software
+  // keyboard's Return on a phone (Safari sends keydown Enter for it, so
+  // the web takes the marked row too) and a hardware key that came this
+  // way. One that comes while the list's own press of that key is still
+  // down is that key, taken already. Every other key, and these with no
+  // list, as before. Then the UI tests' typing probe (TypingProbe): what
+  // reached the field.
   override func insertText(_ text: String) {
+    if text == "\n" || text == "\t" {
+      let key: SuggestionKeys.Key = text == "\n" ? .enter : .tab
+      let name = text == "\n" ? "ret" : "tab"
+      if isHeld(key) {
+        noteListKey("i", name, "dup")
+        return
+      }
+      if takeListKey(key, "i", name) { return }
+    }
     if TypingProbe.isOn, let id = accessibilityIdentifier { TypingProbe.insert(id, text, in: self) }
+    let through = insertingThrough
+    insertingThrough = true
     super.insertText(text)
+    insertingThrough = through
   }
 
+  // MARK: Presses
+
+  /// A hardware keyboard's Return (the keypad's Enter too), Tab and Escape,
+  /// taken from the press as it comes in when the lists take the key
+  /// (SuggestionKeys, with the ⌘ and ⌃ it holds), so they reach the lists
+  /// however UIKit would have handed them on. A press its key command took
+  /// already goes no further and does nothing more. Every other press, and
+  /// these when the lists don't take them, go on to the text view as before.
   override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
     if TypingProbe.isOn, let id = accessibilityIdentifier {
       TypingProbe.press(id, presses.compactMap { $0.key?.characters }.joined())
     }
-    super.pressesBegan(presses, with: event)
+    var taken: [UIPress: SuggestionKeys.Key] = [:]
+    for press in presses {
+      // A press that begins now isn't one held before, should UIKit ever
+      // hand a press object on to a new press.
+      heldListPresses[press] = nil
+      guard let uiKey = press.key else { continue }
+      if TypingProbe.isOn { noteArrow(uiKey, press) }
+      guard let key = Self.pressKey(uiKey) else { continue }
+      let flags = uiKey.modifierFlags
+      let name = key == .tab && flags.contains(.shift) ? "btab" : Self.probeName(key)
+      // A new press of the key: one of it still held ended out of sight.
+      heldListPresses = heldListPresses.filter { $0.value != key }
+      if let took = commandTook, took.key == key, took.at >= press.timestamp {
+        commandTook = nil
+        noteListKey("p", name, "dup")
+        taken[press] = key
+      } else if takeListKey(key, "p", name, command: flags.contains(.command), control: flags.contains(.control)) {
+        taken[press] = key
+      }
+    }
+    let twinOf = taken.values.first
+    if TypingProbe.isOn {
+      for press in presses where press.key == nil {
+        noteListKey("p", "keyless\(press.type.rawValue)", twinOf == nil ? "passed" : "held")
+      }
+    }
+    guard let key = twinOf else {
+      super.pressesBegan(presses, with: event)
+      return
+    }
+    // The key-less twin of a key taken (its semantic press, a select or a
+    // menu) goes no further either, when it comes in the same set. One that
+    // comes in a set of its own goes on, as it did before.
+    for press in presses where press.key == nil { taken[press] = key }
+    heldListPresses.merge(taken) { _, new in new }
+    let rest = presses.filter { taken[$0] == nil }
+    if !rest.isEmpty { super.pressesBegan(rest, with: event) }
+  }
+
+  override func pressesChanged(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+    guard !heldListPresses.isEmpty else { return super.pressesChanged(presses, with: event) }
+    let rest = presses.filter { heldListPresses[$0] == nil }
+    if !rest.isEmpty { super.pressesChanged(rest, with: event) }
+  }
+
+  override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+    if TypingProbe.isOn { noteEnded(presses, "") }
+    forgetCommand(presses)
+    guard !heldListPresses.isEmpty else { return super.pressesEnded(presses, with: event) }
+    let rest = release(presses)
+    if !rest.isEmpty { super.pressesEnded(rest, with: event) }
+  }
+
+  override func pressesCancelled(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+    if TypingProbe.isOn { noteEnded(presses, "cancel-") }
+    forgetCommand(presses)
+    guard !heldListPresses.isEmpty else { return super.pressesCancelled(presses, with: event) }
+    let rest = release(presses)
+    if !rest.isEmpty { super.pressesCancelled(rest, with: event) }
+  }
+
+  /// A press of the key a key command last took has ended, so the press
+  /// that command took is over (a key's press ends before its next press
+  /// begins): the next press of that key is a new one, whatever its stamp.
+  private func forgetCommand(_ presses: Set<UIPress>) {
+    guard let took = commandTook else { return }
+    if presses.contains(where: { $0.key.flatMap(Self.listKey) == took.key }) { commandTook = nil }
+  }
+
+  /// The presses not held, once those held are let go.
+  private func release(_ presses: Set<UIPress>) -> Set<UIPress> {
+    var rest = Set<UIPress>()
+    for press in presses {
+      if heldListPresses.removeValue(forKey: press) == nil { rest.insert(press) }
+    }
+    return rest
+  }
+
+  /// Whether a press of `key` a list took is down now.
+  private func isHeld(_ key: SuggestionKeys.Key) -> Bool {
+    heldListPresses.contains { $0.value == key && $0.key.phase != .ended && $0.key.phase != .cancelled }
+  }
+
+  /// The list key a hardware key is when it is taken from its press. The
+  /// arrows are left to their key commands, which take them.
+  private static func pressKey(_ key: UIKey) -> SuggestionKeys.Key? {
+    switch key.keyCode {
+    case .keyboardReturnOrEnter, .keyboardReturn, .keypadEnter: return .enter
+    case .keyboardTab: return .tab
+    case .keyboardEscape: return .escape
+    default: return nil
+    }
+  }
+
+  /// The list key a hardware key is, the arrows included.
+  private static func listKey(_ key: UIKey) -> SuggestionKeys.Key? {
+    if let key = pressKey(key) { return key }
+    switch key.keyCode {
+    case .keyboardUpArrow: return .up
+    case .keyboardDownArrow: return .down
+    default: return nil
+    }
+  }
+
+  // MARK: Typing probe
+
+  /// A list key in the typing probe: how it came in (c, a key command; p,
+  /// its press; i, insertText), which, and what came of it.
+  private func noteListKey(_ route: String, _ name: String, _ result: String) {
+    guard TypingProbe.isOn, let id = accessibilityIdentifier else { return }
+    TypingProbe.listKey(id, route: route, key: name, result: result)
+  }
+
+  private static func probeName(_ key: SuggestionKeys.Key) -> String {
+    switch key {
+    case .up: return "up"
+    case .down: return "down"
+    case .enter: return "ret"
+    case .tab: return "tab"
+    case .escape: return "esc"
+    }
+  }
+
+  /// What a list key came to: the action, "field" with whether a list was
+  /// up, or "composing" with the length of the marked text.
+  private func probeResult(_ action: SuggestionKeys.Action, _ lists: SuggestionKeys.Lists) -> String {
+    if let marked = markedTextRange { return "composing\(offset(from: marked.start, to: marked.end))" }
+    switch action {
+    case .field: return lists.takesEscape ? "field-listup" : "field-nolist"
+    case .markMention(let row): return "markMention\(row)"
+    case .pickMention(let row): return "pickMention\(row)"
+    case .markSlash(let row): return "markSlash\(row)"
+    case .pickSlash(let row): return "pickSlash\(row)"
+    case .close(let mention, let slash): return "close\(mention ? "M" : "")\(slash ? "S" : "")"
+    }
+  }
+
+  /// An arrow's press, which always goes on: "after-command" when its key
+  /// command took it first.
+  private func noteArrow(_ key: UIKey, _ press: UIPress) {
+    guard let arrow = Self.listKey(key), arrow == .up || arrow == .down else { return }
+    let after = commandTook.map { $0.key == arrow && $0.at >= press.timestamp } ?? false
+    noteListKey("p", Self.probeName(arrow), after ? "after-command" : "passed")
+  }
+
+  /// The end of a press of Return, Tab or Escape: "held" when its list took
+  /// it, "passed" when not, after `prefix` ("cancel-" for a cancelled one).
+  private func noteEnded(_ presses: Set<UIPress>, _ prefix: String) {
+    for press in presses {
+      guard let uiKey = press.key, let key = Self.pressKey(uiKey) else { continue }
+      noteListKey("u", Self.probeName(key), prefix + (heldListPresses[press] != nil ? "held" : "passed"))
+    }
   }
 }
 
@@ -682,6 +1147,9 @@ struct HighlightedTextView: UIViewRepresentable {
   var onRequestsDone: () -> Void
   var onPaste: (NSRange) -> Bool
   var onSend: () -> Void
+  /// The "@" and "/" lists' keys, handed to the text view as its paste and
+  /// send handlers are.
+  var suggestionKeys: SuggestionKeyHandler?
 
   /// What the field's attributes were last set from.
   struct Drawn: Equatable {
@@ -733,6 +1201,7 @@ struct HighlightedTextView: UIViewRepresentable {
     let changes = textChanges()
     view.pasteHandler = onPaste
     view.sendHandler = onSend
+    view.suggestionKeys = suggestionKeys
     view.isEditable = !disabled
     view.tintColor = style.tint
     view.accessibilityLabel = label
@@ -827,6 +1296,13 @@ struct HighlightedTextView: UIViewRepresentable {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
       editing = true
       TypingProbe.shouldChange(parent.identifier, in: textView, range: range, text: text)
+      if TypingProbe.isOn, text == "\n" || text == "\t" {
+        // A new line or tab that reaches the delegate without coming through
+        // ComposerTextView.insertText never met the lists.
+        let through = (textView as? ComposerTextView)?.insertingThrough ?? false
+        TypingProbe.listKey(
+          parent.identifier, route: "d", key: text == "\n" ? "ret" : "tab", result: through ? "via-insert" : "bypassed")
+      }
       return true
     }
 
