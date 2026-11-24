@@ -305,7 +305,7 @@ struct RemoveAccountDialog: ViewModifier {
       isPresented: Binding(get: { account != nil }, set: { if !$0 { account = nil } }), title: "Remove \(name) from this browser"
     ) {
       DialogForm {
-        Text("It signs out and leaves this list. Sign in to add it back.")
+        Text("It signs out here. Sign in to add it back.")
           .fixedSize(horizontal: false, vertical: true)
         if let account {
           PendingWorkWarnings(accounts: [account], model: work)

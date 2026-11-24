@@ -30,7 +30,7 @@ struct LifespanDefaultsCard: View {
   var body: some View {
     let lifespan = SelfDestruct.normalizeTimer(model.settings.lifespan)
     let rule = Self.ruleSentence(lifespan)
-    SettingsSectionView(title: "Default timer", sub: "Each new post starts with it, and can change it or take it off.") {
+    SettingsSectionView(title: "Default timer", sub: "Each post can change it or take it off.") {
       SettingsRow(
         label: "Start new posts with a timer",
         hint: lifespan.enabled ? nil as String? : "New posts start without one. The rule is kept for when you turn this on.",

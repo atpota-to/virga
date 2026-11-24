@@ -26,7 +26,7 @@ public enum SettingsSections {
     SettingsSection(key: "data", label: "Data and sync", desc: "Your archive on this device: sync, export and delete."),
     SettingsSection(key: "dashboards", label: "Dashboards", desc: "Your sets of reports."),
     SettingsSection(key: "posting", label: "Posting", desc: "New post defaults, the queue, timers and the adviser."),
-    SettingsSection(key: "appearance", label: "Appearance", desc: "How Virga looks on this device."),
+    SettingsSection(key: "appearance", label: "Appearance", desc: "Sky, colour, contrast and layout."),
     SettingsSection(key: "permissions", label: "Permissions", desc: "What signing in lets Virga do, and what it can’t."),
     SettingsSection(key: "about", label: "About", desc: "Terms, privacy and where the data comes from."),
   ]

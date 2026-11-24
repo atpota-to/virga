@@ -48,7 +48,7 @@ struct DataSection: View {
         .task { usage = await AppStores.bytesUsed(at: app.stores.filesDirectory) }
         .virgaDialog(isPresented: confirming(.rebuild), title: "Rebuild the post archive?") {
           Text(
-            "Reads every post again, which takes as long as the first build. It’s the only way to drop deleted posts and fully refresh old counts."
+            "It takes as long as the first build."
           )
           .fixedSize(horizontal: false, vertical: true)
         } actions: {
@@ -62,7 +62,7 @@ struct DataSection: View {
         }
         .virgaDialog(isPresented: confirming(.delete), title: "Delete the archive on this device?") {
           Text(
-            "Everything Virga holds for this account on this device goes, unfollow log included. Your dashboards and settings stay."
+            "The unfollow log goes too. Your dashboards and settings stay."
           )
           .fixedSize(horizontal: false, vertical: true)
         } actions: {
@@ -149,7 +149,7 @@ struct DataSection: View {
       }
 
       SettingsSectionView(title: "Take it with you", sub: nil) {
-        SettingsRow(label: "Everything, as JSON", hint: "Posts, followers, blocks, engagement and repo records, as this device holds them.") {
+        SettingsRow(label: "Everything, as JSON", hint: "Posts, followers, blocks, engagement and repo records.") {
           Button {
             exporting = try? archive.exportArchive()
           } label: {
@@ -159,7 +159,7 @@ struct DataSection: View {
           .disabled(!built)
           .accessibilityIdentifier("data-export-json")
         }
-        SettingsRow(label: "Your posts, as CSV", hint: "Every post with its counts, newest first, for a spreadsheet.") {
+        SettingsRow(label: "Your posts, as CSV", hint: "With their counts, newest first.") {
           Button {
             exporting = archive.exportPosts()
           } label: {

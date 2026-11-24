@@ -46,7 +46,7 @@ export default function SettingsPage({ section }) {
   const current = named || SECTIONS[0];
   return (
     <>
-      <PageHeader crumbs={[{ label: 'Settings', to: '/settings' }]} title={current.label} sub={current.desc} />
+      <PageHeader crumbs={[{ label: 'Settings', to: '/settings' }]} title={current.label} />
       <div className="page-body settings-body">
         {current.key === 'account' && <AccountsSettings />}
         {current.key === 'data' && <DataSection />}
@@ -64,7 +64,7 @@ export default function SettingsPage({ section }) {
 function SettingsIndex() {
   return (
     <>
-      <PageHeader title="Settings" sub="For this device and the open account." />
+      <PageHeader title="Settings" />
       <div className="page-body settings-body">
         <ul className="settings-index">
           {SECTIONS.map((s) => (
@@ -223,13 +223,13 @@ function DataSection() {
       </Section>
 
       <Section title="Take it with you">
-        <Row label="Everything, as JSON" hint="Posts, followers, blocks, engagement and repo records, as this device holds them.">
+        <Row label="Everything, as JSON" hint="Posts, followers, blocks, engagement and repo records.">
           <Button onClick={() => exportArchive(archive)} disabled={!built}>
             <Download size={15} aria-hidden="true" />
             Export JSON
           </Button>
         </Row>
-        <Row label="Your posts, as CSV" hint="Every post with its counts, newest first, for a spreadsheet.">
+        <Row label="Your posts, as CSV" hint="With their counts, newest first.">
           <Button onClick={() => exportPosts(archive)} disabled={!built}>
             <Download size={15} aria-hidden="true" />
             Export CSV
@@ -305,7 +305,7 @@ function DataSection() {
         }
       >
         <p>
-          Reads every post again, which takes as long as the first build. It’s the only way to drop deleted posts and fully refresh old counts.
+          It takes as long as the first build.
         </p>
       </Dialog>
       <Dialog
@@ -331,7 +331,7 @@ function DataSection() {
         }
       >
         <p>
-          Everything Virga holds for this account on this device goes, unfollow log included. Your dashboards and settings stay.
+          The unfollow log goes too. Your dashboards and settings stay.
         </p>
       </Dialog>
     </>
@@ -423,7 +423,7 @@ function DashboardsSection() {
         </div>
       </Section>
       <Section title="Where they’re kept">
-        <p className="settings-text">Kept on this device. Other devices start with the three starting dashboards.</p>
+        <p className="settings-text">This device only. Other devices start with the three starting dashboards.</p>
       </Section>
       <Dialog
         open={Boolean(renaming)}
@@ -473,7 +473,7 @@ function DashboardsSection() {
         <p>
           {confirm === 'reset'
             ? 'Every dashboard you made goes, and Overview, Growth and Content come back as they started.'
-            : 'The dashboard and its arrangement go. The reports and your archive stay.'}
+            : 'The reports and your archive stay.'}
         </p>
       </Dialog>
       <NewDashboardDialog
@@ -553,7 +553,7 @@ function AppearanceSection() {
         block
         labelId="sky-label"
         label="Sky"
-        hint="The sky behind every page. Night is the dark theme, and a device set to dark stays on it."
+        hint="Night is the dark theme, and a device set to dark stays on it."
       >
         <RadioButtons className="sky-choices" labelledBy="sky-label" choices={SKIES} value={prefs.sky} onChange={(v) => setPref('sky', v)}>
           {(sky, radio) => {
@@ -605,7 +605,7 @@ function AppearanceSection() {
           ]}
         />
       </Row>
-      <Row label="Density" hint="Compact fits more on a screen.">
+      <Row label="Density">
         <Segmented
           label="Density"
           value={prefs.density}
@@ -617,7 +617,7 @@ function AppearanceSection() {
         />
       </Row>
       {!narrow && (
-        <Row label="Sidebar" hint="Folded, it’s a rail of icons.">
+        <Row label="Sidebar">
           <Segmented
             label="Sidebar"
             value={prefs.sidebar}
@@ -634,7 +634,7 @@ function AppearanceSection() {
         label="Numbers and dates"
         hint={
           <>
-            How figures, dates and times are written, and when the week starts. Virga’s words stay English.
+            Virga’s words stay English.
             <span className="settings-row-sample">{localeSample(activeLocale())}</span>
           </>
         }
@@ -731,7 +731,7 @@ function AboutSection() {
           Analytics for your Bluesky account and atproto repo, worked out on your device, and a place to write and schedule posts. Your archive stays on this device and is never sent to Virga’s server.
         </p>
       </Section>
-      <Section title="Terms and privacy" sub="What you agreed to, and what Virga does with your information.">
+      <Section title="Terms and privacy">
         {/* Each opens in place, like a row of the settings list leads to its page. */}
         {Object.values(DOCUMENTS).map((doc) => (
           <button key={doc.key} type="button" className="settings-index-item" onClick={() => setReading(doc.key)} aria-haspopup="dialog">

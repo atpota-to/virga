@@ -143,7 +143,7 @@ struct AdviserSettingsCard: View {
     }
     .pressingName { change { $0.checkReplyContext = !adviser.checkReplyContext } }
     SettingsRow(
-      label: "Your goals", hint: "The adviser says when a post goes against them. It doesn’t rewrite it.",
+      label: "Your goals", hint: "It flags a post that goes against them, but doesn’t rewrite it.",
       block: true
     ) {
       goals(adviser)

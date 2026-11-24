@@ -60,7 +60,7 @@ function RemoveAccountDialog({ account, onClose, onRemoved }) {
       }
     >
       <div className="dialog-form">
-        <p>It signs out and leaves this list. Sign in to add it back.</p>
+        <p>It signs out here. Sign in to add it back.</p>
         <PendingWorkWarnings accounts={listed} work={work} />
         <label className="choice" data-on={deleteData || undefined}>
           <input type="checkbox" checked={deleteData} onChange={(e) => setDeleteData(e.target.checked)} />

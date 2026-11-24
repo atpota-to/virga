@@ -29,7 +29,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Accounts/AccountsSettings.swift"
       ],
       "note": "All of it; the pending-work warnings in Remove … from this browser read through AppModel.pendingWork (VirgaPosting's listScheduled and listTimers, PendingWorkServices.posting). Refocusing the next row's ⋯ after a removal is the system's.",
-      "synced": "9b17f8a99199"
+      "synced": "f1828d16f77b"
     },
     "src/accounts/AddAccountDialog.jsx": {
       "status": "ported",
@@ -413,7 +413,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
       ],
       "note": "The index (a phone's), Account, Data and sync (the archive's line, the sync's steps and Cancel, what failed, Sync now or the rest of a build, Rebuild posts and its dialog, the JSON and CSV exports through the system's exporter, where it is kept with the app folder's size for the web's storage estimate, and Delete the archive… as the quiet outline in red, with its dialog, the toast and the way home), Dashboards (Your dashboards with New dashboard at its head, each dashboard's name as the way to it with its count of reports, its ⋯ with Rename…, Move up, Move down and Delete while there is more than one, its dialogs, Reset to the three starting dashboards with its dialog and toast, and Where they’re kept; the focus after a move or a delete is the system's to place), Appearance (the sky and the accent with its swatches, each a radio group whose arrows, Home and End choose on a hardware keyboard, each choice saying its place and the clock's tile what it comes to now; contrast, density, the sidebar; numbers and dates, two selects in the system's menu; and the live sky's switch), Permissions and About (with the Terms and the Privacy Policy, the agreement's date, and when the repo was last read). Posting is PostingSettingsSection (ui-posting.json says what of it is there). Data's \"Keep it when space runs low\" is shown only where the browser can be asked (navigator.storage.persist), which iOS has no counterpart for, so it isn't drawn.",
-      "synced": "79c784bcd081"
+      "synced": "2483bee1a19e"
     },
     "src/settings/settings.css": {
       "status": "ported",

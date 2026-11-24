@@ -41,7 +41,6 @@ export default function QueueSettings({ did }) {
   return (
     <SettingsCard
       title="Weekly queue"
-      sub="When queued posts go out each week."
     >
       <SettingsRow
         label={

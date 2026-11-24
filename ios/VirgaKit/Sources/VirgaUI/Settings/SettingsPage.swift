@@ -39,7 +39,7 @@ public struct SettingsPage: View {
       SettingsIndex()
     } else {
       let current = named ?? SettingsSections.sections[0]
-      VirgaPage(PageHeaderModel(title: current.label, sub: current.desc, crumbs: [Crumb("Settings", to: "/settings")])) {
+      VirgaPage(PageHeaderModel(title: current.label, crumbs: [Crumb("Settings", to: "/settings")])) {
         sectionBody(current.key)
       }
     }
@@ -70,7 +70,7 @@ struct SettingsIndex: View {
   @Environment(\.navigate) private var navigate
 
   var body: some View {
-    VirgaPage(PageHeaderModel(title: "Settings", sub: "For this device and the open account.")) {
+    VirgaPage(PageHeaderModel(title: "Settings")) {
       VStack(spacing: 0) {
         ForEach(SettingsSections.sections) { section in
           SettingsIndexItem(label: section.label, desc: section.desc) { navigate("/settings/\(section.key)") }
@@ -415,7 +415,7 @@ struct AppearanceSection: View {
       SettingsRow(
         label: "Sky",
         hint:
-          "The sky behind every page. Night is the dark theme, and a device set to dark stays on it.",
+          "Night is the dark theme, and a device set to dark stays on it.",
         block: true
       ) {
         SkyChoices()
@@ -444,7 +444,7 @@ struct AppearanceSection: View {
         ) { preferences.setPref(\.contrast, $0) }
         .accessibilityIdentifier("contrast")
       }
-      SettingsRow(label: "Density", hint: "Compact fits more on a screen.", kind: .segmented) {
+      SettingsRow(label: "Density", kind: .segmented) {
         Segmented(
           label: "Density",
           options: [
@@ -456,7 +456,7 @@ struct AppearanceSection: View {
       // A phone, or a narrow tablet, has no sidebar to fold.
       if chrome != .phone {
         SettingsRow(
-          label: "Sidebar", hint: "Folded, it’s a rail of icons.",
+          label: "Sidebar",
           kind: .segmented
         ) {
           Segmented(
@@ -510,7 +510,7 @@ struct AppearanceSection: View {
       label: "Numbers and dates",
       hint: AnyView(
         VStack(alignment: .leading, spacing: Measure.Settings.sampleSpaceAbove) {
-          Text("How figures, dates and times are written, and when the week starts. Virga’s words stay English.")
+          Text("Virga’s words stay English.")
           Text(sample).foregroundStyle(theme.ink2).accessibilityIdentifier("locale-sample")
         }),
       block: true
@@ -948,7 +948,7 @@ struct AboutSection: View {
         )
       }
       SettingsSectionView(
-        title: "Terms and privacy", sub: "What you agreed to, and what Virga does with your information."
+        title: "Terms and privacy"
       ) {
         ForEach(LegalDocuments.all, id: \.key) { document in
           SettingsIndexItem(label: document.title, desc: nil) { reading = document.key }

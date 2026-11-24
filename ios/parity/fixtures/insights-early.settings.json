@@ -33,7 +33,7 @@
         {
           "key": "appearance",
           "label": "Appearance",
-          "desc": "How Virga looks on this device."
+          "desc": "Sky, colour, contrast and layout."
         },
         {
           "key": "permissions",

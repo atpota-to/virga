@@ -258,7 +258,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Adviser/AdviserSettingsCard.swift"
       ],
       "note": "Post adviser in Settings › Posting, over the account's PostingSettingsModel: NeedsBackend for an account that can't use AI; Use the post adviser (nextPostingAdviserState, the recommended setup the first time), Check before posting, Stop me (the Segmented's own medium keys, in a row drawn up for them), Which posts, Read replies with their conversation (the switches' names press them), Your goals (the two presets, Post less about some topics with its topics, VirgaTextField with its muted example, Goals in your own words with its example placeholder and its count), Proofread (the three checks, Notes for the proofread with its example placeholder, Your writing style with Learn my style or See or change it, which opens StyleDialog), the month's three usage lines, What’s sent, and to whom (a Settings disclosure row), and a refused change's message, read out. Which posts is a radio group: each scope a button with the round radio mark, selected when it's the scope, its place ('1 of 3') as its value; the arrows move the choice, and choosing the chosen one does nothing.",
-      "synced": "e7dd1707ab54"
+      "synced": "048f07d35911"
     },
     "src/posting/ui/AdviserSheet.jsx": {
       "status": "ported",
@@ -283,7 +283,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
       ],
       "note": "New posts: Languages (the composer's LanguagePicker, bare: its label VoiceOver's alone, no hint, under the row's own name), Who can reply and quote (My Bluesky setting or Choose here, with the composer's GatesEditor over the stored gates), the two stacked 12 apart and each held to 420 (composer.css's .settings-row-control--stack), Main button (PublishActions' four, normalized, as SettingsSelect), Require alt text, Offer to split long posts and Number the posts of a split thread as switches whose names press them (the label's htmlFor), each saved as it changes, with a refused change's message under them, read out.",
-      "synced": "bcb2b9acc2cd"
+      "synced": "1540ca1e06bd"
     },
     "src/posting/ui/GatesEditor.jsx": {
       "status": "ported",
@@ -299,7 +299,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Posting/LifespanDefaults.swift"
       ],
       "note": "LifespanDefaultsCard in Settings › Posting: Start new posts with a timer (its hint when off; its name presses the switch), the rule's editor (LifespanRuleEditor, a length and never a set time, its changes keeping the timer on or off as it is, checked against the account's limits, held to 640 and its parts named like Settings' rows) as a label-less block row when on, and behind The rule it will use: … when off (a Settings disclosure row: its arrow on the sentence's first line, the sentence pressed through 44 points that reach into the row's air, the editor 16 under it and kept while closed, as a closed <details> keeps its children), saved never pinned to a time, the refusal read out, and the caption: with a long session the timers in use (getLimits, timerLimitsLine) first, then the rest with See posts on a timer, a link in ink and underlined that the navigator follows to postingPath('timers') (ScheduleLinkedText).",
-      "synced": "86238654b30c"
+      "synced": "4c6b7b1db381"
     },
     "src/posting/ui/LifespanEditor.jsx": {
       "status": "ported",
@@ -340,7 +340,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
       ],
       "note": "Weekly queue: the posting times a week with the week in a line and Edit the week (a Link drawn as a button: read as a link, to postingPath('schedule'), Posting › Weekly schedule), the time zone (scheduleParts' TimezoneSelect: this device's first, then every zone the device knows; the whole line from 760 down) with the device's zone named when it differs, and Suggest posting times (its name presses its switch), over VirgaPosting's ScheduleModel (weeklyCount, weekSummary, zoneLabel, moveToZone); a refused change read out. TimeZone.knownTimeZoneIdentifiers stands in for Intl.supportedValuesOf('timeZone').",
-      "synced": "d0ea990c1359"
+      "synced": "c90064d2ec11"
     },
     "src/posting/ui/SettingsParts.jsx": {
       "status": "ported",

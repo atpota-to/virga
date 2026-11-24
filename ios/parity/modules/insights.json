@@ -117,7 +117,7 @@
       "fixtures": [
         "insights-early.settings"
       ],
-      "synced": "438c1284217b"
+      "synced": "6c53eb6df3ac"
     },
     "src/share/chartImage.js": {
       "status": "ported",

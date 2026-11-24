@@ -163,7 +163,7 @@ struct ComposerDefaultsCard: View {
   var body: some View {
     let settings = model.settings
     let own = settings.gates != nil
-    SettingsSectionView(title: "New posts", sub: "What new posts start with. Each post can change it.") {
+    SettingsSectionView(title: "New posts", sub: "Each post can still change these.") {
       SettingsRow(
         label: "Languages", hint: "Bluesky uses these to show your posts to people who read them. Up to three.", block: true
       ) {
@@ -207,7 +207,7 @@ struct ComposerDefaultsCard: View {
           }
         }
       }
-      SettingsRow(label: "Main button", hint: "What the composer’s main button does. The others stay in its menu.") {
+      SettingsRow(label: "Main button", hint: "The others stay in its menu.") {
         SettingsSelect(
           label: "Main button", options: PublishActions.publishActionOptions.map { ($0.value, $0.label) },
           selection: PublishActions.normalizePublishAction(settings.defaultAction)
@@ -215,12 +215,12 @@ struct ComposerDefaultsCard: View {
         .modifier(PostingSettingsSelectWidth())
         .accessibilityIdentifier("posting-main-button")
       }
-      SettingsRow(label: "Require alt text", hint: "Don’t post an image until it has a description.", compactControl: true) {
+      SettingsRow(label: "Require alt text", compactControl: true) {
         SettingsSwitch(label: "Require alt text", isOn: settings.requireAltText) { save(["requireAltText": .bool($0)]) }
       }
       .pressingName { save(["requireAltText": .bool(!settings.requireAltText)]) }
       SettingsRow(
-        label: "Offer to split long posts", hint: "When a post runs past 300 characters, offer to make it a thread.", compactControl: true
+        label: "Offer to split long posts", hint: "For posts over 300 characters.", compactControl: true
       ) {
         SettingsSwitch(label: "Offer to split long posts", isOn: settings.showThreadSuggestion) {
           save(["showThreadSuggestion": .bool($0)])
@@ -286,7 +286,7 @@ struct QueueSettingsCard: View {
     let device = PostingQueue.resolveTimezone(nil)
     let count = ScheduleModel.weeklyCount(schedule)
     SettingsSectionView(
-      title: "Weekly queue", sub: "When queued posts go out each week."
+      title: "Weekly queue"
     ) {
       SettingsRow(label: count == 1 ? "1 posting time a week" : "\(count) posting times a week", hint: ScheduleModel.weekSummary(schedule)) {
         // `<Link className="btn">`: a way to a page, drawn as a button.

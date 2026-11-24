@@ -176,7 +176,7 @@ export default function AdviserSettings({ open, onClose, did }) {
               <div className="settings-row-label" id={ids.goalsTitle}>
                 Your goals
               </div>
-              <div className="settings-row-hint">The adviser says when a post goes against them. It doesn’t rewrite it.</div>
+              <div className="settings-row-hint">It flags a post that goes against them, but doesn’t rewrite it.</div>
             </div>
             <div className="settings-row-control adviser-set-stack">
               {GOAL_PRESETS.map((g) => (

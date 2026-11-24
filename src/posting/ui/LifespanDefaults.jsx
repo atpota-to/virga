@@ -65,7 +65,7 @@ export default function LifespanDefaults({ did }) {
   return (
     <SettingsCard
       title="Default timer"
-      sub="Each new post starts with it, and can change it or take it off."
+      sub="Each post can change it or take it off."
     >
       {/* On, the editor under this row ends with the rule in a sentence, so
           the row says nothing more; off, it says what happens instead. */}
