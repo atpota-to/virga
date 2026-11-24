@@ -1387,6 +1387,36 @@ followed:
   carry the same risk; no test has pressed a key in them, and KeyTextField can replace them once
   CI shows it working.
 
+### What runs 100 to 104 showed about the iPad's keys
+
+Every run compiled; the iPhone passed every test in each, its software Return taking the marked
+person. On the iPad:
+- Run 100 (29abaf5): the post editor's typing probe recorded the ↓ as a press and then its
+  priority key command, which marked the second person, and no trace at all of the Return
+  pressed with `app.typeKey` five seconds later (no press, key command or insertText). The
+  composer test also failed, but on its own timing: it waited for a progress view that never
+  showed while the 9-second "Posted as" toast came and went (its shot shows the toast); it now
+  looks for the toast straight after Post. A posting pages step timed out reading the screen in
+  the palette, which passed in later runs on the same code.
+- Runs 102 and 103 tried a test-only flag giving the UIKit fields an empty input view, so no
+  software keyboard came up. With it XCUITest could no longer type into the post editor
+  ("Neither element nor any descendant has keyboard focus"), and the language search's Escape
+  still did nothing with no keyboard at all (`keyboards=0`). The flag is gone.
+- Run 104 (e611fb8) pressed each key three ways and logged each: the app's `typeKey`, the
+  field's `typeKey`, and the key typed as text. ↓ came through `app.typeKey`. Return came through
+  neither `typeKey`, and typed as text ("\n") it reached the post editor's insertText, which took
+  the marked person with no new line (Qi-ret=pickMention1). Escape came through no way at all,
+  in either field: the language search's probe record holds no press of any key and the post
+  editor's none of Escape.
+
+So on CI's iPad simulator XCUITest delivers neither a hardware Return nor Escape to the app, and
+what the fields do with them is checked there as far as it can be: Return as the field receives
+it from text, and Escape only when the probe shows it arrived, which fails the test if the list
+stays up. When no way of pressing Escape reached the field, the tests log it (VIRGA-NOTE) and go
+on. On a device, a hardware Return and Escape take the routes the code gives them (presses,
+priority key commands, the delegate), which the Linux models and two reviews hold to the web's
+rules but no CI run has exercised.
+
 ## Known gaps and deliberate differences
 
 - Left for later steps: dragging cards; "Keep it when space runs low" (iOS has nothing to ask).

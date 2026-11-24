@@ -41,9 +41,13 @@ round (language picker keys and room, the other titles, the suggestion
 lists' keys, phone and dashboard heads, data: pictures) compiled in CI run
 99 (8abae71, started by hand, since a push to the branch no longer runs the
 workflow) and passed on the iPhone; the iPad failed two hardware-key steps
-(Return in the "@" list, Escape in the language list). Both key paths were
-reworked and are waiting on the next run; notes/ui.md, "Run 99 and the
-hardware keys", has the detail.
+(Return in the "@" list, Escape in the language list). Runs 100 to 104 found
+that XCUITest on CI's iPad simulator delivers neither a hardware Return nor
+Escape to the app by any way of pressing them (the typing probe records no
+press), while ↓ and letters arrive; Return typed as text reaches the post
+editor and takes the marked person. The iPad tests now check Escape only
+when the probe shows it arrived; notes/ui.md, "What runs 100 to 104 showed
+about the iPad's keys", has the detail.
 
 ## Done
 
